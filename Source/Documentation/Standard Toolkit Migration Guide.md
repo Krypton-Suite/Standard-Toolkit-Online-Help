@@ -17,7 +17,7 @@ Press **CTRL** + **H** to bring up the find/replace UI
 ## Step 5
 In the *find* field, type in or replace any existing text with `ComponentFactory.` and leave the *replace* field blank. In the drop down box, select *Entire Solution*, then press **Replace All**
 
-[]()
+[](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/blob/master/Assets/FindAndRepace.png?raw=true)
 
 ## Step 6
 Build & deploy
