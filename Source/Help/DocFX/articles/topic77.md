@@ -20,8 +20,8 @@ combination that sets focus to the combo box.
 **Visible**  
 Use this property to specify if the combo box should be visible at runtime. 
 
-**MaximumSize**  
-**MinimumSize**  
+**MaximumSize** and **MinimumSize**  
+
 These two properties are very important and allow you to control the width of
 the combo box. By default they have the same value giving a fixed width to the
 control, but you can alter the values so that they specify a valid range of
@@ -44,6 +44,13 @@ over the user defined button specifications. If you set this boolean property to
 *True* then it will turn on tool tips for those button specs. Use the
 *ButtonSpec.TooltipText* property in order to define the string you would like
 to appear inside the displayed tool tip.  
+
+**AllowButtonSpecTooltipPriority**
+
+If the parent Item has tooltips, and the button spec has tooltips, then
+the default is show both when hovering over the buttonspec. This can be disabled 
+by setting `AllowButtonSpecTooltipPriority` to `true`, so that only 1 tooltip is
+displayed when hovering over any part of the control.
   
 **Tag**  
 Associate application specific information with the object instance by using
