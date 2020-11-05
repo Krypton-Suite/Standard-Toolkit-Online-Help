@@ -70,7 +70,7 @@ can add references manually by right clicking the *References* folder in
 your project and then using the '*Add Reference...*' context menu option. The
 presented dialog box is then used to add references by selecting the *.NET* tab
 and then searching the presented list of assemblies for the
-*ComponentFactory.Krypton* assemblies. Alternatively select the *Browse* tab and
+*Krypton* assemblies. Alternatively select the *Browse* tab and
 then navigate to the file location of the assemblies.
 
 Once the project references are in place we need to add some '*using*'
@@ -78,10 +78,10 @@ statements to the forms code file. This makes it easier to write code that
 involves the *Krypton* components without the need to fully scope them. Open up
 the form code file and add the following statements to the existing entries...  
   
-    using ComponentFactory.Krypton.Toolkit;  
-    using ComponentFactory.Krypton.Navigator;  
-    using ComponentFactory.Krypton.Workspace;  
-    using ComponentFactory.Krypton.Docking;
+    using Krypton.Toolkit;  
+    using Krypton.Navigator;  
+    using Krypton.Workspace;  
+    using Krypton.Docking;
 
  
 

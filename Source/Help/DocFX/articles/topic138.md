@@ -23,7 +23,7 @@ Enter the name ‘Krypton’ for the new tab title.
 
 The full selection of *Krypton* components will already be present in the dialog
 box. Just click the *Namespace* column header to sort the list into alphabetical
-order and then use the scroll bar to bring the *ComponentFactory.Krypton*
+order and then use the scroll bar to bring the *Krypton*
 entries into view. Mark the check box for all the *Krypton* entries so they will
 all be added to the toolbox.  
  
@@ -33,7 +33,7 @@ all be added to the toolbox.
  
 
 If the Krypton components are not already present then use the Browse button and
-select the ComponentFactory.Krypton.\* assemblies in order to add them manually.
+select the Krypton.\* assemblies in order to add them manually.
 
  
 
