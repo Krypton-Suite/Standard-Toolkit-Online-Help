@@ -3,7 +3,7 @@ The `Krypton Suite` contains user interface components designed to make it quick
 The `Krypton Suite` consists of five products called `Krypton Toolkit, Krypton Ribbon, Krypton Navigator, Krypton Workspace` and `Krypton Docking`.
 
 
-## https://github.com/Wagnerp/Krypton-NET-Core
+## https://github.com/Krypton-Suite/Standard-Toolkit
 * Modifications by Peter Wagner (aka Wagnerp) & Simon Coghlan (aka Smurf-IV)  have been fixing and adding more capabilities to this toolkit.
 * There is also an Extensions project, which takes these base controls and add more useful complete controls (Currently outside the scope of this help). To find out more, please head to [this link](https://github.com/Krypton-Suite/Extended-Toolkit)
 * All .Net Versions from 3.5 are catered for 
