@@ -20,8 +20,13 @@
 - Open a command line at the Help directory
 - Copy in the location of the DocFX.exe
 - Copy the following onto the end of the command line to "build" and then "serve" html help generated
-- `docfx\docfx.json --serve`
-- e.g `>><##PATH-TO-HELP##>\Help>Z:\DocFX\docfx.exe docfx\docfx.json --serve`
+```cmd
+docfx\docfx.json --serve
+```
+- e.g 
+```cmd 
+<##PATH-TO-HELP##>\Help>Z:\DocFX\docfx.exe docfx\docfx.json --serve
+```
 - Now you can view the generated website on http://localhost:8080.
 ### Tip 
 - run `cls` after each `serve`, so that you can see *fresh* information each time
