@@ -1,4 +1,4 @@
-## Krypton Toolkit
+# Krypton Toolkit
 
 
 Learn more about each of the individual controls and components that appear in

@@ -12,7 +12,7 @@ of the controls. *Figure 1* shows the standard set of properties from the
 
 *Figure 1 –Background display properties*
 
-###Color Properties
+### Color Properties
 
 The *ColorStyle* property determines how to make use of the *Color1*, *Color2*,
 *ColorAlign* and *ColorAngle* set properties. When *ColorStyle* is defined as
