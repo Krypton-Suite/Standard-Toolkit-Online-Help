@@ -76,7 +76,7 @@ when that *ButtonSpec* is clicked. It also inverts the *Type* and so *ArrowUp*
 would be automatically changed into *ArrowDown*. This property means you can
 implement a fully working collapsing/expanding header group without needing to
 write a single line of code. Check out the [Expanding HeaderGroups
-(DockStyle)](topic143.md) tutorial to see the detailed steps.
+(DockStyle)](Components/KryptonHeaderGroup/ExpandingHeaderGroups.md) tutorial to see the detailed steps.
 
  
 
