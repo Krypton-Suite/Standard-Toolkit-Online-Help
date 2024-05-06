@@ -33,6 +33,7 @@ wait until the user chooses any appropriate action. Whatever the case may be you
 only need the following three lines of code to load the palette XML file from
 resources into a KryptonPalette instance.
 
+```cs
     // Get the assembly that this type is inside  
     Assembly a = Assembly.GetAssembly(typeof(Form1));
 
@@ -41,6 +42,7 @@ resources into a KryptonPalette instance.
 
     // Import the stream into the KryptonPalette instance  
     kryptonPalette1.Import(s);
+```
 
 Of course, you will need to alter the 'typeof(Form1)' to be a type that is
 defined in the assembly that contains the embedded resource. Then you will also

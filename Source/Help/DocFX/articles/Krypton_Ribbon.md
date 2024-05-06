@@ -1,7 +1,24 @@
 # Krypton Ribbon
 
-[**Structure**](structure.md)   
+Learn more about the capabilities of the `KryptonRibbon` using the following sections.
 
-Describes the consistent organization used for each of the controls and components. Once you understand how they are structured it becomes much easier to quickly and easily find the property or event you need to modify. At a minimum you should read this section before using the controls in your own application.
+**Overview**
+* [Overview](Ribbon/KryptonRibbonOverview.md)
 
-`KryptonRibbon`
+**Operation**
+* [Tabs](Ribbon/KryptonRibbonTabs.md)
+* [Groups](Ribbon/KryptonRibbonGroups.md)
+* [Group Containers](Ribbon/KryptonRibbonGroupContainers.md)
+* [Group Items](Ribbon/KryptonRibbonGroupItems.md)
+* [Contextual Tabs](Ribbon/KryptonRibbonContextualTabs.md)
+* [Application Button](Ribbon/KryptonRibbonApplicationButton.md)
+* [Quick Access Toolbar](Ribbon/KryptonRibbonQuickAccessToolbar.md)
+* [KeyTips & Keyboard Access](Ribbon/KryptonRibbonKeyTipsAndKeyboardAccess.md)
+* [ButtonSpecs](Ribbon/ButtonSpecs.md)
+
+**Events**
+* [Control Events](Ribbon/ControlEvents.md)
+* [Item Events](Ribbon/ItemEvents.md)
+
+**Standalone Controls**
+* [KryptonGallery](Ribbon/KryptonGallery.md)

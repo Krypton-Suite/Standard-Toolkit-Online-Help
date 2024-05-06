@@ -9,6 +9,8 @@ The `Krypton Suite` consists of five products called `Krypton Toolkit, Krypton R
 * All .NET Versions from 4.6.2 are catered for 
 * New versions of NuGet packages can be obtained via [this link](https://www.nuget.org/profiles/Krypton_Suite), or via your package manager by searching `Krypton.`.
 
+## [Overview](./articles/intro.md)
+If you are new to the Krypton Toolkit, please start here to gain a basic understanding of what the toolkit can do first, before using it in your own applications.
 
 ## [Krypton Toolkit](./articles/Krypton_Toolkit.md)
 The `Krypton Toolkit` provides a set of basic user interface components for free. You can distribute the signed Krypton Toolkit assembly without charge or royalty with your own products. 
@@ -27,3 +29,8 @@ The `Krypton Workspace` allows a document area to be created that the user can c
  
 ## [Krypton Docking](./articles/Krypton_Docking.md)
 The `Krypton Docking` set of components allow the user to drag and drop docking pages into new locations in order to customize the organization of the application content. It allows this in a way similar to that of Visual Studio 2008/2010. Each docking area uses an instance of the `Krypton Workspace` allowing a wide range of options for organizing and displaying pages. It integrates with the `Krypton Toolkit` architecture to ensure a consistent look and feel.
+
+## [Krypton Custom Controls](./articles/Krypton_CustomControls.md)
+When writing your own custom controls that are working alongside the Krypton controls you may want to ensure that the look and feel of your custom control matches that of the Krypton components. There are two levels of integration that you can aim for. The first is to use the same palette of colors, font, widths and other metrics when drawing and sizing your custom control. This is the purpose of the [Using PaletteBase](./articles/CustomControls/UsingPaletteBase.md) article. Recovering these metrics is actually very simple and you can examine the Custom Control using Palettes sample project to see the principle in action.
+
+Alternatively you might want to leverage the same rendering code that the Krypton Toolkit controls use. In this case follow the [Using PaletteBase](./articles/CustomControls/UsingPaletteBase.md) article to understand how to render background, border and content elements within your custom control client area. Although a little more complicated this technique has the advantage of performing the hard work for you. You can use the renderer to draw vertical orientated text and elements with tiled images without the need to write the actual drawing code yourself.

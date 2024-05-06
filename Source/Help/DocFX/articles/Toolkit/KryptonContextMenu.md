@@ -146,22 +146,22 @@ without the image column having the traditional background displayed.
 
 The list of items that can be placed at the root *Items* level is as follows...
 
-*   * [KryptonContextMenuCheckBox](topic23.md)  
-*   * [KryptonContextMenuCheckButton](topic24.md)  
-*   * [KryptonContextMenuColorColumns](topic25.md)  
-    [KryptonContextMenuHeader](topic26.md)  
-*   * [KryptonContextMenuImageSelect](topic27.md)  
-*   * [KryptonContextMenuItems](topic28.md)  
-*   * [KryptonContextMenuItem](topic29.md)  
-*   * [KryptonContextMenuLinkLabel](topic30.md)  
-*   * [KryptonContextMenuMonthCalendar](topic31.md)  
-*   * [KryptonContextMenuRadioButton](topic32.md)  
-*   * [KryptonContextMenuSeparator](topic33.md)  
+* [KryptonContextMenuCheckBox](Components/KryptonContextMenu/KryptonContextMenuCheckBox.md)  
+* [KryptonContextMenuCheckButton](Components/KryptonContextMenu/KryptonContextMenuCheckButton.md)  
+* [KryptonContextMenuColorColumns](Components/KryptonContextMenu/KryptonContextMenuColorColumns.md)  
+* [KryptonContextMenuHeader](Components/KryptonContextMenu/KryptonContextMenuHeader.md)  
+* [KryptonContextMenuImageSelect](Components/KryptonContextMenu/KryptonContextMenuImageSelect.md)  
+* [KryptonContextMenuItems](Components/KryptonContextMenu/KryptonContextMenuItems.md)  
+* [KryptonContextMenuItem](Components/KryptonContextMenu/KryptonContextMenuItem.md)  
+* [KryptonContextMenuLinkLabel](Components/KryptonContextMenu/KryptonContextMenuLinkLabel.md)  
+* [KryptonContextMenuMonthCalendar](Components/KryptonContextMenu/KryptonContextMenuMonthCalendar.md)  
+* [KryptonContextMenuRadioButton](Components/KryptonContextMenu/KryptonContextMenuRadioButton.md)  
+* [KryptonContextMenuSeparator](Components/KryptonContextMenu/KryptonContextMenuSeparator.md)  
   
 The list of items that can be placed inside a
-[KryptonContextMenuItems](topic28.md) is as follows...
+[KryptonContextMenuItems](Components/KryptonContextMenu/KryptonContextMenuItems.md) is as follows...
 
-*   * [KryptonContextMenuItem](topic29.md)  
-    [KryptonContextMenuHeader](topic26.md)  
-*   * [KryptonContextMenuSeparator](topic33.md)  
+* [KryptonContextMenuItem](Components/KryptonContextMenu/KryptonContextMenuItem.md)  
+* [KryptonContextMenuHeader](Components/KryptonContextMenu/KryptonContextMenuHeader.md)  
+* [KryptonContextMenuSeparator](Components/KryptonContextMenu/KryptonContextMenuSeparator.md)  
 
