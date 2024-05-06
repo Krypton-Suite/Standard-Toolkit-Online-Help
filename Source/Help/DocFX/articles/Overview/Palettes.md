@@ -14,15 +14,15 @@ library itself. For example the *Office 2007 - Blue* and *Professional - Office
 component to alter the global palette to one of the built in choices. Figure 1
 shows the global palette being altered to a built in palette.
 
-![*Figure 1 - KryptonManager smart tag*](images/PalettteManager.png)
+![*Figure 1 - KryptonManager smart tag*](KryptonManager.png)
 
 *Figure 1 - KryptonManager smart tag*
 
 ### Import a palette definition  
-Your second option is to add a *KryptonPalette* component to the application and
+Your second option is to add a *KryptonCustomPaletteBase* component to the application and
 then import palette settings from a palette definition file. Palette definition
 files are just XML documents that store all the settings and images needed to
-recreate a palette. All you need to do is drop a new *KryptonPalette* along with a *KryptonManager*, 
+recreate a palette. All you need to do is drop a new *KryptonCustomPaletteBase* along with a *KryptonManager*, 
 and then in your application's code, apply the following code:
 
 C# Method:
@@ -69,27 +69,27 @@ VisualBasic Function:
         End Try
     End Function
   
-<!--The smart tag contains options to *Export* and *Import* palette definitions.
-Figure 2 shows the smart tag for the *KryptonPalette*.
+The smart tag contains options to *Export* and *Import* palette definitions.
+Figure 2 shows the smart tag for the *KryptonCustomPaletteBase*.
 
-![*Figure 2 - KryptonPalette smart tag*](images/PaletteImport.png)
+![*Figure 2 - KryptonCustomPaletteBase smart tag*](PaletteImport.png)
 
-*Figure 2 - KryptonPalette smart tag*  
+*Figure 2 - KryptonCustomPaletteBase smart tag*  
 
 
 Now you need to alter the *KryptonManager* property called *GlobalPalette* so
-that the *KryptonPalette* component is used instead of one of the built in
+that the *KryptonCustomPaletteBase* component is used instead of one of the built in
 options. Figure 3 shows the property being altered at design time. 
   
-![*Figure 3 - KryptonManager GlobalPalette property*](images/PaletteCustom.png)
+![*Figure 3 - KryptonManager GlobalPalette property*](PaletteCustom.png)
 
-   *Figure 3 - KryptonManager GlobalPalette property*-->
+   *Figure 3 - KryptonManager GlobalPalette property*
 
 Note that exporting a palette will only save values that are not the default. So
 if you have only changed a few values from the default then the exported XML
 file will be very small and compact. When importing a palette the only values
 that will be changed in the palette are those than are read in from the XML
-file. If you have a new instance of a *KryptonPalette* component then all the
+file. If you have a new instance of a *KryptonCustomPaletteBase* component then all the
 values will be defaulted and importing a palette will achieve the expected
 changes.  
   
@@ -110,7 +110,7 @@ these styles are always local to a particular palette.
 ### Creating a palette definition
   
 You can create a new palette definition instead of importing an existing
-definition. You could do this by altering the properties of the *KryptonPalette*
+definition. You could do this by altering the properties of the *KryptonCustomPaletteBase*
 using the properties window at design time. This is however quite difficult as
 you cannot see the changes taking effect immediately unless you have every type
 of control on your form at the same time. Instead you should use the *Palette
@@ -120,11 +120,11 @@ install process.
 
 Use the *Palette Designer* to modify the palette properties and see the changes
 immediately. Once you are finished you can save the settings to a palette
-definition file. Then just use the smart tag on the *KryptonPalette* to access
+definition file. Then just use the smart tag on the *KryptonCustomPaletteBase* to access
 the *Import* option and select the file just saved from the *Palette Designer*.
 Figure 4 shows the Palette Designer.
 
-![*Figure 4 - Palette Designer*](images/PaletteDesigner.png)
+![*Figure 4 - Palette Designer*](PaletteDesigner.png)
 
 *Figure 4 - Palette Designer*  
   
@@ -135,7 +135,7 @@ Upgrade Tool* to convert palette XML files to the latest file format. This
 utility can be started from the *Krypton Explorer* program, a shortcut for which
 should be on your desktop after installation. Figure 5 shows the tool in action.  
   
-![*Figure 5 - Palette Upgrade Tool*](images/PaletteUpgradeTool.png)
+![*Figure 5 - Palette Upgrade Tool*](PaletteUpgradeTool.png)
 
 *Figure 5 - Palette Upgrade Tool*  
   
@@ -145,4 +145,4 @@ the palette in order to create a palette definition file. Then perform a *Reset*
 on the palette component so it is defaulted for all its values. Once the new
 version of *Krypton* has been installed you use the *Palette Upgrade Tool* to
 update the XML file and then *Import* it into the palette component. This is
-easier than trying to fix the compile time
+easier than trying to fix the compile time. Alternatively, you can use the built-in `ImportWithUpgrade()` function, which will write a upgraded palette version to memory, before you save it to an `XML` file.
