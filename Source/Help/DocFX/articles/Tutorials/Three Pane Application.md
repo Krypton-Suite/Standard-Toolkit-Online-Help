@@ -17,7 +17,7 @@ to the location you installed the library and choose the
 '\\bin\\Krypton.Toolkit.dll' file. This will then add the
 toolkit assembly to the list of references for the project.  
   
-*VB.NET* : Right click the project in the 'Solution Explorer' window and choose
+**VB.NET** : Right click the project in the 'Solution Explorer' window and choose
 the 'Add Reference' option. Use the 'Browse' tab of the shown dialog box to
 navigate to the location you installed the library and choose the
 '\\bin\\Krypton.Toolkit.dll' file. This will then add the
