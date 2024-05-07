@@ -1,4 +1,4 @@
-## Using Krypton in VS2017
+# Using Krypton in Visual Studio 2022
 The older version of Krypton used to force you to go through the steps of adding certain files to the GAC. This proved on many occasions to be misleading, and if the release cycle is more than once a year, very disruptive (Especially if working on more than one CLR targeted version).
 
 What is recommended for 2017 onwards, is to add the Krypton files directly to the visual studio's toolbox for each solution you are working on.
@@ -6,7 +6,7 @@ What is recommended for 2017 onwards, is to add the Krypton files directly to th
 If you replace (upgrade etc.) the Kyrpton dll's then just simply re-add the new location to the toolbox.
 
 
-![*Figure 1 - ToolBox_Start*](images\ToolBox_Start.png)
+![](ToolBox_Start.PNG)
 
 *Figure 1 - ToolBox_Start*
 
