@@ -1,11 +1,11 @@
-Navigator Selection Events  
+# Navigator Selection Events  
   
 Applicable Events:  
-        Deselecting  
-        Selecting  
-        Deselected  
-        Selected  
-        SelectedPageChanged  
+* Deselecting
+* Selecting
+* Deselected
+* Selected
+* SelectedPageChanged
   
   
 **Standard Event Sequence**  

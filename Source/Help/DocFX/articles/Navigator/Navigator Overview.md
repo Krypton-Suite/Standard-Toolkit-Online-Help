@@ -1,4 +1,4 @@
-Navigator Overview  
+# Navigator Overview  
   
 The *Navigator* control is designed to provide a variety of ways for the user to
 navigate around a set of pages. Modes range from the very basic such as *Panel*,

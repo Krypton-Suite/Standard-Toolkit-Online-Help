@@ -1,23 +1,23 @@
-Navigator Tooltips Properties  
+# Navigator Tooltips Properties  
   
 Applicable Modes:  
-        Bar - Tab - Group  
-        Bar - Tab - Only  
-        Bar - RibbonTab - Group  
-        Bar - RibbonTab - Only  
-        Bar - CheckButton - Group - Outside  
-        Bar - CheckButton - Group - Inside  
-        Bar - CheckButton - Group - Only  
-        Bar - CheckButton - Only  
-        HeaderBar - CheckButton - Group  
-        HeaderBar - CheckButton - HeaderGroup  
-        HeaderBar - CheckButton - Only  
-        Stack - CheckButton - Group  
-        Stack - CheckButton - HeaderGroup  
-        Outlook - Full  
-        Outlook - Mini  
-        HeaderGroup  
-        HeaderGroup - Tab  
+* Bar - Tab - Group
+* Bar - Tab - Only
+* Bar - RibbonTab - Group
+* Bar - RibbonTab - Only
+* Bar - CheckButton - Group - Outside
+* Bar - CheckButton - Group - Inside
+* Bar - CheckButton - Group - Only
+* Bar - CheckButton - Only
+* HeaderBar - CheckButton - Group
+* HeaderBar - CheckButton - HeaderGroup
+* HeaderBar - CheckButton - Only
+* Stack - CheckButton - Group
+* Stack - CheckButton - HeaderGroup
+* Outlook - Full
+* Outlook - Mini
+* HeaderGroup
+* HeaderGroup - Tab
  
 
 **Tooltips Properties**  

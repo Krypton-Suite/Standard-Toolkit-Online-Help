@@ -1,12 +1,12 @@
-Navigator Header Modes  
+# Navigator Header Modes  
   
 Applicable Modes:  
-        HeaderBar - CheckButton - HeaderGroup  
-        Stack - CheckButton - HeaderGroup  
-        Outlook - Full  
-        Outlook - Mini  
-        HeaderGroup  
-        HeaderGroup - Tab
+* HeaderBar - CheckButton - HeaderGroup
+* Stack - CheckButton - HeaderGroup
+* Outlook - Full
+* Outlook - Mini
+* HeaderGroup
+* HeaderGroup - Tab
 
  
 

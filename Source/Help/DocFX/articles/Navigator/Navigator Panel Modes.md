@@ -1,14 +1,14 @@
-Navigator Panel Modes  
+# Navigator Panel Modes  
   
 Applicable Modes:  
-        Bar - Tab - Group  
-        Bar - Tab - Only  
-        Bar - RibbonTab - Group  
-        Bar - RibbonTab - Only  
-        Bar - CheckButton - Group - Outside  
-        Bar - CheckButton - Only  
-        HeaderBar - CheckButton - Only  
-        Panel
+* Bar - Tab - Group
+* Bar - Tab - Only
+* Bar - RibbonTab - Group
+* Bar - RibbonTab - Only
+* Bar - CheckButton - Group - Outside
+* Bar - CheckButton - Only
+* HeaderBar - CheckButton - Only
+* Panel
 
  
 

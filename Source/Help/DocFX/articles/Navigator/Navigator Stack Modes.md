@@ -1,8 +1,8 @@
-Navigator Stack Modes  
+# Navigator Stack Modes  
   
 Applicable Modes:  
-        Stack - CheckButton - Group  
-        Stack - CheckButton - HeaderGroup
+* Stack - CheckButton - Group
+* Stack - CheckButton - HeaderGroup
 
  
 

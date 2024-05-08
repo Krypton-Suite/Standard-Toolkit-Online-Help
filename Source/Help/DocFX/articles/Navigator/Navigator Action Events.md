@@ -1,10 +1,12 @@
-Navigator Action Events  
+# Navigator Action Events  
   
 Applicable Events:  
-        NextAction  
-        PreviousAction  
-        CloseAction  
-        ContextAction
+
+* NextAction
+* PreviousAction
+* CloseAction
+* ContextAction
+
 
  
 

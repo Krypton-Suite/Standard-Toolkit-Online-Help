@@ -1,12 +1,12 @@
-Navigator Page Dragging  
+# Navigator Page Dragging  
   
 Applicable Properties:  
-        AllowPageDrag  
-        DragPageNotify
+* AllowPageDrag
+* DragPageNotify
 
 Applicable Events:  
-        BeginPageDrag  
-        AfterPageDrag
+* BeginPageDrag
+* AfterPageDrag
 
  
 

@@ -1,23 +1,23 @@
-Navigator Other Events  
+# Navigator Other Events  
   
 Applicable Events:  
-        TabCountChanged  
-        TabVisibleCountChanged  
-        TabDoubleClicked  
-        TabMouseHoverStart  
-        TabMouseHoverEnd  
-        PrimaryHeaderLeftClicked  
-        PrimaryHeaderRightClicked  
-        PrimaryHeaderDoubleClicked  
-        DisplayPopupPage  
-        OutlookDropDown  
-        ShowContextMenu  
-        BeginPageDrag  
-        AfterPageDrag  
-        PageDrop  
-        CtrlTabStart  
-        CtrlTabWrap  
-        TabClicked
+* TabCountChanged
+* TabVisibleCountChanged
+* TabDoubleClicked
+* TabMouseHoverStart
+* TabMouseHoverEnd
+* PrimaryHeaderLeftClicked
+* PrimaryHeaderRightClicked
+* PrimaryHeaderDoubleClicked
+* DisplayPopupPage
+* OutlookDropDown
+* ShowContextMenu
+* BeginPageDrag
+* AfterPageDrag
+* PageDrop
+* CtrlTabStart
+* CtrlTabWrap
+* TabClicked
 
  
 

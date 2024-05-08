@@ -1,4 +1,4 @@
-Navigator KryptonPage
+# Navigator KryptonPage
 
 The *KryptonPage* is the only type that can be added to the
 *KryptonNavigator.Pages* collection. It works just like a traditional *Panel* in

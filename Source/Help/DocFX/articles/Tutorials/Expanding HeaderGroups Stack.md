@@ -14,7 +14,7 @@ This will automatically create a form in design mode as below.
  
 
 **2) Ensure that the Krypton components are in the Toolbox**  
-If not the [Using Krypton in VS2017](Using%20Krypton%20in%20VS2017.md)
+If not the [Using Krypton in Visual Studio 2022](Using%20Krypton%20in%20Visual%20Studio%202022.md)
 tutorial can be used to add them.
 
 **3) Drag a KryptonNavigator from the toolbox onto the client area**  

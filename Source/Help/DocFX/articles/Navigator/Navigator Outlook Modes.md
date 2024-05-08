@@ -1,8 +1,8 @@
-Navigator Outlook Modes  
+# Navigator Outlook Modes  
   
 Applicable Modes:  
-        Outlook - Full  
-        Outlook - Mini
+* Outlook - Full
+* Outlook - Mini
 
  
 

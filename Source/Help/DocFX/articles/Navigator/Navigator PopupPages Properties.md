@@ -1,12 +1,12 @@
-Navigator PopupPages Properties  
+# Navigator PopupPages Properties  
   
 Applicable Modes:  
-        Bar - Tab - Only  
-        Bar - RibbonTab - Only  
-        Bar - CheckButton - Group - Only  
-        Bar - CheckButton - Only  
-        HeaderBar - CheckButton - Only  
-        Outlook - Mini
+* Bar - Tab - Only
+* Bar - RibbonTab - Only
+* Bar - CheckButton - Group - Only
+* Bar - CheckButton - Only
+* HeaderBar - CheckButton - Only
+* Outlook - Mini
 
  
 

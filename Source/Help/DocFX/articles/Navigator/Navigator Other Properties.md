@@ -1,10 +1,10 @@
-Navigator Other Properties  
+# Navigator Other Properties  
   
 Applicable Properties:  
-        AllowTabReorder  
-        AllowTabFocus  
-        AllowTabSelect  
-        AutoHiddenSlideSize
+* AllowTabReorder
+* AllowTabFocus
+* AllowTabSelect
+* AutoHiddenSlideSize
 
  
 

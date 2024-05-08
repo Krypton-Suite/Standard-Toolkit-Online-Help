@@ -1,14 +1,14 @@
-Navigator Bar Modes  
+# Navigator Bar Modes  
   
 Applicable Modes:  
-        Bar - Tab - Group  
-        Bar - Tab - Only  
-        Bar - RibbonTab - Group  
-        Bar - RibbonTab - Only  
-        Bar - CheckButton - Group - Outside  
-        Bar - CheckButton - Group - Inside  
-        Bar - CheckButton - Group - Only  
-        Bar - CheckButton - Only  
+* Bar - Tab - Group
+* Bar - Tab - Only
+* Bar - RibbonTab - Group
+* Bar - RibbonTab - Only
+* Bar - CheckButton - Group - Outside
+* Bar - CheckButton - Group - Inside
+* Bar - CheckButton - Group - Only
+* Bar - CheckButton - Only
   
   
 **Bar Mode Properties**  

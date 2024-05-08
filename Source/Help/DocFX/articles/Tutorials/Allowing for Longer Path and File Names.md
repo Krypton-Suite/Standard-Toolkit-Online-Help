@@ -5,7 +5,7 @@ As of V90.##, you will need to allow for longer path/file names, as this is not 
 There are two ways that you can do this. They are:-
 
 1. Via [`gpedit`](#option-1---via-gpedit)
-2. Via an elevated [PowerShell](#option-2---PowerShell) prompt
+2. Via an elevated [PowerShell](#option-2---powershell) prompt
 
 ## Option 1 - via `gpedit`
 

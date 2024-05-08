@@ -1,22 +1,23 @@
-Navigator Button Modes  
+# Navigator Button Modes  
   
 Applicable Modes:  
-        Bar - Tab - Group  
-        Bar - Tab - Only  
-        Bar - RibbonTab - Group  
-        Bar - RibbonTab - Only  
-        Bar - CheckButton - Group - Outside  
-        Bar - CheckButton - Group - Inside  
-        Bar - CheckButton - Group - Only  
-        Bar - CheckButton - Only  
-        HeaderBar - CheckButton - Group  
-        HeaderBar - CheckButton - HeaderGroup  
-        HeaderBar - CheckButton - Only  
-        Stack - CheckButton - HeaderGroup  
-        Outlook - Full  
-        Outlook - Mini  
-        HeaderGroup  
-        HeaderGroup - Tab
+
+* Bar - Tab - Group
+* Bar - Tab - Only
+* Bar - RibbonTab - Group
+* Bar - RibbonTab - Only
+* Bar - CheckButton - Group - Outside
+* Bar - CheckButton - Group - Inside
+* Bar - CheckButton - Group - Only
+* Bar - CheckButton - Only
+* HeaderBar - CheckButton - Group
+* HeaderBar - CheckButton - HeaderGroup
+* HeaderBar - CheckButton - Only
+* Stack - CheckButton - HeaderGroup
+* Outlook - Full
+* Outlook - Mini
+* HeaderGroup
+* HeaderGroup - Tab
 
  
 
@@ -25,7 +26,7 @@ The properties associated with buttons can be seen in Figure 1 as they appear in
 the properties window.  
   
   
-*   Figure 1 - Button Mode Properties*  
+*Figure 1 - Button Mode Properties*  
   
 There are four standard buttons exposed for use with the modes listed at the top
 of the page. These buttons are called *Close*, *Context*, *Next* and *Previous,*
@@ -39,7 +40,7 @@ of additional properties that will be described after the standard set of three.
 Each button has a property with the extension *Button, *for example
 *CloseButton* and *NextButton*, that is an aggregate containing many values for
 defining the appearance of the button. This set of values are not described in
-detail here as the [ButtonSpec](buttonspec.md) section contains a full description
+detail here as the [ButtonSpec](../Overview/ButtonSpec.md) section contains a full description
 of all the properties and how to use them to customize the appearance of the
 button.
 
@@ -49,8 +50,7 @@ by the user. When any of the buttons is clicked an event is generated and this
 property is passed to the event handler as the action to be taken. The event
 handler can override the action or leave it as the default. Button events are
 named by adding the word *Action* to the end, for example *NextAction*,
-*CloseAction* and so forth. A full description of the [Action
-Events](topic110.md) is contained in a separate section.  
+*CloseAction* and so forth. A full description of the [Action Events](Navigator Action%20Events.md) is contained in a separate section.  
   
 The extension *ButttonDisplay*, for example *CloseButtonDisplay*, is used to
 specify how to display and enable the button. All of the buttons have a default
@@ -112,7 +112,7 @@ possible values for the property are as follows.
     their actions. Figure 2 shows this enumeration value in operation.
 
 * *  
-*    Figure 2 - ContextButton*
+*Figure 2 - ContextButton*
 
  
 
@@ -125,7 +125,7 @@ images the navigator needs to know to pull the correct values from the page to
 each menu item.
 
 *  *  
-*    Figure 3 - ContextButton*
+*Figure 3 - ContextButton*
 
 The default value for the *ContextMenuMapImage* is *Small* and indicates that
 the *ImageSmall* property of the *KryptonPage* will be used for the menu item
@@ -147,9 +147,9 @@ which text properties to use.
 
 **ButtonSpecs**  
 This collection property allows you to add your own buttons to the display. See
-the [ButtonSpec](buttonspec.md) section for a full description of how to create
+the [ButtonSpec](../Overview/ButtonSpec.md) section for a full description of how to create
 and configure a *ButtonSpec* for use. Figure 4 shows an example of a bar mode
 that has a custom button added.
 
 * *  
-*    Figure 4 - Custom button using ButtonSpecs*
+*Figure 4 - Custom button using ButtonSpecs*

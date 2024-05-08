@@ -1,19 +1,19 @@
-Navigator Group Modes  
+# Navigator Group Modes  
   
 Applicable Modes:  
-        Bar - Tab - Group  
-        Bar - RibbonTab - Group  
-        Bar - CheckButton - Group - Outside  
-        Bar - CheckButton - Group - Inside  
-        Bar - CheckButton - Group - Only  
-        HeaderBar - CheckButton - Group  
-        HeaderBar - CheckButton - HeaderGroup  
-        Stack - CheckButton - HeaderGroup  
-        Outlook - Full  
-        Outlook - Mini  
-        HeaderGroup  
-        HeaderGroup - Tab  
-        Group
+* Bar - Tab - Group
+* Bar - RibbonTab - Group
+* Bar - CheckButton - Group - Outside
+* Bar - CheckButton - Group - Inside
+* Bar - CheckButton - Group - Only
+* HeaderBar - CheckButton - Group
+* HeaderBar - CheckButton - HeaderGroup
+* Stack - CheckButton - HeaderGroup
+* Outlook - Full
+* Outlook - Mini
+* HeaderGroup
+* HeaderGroup - Tab
+* Group
 
  
 
