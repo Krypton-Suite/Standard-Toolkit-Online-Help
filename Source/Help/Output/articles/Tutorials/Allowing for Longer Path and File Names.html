@@ -5,11 +5,11 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title> | Krypton Component Suite 2020
+      <title>How to allow longer path/file names | Krypton Component Suite 2020
 BSD 3-Clause License
 � Component Factory Pty Ltd, 2006 - 2024, All rights reserved. </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content=" | Krypton Component Suite 2020
+      <meta name="title" content="How to allow longer path/file names | Krypton Component Suite 2020
 BSD 3-Clause License
 � Component Factory Pty Ltd, 2006 - 2024, All rights reserved. ">
     
@@ -71,71 +71,32 @@ BSD 3-Clause License
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
+<h1 id="how-to-allow-longer-pathfile-names">How to allow longer path/file names</h1>
 
-<p>Tutorial – Multiple Choice Buttons</p>
-<p></p>
-<p><strong>1) Create a new Windows Forms project</strong></p>
-<p>This will automatically create a form in design mode as below.</p>
-<p><img src="Normal%20WinForm%20Form.png" alt=""></p>
-<p><strong>2) Ensure that the Krypton Toolkit components are in the Toolbox</strong><br>
-If not the <a href="Using%20Krypton%20in%20Visual%20Studio%202022.html">Using Krypton in Visual Studio 2022</a>
-tutorial can be used to add them.</p>
-<p></p>
-<p></p>
-<p><strong>3) Drag and drop three KryptonCheckButton instances onto the form</strong></p>
-<p>Place the controls in a vertical line as shown below.</p>
-<p><img src="MultiCheck1.png" alt=""></p>
-<p><strong>4) Use the KryptonCheckButton smart tags to enter ‘Text’ values of ‘Alpha’,
-‘Beta’ and ‘Omega’</strong></p>
-<p>You can use the properties window to change the ‘Text’ values but the smart tag
-provides easier access to the common values and operations on all Krypton
-controls. As you can see below you just need to click the small arrow on the top
-right of each control in order to display the smart tag for the control.</p>
-<p><img src="MultiCheck2.png" alt=""></p>
-<p><strong>5) Drag and drop a KryptonLabel instance below the check buttons</strong></p>
-<p>We will use the label control for feedback on the current choice selected.</p>
-<p><img src="MultiCheck3.png" alt=""></p>
-<p><strong>6) Drag and drop a KryptonCheckSet instance onto the form</strong></p>
-<p>The KryptonCheckSet set is used to manage the exclusive selection logic and is a
-component placed onto the component tray area. When you drop the component onto
-the form it will not create a control but instead a component as shown below in
-the area at the bottom of the design screen.</p>
-<p><img src="MultiCheck4.png" alt=""></p>
-<p><strong>7) Find the ‘CheckButtons’ property in the properties window and press the ‘…’
-button</strong><br>
-The '...' button as shown below indicates that the collection will be edited by
-showing a modal dialog.</p>
-<p><img src="MultiCheck6.png" alt=""></p>
-<p><strong>8) Select all three check button entries and press ‘OK’</strong></p>
-<p>The collection editor for the KryptonCheckSet component allows the user to
-specify which of the KryptonCheckButton instances it should manage. As you can
-see below, all three of the controls we added earlier are displayed along with
-the current text they are showing. You should click the check box for each entry
-so they are all ticked.</p>
-<p><img src="MultiCheck5.png" alt=""></p>
-<p><strong>9) Double click the ‘kryptonCheckSet1’ component</strong></p>
-<p>This will generate a default event handler for the CheckedButtonChanged event
-that we are using to update the label control with details of the new selection.
-Enter the following code into the handler.</p>
-<pre><code class="lang-cs">private void kryptonCheckSet1_CheckedButtonChanged(object sender, EventArgs e)
-{
-
-   KryptonCheckButton cb = (KryptonCheckButton)kryptonCheckSet1.CheckedButton;
-
-   kryptonLabel1.Text = cb.Text;
-
-}
+<p>As of V90.##, you will need to allow for longer path/file names, as this is not enabled by default in Windows. Failure to do so will result in the <a href="https://learn.microsoft.com/en-us/visualstudio/msbuild/errors/msb3553?view=vs-2022">MSB3553</a> compiler error.</p>
+<p>There are two ways that you can do this. They are:-</p>
+<ol>
+<li>Via <a href="#option-1---via-gpedit"><code>gpedit</code></a></li>
+<li>Via an elevated <a href="#option-2---PowerShell">PowerShell</a> prompt</li>
+</ol>
+<h2 id="option-1---via-gpedit">Option 1 - via <code>gpedit</code></h2>
+<p><strong>Step 1</strong></p>
+<p>Search for <code>gpedit.msc</code> from the start or search menu, then open it.</p>
+<p><strong>Step 2</strong></p>
+<p>Navigate to <code>Computer Configuration</code> -&gt; <code>Administrative Templates</code> -&gt; <code>System</code> -&gt; <code>Filesystem</code>.</p>
+<p><strong>Step 3</strong></p>
+<p>Look for a setting called <code>Enable Win32 Long paths</code> on the right side.</p>
+<p><img src="Images/Allowing%20Longer%20File%20Names/Group%20Policy%20Editor.png" alt=""></p>
+<p><strong>Step 4</strong></p>
+<p>Double click the <code>Enable Win32 Long paths</code> setting, click <code>Enabled</code>, then click OK.</p>
+<p><img src="Images/Allowing%20Longer%20File%20Names/Enable%20Win32%20Long%20Paths.png" alt=""></p>
+<p><strong>Step 5</strong></p>
+<p>Close <em>all</em> windows and restart your computer.</p>
+<p><em><strong>Note:</strong> It is necessary to do this, so that changes can take effect.</em></p>
+<h2 id="option-2---powershell">Option 2 - PowerShell</h2>
+<p>Open a new <em>elevated</em> PowerShell prompt, then run the command as shown below.</p>
+<pre><code class="lang-ps">New-ItemProperty -Path &quot;HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem&quot; ` -Name &quot;LongPathsEnabled&quot; -Value 1 -PropertyType DWORD -Force
 </code></pre>
-<p>Then add the following statement to the top of the source file so that it will
-compile.</p>
-<pre><code class="lang-cs">using Krypton.Toolkit;
-</code></pre>
-<p><strong>10) Compile and run the application</strong></p>
-<p>As you click the different check buttons the check set is automatically ensuring
-that only one button at a time is checked and then generating the checked
-changed event so that we can update the label with the new selection. You can
-see below the results of clicking the first and second check buttons.</p>
-<p><img src="MultiCheck7.png" alt=""> <img src="MultiCheck8.png" alt=""></p>
 
 </article>
           </div>

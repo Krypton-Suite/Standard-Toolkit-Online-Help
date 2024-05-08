@@ -9,7 +9,7 @@
 
 This will automatically create a form in design mode as below.
 
-![](ThreePane1.png)
+![](Normal%20WinForm%20Form.png)
 
 **2) Ensure that the Krypton components are in the Toolbox**
 

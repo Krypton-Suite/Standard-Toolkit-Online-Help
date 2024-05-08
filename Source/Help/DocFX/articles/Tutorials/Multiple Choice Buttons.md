@@ -7,7 +7,7 @@ Tutorial – Multiple Choice Buttons
 
 This will automatically create a form in design mode as below.
 
-![](ThreePane1.png)
+![](Normal%20WinForm%20Form.png)
 
 **2) Ensure that the Krypton Toolkit components are in the Toolbox**  
 If not the [Using Krypton in Visual Studio 2022](Using%20Krypton%20in%20Visual%20Studio%202022.md)
