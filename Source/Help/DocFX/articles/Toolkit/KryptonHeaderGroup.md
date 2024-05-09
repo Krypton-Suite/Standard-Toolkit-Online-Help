@@ -75,8 +75,7 @@ has a *ButtonSpec* defined that has a *Type* of *ArrowUp*, *ArrowDown*,
 when that *ButtonSpec* is clicked. It also inverts the *Type* and so *ArrowUp*
 would be automatically changed into *ArrowDown*. This property means you can
 implement a fully working collapsing/expanding header group without needing to
-write a single line of code. Check out the [Expanding HeaderGroups
-(DockStyle)](Components/KryptonHeaderGroup/ExpandingHeaderGroups.md) tutorial to see the detailed steps.
+write a single line of code. Check out the [Expanding HeaderGroups (DockStyle)](../Tutorials/Expanding%20HeaderGroups%20DockStyle.md) tutorial to see the detailed steps.
 
  
 
