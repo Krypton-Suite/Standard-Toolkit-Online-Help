@@ -1,0 +1,5 @@
+# KryptonScrollBar
+
+## KryptonScrollBar
+
+The `KryptonScrollBar` 

@@ -18,10 +18,11 @@ user interface. Instead just change the mode and you switch from a traditional
 TabControl style to a header group style. Figure 1 shows examples of two
 different modes that are achieved by just altering the mode property.  
   
+![](NavMode1.png)![](NavMode5.png)
    
-*  Figure 1 - Two Example Modes*
+*Figure 1 - Two Example Modes*
 
-See [Navigator Modes](topic97.md) for a detailed list of all the different
+See [Navigator Modes](Navigator%20Modes.md) for a detailed list of all the different
 modes available.
 
  
@@ -29,25 +30,23 @@ modes available.
 **Navigator Properties**  
 Properties that control the appearance and operation of the navigator are
 concentrated in two different categories. Figure 2 shows the set of properties
-in the *Visuals* category; these are explained here and in the [PopupPages
-Properties](topic99.md) and [ToolTips Properties](topic99.md) sections.
+in the *Visuals* category; these are explained here and in the [Popup Pages Properties](Navigator PopupPages%20Properties.md) and [ToolTips Properties](Navigator Tooltips%20Properties.md) sections.
 Figure 3 shows the *Visuals (Modes)* category which contains mode specific
-properties that are described in detail in the [Bar Modes](topic102.md),
-[Button Modes](topic103.md), [Group Modes](topic104.md), [Header
-Modes](topic105.md), [Outlook Modes](topic106.md), [Panel
-Modes](topic107.md) and [Stack Modes](topic108.md) sections.
+properties that are described in detail in the [Bar Modes](Navigator Bar%20Modes.md),
+[Button Modes](Navigator%20Button%20Modes.md), [Group Modes](Navigator%20Group%20Modes.md), [Header Modes](Navigator%20Header%20Modes.md), [Outlook Modes](Navigator Outlook%20Modes.md), [Panel Modes](Navigator%20Panel%20Modes.md) and [Stack Modes](Navigator Stack%20Modes.md) sections.
 
-   
-   *Figure 2 - Visuals*  
+![](NavProperties.png)
   
-   
-   *Figure 3 - Visuals (Modes)*
+*Figure 2 - Visuals*  
+
+![](NavProperties2.png)
+  
+*Figure 3 - Visuals (Modes)*
 
   
 **Navigator Events**  
 Information about all the different events exposed by the navigator are found in
-the [Selection Events](topic109.md), [Action Events](topic110.md) and [Other
-Events](topic111.md) sections. At a minimum you are recommended to read up on
+the [Selection Events](Navigator Selection%20Events.md), [Action Events](Navigator Action%20Events.md) and [Other Events](Navigator Other%20Events.md) sections. At a minimum you are recommended to read up on
 the selection events as they are crucial in understanding how to correctly
 handle selection changes and provide fine grained control over selection
 activity.
@@ -61,8 +60,9 @@ property. This will then display the collection editor as can be seen in Figure
 pages will not be reflected immediately in the navigator; not until you press
 *OK* and leave the collection editor does the control get refreshed.
 
-   
-   *Figure 4 - KryptonPage Collection Editor*
+![](UserPage4.png)
+  
+*Figure 4 - KryptonPage Collection Editor*
 
  
 
@@ -73,14 +73,15 @@ appearance of the selected *KryptonPage* background. The default value of
 change the value to any of the background styles. Figure 5 shows the default
 style on the left and the *Header - Primary* style on the right.
 
-* *  
-*   Figure 5 - PageBackStyle Styles*
+![](NavProperties4.png)
+
+*Figure 5 - PageBackStyle Styles*
 
 **KryptonPage**  
 Each *KryptonPage* has the ability to override the appearance of the navigator
 when the page is selected and also, to a lesser extent, when not selected. This
 is useful if you want a particular page to have a different color border or text
-for its display. Read the [KryptonPage](topic96.md) section for a detailed
+for its display. Read the [KryptonPage](Navigator%20KryptonPage.md) section for a detailed
 description of how to achieve this.  
  
 

@@ -16,12 +16,12 @@ sections.
 
 **Mode Operation**  
 * [Bar Modes](Navigator Bar%20Modes.md)
-* [Button Modes](Navigator Bar%20Button%Modes.md)
+* [Button Modes](Navigator%20Button%20Modes.md)
 * [Group Modes](Navigator%20Group%20Modes.md)
-* [Header Modes](Navigator Bar%20Header%20Modes.md)
-* [Outlook Modes](Navigator Bar%20Outlook%20Modes.md)
-* [Panel Modes](Navigator Bar%20Panel%20Modes.md)
-* [Stack Modes](Navigator Bar%20Stack%Modes.md)
+* [Header Modes](Navigator%20Header%20Modes.md)
+* [Outlook Modes](Navigator Outlook%20Modes.md)
+* [Panel Modes](Navigator%20Panel%20Modes.md)
+* [Stack Modes](Navigator Stack%20Modes.md)
 
 **Events**  
 * [Selection Events](Navigator Selection%20Events.md)

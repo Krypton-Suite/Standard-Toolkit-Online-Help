@@ -26,6 +26,7 @@ do not need to implement this yourself as Krypton comes with a class called
 drawing for you. For example, to allow two Navigator instances to have pages
 dragged between them you can use the following simple code:-
 
+```cs
       DragManager dm = new DragManager();  
 
       // Add page dragging sources  
@@ -35,10 +36,11 @@ dragged between them you can use the following simple code:-
       // Add page drop targets  
       dm.DragTargetProviders.Add(kryptonNavigator1);  
       dm.DragTargetProviders.Add(kryptonNavigator2);
+```
 
 For a more detailed explanation for how page dragging occurs within Krypton you
-should read the top-level [Page Dragging](topic131.md) section.
+should read the top-level [Page Dragging](../Page%20Dragging/Page%20Dragging%20Overview.md) section.
 
 **BeginPageDrag, AfterPageDrag**  
 These events are fired before and after the page drag operation. For more
-details see [Other Events](topic111.md).
+details see [Other Events](Navigator Other%20Events.md).
