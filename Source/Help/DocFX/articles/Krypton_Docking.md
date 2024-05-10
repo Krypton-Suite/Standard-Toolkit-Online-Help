@@ -15,4 +15,4 @@ Learn more about the capabilities of `Krypton Docking` using the following secti
 * [Persistence](Docking/Krypton%20Docking%20Persistence%20Events.md)
 * [User Requests](Docking/Krypton%20Docking%20User%20Requests.md)
 * [Controls](Docking/Krypton%20Docking%20Controls%20Events.md)
-* [Drag & Drop](Docking/Krypton%20Docking%20Drag%20&%20Drop.md)
+* [Drag & Drop](Docking/Krypton%20Docking%20Drag%20and%20Drop.md)
