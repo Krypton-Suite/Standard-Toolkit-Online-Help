@@ -104,7 +104,7 @@ docking system always assumes that all pages have a unique value for this
 property. Although each *KryptonPage* when constructed is given a unique name by
 generating a *GUID* you are advised to set this yourself. Using your own names
 such as '*Properties*', '*Output*' and '*Document*' is much easier than working
-with a *GUID* like '483CC32A643F4AB7483CC32A643F4AB7'.
+with a *GUID* like `483CC32A643F4AB7483CC32A643F4AB7`.
 
 Copy the following code into your form code file for use later on.
 
