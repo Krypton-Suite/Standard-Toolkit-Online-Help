@@ -18,4 +18,4 @@ The purpose of this article is to describe how to enable preview SDKs inside of 
 
 ***NOTE:*** By following this guide, you accept that we are _not_ responsible for **any** data loss or damage. It is _your_ responsibility to create backups of your data.
 
-![](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/EnablePreviewSDK.gif?raw=true)
+![](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/blob/master/Source/Help/DocFX/articles/Contributing/EnablePreviewSDK.gif?raw=true)
