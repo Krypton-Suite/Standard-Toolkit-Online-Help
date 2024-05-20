@@ -14,7 +14,7 @@ The purpose of this article is to guide developers who might be new to Krypton t
 
 **Step 6:** Close all tabs, then rebuild your projects
 
-![](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/InstallingKrypton.gif?raw=true)
+![](InstallingKrypton.gif)
 
 **Stay up-to-date:** [Current Versions](https://github.com/Krypton-Suite/Documentation)
 
