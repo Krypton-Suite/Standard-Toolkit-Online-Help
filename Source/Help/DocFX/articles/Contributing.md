@@ -9,3 +9,4 @@ If you are wanting to contribute to the toolkit, the articles below will guide y
 * [How to Create a Pull Request](Contributing/How-to-Create-a-Pull-Request.md)
 * [How to Create the API Reference](Contributing/How-to-Create-the-API-Reference.md)
 * [How to Manage 'Using' Statements](Contributing/How-to-Manage-Using-Statements.md)
+* [Using the MSBuild Log Viewer](Contributing/Using%20the%20MSBuild%20Log%20Viewer.md)
