@@ -23,3 +23,11 @@ In the newly opened tab, click Browse, then search for Krypton
 Find the package you require, then click Install (Note: You may need to accept some license agreements during this process)
 
 **Step 6:** Close all tabs, then rebuild your projects
+
+![](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/InstallingKrypton.gif?raw=true)
+
+**Stay up-to-date:** [Current Versions](https://github.com/Krypton-Suite/Documentation)
+
+**Need Documentation?** [Click here](https://github.com/Krypton-Suite/Help-Files/releases)
+
+**Want to try the toolkit out?** [Download Demos](https://github.com/Krypton-Suite/Releases/releases)

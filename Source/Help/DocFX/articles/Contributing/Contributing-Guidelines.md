@@ -82,7 +82,7 @@ The developers **respects** diversity. Any user who posts offensive or disrespec
  
  #### Breaking Changes
  
- If you make a breaking change within the code, ensure that the maintainers are aware of these changes, and that they are recorded **both** in the `README` and `Changelog` of that particular repository. Please ensure that in the `Changelog`, you precede the change with the following:
+ If you make a breaking change within the code, ensure that the maintainers are aware of these changes, and that they are recorded **both** in the `README` and `Changelog` of that particular repository. The changelog is located in `Documents\Changelog`. Please ensure that in the `Changelog`, you precede the change with the following:
  
  ```md
  **[Breaking Change]:**
