@@ -1,63 +1,29 @@
 # Getting Started
 
-Before writing any applications that use *Krypton* you are recommended to read the documentation in order to speed up your development and get the most from the suite of components. To explore some of the capabilities you should run the *Krypton Explorer* application that was placed onto the desktop during installation. You can then explore the various example applications.
+Before writing any applications that use *Krypton*  you are recommended to read the documentation in order to speed up your development and get the most from the suite of components. To explore some of the capabilities you should run the *Krypton Explorer*  application that was placed onto the desktop during installation. You can then explore the various example applications.
 
 As a minimum you should read the [Overview - Structure](Overview/Structure.md) section to get a feel for the common organization of all the controls and components. Then run through the [Tutorials - Three Pane Application](Tutorials/Three%20Pane%20Application.md) tutorial for an example application being built with the controls. Finally read the description of a typical control such as [Toolkit - KryptonButton](Toolkit/KryptonButton.md) to see how specific controls are structured.
 
-| Overview                                                                 |
+| [Overview](intro.md)                                                                 |
 |--------------------------------------------------------------------------|
-| * [Overview](intro.md)<br>  * [Structure](Overview/Structure.md)<br>  * [Background](Overview/Background.md)<br>  * [Border](Overview/Border.md)<br>  * [Content](Overview/Content.md)<br>  * [ButtonSpec](Overview/ButtonSpec.md)<br>  * [Palettes](Overview/Palettes.md) |
+| &nbsp; &nbsp; *  [Structure](Overview/Structure.md)<br>  &nbsp; &nbsp; *  [Background](Overview/Background.md)<br>  &nbsp; &nbsp; *  [Border](Overview/Border.md)<br>  &nbsp; &nbsp; *  [Content](Overview/Content.md)<br>  &nbsp; &nbsp; *  [ButtonSpec](Overview/ButtonSpec.md)<br>  &nbsp; &nbsp; *  [Palettes](Overview/Palettes.md) |
 
-| Header 1       | Header 2       |
+| [Toolkit](Krypton_Toolkit.md)       | [Ribbon](Krypton_Ribbon.md)       |
 |----------------|----------------|
-| * [Toolkit](Krypton_Toolkit.md) <br> * [KryptonBorderEdge](Toolkit/KryptonBorderEdge.md)  <br> * [KryptonBreadCrumb](Toolkit/KryptonBreadCrumb.md)  <br> * [KryptonButton](Toolkit/KryptonButton.md)  <br> * [KryptonCheckBox](Toolkit/KryptonCheckBox.md)  <br> * [KryptonCheckButton](Toolkit/KryptonCheckButton.md)  <br> * [KryptonCheckedListBox](Toolkit/KryptonCheckedListBox.md) <br> * [KryptonColorButton](Toolkit/KryptonColorButton.md)  <br> * [KryptonComboBox](Toolkit/KryptonComboBox.md)  <br> * [KryptonDataGridView](Toolkit/KryptonDataGridView.md)  <br> * [KryptonDateTimePicker](Toolkit/KryptonDateTimePicker.md)  
-* [KryptonDomainUpDown](Toolkit/KryptonDomainUpDown.md)  
-* [KryptonDropDown](Toolkit/KryptonDropButton.md)  
-* [KryptonGroup](Toolkit/KryptonGroup.md)  
-* [KryptonHeader](Toolkit/KryptonHeader.md)  
-* [KryptonHeaderGroup](Toolkit/KryptonHeaderGroup.md)  
-* [KryptonLabel](Toolkit/KryptonLabel.md)  
-* [KryptonLinkLabel](Toolkit/KryptonLinkLabel.md)  
-* [KryptonListBox](Toolkit/KryptonListBox.md)
-* [KryptonMaskedTextBox](Toolkit/KryptonMaskedTextBox.md)  
-* [KryptonMonthCalendar](Toolkit/KryptonMonthCalendar.md)  
-* [KryptonNumericUpDown](Toolkit/KryptonNumericUpDown.md)  
-* [KryptonPanel](Toolkit/KryptonPanel.md)  
-* [KryptonRadioButton](Toolkit/KryptonRadioButton.md)  
-* [KryptonRichTextBox](Toolkit/KryptonRichTextBox.md)  
-* [KryptonSeparator](Toolkit/KryptonSeparator.md)  
-* [KryptonSplitContainer](Toolkit/KryptonSplitContainer.md)  
-* [KryptonTextBox](Toolkit/KryptonTextBox.md)  
-* [KryptonTrackBar](Toolkit/KryptonTrackBar.md)  
-* [KryptonTreeView](Toolkit/KryptonTreeView.md)  
-* [KryptonWrapLabel](Toolkit/KryptonWrapLabel.md)
+| &nbsp; &nbsp; *  [KryptonBorderEdge](Toolkit/KryptonBorderEdge.md)  <br> &nbsp; &nbsp; *  [KryptonBreadCrumb](Toolkit/KryptonBreadCrumb.md)  <br> &nbsp; &nbsp; *  [KryptonButton](Toolkit/KryptonButton.md)  <br> &nbsp; &nbsp; *  [KryptonCheckBox](Toolkit/KryptonCheckBox.md)  <br> &nbsp; &nbsp; *  [KryptonCheckButton](Toolkit/KryptonCheckButton.md)  <br> &nbsp; &nbsp; *  [KryptonCheckedListBox](Toolkit/KryptonCheckedListBox.md) <br> &nbsp; &nbsp; *  [KryptonColorButton](Toolkit/KryptonColorButton.md)  <br> &nbsp; &nbsp; *  [KryptonComboBox](Toolkit/KryptonComboBox.md)  <br> &nbsp; &nbsp; *  [KryptonDataGridView](Toolkit/KryptonDataGridView.md)  <br> &nbsp; &nbsp; *   [KryptonDateTimePicker](Toolkit/KryptonDateTimePicker.md)   <br> &nbsp; &nbsp; *  [KryptonDomainUpDown](Toolkit/KryptonDomainUpDown.md)  <br> &nbsp; &nbsp; *  [KryptonDropDown](Toolkit/KryptonDropButton.md) <br> &nbsp; &nbsp; *  [KryptonGroup](Toolkit/KryptonGroup.md)  <br> &nbsp; &nbsp; *  [KryptonHeader](Toolkit/KryptonHeader.md)  <br> &nbsp; &nbsp; *  [KryptonHeaderGroup](Toolkit/KryptonHeaderGroup.md)  <br> &nbsp; &nbsp; *  [KryptonLabel](Toolkit/KryptonLabel.md)  <br> &nbsp; &nbsp; *  [KryptonLinkLabel](Toolkit/KryptonLinkLabel.md)  <br> &nbsp; &nbsp; *  [KryptonListBox](Toolkit/KryptonListBox.md) <br> &nbsp; &nbsp; *  [KryptonMaskedTextBox](Toolkit/KryptonMaskedTextBox.md)  <br> &nbsp; &nbsp; *  [KryptonMonthCalendar](Toolkit/KryptonMonthCalendar.md)  <br> &nbsp; &nbsp; *  [KryptonNumericUpDown](Toolkit/KryptonNumericUpDown.md)  <br> &nbsp; &nbsp; *  [KryptonPanel](Toolkit/KryptonPanel.md)  <br> &nbsp; &nbsp; *  [KryptonRadioButton](Toolkit/KryptonRadioButton.md)  <br> &nbsp; &nbsp; *  [KryptonRichTextBox](Toolkit/KryptonRichTextBox.md)  <br> &nbsp; &nbsp; *  [KryptonSeparator](Toolkit/KryptonSeparator.md)  <br> &nbsp; &nbsp; *  [KryptonSplitContainer](Toolkit/KryptonSplitContainer.md)  <br> &nbsp; &nbsp; *  [KryptonTextBox](Toolkit/KryptonTextBox.md)  <br> &nbsp; &nbsp; *  [KryptonTrackBar](Toolkit/KryptonTrackBar.md)  <br> &nbsp; &nbsp; *  [KryptonTreeView](Toolkit/KryptonTreeView.md)  <br> &nbsp; &nbsp; *  [KryptonWrapLabel](Toolkit/KryptonWrapLabel.md) <br> <br> **Components**   <br> &nbsp; &nbsp; *  [KryptonCheckSet](Toolkit/KryptonCheckSet.md)  <br> &nbsp; &nbsp; *  [KryptonCommand](Toolkit/KryptonCommand.md)  <br> &nbsp; &nbsp; *  [KryptonContextMenu](Toolkit/KryptonContextMenu.md)  <br> &nbsp; &nbsp; *  [KryptonCustomPaletteBase](Toolkit/KryptonCustomPaletteBase.md) <br> &nbsp; &nbsp; *  [KryptonFontDialog](Toolkit/KryptonFontDialog.md) <br> &nbsp; &nbsp; *  [KryptonInputBox](Toolkit/KryptonInputBox.md)  <br> &nbsp; &nbsp; *  [KryptonManager](Toolkit/KryptonManager.md)  <br> &nbsp; &nbsp; *  [KryptonMessageBox](Toolkit/KryptonMessageBox.md)  <br> &nbsp; &nbsp; *  [KryptonTaskDialog](Toolkit/KryptonTaskDialog.md) <br> <br> **Forms**   <br> &nbsp; &nbsp; *  [KryptonForm](Toolkit/KryptonForm.md)| &nbsp; &nbsp; *  [Overview](Ribbon/KryptonRibbonOverview.md)  <br> &nbsp; &nbsp; * [Tabs](Ribbon/KryptonRibbonTabs.md)  <br> &nbsp; &nbsp; * [Groups](Ribbon/KryptonRibbonGroups.md)  <br> &nbsp; &nbsp; * [Group Containers](Ribbon/KryptonRibbonGroupContainers.md)  <br> &nbsp; &nbsp; * [Group Items](Ribbon/KryptonRibbonGroupItems.md)  <br> &nbsp; &nbsp; * [Contextual Tabs](Ribbon/KryptonRibbonContextualTabs.md)  <br> &nbsp; &nbsp; * [Application Button](Ribbon/KryptonRibbonApplicationButton.md)  <br> &nbsp; &nbsp; * [Quick Access Toolbar](Ribbon/KryptonRibbonQuickAccessToolbar.md)  <br> &nbsp; &nbsp; * [KeyTips & Keyboard Access](Ribbon/KryptonRibbonKeyTipsAndKeyboardAccess.md)  <br> &nbsp; &nbsp; * [ButtonSpecs](Ribbon/ButtonSpecs.md)  <br> &nbsp; &nbsp; * [Control Events](Ribbon/ControlEvents.md)  <br> &nbsp; &nbsp; * [Item Events](Ribbon/ItemEvents.md) <br> <br> &nbsp; &nbsp; * [KryptonGallery](Ribbon/KryptonGallery.md) |
 
-**Components**  
-* [KryptonCheckSet](Toolkit/KryptonCheckSet.md)  
-* [KryptonCommand](Toolkit/KryptonCommand.md)  
-* [KryptonContextMenu](Toolkit/KryptonContextMenu.md)  
-* [KryptonCustomPaletteBase](Toolkit/KryptonCustomPaletteBase.md) 
-* [KryptonFontDialog](Toolkit/KryptonFontDialog.md)
-* [KryptonInputBox](Toolkit/KryptonInputBox.md)  
-* [KryptonManager](Toolkit/KryptonManager.md)  
-* [KryptonMessageBox](Toolkit/KryptonMessageBox.md)  
-* [KryptonTaskDialog](Toolkit/KryptonTaskDialog.md)
-    
-**Forms**  
-* [KryptonForm](Toolkit/KryptonForm.md)| Row 1 Column 2 |
-
-| Header 1       | Header 2       |
+| [Navigator](Krypton_Navigator.md)       | [Workspace](Krypton_Workspace.md)       |
 |----------------|----------------|
-| Row 1 Column 1 | Row 1 Column 2 |
+| &nbsp; &nbsp; * [Overview](Navigator/Navigator%20Overview.md)  <br> &nbsp; &nbsp; * [KryptonPage](Navigator/Navigator%20KryptonPage.md)  <br> &nbsp; &nbsp; * [Modes](Navigator/Navigator%20Modes.md)  <br> &nbsp; &nbsp; * [Page Dragging](Navigator/Navigator Page%20Dragging.md)  <br> &nbsp; &nbsp; * [PopupPages](Navigator/Navigator PopupPages%20Properties.md)  <br> &nbsp; &nbsp; * [Tooltips](Navigator/Navigator Tooltips%20Properties.md)  <br> &nbsp; &nbsp; * [Other Properties](Navigator/Navigator Other%20Properties.md)  <br> &nbsp; &nbsp; * [Bar Modes](Navigator/Navigator Bar%20Modes.md)  <br> &nbsp; &nbsp; * [Group Modes](Navigator/Navigator%20Group%20Modes.md)  <br> &nbsp; &nbsp; * [Header Modes](Navigator/Navigator%20Header%20Modes.md)  <br> &nbsp; &nbsp; * [Outlook Modes](Navigator/Navigator Outlook%20Modes.md)  <br> &nbsp; &nbsp; * [Panel Modes](Navigator/Navigator%20Panel%20Modes.md)  <br> &nbsp; &nbsp; * [Stack Modes](Navigator/Navigator Stack%20Modes.md)  <br> &nbsp; &nbsp; * [Selection Events](Navigator/Navigator Selection%20Events.md)  <br> &nbsp; &nbsp; * [Action Events](Navigator/Navigator Action%20Events.md)  <br> &nbsp; &nbsp; * [Other Events](Navigator/Navigator Other%20Events.md) | &nbsp; &nbsp; * [Overview](Workspace/Workspace%20Overview.md)  <br> &nbsp; &nbsp; * [Layout](Workspace/Workspace%20Layout.md)  <br> &nbsp; &nbsp; * [Compacting](Workspace/Workspace%20Compacting.md)  <br> &nbsp; &nbsp; * [Sizing](Workspace/Workspace%20Sizing.md)  <br> &nbsp; &nbsp; * [Workspace Persistence](Workspace/Workspace Persistence.md)  <br> &nbsp; &nbsp; * [Page Dragging](Workspace/Workspace Page%20Dragging.md)  <br> &nbsp; &nbsp; * [Events](Workspace/Workspace Events.md) |
 
-| Header 1       |
+| [Docking](Krypton_Docking.md) |
 |----------------|
-| Row 1 Column 1 |
+| &nbsp; &nbsp; * [Overview](Docking/Krypton%20Docking%20Overview.md)  <br> &nbsp; &nbsp; * [Page Creation](Docking/Krypton%20Docking%20Page%20Creation.md)  <br> &nbsp; &nbsp; * [Flags](Docking/Krypton%20Docking%20Flags.md)  <br> &nbsp; &nbsp; * [Persistence](Docking/Krypton%20Docking%20Persistence.md)  <br> &nbsp; &nbsp; * [Hierarchy](Docking/Krypton%20Docking%20Hierarchy.md)  <br> &nbsp; &nbsp; * [Persistence Events](Docking/Krypton%20Docking%20Persistence%20Events.md)  <br> &nbsp; &nbsp; * [User Requests Events](Docking/Krypton%20Docking%20User%20Requests.md)  <br> &nbsp; &nbsp; * [Controls Events](Docking/Krypton%20Docking%20Controls%20Events.md)  <br> &nbsp; &nbsp; * [Drag & Drop Events](Docking/Krypton%20Docking%20Drag%20and%20Drop.md) |
 
-| Header 1       |
+| [Page Dragging](Page_Dragging.md) |
 |----------------|
-| Row 1 Column 1 |
+| &nbsp; &nbsp; * [Overview](Page%20Dragging/Page%20Dragging%20Overview.md)  <br> &nbsp; &nbsp; * [DragManager](Page%20Dragging/DragManager.md)  <br> &nbsp; &nbsp; * [Drag Enabling Controls](Page%20Dragging/Drag%20Enabling%20Controls.md) |
 
-| Header 1       |
-|----------------|
-| Row 1 Column 1 |
+| [Tutorials - Toolkit](Tutorials.md)       | [Tutorials - Navigator](Tutorials.md)       |
+|----------------|----------------|
+| &nbsp; &nbsp; * [Using Krypton in Visual Studio 2022](Tutorials/Using%20Krypton%20in%20Visual%20Studio%202022.md)  <br> &nbsp; &nbsp; * [Using Images With Buttons](Tutorials/Using%20Images%20With%20Buttons.md)  <br> &nbsp; &nbsp; * [Embedding Palette Definitions](Tutorials/Embedding%20Palette%20Definitions.md)  <br> &nbsp; &nbsp; * [Multiple Choice Buttons](Tutorials/Multiple%20Choice%20Buttons.md)  <br> &nbsp; &nbsp; * [Three Pane Application](Tutorials/Three%20Pane%20Application.md)  <br> &nbsp; &nbsp; * [Expanding HeaderGroups (Splitters)](Tutorials/Expanding%20HeaderGroups%20Splitters.md)  <br> &nbsp; &nbsp; * [Expanding HeaderGroups (DockStyle)](Tutorials/Expanding%20HeaderGroups%20DockStyle.md)  <br> &nbsp; &nbsp; * [Expanding HeaderGroups (Stack)](Tutorials/Expanding%20HeaderGroups%20Stack.md)  | &nbsp; &nbsp; * [User Page Creation](Tutorials/User%20Page%20Creation.md) |
