@@ -1,4 +1,4 @@
-KryptonMessageBox
+# KryptonMessageBox
 
 The *KryptonMessageBox* provides access to a *Krypton* style message box that
 displays a modal dialog with text, buttons and symbols that inform and instruct
@@ -28,5 +28,4 @@ localize the strings to other languages you can do so by placing a
 then expand the *GlobalStrings* property and modify the strings as needed.
 
    
-* *  
-*   Figure 1 – Example Appearance*
+*Figure 1 – Example Appearance*

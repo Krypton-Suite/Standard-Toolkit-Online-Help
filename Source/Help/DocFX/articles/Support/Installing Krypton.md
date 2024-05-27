@@ -16,6 +16,8 @@ The purpose of this article is to guide developers who might be new to Krypton t
 
 ![](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/InstallingKrypton.gif?raw=true)
 
+For details on how to install pre-release packages, [click here](How%20to%20Install%20Pre%20Release%20Packages.md).
+
 **Stay up-to-date:** [Current Versions](https://github.com/Krypton-Suite/Documentation)
 
 **Need Documentation?** [Click here](https://github.com/Krypton-Suite/Help-Files/releases)

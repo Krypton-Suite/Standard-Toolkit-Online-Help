@@ -1,4 +1,4 @@
-## KryptonBreadCrumb
+# KryptonBreadCrumb
 
 Use the *KryptonBreadCrumb* control to navigate around a tree hierarchy of
 options. The control displays a trail leading from the root to the currently

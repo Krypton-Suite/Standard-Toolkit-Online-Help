@@ -1,4 +1,4 @@
-## KryptonHeaderGroup
+# KryptonHeaderGroup
 
 Use the *KryptonHeaderGroup* control to combine the benefits of the
 *KryptonHeader* and the *KryptonGroup* into one. When you need to group together

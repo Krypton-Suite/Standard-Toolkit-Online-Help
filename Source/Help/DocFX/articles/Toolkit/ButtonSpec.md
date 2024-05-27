@@ -1,4 +1,4 @@
-## ButtonSpec
+# ButtonSpec
 
 Some *Krypton* controls allow buttons to be specified for display within the
 *Krypton* control itself. In the case of the `KryptonHeader` and

@@ -1,4 +1,4 @@
-KryptonTaskDialog
+# KryptonTaskDialog
 
 The *KryptonTaskDialog* provides an extended version of the standard
 *MessageBox* but with more flexibility. The windows *TaskDialog* was introduced
@@ -29,7 +29,7 @@ the static *Show* methods that exist for the *KryptonMessageBox* and standard
 achieved:-
 
  
-
+```cs
     DialogResult result = KryptonTaskDialog.Show("Window Title",  
                                                  "Main Instructions",  
                                                  "Content",  
@@ -45,6 +45,7 @@ achieved:-
         case DialogResult.Cancel:  
             break;  
     }
+```
 
 A limitation with the above approach is that not all the functionality of the
 task dialog can be accessed in this manner. To enable use of all the possible
@@ -58,15 +59,15 @@ check box control that was shown to the user in the dialog. Here is an example
 of using the second approach:-
 
  
-
+```cs
     using(KryptonTaskDialog kryptonTaskDialog = new KryptonTaskDialog())  
     {  
         kryptonTaskDialog.WindowTitle = "Window Title";  
         kryptonTaskDialog.MainInstruction = "Main Instruction";  
         kryptonTaskDialog.Content = "Content";  
         kryptonTaskDialog.Icon = MessageBoxIcon.Warning;  
-        kryptonTaskDialog.CommonButtons = TaskDialogButtons.OK \|
-TaskDialogButtons.Cancel;  
+        kryptonTaskDialog.CommonButtons = TaskDialogButtons.OK |
+        TaskDialogButtons.Cancel;  
         kryptonTaskDialog.DefaultButton = TaskDialogButtons.OK;  
         kryptonTaskDialog.FooterText = "Footer Text";  
         kryptonTaskDialog.FooterHyperlink = "Hyperlink";  
@@ -86,6 +87,7 @@ TaskDialogButtons.Cancel;
                 break;  
         }         
     }
+```
 
 To simplify the setting of the properties it would be easier to drag the
 *KryptonTaskDialog* from the toolbox onto the *Form* and then use the properties

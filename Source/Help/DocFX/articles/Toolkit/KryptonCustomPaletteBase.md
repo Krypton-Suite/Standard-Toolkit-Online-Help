@@ -1,8 +1,8 @@
-KryptonPalette
+# KryptonCustomPaletteBase
 
  
 
-Use the *KryptonPalette* component to define or modify a global palette. You can
+Use the *KryptonCustomPaletteBase* component to define or modify a global palette. You can
 then assign use of the palette to individual *Krypton* controls. Alternatively
 you can update the *KryptonManager* to use it as the global palette and so all
 *Krypton* controls will be affected that have not already been given a custom
@@ -14,7 +14,7 @@ palette to use.
 
 *BasePaletteMode* is used to determine how to inherit individual palette values
 that have not been specified in the palette component itself. When you create a
-new *KryptonPalette* instance all the palette values are defined to inherit from
+new *KryptonCustomPaletteBase* instance all the palette values are defined to inherit from
 the base palette.
 
  
@@ -30,7 +30,7 @@ Office 2003* and the *Professional - System* options. The last option is called
 
 **BasePalette**  
 *BasePalette* should be used when you need to inherit from another
-*KryptonPalette* instance instead of the global palette or one of the built-in
+*KryptonCustomPaletteBase* instance instead of the global palette or one of the built-in
 palettes. Once you assign a reference to this property the *BasePaletteMode*
 will automatically be changed to the *Custom* enumeration value.
 
@@ -58,7 +58,7 @@ palette as the *Professional - System* built-in palette. Then you update the
 border color setting for the button control to the required value, all other
 values will inherit from the base palette and so this is the only custom value
 that needs defining. Finally alter the *KryptonManager* so it uses our new
-*KryptonPalette* as the global palette.
+*KryptonCustomPaletteBase* as the global palette.
 
  
 
@@ -143,7 +143,7 @@ defined will it use the base palette.
 
 This is illustrated with a simple example. Imagine we have a *KryptonPanel*
 control instance with a style of *PanelClient* that is using our
-*KryptonPalette* instance as the defined palette. The control is in the normal
+*KryptonCustomPaletteBase* instance as the defined palette. The control is in the normal
 state and so uses the following inheritance sequence to discover display values
 to use: -
 
@@ -156,23 +156,23 @@ KryptonPanel.StateCommon
   
         *(Look for a value at the palette level)*
 
-KryptonPalette.PanelStyle.PanelClient.StateNormal
+KryptonCustomPaletteBase.PanelStyle.PanelClient.StateNormal
 
-KryptonPalette.PanelStyle.PanelClient.StateCommon
+KryptonCustomPaletteBase.PanelStyle.PanelClient.StateCommon
 
-KryptonPalette.Common.StateOthers
+KryptonCustomPaletteBase.Common.StateOthers
 
-KryptonPalette.Common.StateCommon  
+KryptonCustomPaletteBase.Common.StateCommon  
  
 
 The advantage of this inheritance chain is the speed with which you can
 customize at the appropriate level. If you want to set the background color of
 all *Krypton* controls then you would alter the
-*KryptonPalette.Common.StateCommon* level values. To alter the background for
+*KryptonCustomPaletteBase.Common.StateCommon* level values. To alter the background for
 just all the panel styles then you would change
-*KryptonPalette.PanelStyles.PanelCommon.StateCommon* values. To change the
+*KryptonCustomPaletteBase.PanelStyles.PanelCommon.StateCommon* values. To change the
 background of just the PanelClient you would alter
-*KryptonPalette.PanelStyles.PanelClient.StateCommon*.
+*KryptonCustomPaletteBase.PanelStyles.PanelClient.StateCommon*.
 
  
 
@@ -203,10 +203,10 @@ value you require.
 
 **Import and Export** 
 
-At design time you can use the smart tag of the *KryptonPalette* to invoke the
+At design time you can use the smart tag of the *KryptonCustomPaletteBase* to invoke the
 exporting or importing of palette settings. Exporting will allow you to generate
 an XML file that contains all the values that have been changed from the
-default. You can then import these settings into another *KryptonPalette*
+default. You can then import these settings into another *KryptonCustomPaletteBase*
 instance in the same or a different application. Use the *Reset* option from the
 smart tag to reset all the palette properties back to the default settings that
 have when the component is first created.

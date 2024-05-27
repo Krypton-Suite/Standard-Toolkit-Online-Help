@@ -1,4 +1,4 @@
-## KryptonListBox  
+# KryptonListBox  
    
 Use the *KryptonListBox* when you need to present the user with a list from
 which the user can select one or more items. If the number of items exceeds the

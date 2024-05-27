@@ -1,4 +1,4 @@
-KryptonTextBox  
+# KryptonTextBox  
  
 
 The *KryptonTextBox* control allows the user to enter text or is used to present

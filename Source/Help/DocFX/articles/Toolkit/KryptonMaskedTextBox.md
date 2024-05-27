@@ -1,4 +1,4 @@
-## KryptonMaskedTextBox  
+# KryptonMaskedTextBox  
  
 
 The *KryptonMaskedTextBox* control to distinguish between proper and improper

@@ -1,4 +1,4 @@
-KryptonNumericUpDown 
+# KryptonNumericUpDown 
 
 The *KryptonNumericUpDown* control allows you to display numeric values with the
 ability to use spin buttons to change the value. You can define value limits to
