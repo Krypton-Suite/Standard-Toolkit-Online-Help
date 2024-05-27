@@ -1,4 +1,4 @@
-KryptonInputBox
+# KryptonInputBox
 
 The *KryptonInputBox* provides access to a *Krypton* style dialog box that
 allows the user to enter a string. It is a replica of the *InputBox* control

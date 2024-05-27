@@ -1,4 +1,4 @@
-## KryptonMonthCalendar
+# KryptonMonthCalendar
 
 The *KryptonMonthCalendar* control presents an intuitive graphical interface for
 users to view and set date information. The control displays a grid containing

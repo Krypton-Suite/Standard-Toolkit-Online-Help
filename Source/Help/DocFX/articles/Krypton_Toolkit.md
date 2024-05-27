@@ -23,6 +23,7 @@ the toolbox.
 * [KryptonLabel](Toolkit/KryptonLabel.md)  
 * [KryptonLinkLabel](Toolkit/KryptonLinkLabel.md)  
 * [KryptonListBox](Toolkit/KryptonListBox.md)
+* [KryptonListView](Toolkit/KryptonListView.md)
 * [KryptonMaskedTextBox](Toolkit/KryptonMaskedTextBox.md)  
 * [KryptonMonthCalendar](Toolkit/KryptonMonthCalendar.md)  
 * [KryptonNumericUpDown](Toolkit/KryptonNumericUpDown.md)  

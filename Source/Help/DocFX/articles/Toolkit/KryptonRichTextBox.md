@@ -1,4 +1,4 @@
-KryptonRichTextBox  
+# KryptonRichTextBox  
  
 
 The *KryptonRichTextBox* control is used for displaying, entering and

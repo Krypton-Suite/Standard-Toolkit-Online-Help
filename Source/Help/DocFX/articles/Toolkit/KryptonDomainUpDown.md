@@ -1,4 +1,4 @@
-## KryptonDomainUpDown
+# KryptonDomainUpDown
 
 The *KryptonDomainUpDown* control allows you to display text values with the
 ability to use spin buttons to change the value up and down a predefined list.

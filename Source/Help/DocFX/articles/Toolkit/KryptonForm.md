@@ -1,4 +1,4 @@
-KryptonForm
+# KryptonForm
 
 The *KryptonForm* derives from *Form* and is intended as the base class for all
 your application *Form* instances.  So instead of inheriting your window classes

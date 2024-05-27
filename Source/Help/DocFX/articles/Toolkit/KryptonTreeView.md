@@ -1,4 +1,4 @@
-KryptonTreeView  
+# KryptonTreeView  
    
 Use the *KryptonTreeView* when you need to present a hierarchical collection of
 labeled items. If the number of items exceeds the number that can be displayed

@@ -1,4 +1,4 @@
-## KryptonCheckedListBox  
+# KryptonCheckedListBox  
    
 Use the *KryptonCheckedListBox* when you need to present the user with a list of
 items that have associated check mark state. Use the *SelectionMode* property to

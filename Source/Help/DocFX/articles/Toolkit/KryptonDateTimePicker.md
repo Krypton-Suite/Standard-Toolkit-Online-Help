@@ -1,4 +1,4 @@
-## KryptonDateTimePicker
+# KryptonDateTimePicker
 
  
 The *KryptonDateTimePicker* control allows the user to select a single item from
