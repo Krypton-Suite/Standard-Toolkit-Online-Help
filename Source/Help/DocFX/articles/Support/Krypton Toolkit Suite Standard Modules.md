@@ -23,7 +23,7 @@
 | <img src="https://img.shields.io/badge/Module-Ribbon-000080.svg?style=flat-square" /> | ![Nuget](https://img.shields.io/nuget/vpre/Krypton.Ribbon.Nightly?color=000080&label=Version&logo=nuget&style=flat-square) | <a href="https://www.nuget.org/packages/Krypton.Ribbon.Nightly/"><img src="https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square" /></a> |
 | <img src="https://img.shields.io/badge/Module-Workspace-000080.svg?style=flat-square" /> | ![Nuget](https://img.shields.io/nuget/vpre/Krypton.Workspace.Nightly?color=000080&label=Version&logo=nuget&style=flat-square) | <a href="https://www.nuget.org/packages/Krypton.Workspace.Nightly/"><img src="https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square" /></a> |
 
-Read the latest [release notes](https://github.com/Krypton-Suite/Standard-Toolkit/blob/alpha/Documents/Help/Changelog.md)
+Read the latest [release notes](https://github.com/Krypton-Suite/Standard-Toolkit/blob/alpha/Documents/Changelog/Changelog.md)
 
 Compare [Nightly & Canary](https://github.com/Krypton-Suite/Standard-Toolkit/compare/canary...alpha)
 
@@ -43,7 +43,7 @@ Go to [Top](#channel-releases)
 | <img src="https://img.shields.io/badge/Module-Ribbon-yellow.svg?style=flat-square" /> | ![Nuget](https://img.shields.io/nuget/vpre/Krypton.Ribbon.Canary?color=yellow&label=Version&logo=nuget&style=flat-square) | <a href="https://www.nuget.org/packages/Krypton.Ribbon.Canary/"><img src="https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square" /></a> |
 | <img src="https://img.shields.io/badge/Module-Workspace-yellow.svg?style=flat-square" /> | ![Nuget](https://img.shields.io/nuget/vpre/Krypton.Workspace.Canary?color=yellow&label=Version&logo=nuget&style=flat-square) |  <a href="https://www.nuget.org/packages/Krypton.Workspace.Canary/"><img src="https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square" /></a> |
 
-Read the latest [release notes](https://github.com/Krypton-Suite/Standard-Toolkit/blob/canary/Documents/Help/Changelog.md)
+Read the latest [release notes](https://github.com/Krypton-Suite/Standard-Toolkit/blob/canary/Documents/Changelog/Changelog.md)
 
 Compare [Canary & Master](https://github.com/Krypton-Suite/Standard-Toolkit/compare/master...canary)
 
