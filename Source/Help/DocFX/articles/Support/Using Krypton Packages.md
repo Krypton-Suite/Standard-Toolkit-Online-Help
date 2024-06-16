@@ -19,6 +19,6 @@ To use the Krypton Standard Toolkit, please follow the steps as described below.
 **Step 7:** Start using Krypton
 
 
-![](Installing%20Krypton.gif)
+![](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/blob/master/Source/Help/DocFX/articles/Support/Installing%20Krypton.gif?raw=true)
 
 For details on how to install pre-release packages, [click here](How%20to%20Install%20Pre%20Release%20Packages.md).

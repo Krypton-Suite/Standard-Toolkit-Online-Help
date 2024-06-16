@@ -8,8 +8,6 @@ caption areas of the form are drawn according to the defined palette settings.
 This ensures that your whole application has a consistent look and feel that
 extends to the windows themselves as well as the regular *Krypton* controls.
 
- 
-
 **Appearance** 
 
 The *GroupBackStyle* and *GroupBorderStyle* properties are used to define the
@@ -17,8 +15,6 @@ border areas of the custom chrome drawing. The default value for both of these
 properties is *FormMain.* The *HeaderStyle* property is used to define the
 appearance of the caption area of the custom chrome, it has a default value of
 *Form*.
-
- 
 
 **Two States** 
 
@@ -36,8 +32,6 @@ precedence and so if you define the border color in *StateActive* and
 in the *Active* state. Only if the *StateActive* value is not overridden will it
 look in *StateCommon*.
 
- 
-
 **AllowFormChrome**
 
 The default value for this property is *True* and indicates that the form is
@@ -51,8 +45,6 @@ If you set this property to *False* then the form will not perform custom
 painting of borders and caption area no matter what the global manager and
 palette might request. When custom chrome is not applied then the window shows a
 standard appearance appropriate for the operating system.
-
- 
 
 **AllowStatusStripMerge**
 
@@ -73,10 +65,9 @@ Last of all the StatusStrip must be using a *RenderMode* setting of
 the control be considered for merging. Figure 1 shows an example of a status
 strip merged and not merged so you can see the visual difference.
 
- 
+![](StatusStripMergingTrue.png) ![](StatusStripMergingFalse.png)
 
-   
-*   Figure 1 - StatusStripMerging = True & False*
+*Figure 1 - StatusStripMerging = True & False*
 
  
 
@@ -97,8 +88,9 @@ for the *ButtonSpecs* property in order to modify the collection and modify
 individual *ButtonSpec* instances. See the [ButtonSpec](buttonspec.md) section for
 more details. Figure 2 shows an example of a *KryptonForm* with an extra button.
 
-* *  
-*   Figure 2 – KryptonForm with extra ButtonSpec*
+![](KryptonFormButtonSpec.png)
+
+*Figure 2 – KryptonForm with extra ButtonSpec*
 
  
 
@@ -110,9 +102,10 @@ area. Two of these are existing properties of the form, *Text* and *Icon*. The
 third property is a new one called *ExtraText* and allows an additional string
 to be specified and displayed. Figure 3 shows the result of defining a value for
 this *ExtraText* property.  
+
+![](KryptonFormExtraText.png)  
   
-* *  
-*   Figure 3 – ExtraText = "String"*
+*Figure 3 – ExtraText = "String"*
 
 **Blur Values**
 You can specify four values to blur the form when inactive. To enable this functionality,
@@ -121,5 +114,6 @@ you will need to set both *BlurWhenFocusLost* & *EnableBlur* properties to *true
 source form, and the *Radius* property allows you to set the gausian pixel radius used
 to blur each pixel.
 
-**
-*   Figure 4 – Example of blur in action*
+![](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/tree/master/Source/Help/DocFX/articles/Toolkit/KryptonFormBlur.gif?raw=true)
+
+*Figure 4 – Example of blur in action*
