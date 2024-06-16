@@ -20,13 +20,15 @@ The developers **respects** diversity. Any user who posts offensive or disrespec
  - Please make sure to check for duplicates as said in the `Bug` template.
  - Please make sure to precede titles with the `[Bug]:` string, so they can be easily identified.
  
- #### Feature Requests
+ #### Feature Requests:
  
  - Please use the `Feature Request` template
  - Please detail how the feature should work. Please be as specific as possible.
  - Some features are difficult and might take some time to get implemented. This project is made in the contributor's free time, so please do not post messages asking for ETAs or similar. Every feature request will be considered.
  - Please make sure to check for duplicates as said in the `Feature Request` template.
  - Please make sure to precede titles with the `[Feature Request]:` string, so they can be easily identified.
+ 
+ ***Note:*** *When a fix or further information is requested, the* ***awaiting feedback*** *label will be appended to the entry. If no response is submitted within* ***90*** *days, the entry will be closed.*
  
  ## Making Pull Requests
  
