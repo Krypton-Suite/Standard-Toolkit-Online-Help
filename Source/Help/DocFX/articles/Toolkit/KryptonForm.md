@@ -114,6 +114,6 @@ you will need to set both *BlurWhenFocusLost* & *EnableBlur* properties to *true
 source form, and the *Radius* property allows you to set the gausian pixel radius used
 to blur each pixel.
 
-![](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/tree/master/Source/Help/DocFX/articles/Toolkit/KryptonFormBlur.gif?raw=true)
+![](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/blob/master/Source/Help/DocFX/articles/Toolkit/KryptonFormBlur.gif?raw=true)
 
 *Figure 4 – Example of blur in action*
