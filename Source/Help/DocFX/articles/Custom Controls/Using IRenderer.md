@@ -199,5 +199,5 @@ Finally the actual *OnPaint* code needed to draw the content is presented.
 
 As always the code checks that the content needs to be drawn all given the provided palette state.
 
-Using the above information and examples it should be possible to experiment and draw whatever elements you need in your custom control in order to leverage the functionality provided in the toolkit as well as remaining faithful to the global palette settings. You should refer to the *Custom Control* using *Renderers* example project for a working example of the renderer code in action.
+Using the above information and examples it should be possible to experiment and draw whatever elements you need in your custom control in order to leverage the functionality provided in the toolkit as well as remaining faithful to the global palette settings. You should refer to the [*Custom Control using Renderers*](https://github.com/Krypton-Suite/Standard-Toolkit-Demos/tree/master/Source/Krypton%20Toolkit%20Examples/Custom%20Control%20using%20Renderers) example project for a working example of the renderer code in action.
 
