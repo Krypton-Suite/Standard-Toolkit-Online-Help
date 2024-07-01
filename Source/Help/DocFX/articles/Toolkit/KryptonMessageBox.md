@@ -27,5 +27,6 @@ localize the strings to other languages you can do so by placing a
 *KryptonManager* component on your main *Form*. Use the properties window and
 then expand the *GlobalStrings* property and modify the strings as needed.
 
-   
+![](KMB.png)
+
 *Figure 1 – Example Appearance*
