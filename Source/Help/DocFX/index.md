@@ -1,6 +1,6 @@
 # Introduction
-The `Krypton Suite` contains user interface components designed to make it quick and easy for developers to create professional looking applications. It provides the essential building blocks needed to create a consistent look and feel across all your products. You can use the built-in palettes to achieve the same appearance as industry standard applications such as _Microsoft Office 2007/2010/2013/365_. Alternatively you can create your own custom palettes to create a completely unique user interface.
-The `Krypton Suite` consists of five products called `Krypton Toolkit, Krypton Ribbon, Krypton Navigator, Krypton Workspace` and `Krypton Docking`.
+The `Krypton Suite` contains user interface components designed to make it quick and easy for developers to create professional looking applications. It provides the essential building blocks needed to create a consistent look and feel across all your products. You can use the built-in palettes to achieve the same appearance as industry standard applications such as _Microsoft Office 2007/2010/2013/365_ and _Visual Studio_. Alternatively you can create your own custom palettes to create a completely unique user interface.
+The `Krypton Suite` consists of five products called `Krypton Toolkit`, `Krypton Ribbon`, `Krypton Navigator`, `Krypton Workspace` and `Krypton Docking`.
 
 
 ## https://github.com/Krypton-Suite/Standard-Toolkit
@@ -14,7 +14,7 @@ If you are new to the Krypton Toolkit, please start here to gain a basic underst
 
 ## [Krypton Toolkit](./articles/Krypton_Toolkit.md)
 The `Krypton Toolkit` provides a set of basic user interface components for free. You can distribute the signed Krypton Toolkit assembly without charge or royalty with your own products. 
-The `Krypton Toolkit` is great resource for speeding up development of professional looking applications. It works in tandem with the `MenuStrip, StatusStrip and ToolStrip` controls that come with _.NET Framework_ controls. Using the `Krypton Toolkit` you can create a great looking application in just minutes. 
+The `Krypton Toolkit` is great resource for speeding up development of professional looking applications. It works in tandem with the `MenuStrip`, `StatusStrip` and `ToolStrip` controls that come with _.NET Framework_ and _.NET_ controls. Using the `Krypton Toolkit` you can create a great looking application in just minutes. 
  
 
 ## [Krypton Ribbon](./articles/Krypton_Ribbon.md)
@@ -36,4 +36,4 @@ When writing your own custom controls that are working alongside the Krypton con
 Alternatively you might want to leverage the same rendering code that the Krypton Toolkit controls use. In this case follow the [Using IRenderer](articles/Custom%20Controls/Using%20IRenderer.md) article to understand how to render background, border and content elements within your custom control client area. Although a little more complicated this technique has the advantage of performing the hard work for you. You can use the renderer to draw vertical orientated text and elements with tiled images without the need to write the actual drawing code yourself.
 
 ## [Contributing to the Standard Toolkit](./articles/Contributing.md)
-Want to contribute to the Standard Toolkit project? Learn more here.
+Want to contribute to the Standard Toolkit project? Learn more [here](articles/Contributing.md).

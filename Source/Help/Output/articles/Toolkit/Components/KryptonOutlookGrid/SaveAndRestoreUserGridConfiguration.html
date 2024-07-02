@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title> | Krypton Standard Toolkit Documentation </title>
+      <title>KryptonOutlookGrid - Save &amp; Restore User&#39;s Grid Configuration | Krypton Standard Toolkit Documentation </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content=" | Krypton Standard Toolkit Documentation ">
+      <meta name="title" content="KryptonOutlookGrid - Save &amp; Restore User&#39;s Grid Configuration | Krypton Standard Toolkit Documentation ">
     
     
       <link rel="shortcut icon" href="../../../../Krypton.ico">
@@ -67,7 +67,193 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonoutlookgrid---save--restore-users-grid-configuration">KryptonOutlookGrid - Save &amp; Restore User's Grid Configuration</h1>
 
+<h2 id="save-a-users-grid-configuration">Save a user's grid configuration</h2>
+<p>This will produce a XML file with the necessary information to restore the grid.</p>
+<pre><code class="lang-cs">private void Save()
+{
+    OutlookGrid1.PersistConfiguration(Application.StartupPath + &quot;/grid.xml&quot;, StaticInfos._GRIDCONFIG_VERSION.ToString());
+}
+</code></pre>
+<h2 id="restore-a-users-grid-configuration-at-loading">Restore a user's grid configuration at loading</h2>
+<p>At loading you can choose trying to restore a configuration file of the grid you've previously saved or you can launch the default configuration.</p>
+<pre><code class="lang-cs">public void SetupDataGridView(KryptonOutlookGrid Grid, bool restoreIfPossible)
+{
+    if (File.Exists(Application.StartupPath + &quot;/grid.xml&quot;) &amp; restoreIfPossible)
+    {
+        try
+        {
+            LoadConfigFromFile(Application.StartupPath + &quot;/grid.xml&quot;, Grid);
+        }
+        catch (Exception ex)
+        {
+            KryptonMessageBox.Show(&quot;Error when retrieving configuration : &quot; + ex.Message, &quot;Error&quot;, KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Error);
+            Grid.ClearEverything();
+            LoadDefaultConfiguration(Grid);
+        }
+    }
+    else
+    {
+        LoadDefaultConfiguration(Grid);
+    }
+}
+</code></pre>
+<p>This is a sort of deserialization. As some actions such as creating columns (many options can be defined here) are specific to each application, the grid deserialization is located out of the main <em>OutlookGrid</em> code.</p>
+<pre><code class="lang-cs">private void LoadConfigFromFile(string file, KryptonOutlookGrid Grid)
+ {
+     if (string.IsNullOrEmpty(file))
+     {
+        throw new Exception(&quot;Grid config file is missing !&quot;);
+     }
+
+     XDocument doc = XDocument.Load(file);
+     int versionGrid = -1;
+     int.TryParse(doc.Element(&quot;OutlookGrid&quot;).Attribute(&quot;V&quot;).Value, out versionGrid);
+
+     //Upgrade if necessary the config file
+     CheckAndUpgradeConfigFile(versionGrid, doc, Grid, LoadState.After);
+     Grid.ClearEverything();
+     Grid.GroupBox.Visible = CommonHelper.StringToBool(doc.XPathSelectElement(&quot;OutlookGrid/GroupBox&quot;).Value);
+     Grid.HideColumnOnGrouping = CommonHelper.StringToBool(doc.XPathSelectElement(&quot;OutlookGrid/HideColumnOnGrouping&quot;).Value);
+
+     //Initialize
+     int NbColsInFile = doc.XPathSelectElements(&quot;//Column&quot;).Count();
+     DataGridViewColumn[] columnsToAdd = new DataGridViewColumn[NbColsInFile];
+     SandBoxGridColumn[] enumCols = new SandBoxGridColumn[NbColsInFile];
+     OutlookGridColumn[] OutlookColumnsToAdd = new OutlookGridColumn[columnsToAdd.Length];
+     SortedList&lt;int, int&gt; hash = new SortedList&lt;int, int&gt;();// (DisplayIndex , Index)
+
+
+     int i = 0;
+     IOutlookGridGroup group;
+     XElement node2;
+
+     foreach (XElement node in doc.XPathSelectElement(&quot;OutlookGrid/Columns&quot;).Nodes())
+     {
+         //Create the columns and restore the saved properties
+         //As the OutlookGrid receives constructed DataGridViewColumns, only the parent application can recreate them (dgvcolumn not serializable)
+         enumCols[i] = (SandBoxGridColumn)Enum.Parse(typeof(SandBoxGridColumn), node.Element(&quot;Name&quot;).Value);
+         columnsToAdd[i] = SetupColumn(enumCols[i]);
+         columnsToAdd[i].Width = int.Parse(node.Element(&quot;Width&quot;).Value);
+         columnsToAdd[i].Visible = CommonHelper.StringToBool(node.Element(&quot;Visible&quot;).Value);
+         hash.Add(int.Parse(node.Element(&quot;DisplayIndex&quot;).Value), i);
+         //Reinit the group if it has been set previously
+         group = null;
+         if (!node.Element(&quot;GroupingType&quot;).IsEmpty &amp;&amp; node.Element(&quot;GroupingType&quot;).HasElements)
+         {
+             node2 = node.Element(&quot;GroupingType&quot;);
+             group = (IOutlookGridGroup)Activator.CreateInstance(Type.GetType(TypeConverter.ProcessType(node2.Element(&quot;Name&quot;).Value), true));
+             group.OneItemText = node2.Element(&quot;OneItemText&quot;).Value;
+             group.XXXItemsText = node2.Element(&quot;XXXItemsText&quot;).Value;
+             group.SortBySummaryCount = CommonHelper.StringToBool(node2.Element(&quot;SortBySummaryCount&quot;).Value);
+             if (!string.IsNullOrEmpty((node2.Element(&quot;ItemsComparer&quot;).Value)))
+             {
+                 Object comparer = Activator.CreateInstance(Type.GetType(TypeConverter.ProcessType(node2.Element(&quot;ItemsComparer&quot;).Value), true));
+                 group.ItemsComparer = (IComparer)comparer;
+             }
+             if (node2.Element(&quot;Name&quot;).Value.Contains(&quot;OutlookGridDateTimeGroup&quot;))
+             {
+                 ((OutlookGridDateTimeGroup)group).Interval = (OutlookGridDateTimeGroup.DateInterval)Enum.Parse(typeof(OutlookGridDateTimeGroup.DateInterval), node2.Element(&quot;GroupDateInterval&quot;).Value);
+             }
+         }
+         OutlookColumnsToAdd[i] = new OutlookGridColumn(columnsToAdd[i], group, (SortOrder)Enum.Parse(typeof(SortOrder), node.Element(&quot;SortDirection&quot;).Value), int.Parse(node.Element(&quot;GroupIndex&quot;).Value), int.Parse(node.Element(&quot;SortIndex&quot;).Value));
+
+         i += 1;
+     }
+     //First add the underlying DataGridViewColumns to the grid
+     Grid.Columns.AddRange(columnsToAdd);
+     //And then the outlookgrid columns
+     Grid.AddRangeInternalColumns(OutlookColumnsToAdd);
+
+     //Add conditionnal formatting to the grid
+     EnumConditionalFormatType conditionFormatType = default(EnumConditionalFormatType);
+     IFormatParams conditionFormatParams = default(IFormatParams);
+     foreach (XElement node in doc.XPathSelectElement(&quot;OutlookGrid/ConditionalFormatting&quot;).Nodes())
+     {
+         conditionFormatType = (EnumConditionalFormatType)Enum.Parse(typeof(EnumConditionalFormatType), node.Element(&quot;FormatType&quot;).Value);
+         XElement nodeParams = node.Element(&quot;FormatParams&quot;);
+         switch (conditionFormatType)
+         {
+             case EnumConditionalFormatType.Bar:
+                 conditionFormatParams = new BarParams(Color.FromArgb(int.Parse(nodeParams.Element(&quot;BarColor&quot;).Value)), CommonHelper.StringToBool(nodeParams.Element(&quot;GradientFill&quot;).Value));
+                 break;
+             case EnumConditionalFormatType.ThreeColorsRange:
+                 conditionFormatParams = new ThreeColorsParams(Color.FromArgb(int.Parse(nodeParams.Element(&quot;MinimumColor&quot;).Value)), Color.FromArgb(int.Parse(nodeParams.Element(&quot;MediumColor&quot;).Value)), Color.FromArgb(int.Parse(nodeParams.Element(&quot;MaximumColor&quot;).Value)));
+                 break;
+             case EnumConditionalFormatType.TwoColorsRange:
+                 conditionFormatParams = new TwoColorsParams(Color.FromArgb(int.Parse(nodeParams.Element(&quot;MinimumColor&quot;).Value)), Color.FromArgb(int.Parse(nodeParams.Element(&quot;MaximumColor&quot;).Value)));
+                 break;
+             default:
+                 conditionFormatParams = null;
+                 //will never happened but who knows ? throw exception ?
+                 break;
+         }
+         Grid.ConditionalFormatting.Add(new ConditionalFormatting(node.Element(&quot;ColumnName&quot;).Value, conditionFormatType, conditionFormatParams));
+     }
+
+     //We need to loop through the columns in the order of the display order, starting at zero; otherwise the columns will fall out of order as the loop progresses.
+     foreach (KeyValuePair&lt;int, int&gt; kvp in hash)
+     {
+         columnsToAdd[kvp.Value].DisplayIndex = kvp.Key;
+     }
+
+     activeColumns = enumCols;
+ }
+</code></pre>
+<p>In the life of your application you may want to do some changes to the default configuration grid such as adding a new column. This is why you have a <em>CheckAndUpgradeConfigFile</em> function.</p>
+<pre><code class="lang-cs">private void CheckAndUpgradeConfigFile(int versionGrid, XDocument doc, KryptonOutlookGrid grid, LoadState state)
+{
+    while (versionGrid &lt; StaticInfos._GRIDCONFIG_VERSION)
+    {
+        UpgradeGridConfigToVX(doc, versionGrid + 1, grid, state);
+        versionGrid += 1;
+    }
+}
+
+private void UpgradeGridConfigToVX(XDocument doc, int version, KryptonOutlookGrid Grid, LoadState state)
+{
+    // Do changes according to version
+    // For example you can add automatically new columns. This can be useful when you update your application to add columns and would like to display them to the user for the first time.
+    switch (version)
+    {
+        //case 2:
+        //    // Do changes to match the V2
+        //    if (state == DataGridViewSetup.LoadState.Before)
+        //    {
+        //        doc.Element(&quot;OutlookGrid&quot;).Attribute(&quot;V&quot;).Value = version.ToString();
+        //        Array.Resize(ref activeColumns, activeColumns.Length + 1);
+        //        DataGridViewColumn columnToAdd = SetupColumn(SandBoxGridColumn.ColumnPrice2);
+        //        Grid.Columns.Add(columnToAdd);
+        //        Grid.AddInternalColumn(columnToAdd, new OutlookGridDefaultGroup(null)
+        //        {
+        //            OneItemText = &quot;Example&quot;,
+        //            XXXItemsText = &quot;Examples&quot;
+        //        }, SortOrder.None, -1, -1);
+        //        activeColumns[activeColumns.Length - 1] = SandBoxGridColumn.ColumnPrice2;
+        //        Grid.PersistConfiguration(PublicFcts.GetGridConfigFile, version);
+        //    }
+        //    break;
+    }
+}
+</code></pre>
+<p>In case of a breaking modification of an <em>IOutlookGridGroup</em> object (from the base <em>Krypton OutlookGrid</em> or from your own) you can write changes for allowing correct reflection.</p>
+<pre><code class="lang-cs">public class TypeConverter
+{
+    public static string ProcessType(string fullQualifiedName)
+    {
+        // Translate types here to accommodate code changes, namespaces and version
+        //  switch(fullQualifiedName)
+        //  {
+        //    case &quot;KryptonOutlookGrid.SandBox.OutlookGridPriceGroup, KryptonOutlookGrid.SandBox, Version=1.6.0.0, Culture=neutral, PublicKeyToken=null&quot; :
+        //        Change with new version or namespace or both !
+        //        FullQualifiedName = &quot;TestMe, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null&quot;
+        //        break;
+        //  }
+        return FullQualifiedName;
+    }
+}
+</code></pre>
 
 </article>
           </div>
