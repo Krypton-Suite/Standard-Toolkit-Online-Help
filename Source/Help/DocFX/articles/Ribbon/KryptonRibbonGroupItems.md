@@ -22,5 +22,6 @@ Following are the different types of group items.
 * [GroupItemRichTextBox](Components/GroupItems/GroupItemRichTextBox.md)
 * [GroupItemTextBox](Components/GroupItems/GroupItemTextBox.md)
 * [GroupItemTrackBar](Components/GroupItems/GroupItemTrackBar.md)
+* [GroupItemThemeComboBox](Components/GroupItems/GroupItemThemeComboBox.md)
 
 
