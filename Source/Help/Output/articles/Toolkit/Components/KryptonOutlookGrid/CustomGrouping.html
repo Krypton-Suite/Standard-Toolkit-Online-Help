@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title> | Krypton Standard Toolkit Documentation </title>
+      <title>KryptonOutlookGrid - Custom Grouping | Krypton Standard Toolkit Documentation </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content=" | Krypton Standard Toolkit Documentation ">
+      <meta name="title" content="KryptonOutlookGrid - Custom Grouping | Krypton Standard Toolkit Documentation ">
     
     
       <link rel="shortcut icon" href="../../../../Krypton.ico">
@@ -67,7 +67,222 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonoutlookgrid---custom-grouping">KryptonOutlookGrid - Custom Grouping</h1>
 
+<h2 id="create-a-new-outlookgridgroup">Create a new OutlookGridGroup</h2>
+<p>You may want to group your data in another way that the one provided by the grid. Please take a look to the following steps :</p>
+<ul>
+<li>
+<ol>
+<li>Create a new class</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Overrides the <em>Text</em> property. Used for the text associated to the group and displayed in the grid.</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Overrides the <em>Value</em>. Used for the value of the group that allows to select rows in the group and to sort groups between them.</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Overrides the <em>Clone()</em> method.</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Overrides the <em>CompareTo()</em> method.</li>
+</ol>
+</li>
+</ul>
+<pre><code class="lang-cs">using System;
+using Krypton.Toolkit;
+using System.Globalization;
+using System.Windows.Forms;
+
+namespace KryptonOutlookGrid.SandBox
+{
+    public class OutlookGridPriceGroup : OutlookGridDefaultGroup
+    {
+
+        private int _priceCode;
+        private string _currency;
+
+        private const int NO_PRICE = 999999;
+        public OutlookGridPriceGroup() : base()
+        {
+            AllowHiddenWhenGrouped = false;
+            _currency = CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol;
+        }
+
+        /// &lt;summary&gt;
+        /// Constructor.
+        /// &lt;/summary&gt;
+        /// The parentGroup if any.&lt;/param&gt;
+        public OutlookGridPriceGroup(IOutlookGridGroup parentGroup) : base(parentGroup)
+        {
+            AllowHiddenWhenGrouped = false;
+            _currency = CultureInfo.CurrentCulture.NumberFormat.CurrencySymbol;
+        }
+
+        /// &lt;summary&gt;
+        /// Gets or sets the displayed text.
+        /// &lt;/summary&gt;
+        public override string Text =&gt; $&quot;{Column.DataGridViewColumn.HeaderText}: {GetPriceString(_priceCode)} ({ItemCount == 1 ? OneItemText : ItemCount.ToString() + XXXItemsText)})&quot;;
+
+        private int GetPriceCode(decimal price)
+        {
+            if ((price == 0))
+            {
+                return 0;
+            }
+            else if ((price &gt; 0) &amp;&amp; (price &lt;= 100))
+            {
+                return 100;
+            }
+            else if ((price &gt; 100) &amp;&amp; (price &lt;= 200))
+            {
+                return 200;
+            }
+            else if ((price &gt; 200) &amp;&amp; (price &lt;= 300))
+            {
+                return 300;
+            }
+            else if ((price &gt; 300) &amp;&amp; (price &lt;= 600))
+            {
+                return 600;
+            }
+            else if ((price &gt; 600) &amp;&amp; (price &lt;= 1000))
+            {
+                return 1000;
+            }
+            else if ((price &gt; 1000) &amp;&amp; (price &lt;= 5000))
+            {
+                return 5000;
+            }
+            else if ((price &gt; 5000) &amp;&amp; (price &lt;= 10000))
+            {
+                return 10000;
+            }
+            else if (price &gt; 10000)
+            {
+                return 20000;
+            }
+            else
+            {
+                return 999999;
+            }
+        }
+
+
+        private string GetPriceString(int priceCode)
+        {
+            switch (priceCode)
+            {
+                case 0:
+                    return &quot;Free&quot;;
+                case 100:
+                    return &quot;Below 100 &quot; +  _currency;
+                case 200:
+                    return &quot;Between 100 and 200 &quot; + _currency;
+                case 300:
+                    return &quot;Between 200 and 300 &quot; + _currency;
+                case 600:
+                    return &quot;Between 300 and 600 &quot; + _currency;
+                case 1000:
+                    return &quot;Between 600 and 1000 &quot; + _currency;
+                case 5000:
+                    return &quot;Between 1000 and 5000 &quot; + _currency;
+                case 10000:
+                    return &quot;Between 5000 and 10000 &quot; + _currency;
+                case 20000:
+                    return &quot;Above 10000 &quot; + _currency;
+                case 999999:
+                    return &quot;No price&quot;;
+                default:
+                    return &quot;&quot;;
+            }
+        }
+
+
+        /// &lt;summary&gt;
+        /// Gets or sets the Alphabetic value
+        /// &lt;/summary&gt;
+        public override object Value
+        {
+            get { return val; }
+            set
+            {
+                if (object.ReferenceEquals(value, DBNull.Value) || value == null)
+                {
+                    _priceCode = NO_PRICE;
+                    val = _priceCode;
+                }
+                else
+                {
+                    _priceCode = GetPriceCode(decimal.Parse(value.ToString()));
+                    val = _priceCode;
+                }
+            }
+        }
+
+        #region &quot;ICloneable Members&quot;
+
+        /// &lt;summary&gt;
+        /// Overrides the Clone() function
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;OutlookGridAlphabeticGroup&lt;/returns&gt;
+        public override object Clone()
+        {
+            OutlookGridPriceGroup gr = new OutlookGridPriceGroup(this.ParentGroup);
+
+            gr.Column = this.Column;
+            gr.Value = this.val;
+            gr.Collapsed = this.Collapsed;
+            gr.Height = this.Height;
+            gr.GroupImage = this.GroupImage;
+            gr.FormatStyle = this.FormatStyle;
+            gr.XXXItemsText = this.XXXItemsText;
+            gr.OneItemText = this.OneItemText;
+            gr.AllowHiddenWhenGrouped = this.AllowHiddenWhenGrouped;
+            gr.SortBySummaryCount = this.SortBySummaryCount;
+            gr._currency = _currency;
+            gr._priceCode = _priceCode;
+            return gr;
+        }
+
+        #endregion
+
+        #region &quot;IComparable Members&quot;
+        /// &lt;summary&gt;
+        /// Override the CompareTo, so only the first character is compared, instead of the whole string
+        /// this will result in classifying each item into a letter of the Alphabet.
+        /// for instance, this is useful when grouping names, they will be categorized under the letters A, B, C etc..
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;obj&quot;&gt;&lt;/param&gt;
+        /// &lt;returns&gt;&lt;/returns&gt;
+        public override int CompareTo(object obj)
+        {
+            int orderModifier = (Column.SortDirection == SortOrder.Ascending ? 1 : -1);
+            int priceOther = 0;
+
+            if (obj is OutlookGridPriceGroup)
+            {
+                priceOther = ((OutlookGridPriceGroup)obj)._priceCode;
+            }
+            else
+            {
+                priceOther = NO_PRICE;
+            }
+            return _priceCode.CompareTo(priceOther) * orderModifier;
+        }
+        #endregion
+    }
+}
+</code></pre>
 
 </article>
           </div>

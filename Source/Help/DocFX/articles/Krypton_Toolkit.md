@@ -58,6 +58,7 @@ the toolbox.
 * [KryptonFolderBrowserDialog](Toolkit/KryptonFolderBrowserDialog.md)
 * [KryptonFontDialog](Toolkit/KryptonFontDialog.md)
 * [KryptonInputBox](Toolkit/KryptonInputBox.md)  
+* [KryptonIntegratedToolBarManager](Toolkit/KryptonIntegratedToolBarManager.md)
 * [KryptonManager](Toolkit/KryptonManager.md)  
 * [KryptonMessageBox](Toolkit/KryptonMessageBox.md)  
 * [KryptonOpenFileDialog](Toolkit/KryptonOpenFileDialog.md)

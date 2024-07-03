@@ -6,9 +6,12 @@ Use the *KryptonManager* component to modify global settings that affect all the
 *Krypton* controls in your application. Note that the global settings affect all
 controls and not just those on the same form as the *KryptonManager* instance.
 
+**BaseFont**
+
+The *BaseFont* controls the global font used within the toolkit. Changing this property will change the font used by controls. By default, it is set to *Segoe UI, 9pt*. From here, you can customize the *Font Name*, *Size*, styling etc.
  
 
-**Global Palette** 
+**GlobalPaletteMode** 
 
 Each individual *Krypton* control will by default inherit its display values
 from the global palette that is specified by the *KryptonManager*. This makes it
@@ -57,13 +60,21 @@ the tool strip renderer is updated to reflect this. If you prefer to turn off
 this feature so that you control the tool strip rendering manually then you just
 need to assign *False* to the *GlobalApplyToolstrips* property.
 
- 
+**GlobalCustomPalette**
 
-**GlobalStrings**
+If you have loaded a custom palette into a [KryptonCustomPaletteBase](KryptonCustomPaletteBase.md) control, then you will need to assign it to the *GlobalCustomPalette* property. When this property is set to use a *KryptonCustomPaletteBase*, the *GlobalPaletteMode* will automatically be set to *Custom*. 
+
+If the *GlobalCustomPalette* is subsequently reset back to its default value, then the *GlobalPaletteMode* will automatically be set to its default value, which is *Microsoft 365 - Blue*.
+
+**ToolkitImages**
+
+The *ToolkitImages* property is where you can define your own images that are used throughout the toolkit. The [KryptonIntegratedToolBar](KryptonIntegratedToolBarManager.md) uses these set of images to display on toolbars, as well as the [KryptonAboutBox](KryptonAboutBox.md).
+
+**ToolkitStrings**
 
 The *KryptonMessageBox* has buttons that use the string values from this
 section. If you would like to alter the strings displayed on those buttons then
 you can do so by altering the values in this area. If you have set the
 *Localization* property on your *Form* to *True* then these values will be
 stored on a per-language setting allowing your message box to have different
-display strings per language you choose to define.
+display strings per language you choose to define. The *ToolkitStrings* also contains strings used throughout the toolkit that you can customize. You will note that sub-sections are labelled accordingly to which sections of the toolkit they will affect.
