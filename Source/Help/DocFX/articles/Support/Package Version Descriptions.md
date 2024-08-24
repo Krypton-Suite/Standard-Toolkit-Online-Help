@@ -21,4 +21,4 @@ The canary packages are the next phase of development. Typically, canary package
 
 Stable packages are normally released **once** or **twice** per year, and are intended for production ready code. These packages are supported for 12 months from the date of initial release, i.e. from November until the following year, excluding any patches released between them.
 
-For more information about supported frameworks, please check out this [article](https://krypton-suite.github.io/Standard-Toolkit-Online-Help/Source/Help/Output/articles/Support/Package%20Support%20Information.html).
+For more information about supported frameworks, please check out this [article](Package%20Support%20Information.md).
