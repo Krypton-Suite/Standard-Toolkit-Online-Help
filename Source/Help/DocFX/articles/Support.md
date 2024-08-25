@@ -12,3 +12,5 @@ The following articles contain answers to common questions.
 * [Krypton Toolkit Suite Standard Modules](Support/Krypton%20Toolkit%20Suite%20Standard%20Modules.md)
 * [Package Support Information](Support/Package%20Support%20Information.md)
 * [Package Version Descriptions](Support/Package%20Version%20Descriptions.md)
+* [Reporting a Issue](Support/Reporting%20a%20Issue.md)
+* [Using Krypton Packages](Support/Using%20Krypton%20Packages.md)

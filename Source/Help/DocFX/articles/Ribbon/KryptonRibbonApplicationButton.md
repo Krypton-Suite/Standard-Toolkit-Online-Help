@@ -2,7 +2,7 @@
 
 ## Ribbon Application Button
 
-The application button is the large round button that appears at the top left of the ribbon control. You cannot prevent the display of the button and pressing it should always result in the display of a context menu. When the ribbon control is integrated into the custom chrome of the owning *Form* then the application button should be presented half in the *Form* caption area and half in the ribbon control itself. When the ribbon is not integrated then an extra header area is shown at the top of the ribbon control that allows the application button to be completely shown.
+The application button is the large round button or _File_ button that appears at the top left of the ribbon control. You cannot prevent the display of the button and pressing it should always result in the display of a context menu. When the ribbon control is integrated into the custom chrome of the owning *Form* then the application button should be presented half in the *Form* caption area and half in the ribbon control itself. When the ribbon is not integrated then an extra header area is shown at the top of the ribbon control that allows the application button to be completely shown.
 
 **Application Button Properties**
 

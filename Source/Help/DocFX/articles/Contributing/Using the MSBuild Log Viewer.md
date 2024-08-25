@@ -8,7 +8,7 @@ When building the Standard Toolkit, it will generate a file named *build-log.bin
 
 ## Chocolatey 
 
-```powershell
+```bash
 choco install msbuild-structured-log-viewer
 ```
 
@@ -20,6 +20,6 @@ https://github.com/KirillOsenkov/MSBuildStructuredLog/releases/latest/download/M
 
 ## WinGet
 
-```powershell
+```bash
 winget install KirillOsenkov.MSBuildStructuredLogViewer
 ```
