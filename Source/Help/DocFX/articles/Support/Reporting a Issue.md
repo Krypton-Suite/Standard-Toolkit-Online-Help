@@ -6,4 +6,6 @@ Standard Toolkit: [Report it here](https://github.com/Krypton-Suite/Standard-Too
 
 Extended Toolkit: [Report it here](https://github.com/Krypton-Suite/Extended-Toolkit/issues/new/choose)
 
-***Note: Please do not use Discord to report bugs, as they cannot be tracked. The only exception to this rule is if you do not have a GitHub account. In this case, please ping `@Developer` on our Discord server for assistance. Thanks!*** :slightly_smiling_face:
+Before creating a new issue, please take a look at these [guidelines](../Contributing/Contributing-Guidelines.md).
+
+***Note: Please do not use Discord to report bugs, as they cannot be tracked. The only exception to this rule is if you do not have a GitHub account. In this case, please ping `@Developer` on our [Discord server](Joining%20Our%20Discord%20Server.md) for assistance. Thanks!*** :slightly_smiling_face:
