@@ -29,8 +29,9 @@ track and track indicator are drawn. Figure 1 shows instances with the default
 value of *Medium*.
 
  
+![](KryptonTrackBarOrientation.jpg)
 
-     *Figure 1 - Orientation settings.*  
+*Figure 1 - Orientation settings.*  
 
 
  
@@ -77,6 +78,6 @@ position indicator shows that the control has the focus.
 Figure 2 shows the appearance when a track bar is using the *Office 2010 Blue*
 palette and for each of the different possible states.
 
- 
+![](KryptonTrackBarStates.jpg)
 
-*   Figure 2 - TrackBar states.*
+*Figure 2 - TrackBar states.*

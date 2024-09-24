@@ -31,7 +31,7 @@ Use the *Orientation* property to alter the splitter from working in a vertical
 to horizontal manner. See figure 1 for an example of the difference as seen at
 design time.
 
- 
+![ ](KryptonSplitContainer.bmp)
 
 *Figure 1 – Vertical and Horizontal orientation*
 

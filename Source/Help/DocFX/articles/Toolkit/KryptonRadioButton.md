@@ -29,7 +29,7 @@ arrangement. Specify *Bottom* to have the control displayed upside down, *Left*
 to show the content rotated 90 degrees left and *Right* for 90 degrees rotated
 right. See figure 1 for examples.
 
- 
+![](KryptonRadioButtonOrientation.bmp)
 
 *Figure 1 – Orientation Property*
 
@@ -40,7 +40,7 @@ property. The default is Left and shows the radio button on the left side of t
 control values. Alternatively use the *Top*, *Bottom* or *Right* values as shown
 in Figure 2.
 
- 
+![](KryptonRadioButtonCheckPosition.bmp)
 
 *Figure 2 – Orientation Property*
 
@@ -67,7 +67,7 @@ buttons then set this to *False* for all instances inside the same container.
 
  
 
-**Two States **
+**Two States**
 
 Only two possible states of *Disabled* and *Normal* are used by
 the radio button control. In order to customize the appearance use the
@@ -87,7 +87,7 @@ in *StateCommon*.
 
  
 
-**Focus Override **
+**Focus Override**
 
 If the control currently has the focus then the *OverrideFocus* settings are
 applied. This can occur when the control is in the *Normal* state. By default
@@ -97,10 +97,12 @@ focus.
 
  
 
-**Examples of Appearance **
+**Examples of Appearance**
 
 Figure 3 shows the appearance when using the *Office 2007 - Blue* palette with
 the default settings. You can see checked and unchecked appearance when
 disabled, normal, tracking or pressed down.
+
+![](KryptonRadioButtonStates.bmp)
 
 *Figure 3 – RadioButton Appearance*

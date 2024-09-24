@@ -13,9 +13,10 @@ define the appearance of the overall control but the *ItemStyle* is used to
 define the display of the individual node items themselves. You can see in
 figure 1 the default appearance using the *Office 2010 - Blue* builtin palette.  
    
-   
-   *Figure 1 – Default Appearance*  
-   
+![](KryptonTreeViewCheckBox.png)
+
+*Figure 1 – Default Appearance*  
+
    
 **Eight States**  
 There are eight different states relating to the control but not all the states
@@ -73,15 +74,14 @@ the *AlwaysActive* property defined as *False*. The left instance does not have
 the mouse over it and the right instance does.
 
  
+![](KryptonTreeViewInputControlStyle.png)
 
- 
-
-*   Figure 2 – InputControlStyle - Ribbon*
+*Figure 2 – InputControlStyle - Ribbon*
 
  
 
   
-**KryptonTreeNode **  
+**KryptonTreeNode**  
 You can add standard *TreeNode* instances to the node hierarchy and it will use
 the *Text* property to recover the text for display. Alternatively you can add
 *KryptonTreeNode* instances that derive from that standard *TreeNode* class and
@@ -90,7 +90,7 @@ node text. Figure 3 shows an example with several instances of this class added
 to the root *Nodes* collection.
 
  
-
+![](KryptonTreeViewTreeNode.png)
  
 
-*   Figure 3 – Nodes collection containing KryptonTreeNode instances*
+*Figure 3 – Nodes collection containing KryptonTreeNode instances*

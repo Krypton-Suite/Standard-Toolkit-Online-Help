@@ -30,14 +30,11 @@ thin splitter with a high vertical size but slim horizontal size. Specify
 *Horizontal* to have the control in the opposite orientation. See figure 1 for
 examples.
 
- 
+![](KryptonSeparatorOrientation.gif)
 
 *Figure 1 – Orientation Property*
 
  
-
- 
-
 **Four States**
 
 The separator control has four possible states, *Disabled*, *Normal*, *Tracking*
@@ -78,13 +75,9 @@ is the display you see whilst the mouse is pressed and being dragged, you can
 see the black box that provides feedback on the change that will occur if the
 mouse is released in that position.
 
- 
+![](KryptonSeparatorDragging.gif)
 
-*    Figure 2 – Example appearance during operation*
-
- 
-
- 
+*Figure 2 – Example appearance during operation*
 
 **Events**
 

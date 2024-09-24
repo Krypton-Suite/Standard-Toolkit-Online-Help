@@ -8,9 +8,9 @@ sample that comes with the *Toolkit* in order to see and experiment with the
 *KryptonTaskDialog* implementation. Figure 1 shows an example of the
 KryptonTaskDialog with all the possible options used.
 
- 
+![](KryptonTaskDialogAll.png)
 
-*       Figure 1 – KryptonTaskDialog Example*
+*Figure 1 – KryptonTaskDialog Example*
 
  
 
@@ -116,9 +116,9 @@ appearance of the component.
 
  
 
- 
+![](KryptonTaskDialogProps.png) 
 
-*   Figure 2 – KryptonTaskDialog Properties*
+*Figure 2 – KryptonTaskDialog Properties*
 
  
 

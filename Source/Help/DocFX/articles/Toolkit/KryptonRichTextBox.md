@@ -41,7 +41,7 @@ on something like a *KryptonPanel* or *KryptonGroup*. The *InputControlStyle* o
 *Ribbon* is intended for use when the control is present inside the
 *KryptonRibbon* and then needs a different appearance and operation.
 
- 
+![](KryptonRichTextBox1.bmp)
 
 *Figure 1 – InputControlStyle = Standalone*
 
@@ -82,9 +82,9 @@ the mouse over it and the bottom instance does.
 
  
 
- 
+![](KryptonTextBox2.bmp)
 
-*   Figure 2 – InputControlStyle = Ribbon*
+*Figure 2 – InputControlStyle = Ribbon*
 
  
 
@@ -99,9 +99,9 @@ options relevant to the entry field. Other possible uses of button
 specifications might be to indicate error conditions or to initiate the showing
 of help information.
 
- 
+![](KryptonTextBox3.bmp)
 
-*   Figure 3 – InputControlStyle = Ribbon*
+*Figure 3 – InputControlStyle = Ribbon*
 
  
 
