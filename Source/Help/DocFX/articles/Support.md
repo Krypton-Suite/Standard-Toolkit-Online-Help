@@ -4,6 +4,7 @@ The following articles contain answers to common questions.
 
 **Support**
 
+* [Breaking Changes](Support/Breaking%20Changes.md)
 * [Designer Fixes with .NET](Support/Designer%20Fix.md)
 * [How to Install Pre Release Packages](Support/How%20to%20Install%20Pre%20Release%20Packages.md)
 * [Installing Krypton](Support/Installing%20Krypton.md)
