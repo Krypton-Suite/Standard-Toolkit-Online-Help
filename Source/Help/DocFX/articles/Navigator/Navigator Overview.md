@@ -19,7 +19,7 @@ TabControl style to a header group style. Figure 1 shows examples of two
 different modes that are achieved by just altering the mode property.  
   
 ![](NavMode1.png)![](NavMode5.png)
-   
+
 *Figure 1 - Two Example Modes*
 
 See [Navigator Modes](Navigator%20Modes.md) for a detailed list of all the different
@@ -30,7 +30,7 @@ modes available.
 **Navigator Properties**  
 Properties that control the appearance and operation of the navigator are
 concentrated in two different categories. Figure 2 shows the set of properties
-in the *Visuals* category; these are explained here and in the [Popup Pages Properties](Navigator PopupPages%20Properties.md) and [ToolTips Properties](Navigator Tooltips%20Properties.md) sections.
+in the *Visuals* category; these are explained here and in the [Popup Pages Properties](Navigator PopupPages.md) and [ToolTips Properties](Navigator ToolTips.md) sections.
 Figure 3 shows the *Visuals (Modes)* category which contains mode specific
 properties that are described in detail in the [Bar Modes](Navigator Bar%20Modes.md),
 [Button Modes](Navigator%20Button%20Modes.md), [Group Modes](Navigator%20Group%20Modes.md), [Header Modes](Navigator%20Header%20Modes.md), [Outlook Modes](Navigator Outlook%20Modes.md), [Panel Modes](Navigator%20Panel%20Modes.md) and [Stack Modes](Navigator Stack%20Modes.md) sections.

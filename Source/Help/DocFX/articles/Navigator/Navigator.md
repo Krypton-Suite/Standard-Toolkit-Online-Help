@@ -10,8 +10,8 @@ sections.
 * [Page Dragging](Navigator Page%20Dragging.md)
 
 **Visual Properties**  
-* [Popup Pages Properties](Navigator PopupPages%20Properties.md)
-* [ToolTips Properties](Navigator Tooltips%20Properties.md)
+* [Popup Pages Properties](Navigator PopupPages.md)
+* [ToolTips Properties](Navigator ToolTips.md)
 * [Other Properties](Navigator Other%20Properties.md)
 
 **Mode Operation**  
