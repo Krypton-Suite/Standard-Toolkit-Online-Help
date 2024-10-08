@@ -21,4 +21,10 @@ The canary packages are the next phase of development. Typically, canary package
 
 Stable packages are normally released **once** or **twice** per year, and are intended for production ready code. These packages are supported for 12 months from the date of initial release, i.e. from November until the following year, excluding any patches released between them.
 
+## Long Term Stable (LTS)
+
+<img src="https://github.com/Krypton-Suite/Documentation/blob/main/Assets/NuGet%20Package%20Icons/Krypton%20Standard%20Toolkit%20LTS.png?raw=true" />
+
+The long term stable packages are designed for those developers who need to still support older framework versions, which are no longer officially supported. No new features are added to these packages and fixes are very few and far between. It is recommended to use these up to 18 months after official support has ended.
+
 For more information about supported frameworks, please check out this [article](Package%20Support%20Information.md).
