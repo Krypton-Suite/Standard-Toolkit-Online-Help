@@ -11,7 +11,7 @@ The following articles contain answers to common questions.
 * [Using Krypton in Visual Studio 2022](Tutorials/Using%20Krypton%20in%20Visual%20Studio%202022.md)
 * [Removal of IPalette](Support/IPalette%20Removal.md)
 * [Joining Our Discord Server](Support/Joining%20Our%20Discord%20Server.md)
-* [Krypton Toolkit Suite Standard Modules](Support/Krypton%20Toolkit%20Suite%20Standard%20Modules.md)
+* [Krypton Module Versions](Support/Krypton%20Module%20Versions.md)
 * [Package Support Information](Support/Package%20Support%20Information.md)
 * [Package Version Descriptions](Support/Package%20Version%20Descriptions.md)
 * [Reporting a Issue](Support/Reporting%20a%20Issue.md)
