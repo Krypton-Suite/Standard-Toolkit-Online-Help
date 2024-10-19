@@ -7,7 +7,7 @@
 * Jump to [Nightly](#nightly)
 * Jump to [Canary](#canary)
 * Jump to [Stable](#stable)
-* Jump to [LTS](#lts-unsupported)
+* Jump to [LTS](#long-term-support-lts)
 * Jump to [Themes](#themes)
 * Jump to [Links](#links)
 
@@ -67,7 +67,7 @@ Go to [Top](#channel-releases)
 
 ================================================================================
 
-## LTS (Unsupported)
+## Long Term Support (LTS)
 
 | Module Name | Current Version | Link |
 |---|---|---|
