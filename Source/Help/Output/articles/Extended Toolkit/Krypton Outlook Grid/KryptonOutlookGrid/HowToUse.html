@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonOutlookGrid - How to Use | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonOutlookGrid - How to Use | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonoutlookgrid---how-to-use">KryptonOutlookGrid - How to Use</h1>
+
+<p><strong>1. Drag and drop the KryptonOutlookGrid and KryptonOutlookGridGroupBox on the Form.</strong></p>
+<p><strong>2. Associate the KryptonOutlookGridGroupBox with the grid by design time or by code using the following:</strong></p>
+<pre><code class="lang-cs">OutlookGrid1.GroupBox = KryptonOutlookGridGroupBox1;
+</code></pre>
+<p><strong>3. We need that the OutlookGrid listens to the GroupBox actions/events.</strong></p>
+<pre><code class="lang-cs">OutlookGrid1.RegisterGroupBoxEvents();
+</code></pre>
+<p>Also set to <em>true</em> the property <em>AllowDrop</em> for the <em>OutlookGrid</em>.</p>
+<p><strong>4. Design your grid by configuring your columns as you would do with the standard datagridview in unbound mode. You can do it by code or by design time.</strong></p>
+<p><em>Warning you must respect these two rules:</em></p>
+<p>The column <em>SortMode</em> property must be set to &quot;Programmatic&quot; as the grid will handle itself the sorting.
+The column Name property must not be empty (whereas the <em>HeaderText</em> could be).</p>
+<pre><code class="lang-cs">DataGridViewColumn[] columnsToAdd = new DataGridViewColumn[10];
+columnsToAdd[0] = SetupColumn(SandBoxGridColumn.ColumnCustomerID);
+columnsToAdd[1] = SetupColumn(SandBoxGridColumn.ColumnCustomerName);
+columnsToAdd[2] = SetupColumn(SandBoxGridColumn.ColumnAddress);
+...
+Grid.Columns.AddRange(columnsToAdd);
+</code></pre>
+<p><strong>5. Configure the OutlookGrid. For grouping and sorting abilities we need to precise the columns to the grid.</strong></p>
+<pre><code class="lang-cs">Grid.AddInternalColumn(columnsToAdd[0], new OutlookGridDefaultGroup(null), SortOrder.None, -1, -1);
+Grid.AddInternalColumn(columnsToAdd[1], new OutlookGridAlphabeticGroup(null), SortOrder.None, -1, -1);
+Grid.AddInternalColumn(columnsToAdd[2], new OutlookGridDefaultGroup(null), SortOrder.None, -1, -1);
+...
+</code></pre>
+<p>The different parameters for the AddInternalColumn procedure are:</p>
+<ul>
+<li>Parameter 1 : the <em>DataGridView</em> column</li>
+<li>Parameter 2 : the <em>IOutlookGridGroup</em> that will be used when the column will be grouped</li>
+<li>Parameter 3 : the sort direction</li>
+<li>Parameter 4 : the column position among grouped columns, -1 if not grouped.</li>
+<li>Parameter 5 : the column position among sorted columns, -1 if not sorted.</li>
+</ul>
+<p><em>Please note that a grouped column will automatically be sorted.</em></p>
+<p>You can customize the default group with some properties :</p>
+<ul>
+<li>Single (<em>OneItemText</em>) and multiple items (<em>XXXItemsText</em>) : this allows you to change the word &quot;item&quot; by the current object you are displaying in the grid and manage the specificities of each country regarding the plural.</li>
+<li>SortBySummaryCount : This indicates if the groups should be sorted by the number of elements in each group rather the group element value</li>
+<li>ItemsComparer : for complex objects you can set your own comparer. It will be used during sort operations.</li>
+<li>Interval : only for the <em>OutlookGridDateTimeGroup</em>, you can specify type of grouping you want to use : day, month, quarter, year and intelligent (such as Outlook)</li>
+</ul>
+<p><strong>6. Fill the grid with data (unbound mode only).</strong></p>
+<pre><code class="lang-cs">//Setup Rows
+OutlookGridRow row = new OutlookGridRow();
+List l = new List();
+OutlookGrid1.SuspendLayout();
+OutlookGrid1.ClearInternalRows();
+foreach (item in items)
+{
+     try
+     {
+           row = new OutlookGridRow();
+           row.CreateCells(OutlookGrid1, new object[] {
+                    item.Prop1,
+                    item.Prop2,
+                   ....
+      });
+      l.Add(row);
+}
+OutlookGrid1.ResumeLayout();
+OutlookGrid1.AssignRows(l);
+OutlookGrid1.ForceRefreshGroupBox();
+OutlookGrid1.Fill();
+</code></pre>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite/Standard-Toolkit">https://github.com/Krypton-Suite/Standard-Toolkit</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
