@@ -1,4 +1,0 @@
-# KryptonPrintDialog
-
-
-![](KryptonPrintDialog.png)

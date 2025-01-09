@@ -1,3 +1,0 @@
-# KryptonThemeBrowser
-
-![](KryptonThemeBrowser.png)
