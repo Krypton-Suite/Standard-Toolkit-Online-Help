@@ -101,7 +101,7 @@ the other options for a range of different *Bar* modes.
 *Figure 4 - BarOrientation = Top*  
   
   
-![](Images/NavBarFigure2.bmp)
+![](Images/NavBarFigure2.png)
 
 *Figure 5 - BarOrientation = Left, Bottom and Right*
 
