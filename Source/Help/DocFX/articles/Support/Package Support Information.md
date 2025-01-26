@@ -15,8 +15,8 @@ There are currently two types of package that are supported. The table below out
 
 | Version | Status | Latest Release | Latest Release Date | End of Support |
 |---|---|---|---|---|
-| .NET 9.0 | Standard Term Support | 9.0.0 | November 12, 2024 | May 12, 2026 |
-| .NET 8.0 | Long Term Support | 8.0.11 | November 12, 2024 | November 10, 2026 |
+| .NET 9.0 | Standard Term Support | 9.0.1 | January 14, 2025 | May 12, 2026 |
+| .NET 8.0 | Long Term Support | 8.0.12 | January 14, 2025 | November 10, 2026 |
 
 ### Supported .NET Framework Versions
 

@@ -9,7 +9,7 @@
 
 This will automatically create a form in design mode as below.
 
-![](Normal%20WinForm%20Form.png)
+![](Images/Normal%20WinForm%20Form.png)
 
 **2) Ensure that the Krypton components are in the Toolbox**
 
@@ -20,11 +20,11 @@ If not the [Using Krypton in Visual Studio 2022](Using%20Krypton%20in%20Visual%2
 
 Once dropped resize the control so it takes up most of the client space as shown below.
 
-![](UserPage1.png)
+![](Images/UserPage1.png)
 
 **4) Click the smart tag and then select the 'Remove Page' action**
 
-![](UserPage2.png)
+![](Images/UserPage2.png)
 
 We only want the navigator to have a single page at design time, so we remove one of the default pages. 
 
@@ -32,13 +32,13 @@ We only want the navigator to have a single page at design time, so we remove on
 
 We want to prevent the user from deleting the single page that is now shown. 
 
-![](UserPage3.png)
+![](Images/UserPage3.png)
 
 **6) Click the edit button for the 'Pages' property of the navigator in the properties window**
 
 Once clicked you should have the following page collection editor displayed.
 
-![](UserPage4.png)
+![](Images/UserPage4.png)
 
 **7) Set the 'Text' and 'Text Title' properties of the page to be an empty.**
 
@@ -52,7 +52,7 @@ Click the 'ImageSmall' property and use the edit button to import an image for d
 
 You should now have the following display for the navigator at design time.
 
-![](UserPage5.png)
+![](Images/UserPage5.png)
 
 **10) Double click the title bar of the form so the 'Load' event handler is generated.**
 
@@ -149,6 +149,6 @@ In an earlier step we removed the display text for the 'new page' page. A conseq
 
 **15) Compile and run the code and you will have the following application.**
 
-![](UserPage6.png)
+![](Images/UserPage6.png)
 
 

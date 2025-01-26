@@ -10,3 +10,9 @@ More discussion about this topic can be found [here](https://github.com/Krypton-
 To learn more about the `TargetFrameworks` attribute, [click here](https://docs.microsoft.com/en-us/dotnet/standard/frameworks).
 
 ***N.B: This action will produce binaries for multiple frameworks.***
+
+If you do not want to default to a .NET FrameWork build, you can configure your build process in Visual Studio, as shown below.
+
+![](Images/ConfigurableTargets.png)
+
+*Figure 1: Configurable targets* 
