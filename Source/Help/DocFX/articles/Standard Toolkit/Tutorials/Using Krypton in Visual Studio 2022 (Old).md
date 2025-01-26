@@ -6,9 +6,9 @@ What is recommended for 2017 onwards, is to add the Krypton files directly to th
 If you replace (upgrade etc.) the Kyrpton dll's then just simply re-add the new location to the toolbox.
 
 
-![](ToolBox_Start.PNG)
+![](Images/ToolBox_Start.PNG)
 
-*Figure 1 - ToolBox_Start*
+*Figure 1 - ToolBox Start*
 
  ### Initially the toolbox will be empty
 If the form does not allow a designer to directly access Krypton Controls, then it means that the:

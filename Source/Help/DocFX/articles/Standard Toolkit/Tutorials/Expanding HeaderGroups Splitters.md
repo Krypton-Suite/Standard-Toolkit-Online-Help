@@ -12,7 +12,7 @@ Part 1 - Expanding/Collapsing Left Panel<br><br>
 
 This will automatically create a form in design mode as below.
 
-![](Normal%20WinForm%20Form.png)
+![](Images/Normal%20WinForm%20Form.png)
 
 **2) Add a reference to the Krypton.Toolkit assembly**  
   
