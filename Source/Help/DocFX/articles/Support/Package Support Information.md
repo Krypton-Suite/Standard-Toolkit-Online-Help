@@ -4,8 +4,8 @@ There are currently two types of package that are supported. The table below out
 
 | Package Type | Supported Frameworks |
 |---|---|
-| Full | .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8, 4.8.1, .NET 8 & 9 |
-| Lite | .NET Framework 4.8, 4.8.1, .NET 8 & 9 |
+| Full | .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8, 4.8.1, .NET 8 - 10 |
+| Lite | .NET Framework 4.8, 4.8.1, .NET 8 - 10 |
 
 (**Note:** If you are using either the `Canary` or `Nightly` packages, then they will have _all_ of the frameworks supported, as listed in the 'Full' regime.)
 
@@ -15,6 +15,7 @@ There are currently two types of package that are supported. The table below out
 
 | Version | Status | Latest Release | Latest Release Date | End of Support |
 |---|---|---|---|---|
+| .NET 10.0 | Long Term Support | 10.0.0-preview.1 | February 25, 2025 | TBA |
 | .NET 9.0 | Standard Term Support | 9.0.2 | February 11, 2025 | May 12, 2026 |
 | .NET 8.0 | Long Term Support | 8.0.11 | February 11, 2025 | November 10, 2026 |
 
