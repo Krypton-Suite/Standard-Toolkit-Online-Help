@@ -17,4 +17,3 @@ The following articles contain answers to common questions.
 * [Package Version Descriptions](Support/Package%20Version%20Descriptions.md)
 * [Reporting a Issue](Support/Reporting%20a%20Issue.md)
 * [Using Krypton Packages](Support/Using%20Krypton%20Packages.md)
-* [Using SLNX in Visual Studio](Support/Using%20SLNX%20in%20Visual%20Studio.md)
