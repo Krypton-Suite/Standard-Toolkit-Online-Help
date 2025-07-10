@@ -7,7 +7,7 @@
 
 This will automatically create a form in design mode as below.
 
-![](Normal%20WinForm%20Form.png)
+![Normal WinForm Form](Images/Normal%20WinForm%20Form.png)
 
 **2) Add a reference to the Krypton.Toolkit assembly**  
   
