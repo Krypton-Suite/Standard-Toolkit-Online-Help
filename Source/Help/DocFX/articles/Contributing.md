@@ -9,6 +9,7 @@ If you are wanting to contribute to the toolkit, the articles below will guide y
 * [How to Create a Pull Request](Contributing/How-to-Create-a-Pull-Request.md)
 * [How to Create the API Reference](Contributing/How-to-Create-the-API-Reference.md)
 * [How to Manage 'Using' Statements](Contributing/How-to-Manage-Using-Statements.md)
+* [Krypton RTL Audit Summary](Contributing/Krypton%20RTL%20Audit%20Summary.md)
 * [Using the MSBuild Log Viewer](Contributing/Using%20the%20MSBuild%20Log%20Viewer.md)
 * [Using Custom Pre-Processor Directives](Contributing/Using%20Custom%20Pre%20Processor%20Directives.md)
 * [Using SLNX in Visual Studio](Contributing/Using%20SLNX%20in%20Visual%20Studio.md)
