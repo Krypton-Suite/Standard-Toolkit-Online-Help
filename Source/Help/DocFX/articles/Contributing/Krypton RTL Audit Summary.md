@@ -1,4 +1,4 @@
-# Krypton Toolkit RTL Support Audit Summary
+# Krypton Toolkit RTL Support Audit Summary - Version 100
 
 ## Executive Summary
 
