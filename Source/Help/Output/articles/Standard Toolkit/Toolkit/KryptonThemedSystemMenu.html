@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Developer Guide: Themed System Menu | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Developer Guide: Themed System Menu | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="developer-guide-themed-system-menu">Developer Guide: Themed System Menu</h1>
+
+<h2 id="quick-start">Quick Start</h2>
+<p>The themed system menu is automatically enabled on <code>KryptonForm</code>:</p>
+<pre><code class="lang-csharp">// Create a form - themed system menu works automatically
+var form = new KryptonForm();
+form.Text = &quot;My Application&quot;;
+
+// Users can trigger the menu by:
+// - Left-clicking on the title bar
+// - Right-clicking on the title bar  
+// - Pressing Alt+Space
+</code></pre>
+<h2 id="what-you-need-to-know">What You Need to Know</h2>
+<h3 id="automatic-integration">Automatic Integration</h3>
+<ul>
+<li><strong>KryptonForm</strong> automatically includes themed system menu functionality</li>
+<li><strong>No setup required</strong> - it works out of the box</li>
+<li><strong>Native behavior</strong> - works exactly like the Windows system menu</li>
+<li><strong>Theme integration</strong> - matches your application's theme</li>
+</ul>
+<h3 id="trigger-methods">Trigger Methods</h3>
+<p>The menu can be triggered in three ways:</p>
+<ol>
+<li><strong>Left-click</strong> on title bar (except control buttons)</li>
+<li><strong>Right-click</strong> on title bar (except control buttons)</li>
+<li><strong>Alt+Space</strong> keyboard shortcut</li>
+</ol>
+<h2 id="basic-configuration">Basic Configuration</h2>
+<h3 id="enabledisable-the-feature">Enable/Disable the Feature</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+// Disable themed system menu (falls back to native)
+form.UseThemedSystemMenu = false;
+
+// Re-enable it
+form.UseThemedSystemMenu = true;
+</code></pre>
+<h3 id="configure-trigger-methods">Configure Trigger Methods</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+// Enable all trigger methods (default)
+form.ShowThemedSystemMenuOnLeftClick = true;
+form.ShowThemedSystemMenuOnRightClick = true;
+form.ShowThemedSystemMenuOnAltSpace = true;
+
+// Disable specific triggers
+form.ShowThemedSystemMenuOnLeftClick = false;   // Disable left-click only
+form.ShowThemedSystemMenuOnRightClick = false;  // Disable right-click only
+form.ShowThemedSystemMenuOnAltSpace = false;    // Disable Alt+Space only
+</code></pre>
+<h2 id="adding-custom-menu-items">Adding Custom Menu Items</h2>
+<h3 id="simple-custom-items">Simple Custom Items</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+// Add a custom menu item before the Close item
+if (form.KryptonSystemMenu != null)
+{
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Settings&quot;, (sender, e) =&gt;
+    {
+        // Open settings dialog
+        OpenSettingsDialog();
+    }, insertBeforeClose: true);
+}
+</code></pre>
+<h3 id="multiple-custom-items">Multiple Custom Items</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+if (form.KryptonSystemMenu != null)
+{
+    // Add a separator first
+    form.KryptonSystemMenu.AddSeparator(insertBeforeClose: true);
+    
+    // Add custom items
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Save&quot;, (sender, e) =&gt; SaveDocument());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Print&quot;, (sender, e) =&gt; PrintDocument());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Settings&quot;, (sender, e) =&gt; OpenSettings());
+}
+</code></pre>
+<h3 id="items-at-the-end">Items at the End</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+if (form.KryptonSystemMenu != null)
+{
+    // Add items at the end (after Close)
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;About&quot;, (sender, e) =&gt; ShowAboutDialog(), insertBeforeClose: false);
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Help&quot;, (sender, e) =&gt; ShowHelp(), insertBeforeClose: false);
+}
+</code></pre>
+<h2 id="advanced-customization">Advanced Customization</h2>
+<h3 id="direct-access-to-context-menu">Direct Access to Context Menu</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+// Get direct access for advanced customization
+if (form.KryptonSystemMenu is KryptonThemedSystemMenu themedMenu)
+{
+    var contextMenu = themedMenu.ContextMenu;
+    
+    // Add custom items with full control
+    var customItem = new KryptonContextMenuItem(&quot;Advanced Action&quot;);
+    customItem.Click += (sender, e) =&gt; PerformAdvancedAction();
+    
+    // Add separator and item
+    contextMenu.Items.Add(new KryptonContextMenuSeparator());
+    contextMenu.Items.Add(customItem);
+}
+</code></pre>
+<h3 id="conditional-menu-items">Conditional Menu Items</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+if (form.KryptonSystemMenu != null)
+{
+    // Only show &quot;Save&quot; if document is modified
+    if (IsDocumentModified)
+    {
+        form.KryptonSystemMenu.AddCustomMenuItem(&quot;Save&quot;, (sender, e) =&gt; SaveDocument());
+    }
+    
+    // Only show &quot;Print&quot; if printer is available
+    if (IsPrinterAvailable)
+    {
+        form.KryptonSystemMenu.AddCustomMenuItem(&quot;Print&quot;, (sender, e) =&gt; PrintDocument());
+    }
+}
+</code></pre>
+<h3 id="dynamic-menu-updates">Dynamic Menu Updates</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+// Update menu when application state changes
+public void UpdateSystemMenu()
+{
+    if (form.KryptonSystemMenu != null)
+    {
+        // Clear existing custom items
+        form.KryptonSystemMenu.ClearCustomItems();
+        
+        // Add items based on current state
+        if (IsDocumentModified)
+        {
+            form.KryptonSystemMenu.AddCustomMenuItem(&quot;Save&quot;, (sender, e) =&gt; SaveDocument());
+        }
+        
+        if (CanUndo)
+        {
+            form.KryptonSystemMenu.AddCustomMenuItem(&quot;Undo&quot;, (sender, e) =&gt; UndoAction());
+        }
+    }
+}
+</code></pre>
+<h2 id="keyboard-shortcut-handling">Keyboard Shortcut Handling</h2>
+<h3 id="override-processcmdkey">Override ProcessCmdKey</h3>
+<pre><code class="lang-csharp">public partial class MyForm : KryptonForm
+{
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        // Let the themed system menu handle its shortcuts first
+        if (KryptonSystemMenu?.HandleKeyboardShortcut(keyData) == true)
+        {
+            return true;
+        }
+
+        // Handle your own shortcuts
+        if (keyData == (Keys.Control | Keys.S))
+        {
+            SaveDocument();
+            return true;
+        }
+
+        if (keyData == (Keys.Control | Keys.O))
+        {
+            OpenDocument();
+            return true;
+        }
+
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
+}
+</code></pre>
+<h3 id="custom-shortcuts">Custom Shortcuts</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+// Add custom shortcuts to the system menu
+if (form.KryptonSystemMenu != null)
+{
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Save\tCtrl+S&quot;, (sender, e) =&gt; SaveDocument());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Open\tCtrl+O&quot;, (sender, e) =&gt; OpenDocument());
+}
+</code></pre>
+<h2 id="theme-integration">Theme Integration</h2>
+<h3 id="theme-aware-icons">Theme-Aware Icons</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+// Refresh icons when theme changes
+KryptonManager.GlobalPaletteChanged += (sender, e) =&gt;
+{
+    if (form.KryptonSystemMenu != null)
+    {
+        form.KryptonSystemMenu.RefreshThemeIcons();
+    }
+};
+</code></pre>
+<h3 id="manual-refresh">Manual Refresh</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+// Manually refresh the menu
+if (form.KryptonSystemMenu != null)
+{
+    form.KryptonSystemMenu.Refresh();
+}
+</code></pre>
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="safe-access-pattern">Safe Access Pattern</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+// Always check for null before using
+if (form.KryptonSystemMenu != null)
+{
+    try
+    {
+        form.KryptonSystemMenu.AddCustomMenuItem(&quot;Safe Action&quot;, (sender, e) =&gt;
+        {
+            // Your action here
+        });
+    }
+    catch (Exception ex)
+    {
+        // Handle any errors gracefully
+        Debug.WriteLine($&quot;Failed to add custom menu item: {ex.Message}&quot;);
+    }
+}
+</code></pre>
+<h3 id="graceful-fallback">Graceful Fallback</h3>
+<pre><code class="lang-csharp">public void AddSystemMenuItem(string text, EventHandler clickHandler)
+{
+    if (KryptonSystemMenu != null)
+    {
+        try
+        {
+            KryptonSystemMenu.AddCustomMenuItem(text, clickHandler);
+        }
+        catch
+        {
+            // Fall back to native system menu or handle gracefully
+            Debug.WriteLine(&quot;Failed to add themed system menu item&quot;);
+        }
+    }
+}
+</code></pre>
+<h2 id="common-use-cases">Common Use Cases</h2>
+<h3 id="application-settings">Application Settings</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+if (form.KryptonSystemMenu != null)
+{
+    form.KryptonSystemMenu.AddSeparator(insertBeforeClose: true);
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Settings&quot;, (sender, e) =&gt; OpenSettings());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Preferences&quot;, (sender, e) =&gt; OpenPreferences());
+}
+</code></pre>
+<h3 id="file-operations">File Operations</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+if (form.KryptonSystemMenu != null)
+{
+    form.KryptonSystemMenu.AddSeparator(insertBeforeClose: true);
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;New&quot;, (sender, e) =&gt; CreateNewDocument());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Open&quot;, (sender, e) =&gt; OpenDocument());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Save&quot;, (sender, e) =&gt; SaveDocument());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Save As&quot;, (sender, e) =&gt; SaveDocumentAs());
+}
+</code></pre>
+<h3 id="help-and-support">Help and Support</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+if (form.KryptonSystemMenu != null)
+{
+    form.KryptonSystemMenu.AddSeparator(insertBeforeClose: false);
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Help&quot;, (sender, e) =&gt; ShowHelp());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;About&quot;, (sender, e) =&gt; ShowAbout());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Support&quot;, (sender, e) =&gt; OpenSupport());
+}
+</code></pre>
+<h3 id="application-specific-actions">Application-Specific Actions</h3>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+
+if (form.KryptonSystemMenu != null)
+{
+    form.KryptonSystemMenu.AddSeparator(insertBeforeClose: true);
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Export Data&quot;, (sender, e) =&gt; ExportData());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Import Data&quot;, (sender, e) =&gt; ImportData());
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Generate Report&quot;, (sender, e) =&gt; GenerateReport());
+}
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-check-for-null">1. Check for Null</h3>
+<pre><code class="lang-csharp">// Always check if the system menu is available
+if (form.KryptonSystemMenu != null)
+{
+    // Safe to use
+    form.KryptonSystemMenu.AddCustomMenuItem(&quot;Action&quot;, (sender, e) =&gt; { });
+}
+</code></pre>
+<h3 id="2-use-appropriate-positioning">2. Use Appropriate Positioning</h3>
+<pre><code class="lang-csharp">// Use insertBeforeClose: true for main application actions
+form.KryptonSystemMenu.AddCustomMenuItem(&quot;Save&quot;, (sender, e) =&gt; Save(), insertBeforeClose: true);
+
+// Use insertBeforeClose: false for secondary actions
+form.KryptonSystemMenu.AddCustomMenuItem(&quot;About&quot;, (sender, e) =&gt; ShowAbout(), insertBeforeClose: false);
+</code></pre>
+<h3 id="3-add-separators">3. Add Separators</h3>
+<pre><code class="lang-csharp">// Add separators to organize menu items
+form.KryptonSystemMenu.AddSeparator(insertBeforeClose: true);
+form.KryptonSystemMenu.AddCustomMenuItem(&quot;Action 1&quot;, (sender, e) =&gt; { });
+form.KryptonSystemMenu.AddCustomMenuItem(&quot;Action 2&quot;, (sender, e) =&gt; { });
+form.KryptonSystemMenu.AddSeparator(insertBeforeClose: true);
+</code></pre>
+<h3 id="4-handle-theme-changes">4. Handle Theme Changes</h3>
+<pre><code class="lang-csharp">// Refresh icons when theme changes
+KryptonManager.GlobalPaletteChanged += (sender, e) =&gt;
+{
+    if (form.KryptonSystemMenu != null)
+    {
+        form.KryptonSystemMenu.RefreshThemeIcons();
+    }
+};
+</code></pre>
+<h3 id="5-clean-up-event-handlers">5. Clean Up Event Handlers</h3>
+<pre><code class="lang-csharp">// Store references to event handlers for cleanup
+private EventHandler _saveHandler;
+
+public void AddSaveMenuItem()
+{
+    _saveHandler = (sender, e) =&gt; SaveDocument();
+    form.KryptonSystemMenu?.AddCustomMenuItem(&quot;Save&quot;, _saveHandler);
+}
+
+public void RemoveSaveMenuItem()
+{
+    // Remove the event handler when no longer needed
+    if (_saveHandler != null)
+    {
+        // Implementation depends on your cleanup strategy
+    }
+}
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="menu-not-appearing">Menu Not Appearing</h3>
+<pre><code class="lang-csharp">// Check if themed system menu is enabled
+if (!form.UseThemedSystemMenu)
+{
+    // Enable it
+    form.UseThemedSystemMenu = true;
+}
+
+// Check trigger methods
+if (!form.ShowThemedSystemMenuOnLeftClick &amp;&amp; 
+    !form.ShowThemedSystemMenuOnRightClick &amp;&amp; 
+    !form.ShowThemedSystemMenuOnAltSpace)
+{
+    // Enable at least one trigger method
+    form.ShowThemedSystemMenuOnLeftClick = true;
+}
+</code></pre>
+<h3 id="custom-items-not-working">Custom Items Not Working</h3>
+<pre><code class="lang-csharp">// Check if system menu is available
+if (form.KryptonSystemMenu == null)
+{
+    Debug.WriteLine(&quot;Themed system menu is not available&quot;);
+    return;
+}
+
+// Check if menu has items
+if (!form.KryptonSystemMenu.HasMenuItems)
+{
+    Debug.WriteLine(&quot;System menu has no items&quot;);
+    return;
+}
+</code></pre>
+<h3 id="performance-issues">Performance Issues</h3>
+<pre><code class="lang-csharp">// Avoid frequent menu updates
+private bool _menuNeedsUpdate = false;
+
+public void MarkMenuForUpdate()
+{
+    _menuNeedsUpdate = true;
+}
+
+public void UpdateMenuIfNeeded()
+{
+    if (_menuNeedsUpdate &amp;&amp; form.KryptonSystemMenu != null)
+    {
+        form.KryptonSystemMenu.Refresh();
+        _menuNeedsUpdate = false;
+    }
+}
+</code></pre>
+<h2 id="testing">Testing</h2>
+<h3 id="manual-testing-steps">Manual Testing Steps</h3>
+<ol>
+<li><strong>Build and run</strong> your KryptonForm application</li>
+<li><strong>Left-click</strong> on the title bar (not on minimize/maximize/close buttons)</li>
+<li><strong>Right-click</strong> on the title bar</li>
+<li><strong>Press Alt+Space</strong> keyboard shortcut</li>
+<li><strong>Verify</strong> the themed menu appears with your custom items</li>
+<li><strong>Test</strong> different window states (normal, maximized, minimized)</li>
+</ol>
+<h3 id="test-different-scenarios">Test Different Scenarios</h3>
+<pre><code class="lang-csharp">// Test with different configurations
+form.ShowThemedSystemMenuOnLeftClick = false;   // Test right-click only
+form.ShowThemedSystemMenuOnRightClick = false;  // Test left-click only
+form.ShowThemedSystemMenuOnAltSpace = false;   // Test mouse clicks only
+
+// Test with custom items
+form.KryptonSystemMenu?.AddCustomMenuItem(&quot;Test Item&quot;, (sender, e) =&gt; 
+{
+    MessageBox.Show(&quot;Test item clicked!&quot;);
+});
+</code></pre>
+<h2 id="summary">Summary</h2>
+<p>The themed system menu provides:</p>
+<ul>
+<li><strong>Automatic integration</strong> with KryptonForm</li>
+<li><strong>Native behavior</strong> with themed appearance</li>
+<li><strong>Multiple trigger methods</strong> (left-click, right-click, Alt+Space)</li>
+<li><strong>Easy customization</strong> with simple API</li>
+<li><strong>Theme integration</strong> that matches your application</li>
+<li><strong>Robust error handling</strong> with graceful fallbacks</li>
+</ul>
+<p>Use this feature to enhance your application's user experience with a professional, consistent system menu that integrates seamlessly with the Krypton Toolkit theming system.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
