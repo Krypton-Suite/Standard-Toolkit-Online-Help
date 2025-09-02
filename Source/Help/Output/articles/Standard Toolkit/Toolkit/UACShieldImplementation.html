@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>UAC Shield and Icon Extraction Implementation | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="UAC Shield and Icon Extraction Implementation | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="uac-shield-and-icon-extraction-implementation">UAC Shield and Icon Extraction Implementation</h1>
+
+<h2 id="overview">Overview</h2>
+<p>This document details the comprehensive implementation of UAC shield icon extraction and enhanced icon management features added to the Krypton Toolkit. The implementation provides developers with easy access to Windows system icons from <code>imageres.dll</code> with flexible sizing options.</p>
+<h2 id="features-added">Features Added</h2>
+<h3 id="1-extracticonfromimageres-method">1. ExtractIconFromImageres Method</h3>
+<p><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/Utilities/GraphicsExtensions.cs</code></p>
+<p>A new method that extracts icons from <code>imageres.dll</code> using both <code>ImageresIconID</code> and <code>IconSize</code> parameters.</p>
+<h4 id="method-signature">Method Signature</h4>
+<pre><code class="lang-csharp">public static Icon? ExtractIconFromImageres(int iconId, IconSize iconSize = IconSize.Medium, IconSelectionStrategy selectionStrategy = IconSelectionStrategy.OSBased)
+</code></pre>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>iconId</code> (int): The icon ID from the comprehensive ImageresIconID enum (cast to int for public accessibility)</li>
+<li><code>iconSize</code> (IconSize): The size of the icon to extract (defaults to Medium - 32x32)</li>
+<li><code>selectionStrategy</code> (IconSelectionStrategy): The strategy for selecting fallback icons (defaults to OS-based selection)</li>
+</ul>
+<h4 id="returns">Returns</h4>
+<ul>
+<li><code>Icon?</code>: The extracted icon, or null if extraction fails</li>
+</ul>
+<h4 id="features">Features</h4>
+<ul>
+<li><strong>Smart Size Detection</strong>: Automatically determines whether to use large or small icon extraction based on requested size</li>
+<li><strong>Default Parameter</strong>: Uses <code>MediumSmall</code> (32x32) as the default size for convenience</li>
+<li><strong>Error Handling</strong>: Gracefully handles extraction failures and returns null</li>
+<li><strong>Resource Management</strong>: Properly manages Windows resources during extraction</li>
+</ul>
+<h4 id="usage-examples">Usage Examples</h4>
+<pre><code class="lang-csharp">// Extract a shield icon at default size (32x32)
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+
+// Extract a lock icon at large size (96x96)
+var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Lock, IconSize.Large);
+
+// Extract a user icon at tiny size (8x8)
+var userIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.User, IconSize.Tiny);
+
+// Extract a computer icon at maximum size (256x256)
+var computerIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Computer, IconSize.Maximum);
+
+// Extract with theme-based selection strategy
+var themeAwareIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Medium, IconSelectionStrategy.ThemeBased);
+</code></pre>
+<h3 id="2-enhanced-iconsize-enum">2. Enhanced IconSize Enum</h3>
+<p><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/General/Definitions.cs</code></p>
+<p>The existing enum was leveraged and enhanced with comprehensive size mapping.</p>
+<h4 id="available-sizes">Available Sizes</h4>
+<table>
+<thead>
+<tr>
+<th>Enum Value</th>
+<th>Pixel Size</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tiny</code></td>
+<td>8x8</td>
+<td>Very small icon for compact interfaces</td>
+</tr>
+<tr>
+<td><code>ExtraSmall</code></td>
+<td>16x16</td>
+<td>Small icon for toolbars and menus</td>
+</tr>
+<tr>
+<td><code>Small</code></td>
+<td>20x20</td>
+<td>Standard small icon</td>
+</tr>
+<tr>
+<td><code>MediumSmall</code></td>
+<td>24x24</td>
+<td>Medium small icon</td>
+</tr>
+<tr>
+<td><code>Medium</code></td>
+<td>32x32</td>
+<td><strong>Default</strong> - Standard medium icon</td>
+</tr>
+<tr>
+<td><code>MediumLarge</code></td>
+<td>40x40</td>
+<td>Large medium icon</td>
+</tr>
+<tr>
+<td><code>Large</code></td>
+<td>48x48</td>
+<td>Large icon for dialogs</td>
+</tr>
+<tr>
+<td><code>ExtraLarge</code></td>
+<td>64x64</td>
+<td>Extra large icon</td>
+</tr>
+<tr>
+<td><code>Huge</code></td>
+<td>128x128</td>
+<td>Very large icon</td>
+</tr>
+<tr>
+<td><code>Maximum</code></td>
+<td>256x256</td>
+<td>Maximum size icon</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-iconselectionstrategy-enum">3. IconSelectionStrategy Enum</h3>
+<p><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/General/Definitions.cs</code></p>
+<p>A new enum that controls how fallback icons are selected when <code>imageres.dll</code> is not available.</p>
+<h4 id="available-strategies">Available Strategies</h4>
+<table>
+<thead>
+<tr>
+<th>Enum Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OSBased</code></td>
+<td><strong>Default</strong> - Select icons based on the current operating system</td>
+</tr>
+<tr>
+<td><code>ThemeBased</code></td>
+<td>Select icons based on the current Krypton theme</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-comprehensive-imageresiconid-documentation">4. Comprehensive ImageresIconID Documentation</h3>
+<p><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/General/PlatformInvoke.cs</code></p>
+<p>Extensive XML documentation was added to the <code>ImageresIconID</code> enum, providing detailed descriptions for over 200+ system icons.</p>
+<h4 id="documentation-features">Documentation Features</h4>
+<ul>
+<li><strong>Enhanced Enum Summary</strong>: Comprehensive description with usage examples</li>
+<li><strong>Category Organization</strong>: Icons organized into logical groups using <code>#region</code> directives</li>
+<li><strong>Individual Icon Documentation</strong>: Each icon has detailed XML documentation explaining its purpose</li>
+<li><strong>Usage Examples</strong>: Practical code examples showing how to use the icons</li>
+</ul>
+<h4 id="icon-categories">Icon Categories</h4>
+<h5 id="system-icons-security-users-files-folders">System Icons (Security, Users, Files, Folders)</h5>
+<ul>
+<li><strong>Security</strong>: <code>Shield</code>, <code>ShieldAlt</code>, <code>Lock</code>, <code>Unlock</code>, <code>Key</code></li>
+<li><strong>Users</strong>: <code>User</code>, <code>Users</code>, <code>UserGroup</code></li>
+<li><strong>File System</strong>: <code>Computer</code>, <code>Network</code>, <code>Folder</code>, <code>File</code>, <code>FileText</code>, <code>FileImage</code>, etc.</li>
+<li><strong>Microsoft Office</strong>: <code>FileWord</code>, <code>FileExcel</code>, <code>FilePowerpoint</code>, <code>FileAccess</code>, <code>FileOutlook</code>, etc.</li>
+</ul>
+<h5 id="application-icons-software-tools-productivity">Application Icons (Software, Tools, Productivity)</h5>
+<ul>
+<li><strong>Generic Apps</strong>: <code>Application</code>, <code>ApplicationAlt</code>, <code>ApplicationGeneric</code></li>
+<li><strong>System Functions</strong>: <code>ApplicationSettings</code>, <code>ApplicationHelp</code>, <code>ApplicationInfo</code>, <code>ApplicationWarning</code></li>
+<li><strong>Productivity</strong>: <code>ApplicationCalendar</code>, <code>ApplicationContacts</code>, <code>ApplicationTasks</code>, <code>ApplicationNotes</code></li>
+<li><strong>Utilities</strong>: <code>ApplicationCalculator</code>, <code>ApplicationClock</code>, <code>ApplicationTimer</code>, <code>ApplicationStopwatch</code></li>
+</ul>
+<h5 id="media-icons-audio-video-photography-storage">Media Icons (Audio, Video, Photography, Storage)</h5>
+<ul>
+<li><strong>Playback Controls</strong>: <code>MediaPlay</code>, <code>MediaPause</code>, <code>MediaStop</code>, <code>MediaNext</code>, <code>MediaPrevious</code></li>
+<li><strong>Audio Controls</strong>: <code>MediaVolume</code>, <code>MediaVolumeMute</code>, <code>MediaMicrophone</code>, <code>MediaHeadphones</code></li>
+<li><strong>Media Types</strong>: <code>MediaCamera</code>, <code>MediaVideo</code>, <code>MediaPhoto</code>, <code>MediaPicture</code></li>
+<li><strong>Storage</strong>: <code>MediaUsb</code>, <code>MediaSd</code>, <code>MediaHdd</code>, <code>MediaSsd</code>, <code>MediaCloud</code></li>
+</ul>
+<h5 id="communication-icons-email-messaging-calls-status">Communication Icons (Email, Messaging, Calls, Status)</h5>
+<ul>
+<li><strong>Email</strong>: <code>CommunicationEmail</code>, <code>CommunicationInbox</code>, <code>CommunicationSent</code>, <code>CommunicationDraft</code></li>
+<li><strong>Messaging</strong>: <code>CommunicationSms</code>, <code>CommunicationChat</code>, <code>CommunicationMessage</code></li>
+<li><strong>Calls</strong>: <code>CommunicationCall</code>, <code>CommunicationAnswer</code>, <code>CommunicationEndCall</code></li>
+<li><strong>Status</strong>: <code>CommunicationOnline</code>, <code>CommunicationOffline</code>, <code>CommunicationBusy</code>, <code>CommunicationAvailable</code></li>
+</ul>
+<h4 id="additional-categories-referenced">Additional Categories (Referenced)</h4>
+<ul>
+<li><strong>System Status Icons</strong> (201-255): Status indicators, system states, performance levels</li>
+<li><strong>Action Icons</strong> (256-400): Common actions like add, remove, edit, copy, paste</li>
+<li><strong>Navigation Icons</strong> (401-492): Navigation controls, directions, mathematical symbols</li>
+<li><strong>Tool Icons</strong> (493-600): Hardware tools, construction equipment, mechanical parts</li>
+<li><strong>Device Icons</strong> (601-800): Computing devices, peripherals, sensors, power systems</li>
+</ul>
+<h3 id="5-helper-method-getsizefromiconsize">5. Helper Method: GetSizeFromIconSize</h3>
+<p><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/Utilities/GraphicsExtensions.cs</code></p>
+<p>A private helper method that maps <code>IconSize</code> enum values to actual pixel sizes.</p>
+<h4 id="method-signature-1">Method Signature</h4>
+<pre><code class="lang-csharp">private static Size GetSizeFromIconSize(IconSize iconSize)
+</code></pre>
+<h4 id="features-1">Features</h4>
+<ul>
+<li><strong>Switch Expression</strong>: Uses modern C# switch expression for clean, efficient mapping</li>
+<li><strong>Default Handling</strong>: Provides sensible default (32x32) for unknown values</li>
+<li><strong>Comprehensive Mapping</strong>: Maps all enum values to their corresponding pixel sizes</li>
+</ul>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="architecture">Architecture</h3>
+<p>The implementation follows the existing Krypton Toolkit patterns:</p>
+<ul>
+<li><strong>Public Wrapper</strong>: Uses a public method that accepts <code>int</code> parameters for accessibility</li>
+<li><strong>Internal Implementation</strong>: Contains the actual logic in an internal method that accepts the internal enum</li>
+<li><strong>Static Methods</strong>: Uses static methods in utility classes for easy access</li>
+<li><strong>Error Handling</strong>: Consistent with existing error handling patterns</li>
+<li><strong>Resource Management</strong>: Proper Windows resource cleanup</li>
+<li><strong>Documentation</strong>: Comprehensive XML documentation for IntelliSense support</li>
+</ul>
+<h3 id="dependencies">Dependencies</h3>
+<ul>
+<li><strong>GraphicsExtensions.ExtractIcon</strong>: Leverages existing icon extraction infrastructure</li>
+<li><strong>Libraries.Imageres</strong>: Uses the predefined imageres.dll path constant</li>
+<li><strong>PI.ImageresIconID</strong>: Comprehensive enum of available icon IDs (internal)</li>
+<li><strong>IconSize</strong>: Size specification enum</li>
+<li><strong>IconSelectionStrategy</strong>: Strategy selection enum</li>
+</ul>
+<h3 id="performance-considerations">Performance Considerations</h3>
+<ul>
+<li><strong>Lazy Loading</strong>: Icons are extracted on-demand, not pre-loaded</li>
+<li><strong>Resource Cleanup</strong>: Proper disposal of Windows handles</li>
+<li><strong>Size Optimization</strong>: Automatic selection of large vs small icon extraction</li>
+<li><strong>Memory Management</strong>: Efficient memory usage through proper resource handling</li>
+</ul>
+<h2 id="usage-scenarios">Usage Scenarios</h2>
+<h3 id="1-uac-shield-buttons">1. UAC Shield Buttons</h3>
+<pre><code class="lang-csharp">// Create a button with UAC shield icon
+var button = new KryptonButton();
+button.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Small)?.ToBitmap();
+</code></pre>
+<h3 id="2-security-dialogs">2. Security Dialogs</h3>
+<pre><code class="lang-csharp">// Use lock icon for security dialogs
+var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Lock, IconSize.Medium);
+</code></pre>
+<h3 id="3-file-operations">3. File Operations</h3>
+<pre><code class="lang-csharp">// Use appropriate icons for file operations
+var folderIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Folder, IconSize.Small);
+var fileIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.File, IconSize.Small);
+</code></pre>
+<h3 id="4-application-toolbars">4. Application Toolbars</h3>
+<pre><code class="lang-csharp">// Use application icons for toolbars
+var settingsIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationSettings, IconSize.ExtraSmall);
+var helpIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationHelp, IconSize.ExtraSmall);
+</code></pre>
+<h3 id="5-media-applications">5. Media Applications</h3>
+<pre><code class="lang-csharp">// Use media icons for media applications
+var playIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaPlay, IconSize.Small);
+var pauseIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaPause, IconSize.Small);
+</code></pre>
+<h3 id="6-theme-aware-icon-selection">6. Theme-Aware Icon Selection</h3>
+<pre><code class="lang-csharp">// Use theme-based selection for consistent visual experience
+var themeAwareShield = GraphicsExtensions.ExtractIconFromImageres(
+    (int)PI.ImageresIconID.Shield, 
+    IconSize.Medium, 
+    IconSelectionStrategy.ThemeBased
+);
+</code></pre>
+<h2 id="benefits">Benefits</h2>
+<h3 id="1-developer-experience">1. Developer Experience</h3>
+<ul>
+<li><strong>Easy Access</strong>: Simple method call to extract any system icon</li>
+<li><strong>IntelliSense Support</strong>: Rich documentation provides excellent IntelliSense experience</li>
+<li><strong>Consistent API</strong>: Follows existing Krypton Toolkit patterns</li>
+<li><strong>Flexible Sizing</strong>: Multiple size options for different UI contexts</li>
+<li><strong>Accessibility Compliance</strong>: Public wrapper method resolves internal enum accessibility issues</li>
+</ul>
+<h3 id="2-application-quality">2. Application Quality</h3>
+<ul>
+<li><strong>Native Look</strong>: Uses authentic Windows system icons</li>
+<li><strong>Consistent Design</strong>: Maintains Windows design language</li>
+<li><strong>High Quality</strong>: Vector-based icons scale perfectly at any size</li>
+<li><strong>Professional Appearance</strong>: Enhances application professionalism</li>
+</ul>
+<h3 id="3-maintenance">3. Maintenance</h3>
+<ul>
+<li><strong>Future-Proof</strong>: Uses Windows system resources that are maintained by Microsoft</li>
+<li><strong>Version Compatibility</strong>: Works across different Windows versions</li>
+<li><strong>Localization</strong>: Icons automatically adapt to system theme and language</li>
+<li><strong>Accessibility</strong>: System icons include accessibility features</li>
+</ul>
+<h3 id="4-performance">4. Performance</h3>
+<ul>
+<li><strong>Efficient</strong>: On-demand loading reduces memory usage</li>
+<li><strong>Optimized</strong>: Automatic size selection for best performance</li>
+<li><strong>Resource Management</strong>: Proper cleanup prevents resource leaks</li>
+<li><strong>Scalable</strong>: Works well with high-DPI displays</li>
+</ul>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<h3 id="potential-additions">Potential Additions</h3>
+<ol>
+<li><strong>Icon Caching</strong>: Implement caching for frequently used icons</li>
+<li><strong>Theme Awareness</strong>: Automatic adaptation to Windows theme changes</li>
+<li><strong>Custom Icon Support</strong>: Allow custom icon sources beyond imageres.dll</li>
+<li><strong>Batch Operations</strong>: Extract multiple icons in a single call</li>
+<li><strong>Icon Validation</strong>: Validate icon availability before extraction</li>
+<li><strong>Accessibility Improvements</strong>: Further enhance public API accessibility</li>
+</ol>
+<h3 id="integration-opportunities">Integration Opportunities</h3>
+<ol>
+<li><strong>KryptonButton Enhancement</strong>: Direct UAC shield support in button controls</li>
+<li><strong>Message Box Integration</strong>: Use system icons in message dialogs</li>
+<li><strong>Toolbar Integration</strong>: Easy icon assignment for toolbars</li>
+<li><strong>Menu Integration</strong>: System icons for menu items</li>
+<li><strong>Status Bar Integration</strong>: Status indicators using system icons</li>
+</ol>
+<h2 id="conclusion">Conclusion</h2>
+<p>This implementation provides a comprehensive solution for accessing Windows system icons in Krypton Toolkit applications. The combination of the <code>ExtractIconFromImageres</code> method, enhanced <code>ImageresIconID</code> documentation, flexible sizing options, and accessibility-compliant public API creates a powerful and easy-to-use system for incorporating authentic Windows icons into applications.</p>
+<p>The implementation follows Krypton Toolkit best practices, provides excellent developer experience through comprehensive documentation, resolves accessibility issues through proper API design, and delivers high-quality, professional results that enhance application appearance and usability.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

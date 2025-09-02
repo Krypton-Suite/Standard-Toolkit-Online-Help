@@ -1,4 +1,4 @@
-# Developer Guide: Themed System Menu
+# Krypton Themed System Menu
 
 ## Quick Start
 
