@@ -34,13 +34,13 @@ In the Visual Studio designer, you can configure the setting through the `Krypto
 
 ## Properties
 
-### KryptonManager.ShowAdministratorSuffix (Static)
+### KryptonManager.UseShowAdministratorSuffix (Static)
 - **Type**: `bool`
 - **Default**: `true`
 - **Description**: Global setting that controls whether all `KryptonForm` instances should display the administrator suffix
 - **Usage**: `KryptonManager.UseAdministratorSuffix = true;`
 
-### KryptonManager.GlobalShowAdministratorSuffix (Instance)
+### KryptonManager.ShowAdministratorSuffix (Instance)
 - **Type**: `bool`
 - **Default**: `true`
 - **Description**: Designer-friendly instance property that mirrors the static `UseAdministratorSuffix` setting
