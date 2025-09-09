@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title> | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content=" | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+
+<h2 id="kryptonsystemmenu">KryptonSystemMenu</h2>
+<p>This guide explains how to use the themed system menu that replaces the native Windows system menu on <code>KryptonForm</code>. It covers wiring, APIs, customization, theming, designer usage, and troubleshooting.</p>
+<h3 id="types-and-locations">Types and locations</h3>
+<ul>
+<li><code>KryptonSystemMenu</code> — <code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonSystemMenu.cs</code></li>
+<li><code>KryptonSystemMenuService</code> — <code>Source/Krypton Components/Krypton.Toolkit/General/KryptonSystemMenuService.cs</code></li>
+<li><code>IKryptonSystemMenu</code> — <code>Source/Krypton Components/Krypton.Toolkit/General/Definitions.cs</code></li>
+<li><code>SystemMenuValues</code> — <code>Source/Krypton Components/Krypton.Toolkit/Values/SystemMenuValues.cs</code></li>
+<li><code>SystemMenuItemCollection</code> — <code>Source/Krypton Components/Krypton.Toolkit/General/SystemMenuItemCollection.cs</code></li>
+<li><code>SystemMenuItemValues</code> — <code>Source/Krypton Components/Krypton.Toolkit/Values/SystemMenuItemValues.cs</code></li>
+<li><code>KryptonSystemMenuItemsEditor</code> — <code>Source/Krypton Components/Krypton.Toolkit/Designers/Editors/KryptonSystemMenuItemsEditor.cs</code></li>
+<li><code>KryptonSystemMenuConverter</code> — <code>Source/Krypton Components/Krypton.Toolkit/Converters/KryptonSystemMenuConverter.cs</code></li>
+</ul>
+<h3 id="what-you-get">What you get</h3>
+<ul>
+<li><strong>Themed menu</strong>: A <code>KryptonContextMenu</code> that mirrors the Windows system menu (Restore, Move, Size, Minimize, Maximize, Close) and adapts to the active palette.</li>
+<li><strong>Consistent composition</strong>: Items are always built by Krypton; no Win32 menu parsing. Enablement follows form state and properties.</li>
+<li><strong>Custom items</strong>: Insert your commands above the Close item (with a separator) or append at the end.</li>
+<li><strong>Icon theming</strong>: Uses theme-appropriate icons; falls back to crisp drawn glyphs.</li>
+<li><strong>Triggers</strong>: Show on right-click in the title bar, Alt+Space, and optionally icon click/left-click.</li>
+</ul>
+<h3 id="quick-start">Quick start</h3>
+<pre><code class="lang-csharp">// In your KryptonForm subclass or instance code
+// Add an item above Close, insert a separator, and refresh enablement/icons
+KryptonSystemMenu?.AddCustomMenuItem(&quot;About&quot;, (s, e) =&gt; KryptonMessageBox.Show(&quot;About Krypton&quot;));
+KryptonSystemMenu?.AddSeparator();
+KryptonSystemMenu?.Refresh();
+
+// Programmatically show at the classic Alt+Space location
+KryptonSystemMenu?.ShowAtFormTopLeft();
+</code></pre>
+<h3 id="how-its-wired-into-kryptonform">How it’s wired into KryptonForm</h3>
+<ul>
+<li><code>KryptonForm</code> constructs a <code>KryptonSystemMenuService</code> and a <code>SystemMenuValues</code> store, and keeps them synchronized.</li>
+<li><code>KryptonForm</code> exposes the menu via <code>public override IKryptonSystemMenu? KryptonSystemMenu</code>.</li>
+<li>Title bar interactions (non-client area) use <code>SystemMenuValues</code> to determine when to show the menu (right-click, Alt+Space, icon click).</li>
+<li>Setting <code>MinimizeBox</code>, <code>MaximizeBox</code>, <code>ControlBox</code>, or <code>FormBorderStyle</code> triggers a rebuild of menu enablement.</li>
+</ul>
+<h3 id="enabling-and-triggers">Enabling and triggers</h3>
+<ul>
+<li>Configure via <code>KryptonForm.SystemMenuValues</code>:
+<ul>
+<li><strong>Enabled</strong>: Turns the themed system menu on/off.</li>
+<li><strong>ShowOnRightClick</strong>: Show when right-clicking the title bar (default true).</li>
+<li><strong>ShowOnAltSpace</strong>: Show on Alt+Space (default true).</li>
+<li><strong>ShowOnIconClick</strong>: Show when left-clicking the window icon (default true).</li>
+</ul>
+</li>
+<li>At the service layer (<code>KryptonSystemMenuService</code>):
+<ul>
+<li><code>UseSystemMenu</code>, <code>ShowSystemMenuOnRightClick</code>, <code>ShowSystemMenuOnAltSpace</code>, <code>ShowSystemMenuOnLeftClick</code> mirror the toggles.</li>
+<li>Typical usage is indirect via <code>SystemMenuValues</code> on the form.</li>
+</ul>
+</li>
+</ul>
+<h3 id="ikryptonsystemmenu-surface">IKryptonSystemMenu surface</h3>
+<ul>
+<li><strong>Properties</strong>
+<ul>
+<li><code>bool Enabled</code></li>
+<li><code>bool ShowOnLeftClick</code></li>
+<li><code>bool ShowOnRightClick</code></li>
+<li><code>bool ShowOnAltSpace</code></li>
+<li><code>int MenuItemCount</code></li>
+<li><code>bool HasMenuItems</code></li>
+<li><code>string CurrentIconTheme</code></li>
+</ul>
+</li>
+<li><strong>Methods</strong>
+<ul>
+<li><code>void Show(Point screenLocation)</code></li>
+<li><code>void ShowAtFormTopLeft()</code></li>
+<li><code>void Refresh()</code></li>
+<li><code>bool HandleKeyboardShortcut(Keys keyData)</code></li>
+<li><code>void AddCustomMenuItem(string text, EventHandler? clickHandler, bool insertBeforeClose = true)</code></li>
+<li><code>void AddSeparator(bool insertBeforeClose = true)</code></li>
+<li><code>void ClearCustomItems()</code></li>
+<li><code>List&lt;string&gt; GetCustomMenuItems()</code></li>
+<li><code>void RefreshThemeIcons()</code></li>
+<li><code>void SetIconTheme(string themeName)</code></li>
+<li><code>void SetThemeType(ThemeType themeType)</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="menu-composition-and-enablement">Menu composition and enablement</h3>
+<ul>
+<li><strong>Restore</strong>: Added only when <code>WindowState != Normal</code> and (<code>MinimizeBox</code> or <code>MaximizeBox</code>) is true; enabled when not Normal.</li>
+<li><strong>Move / Size</strong>: Added only for sizable borders (<code>FormBorderStyle.Sizable</code> or <code>SizableToolWindow</code>).</li>
+<li><strong>Minimize</strong>: Enabled when <code>MinimizeBox</code> is true and window is not minimized.</li>
+<li><strong>Maximize</strong>: Enabled when <code>MaximizeBox</code> is true and window is not maximized.</li>
+<li><strong>Close</strong>: Always present when <code>ControlBox</code> is true; shows <code>Alt+F4</code> hint.</li>
+<li><strong>Custom items</strong>: Inserted above Close (with a separator). If appended, call <code>AddSeparator(insertBeforeClose: false)</code> to group them.</li>
+</ul>
+<h3 id="theming-and-icons">Theming and icons</h3>
+<ul>
+<li><code>CurrentIconTheme</code> may resolve to: <code>Office2013</code>, <code>Office2010</code>, <code>Office2007</code>, <code>Sparkle</code>, <code>Professional</code>, <code>Microsoft365</code>, <code>Office2003</code>.</li>
+<li>Icons follow the active palette; if a themed resource is unavailable, glyphs are drawn at 16px with palette-derived colors.</li>
+<li>Call <code>RefreshThemeIcons()</code> after palette/theme changes to rebind images.</li>
+<li>You can force selection via <code>SetIconTheme(string)</code> or by convenience <code>SetThemeType(ThemeType)</code>.</li>
+</ul>
+<h3 id="programmatic-customization-examples">Programmatic customization examples</h3>
+<pre><code class="lang-csharp">// Add a settings command above Close
+KryptonSystemMenu?.AddCustomMenuItem(&quot;Settings&quot;, (s, e) =&gt; OpenSettings(), insertBeforeClose: true);
+
+// Append a group to the end (always separated from system items)
+KryptonSystemMenu?.AddSeparator(insertBeforeClose: false);
+KryptonSystemMenu?.AddCustomMenuItem(&quot;Action 1&quot;, OnAction1, insertBeforeClose: false);
+KryptonSystemMenu?.AddCustomMenuItem(&quot;Action 2&quot;, OnAction2, insertBeforeClose: false);
+
+// Recompute enablement after changing window chrome/state
+KryptonSystemMenu?.Refresh();
+
+// Keyboard shortcuts: Alt+F4 is handled; Alt+Space can invoke ShowAtFormTopLeft
+protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+{
+    if (KryptonSystemMenu?.HandleKeyboardShortcut(keyData) == true)
+    {
+        return true;
+    }
+    return base.ProcessCmdKey(ref msg, keyData);
+}
+</code></pre>
+<h3 id="designer-integration">Designer integration</h3>
+<ul>
+<li>Configure <code>KryptonForm.SystemMenuValues</code> in the designer:
+<ul>
+<li><strong>Enabled</strong>, <strong>ShowOnRightClick</strong>, <strong>ShowOnAltSpace</strong>, <strong>ShowOnIconClick</strong>.</li>
+<li><strong>CustomMenuItems</strong>: Edit via <code>KryptonSystemMenuItemsEditor</code>. Items have <code>Text</code>, optional <code>Shortcut</code> (displayed as <code>Text\tShortcut</code>), <code>Image</code>, <code>Enabled</code>, <code>Visible</code>, and <code>InsertBeforeClose</code>.</li>
+</ul>
+</li>
+<li>At runtime, designer items become <code>KryptonContextMenuItem</code> entries; you can also associate a <code>KryptonCommand</code> via <code>SystemMenuItemValues.Command</code> for decoupled invocation.</li>
+</ul>
+<h3 id="showing-the-menu">Showing the menu</h3>
+<ul>
+<li><strong>Auto</strong>: Right-click title bar or press Alt+Space (depending on <code>SystemMenuValues</code>).</li>
+<li><strong>Programmatic</strong>: <code>KryptonSystemMenu.Show(screenPoint)</code> or <code>KryptonSystemMenu.ShowAtFormTopLeft()</code>.</li>
+</ul>
+<h3 id="diagnostics-and-troubleshooting">Diagnostics and troubleshooting</h3>
+<ul>
+<li><strong>No icons or wrong icons</strong>: Call <code>RefreshThemeIcons()</code>. Verify the active palette if custom.</li>
+<li><strong>Items disabled unexpectedly</strong>: Check <code>MinimizeBox</code>, <code>MaximizeBox</code>, <code>FormBorderStyle</code>, and actual window state (<code>KryptonForm.GetWindowState()</code>), then call <code>Refresh()</code>.</li>
+<li><strong>Menu not appearing</strong>: Ensure <code>SystemMenuValues.Enabled</code> and the relevant trigger flag are true. For icon-click, <code>SystemMenuValues.ShowOnIconClick</code> must be true and the click must be on the window icon area.</li>
+<li><strong>Locate custom items</strong>: <code>GetCustomMenuItems()</code> returns the non-standard item texts currently present.</li>
+</ul>
+<h3 id="notes-and-compatibility">Notes and compatibility</h3>
+<ul>
+<li><strong>Target forms</strong>: Designed for <code>KryptonForm</code>. Custom hosts can use <code>KryptonSystemMenuService</code> directly if needed.</li>
+<li><strong>TFMs</strong>: Compatible with toolkit target frameworks including <code>net472</code> and newer Windows TFMs.</li>
+<li><strong>Localization</strong>: Built-in system item text is sourced from <code>KryptonManager.Strings.SystemMenuStrings</code> so it follows your localization settings.</li>
+</ul>
+<h3 id="migration-from-older-themed-menu-implementations">Migration (from older themed menu implementations)</h3>
+<ul>
+<li>The class is <code>KryptonSystemMenu</code>. Win32 system menu parsing was removed in favor of consistently built Krypton menus.</li>
+<li>Familiar members remain: <code>Show</code>, <code>Refresh</code>, <code>AddCustomMenuItem</code>, <code>AddSeparator</code>, <code>ClearCustomItems</code>.</li>
+<li>Designer/editor types: <code>KryptonSystemMenuItemsEditor</code>, <code>SystemMenuValues</code>, <code>KryptonSystemMenuConverter</code>.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

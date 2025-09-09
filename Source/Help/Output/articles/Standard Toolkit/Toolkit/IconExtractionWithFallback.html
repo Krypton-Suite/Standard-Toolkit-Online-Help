@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Icon Extraction with Fallback System | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Icon Extraction with Fallback System | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="icon-extraction-with-fallback-system">Icon Extraction with Fallback System</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>ExtractIconFromImageres</code> method provides a robust icon extraction system that automatically falls back to embedded resources when <code>imageres.dll</code> is not available. This ensures your application always has access to essential system icons, particularly UAC shield icons.</p>
+<h2 id="how-it-works">How It Works</h2>
+<h3 id="primary-method-imageresdll">Primary Method: imageres.dll</h3>
+<p>The method first attempts to extract icons directly from Windows' <code>imageres.dll</code>:</p>
+<pre><code class="lang-csharp">// Primary extraction from imageres.dll
+var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Medium);
+</code></pre>
+<h3 id="fallback-system-embedded-resources">Fallback System: Embedded Resources</h3>
+<p>If <code>imageres.dll</code> is unavailable or the icon extraction fails, the system automatically falls back to embedded resources:</p>
+<pre><code class="lang-csharp">// Automatic fallback to embedded resources if imageres.dll fails
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+// This will work even if imageres.dll is not available
+</code></pre>
+<h2 id="available-fallback-icons">Available Fallback Icons</h2>
+<h3 id="currently-supported-icons">Currently Supported Icons</h3>
+<ul>
+<li><strong>Shield</strong> (<code>PI.ImageresIconID.Shield</code>) - UAC shield icon</li>
+<li><strong>ShieldAlt</strong> (<code>PI.ImageresIconID.ShieldAlt</code>) - Alternative UAC shield icon</li>
+</ul>
+<h3 id="os-specific-resources">OS-Specific Resources</h3>
+<p>The fallback system uses OS-specific embedded resources:</p>
+<table>
+<thead>
+<tr>
+<th>Windows Version</th>
+<th>Resource File</th>
+<th>Available Sizes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows 11</td>
+<td><code>Windows11UACShieldIconResources</code></td>
+<td>16x16, 20x20, 24x24, 32x32, 40x40, 48x48, 64x64, 256x256</td>
+</tr>
+<tr>
+<td>Windows 10</td>
+<td><code>Windows10UACShieldIconResources</code></td>
+<td>16x16, 20x20, 24x24, 32x32, 40x40, 48x48, 64x64, 256x256</td>
+</tr>
+<tr>
+<td>Windows 7/8.x</td>
+<td><code>Windows7And8xUACShieldIconResources</code></td>
+<td>8x8, 16x16, 24x24, 32x32, 48x48, 64x64, 128x128, 256x256</td>
+</tr>
+<tr>
+<td>Windows Vista</td>
+<td><code>WindowsVistaUACShieldIconResources</code></td>
+<td>8x8, 16x16, 24x24, 32x32, 48x48, 128x128, 256x256</td>
+</tr>
+</tbody>
+</table>
+<h2 id="size-mapping">Size Mapping</h2>
+<h3 id="exact-size-matching">Exact Size Matching</h3>
+<p>The system first tries to find an exact size match in the embedded resources:</p>
+<pre><code class="lang-csharp">// Exact size match - uses 32x32 resource directly
+var icon32 = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Medium);
+</code></pre>
+<h3 id="size-approximation">Size Approximation</h3>
+<p>If an exact size isn't available, the system uses the closest available size:</p>
+<pre><code class="lang-csharp">// Size approximation examples:
+// 8x8 request → uses 16x16 resource (scaled down)
+// 96x96 request → uses 64x64 resource (scaled up)
+// 192x192 request → uses 256x256 resource (scaled down)
+</code></pre>
+<h3 id="size-mapping-table">Size Mapping Table</h3>
+<table>
+<thead>
+<tr>
+<th>Requested Size</th>
+<th>Windows 11/10</th>
+<th>Windows 7/8.x</th>
+<th>Windows Vista</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8x8</td>
+<td>16x16 (scaled)</td>
+<td>8x8</td>
+<td>8x8</td>
+</tr>
+<tr>
+<td>16x16</td>
+<td>16x16</td>
+<td>16x16</td>
+<td>16x16</td>
+</tr>
+<tr>
+<td>20x20</td>
+<td>20x20</td>
+<td>24x24 (scaled)</td>
+<td>24x24 (scaled)</td>
+</tr>
+<tr>
+<td>24x24</td>
+<td>24x24</td>
+<td>24x24</td>
+<td>24x24</td>
+</tr>
+<tr>
+<td>32x32</td>
+<td>32x32</td>
+<td>32x32</td>
+<td>32x32</td>
+</tr>
+<tr>
+<td>40x40</td>
+<td>40x40</td>
+<td>48x48 (scaled)</td>
+<td>48x48 (scaled)</td>
+</tr>
+<tr>
+<td>48x48</td>
+<td>48x48</td>
+<td>48x48</td>
+<td>48x48</td>
+</tr>
+<tr>
+<td>64x64</td>
+<td>64x64</td>
+<td>64x64</td>
+<td>32x32 (scaled)</td>
+</tr>
+<tr>
+<td>96x96</td>
+<td>64x64 (scaled)</td>
+<td>64x64 (scaled)</td>
+<td>128x128 (scaled)</td>
+</tr>
+<tr>
+<td>128x128</td>
+<td>64x64 (scaled)</td>
+<td>128x128</td>
+<td>128x128</td>
+</tr>
+<tr>
+<td>192x192</td>
+<td>256x256 (scaled)</td>
+<td>256x256 (scaled)</td>
+<td>256x256 (scaled)</td>
+</tr>
+<tr>
+<td>256x256</td>
+<td>256x256</td>
+<td>256x256</td>
+<td>256x256</td>
+</tr>
+</tbody>
+</table>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-usage-automatic-fallback">Basic Usage (Automatic Fallback)</h3>
+<pre><code class="lang-csharp">// This will work regardless of imageres.dll availability
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Medium);
+
+// Use the icon
+if (shieldIcon != null)
+{
+    button.Image = shieldIcon.ToBitmap();
+    shieldIcon.Dispose(); // Remember to dispose
+}
+</code></pre>
+<h3 id="error-handling">Error Handling</h3>
+<pre><code class="lang-csharp">public Image? GetSafeShieldIcon(IconSize size = IconSize.Medium)
+{
+    try
+    {
+        var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, size);
+        return icon?.ToBitmap();
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($&quot;Failed to extract shield icon: {ex.Message}&quot;);
+        return null;
+    }
+}
+</code></pre>
+<h3 id="os-aware-usage">OS-Aware Usage</h3>
+<pre><code class="lang-csharp">// The fallback automatically uses the correct OS-specific icon
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres(PI.ImageresIconID.Shield);
+
+// On Windows 11: Uses Windows 11 shield design
+// On Windows 10: Uses Windows 10 shield design  
+// On Windows 7: Uses Windows 7 shield design
+// On Windows Vista: Uses Windows Vista shield design
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="resource-loading">Resource Loading</h3>
+<ul>
+<li><strong>Embedded resources</strong> are loaded from the assembly, not from disk</li>
+<li><strong>No network access</strong> required for fallback icons</li>
+<li><strong>Fast loading</strong> compared to disk-based resources</li>
+</ul>
+<h3 id="memory-management">Memory Management</h3>
+<pre><code class="lang-csharp">// Always dispose of icons when done
+using var icon = GraphicsExtensions.ExtractIconFromImageres(PI.ImageresIconID.Shield);
+if (icon != null)
+{
+    button.Image = icon.ToBitmap();
+}
+// Icon is automatically disposed here
+</code></pre>
+<h3 id="caching-strategy">Caching Strategy</h3>
+<pre><code class="lang-csharp">private static readonly Dictionary&lt;IconSize, Image&gt; _iconCache = new();
+
+public static Image? GetCachedShieldIcon(IconSize size)
+{
+    if (!_iconCache.ContainsKey(size))
+    {
+        var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, size);
+        _iconCache[size] = icon?.ToBitmap();
+    }
+    
+    return _iconCache[size];
+}
+</code></pre>
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="uac-shield-buttons">UAC Shield Buttons</h3>
+<pre><code class="lang-csharp">// Create an &quot;Run as Administrator&quot; button
+var adminButton = new KryptonButton();
+adminButton.Text = &quot;Run as Administrator&quot;;
+
+// This will work even in environments where imageres.dll is not available
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Small);
+if (shieldIcon != null)
+{
+    adminButton.Image = shieldIcon.ToBitmap();
+    shieldIcon.Dispose();
+}
+</code></pre>
+<h3 id="security-dialogs">Security Dialogs</h3>
+<pre><code class="lang-csharp">// Use shield icon for security dialogs
+var securityForm = new KryptonForm();
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Medium);
+if (shieldIcon != null)
+{
+    securityForm.Icon = shieldIcon;
+    shieldIcon.Dispose();
+}
+</code></pre>
+<h3 id="toolbar-icons">Toolbar Icons</h3>
+<pre><code class="lang-csharp">// Add shield icon to toolbar
+var toolbar = new KryptonToolStrip();
+var shieldButton = new KryptonToolStripButton();
+
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Small);
+if (shieldIcon != null)
+{
+    shieldButton.Image = shieldIcon.ToBitmap();
+    shieldIcon.Dispose();
+}
+
+toolbar.Items.Add(shieldButton);
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="icon-not-found">Icon Not Found</h3>
+<pre><code class="lang-csharp">// Check if icon extraction failed
+var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+if (icon == null)
+{
+    // Both imageres.dll and fallback resources failed
+    Debug.WriteLine(&quot;Shield icon extraction failed completely&quot;);
+    // Use a default icon or handle gracefully
+}
+</code></pre>
+<h3 id="size-not-available">Size Not Available</h3>
+<pre><code class="lang-csharp">// Check available sizes for debugging
+var sizes = UACShieldHelper.GetAvailableImageresSizes();
+Debug.WriteLine($&quot;Available imageres.dll sizes: {string.Join(&quot;, &quot;, sizes.Select(s =&gt; $&quot;{s.Width}x{s.Height}&quot;))}&quot;);
+</code></pre>
+<h3 id="performance-issues">Performance Issues</h3>
+<pre><code class="lang-csharp">// For frequently used icons, cache them
+private static Image? _cachedShieldIcon;
+
+public static Image GetShieldIcon()
+{
+    if (_cachedShieldIcon == null)
+    {
+        var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+        _cachedShieldIcon = icon?.ToBitmap();
+        icon?.Dispose();
+    }
+    return _cachedShieldIcon;
+}
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-always-check-for-null">1. Always Check for Null</h3>
+<pre><code class="lang-csharp">var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+if (icon != null)
+{
+    // Use the icon
+    button.Image = icon.ToBitmap();
+    icon.Dispose();
+}
+else
+{
+    // Handle the case where both imageres.dll and fallback failed
+    button.Image = Properties.Resources.DefaultShield;
+}
+</code></pre>
+<h3 id="2-dispose-icons-properly">2. Dispose Icons Properly</h3>
+<pre><code class="lang-csharp">// Use using statement for automatic disposal
+using var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+if (icon != null)
+{
+    button.Image = icon.ToBitmap();
+}
+</code></pre>
+<h3 id="3-cache-frequently-used-icons">3. Cache Frequently Used Icons</h3>
+<pre><code class="lang-csharp">// Cache icons to avoid repeated extraction
+private static readonly Dictionary&lt;IconSize, Image&gt; _shieldIconCache = new();
+
+public static Image GetShieldIcon(IconSize size)
+{
+    if (!_shieldIconCache.ContainsKey(size))
+    {
+        var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, size);
+        _shieldIconCache[size] = icon?.ToBitmap();
+        icon?.Dispose();
+    }
+    
+    return _shieldIconCache[size];
+}
+</code></pre>
+<h3 id="4-handle-theme-changes">4. Handle Theme Changes</h3>
+<pre><code class="lang-csharp">// Clear cache when theme changes
+KryptonManager.GlobalPaletteChanged += (sender, e) =&gt;
+{
+    _shieldIconCache.Clear(); // Force re-extraction
+    RefreshShieldIcons();
+};
+</code></pre>
+<h2 id="benefits">Benefits</h2>
+<h3 id="1-reliability">1. Reliability</h3>
+<ul>
+<li><strong>Always works</strong> - No dependency on external files</li>
+<li><strong>Graceful degradation</strong> - Falls back automatically</li>
+<li><strong>Cross-platform</strong> - Works in different deployment scenarios</li>
+</ul>
+<h3 id="2-performance">2. Performance</h3>
+<ul>
+<li><strong>Fast loading</strong> - Embedded resources load quickly</li>
+<li><strong>No disk access</strong> - Resources are in memory</li>
+<li><strong>Efficient caching</strong> - Can cache frequently used icons</li>
+</ul>
+<h3 id="3-consistency">3. Consistency</h3>
+<ul>
+<li><strong>OS-specific</strong> - Uses appropriate design for each Windows version</li>
+<li><strong>Theme-aware</strong> - Integrates with Krypton theming system</li>
+<li><strong>Professional appearance</strong> - Maintains visual quality</li>
+</ul>
+<h3 id="4-developer-experience">4. Developer Experience</h3>
+<ul>
+<li><strong>Simple API</strong> - Same method call regardless of fallback</li>
+<li><strong>Automatic handling</strong> - No manual fallback logic needed</li>
+<li><strong>Comprehensive documentation</strong> - Clear usage guidelines</li>
+</ul>
+<h2 id="summary">Summary</h2>
+<p>The <code>ExtractIconFromImageres</code> method with fallback system provides:</p>
+<ul>
+<li><strong>Robust icon extraction</strong> from <code>imageres.dll</code> with automatic fallback</li>
+<li><strong>OS-specific embedded resources</strong> for UAC shield icons</li>
+<li><strong>Automatic size mapping</strong> and approximation</li>
+<li><strong>Performance optimization</strong> through caching and efficient loading</li>
+<li><strong>Professional appearance</strong> that matches the Windows design language</li>
+</ul>
+<p>This system ensures your application always has access to essential system icons, providing a consistent and professional user experience across different deployment environments.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

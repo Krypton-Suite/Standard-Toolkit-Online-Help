@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>ButtonValues Theme-Aware Integration | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="ButtonValues Theme-Aware Integration | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="buttonvalues-theme-aware-integration">ButtonValues Theme-Aware Integration</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>ButtonValues</code> class now supports <strong>theme-aware UAC shield icon selection</strong>, allowing buttons to automatically use icons that match your application's Krypton theme. This creates a more cohesive and professional appearance by ensuring UAC shield icons align with your chosen theme.</p>
+<h2 id="new-feature-iconselectionstrategy-property">New Feature: IconSelectionStrategy Property</h2>
+<h3 id="the-new-property">The New Property</h3>
+<pre><code class="lang-csharp">/// &lt;summary&gt;Gets or sets the strategy for selecting UAC shield icons.&lt;/summary&gt;
+/// &lt;value&gt;The strategy for selecting UAC shield icons.&lt;/value&gt;
+[DefaultValue(IconSelectionStrategy.OSBased), Description(@&quot;The strategy for selecting UAC shield icons (OS-based or theme-based).&quot;)]
+public IconSelectionStrategy IconSelectionStrategy
+{
+    get =&gt; _iconSelectionStrategy;
+    set
+    {
+        if (_iconSelectionStrategy != value)
+        {
+            _iconSelectionStrategy = value;
+
+            // Refresh the UAC shield if it's currently enabled
+            if (_useAsUACElevationButton)
+            {
+                ShowUACShieldImage(true, _iconSize);
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="theme-mapping">Theme Mapping</h3>
+<p>When using <code>ThemeBased</code> strategy, UAC shield icons are selected based on your current Krypton theme:</p>
+<table>
+<thead>
+<tr>
+<th>Theme Category</th>
+<th>Windows Icon Style</th>
+<th>Example Themes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Professional/Office 2007/Sparkle</strong></td>
+<td>Windows Vista</td>
+<td>ProfessionalSystem, Office2007Blue, SparkleBlue</td>
+</tr>
+<tr>
+<td><strong>Office 2010/2013</strong></td>
+<td>Windows 7/8.x</td>
+<td>Office2010Blue, Office2013White, VisualStudio2010Render2010</td>
+</tr>
+<tr>
+<td><strong>Microsoft 365/Material</strong></td>
+<td>Windows 10/11</td>
+<td>Microsoft365Blue, MaterialLight, MaterialDark</td>
+</tr>
+</tbody>
+</table>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="1-basic-theme-aware-button-creation">1. Basic Theme-Aware Button Creation</h3>
+<pre><code class="lang-csharp">// Create a button with theme-aware UAC shield
+var button = new KryptonButton();
+button.Values.UseAsUACElevationButton = true;
+button.Values.IconSize = IconSize.Medium;
+button.Values.IconSelectionStrategy = IconSelectionStrategy.ThemeBased;
+button.Text = &quot;Run as Administrator&quot;;
+</code></pre>
+<h3 id="2-comparison-os-based-vs-theme-based">2. Comparison: OS-Based vs Theme-Based</h3>
+<pre><code class="lang-csharp">// OS-based selection (default behavior)
+var osBasedButton = new KryptonButton();
+osBasedButton.Values.UseAsUACElevationButton = true;
+osBasedButton.Values.IconSelectionStrategy = IconSelectionStrategy.OSBased;
+// Uses Windows version-specific icons
+
+// Theme-based selection
+var themeBasedButton = new KryptonButton();
+themeBasedButton.Values.UseAsUACElevationButton = true;
+themeBasedButton.Values.IconSelectionStrategy = IconSelectionStrategy.ThemeBased;
+// Uses theme-appropriate icons
+</code></pre>
+<h3 id="3-dynamic-theme-aware-button-updates">3. Dynamic Theme-Aware Button Updates</h3>
+<pre><code class="lang-csharp">public class ThemeAwareButton : KryptonButton
+{
+    public ThemeAwareButton()
+    {
+        // Enable UAC shield with theme-aware selection
+        Values.UseAsUACElevationButton = true;
+        Values.IconSize = IconSize.Small;
+        Values.IconSelectionStrategy = IconSelectionStrategy.ThemeBased;
+        
+        // Listen for theme changes
+        KryptonManager.GlobalPaletteChanged += OnThemeChanged;
+    }
+    
+    private void OnThemeChanged(object? sender, EventArgs e)
+    {
+        // Force refresh of UAC shield icon
+        Values.UseAsUACElevationButton = false;
+        Values.UseAsUACElevationButton = true;
+    }
+}
+</code></pre>
+<h2 id="integration-with-existing-properties">Integration with Existing Properties</h2>
+<h3 id="existing-buttonvalues-properties">Existing ButtonValues Properties</h3>
+<p>The new theme-aware system integrates seamlessly with existing <code>ButtonValues</code> properties:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+<th>Theme-Aware Support</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UseAsUACElevationButton</code></td>
+<td>Enables UAC shield functionality</td>
+<td>✅ Full support</td>
+</tr>
+<tr>
+<td><code>IconSize</code></td>
+<td>Sets predefined icon sizes</td>
+<td>✅ Full support</td>
+</tr>
+<tr>
+<td><code>CustomIconSize</code></td>
+<td>Sets custom icon dimensions</td>
+<td>✅ Full support</td>
+</tr>
+</tbody>
+</table>
+<h3 id="backward-compatibility">Backward Compatibility</h3>
+<p>All existing code continues to work without changes:</p>
+<pre><code class="lang-csharp">// This existing code still works (uses OS-based selection)
+var button = new KryptonButton();
+button.Values.UseAsUACElevationButton = true;
+button.Values.IconSize = IconSize.Medium;
+// Defaults to OS-based selection
+</code></pre>
+<h2 id="real-world-scenarios">Real-World Scenarios</h2>
+<h3 id="scenario-1-professional-application-with-office-2007-theme">Scenario 1: Professional Application with Office 2007 Theme</h3>
+<pre><code class="lang-csharp">// Set theme
+KryptonManager.GlobalPaletteMode = PaletteMode.Office2007Blue;
+
+// Create UAC button with theme-aware icons
+var adminButton = new KryptonButton();
+adminButton.Values.UseAsUACElevationButton = true;
+adminButton.Values.IconSize = IconSize.Medium;
+adminButton.Values.IconSelectionStrategy = IconSelectionStrategy.ThemeBased;
+adminButton.Text = &quot;Install Software&quot;;
+
+// Result: Uses Windows Vista shield icon to match Office 2007 theme
+</code></pre>
+<h3 id="scenario-2-modern-application-with-microsoft-365-theme">Scenario 2: Modern Application with Microsoft 365 Theme</h3>
+<pre><code class="lang-csharp">// Set theme
+KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
+
+// Create UAC button with theme-aware icons
+var adminButton = new KryptonButton();
+adminButton.Values.UseAsUACElevationButton = true;
+adminButton.Values.IconSize = IconSize.Medium;
+adminButton.Values.IconSelectionStrategy = IconSelectionStrategy.ThemeBased;
+adminButton.Text = &quot;Run as Administrator&quot;;
+
+// Result: Uses Windows 10/11 shield icon to match Microsoft 365 theme
+</code></pre>
+<h3 id="scenario-3-development-tool-with-visual-studio-theme">Scenario 3: Development Tool with Visual Studio Theme</h3>
+<pre><code class="lang-csharp">// Set theme
+KryptonManager.GlobalPaletteMode = PaletteMode.VisualStudio2010Render2010;
+
+// Create UAC button with theme-aware icons
+var adminButton = new KryptonButton();
+adminButton.Values.UseAsUACElevationButton = true;
+adminButton.Values.IconSize = IconSize.Small;
+adminButton.Values.IconSelectionStrategy = IconSelectionStrategy.ThemeBased;
+adminButton.Text = &quot;Debug as Administrator&quot;;
+
+// Result: Uses Windows 7/8.x shield icon to match Visual Studio theme
+</code></pre>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="1-application-wide-theme-aware-strategy">1. Application-Wide Theme-Aware Strategy</h3>
+<pre><code class="lang-csharp">public static class UACButtonManager
+{
+    private static IconSelectionStrategy _globalStrategy = IconSelectionStrategy.OSBased;
+    
+    public static IconSelectionStrategy GlobalStrategy
+    {
+        get =&gt; _globalStrategy;
+        set
+        {
+            if (_globalStrategy != value)
+            {
+                _globalStrategy = value;
+                OnStrategyChanged();
+            }
+        }
+    }
+    
+    public static void ConfigureButton(KryptonButton button, IconSize size = IconSize.Medium)
+    {
+        button.Values.UseAsUACElevationButton = true;
+        button.Values.IconSize = size;
+        button.Values.IconSelectionStrategy = _globalStrategy;
+    }
+    
+    private static void OnStrategyChanged()
+    {
+        // Notify all UAC buttons to refresh
+        // Implementation depends on your application architecture
+    }
+}
+
+// Usage
+UACButtonManager.GlobalStrategy = IconSelectionStrategy.ThemeBased;
+UACButtonManager.ConfigureButton(adminButton, IconSize.Medium);
+</code></pre>
+<h3 id="2-conditional-theme-aware-selection">2. Conditional Theme-Aware Selection</h3>
+<pre><code class="lang-csharp">public static class UACButtonFactory
+{
+    public static KryptonButton CreateUACButton(string text, bool useThemeAware = true)
+    {
+        var button = new KryptonButton();
+        button.Text = text;
+        button.Values.UseAsUACElevationButton = true;
+        button.Values.IconSize = IconSize.Medium;
+        
+        if (useThemeAware)
+        {
+            button.Values.IconSelectionStrategy = IconSelectionStrategy.ThemeBased;
+        }
+        else
+        {
+            button.Values.IconSelectionStrategy = IconSelectionStrategy.OSBased;
+        }
+        
+        return button;
+    }
+}
+
+// Usage
+var adminButton = UACButtonFactory.CreateUACButton(&quot;Run as Administrator&quot;, useThemeAware: true);
+var systemButton = UACButtonFactory.CreateUACButton(&quot;System Settings&quot;, useThemeAware: false);
+</code></pre>
+<h3 id="3-dynamic-theme-response">3. Dynamic Theme Response</h3>
+<pre><code class="lang-csharp">public class ThemeAwareUACButton : KryptonButton
+{
+    private readonly List&lt;KryptonButton&gt; _relatedButtons = new();
+    
+    public ThemeAwareUACButton()
+    {
+        Values.UseAsUACElevationButton = true;
+        Values.IconSize = IconSize.Medium;
+        Values.IconSelectionStrategy = IconSelectionStrategy.ThemeBased;
+        
+        KryptonManager.GlobalPaletteChanged += OnThemeChanged;
+    }
+    
+    public void AddRelatedButton(KryptonButton button)
+    {
+        _relatedButtons.Add(button);
+    }
+    
+    private void OnThemeChanged(object? sender, EventArgs e)
+    {
+        // Refresh this button
+        RefreshUACShield();
+        
+        // Refresh related buttons
+        foreach (var button in _relatedButtons)
+        {
+            if (button.Values.UseAsUACElevationButton)
+            {
+                button.Values.UseAsUACElevationButton = false;
+                button.Values.UseAsUACElevationButton = true;
+            }
+        }
+    }
+    
+    private void RefreshUACShield()
+    {
+        Values.UseAsUACElevationButton = false;
+        Values.UseAsUACElevationButton = true;
+    }
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="1-efficient-icon-loading">1. Efficient Icon Loading</h3>
+<pre><code class="lang-csharp">public class UACIconCache
+{
+    private static readonly Dictionary&lt;(IconSize, IconSelectionStrategy), Image&gt; _cache = new();
+    
+    public static Image? GetCachedIcon(IconSize size, IconSelectionStrategy strategy)
+    {
+        var key = (size, strategy);
+        
+        if (!_cache.ContainsKey(key))
+        {
+            // Use our new theme-aware system
+            var icon = GraphicsExtensions.ExtractIconFromImageres(
+                PI.ImageresIconID.Shield, 
+                size, 
+                strategy
+            );
+            
+            if (icon != null)
+            {
+                var targetSize = GetSizeFromIconSize(size);
+                _cache[key] = new Bitmap(icon.ToBitmap(), targetSize);
+                icon.Dispose();
+            }
+        }
+        
+        return _cache[key];
+    }
+    
+    public static void ClearCache()
+    {
+        foreach (var image in _cache.Values)
+        {
+            image?.Dispose();
+        }
+        _cache.Clear();
+    }
+    
+    private static Size GetSizeFromIconSize(IconSize iconSize)
+    {
+        return new Size((int)iconSize, (int)iconSize);
+    }
+}
+</code></pre>
+<h3 id="2-memory-management">2. Memory Management</h3>
+<pre><code class="lang-csharp">public class UACButtonManager : IDisposable
+{
+    private readonly List&lt;KryptonButton&gt; _managedButtons = new();
+    
+    public void AddButton(KryptonButton button)
+    {
+        if (button.Values.UseAsUACElevationButton)
+        {
+            _managedButtons.Add(button);
+        }
+    }
+    
+    public void SetThemeAware(bool themeAware)
+    {
+        var strategy = themeAware 
+            ? IconSelectionStrategy.ThemeBased 
+            : IconSelectionStrategy.OSBased;
+            
+        foreach (var button in _managedButtons)
+        {
+            button.Values.IconSelectionStrategy = strategy;
+        }
+    }
+    
+    public void Dispose()
+    {
+        UACIconCache.ClearCache();
+        _managedButtons.Clear();
+    }
+}
+</code></pre>
+<h2 id="migration-guide">Migration Guide</h2>
+<h3 id="from-os-based-to-theme-based">From OS-Based to Theme-Based</h3>
+<p>If you're updating existing code to use theme-aware UAC shields:</p>
+<pre><code class="lang-csharp">// Old code (OS-based only)
+var button = new KryptonButton();
+button.Values.UseAsUACElevationButton = true;
+button.Values.IconSize = IconSize.Medium;
+
+// New code (theme-aware)
+var button = new KryptonButton();
+button.Values.UseAsUACElevationButton = true;
+button.Values.IconSize = IconSize.Medium;
+button.Values.IconSelectionStrategy = IconSelectionStrategy.ThemeBased;
+</code></pre>
+<h3 id="backward-compatibility-1">Backward Compatibility</h3>
+<p>The new property is optional, so existing code continues to work:</p>
+<pre><code class="lang-csharp">// This still works (uses OS-based selection)
+var button = new KryptonButton();
+button.Values.UseAsUACElevationButton = true;
+button.Values.IconSize = IconSize.Medium;
+// Defaults to OS-based selection
+
+// This also works (explicit OS-based selection)
+var button = new KryptonButton();
+button.Values.UseAsUACElevationButton = true;
+button.Values.IconSize = IconSize.Medium;
+button.Values.IconSelectionStrategy = IconSelectionStrategy.OSBased;
+</code></pre>
+<h2 id="benefits">Benefits</h2>
+<h3 id="1-visual-consistency">1. Visual Consistency</h3>
+<ul>
+<li>UAC shield icons match your application's theme</li>
+<li>Professional, cohesive appearance</li>
+<li>Better user experience</li>
+</ul>
+<h3 id="2-flexibility">2. Flexibility</h3>
+<ul>
+<li>Choose between OS-based and theme-based selection</li>
+<li>Automatic adaptation to theme changes</li>
+<li>Backward compatibility maintained</li>
+</ul>
+<h3 id="3-performance">3. Performance</h3>
+<ul>
+<li>Efficient icon loading with caching</li>
+<li>Memory management best practices</li>
+<li>Seamless integration with existing code</li>
+</ul>
+<h3 id="4-developer-experience">4. Developer Experience</h3>
+<ul>
+<li>Simple property-based configuration</li>
+<li>Clear theme mapping documentation</li>
+<li>Comprehensive examples and best practices</li>
+</ul>
+<h2 id="summary">Summary</h2>
+<p>The theme-aware integration with <code>ButtonValues</code> provides:</p>
+<ul>
+<li><strong>Automatic UAC shield matching</strong> to your Krypton theme</li>
+<li><strong>Flexible selection strategy</strong> (OS-based or theme-based)</li>
+<li><strong>Seamless integration</strong> with existing ButtonValues properties</li>
+<li><strong>Performance optimization</strong> through efficient icon loading</li>
+<li><strong>Professional appearance</strong> that enhances user experience</li>
+</ul>
+<p>This integration ensures your UAC buttons always look professional and consistent with your chosen theme, creating a more polished and cohesive user interface throughout your application.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

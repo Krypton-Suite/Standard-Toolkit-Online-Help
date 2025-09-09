@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Icon Extraction from Imageres.dll | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Icon Extraction from Imageres.dll | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="icon-extraction-from-imageresdll">Icon Extraction from <code>Imageres.dll</code></h1>
+
+<h2 id="quick-start">Quick Start</h2>
+<p>Extract Windows system icons with a single method call:</p>
+<pre><code class="lang-csharp">// Extract a shield icon at default size (32x32)
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+
+// Extract a lock icon at large size (96x96)
+var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Lock, IconSize.Large);
+</code></pre>
+<h2 id="what-you-need-to-know">What You Need to Know</h2>
+<h3 id="the-method">The Method</h3>
+<pre><code class="lang-csharp">public static Icon? ExtractIconFromImageres(int iconId, IconSize iconSize = IconSize.Medium, IconSelectionStrategy selectionStrategy = IconSelectionStrategy.OSBased)
+</code></pre>
+<h3 id="parameters">Parameters</h3>
+<ul>
+<li><strong>iconId</strong>: Choose from the comprehensive <code>ImageresIconID</code> enum (200+ icons available) - cast to <code>int</code></li>
+<li><strong>iconSize</strong>: Optional size parameter (defaults to 32x32 pixels)</li>
+<li><strong>selectionStrategy</strong>: Optional strategy for theme-aware selection (defaults to OS-based)</li>
+</ul>
+<h3 id="returns">Returns</h3>
+<ul>
+<li><strong>Icon?</strong>: The extracted icon, or <code>null</code> if extraction fails</li>
+</ul>
+<h2 id="available-icon-sizes">Available Icon Sizes</h2>
+<table>
+<thead>
+<tr>
+<th>Size</th>
+<th>Pixels</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IconSize.Small</code></td>
+<td>8x8</td>
+<td>Very small UI elements</td>
+</tr>
+<tr>
+<td><code>IconSize.Small</code></td>
+<td>16x16</td>
+<td>Toolbars, menus</td>
+</tr>
+<tr>
+<td><code>IconSize.Small</code></td>
+<td>20x20</td>
+<td>Standard small icons</td>
+</tr>
+<tr>
+<td><code>IconSize.Medium</code></td>
+<td>24x24</td>
+<td>Standard medium icons</td>
+</tr>
+<tr>
+<td><code>IconSize.Medium</code></td>
+<td>32x32</td>
+<td><strong>Default</strong> - Standard size</td>
+</tr>
+<tr>
+<td><code>IconSize.Medium</code></td>
+<td>40x40</td>
+<td>Dialogs, larger buttons</td>
+</tr>
+<tr>
+<td><code>IconSize.Medium</code></td>
+<td>48x48</td>
+<td>High-DPI displays</td>
+</tr>
+<tr>
+<td><code>IconSize.Large</code></td>
+<td>64x64</td>
+<td>Large buttons, headers</td>
+</tr>
+<tr>
+<td><code>IconSize.Large</code></td>
+<td>128x128</td>
+<td>Very large displays</td>
+</tr>
+<tr>
+<td><code>IconSize.Large</code></td>
+<td>256x256</td>
+<td>Maximum quality</td>
+</tr>
+</tbody>
+</table>
+<h2 id="common-icon-categories">Common Icon Categories</h2>
+<h3 id="security-icons">Security Icons</h3>
+<pre><code class="lang-csharp">var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Lock);
+var unlockIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Unlock);
+var keyIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Key);
+</code></pre>
+<h3 id="user--system-icons">User &amp; System Icons</h3>
+<pre><code class="lang-csharp">var userIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.User);
+var usersIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Users);
+var computerIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Computer);
+var networkIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Network);
+</code></pre>
+<h3 id="file--folder-icons">File &amp; Folder Icons</h3>
+<pre><code class="lang-csharp">var folderIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Folder);
+var fileIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.File);
+var fileTextIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.FileText);
+var fileImageIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.FileImage);
+</code></pre>
+<h3 id="application-icons">Application Icons</h3>
+<pre><code class="lang-csharp">var settingsIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationSettings);
+var helpIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationHelp);
+var infoIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationInfo);
+var warningIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationWarning);
+</code></pre>
+<h3 id="media-icons">Media Icons</h3>
+<pre><code class="lang-csharp">var playIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaPlay);
+var pauseIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaPause);
+var stopIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaStop);
+var volumeIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaVolume);
+</code></pre>
+<h2 id="practical-examples">Practical Examples</h2>
+<h3 id="1-button-icons">1. Button Icons</h3>
+<pre><code class="lang-csharp">// Create a button with a shield icon
+var button = new KryptonButton();
+button.Text = &quot;Run as Administrator&quot;;
+button.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Small)?.ToBitmap();
+
+// Create a settings button
+var settingsButton = new KryptonButton();
+settingsButton.Text = &quot;Settings&quot;;
+settingsButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationSettings, IconSize.Small)?.ToBitmap();
+</code></pre>
+<h3 id="2-menu-items">2. Menu Items</h3>
+<pre><code class="lang-csharp">// Add icons to menu items
+var menuItem = new KryptonContextMenuItem(&quot;Save&quot;);
+menuItem.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionSave, IconSize.Small)?.ToBitmap();
+
+var helpMenuItem = new KryptonContextMenuItem(&quot;Help&quot;);
+helpMenuItem.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationHelp, IconSize.Small)?.ToBitmap();
+</code></pre>
+<h3 id="3-toolbar-icons">3. Toolbar Icons</h3>
+<pre><code class="lang-csharp">// Create toolbar buttons with system icons
+var toolbar = new KryptonToolStrip();
+
+var newButton = new KryptonToolStripButton();
+newButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionAdd, IconSize.Small)?.ToBitmap();
+newButton.Text = &quot;New&quot;;
+
+var openButton = new KryptonToolStripButton();
+openButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionOpen, IconSize.Small)?.ToBitmap();
+openButton.Text = &quot;Open&quot;;
+
+toolbar.Items.Add(newButton);
+toolbar.Items.Add(openButton);
+</code></pre>
+<h3 id="4-status-bar-icons">4. Status Bar Icons</h3>
+<pre><code class="lang-csharp">// Add status indicators
+var statusStrip = new KryptonStatusStrip();
+
+var statusLabel = new KryptonStatusStripLabel();
+statusLabel.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.SystemStatusOk, IconSize.Small)?.ToBitmap();
+statusLabel.Text = &quot;Ready&quot;;
+
+statusStrip.Items.Add(statusLabel);
+</code></pre>
+<h3 id="5-error-handling">5. Error Handling</h3>
+<pre><code class="lang-csharp">// Safe icon extraction with fallback
+public Image? GetSafeIcon(int iconId, IconSize size = IconSize.Medium)
+{
+    try
+    {
+        var icon = GraphicsExtensions.ExtractIconFromImageres(iconId, size);
+        return icon?.ToBitmap();
+    }
+    catch (Exception ex)
+    {
+        // Log the error and return null or a fallback icon
+        Debug.WriteLine($&quot;Failed to extract icon {iconId}: {ex.Message}&quot;);
+        return null;
+    }
+}
+
+// Usage
+var icon = GetSafeIcon((int)PI.ImageresIconID.Shield) ?? Properties.Resources.DefaultShield;
+</code></pre>
+<h3 id="6-theme-aware-icons">6. Theme-Aware Icons</h3>
+<pre><code class="lang-csharp">// Refresh icons when theme changes
+KryptonManager.GlobalPaletteChanged += (sender, e) =&gt;
+{
+    // Re-extract icons to match new theme
+    RefreshAllIcons();
+};
+
+private void RefreshAllIcons()
+{
+    // Re-extract all icons used in your application
+    button1.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Small)?.ToBitmap();
+    button2.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationSettings, IconSize.Small)?.ToBitmap();
+    // ... refresh other icons
+}
+</code></pre>
+<h3 id="7-conditional-icons">7. Conditional Icons</h3>
+<pre><code class="lang-csharp">// Show different icons based on application state
+public void UpdateStatusIcon(bool isConnected)
+{
+    var iconId = isConnected ? (int)PI.ImageresIconID.SystemStatusOk : (int)PI.ImageresIconID.SystemStatusError;
+    statusLabel.Image = GraphicsExtensions.ExtractIconFromImageres(iconId, IconSize.Small)?.ToBitmap();
+}
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-choose-appropriate-sizes">1. Choose Appropriate Sizes</h3>
+<pre><code class="lang-csharp">// Use smaller sizes for toolbars and menus
+var toolbarIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionSave, IconSize.Small);
+
+// Use larger sizes for buttons and dialogs
+var buttonIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Medium);
+</code></pre>
+<h3 id="2-cache-frequently-used-icons">2. Cache Frequently Used Icons</h3>
+<pre><code class="lang-csharp">private static readonly Dictionary&lt;int, Image&gt; _iconCache = new();
+
+public static Image? GetCachedIcon(int iconId, IconSize size = IconSize.Medium)
+{
+    var key = $&quot;{iconId}_{size}&quot;;
+    
+    if (!_iconCache.ContainsKey(iconId))
+    {
+        var icon = GraphicsExtensions.ExtractIconFromImageres(iconId, size);
+        _iconCache[iconId] = icon?.ToBitmap();
+    }
+    
+    return _iconCache[iconId];
+}
+</code></pre>
+<h3 id="3-handle-null-returns">3. Handle Null Returns</h3>
+<pre><code class="lang-csharp">// Always check for null returns
+var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+if (icon != null)
+{
+    button.Image = icon.ToBitmap();
+}
+else
+{
+    // Use fallback icon or handle gracefully
+    button.Image = Properties.Resources.DefaultShield;
+}
+</code></pre>
+<h3 id="4-dispose-icons-properly">4. Dispose Icons Properly</h3>
+<pre><code class="lang-csharp">// Icons should be disposed when no longer needed
+using var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+if (icon != null)
+{
+    button.Image = icon.ToBitmap();
+}
+</code></pre>
+<h2 id="common-use-cases">Common Use Cases</h2>
+<h3 id="uac-shield-buttons">UAC Shield Buttons</h3>
+<pre><code class="lang-csharp">// Create an &quot;Run as Administrator&quot; button
+var adminButton = new KryptonButton();
+adminButton.Text = &quot;Run as Administrator&quot;;
+adminButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Small)?.ToBitmap();
+</code></pre>
+<h3 id="security-dialogs">Security Dialogs</h3>
+<pre><code class="lang-csharp">// Use lock icon for security dialogs
+var securityForm = new KryptonForm();
+securityForm.Icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Lock, IconSize.Medium);
+</code></pre>
+<h3 id="file-operations">File Operations</h3>
+<pre><code class="lang-csharp">// Use appropriate icons for file operations
+var openButton = new KryptonButton();
+openButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionOpen, IconSize.Small)?.ToBitmap();
+
+var saveButton = new KryptonButton();
+saveButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionSave, IconSize.Small)?.ToBitmap();
+</code></pre>
+<h3 id="application-settings">Application Settings</h3>
+<pre><code class="lang-csharp">// Settings and configuration icons
+var settingsButton = new KryptonButton();
+settingsButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationSettings, IconSize.Small)?.ToBitmap();
+
+var helpButton = new KryptonButton();
+helpButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationHelp, IconSize.Small)?.ToBitmap();
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="icon-not-found">Icon Not Found</h3>
+<pre><code class="lang-csharp">// Check if icon extraction failed
+var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+if (icon == null)
+{
+    // Icon extraction failed - use fallback
+    Debug.WriteLine(&quot;Failed to extract shield icon from imageres.dll&quot;);
+}
+</code></pre>
+<h3 id="performance-issues">Performance Issues</h3>
+<pre><code class="lang-csharp">// For frequently used icons, cache them
+private static Image? _cachedShieldIcon;
+
+public static Image GetShieldIcon()
+{
+    if (_cachedShieldIcon == null)
+    {
+        var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+        _cachedShieldIcon = icon?.ToBitmap();
+    }
+    return _cachedShieldIcon;
+}
+</code></pre>
+<h3 id="theme-changes">Theme Changes</h3>
+<pre><code class="lang-csharp">// Clear cache when theme changes
+KryptonManager.GlobalPaletteChanged += (sender, e) =&gt;
+{
+    _cachedShieldIcon = null; // Force re-extraction
+    RefreshIcons();
+};
+</code></pre>
+<h2 id="summary">Summary</h2>
+<p>The <code>ExtractIconFromImageres</code> method provides easy access to Windows system icons with:</p>
+<ul>
+<li><strong>200+ available icons</strong> across multiple categories</li>
+<li><strong>10 different sizes</strong> from 8x8 to 256x256 pixels</li>
+<li><strong>Automatic theme integration</strong> with Krypton Toolkit</li>
+<li><strong>Simple API</strong> - just one method call</li>
+<li><strong>Robust error handling</strong> with null returns</li>
+</ul>
+<p>Use this feature to create professional, consistent user interfaces that match the Windows design language while maintaining your application's branding.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
