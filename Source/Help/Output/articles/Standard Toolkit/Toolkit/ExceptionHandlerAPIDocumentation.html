@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>ExceptionHandler API Documentation | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="ExceptionHandler API Documentation | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="exceptionhandler-api-documentation">ExceptionHandler API Documentation</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>ExceptionHandler</code> class is a comprehensive exception management system within the Krypton Toolkit Suite. It provides centralized exception handling capabilities with multiple display options, logging functionality, and integration with the Krypton UI framework.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Access Level:</strong> <code>internal</code> (for internal toolkit use)<br>
+<strong>Public API:</strong> <code>KryptonExceptionHandler</code> (public wrapper)</p>
+<h2 id="architecture">Architecture</h2>
+<p>The exception handling system consists of several interconnected components:</p>
+<pre><code>ExceptionHandler (internal)
+    ↓
+KryptonExceptionHandler (public API)
+    ↓
+KryptonExceptionDialog (UI wrapper)
+    ↓
+VisualExceptionDialogForm (actual form)
+</code></pre>
+<h2 id="core-classes">Core Classes</h2>
+<h3 id="1-exceptionhandler-internal">1. ExceptionHandler (Internal)</h3>
+<p>The core exception handling class that provides the fundamental exception management functionality.</p>
+<p><strong>Location:</strong> <code>Source/Krypton Components/Krypton.Toolkit/Tooling/ExceptionHandler.cs</code></p>
+<h4 id="constructor">Constructor</h4>
+<pre><code class="lang-csharp">public ExceptionHandler()
+</code></pre>
+<p>Creates a new instance of the ExceptionHandler class.</p>
+<h4 id="methods">Methods</h4>
+<h5 id="captureexception">CaptureException</h5>
+<pre><code class="lang-csharp">public static void CaptureException(
+    Exception exception, 
+    string title = &quot;Exception Caught&quot;,
+    [CallerFilePath] string callerFilePath = &quot;&quot;,
+    [CallerLineNumber] int lineNumber = 0,
+    [CallerMemberName] string callerMethod = &quot;&quot;, 
+    bool showStackTrace = false, 
+    bool? useExceptionDialog = true,
+    bool? showExceptionDialogCopyButton = false, 
+    bool? showExceptionDialogSearchBox = false)
+</code></pre>
+<p><strong>Purpose:</strong> Captures and displays exceptions with comprehensive debugging information.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>exception</code> (Exception): The exception to capture and display</li>
+<li><code>title</code> (string): Title for the exception dialog (default: &quot;Exception Caught&quot;)</li>
+<li><code>callerFilePath</code> (string): Automatically populated with the calling file path using <code>[CallerFilePath]</code></li>
+<li><code>lineNumber</code> (int): Automatically populated with the calling line number using <code>[CallerLineNumber]</code></li>
+<li><code>callerMethod</code> (string): Automatically populated with the calling method name using <code>[CallerMemberName]</code></li>
+<li><code>showStackTrace</code> (bool): Whether to include stack trace in the message (default: false)</li>
+<li><code>useExceptionDialog</code> (bool?): Whether to use the advanced KryptonExceptionDialog (default: true)</li>
+<li><code>showExceptionDialogCopyButton</code> (bool?): Whether to show copy button in the dialog (default: false)</li>
+<li><code>showExceptionDialogSearchBox</code> (bool?): Whether to show search functionality in the dialog (default: false)</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>If <code>useExceptionDialog</code> is true (default), displays the exception using <code>KryptonExceptionDialog.Show()</code></li>
+<li>If <code>useExceptionDialog</code> is false, displays a simple message box with formatted exception details</li>
+<li>Automatically captures caller information using C# compiler attributes</li>
+<li>Provides fallback error handling for any exceptions during the capture process</li>
+</ul>
+<p><strong>Example Usage:</strong></p>
+<pre><code class="lang-csharp">try
+{
+    // Some operation that might throw an exception
+    ProcessData();
+}
+catch (Exception ex)
+{
+    ExceptionHandler.CaptureException(ex, &quot;Data Processing Error&quot;, showStackTrace: true);
+}
+</code></pre>
+<h5 id="printstacktrace">PrintStackTrace</h5>
+<pre><code class="lang-csharp">public static void PrintStackTrace(Exception exception, string fileName)
+</code></pre>
+<p><strong>Purpose:</strong> Writes exception details and stack trace to a file.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>exception</code> (Exception): The exception to log</li>
+<li><code>fileName</code> (string): Path to the file where the exception details will be written</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Creates the file if it doesn't exist</li>
+<li>Writes both <code>exception.ToString()</code> and <code>exception.StackTrace</code> to the file</li>
+<li>Properly disposes of file resources</li>
+<li>If file operations fail, calls <code>CaptureException</code> with stack trace enabled</li>
+</ul>
+<p><strong>Example Usage:</strong></p>
+<pre><code class="lang-csharp">try
+{
+    // Some operation
+}
+catch (Exception ex)
+{
+    ExceptionHandler.PrintStackTrace(ex, @&quot;C:\Logs\error.log&quot;);
+}
+</code></pre>
+<h5 id="printexceptionstacktrace">PrintExceptionStackTrace</h5>
+<pre><code class="lang-csharp">public static void PrintExceptionStackTrace(Exception exception, string fileName)
+</code></pre>
+<p><strong>Purpose:</strong> Writes only the stack trace portion of an exception to a file.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>exception</code> (Exception): The exception whose stack trace to log</li>
+<li><code>fileName</code> (string): Path to the file where the stack trace will be written</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Similar to <code>PrintStackTrace</code> but only writes <code>exception.StackTrace</code></li>
+<li>Useful when you only need the call stack without the full exception details</li>
+<li>Includes proper error handling and resource disposal</li>
+</ul>
+<h3 id="2-kryptonexceptionhandler-public-api">2. KryptonExceptionHandler (Public API)</h3>
+<p>A public wrapper that provides access to the internal ExceptionHandler functionality.</p>
+<p><strong>Location:</strong> <code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonExceptionHandler.cs</code></p>
+<h4 id="methods-1">Methods</h4>
+<h5 id="captureexception-1">CaptureException</h5>
+<pre><code class="lang-csharp">public static void CaptureException(Exception exception,
+    string title = &quot;Exception Caught&quot;,
+    [CallerFilePath] string callerFilePath = &quot;&quot;,
+    [CallerLineNumber] int lineNumber = 0,
+    [CallerMemberName] string callerMethod = &quot;&quot;,
+    bool showStackTrace = false, 
+    bool? useExceptionDialog = true)
+</code></pre>
+<p><strong>Purpose:</strong> Public interface to the internal exception capture functionality.</p>
+<p><strong>Note:</strong> This method has fewer parameters than the internal version, focusing on the most commonly used options.</p>
+<h5 id="printstacktrace-1">PrintStackTrace</h5>
+<pre><code class="lang-csharp">public static void PrintStackTrace(Exception exception, string fileName)
+</code></pre>
+<p><strong>Purpose:</strong> Public interface to the internal stack trace printing functionality.</p>
+<h5 id="printexceptionstacktrace-1">PrintExceptionStackTrace</h5>
+<pre><code class="lang-csharp">public static void PrintExceptionStackTrace(Exception exception, string fileName)
+</code></pre>
+<p><strong>Purpose:</strong> Public interface to the internal exception stack trace printing functionality.</p>
+<h3 id="3-kryptonexceptiondialog-ui-component">3. KryptonExceptionDialog (UI Component)</h3>
+<p>A static class that provides access to the advanced exception dialog UI.</p>
+<p><strong>Location:</strong> <code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonExceptionDialog.cs</code></p>
+<h4 id="methods-2">Methods</h4>
+<h5 id="show">Show</h5>
+<pre><code class="lang-csharp">public static void Show(Exception exception, bool? showCopyButton, bool? showSearchBox)
+</code></pre>
+<p><strong>Purpose:</strong> Displays an exception using the advanced VisualExceptionDialogForm.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>exception</code> (Exception): The exception to display</li>
+<li><code>showCopyButton</code> (bool?): Whether to show the copy button (default: true)</li>
+<li><code>showSearchBox</code> (bool?): Whether to show the search functionality (default: true)</li>
+</ul>
+<h3 id="4-visualexceptiondialogform-ui-implementation">4. VisualExceptionDialogForm (UI Implementation)</h3>
+<p>The actual Windows Forms dialog that displays exception information in a user-friendly format.</p>
+<p><strong>Location:</strong> <code>Source/Krypton Components/Krypton.Toolkit/Controls Visuals/VisualExceptionDialogForm.cs</code></p>
+<h4 id="features">Features</h4>
+<ul>
+<li><strong>Tree View Display:</strong> Shows exception hierarchy with inner exceptions</li>
+<li><strong>Search Functionality:</strong> Allows searching through exception details</li>
+<li><strong>Copy to Clipboard:</strong> One-click copying of exception details</li>
+<li><strong>Formatted Display:</strong> Clean, readable presentation of exception information</li>
+<li><strong>Responsive Design:</strong> Adapts to different screen sizes</li>
+<li><strong>Localized Strings:</strong> Uses KryptonManager.Strings for internationalization</li>
+</ul>
+<h4 id="key-properties">Key Properties</h4>
+<ul>
+<li><code>_showCopyButton</code> (bool?): Controls copy button visibility</li>
+<li><code>_showSearchBox</code> (bool?): Controls search functionality visibility</li>
+<li><code>_exception</code> (Exception?): The exception being displayed</li>
+<li><code>_originalNodes</code> (List<treenode>): Backup of original tree nodes for search functionality</treenode></li>
+</ul>
+<h2 id="configuration-and-dependencies">Configuration and Dependencies</h2>
+<h3 id="globalstaticvalues-integration">GlobalStaticValues Integration</h3>
+<p>The ExceptionHandler integrates with <code>GlobalStaticValues</code> for default configuration:</p>
+<pre><code class="lang-csharp">internal const bool DEFAULT_USE_STACK_TRACE = true;
+internal const bool DEFAULT_USE_EXCEPTION_MESSAGE = true;
+internal const bool DEFAULT_USE_INNER_EXCEPTION = true;
+</code></pre>
+<h3 id="string-localization">String Localization</h3>
+<p>The exception dialog supports localization through <code>KryptonManager.Strings.ExceptionDialogStrings</code>:</p>
+<ul>
+<li><code>WindowTitle</code>: Dialog window title</li>
+<li><code>ExceptionDetailsHeader</code>: Header for exception details section</li>
+<li><code>ExceptionOutlineHeader</code>: Header for exception outline section</li>
+<li><code>Type</code>: Label for exception type</li>
+<li><code>Message</code>: Label for exception message</li>
+<li><code>StackTrace</code>: Label for stack trace section</li>
+<li><code>InnerException</code>: Label for inner exception section</li>
+<li><code>None</code>: Text displayed when no inner exception exists</li>
+<li><code>SearchBoxCueText</code>: Placeholder text for search box</li>
+</ul>
+<h2 id="usage-patterns">Usage Patterns</h2>
+<h3 id="basic-exception-handling">Basic Exception Handling</h3>
+<pre><code class="lang-csharp">try
+{
+    // Risky operation
+    PerformOperation();
+}
+catch (Exception ex)
+{
+    KryptonExceptionHandler.CaptureException(ex);
+}
+</code></pre>
+<h3 id="advanced-exception-handling-with-custom-title">Advanced Exception Handling with Custom Title</h3>
+<pre><code class="lang-csharp">try
+{
+    // Operation
+}
+catch (InvalidOperationException ex)
+{
+    KryptonExceptionHandler.CaptureException(ex, &quot;Invalid Operation Detected&quot;, showStackTrace: true);
+}
+</code></pre>
+<h3 id="file-based-exception-logging">File-Based Exception Logging</h3>
+<pre><code class="lang-csharp">try
+{
+    // Operation
+}
+catch (Exception ex)
+{
+    // Log to file
+    KryptonExceptionHandler.PrintStackTrace(ex, @&quot;C:\Logs\ApplicationErrors.log&quot;);
+    
+    // Also show to user
+    KryptonExceptionHandler.CaptureException(ex, &quot;Application Error&quot;);
+}
+</code></pre>
+<h3 id="custom-exception-dialog-configuration">Custom Exception Dialog Configuration</h3>
+<pre><code class="lang-csharp">try
+{
+    // Operation
+}
+catch (Exception ex)
+{
+    // Use internal handler for full control
+    ExceptionHandler.CaptureException(
+        ex, 
+        &quot;Custom Error Title&quot;,
+        showStackTrace: true,
+        useExceptionDialog: true,
+        showExceptionDialogCopyButton: true,
+        showExceptionDialogSearchBox: true
+    );
+}
+</code></pre>
+<h2 id="error-handling-and-resilience">Error Handling and Resilience</h2>
+<p>The ExceptionHandler includes comprehensive error handling:</p>
+<ol>
+<li><strong>File Operations:</strong> All file writing operations are wrapped in try-catch blocks</li>
+<li><strong>Resource Management:</strong> Proper disposal of file streams and writers</li>
+<li><strong>Fallback Mechanisms:</strong> If the primary exception handling fails, it falls back to basic error reporting</li>
+<li><strong>Recursive Protection:</strong> Prevents infinite loops when exception handling itself throws exceptions</li>
+</ol>
+<h2 id="integration-points">Integration Points</h2>
+<h3 id="with-kryptonmessagebox">With KryptonMessageBox</h3>
+<p>When <code>useExceptionDialog</code> is false, the ExceptionHandler uses <code>KryptonMessageBox.Show()</code> to display exception information in a simple message box format.</p>
+<h3 id="with-kryptonmanager">With KryptonManager</h3>
+<p>The exception dialog integrates with the KryptonManager for:</p>
+<ul>
+<li>String localization</li>
+<li>Theme management</li>
+<li>Global configuration</li>
+</ul>
+<h3 id="with-globalstaticvalues">With GlobalStaticValues</h3>
+<p>Uses global constants for default behavior configuration.</p>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="when-to-use-each-method">When to Use Each Method</h3>
+<ol>
+<li><strong>Use <code>CaptureException</code></strong> for user-facing error handling where you want to display the exception</li>
+<li><strong>Use <code>PrintStackTrace</code></strong> for comprehensive logging that includes full exception details</li>
+<li><strong>Use <code>PrintExceptionStackTrace</code></strong> for lightweight logging that only needs the call stack</li>
+<li><strong>Use <code>KryptonExceptionDialog.Show</code></strong> directly when you need fine-grained control over the dialog appearance</li>
+</ol>
+<h3 id="performance-considerations">Performance Considerations</h3>
+<ul>
+<li>The exception dialog is modal and blocks the UI thread</li>
+<li>File operations are synchronous and may cause brief delays</li>
+<li>Consider using async patterns for file logging in high-performance scenarios</li>
+</ul>
+<h3 id="security-considerations">Security Considerations</h3>
+<ul>
+<li>Exception details may contain sensitive information</li>
+<li>File logging should use secure paths and proper permissions</li>
+<li>Consider sanitizing exception messages before logging in production environments</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<ol>
+<li><strong>File Access Denied:</strong> Ensure the application has write permissions to the log file directory</li>
+<li><strong>Dialog Not Appearing:</strong> Check that the UI thread is not blocked</li>
+<li><strong>Missing Caller Information:</strong> Ensure you're calling from C# code (not reflection or dynamic code)</li>
+</ol>
+<h3 id="debugging-tips">Debugging Tips</h3>
+<ul>
+<li>Use <code>showStackTrace: true</code> to get detailed call stack information</li>
+<li>Check the <code>GlobalStaticValues.DEFAULT_USE_STACK_TRACE</code> setting</li>
+<li>Verify that <code>KryptonManager</code> is properly initialized for localized strings</li>
+</ul>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<p>Potential areas for future development:</p>
+<ol>
+<li><strong>Async Support:</strong> Add async versions of file logging methods</li>
+<li><strong>Custom Formatters:</strong> Allow custom exception formatting</li>
+<li><strong>Remote Logging:</strong> Support for sending exceptions to remote logging services</li>
+<li><strong>Performance Metrics:</strong> Add timing and performance tracking for exception handling</li>
+<li><strong>Exception Filtering:</strong> Add filtering capabilities to exclude certain exception types</li>
+</ol>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="KryptonMessageBox-API-Documentation.md">KryptonMessageBox API Documentation</a></li>
+<li><a href="KryptonManager-Configuration-Guide.md">KryptonManager Configuration Guide</a></li>
+<li><a href="GlobalStaticValues-Reference.md">GlobalStaticValues Reference</a></li>
+<li><a href="Localization-Guide.md">Localization and String Management</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

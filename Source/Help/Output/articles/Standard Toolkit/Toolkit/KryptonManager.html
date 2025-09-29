@@ -69,61 +69,964 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonmanager">KryptonManager</h1>
 
-<p></p>
-<p>Use the <em>KryptonManager</em> component to modify global settings that affect all the
-<em>Krypton</em> controls in your application. Note that the global settings affect all
-controls and not just those on the same form as the <em>KryptonManager</em> instance.</p>
-<p><strong>BaseFont</strong></p>
-<p>The <em>BaseFont</em> controls the global font used within the toolkit. Changing this property will change the font used by controls. By default, it is set to <em>Segoe UI, 9pt</em>. From here, you can customize the <em>Font Name</em>, <em>Size</em>, styling etc.</p>
-<p><strong>GlobalPaletteMode</strong></p>
-<p>Each individual <em>Krypton</em> control will by default inherit its display values
-from the global palette that is specified by the <em>KryptonManager</em>. This makes it
-easy to change the global palette and have all <em>Krypton</em> controls update their
-appearance in one step.</p>
-<p></p>
-<p><em>GlobalPaletteMode</em> is an enumeration that specifies which palette to use as the
-global palette. You can either choose one of the built-in palettes such as the
-<em>Professional - Office 2003</em> or specify use of a custom palette.</p>
-<p><em>GlobalPalette</em> should be used when you need to use a <em>KryptonPalette</em> instance
-instead of one of the built-in palettes. Once you assign a reference to this
-property the <em>GlobalPaletteMode</em> will automatically be changed to the <em>Custom</em>
-enumeration value.</p>
-<p></p>
-<p>Note that you are not allowed circular references in the use of palettes. So if
-you define the global palette to be a <em>KryptonPalette</em> and then try to make the
-base palette of the <em>KryptonPalette</em> the <em>Global</em> value then it will cause an
-error. Whenever you alter the global palette or the base palette of a
-<em>KryptonPalette</em> it will check the inheritance chain to ensure no circular
-dependency is created.</p>
-<p><strong>GlobalAllowFormChrome</strong></p>
-<p>When your <em>Form</em> derives from the <em>KryptonForm</em> base class the caption and
-border areas will be custom painted if the associated <em>Form</em> palette indicates
-it would like custom chrome. For example the <em>Office 2007</em> builtin palettes all
-request that the form be custom drawn to achieve a consistent look and feel to
-that of <em>Microsoft Office 2007</em> applications. If you would like to prevent any
-of your <em>KryptonForm</em> derived windows from having custom chrome then set this
-property to <em>False</em>. This setting overrides any requirement by a palette or
-<em>KryptonForm</em> to have custom chrome.</p>
-<p></p>
-<p><strong>GlobalApplyToolstrips</strong></p>
-<p>In order to ensure your entire application looks consistent the <em>KryptonManager</em>
-will create and assign a tool strip renderer to your application. Whenever you
-change the global palette or the palette has a tool strip related value changed
-the tool strip renderer is updated to reflect this. If you prefer to turn off
-this feature so that you control the tool strip rendering manually then you just
-need to assign <em>False</em> to the <em>GlobalApplyToolstrips</em> property.</p>
-<p><strong>GlobalCustomPalette</strong></p>
-<p>If you have loaded a custom palette into a <a href="KryptonCustomPaletteBase.html">KryptonCustomPaletteBase</a> control, then you will need to assign it to the <em>GlobalCustomPalette</em> property. When this property is set to use a <em>KryptonCustomPaletteBase</em>, the <em>GlobalPaletteMode</em> will automatically be set to <em>Custom</em>.</p>
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonManager</code> class is the central component that manages global settings affecting all Krypton controls in your application. It provides a unified way to control themes, palettes, fonts, toolstrip rendering, and other global behaviors across the entire application.</p>
+<p><strong>Important</strong>: The global settings affect all controls and not just those on the same form as the KryptonManager instance. This means that when you change a global setting, it will impact every Krypton control throughout your entire application, ensuring consistent theming and behavior across all forms and dialogs.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── Krypton.Toolkit.KryptonManager
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<h3 id="default-constructor">Default Constructor</h3>
+<pre><code class="lang-csharp">public KryptonManager()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Creates a new instance of KryptonManager</li>
+<li><strong>Usage</strong>: Basic instantiation for programmatic use</li>
+</ul>
+<h3 id="container-constructor">Container Constructor</h3>
+<pre><code class="lang-csharp">public KryptonManager([DisallowNull] IContainer container)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Creates a new instance and adds it to the specified container</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>container</code>: Container that owns the component</li>
+</ul>
+</li>
+<li><strong>Exception</strong>: <code>ArgumentNullException</code> if container is null</li>
+<li><strong>Usage</strong>: Design-time usage with proper component lifecycle management</li>
+</ul>
+<h3 id="static-constructor">Static Constructor</h3>
+<pre><code class="lang-csharp">static KryptonManager()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Initializes static state and event handlers</li>
+<li><strong>Features</strong>:
+<ul>
+<li>Registers for system color changes</li>
+<li>Updates toolstrip manager with default settings</li>
+<li>Sets up global event handling</li>
+</ul>
+</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="globalpalettemode-property">GlobalPaletteMode Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;GlobalPalette&quot;), DefaultValue(PaletteMode.Microsoft365Blue)]
+public PaletteMode GlobalPaletteMode { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls the global theme/palette used by all Krypton controls</li>
+<li><strong>Category</strong>: GlobalPalette</li>
+<li><strong>Default Value</strong>: <code>PaletteMode.Microsoft365Blue</code></li>
+<li><strong>Effect</strong>: Changing this property updates all Krypton controls in the application</li>
+<li><strong>Available Values</strong>: All built-in palette modes plus Custom and Global</li>
+</ul>
+<p><strong>GlobalPaletteMode</strong> - Each individual <em>Krypton</em> control will by default inherit its display values from the global palette that is specified by the <em>KryptonManager</em>. This makes it easy to change the global palette and have all <em>Krypton</em> controls update their appearance in one step.</p>
+<p><em>GlobalPaletteMode</em> is an enumeration that specifies which palette to use as the global palette. You can either choose one of the built-in palettes such as the <em>Professional - Office 2003</em> or specify use of a custom palette.</p>
+<p><strong>Supported Palette Modes:</strong></p>
+<ul>
+<li><strong>Professional</strong>: <code>ProfessionalSystem</code>, <code>ProfessionalOffice2003</code></li>
+<li><strong>Office 2007</strong>: <code>Office2007Blue</code>, <code>Office2007Silver</code>, <code>Office2007White</code>, <code>Office2007Black</code> (with Dark/Light mode variants)</li>
+<li><strong>Office 2010</strong>: <code>Office2010Blue</code>, <code>Office2010Silver</code>, <code>Office2010White</code>, <code>Office2010Black</code> (with Dark/Light mode variants)</li>
+<li><strong>Office 2013</strong>: <code>Office2013White</code></li>
+<li><strong>Sparkle</strong>: <code>SparkleBlue</code>, <code>SparkleOrange</code>, <code>SparklePurple</code> (with Dark/Light mode variants)</li>
+<li><strong>Microsoft 365</strong>: <code>Microsoft365Blue</code>, <code>Microsoft365Silver</code>, <code>Microsoft365White</code>, <code>Microsoft365Black</code> (with Dark/Light mode variants)</li>
+<li><strong>Visual Studio</strong>: <code>VisualStudio2010Render2007</code>, <code>VisualStudio2010Render2010</code>, <code>VisualStudio2010Render2013</code>, <code>VisualStudio2010Render365</code></li>
+<li><strong>Material</strong>: <code>MaterialLight</code>, <code>MaterialDark</code>, <code>MaterialLightRipple</code>, <code>MaterialDarkRipple</code></li>
+<li><strong>Special</strong>: <code>Custom</code>, <code>Global</code></li>
+</ul>
+<h3 id="globalcustompalette-property">GlobalCustomPalette Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;GlobalPalette&quot;), DefaultValue(null)]
+public KryptonCustomPaletteBase? GlobalCustomPalette { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Assigns a custom palette to be used globally</li>
+<li><strong>Category</strong>: GlobalPalette</li>
+<li><strong>Default Value</strong>: null</li>
+<li><strong>Effect</strong>: When set, automatically changes <code>GlobalPaletteMode</code> to <code>Custom</code></li>
+<li><strong>Usage</strong>: For applications requiring custom color schemes and styling</li>
+</ul>
+<p><strong>GlobalCustomPalette</strong> - If you have loaded a custom palette into a <a href="KryptonCustomPaletteBase.html">KryptonCustomPaletteBase</a> control, then you will need to assign it to the <em>GlobalCustomPalette</em> property. When this property is set to use a <em>KryptonCustomPaletteBase</em>, the <em>GlobalPaletteMode</em> will automatically be set to <em>Custom</em>.</p>
 <p>If the <em>GlobalCustomPalette</em> is subsequently reset back to its default value, then the <em>GlobalPaletteMode</em> will automatically be set to its default value, which is <em>Microsoft 365 - Blue</em>.</p>
-<p><strong>ToolkitImages</strong></p>
-<p>The <em>ToolkitImages</em> property is where you can define your own images that are used throughout the toolkit. The <a href="KryptonIntegratedToolBarManager.html">KryptonIntegratedToolBar</a> uses these set of images to display on toolbars, as well as the <a href="KryptonAboutBox.html">KryptonAboutBox</a>.</p>
-<p><strong>ToolkitStrings</strong></p>
-<p>The <em>KryptonMessageBox</em> has buttons that use the string values from this
-section. If you would like to alter the strings displayed on those buttons then
-you can do so by altering the values in this area. If you have set the
-<em>Localization</em> property on your <em>Form</em> to <em>True</em> then these values will be
-stored on a per-language setting allowing your message box to have different
-display strings per language you choose to define. The <em>ToolkitStrings</em> also contains strings used throughout the toolkit that you can customize. You will note that sub-sections are labelled accordingly to which sections of the toolkit they will affect.</p>
+<p><em>GlobalCustomPalette</em> should be used when you need to use a <em>KryptonPalette</em> instance instead of one of the built-in palettes. Once you assign a reference to this property the <em>GlobalPaletteMode</em> will automatically be changed to the <em>Custom</em> enumeration value.</p>
+<p><strong>Note</strong>: You are not allowed circular references in the use of palettes. So if you define the global palette to be a <em>KryptonPalette</em> and then try to make the base palette of the <em>KryptonPalette</em> the <em>Global</em> value then it will cause an error. Whenever you alter the global palette or the base palette of a <em>KryptonPalette</em> it will check the inheritance chain to ensure no circular dependency is created.</p>
+<h3 id="basefont-property">BaseFont Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;GlobalPalette&quot;), AllowNull]
+public Font BaseFont { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls the global font used throughout the toolkit</li>
+<li><strong>Category</strong>: GlobalPalette</li>
+<li><strong>Default Value</strong>: Segoe UI, 9pt</li>
+<li><strong>Effect</strong>: Changes the font used by all Krypton controls</li>
+<li><strong>Usage</strong>: Customize font name, size, and styling globally</li>
+</ul>
+<p><strong>BaseFont</strong> controls the global font used within the toolkit. Changing this property will change the font used by controls. By default, it is set to <em>Segoe UI, 9pt</em>. From here, you can customize the <em>Font Name</em>, <em>Size</em>, styling etc.</p>
+<h3 id="globalapplytoolstrips-property">GlobalApplyToolstrips Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;), DefaultValue(true)]
+public bool GlobalApplyToolstrips { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls whether palette colors are applied to toolstrips</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Default Value</strong>: true</li>
+<li><strong>Effect</strong>: When true, automatically updates ToolStripManager.Renderer</li>
+<li><strong>Usage</strong>: Ensure consistent theming across toolstrips and menus</li>
+</ul>
+<p><strong>GlobalApplyToolstrips</strong> - In order to ensure your entire application looks consistent the <em>KryptonManager</em> will create and assign a tool strip renderer to your application. Whenever you change the global palette or the palette has a tool strip related value changed the tool strip renderer is updated to reflect this. If you prefer to turn off this feature so that you control the tool strip rendering manually then you just need to assign <em>False</em> to the <em>GlobalApplyToolstrips</em> property.</p>
+<h3 id="globalusethemeformchromeborderwidth-property">GlobalUseThemeFormChromeBorderWidth Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;), DefaultValue(true)]
+public bool GlobalUseThemeFormChromeBorderWidth { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls whether KryptonForm instances use theme-based chrome border width</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Default Value</strong>: true</li>
+<li><strong>Effect</strong>: Overrides individual form chrome settings</li>
+<li><strong>Usage</strong>: Global control over form appearance consistency</li>
+</ul>
+<p><strong>GlobalUseThemeFormChromeBorderWidth</strong> - When your <em>Form</em> derives from the <em>KryptonForm</em> base class the caption and border areas will be custom painted if the associated <em>Form</em> palette indicates it would like custom chrome. For example the <em>Office 2007</em> builtin palettes all request that the form be custom drawn to achieve a consistent look and feel to that of <em>Microsoft Office 2007</em> applications. If you would like to prevent any of your <em>KryptonForm</em> derived windows from having custom chrome then set this property to <em>False</em>. This setting overrides any requirement by a palette or <em>KryptonForm</em> to have custom chrome.</p>
+<h3 id="usekryptonfiledialogs-property">UseKryptonFileDialogs Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;), DefaultValue(true)]
+public bool UseKryptonFileDialogs { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls whether Krypton file dialogs are used for internal operations</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Default Value</strong>: true</li>
+<li><strong>Effect</strong>: Affects dialogs like CustomPalette import</li>
+<li><strong>Usage</strong>: Ensure consistent dialog theming</li>
+</ul>
+<h3 id="showadministratorsuffix-property">ShowAdministratorSuffix Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;), DefaultValue(true)]
+public bool ShowAdministratorSuffix { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls whether administrator suffix is shown in KryptonForm title bars</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Default Value</strong>: true</li>
+<li><strong>Effect</strong>: Shows &quot;(Administrator)&quot; when running with elevated privileges</li>
+<li><strong>Usage</strong>: Visual indication of elevated permissions</li>
+</ul>
+<h3 id="toolkitstrings-property">ToolkitStrings Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;Data&quot;), Localizable(true)]
+public KryptonGlobalToolkitStrings ToolkitStrings { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Collection of global toolkit strings that can be localized</li>
+<li><strong>Category</strong>: Data</li>
+<li><strong>Localizable</strong>: true</li>
+<li><strong>Effect</strong>: Controls text displayed in message boxes, dialogs, and other UI elements</li>
+<li><strong>Usage</strong>: Multi-language support and custom text customization</li>
+</ul>
+<p><strong>ToolkitStrings</strong> - The <em>KryptonMessageBox</em> has buttons that use the string values from this section. If you would like to alter the strings displayed on those buttons then you can do so by altering the values in this area. If you have set the <em>Localization</em> property on your <em>Form</em> to <em>True</em> then these values will be stored on a per-language setting allowing your message box to have different display strings per language you choose to define. The <em>ToolkitStrings</em> also contains strings used throughout the toolkit that you can customize. You will note that sub-sections are labelled accordingly to which sections of the toolkit they will affect.</p>
+<h3 id="toolkitcolors-property">ToolkitColors Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;Data&quot;)]
+public KryptonColorStorage ToolkitColors { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Collection of global toolkit colors</li>
+<li><strong>Category</strong>: Data</li>
+<li><strong>Effect</strong>: Provides access to color storage for custom theming</li>
+<li><strong>Usage</strong>: Advanced color customization and theming</li>
+</ul>
+<h2 id="static-properties">Static Properties</h2>
+<h3 id="strings-property">Strings Property</h3>
+<pre><code class="lang-csharp">public static KryptonGlobalToolkitStrings Strings { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Global access to toolkit strings</li>
+<li><strong>Type</strong>: Static property</li>
+<li><strong>Usage</strong>: Access strings from anywhere in the application</li>
+</ul>
+<h3 id="images-property">Images Property</h3>
+<pre><code class="lang-csharp">public static KryptonImageStorage Images { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Global access to toolkit images</li>
+<li><strong>Type</strong>: Static property</li>
+<li><strong>Usage</strong>: Access images for toolbars, dialogs, and other UI elements</li>
+</ul>
+<p><strong>ToolkitImages</strong> - The <em>ToolkitImages</em> property is where you can define your own images that are used throughout the toolkit. The <a href="KryptonIntegratedToolBarManager.html">KryptonIntegratedToolBar</a> uses these set of images to display on toolbars, as well as the <a href="KryptonAboutBox.html">KryptonAboutBox</a>.</p>
+<h3 id="colors-property">Colors Property</h3>
+<pre><code class="lang-csharp">public static KryptonColorStorage Colors { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Global access to toolkit colors</li>
+<li><strong>Type</strong>: Static property</li>
+<li><strong>Usage</strong>: Access color storage for theming</li>
+</ul>
+<h3 id="currentglobalpalettemode-property">CurrentGlobalPaletteMode Property</h3>
+<pre><code class="lang-csharp">public static PaletteMode CurrentGlobalPaletteMode { get; private set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets the currently active global palette mode</li>
+<li><strong>Type</strong>: Static property</li>
+<li><strong>Usage</strong>: Check current theme state</li>
+</ul>
+<h3 id="currentglobalpalette-property">CurrentGlobalPalette Property</h3>
+<pre><code class="lang-csharp">public static PaletteBase CurrentGlobalPalette { get; private set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets the currently active global palette instance</li>
+<li><strong>Type</strong>: Static property</li>
+<li><strong>Usage</strong>: Access current palette for advanced operations</li>
+</ul>
+<h2 id="key-methods">Key Methods</h2>
+<h3 id="getpaletteformode-method">GetPaletteForMode Method</h3>
+<pre><code class="lang-csharp">public static PaletteBase GetPaletteForMode(PaletteMode mode)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets the palette instance for a specific mode</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>mode</code>: The palette mode to retrieve</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: <code>PaletteBase</code> instance for the specified mode</li>
+<li><strong>Exception</strong>: <code>ArgumentOutOfRangeException</code> for invalid modes</li>
+<li><strong>Usage</strong>: Access specific palette instances programmatically</li>
+</ul>
+<h3 id="getmodeforpalette-method">GetModeForPalette Method</h3>
+<pre><code class="lang-csharp">public static PaletteMode GetModeForPalette(PaletteBase? palette)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Determines the palette mode for a given palette instance</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>palette</code>: The palette instance to analyze</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: <code>PaletteMode</code> corresponding to the palette</li>
+<li><strong>Usage</strong>: Identify the mode of a custom palette</li>
+</ul>
+<h3 id="getrendererformode-method">GetRendererForMode Method</h3>
+<pre><code class="lang-csharp">public static IRenderer GetRendererForMode(RendererMode mode)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets the renderer instance for a specific mode</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>mode</code>: The renderer mode to retrieve</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: <code>IRenderer</code> instance for the specified mode</li>
+<li><strong>Exception</strong>: <code>ArgumentOutOfRangeException</code> for invalid modes</li>
+<li><strong>Usage</strong>: Access specific renderer instances</li>
+</ul>
+<h3 id="reset-method">Reset Method</h3>
+<pre><code class="lang-csharp">public void Reset()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Resets all KryptonManager properties to their default values</li>
+<li><strong>Effect</strong>: Restores default theme, font, and other settings</li>
+<li><strong>Usage</strong>: Restore application to default state</li>
+</ul>
+<h2 id="events">Events</h2>
+<h3 id="globalpalettechanged-event">GlobalPaletteChanged Event</h3>
+<pre><code class="lang-csharp">[Category(&quot;Property Changed&quot;)]
+public static event EventHandler? GlobalPaletteChanged;
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Fired when the global palette changes</li>
+<li><strong>Category</strong>: Property Changed</li>
+<li><strong>Usage</strong>: React to theme changes across the application</li>
+</ul>
+<h3 id="globalusethemeformchromeborderwidthchanged-event">GlobalUseThemeFormChromeBorderWidthChanged Event</h3>
+<pre><code class="lang-csharp">[Category(&quot;Property Changed&quot;)]
+public static event EventHandler? GlobalUseThemeFormChromeBorderWidthChanged;
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Fired when the form chrome border width setting changes</li>
+<li><strong>Category</strong>: Property Changed</li>
+<li><strong>Usage</strong>: React to form chrome setting changes</li>
+</ul>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="basic-theme-management">Basic Theme Management</h3>
+<pre><code class="lang-csharp">public class ThemeManager
+{
+    public void SetApplicationTheme(PaletteMode theme)
+    {
+        KryptonManager.GlobalPaletteMode = theme;
+    }
+
+    public void SetCustomTheme(KryptonCustomPaletteBase customPalette)
+    {
+        KryptonManager.GlobalCustomPalette = customPalette;
+    }
+
+    public void ResetToDefault()
+    {
+        KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
+        KryptonManager.GlobalCustomPalette = null;
+    }
+}
+</code></pre>
+<h3 id="dynamic-theme-switching">Dynamic Theme Switching</h3>
+<pre><code class="lang-csharp">public class DynamicThemeManager
+{
+    private readonly List&lt;PaletteMode&gt; availableThemes;
+    private int currentThemeIndex;
+
+    public DynamicThemeManager()
+    {
+        availableThemes = new List&lt;PaletteMode&gt;
+        {
+            PaletteMode.Microsoft365Blue,
+            PaletteMode.Microsoft365Silver,
+            PaletteMode.Microsoft365White,
+            PaletteMode.Microsoft365Black,
+            PaletteMode.Office2007Blue,
+            PaletteMode.Office2010Blue,
+            PaletteMode.SparkleBlue,
+            PaletteMode.MaterialLight,
+            PaletteMode.MaterialDark
+        };
+        
+        currentThemeIndex = 0;
+        
+        // Subscribe to theme changes
+        KryptonManager.GlobalPaletteChanged += OnThemeChanged;
+    }
+
+    public void NextTheme()
+    {
+        currentThemeIndex = (currentThemeIndex + 1) % availableThemes.Count;
+        KryptonManager.GlobalPaletteMode = availableThemes[currentThemeIndex];
+    }
+
+    public void PreviousTheme()
+    {
+        currentThemeIndex = (currentThemeIndex - 1 + availableThemes.Count) % availableThemes.Count;
+        KryptonManager.GlobalPaletteMode = availableThemes[currentThemeIndex];
+    }
+
+    public void SetTheme(PaletteMode theme)
+    {
+        if (availableThemes.Contains(theme))
+        {
+            currentThemeIndex = availableThemes.IndexOf(theme);
+            KryptonManager.GlobalPaletteMode = theme;
+        }
+    }
+
+    private void OnThemeChanged(object? sender, EventArgs e)
+    {
+        // React to theme changes
+        Console.WriteLine($&quot;Theme changed to: {KryptonManager.CurrentGlobalPaletteMode}&quot;);
+    }
+}
+</code></pre>
+<h3 id="custom-palette-management">Custom Palette Management</h3>
+<pre><code class="lang-csharp">public class CustomPaletteManager
+{
+    private KryptonCustomPaletteBase? currentCustomPalette;
+
+    public void LoadCustomPalette(string paletteFile)
+    {
+        try
+        {
+            var customPalette = new KryptonCustomPaletteBase();
+            customPalette.Import(paletteFile);
+            
+            KryptonManager.GlobalCustomPalette = customPalette;
+            currentCustomPalette = customPalette;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($&quot;Failed to load palette: {ex.Message}&quot;, &quot;Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    public void SaveCustomPalette(string paletteFile)
+    {
+        if (currentCustomPalette != null)
+        {
+            try
+            {
+                currentCustomPalette.Export(paletteFile);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($&quot;Failed to save palette: {ex.Message}&quot;, &quot;Error&quot;, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+    }
+
+    public void CreateCustomPalette()
+    {
+        var customPalette = new KryptonCustomPaletteBase();
+        
+        // Customize colors
+        customPalette.ColorTable.ButtonSelectedGradientBegin = Color.LightBlue;
+        customPalette.ColorTable.ButtonSelectedGradientEnd = Color.DarkBlue;
+        customPalette.ColorTable.ButtonPressedGradientBegin = Color.DarkBlue;
+        customPalette.ColorTable.ButtonPressedGradientEnd = Color.LightBlue;
+        
+        // Apply the custom palette
+        KryptonManager.GlobalCustomPalette = customPalette;
+        currentCustomPalette = customPalette;
+    }
+}
+</code></pre>
+<h3 id="font-management">Font Management</h3>
+<pre><code class="lang-csharp">public class FontManager
+{
+    public void SetGlobalFont(string fontFamily, float size, FontStyle style = FontStyle.Regular)
+    {
+        var font = new Font(fontFamily, size, style);
+        KryptonManager.BaseFont = font;
+    }
+
+    public void SetGlobalFont(Font font)
+    {
+        KryptonManager.BaseFont = font;
+    }
+
+    public void ResetGlobalFont()
+    {
+        KryptonManager.BaseFont = null; // Resets to default
+    }
+
+    public Font GetCurrentFont()
+    {
+        return KryptonManager.BaseFont;
+    }
+}
+</code></pre>
+<h3 id="localization-management">Localization Management</h3>
+<pre><code class="lang-csharp">public class LocalizationManager
+{
+    public void SetLanguage(string languageCode)
+    {
+        // Set culture
+        var culture = new CultureInfo(languageCode);
+        Thread.CurrentThread.CurrentCulture = culture;
+        Thread.CurrentThread.CurrentUICulture = culture;
+
+        // Update toolkit strings
+        UpdateToolkitStrings(languageCode);
+    }
+
+    private void UpdateToolkitStrings(string languageCode)
+    {
+        switch (languageCode)
+        {
+            case &quot;en-US&quot;:
+                KryptonManager.Strings.CommonStrings.Ok = &quot;OK&quot;;
+                KryptonManager.Strings.CommonStrings.Cancel = &quot;Cancel&quot;;
+                KryptonManager.Strings.CommonStrings.Yes = &quot;Yes&quot;;
+                KryptonManager.Strings.CommonStrings.No = &quot;No&quot;;
+                break;
+            case &quot;es-ES&quot;:
+                KryptonManager.Strings.CommonStrings.Ok = &quot;Aceptar&quot;;
+                KryptonManager.Strings.CommonStrings.Cancel = &quot;Cancelar&quot;;
+                KryptonManager.Strings.CommonStrings.Yes = &quot;Sí&quot;;
+                KryptonManager.Strings.CommonStrings.No = &quot;No&quot;;
+                break;
+            case &quot;fr-FR&quot;:
+                KryptonManager.Strings.CommonStrings.Ok = &quot;OK&quot;;
+                KryptonManager.Strings.CommonStrings.Cancel = &quot;Annuler&quot;;
+                KryptonManager.Strings.CommonStrings.Yes = &quot;Oui&quot;;
+                KryptonManager.Strings.CommonStrings.No = &quot;Non&quot;;
+                break;
+        }
+    }
+}
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="application-startup-configuration">Application Startup Configuration</h3>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    private KryptonManager kryptonManager;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        SetupKryptonManager();
+        ConfigureApplication();
+    }
+
+    private void SetupKryptonManager()
+    {
+        kryptonManager = new KryptonManager();
+        Components.Add(kryptonManager);
+    }
+
+    private void ConfigureApplication()
+    {
+        // Set initial theme
+        KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
+        
+        // Configure global settings
+        KryptonManager.GlobalApplyToolstrips = true;
+        KryptonManager.GlobalUseThemeFormChromeBorderWidth = true;
+        KryptonManager.UseKryptonFileDialogs = true;
+        KryptonManager.ShowAdministratorSuffix = true;
+        
+        // Set custom font if needed
+        KryptonManager.BaseFont = new Font(&quot;Segoe UI&quot;, 10f);
+        
+        // Subscribe to events
+        KryptonManager.GlobalPaletteChanged += OnGlobalPaletteChanged;
+    }
+
+    private void OnGlobalPaletteChanged(object? sender, EventArgs e)
+    {
+        // React to theme changes
+        UpdateApplicationForTheme();
+    }
+
+    private void UpdateApplicationForTheme()
+    {
+        // Update application-specific elements based on theme
+        var currentTheme = KryptonManager.CurrentGlobalPaletteMode;
+        
+        switch (currentTheme)
+        {
+            case PaletteMode.MaterialDark:
+            case PaletteMode.Microsoft365BlackDarkMode:
+                // Configure for dark theme
+                ConfigureDarkTheme();
+                break;
+            case PaletteMode.MaterialLight:
+            case PaletteMode.Microsoft365White:
+                // Configure for light theme
+                ConfigureLightTheme();
+                break;
+        }
+    }
+
+    private void ConfigureDarkTheme()
+    {
+        // Dark theme specific configuration
+    }
+
+    private void ConfigureLightTheme()
+    {
+        // Light theme specific configuration
+    }
+}
+</code></pre>
+<h3 id="settings-based-theme-management">Settings-Based Theme Management</h3>
+<pre><code class="lang-csharp">public class ApplicationSettings
+{
+    public PaletteMode Theme { get; set; } = PaletteMode.Microsoft365Blue;
+    public string FontFamily { get; set; } = &quot;Segoe UI&quot;;
+    public float FontSize { get; set; } = 9f;
+    public bool ApplyToolstrips { get; set; } = true;
+    public bool UseThemeFormChrome { get; set; } = true;
+    public bool ShowAdministratorSuffix { get; set; } = true;
+    public bool UseKryptonFileDialogs { get; set; } = true;
+}
+
+public class SettingsManager
+{
+    private readonly string settingsFile = &quot;appsettings.json&quot;;
+
+    public void LoadSettings()
+    {
+        try
+        {
+            if (File.Exists(settingsFile))
+            {
+                var json = File.ReadAllText(settingsFile);
+                var settings = JsonSerializer.Deserialize&lt;ApplicationSettings&gt;(json);
+                
+                if (settings != null)
+                {
+                    ApplySettings(settings);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($&quot;Failed to load settings: {ex.Message}&quot;, &quot;Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    public void SaveSettings()
+    {
+        try
+        {
+            var settings = new ApplicationSettings
+            {
+                Theme = KryptonManager.CurrentGlobalPaletteMode,
+                FontFamily = KryptonManager.BaseFont.FontFamily.Name,
+                FontSize = KryptonManager.BaseFont.Size,
+                ApplyToolstrips = KryptonManager.GlobalApplyToolstrips,
+                UseThemeFormChrome = KryptonManager.GlobalUseThemeFormChromeBorderWidth,
+                ShowAdministratorSuffix = KryptonManager.ShowAdministratorSuffix,
+                UseKryptonFileDialogs = KryptonManager.UseKryptonFileDialogs
+            };
+
+            var json = JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(settingsFile, json);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($&quot;Failed to save settings: {ex.Message}&quot;, &quot;Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void ApplySettings(ApplicationSettings settings)
+    {
+        KryptonManager.GlobalPaletteMode = settings.Theme;
+        KryptonManager.BaseFont = new Font(settings.FontFamily, settings.FontSize);
+        KryptonManager.GlobalApplyToolstrips = settings.ApplyToolstrips;
+        KryptonManager.GlobalUseThemeFormChromeBorderWidth = settings.UseThemeFormChrome;
+        KryptonManager.ShowAdministratorSuffix = settings.ShowAdministratorSuffix;
+        KryptonManager.UseKryptonFileDialogs = settings.UseKryptonFileDialogs;
+    }
+}
+</code></pre>
+<h3 id="multi-form-theme-synchronization">Multi-Form Theme Synchronization</h3>
+<pre><code class="lang-csharp">public class FormThemeManager
+{
+    private static readonly List&lt;KryptonForm&gt; registeredForms = new List&lt;KryptonForm&gt;();
+
+    public static void RegisterForm(KryptonForm form)
+    {
+        if (!registeredForms.Contains(form))
+        {
+            registeredForms.Add(form);
+            form.FormClosed += OnFormClosed;
+        }
+    }
+
+    public static void UnregisterForm(KryptonForm form)
+    {
+        registeredForms.Remove(form);
+        form.FormClosed -= OnFormClosed;
+    }
+
+    public static void ApplyThemeToAllForms(PaletteMode theme)
+    {
+        KryptonManager.GlobalPaletteMode = theme;
+        
+        // Force refresh of all registered forms
+        foreach (var form in registeredForms)
+        {
+            if (!form.IsDisposed)
+            {
+                form.Invalidate();
+                form.Refresh();
+            }
+        }
+    }
+
+    private static void OnFormClosed(object? sender, FormClosedEventArgs e)
+    {
+        if (sender is KryptonForm form)
+        {
+            UnregisterForm(form);
+        }
+    }
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Static Properties</strong>: Efficient access to global state without instance creation</li>
+<li><strong>Palette Caching</strong>: Built-in palettes are cached and reused</li>
+<li><strong>Event Management</strong>: Efficient event handling for theme changes</li>
+<li><strong>Memory Management</strong>: Proper cleanup of palette instances and event handlers</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="theme-not-applying">Theme Not Applying</h3>
+<p><strong>Issue</strong>: Theme changes not affecting all controls<br>
+<strong>Solution</strong>: Ensure proper event handling and form refresh:</p>
+<pre><code class="lang-csharp">KryptonManager.GlobalPaletteChanged += (sender, e) =&gt;
+{
+    // Force refresh of all forms
+    foreach (Form form in Application.OpenForms)
+    {
+        form.Invalidate();
+        form.Refresh();
+    }
+};
+</code></pre>
+<h3 id="custom-palette-not-working">Custom Palette Not Working</h3>
+<p><strong>Issue</strong>: Custom palette not being applied<br>
+<strong>Solution</strong>: Ensure proper palette assignment:</p>
+<pre><code class="lang-csharp">var customPalette = new KryptonCustomPaletteBase();
+// Configure custom palette
+KryptonManager.GlobalCustomPalette = customPalette;
+// This automatically sets GlobalPaletteMode to Custom
+</code></pre>
+<h3 id="font-not-updating">Font Not Updating</h3>
+<p><strong>Issue</strong>: Font changes not affecting all controls<br>
+<strong>Solution</strong>: Ensure proper font assignment and control refresh:</p>
+<pre><code class="lang-csharp">KryptonManager.BaseFont = new Font(&quot;Arial&quot;, 12f);
+// Force refresh of all controls
+Application.DoEvents();
+</code></pre>
+<h3 id="toolstrip-not-themed">Toolstrip Not Themed</h3>
+<p><strong>Issue</strong>: Toolstrips not using Krypton theming<br>
+<strong>Solution</strong>: Ensure GlobalApplyToolstrips is enabled:</p>
+<pre><code class="lang-csharp">KryptonManager.GlobalApplyToolstrips = true;
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: All properties available for configuration</li>
+<li><strong>Designer Support</strong>: Full design-time support with custom designer</li>
+<li><strong>Default Property</strong>: <code>GlobalPaletteMode</code> is the default property</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>GlobalPalette</strong>: Theme and palette-related properties</li>
+<li><strong>Visuals</strong>: Visual appearance and behavior properties</li>
+<li><strong>Data</strong>: Strings, colors, and other data properties</li>
+<li><strong>Property Changed</strong>: Event properties</li>
+</ul>
+<h2 id="migration-and-compatibility">Migration and Compatibility</h2>
+<h3 id="from-manual-theme-management">From Manual Theme Management</h3>
+<pre><code class="lang-csharp">// Old way (manual theme management)
+// foreach (Control control in this.Controls)
+// {
+//     if (control is KryptonControl kryptonControl)
+//     {
+//         kryptonControl.PaletteMode = PaletteMode.Office2007Blue;
+//     }
+// }
+
+// New way (global theme management)
+KryptonManager.GlobalPaletteMode = PaletteMode.Office2007Blue;
+</code></pre>
+<h3 id="from-custom-theme-systems">From Custom Theme Systems</h3>
+<pre><code class="lang-csharp">// Old way (custom theme system)
+// CustomThemeManager.SetTheme(&quot;Blue&quot;);
+
+// New way (KryptonManager)
+KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="enterprise-application-theme-management">Enterprise Application Theme Management</h3>
+<pre><code class="lang-csharp">public class EnterpriseThemeManager
+{
+    private readonly Dictionary&lt;string, PaletteMode&gt; companyThemes;
+    private readonly Dictionary&lt;string, KryptonCustomPaletteBase&gt; customThemes;
+
+    public EnterpriseThemeManager()
+    {
+        companyThemes = new Dictionary&lt;string, PaletteMode&gt;
+        {
+            [&quot;Corporate Blue&quot;] = PaletteMode.Microsoft365Blue,
+            [&quot;Corporate Silver&quot;] = PaletteMode.Microsoft365Silver,
+            [&quot;Corporate White&quot;] = PaletteMode.Microsoft365White,
+            [&quot;Corporate Black&quot;] = PaletteMode.Microsoft365Black,
+            [&quot;Legacy Office&quot;] = PaletteMode.Office2007Blue,
+            [&quot;Modern Office&quot;] = PaletteMode.Office2010Blue,
+            [&quot;Creative&quot;] = PaletteMode.SparkleBlue,
+            [&quot;Material Light&quot;] = PaletteMode.MaterialLight,
+            [&quot;Material Dark&quot;] = PaletteMode.MaterialDark
+        };
+
+        customThemes = new Dictionary&lt;string, KryptonCustomPaletteBase&gt;();
+        LoadCustomThemes();
+    }
+
+    public void ApplyCompanyTheme(string themeName)
+    {
+        if (companyThemes.TryGetValue(themeName, out var paletteMode))
+        {
+            KryptonManager.GlobalPaletteMode = paletteMode;
+        }
+        else if (customThemes.TryGetValue(themeName, out var customPalette))
+        {
+            KryptonManager.GlobalCustomPalette = customPalette;
+        }
+        else
+        {
+            throw new ArgumentException($&quot;Theme '{themeName}' not found&quot;, nameof(themeName));
+        }
+    }
+
+    public string[] GetAvailableThemes()
+    {
+        var themes = new List&lt;string&gt;();
+        themes.AddRange(companyThemes.Keys);
+        themes.AddRange(customThemes.Keys);
+        return themes.ToArray();
+    }
+
+    public void CreateCustomTheme(string themeName, Color primaryColor, Color secondaryColor)
+    {
+        var customPalette = new KryptonCustomPaletteBase();
+        
+        // Configure colors based on company branding
+        customPalette.ColorTable.ButtonSelectedGradientBegin = primaryColor;
+        customPalette.ColorTable.ButtonSelectedGradientEnd = secondaryColor;
+        customPalette.ColorTable.ButtonPressedGradientBegin = secondaryColor;
+        customPalette.ColorTable.ButtonPressedGradientEnd = primaryColor;
+        
+        customThemes[themeName] = customPalette;
+        SaveCustomThemes();
+    }
+
+    private void LoadCustomThemes()
+    {
+        // Implementation to load custom themes from storage
+    }
+
+    private void SaveCustomThemes()
+    {
+        // Implementation to save custom themes to storage
+    }
+}
+</code></pre>
+<h3 id="multi-tenant-application-theme-management">Multi-Tenant Application Theme Management</h3>
+<pre><code class="lang-csharp">public class MultiTenantThemeManager
+{
+    private readonly Dictionary&lt;string, TenantThemeSettings&gt; tenantThemes;
+    private string currentTenant;
+
+    public MultiTenantThemeManager()
+    {
+        tenantThemes = new Dictionary&lt;string, TenantThemeSettings&gt;();
+        LoadTenantThemes();
+    }
+
+    public void SetTenant(string tenantId)
+    {
+        currentTenant = tenantId;
+        
+        if (tenantThemes.TryGetValue(tenantId, out var settings))
+        {
+            ApplyTenantTheme(settings);
+        }
+        else
+        {
+            // Apply default theme for new tenant
+            ApplyDefaultTheme();
+        }
+    }
+
+    public void UpdateTenantTheme(string tenantId, TenantThemeSettings settings)
+    {
+        tenantThemes[tenantId] = settings;
+        
+        if (tenantId == currentTenant)
+        {
+            ApplyTenantTheme(settings);
+        }
+        
+        SaveTenantThemes();
+    }
+
+    private void ApplyTenantTheme(TenantThemeSettings settings)
+    {
+        if (settings.UseCustomPalette &amp;&amp; settings.CustomPalette != null)
+        {
+            KryptonManager.GlobalCustomPalette = settings.CustomPalette;
+        }
+        else
+        {
+            KryptonManager.GlobalPaletteMode = settings.PaletteMode;
+        }
+
+        if (settings.CustomFont != null)
+        {
+            KryptonManager.BaseFont = settings.CustomFont;
+        }
+
+        // Apply tenant-specific strings
+        ApplyTenantStrings(settings);
+    }
+
+    private void ApplyDefaultTheme()
+    {
+        KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
+        KryptonManager.BaseFont = new Font(&quot;Segoe UI&quot;, 9f);
+    }
+
+    private void ApplyTenantStrings(TenantThemeSettings settings)
+    {
+        if (settings.CustomStrings != null)
+        {
+            foreach (var kvp in settings.CustomStrings)
+            {
+                // Apply custom strings based on tenant requirements
+                // Implementation depends on specific string properties
+            }
+        }
+    }
+
+    private void LoadTenantThemes()
+    {
+        // Implementation to load tenant themes from storage
+    }
+
+    private void SaveTenantThemes()
+    {
+        // Implementation to save tenant themes to storage
+    }
+}
+
+public class TenantThemeSettings
+{
+    public PaletteMode PaletteMode { get; set; } = PaletteMode.Microsoft365Blue;
+    public bool UseCustomPalette { get; set; } = false;
+    public KryptonCustomPaletteBase? CustomPalette { get; set; }
+    public Font? CustomFont { get; set; }
+    public Dictionary&lt;string, string&gt;? CustomStrings { get; set; }
+}
+</code></pre>
+<h3 id="accessibility-theme-management">Accessibility Theme Management</h3>
+<pre><code class="lang-csharp">public class AccessibilityThemeManager
+{
+    public void ApplyHighContrastTheme()
+    {
+        var highContrastPalette = new KryptonCustomPaletteBase();
+        
+        // Configure high contrast colors
+        highContrastPalette.ColorTable.ButtonSelectedGradientBegin = Color.White;
+        highContrastPalette.ColorTable.ButtonSelectedGradientEnd = Color.Black;
+        highContrastPalette.ColorTable.ButtonPressedGradientBegin = Color.Black;
+        highContrastPalette.ColorTable.ButtonPressedGradientEnd = Color.White;
+        highContrastPalette.ColorTable.ButtonCheckedGradientBegin = Color.Yellow;
+        highContrastPalette.ColorTable.ButtonCheckedGradientEnd = Color.Orange;
+        
+        KryptonManager.GlobalCustomPalette = highContrastPalette;
+        
+        // Use larger font for better readability
+        KryptonManager.BaseFont = new Font(&quot;Segoe UI&quot;, 12f, FontStyle.Bold);
+    }
+
+    public void ApplyLargeFontTheme()
+    {
+        // Keep current theme but increase font size
+        KryptonManager.BaseFont = new Font(&quot;Segoe UI&quot;, 14f);
+    }
+
+    public void ApplyColorBlindFriendlyTheme()
+    {
+        var colorBlindPalette = new KryptonCustomPaletteBase();
+        
+        // Use colors that are distinguishable for colorblind users
+        colorBlindPalette.ColorTable.ButtonSelectedGradientBegin = Color.LightBlue;
+        colorBlindPalette.ColorTable.ButtonSelectedGradientEnd = Color.DarkBlue;
+        colorBlindPalette.ColorTable.ButtonPressedGradientBegin = Color.DarkBlue;
+        colorBlindPalette.ColorTable.ButtonPressedGradientEnd = Color.LightBlue;
+        
+        KryptonManager.GlobalCustomPalette = colorBlindPalette;
+    }
+
+    public void ResetToDefaultTheme()
+    {
+        KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
+        KryptonManager.BaseFont = new Font(&quot;Segoe UI&quot;, 9f);
+    }
+}
+</code></pre>
 
 </article>
           </div>

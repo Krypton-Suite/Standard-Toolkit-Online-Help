@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonWebView2 Control | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonWebView2 Control | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonwebview2-control">KryptonWebView2 Control</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonWebView2</code> control is a modern web browser component that integrates Microsoft's WebView2 engine with the Krypton Toolkit's theming system. It provides a consistent look and feel with other Krypton controls while offering cutting-edge web rendering capabilities.</p>
+<h2 id="features">Features</h2>
+<h3 id="-implemented-features">✅ <strong>Implemented Features</strong></h3>
+<ul>
+<li><strong>Modern Web Engine</strong>: Based on Microsoft Edge Chromium</li>
+<li><strong>Krypton Theming</strong>: Full integration with Krypton's theming system</li>
+<li><strong>Custom Context Menus</strong>: KryptonContextMenu support with proper theming</li>
+<li><strong>Designer Support</strong>: Visual Studio designer integration</li>
+<li><strong>Async Operations</strong>: Modern async/await pattern for WebView2 operations</li>
+<li><strong>Cross-Platform Compatibility</strong>: .NET Framework 4.7.2+ and .NET 8+ support</li>
+<li><strong>Comprehensive Documentation</strong>: Extensive API and developer documentation</li>
+<li><strong>Test Form</strong>: Complete working example with navigation controls</li>
+</ul>
+<h3 id="-technical-features">🔧 <strong>Technical Features</strong></h3>
+<ul>
+<li><strong>Double Buffering</strong>: Smooth rendering with reduced flicker</li>
+<li><strong>Palette Integration</strong>: Automatic theme updates</li>
+<li><strong>Error Handling</strong>: Comprehensive error handling for initialization and navigation</li>
+<li><strong>Resource Management</strong>: Proper cleanup and disposal</li>
+<li><strong>Message Processing</strong>: Custom Windows message handling for context menus</li>
+</ul>
+<h2 id="files-structure">Files Structure</h2>
+<pre><code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/
+├── KryptonWebView2.cs                           # Main control implementation
+├── KryptonWebView2.Documentation.md             # Comprehensive developer guide
+├── KryptonWebView2.API.md                       # Complete API reference
+├── KryptonWebView2.README.md                    # This file
+└── ToolboxBitmaps/WebView2.bmp                  # Toolbox icon
+
+Source/Krypton Components/Krypton.Toolkit/Designers/Designers/
+└── KryptonWebView2Designer.cs                   # Designer support
+
+Source/Krypton Components/TestForm/
+├── KryptonWebView2Test.cs                       # Test form implementation
+├── KryptonWebView2Test.Designer.cs              # Test form designer
+└── KryptonWebView2Test.resx                     # Test form resources
+</code></pre>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="1-basic-usage">1. Basic Usage</h3>
+<pre><code class="lang-csharp">// Create the control
+var webView = new KryptonWebView2();
+webView.Size = new Size(800, 600);
+
+// Initialize WebView2 engine
+await webView.EnsureCoreWebView2Async();
+
+// Navigate to a URL
+webView.CoreWebView2?.Navigate(&quot;https://example.com&quot;);
+</code></pre>
+<h3 id="2-custom-context-menu">2. Custom Context Menu</h3>
+<pre><code class="lang-csharp">var contextMenu = new KryptonContextMenu();
+contextMenu.Items.Add(new KryptonContextMenuItem(&quot;Copy&quot;));
+contextMenu.Items.Add(new KryptonContextMenuItem(&quot;Paste&quot;));
+
+webView.KryptonContextMenu = contextMenu;
+</code></pre>
+<h3 id="3-error-handling">3. Error Handling</h3>
+<pre><code class="lang-csharp">try
+{
+    await webView.EnsureCoreWebView2Async();
+}
+catch (WebView2RuntimeNotFoundException)
+{
+    MessageBox.Show(&quot;WebView2 Runtime is not installed.&quot;);
+}
+</code></pre>
+<h2 id="requirements">Requirements</h2>
+<h3 id="system-requirements">System Requirements</h3>
+<ul>
+<li><strong>WebView2 Runtime</strong>: Must be installed on target systems</li>
+<li><strong>Windows Platform</strong>: Windows 7 SP1 or later (Windows 10+ recommended)</li>
+<li><strong>.NET Framework</strong>: 4.7.2 or later</li>
+<li><strong>.NET</strong>: 8.0 or later</li>
+</ul>
+<h3 id="development-requirements">Development Requirements</h3>
+<ul>
+<li><strong>Visual Studio</strong>: 2019 or later (for designer support)</li>
+<li><strong>WebView2 SDK</strong>: Assemblies must be available (see Setup section)</li>
+</ul>
+<h2 id="setup-instructions">Setup Instructions</h2>
+<h3 id="1-webview2-sdk-setup">1. WebView2 SDK Setup</h3>
+<ol>
+<li>Download the WebView2 SDK from Microsoft</li>
+<li>Extract the assemblies to a <code>WebView2SDK</code> folder at the repository root:
+<pre><code>WebView2SDK/
+├── Microsoft.Web.WebView2.Core.dll
+├── Microsoft.Web.WebView2.WinForms.dll
+└── WebView2Loader.dll
+</code></pre>
+</li>
+</ol>
+<h3 id="2-project-configuration">2. Project Configuration</h3>
+<p>The project file already includes the necessary assembly references:</p>
+<ul>
+<li>Conditional references for .NET Framework and .NET 8+</li>
+<li>Proper hint paths to the WebView2SDK folder</li>
+<li>Toolbox bitmap integration</li>
+</ul>
+<h3 id="3-runtime-distribution">3. Runtime Distribution</h3>
+<p>Choose one of these distribution methods:</p>
+<h4 id="option-a-evergreen-distribution-recommended">Option A: Evergreen Distribution (Recommended)</h4>
+<ul>
+<li>Users install WebView2 Runtime from Microsoft</li>
+<li>Automatic updates via Windows Update</li>
+<li>Smaller application size</li>
+</ul>
+<h4 id="option-b-fixed-version-distribution">Option B: Fixed Version Distribution</h4>
+<ul>
+<li>Bundle specific WebView2 Runtime with your application</li>
+<li>More control over version and updates</li>
+<li>Larger application size</li>
+</ul>
+<h2 id="testing">Testing</h2>
+<h3 id="running-the-test-form">Running the Test Form</h3>
+<ol>
+<li>Build the solution</li>
+<li>Run the TestForm project</li>
+<li>Navigate to the KryptonWebView2 test form</li>
+<li>Test various features:
+<ul>
+<li>Navigation with address bar</li>
+<li>Back/Forward/Refresh buttons</li>
+<li>Error handling scenarios</li>
+</ul>
+</li>
+</ol>
+<h3 id="test-scenarios">Test Scenarios</h3>
+<ul>
+<li><strong>Normal Navigation</strong>: Test with various websites</li>
+<li><strong>Error Handling</strong>: Test with invalid URLs</li>
+<li><strong>Context Menu</strong>: Right-click to test custom context menu</li>
+<li><strong>Theme Changes</strong>: Switch themes to test integration</li>
+<li><strong>Resize</strong>: Test control resizing and layout</li>
+</ul>
+<h2 id="api-documentation">API Documentation</h2>
+<h3 id="key-properties">Key Properties</h3>
+<ul>
+<li><code>KryptonContextMenu</code>: Custom context menu for right-click operations</li>
+<li><code>CoreWebView2</code>: Access to WebView2 functionality (after initialization)</li>
+<li><code>DocumentTitle</code>: Current document title</li>
+<li><code>Source</code>: Current page URI</li>
+</ul>
+<h3 id="key-methods">Key Methods</h3>
+<ul>
+<li><code>EnsureCoreWebView2Async()</code>: Initialize WebView2 engine</li>
+<li><code>CreateToolStripRenderer()</code>: Create themed renderer for tool strips</li>
+<li><code>GetResolvedPalette()</code>: Get current active palette</li>
+</ul>
+<h3 id="key-events">Key Events</h3>
+<ul>
+<li><code>NavigationStarting</code>: Before navigation begins</li>
+<li><code>NavigationCompleted</code>: After navigation completes</li>
+<li><code>DocumentTitleChanged</code>: When document title changes</li>
+<li><code>WebMessageReceived</code>: When JavaScript sends messages to C#</li>
+</ul>
+<h2 id="migration-from-kryptonwebbrowser">Migration from KryptonWebBrowser</h2>
+<h3 id="key-differences">Key Differences</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>KryptonWebBrowser</th>
+<th>KryptonWebView2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engine</td>
+<td>Internet Explorer</td>
+<td>Microsoft Edge Chromium</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Slower, limited</td>
+<td>Fast, modern</td>
+</tr>
+<tr>
+<td>Standards</td>
+<td>Limited HTML5/CSS3</td>
+<td>Full HTML5/CSS3</td>
+</tr>
+<tr>
+<td>JavaScript</td>
+<td>Limited ES5</td>
+<td>Full ES6+</td>
+</tr>
+<tr>
+<td>Async</td>
+<td>Synchronous</td>
+<td>Async/Await</td>
+</tr>
+</tbody>
+</table>
+<h3 id="migration-steps">Migration Steps</h3>
+<ol>
+<li>Replace <code>KryptonWebBrowser</code> with <code>KryptonWebView2</code></li>
+<li>Add async initialization: <code>await EnsureCoreWebView2Async()</code></li>
+<li>Update navigation calls to use <code>CoreWebView2.Navigate()</code></li>
+<li>Update event handlers to use WebView2 events</li>
+<li>Test thoroughly as behavior may differ</li>
+</ol>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="webview2-runtime-not-found">WebView2 Runtime Not Found</h4>
+<p><strong>Problem</strong>: <code>WebView2RuntimeNotFoundException</code> during initialization<br>
+<strong>Solution</strong>: Install WebView2 Runtime from Microsoft's website</p>
+<h4 id="designer-issues">Designer Issues</h4>
+<p><strong>Problem</strong>: Control doesn't appear in toolbox or designer<br>
+<strong>Solution</strong>:</p>
+<ol>
+<li>Ensure WebView2 SDK assemblies are in correct location</li>
+<li>Rebuild the solution</li>
+<li>Reset the Visual Studio toolbox</li>
+</ol>
+<h4 id="context-menu-not-showing">Context Menu Not Showing</h4>
+<p><strong>Problem</strong>: KryptonContextMenu doesn't appear on right-click<br>
+<strong>Solution</strong>:</p>
+<ol>
+<li>Ensure <code>KryptonContextMenu</code> property is set</li>
+<li>Check that the menu has items added</li>
+<li>Verify the menu is not disposed</li>
+</ol>
+<h3 id="debug-tips">Debug Tips</h3>
+<ol>
+<li>Enable DevTools: <code>CoreWebView2.Settings.AreDevToolsEnabled = true</code></li>
+<li>Check WebView2 logs in <code>%TEMP%\WebView2\</code></li>
+<li>Use F12 developer tools in the WebView2 control</li>
+<li>Monitor navigation events for error details</li>
+</ol>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="memory-management">Memory Management</h3>
+<ul>
+<li>WebView2 engine manages its own memory efficiently</li>
+<li>Multiple WebView2 instances share the same browser process</li>
+<li>Dispose the control properly to clean up resources</li>
+<li>Avoid creating unnecessary WebView2 instances</li>
+</ul>
+<h3 id="async-operations">Async Operations</h3>
+<ul>
+<li>Always use async/await for WebView2 operations</li>
+<li>Avoid blocking the UI thread during navigation</li>
+<li>Use cancellation tokens for long-running operations</li>
+</ul>
+<h2 id="security-considerations">Security Considerations</h2>
+<h3 id="webview2-security">WebView2 Security</h3>
+<ul>
+<li>WebView2 runs in a separate process for security</li>
+<li>JavaScript execution can be controlled via settings</li>
+<li>Network access follows system proxy settings</li>
+<li>Content Security Policy can be enforced for web content</li>
+</ul>
+<h3 id="best-practices">Best Practices</h3>
+<ul>
+<li>Be cautious with JavaScript execution</li>
+<li>Validate all user input before navigation</li>
+<li>Use HTTPS for sensitive operations</li>
+<li>Consider Content Security Policy for web content</li>
+</ul>
+<h2 id="contributing">Contributing</h2>
+<h3 id="development-guidelines">Development Guidelines</h3>
+<ul>
+<li>Follow existing code patterns and naming conventions</li>
+<li>Add comprehensive XML documentation for new APIs</li>
+<li>Include unit tests for new functionality</li>
+<li>Update documentation for any API changes</li>
+</ul>
+<h3 id="code-style">Code Style</h3>
+<ul>
+<li>Use 4-space indentation (consistent with project)</li>
+<li>Follow existing comment and documentation patterns</li>
+<li>Use async/await for WebView2 operations</li>
+<li>Handle exceptions appropriately</li>
+</ul>
+<h2 id="support-and-resources">Support and Resources</h2>
+<h3 id="documentation">Documentation</h3>
+<ul>
+<li><strong>Developer Guide</strong>: <code>KryptonWebView2.Documentation.md</code></li>
+<li><strong>API Reference</strong>: <code>KryptonWebView2.API.md</code></li>
+<li><strong>Inline Documentation</strong>: XML comments in source code</li>
+</ul>
+<h3 id="external-resources">External Resources</h3>
+<ul>
+<li><strong>Krypton Toolkit</strong>: <a href="https://github.com/Krypton-Suite/Standard-Toolkit">GitHub Repository</a></li>
+<li><strong>WebView2 Documentation</strong>: <a href="https://docs.microsoft.com/en-us/microsoft-edge/webview2/">Microsoft WebView2 Docs</a></li>
+<li><strong>WebView2 Runtime</strong>: <a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/">Download from Microsoft</a></li>
+</ul>
+<h3 id="issues-and-support">Issues and Support</h3>
+<ul>
+<li><strong>Bug Reports</strong>: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues">GitHub Issues</a></li>
+<li><strong>Feature Requests</strong>: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues">GitHub Issues</a></li>
+<li><strong>Community</strong>: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/discussions">GitHub Discussions</a></li>
+</ul>
+<h2 id="license">License</h2>
+<p>This implementation follows the same BSD 3-Clause License as the Krypton Toolkit project.</p>
+<h2 id="version-history">Version History</h2>
+<h3 id="initial-implementation">Initial Implementation</h3>
+<ul>
+<li>Basic WebView2 control with Krypton theming</li>
+<li>Custom context menu support</li>
+<li>Designer integration</li>
+<li>Comprehensive documentation</li>
+<li>Test form with navigation controls</li>
+</ul>
+<h3 id="future-enhancements">Future Enhancements</h3>
+<ul>
+<li>Additional WebView2 features integration</li>
+<li>Enhanced theming options</li>
+<li>Performance optimizations</li>
+<li>Additional test scenarios</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

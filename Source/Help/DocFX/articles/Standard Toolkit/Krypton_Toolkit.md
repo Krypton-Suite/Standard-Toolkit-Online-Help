@@ -45,6 +45,7 @@ the toolbox.
 * [KryptonTrackBar](Toolkit/KryptonTrackBar.md)  
 * [KryptonTreeView](Toolkit/KryptonTreeView.md)  
 * [KryptonWebBrowser](Toolkit/KryptonWebBrowser.md)
+* [KryptonWebView2](Toolkit/KryptonWebView2.md)
 * [KryptonWrapLabel](Toolkit/KryptonWrapLabel.md)
 
 **Components**  
@@ -69,3 +70,10 @@ the toolbox.
     
 **Forms**  
 * [KryptonForm](Toolkit/KryptonForm.md)
+    * [AdministratorSuffixFeatureforKryptonForm](Toolkit/AdministratorSuffixFeatureforKryptonForm.md)
+    * [KryptonThemedSystemMenu](Toolkit/KryptonThemedSystemMenu.md)
+  
+**Utilities**
+* [ExceptionHandler](Toolkit/ExceptionHandler.md)
+* [IconExtraction](Toolkit/IconExtraction.md)
+* [IconExtractionWithFallback](Toolkit/IconExtractionWithFallback.md)

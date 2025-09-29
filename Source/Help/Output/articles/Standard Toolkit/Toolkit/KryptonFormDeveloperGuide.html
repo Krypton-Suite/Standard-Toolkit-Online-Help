@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonForm Developer Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonForm Developer Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonform-developer-guide">KryptonForm Developer Guide</h1>
+
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<pre><code class="lang-csharp">// Create a KryptonForm with themed system menu
+var form = new KryptonForm();
+form.Text = &quot;My Application&quot;;
+form.Size = new Size(800, 600);
+
+// Add controls normally
+var button = new Button { Text = &quot;Click Me&quot; };
+form.Controls.Add(button); // Goes to InternalPanel automatically
+
+// System menu is automatically available
+// Right-click title bar to see themed menu
+</code></pre>
+<h3 id="designer-usage">Designer Usage</h3>
+<ol>
+<li><strong>Add KryptonForm</strong> to your project</li>
+<li><strong>Open in Visual Studio designer</strong></li>
+<li><strong>Drag controls</strong> from toolbox onto form</li>
+<li><strong>Configure properties</strong> in Properties window</li>
+<li><strong>No special setup required</strong> - everything works automatically</li>
+</ol>
+<h2 id="common-development-patterns">Common Development Patterns</h2>
+<h3 id="1-form-with-custom-system-menu">1. Form with Custom System Menu</h3>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    public MainForm()
+    {
+        InitializeComponent();
+    }
+    
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        SetupSystemMenu();
+    }
+    
+    private void SetupSystemMenu()
+    {
+        var systemMenu = KryptonSystemMenu;
+        if (systemMenu != null)
+        {
+            systemMenu.AddSeparator();
+            systemMenu.AddCustomMenuItem(&quot;Settings&quot;, OnSettings);
+            systemMenu.AddCustomMenuItem(&quot;About&quot;, OnAbout);
+            systemMenu.Refresh();
+        }
+    }
+    
+    private void OnSettings(object sender, EventArgs e)
+    {
+        var settingsForm = new SettingsForm();
+        settingsForm.ShowDialog(this);
+    }
+    
+    private void OnAbout(object sender, EventArgs e)
+    {
+        MessageBox.Show(&quot;My Application v1.0&quot;, &quot;About&quot;, 
+                       MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+}
+</code></pre>
+<h3 id="2-theme-aware-application">2. Theme-Aware Application</h3>
+<pre><code class="lang-csharp">public partial class ThemedForm : KryptonForm
+{
+    public ThemedForm()
+    {
+        InitializeComponent();
+        
+        // Set initial theme
+        PaletteMode = PaletteMode.Office2013White;
+    }
+    
+    private void ChangeTheme(PaletteMode newTheme)
+    {
+        // Change form theme
+        PaletteMode = newTheme;
+        
+        // System menu automatically adapts
+        // No additional code needed
+        
+        // Force refresh if needed
+        KryptonSystemMenu?.RefreshThemeIcons();
+    }
+    
+    private void OnThemeMenuClick(object sender, EventArgs e)
+    {
+        if (sender is ToolStripMenuItem item)
+        {
+            var theme = (PaletteMode)item.Tag;
+            ChangeTheme(theme);
+        }
+    }
+}
+</code></pre>
+<h3 id="3-configuration-driven-system-menu">3. Configuration-Driven System Menu</h3>
+<pre><code class="lang-csharp">public partial class ConfigurableForm : KryptonForm
+{
+    public ConfigurableForm()
+    {
+        InitializeComponent();
+    }
+    
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        LoadSystemMenuConfiguration();
+    }
+    
+    private void LoadSystemMenuConfiguration()
+    {
+        // Load from app settings
+        SystemMenuValues.Enabled = Properties.Settings.Default.SystemMenuEnabled;
+        SystemMenuValues.ShowOnRightClick = Properties.Settings.Default.ShowOnRightClick;
+        SystemMenuValues.ShowOnAltSpace = Properties.Settings.Default.ShowOnAltSpace;
+        
+        // Add custom items based on user role
+        if (User.IsAdmin)
+        {
+            AddAdminMenuItems();
+        }
+        
+        if (User.IsPowerUser)
+        {
+            AddPowerUserMenuItems();
+        }
+    }
+    
+    private void AddAdminMenuItems()
+    {
+        var systemMenu = KryptonSystemMenu;
+        if (systemMenu != null)
+        {
+            systemMenu.AddSeparator();
+            systemMenu.AddCustomMenuItem(&quot;Admin Panel&quot;, OnAdminPanel);
+            systemMenu.AddCustomMenuItem(&quot;User Management&quot;, OnUserManagement);
+            systemMenu.Refresh();
+        }
+    }
+}
+</code></pre>
+<h2 id="advanced-techniques">Advanced Techniques</h2>
+<h3 id="1-dynamic-menu-updates">1. Dynamic Menu Updates</h3>
+<pre><code class="lang-csharp">private void UpdateMenuBasedOnState()
+{
+    var systemMenu = KryptonSystemMenu;
+    if (systemMenu == null) return;
+    
+    // Clear existing custom items
+    systemMenu.ClearCustomItems();
+    
+    // Add items based on current application state
+    if (documentLoaded)
+    {
+        systemMenu.AddCustomMenuItem(&quot;Save Document&quot;, OnSaveDocument);
+        systemMenu.AddCustomMenuItem(&quot;Export&quot;, OnExport);
+    }
+    
+    if (hasUnsavedChanges)
+    {
+        systemMenu.AddCustomMenuItem(&quot;Discard Changes&quot;, OnDiscardChanges);
+    }
+    
+    // Apply changes
+    systemMenu.Refresh();
+}
+</code></pre>
+<h3 id="2-context-sensitive-menus">2. Context-Sensitive Menus</h3>
+<pre><code class="lang-csharp">private void UpdateMenuForContext(ApplicationContext context)
+{
+    var systemMenu = KryptonSystemMenu;
+    if (systemMenu == null) return;
+    
+    // Get existing custom items
+    var existingItems = systemMenu.GetCustomMenuItems();
+    
+    // Only update if context changed
+    if (ShouldUpdateMenu(context, existingItems))
+    {
+        RebuildMenuForContext(context);
+    }
+}
+
+private void RebuildMenuForContext(ApplicationContext context)
+{
+    var systemMenu = KryptonSystemMenu;
+    systemMenu.ClearCustomItems();
+    
+    switch (context)
+    {
+        case ApplicationContext.Editing:
+            systemMenu.AddCustomMenuItem(&quot;Undo&quot;, OnUndo);
+            systemMenu.AddCustomMenuItem(&quot;Redo&quot;, OnRedo);
+            break;
+            
+        case ApplicationContext.Viewing:
+            systemMenu.AddCustomMenuItem(&quot;Zoom In&quot;, OnZoomIn);
+            systemMenu.AddCustomMenuItem(&quot;Zoom Out&quot;, OnZoomOut);
+            break;
+    }
+    
+    systemMenu.Refresh();
+}
+</code></pre>
+<h3 id="3-integration-with-application-framework">3. Integration with Application Framework</h3>
+<pre><code class="lang-csharp">public abstract class BaseKryptonForm : KryptonForm
+{
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        InitializeBaseSystemMenu();
+    }
+    
+    protected virtual void InitializeBaseSystemMenu()
+    {
+        var systemMenu = KryptonSystemMenu;
+        if (systemMenu != null)
+        {
+            // Add common items to all forms
+            systemMenu.AddSeparator();
+            systemMenu.AddCustomMenuItem(&quot;Help&quot;, OnShowHelp);
+            
+            // Let derived classes add their items
+            AddCustomSystemMenuItems(systemMenu);
+            
+            systemMenu.Refresh();
+        }
+    }
+    
+    protected virtual void AddCustomSystemMenuItems(KryptonSystemMenu systemMenu)
+    {
+        // Override in derived classes to add specific items
+    }
+    
+    private void OnShowHelp(object sender, EventArgs e)
+    {
+        // Show context-sensitive help
+        Help.ShowHelp(this, GetHelpFile(), GetHelpTopic());
+    }
+    
+    protected abstract string GetHelpFile();
+    protected abstract string GetHelpTopic();
+}
+
+// Usage in specific forms
+public partial class DocumentForm : BaseKryptonForm
+{
+    protected override void AddCustomSystemMenuItems(KryptonSystemMenu systemMenu)
+    {
+        systemMenu.AddCustomMenuItem(&quot;Document Properties&quot;, OnDocumentProperties);
+        systemMenu.AddCustomMenuItem(&quot;Print Preview&quot;, OnPrintPreview);
+    }
+    
+    protected override string GetHelpFile() =&gt; &quot;DocumentHelp.chm&quot;;
+    protected override string GetHelpTopic() =&gt; &quot;DocumentEditing&quot;;
+}
+</code></pre>
+<h2 id="testing-strategies">Testing Strategies</h2>
+<h3 id="unit-testing">Unit Testing</h3>
+<pre><code class="lang-csharp">[Test]
+public void SystemMenu_InDesignMode_ShouldBeNull()
+{
+    // Simulate design mode
+    using var form = new KryptonForm();
+    
+    // In design mode, system menu should be null
+    Assert.IsNull(form.KryptonSystemMenu);
+    Assert.IsNull(form.SystemMenuService);
+}
+
+[Test]
+public void SystemMenu_AtRuntime_ShouldBeAvailable()
+{
+    // Simulate runtime
+    using var form = new KryptonForm();
+    form.CreateControl(); // Simulate runtime creation
+    
+    // At runtime, system menu should be available
+    Assert.IsNotNull(form.KryptonSystemMenu);
+    Assert.IsNotNull(form.SystemMenuService);
+}
+</code></pre>
+<h3 id="integration-testing">Integration Testing</h3>
+<pre><code class="lang-csharp">[Test]
+public void CustomMenuItem_ShouldAppearInMenu()
+{
+    using var form = new KryptonForm();
+    form.CreateControl();
+    
+    var systemMenu = form.KryptonSystemMenu;
+    Assert.IsNotNull(systemMenu);
+    
+    // Add custom item
+    bool clicked = false;
+    systemMenu.AddCustomMenuItem(&quot;Test&quot;, (s, e) =&gt; clicked = true);
+    systemMenu.Refresh();
+    
+    // Verify item was added
+    var customItems = systemMenu.GetCustomMenuItems();
+    Assert.Contains(&quot;Test&quot;, customItems);
+}
+</code></pre>
+<h3 id="designer-testing">Designer Testing</h3>
+<pre><code class="lang-csharp">// Manual testing in Visual Studio designer:
+// 1. Open KryptonForm in designer
+// 2. Verify no red rectangle appears
+// 3. Test drag and drop from toolbox
+// 4. Confirm form selection works
+// 5. Check Properties window shows KryptonForm
+</code></pre>
+<h2 id="performance-optimization">Performance Optimization</h2>
+<h3 id="best-practices">Best Practices</h3>
+<h4 id="1-minimize-system-menu-operations">1. Minimize System Menu Operations</h4>
+<pre><code class="lang-csharp">// Batch operations together
+var systemMenu = KryptonSystemMenu;
+if (systemMenu != null)
+{
+    systemMenu.AddCustomMenuItem(&quot;Item1&quot;, OnItem1);
+    systemMenu.AddCustomMenuItem(&quot;Item2&quot;, OnItem2);
+    systemMenu.AddCustomMenuItem(&quot;Item3&quot;, OnItem3);
+    
+    // Single refresh for all changes
+    systemMenu.Refresh();
+}
+</code></pre>
+<h4 id="2-cache-system-menu-reference">2. Cache System Menu Reference</h4>
+<pre><code class="lang-csharp">public partial class OptimizedForm : KryptonForm
+{
+    private KryptonSystemMenu? _cachedSystemMenu;
+    
+    private KryptonSystemMenu? CachedSystemMenu
+    {
+        get
+        {
+            if (_cachedSystemMenu == null)
+            {
+                _cachedSystemMenu = KryptonSystemMenu;
+            }
+            return _cachedSystemMenu;
+        }
+    }
+    
+    private void UseSystemMenu()
+    {
+        var systemMenu = CachedSystemMenu;
+        if (systemMenu != null)
+        {
+            // Use cached reference
+            systemMenu.Refresh();
+        }
+    }
+}
+</code></pre>
+<h4 id="3-efficient-event-handling">3. Efficient Event Handling</h4>
+<pre><code class="lang-csharp">// Use lightweight event handlers
+private void OnQuickAction(object sender, EventArgs e)
+{
+    // Keep handlers simple and fast
+    PerformQuickAction();
+}
+
+// For complex operations, use async patterns
+private async void OnComplexAction(object sender, EventArgs e)
+{
+    // Show progress
+    Cursor = Cursors.WaitCursor;
+    
+    try
+    {
+        await PerformComplexOperationAsync();
+    }
+    finally
+    {
+        Cursor = Cursors.Default;
+    }
+}
+</code></pre>
+<h2 id="deployment-considerations">Deployment Considerations</h2>
+<h3 id="distribution">Distribution</h3>
+<ul>
+<li><strong>No Special Requirements</strong>: System menu is part of Krypton.Toolkit</li>
+<li><strong>Theme Resources</strong>: Icons embedded in assembly</li>
+<li><strong>Dependencies</strong>: Standard Krypton.Toolkit dependencies only</li>
+</ul>
+<h3 id="configuration">Configuration</h3>
+<ul>
+<li><strong>App.config</strong>: No special configuration required</li>
+<li><strong>Registry</strong>: No registry dependencies</li>
+<li><strong>User Settings</strong>: Can store SystemMenuValues preferences</li>
+</ul>
+<h3 id="compatibility">Compatibility</h3>
+<ul>
+<li><strong>Windows Versions</strong>: Works on all supported Windows versions</li>
+<li><strong>.NET Versions</strong>: Supports all Krypton.Toolkit target frameworks</li>
+<li><strong>DPI Awareness</strong>: Automatically handles high-DPI scenarios</li>
+</ul>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="KryptonForm-SystemMenu-Overview.md">System Menu Overview</a></li>
+<li><a href="KryptonSystemMenu-API-Reference.md">API Reference</a></li>
+<li><a href="KryptonSystemMenuService-Documentation.md">Service Documentation</a></li>
+<li><a href="KryptonForm-Troubleshooting.md">Troubleshooting Guide</a></li>
+<li><a href="KryptonForm-Migration-Guide.md">Migration Guide</a></li>
+<li><a href="KryptonForm-InternalPanel-Architecture.md">InternalPanel Architecture</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

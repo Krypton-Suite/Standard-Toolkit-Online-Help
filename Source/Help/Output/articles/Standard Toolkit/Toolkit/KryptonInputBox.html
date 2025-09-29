@@ -69,29 +69,634 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptoninputbox">KryptonInputBox</h1>
 
-<p>The <em>KryptonInputBox</em> provides access to a <em>Krypton</em> style dialog box that
-allows the user to enter a string. It is a replica of the <em>InputBox</em> control
-that is provided as part of the <em>Microsoft.VisualBasic</em> assembly and is
-typically used by <em>VB.NET</em> developers. By providing a Krypton version of this
-dialog it ensures that your whole application has a consistent look and feel
-that extends to even the input boxes that appear.</p>
-<p></p>
-<p><strong>Appearance</strong></p>
-<p>The displayed <em>KryptonInputBox</em> derives from the <em>KryptonForm</em> base class and so
-has the same appearance as other <em>Krypton</em> style forms. In order to show the
-<em>Krypton</em> input box you need to call one of the static methods it exposes called
-<em>Show</em>. The simplest method takes a single parameter and will show an input box
-with the specified prompt text. All the other parameters will be defaulted. Use
-one of the other methods if you need greater control window title or default
-input string. See Figure 1 for an example of the input box in operation.</p>
-<p></p>
-<p><strong>String Localization</strong></p>
-<p>The button text will always display in English by default. If you need to
-localize the strings to other languages you can do so by placing a
-<em>KryptonManager</em> component on your main <em>Form</em>. Use the properties window and
-then expand the <em>GlobalStrings</em> property and modify the strings as needed.</p>
-<p><img src="Images/KryptonInputBox.png" alt=""></p>
-<p><em>Figure 1 – Example Appearance</em></p>
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonInputBox</code> class provides a static utility for displaying input dialogs with Krypton theming. It offers a centralized way to show input dialogs with customizable data and layout options, enabling users to enter text input through a themed dialog interface.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── Krypton.Toolkit.KryptonInputBox
+</code></pre>
+<h2 id="key-methods">Key Methods</h2>
+<h3 id="show-method">Show Method</h3>
+<pre><code class="lang-csharp">public static string Show(KryptonInputBoxData inputBoxData)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Displays an input box dialog with the specified data and returns the user's input</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>inputBoxData</code>: Configuration data for the input box dialog</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: String containing the user's input, or empty string if cancelled</li>
+<li><strong>Usage</strong>: Main entry point for showing input dialogs</li>
+</ul>
+<h3 id="internalshow-method">InternalShow Method</h3>
+<pre><code class="lang-csharp">internal static string InternalShow(KryptonInputBoxData inputBoxData)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Internal implementation that routes to the appropriate form based on RTL layout</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>inputBoxData</code>: Configuration data for the input box dialog</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: String containing the user's input</li>
+<li><strong>Implementation</strong>: Automatically selects between <code>VisualInputBoxForm</code> and <code>VisualInputBoxRtlAwareForm</code> based on RTL layout setting</li>
+</ul>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="basic-input-box">Basic Input Box</h3>
+<pre><code class="lang-csharp">public void ShowBasicInputBox()
+{
+    var inputData = new KryptonInputBoxData
+    {
+        Prompt = &quot;Enter your name:&quot;,
+        Caption = &quot;User Input&quot;,
+        DefaultResponse = &quot;John Doe&quot;
+    };
+
+    string result = KryptonInputBox.Show(inputData);
+    
+    if (!string.IsNullOrEmpty(result))
+    {
+        MessageBox.Show($&quot;Hello, {result}!&quot;, &quot;Greeting&quot;);
+    }
+}
+</code></pre>
+<h3 id="advanced-input-box-with-validation">Advanced Input Box with Validation</h3>
+<pre><code class="lang-csharp">public class InputValidator
+{
+    public string GetValidatedInput(string prompt, string caption, string defaultValue = &quot;&quot;)
+    {
+        string input;
+        bool isValid = false;
+
+        do
+        {
+            var inputData = new KryptonInputBoxData
+            {
+                Prompt = prompt,
+                Caption = caption,
+                DefaultResponse = defaultValue
+            };
+
+            input = KryptonInputBox.Show(inputData);
+
+            if (string.IsNullOrEmpty(input))
+            {
+                return string.Empty; // User cancelled
+            }
+
+            isValid = ValidateInput(input);
+            if (!isValid)
+            {
+                MessageBox.Show(&quot;Invalid input. Please try again.&quot;, &quot;Validation Error&quot;, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        } while (!isValid);
+
+        return input;
+    }
+
+    private bool ValidateInput(string input)
+    {
+        // Add your validation logic here
+        return !string.IsNullOrWhiteSpace(input) &amp;&amp; input.Length &gt;= 3;
+    }
+}
+</code></pre>
+<h3 id="multi-step-input-collection">Multi-Step Input Collection</h3>
+<pre><code class="lang-csharp">public class MultiStepInputCollector
+{
+    public Dictionary&lt;string, string&gt; CollectUserInformation()
+    {
+        var userInfo = new Dictionary&lt;string, string&gt;();
+
+        // Collect name
+        var nameData = new KryptonInputBoxData
+        {
+            Prompt = &quot;Please enter your full name:&quot;,
+            Caption = &quot;User Information - Step 1 of 3&quot;,
+            DefaultResponse = &quot;&quot;
+        };
+        string name = KryptonInputBox.Show(nameData);
+        if (string.IsNullOrEmpty(name)) return userInfo;
+        userInfo[&quot;Name&quot;] = name;
+
+        // Collect email
+        var emailData = new KryptonInputBoxData
+        {
+            Prompt = &quot;Please enter your email address:&quot;,
+            Caption = &quot;User Information - Step 2 of 3&quot;,
+            DefaultResponse = &quot;&quot;
+        };
+        string email = KryptonInputBox.Show(emailData);
+        if (string.IsNullOrEmpty(email)) return userInfo;
+        userInfo[&quot;Email&quot;] = email;
+
+        // Collect phone
+        var phoneData = new KryptonInputBoxData
+        {
+            Prompt = &quot;Please enter your phone number:&quot;,
+            Caption = &quot;User Information - Step 3 of 3&quot;,
+            DefaultResponse = &quot;&quot;
+        };
+        string phone = KryptonInputBox.Show(phoneData);
+        if (string.IsNullOrEmpty(phone)) return userInfo;
+        userInfo[&quot;Phone&quot;] = phone;
+
+        return userInfo;
+    }
+}
+</code></pre>
+<h3 id="configuration-input-dialog">Configuration Input Dialog</h3>
+<pre><code class="lang-csharp">public class ConfigurationManager
+{
+    public void ShowConfigurationInput()
+    {
+        // Server configuration
+        var serverData = new KryptonInputBoxData
+        {
+            Prompt = &quot;Enter server address:&quot;,
+            Caption = &quot;Server Configuration&quot;,
+            DefaultResponse = &quot;localhost&quot;
+        };
+        string serverAddress = KryptonInputBox.Show(serverData);
+
+        if (!string.IsNullOrEmpty(serverAddress))
+        {
+            // Port configuration
+            var portData = new KryptonInputBoxData
+            {
+                Prompt = &quot;Enter port number:&quot;,
+                Caption = &quot;Server Configuration&quot;,
+                DefaultResponse = &quot;8080&quot;
+            };
+            string portString = KryptonInputBox.Show(portData);
+
+            if (!string.IsNullOrEmpty(portString) &amp;&amp; int.TryParse(portString, out int port))
+            {
+                SaveConfiguration(serverAddress, port);
+            }
+        }
+    }
+
+    private void SaveConfiguration(string server, int port)
+    {
+        // Save configuration logic
+        Console.WriteLine($&quot;Server: {server}, Port: {port}&quot;);
+    }
+}
+</code></pre>
+<h3 id="rtl-layout-support">RTL Layout Support</h3>
+<pre><code class="lang-csharp">public class LocalizedInputManager
+{
+    public void ShowLocalizedInput()
+    {
+        var inputData = new KryptonInputBoxData
+        {
+            Prompt = GetLocalizedString(&quot;InputPrompt&quot;),
+            Caption = GetLocalizedString(&quot;InputCaption&quot;),
+            DefaultResponse = GetLocalizedString(&quot;DefaultInput&quot;),
+            UseRTLLayout = IsRightToLeftLanguage() ? KryptonUseRTLLayout.Yes : KryptonUseRTLLayout.No
+        };
+
+        string result = KryptonInputBox.Show(inputData);
+        ProcessInput(result);
+    }
+
+    private string GetLocalizedString(string key)
+    {
+        // Implementation to get localized strings
+        return key; // Placeholder
+    }
+
+    private bool IsRightToLeftLanguage()
+    {
+        var culture = CultureInfo.CurrentUICulture;
+        return culture.TextInfo.IsRightToLeft;
+    }
+
+    private void ProcessInput(string input)
+    {
+        if (!string.IsNullOrEmpty(input))
+        {
+            // Process the input
+            Console.WriteLine($&quot;User input: {input}&quot;);
+        }
+    }
+}
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="settings-dialog-integration">Settings Dialog Integration</h3>
+<pre><code class="lang-csharp">public class SettingsDialog : Form
+{
+    private KryptonButton configureButton;
+
+    public SettingsDialog()
+    {
+        InitializeComponent();
+        SetupConfigureButton();
+    }
+
+    private void SetupConfigureButton()
+    {
+        configureButton = new KryptonButton
+        {
+            Text = &quot;Configure Settings&quot;,
+            Dock = DockStyle.Fill
+        };
+
+        configureButton.Click += ConfigureButton_Click;
+    }
+
+    private void ConfigureButton_Click(object? sender, EventArgs e)
+    {
+        ShowConfigurationInput();
+    }
+
+    private void ShowConfigurationInput()
+    {
+        var inputData = new KryptonInputBoxData
+        {
+            Prompt = &quot;Enter configuration value:&quot;,
+            Caption = &quot;Settings Configuration&quot;,
+            DefaultResponse = GetCurrentSetting()
+        };
+
+        string newValue = KryptonInputBox.Show(inputData);
+        if (!string.IsNullOrEmpty(newValue))
+        {
+            SaveSetting(newValue);
+        }
+    }
+
+    private string GetCurrentSetting()
+    {
+        // Implementation to get current setting
+        return &quot;Current Value&quot;;
+    }
+
+    private void SaveSetting(string value)
+    {
+        // Implementation to save setting
+        Console.WriteLine($&quot;Setting saved: {value}&quot;);
+    }
+}
+</code></pre>
+<h3 id="user-registration-flow">User Registration Flow</h3>
+<pre><code class="lang-csharp">public class UserRegistration
+{
+    public bool RegisterNewUser()
+    {
+        // Username input
+        var usernameData = new KryptonInputBoxData
+        {
+            Prompt = &quot;Enter your desired username:&quot;,
+            Caption = &quot;User Registration&quot;,
+            DefaultResponse = &quot;&quot;
+        };
+        string username = KryptonInputBox.Show(usernameData);
+        if (string.IsNullOrEmpty(username)) return false;
+
+        // Email input
+        var emailData = new KryptonInputBoxData
+        {
+            Prompt = &quot;Enter your email address:&quot;,
+            Caption = &quot;User Registration&quot;,
+            DefaultResponse = &quot;&quot;
+        };
+        string email = KryptonInputBox.Show(emailData);
+        if (string.IsNullOrEmpty(email)) return false;
+
+        // Display confirmation
+        string confirmation = $&quot;Username: {username}\nEmail: {email}\n\nIs this information correct?&quot;;
+        var result = MessageBox.Show(confirmation, &quot;Confirm Registration&quot;, 
+            MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+        if (result == DialogResult.Yes)
+        {
+            return CreateUserAccount(username, email);
+        }
+
+        return false;
+    }
+
+    private bool CreateUserAccount(string username, string email)
+    {
+        // Implementation to create user account
+        Console.WriteLine($&quot;Creating account for {username} ({email})&quot;);
+        return true;
+    }
+}
+</code></pre>
+<h3 id="dynamic-configuration-input">Dynamic Configuration Input</h3>
+<pre><code class="lang-csharp">public class DynamicConfigurator
+{
+    public void ConfigureApplication()
+    {
+        var configItems = new[]
+        {
+            new ConfigItem(&quot;Database Connection String&quot;, &quot;Server=localhost;Database=MyApp;&quot;),
+            new ConfigItem(&quot;API Endpoint&quot;, &quot;https://api.example.com/&quot;),
+            new ConfigItem(&quot;Log Level&quot;, &quot;Information&quot;),
+            new ConfigItem(&quot;Cache Timeout&quot;, &quot;300&quot;)
+        };
+
+        foreach (var item in configItems)
+        {
+            ConfigureItem(item);
+        }
+    }
+
+    private void ConfigureItem(ConfigItem item)
+    {
+        var inputData = new KryptonInputBoxData
+        {
+            Prompt = $&quot;Enter {item.Name}:&quot;,
+            Caption = &quot;Application Configuration&quot;,
+            DefaultResponse = item.DefaultValue
+        };
+
+        string newValue = KryptonInputBox.Show(inputData);
+        if (!string.IsNullOrEmpty(newValue))
+        {
+            item.Value = newValue;
+            SaveConfigurationItem(item);
+        }
+    }
+
+    private void SaveConfigurationItem(ConfigItem item)
+    {
+        // Implementation to save configuration item
+        Console.WriteLine($&quot;{item.Name}: {item.Value}&quot;);
+    }
+}
+
+public class ConfigItem
+{
+    public string Name { get; set; }
+    public string DefaultValue { get; set; }
+    public string Value { get; set; }
+
+    public ConfigItem(string name, string defaultValue)
+    {
+        Name = name;
+        DefaultValue = defaultValue;
+        Value = defaultValue;
+    }
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Static Methods</strong>: Efficient static method calls without instance creation</li>
+<li><strong>Memory Management</strong>: Minimal memory footprint for utility class</li>
+<li><strong>Dialog Lifecycle</strong>: Proper dialog creation and disposal</li>
+<li><strong>RTL Support</strong>: Automatic RTL layout detection and form selection</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="input-box-not-showing">Input Box Not Showing</h3>
+<p><strong>Issue</strong>: Input box dialog not appearing<br>
+<strong>Solution</strong>: Ensure proper input data configuration:</p>
+<pre><code class="lang-csharp">var inputData = new KryptonInputBoxData
+{
+    Prompt = &quot;Enter your input:&quot;,
+    Caption = &quot;Input Required&quot;,
+    DefaultResponse = &quot;&quot;
+    // Ensure all required properties are set
+};
+
+string result = KryptonInputBox.Show(inputData);
+</code></pre>
+<h3 id="rtl-layout-issues">RTL Layout Issues</h3>
+<p><strong>Issue</strong>: Right-to-left layout not working correctly<br>
+<strong>Solution</strong>: Properly configure RTL layout:</p>
+<pre><code class="lang-csharp">var inputData = new KryptonInputBoxData
+{
+    Prompt = &quot;Enter your input:&quot;,
+    Caption = &quot;Input Required&quot;,
+    DefaultResponse = &quot;&quot;,
+    UseRTLLayout = CultureInfo.CurrentUICulture.TextInfo.IsRightToLeft 
+        ? KryptonUseRTLLayout.Yes 
+        : KryptonUseRTLLayout.No
+};
+
+string result = KryptonInputBox.Show(inputData);
+</code></pre>
+<h3 id="input-validation">Input Validation</h3>
+<p><strong>Issue</strong>: No built-in input validation<br>
+<strong>Solution</strong>: Implement custom validation:</p>
+<pre><code class="lang-csharp">public string GetValidatedInput(string prompt, string caption, Func&lt;string, bool&gt; validator)
+{
+    string input;
+    do
+    {
+        var inputData = new KryptonInputBoxData
+        {
+            Prompt = prompt,
+            Caption = caption,
+            DefaultResponse = &quot;&quot;
+        };
+
+        input = KryptonInputBox.Show(inputData);
+        
+        if (string.IsNullOrEmpty(input))
+        {
+            return string.Empty; // User cancelled
+        }
+
+        if (!validator(input))
+        {
+            MessageBox.Show(&quot;Invalid input. Please try again.&quot;, &quot;Validation Error&quot;);
+        }
+    } while (!validator(input));
+
+    return input;
+}
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Static Class</strong>: Not available in toolbox (static utility class)</li>
+<li><strong>Method Access</strong>: Accessible through code only</li>
+<li><strong>Configuration</strong>: Input data configuration through code</li>
+</ul>
+<h3 id="usage-patterns">Usage Patterns</h3>
+<ul>
+<li><strong>User Input</strong>: Simple text input collection</li>
+<li><strong>Configuration</strong>: Application settings input</li>
+<li><strong>Registration</strong>: User registration flows</li>
+<li><strong>Localization</strong>: Multi-language input dialogs</li>
+</ul>
+<h2 id="migration-and-compatibility">Migration and Compatibility</h2>
+<h3 id="from-standard-inputbox">From Standard InputBox</h3>
+<pre><code class="lang-csharp">// Old way (if using custom input box)
+// string result = CustomInputBox.Show(&quot;Enter your name:&quot;, &quot;Input&quot;, &quot;Default&quot;);
+
+// New way
+var inputData = new KryptonInputBoxData
+{
+    Prompt = &quot;Enter your name:&quot;,
+    Caption = &quot;Input&quot;,
+    DefaultResponse = &quot;Default&quot;
+};
+string result = KryptonInputBox.Show(inputData);
+</code></pre>
+<h3 id="from-messagebox-input">From MessageBox Input</h3>
+<pre><code class="lang-csharp">// Old way (if using MessageBox for input)
+// string result = Microsoft.VisualBasic.Interaction.InputBox(&quot;Prompt&quot;, &quot;Title&quot;, &quot;Default&quot;);
+
+// New way
+var inputData = new KryptonInputBoxData
+{
+    Prompt = &quot;Prompt&quot;,
+    Caption = &quot;Title&quot;,
+    DefaultResponse = &quot;Default&quot;
+};
+string result = KryptonInputBox.Show(inputData);
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="application-settings-manager">Application Settings Manager</h3>
+<pre><code class="lang-csharp">public class ApplicationSettingsManager
+{
+    public void ShowSettingsConfiguration()
+    {
+        var settings = new Dictionary&lt;string, string&gt;
+        {
+            [&quot;DatabaseServer&quot;] = &quot;localhost&quot;,
+            [&quot;DatabasePort&quot;] = &quot;1433&quot;,
+            [&quot;DatabaseName&quot;] = &quot;MyApplication&quot;,
+            [&quot;ApiEndpoint&quot;] = &quot;https://api.myapp.com&quot;,
+            [&quot;LogLevel&quot;] = &quot;Information&quot;
+        };
+
+        foreach (var setting in settings)
+        {
+            ConfigureSetting(setting.Key, setting.Value);
+        }
+    }
+
+    private void ConfigureSetting(string key, string currentValue)
+    {
+        var inputData = new KryptonInputBoxData
+        {
+            Prompt = $&quot;Enter {key}:&quot;,
+            Caption = &quot;Application Settings&quot;,
+            DefaultResponse = currentValue
+        };
+
+        string newValue = KryptonInputBox.Show(inputData);
+        if (!string.IsNullOrEmpty(newValue) &amp;&amp; newValue != currentValue)
+        {
+            SaveSetting(key, newValue);
+        }
+    }
+
+    private void SaveSetting(string key, string value)
+    {
+        // Implementation to save setting
+        Console.WriteLine($&quot;Setting {key} updated to: {value}&quot;);
+    }
+}
+</code></pre>
+<h3 id="user-profile-setup">User Profile Setup</h3>
+<pre><code class="lang-csharp">public class UserProfileSetup
+{
+    public UserProfile CreateUserProfile()
+    {
+        var profile = new UserProfile();
+
+        // Collect basic information
+        profile.FirstName = GetInput(&quot;Enter your first name:&quot;, &quot;Profile Setup&quot;);
+        if (string.IsNullOrEmpty(profile.FirstName)) return null;
+
+        profile.LastName = GetInput(&quot;Enter your last name:&quot;, &quot;Profile Setup&quot;);
+        if (string.IsNullOrEmpty(profile.LastName)) return null;
+
+        profile.Email = GetInput(&quot;Enter your email address:&quot;, &quot;Profile Setup&quot;);
+        if (string.IsNullOrEmpty(profile.Email)) return null;
+
+        profile.Phone = GetInput(&quot;Enter your phone number:&quot;, &quot;Profile Setup&quot;, &quot;&quot;);
+
+        // Collect preferences
+        profile.Theme = GetInput(&quot;Enter your preferred theme:&quot;, &quot;Profile Setup&quot;, &quot;Default&quot;);
+        profile.Language = GetInput(&quot;Enter your preferred language:&quot;, &quot;Profile Setup&quot;, &quot;English&quot;);
+
+        return profile;
+    }
+
+    private string GetInput(string prompt, string caption, string defaultValue = &quot;&quot;)
+    {
+        var inputData = new KryptonInputBoxData
+        {
+            Prompt = prompt,
+            Caption = caption,
+            DefaultResponse = defaultValue
+        };
+
+        return KryptonInputBox.Show(inputData);
+    }
+}
+
+public class UserProfile
+{
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string Theme { get; set; } = string.Empty;
+    public string Language { get; set; } = string.Empty;
+}
+</code></pre>
+<h3 id="dynamic-form-builder">Dynamic Form Builder</h3>
+<pre><code class="lang-csharp">public class DynamicFormBuilder
+{
+    public Dictionary&lt;string, string&gt; BuildForm(string[] fieldNames)
+    {
+        var formData = new Dictionary&lt;string, string&gt;();
+
+        foreach (string fieldName in fieldNames)
+        {
+            var inputData = new KryptonInputBoxData
+            {
+                Prompt = $&quot;Enter {fieldName}:&quot;,
+                Caption = &quot;Dynamic Form&quot;,
+                DefaultResponse = &quot;&quot;
+            };
+
+            string value = KryptonInputBox.Show(inputData);
+            if (!string.IsNullOrEmpty(value))
+            {
+                formData[fieldName] = value;
+            }
+            else
+            {
+                // User cancelled, return partial data
+                break;
+            }
+        }
+
+        return formData;
+    }
+
+    public void ShowDynamicForm()
+    {
+        string[] fields = { &quot;Name&quot;, &quot;Age&quot;, &quot;City&quot;, &quot;Country&quot;, &quot;Occupation&quot; };
+        var data = BuildForm(fields);
+
+        if (data.Count &gt; 0)
+        {
+            string summary = &quot;Form Data:\n&quot;;
+            foreach (var item in data)
+            {
+                summary += $&quot;{item.Key}: {item.Value}\n&quot;;
+            }
+
+            MessageBox.Show(summary, &quot;Form Summary&quot;, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+    }
+}
+</code></pre>
+<h2 id="license-and-attribution">License and Attribution</h2>
+<p>This class is part of the Krypton Toolkit Suite under the BSD 3-Clause License. It provides a centralized input dialog utility with support for RTL layouts and customizable input data, enabling consistent user input collection across Krypton applications.</p>
 
 </article>
           </div>

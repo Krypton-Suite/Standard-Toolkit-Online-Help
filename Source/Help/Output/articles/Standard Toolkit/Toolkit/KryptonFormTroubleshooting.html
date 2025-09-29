@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonForm System Menu - Troubleshooting Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonForm System Menu - Troubleshooting Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonform-system-menu---troubleshooting-guide">KryptonForm System Menu - Troubleshooting Guide</h1>
+
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="designer-issues">Designer Issues</h3>
+<h4 id="-problem-cannot-drag-controls-from-toolbox">❌ Problem: Cannot Drag Controls from Toolbox</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Red rectangle appears when trying to drag controls</li>
+<li>Controls cannot be dropped onto KryptonForm</li>
+<li>Designer appears &quot;locked&quot; or unresponsive</li>
+</ul>
+<p><strong>Root Cause:</strong>
+System menu interference with designer operations</p>
+<p><strong>Solution:</strong>
+This should be resolved with the new implementation. Verify:</p>
+<pre><code class="lang-csharp">// Check that system menu service is null in design mode
+var service = form.SystemMenuService; // Should be null in designer
+</code></pre>
+<p><strong>If still occurring:</strong></p>
+<ol>
+<li>Rebuild the solution completely</li>
+<li>Close and reopen Visual Studio</li>
+<li>Check that <code>LicenseManager.UsageMode == LicenseUsageMode.Designtime</code> in designer</li>
+</ol>
+<h4 id="-problem-internalpanel-selectable-in-designer">❌ Problem: InternalPanel Selectable in Designer</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Clicking on form client area selects InternalPanel instead of KryptonForm</li>
+<li>Properties window shows InternalPanel properties</li>
+</ul>
+<p><strong>Root Cause:</strong>
+InternalPanel being treated as separate control</p>
+<p><strong>Solution:</strong>
+With the new implementation, InternalPanel should be transparent. Verify:</p>
+<pre><code class="lang-csharp">// InternalPanel should not have special designer logic anymore
+// It's now a standard KryptonPanel
+</code></pre>
+<h4 id="-problem-form-selection-issues">❌ Problem: Form Selection Issues</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Cannot select KryptonForm by clicking on it</li>
+<li>Must click title bar to select form</li>
+</ul>
+<p><strong>Root Cause:</strong>
+Hit testing interference</p>
+<p><strong>Solution:</strong>
+The <code>WindowChromeHitTest</code> method now includes designer mode detection:</p>
+<pre><code class="lang-csharp">protected override IntPtr WindowChromeHitTest(Point pt)
+{
+    if (IsInDesignMode())
+    {
+        return base.WindowChromeHitTest(pt); // Let designer handle
+    }
+    // ... runtime hit testing
+}
+</code></pre>
+<h3 id="runtime-issues">Runtime Issues</h3>
+<h4 id="-problem-system-menu-not-appearing">❌ Problem: System Menu Not Appearing</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Right-click on title bar doesn't show menu</li>
+<li>Alt+Space doesn't work</li>
+<li>No system menu functionality</li>
+</ul>
+<p><strong>Possible Causes &amp; Solutions:</strong></p>
+<ol>
+<li><p><strong>System Menu Disabled</strong></p>
+<pre><code class="lang-csharp">// Check and fix
+form.SystemMenuValues.Enabled = true;
+</code></pre>
+</li>
+<li><p><strong>Right-Click Disabled</strong></p>
+<pre><code class="lang-csharp">// Check and fix
+form.SystemMenuValues.ShowOnRightClick = true;
+</code></pre>
+</li>
+<li><p><strong>ControlBox Disabled</strong></p>
+<pre><code class="lang-csharp">// Check and fix
+form.ControlBox = true;
+</code></pre>
+</li>
+<li><p><strong>Service Not Created</strong></p>
+<pre><code class="lang-csharp">// Check if service exists
+if (form.SystemMenuService == null)
+{
+    // This is normal in design mode
+    // At runtime, this indicates an initialization issue
+}
+</code></pre>
+</li>
+</ol>
+<h4 id="-problem-system-menu-shows-native-menu-instead-of-themed">❌ Problem: System Menu Shows Native Menu Instead of Themed</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Right-click shows Windows default system menu</li>
+<li>No themed appearance</li>
+</ul>
+<p><strong>Root Cause:</strong>
+Themed system menu not properly initialized or disabled</p>
+<p><strong>Solution:</strong></p>
+<pre><code class="lang-csharp">// Verify system menu is enabled and service exists
+bool isEnabled = form.SystemMenuValues.Enabled;
+bool serviceExists = form.SystemMenuService != null;
+bool hasMenu = form.KryptonSystemMenu != null;
+
+// If any are false at runtime, check initialization
+</code></pre>
+<h4 id="-problem-custom-menu-items-not-appearing">❌ Problem: Custom Menu Items Not Appearing</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Added custom items don't show in menu</li>
+<li>Menu appears but without custom items</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Refresh After Adding Items</strong></p>
+<pre><code class="lang-csharp">systemMenu.AddCustomMenuItem(&quot;Settings&quot;, OnSettingsClick);
+systemMenu.Refresh(); // Important!
+</code></pre>
+</li>
+<li><p><strong>Check Item Visibility</strong></p>
+<pre><code class="lang-csharp">// Ensure custom items are visible
+foreach (var item in systemMenu.DesignerMenuItems)
+{
+    item.Visible = true;
+}
+</code></pre>
+</li>
+<li><p><strong>Verify Service Exists</strong></p>
+<pre><code class="lang-csharp">var systemMenu = form.KryptonSystemMenu;
+if (systemMenu == null)
+{
+    // System menu not available (design mode or initialization issue)
+}
+</code></pre>
+</li>
+</ol>
+<h4 id="-problem-menu-items-wrong-state-enableddisabled">❌ Problem: Menu Items Wrong State (Enabled/Disabled)</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Minimize/Maximize items disabled when they should be enabled</li>
+<li>Restore item not appearing when window is maximized</li>
+</ul>
+<p><strong>Root Cause:</strong>
+Menu state not synchronized with form state</p>
+<p><strong>Solution:</strong></p>
+<pre><code class="lang-csharp">// Force refresh to update item states
+form.KryptonSystemMenu?.Refresh();
+
+// Check form properties
+bool canMinimize = form.MinimizeBox;
+bool canMaximize = form.MaximizeBox;
+var windowState = form.WindowState;
+</code></pre>
+<h3 id="theme-issues">Theme Issues</h3>
+<h4 id="-problem-icons-not-matching-theme">❌ Problem: Icons Not Matching Theme</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Menu icons don't match current application theme</li>
+<li>Icons appear generic or incorrect</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Force Theme Refresh</strong></p>
+<pre><code class="lang-csharp">form.KryptonSystemMenu?.RefreshThemeIcons();
+</code></pre>
+</li>
+<li><p><strong>Manually Set Theme</strong></p>
+<pre><code class="lang-csharp">form.KryptonSystemMenu?.SetIconTheme(&quot;Office2013&quot;);
+</code></pre>
+</li>
+<li><p><strong>Check Theme Detection</strong></p>
+<pre><code class="lang-csharp">string currentTheme = form.KryptonSystemMenu?.CurrentIconTheme;
+// Should match your application's theme
+</code></pre>
+</li>
+</ol>
+<h4 id="-problem-menu-colors-wrong">❌ Problem: Menu Colors Wrong</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Menu appears with wrong colors</li>
+<li>Doesn't match form theme</li>
+</ul>
+<p><strong>Root Cause:</strong>
+Theme not properly applied to context menu</p>
+<p><strong>Solution:</strong></p>
+<pre><code class="lang-csharp">// Ensure form palette is properly set
+form.PaletteMode = PaletteMode.Office2013White; // or appropriate theme
+
+// Force refresh
+form.KryptonSystemMenu?.Refresh();
+</code></pre>
+<h3 id="performance-issues">Performance Issues</h3>
+<h4 id="-problem-slow-menu-appearance">❌ Problem: Slow Menu Appearance</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Delay when right-clicking to show menu</li>
+<li>Menu takes time to appear</li>
+</ul>
+<p><strong>Possible Causes &amp; Solutions:</strong></p>
+<ol>
+<li><p><strong>Icon Generation Overhead</strong></p>
+<pre><code class="lang-csharp">// Icons are generated on-demand
+// First appearance may be slower
+// Subsequent appearances should be fast due to caching
+</code></pre>
+</li>
+<li><p><strong>Complex Custom Items</strong></p>
+<pre><code class="lang-csharp">// Simplify custom menu item creation
+// Avoid complex operations in click handlers
+</code></pre>
+</li>
+</ol>
+<h4 id="-problem-memory-usage">❌ Problem: Memory Usage</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>High memory usage with multiple KryptonForms</li>
+<li>Memory not released when forms closed</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<pre><code class="lang-csharp">// Ensure proper disposal
+protected override void Dispose(bool disposing)
+{
+    if (disposing)
+    {
+        // System menu is automatically disposed
+        // No manual cleanup required
+    }
+    base.Dispose(disposing);
+}
+</code></pre>
+<h2 id="diagnostic-tools">Diagnostic Tools</h2>
+<h3 id="checking-system-menu-state">Checking System Menu State</h3>
+<pre><code class="lang-csharp">public void DiagnoseSystemMenu(KryptonForm form)
+{
+    Console.WriteLine($&quot;Design Mode: {LicenseManager.UsageMode == LicenseUsageMode.Designtime}&quot;);
+    Console.WriteLine($&quot;Site Design Mode: {form.Site?.DesignMode}&quot;);
+    Console.WriteLine($&quot;Service Exists: {form.SystemMenuService != null}&quot;);
+    Console.WriteLine($&quot;System Menu Exists: {form.KryptonSystemMenu != null}&quot;);
+    Console.WriteLine($&quot;Enabled: {form.SystemMenuValues?.Enabled}&quot;);
+    Console.WriteLine($&quot;Show on Right Click: {form.SystemMenuValues?.ShowOnRightClick}&quot;);
+    Console.WriteLine($&quot;Control Box: {form.ControlBox}&quot;);
+    Console.WriteLine($&quot;Menu Item Count: {form.KryptonSystemMenu?.MenuItemCount ?? 0}&quot;);
+    Console.WriteLine($&quot;Current Theme: {form.KryptonSystemMenu?.CurrentIconTheme ?? &quot;None&quot;}&quot;);
+}
+</code></pre>
+<h3 id="debug-event-handlers">Debug Event Handlers</h3>
+<pre><code class="lang-csharp">// Add debug handlers to track system menu events
+form.SystemMenuValues.PropertyChanged += (s, e) =&gt; 
+{
+    Console.WriteLine($&quot;SystemMenuValues.{e.PropertyName} changed&quot;);
+};
+</code></pre>
+<h3 id="logging-system-menu-operations">Logging System Menu Operations</h3>
+<pre><code class="lang-csharp">// Enable debug output in KryptonSystemMenu
+// Look for Debug.WriteLine statements in the implementation
+// Use Debug output window in Visual Studio
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-always-check-for-null">1. Always Check for Null</h3>
+<pre><code class="lang-csharp">// System menu will be null in design mode
+var systemMenu = form.KryptonSystemMenu;
+if (systemMenu != null)
+{
+    // Safe to use
+}
+</code></pre>
+<h3 id="2-refresh-after-changes">2. Refresh After Changes</h3>
+<pre><code class="lang-csharp">// After modifying form properties that affect menu
+form.MinimizeBox = false;
+form.KryptonSystemMenu?.Refresh(); // Update menu state
+</code></pre>
+<h3 id="3-handle-events-properly">3. Handle Events Properly</h3>
+<pre><code class="lang-csharp">// Use proper event handlers for custom items
+systemMenu.AddCustomMenuItem(&quot;Settings&quot;, OnSettingsClick);
+
+private void OnSettingsClick(object sender, EventArgs e)
+{
+    // Handle the click
+    // Don't perform long-running operations here
+}
+</code></pre>
+<h3 id="4-theme-integration">4. Theme Integration</h3>
+<pre><code class="lang-csharp">// Let system menu auto-detect theme
+// Manual theme setting only needed for special cases
+form.PaletteMode = PaletteMode.Office2013White;
+// System menu automatically adapts
+</code></pre>
+<h2 id="advanced-scenarios">Advanced Scenarios</h2>
+<h3 id="custom-menu-item-with-icon">Custom Menu Item with Icon</h3>
+<pre><code class="lang-csharp">// Add custom item with icon
+var customItem = new KryptonContextMenuItem(&quot;Settings&quot;);
+customItem.Image = Properties.Resources.SettingsIcon;
+customItem.Click += OnSettingsClick;
+
+// Add to context menu directly
+systemMenu.ContextMenu.Items.Add(customItem);
+systemMenu.Refresh();
+</code></pre>
+<h3 id="dynamic-menu-updates">Dynamic Menu Updates</h3>
+<pre><code class="lang-csharp">// Update menu based on application state
+private void UpdateSystemMenu()
+{
+    var systemMenu = form.KryptonSystemMenu;
+    if (systemMenu != null)
+    {
+        // Clear existing custom items
+        systemMenu.ClearCustomItems();
+        
+        // Add items based on current state
+        if (userLoggedIn)
+        {
+            systemMenu.AddCustomMenuItem(&quot;Logout&quot;, OnLogout);
+        }
+        else
+        {
+            systemMenu.AddCustomMenuItem(&quot;Login&quot;, OnLogin);
+        }
+        
+        systemMenu.Refresh();
+    }
+}
+</code></pre>
+<h3 id="integration-with-application-settings">Integration with Application Settings</h3>
+<pre><code class="lang-csharp">// Save/load system menu preferences
+private void LoadSystemMenuSettings()
+{
+    form.SystemMenuValues.ShowOnRightClick = Settings.ShowSystemMenuOnRightClick;
+    form.SystemMenuValues.ShowOnAltSpace = Settings.ShowSystemMenuOnAltSpace;
+    form.SystemMenuValues.Enabled = Settings.SystemMenuEnabled;
+}
+
+private void SaveSystemMenuSettings()
+{
+    Settings.ShowSystemMenuOnRightClick = form.SystemMenuValues.ShowOnRightClick;
+    Settings.ShowSystemMenuOnAltSpace = form.SystemMenuValues.ShowOnAltSpace;
+    Settings.SystemMenuEnabled = form.SystemMenuValues.Enabled;
+}
+</code></pre>
+<h2 id="getting-help">Getting Help</h2>
+<h3 id="debug-steps">Debug Steps</h3>
+<ol>
+<li><strong>Check Design Mode</strong>: Verify <code>LicenseManager.UsageMode</code> value</li>
+<li><strong>Verify Service</strong>: Ensure <code>SystemMenuService</code> is not null at runtime</li>
+<li><strong>Check Configuration</strong>: Verify <code>SystemMenuValues</code> properties</li>
+<li><strong>Test Incrementally</strong>: Start with basic functionality, add complexity gradually</li>
+</ol>
+<h3 id="support-resources">Support Resources</h3>
+<ul>
+<li><a href="KryptonForm-API-Reference.md">KryptonForm API Reference</a></li>
+<li><a href="KryptonForm-SystemMenu-Overview.md">System Menu Overview</a></li>
+<li><a href="KryptonForm-DesignerMode-Implementation.md">Designer Implementation</a></li>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/wiki">Krypton Toolkit Documentation</a></li>
+</ul>
+<h3 id="reporting-issues">Reporting Issues</h3>
+<p>When reporting issues, include:</p>
+<ol>
+<li><strong>Design Mode Status</strong>: Whether issue occurs in designer or runtime</li>
+<li><strong>Configuration</strong>: SystemMenuValues property values</li>
+<li><strong>Form Properties</strong>: ControlBox, MinimizeBox, MaximizeBox, FormBorderStyle</li>
+<li><strong>Steps to Reproduce</strong>: Detailed reproduction steps</li>
+<li><strong>Expected vs Actual</strong>: What should happen vs what actually happens</li>
+</ol>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

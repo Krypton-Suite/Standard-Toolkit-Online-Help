@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Ribbon &quot;No Tab&quot; Designer Feature | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Ribbon &quot;No Tab&quot; Designer Feature | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-ribbon-no-tab-designer-feature">Krypton Ribbon &quot;No Tab&quot; Designer Feature</h1>
+
+<h2 id="overview">Overview</h2>
+<p>This document describes the implementation of the &quot;No Tab&quot; designer feature for the Krypton Ribbon control, addressing <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/331">GitHub Issue #331</a> and the related <a href="https://github.com/ComponentFactory/Krypton/issues/99#issuecomment-914968988">Issue #99</a>.</p>
+<h2 id="feature-description">Feature Description</h2>
+<p>The &quot;No Tab&quot; designer feature allows developers to easily toggle between having ribbon tabs selected and having no tab selected in the Visual Studio designer. This is particularly useful for creating ribbon interfaces that function as toolbars without visible tab headers.</p>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="files-modified">Files Modified</h3>
+<ul>
+<li><code>Source/Krypton Components/Krypton.Ribbon/Designers/Designers/KryptonRibbonDesigner.cs</code></li>
+</ul>
+<h3 id="key-changes">Key Changes</h3>
+<h4 id="1-new-designer-verbs">1. New Designer Verbs</h4>
+<p>Two new designer verbs have been added to the <code>KryptonRibbonDesigner</code> class:</p>
+<ul>
+<li><strong>&quot;Clear Tab Selection&quot;</strong> - Clears the selected tab, setting <code>SelectedTab</code> to <code>null</code></li>
+<li><strong>&quot;Select First Tab&quot;</strong> - Sets the first available tab as selected</li>
+</ul>
+<h4 id="2-dynamic-verb-management">2. Dynamic Verb Management</h4>
+<p>The verbs are dynamically enabled/disabled based on the current state:</p>
+<ul>
+<li>When <code>SelectedTab == null</code>: &quot;Clear Tab Selection&quot; is disabled, &quot;Select First Tab&quot; is enabled (if tabs exist)</li>
+<li>When <code>SelectedTab != null</code>: &quot;Clear Tab Selection&quot; is enabled, &quot;Select First Tab&quot; is disabled</li>
+</ul>
+<h4 id="3-transaction-support">3. Transaction Support</h4>
+<p>Both verbs use designer transactions to ensure proper undo/redo support:</p>
+<pre><code class="lang-csharp">DesignerTransaction transaction = _designerHost.CreateTransaction(@&quot;KryptonRibbon SetNoTab&quot;);
+</code></pre>
+<h2 id="usage">Usage</h2>
+<h3 id="in-visual-studio-designer">In Visual Studio Designer</h3>
+<ol>
+<li>Add a <code>KryptonRibbon</code> control to your form</li>
+<li>Add one or more <code>KryptonRibbonTab</code> controls to the ribbon</li>
+<li>Right-click on the ribbon control in the designer</li>
+<li>Select either:
+<ul>
+<li><strong>&quot;Clear Tab Selection&quot;</strong> to clear the selected tab (toolbar mode)</li>
+<li><strong>&quot;Select First Tab&quot;</strong> to select the first available tab</li>
+</ul>
+</li>
+</ol>
+<h3 id="programmatically">Programmatically</h3>
+<p>You can also set the no-tab state programmatically:</p>
+<pre><code class="lang-csharp">// Set no tab (toolbar mode)
+kryptonRibbon1.SelectedTab = null;
+
+// Set first tab
+if (kryptonRibbon1.RibbonTabs.Count &gt; 0)
+{
+    kryptonRibbon1.SelectedTab = kryptonRibbon1.RibbonTabs[0];
+}
+</code></pre>
+<h2 id="technical-implementation">Technical Implementation</h2>
+<h3 id="designer-verb-registration">Designer Verb Registration</h3>
+<pre><code class="lang-csharp">private DesignerVerb _noTabVerb;
+private DesignerVerb _setTabVerb;
+
+// In Verbs property
+_noTabVerb = new DesignerVerb(@&quot;Clear Tab Selection&quot;, OnNoTab);
+_setTabVerb = new DesignerVerb(@&quot;Select First Tab&quot;, OnSetTab);
+_verbs.AddRange(new[] { _toggleHelpersVerb, _addTabVerb, _clearTabsVerb, _noTabVerb, _setTabVerb });
+</code></pre>
+<h3 id="verb-status-updates">Verb Status Updates</h3>
+<pre><code class="lang-csharp">private void UpdateVerbStatus()
+{
+    if (_verbs.Count != 0 &amp;&amp; _ribbon is not null)
+    {
+        _clearTabsVerb.Enabled = _ribbon.RibbonTabs.Count &gt; 0;
+        
+        // Update the No Tab / Set Tab verbs based on current state
+        if (_ribbon.SelectedTab == null)
+        {
+            _noTabVerb.Enabled = false;
+            _setTabVerb.Enabled = _ribbon.RibbonTabs.Count &gt; 0;
+        }
+        else
+        {
+            _noTabVerb.Enabled = true;
+            _setTabVerb.Enabled = false;
+        }
+    }
+}
+</code></pre>
+<h3 id="event-handlers">Event Handlers</h3>
+<h4 id="onnotab-method">OnNoTab Method</h4>
+<pre><code class="lang-csharp">private void OnNoTab(object? sender, EventArgs e)
+{
+    // Use a transaction to support undo/redo actions
+    DesignerTransaction transaction = _designerHost!.CreateTransaction(@&quot;KryptonRibbon SetNoTab&quot;);
+    
+    try
+    {
+        // Get access to the SelectedTab property
+        MemberDescriptor? propertySelectedTab = TypeDescriptor.GetProperties(_ribbon)[@&quot;SelectedTab&quot;];
+        
+        RaiseComponentChanging(propertySelectedTab);
+        
+        // Clear the selected tab to enable &quot;no tab&quot; mode
+        _ribbon.SelectedTab = null;
+        
+        RaiseComponentChanged(propertySelectedTab, null, null);
+    }
+    finally
+    {
+        transaction?.Commit();
+        UpdateVerbStatus();
+    }
+}
+</code></pre>
+<h4 id="onsettab-method">OnSetTab Method</h4>
+<pre><code class="lang-csharp">private void OnSetTab(object? sender, EventArgs e)
+{
+    // Use a transaction to support undo/redo actions
+    DesignerTransaction transaction = _designerHost!.CreateTransaction(@&quot;KryptonRibbon SetTab&quot;);
+    
+    try
+    {
+        // Get access to the SelectedTab property
+        MemberDescriptor? propertySelectedTab = TypeDescriptor.GetProperties(_ribbon)[@&quot;SelectedTab&quot;];
+        
+        RaiseComponentChanging(propertySelectedTab);
+        
+        // Set to first available tab
+        if (_ribbon.RibbonTabs.Count &gt; 0)
+        {
+            _ribbon.SelectedTab = _ribbon.RibbonTabs[0];
+        }
+        
+        RaiseComponentChanged(propertySelectedTab, null, null);
+    }
+    finally
+    {
+        transaction?.Commit();
+        UpdateVerbStatus();
+    }
+}
+</code></pre>
+<h2 id="use-cases">Use Cases</h2>
+<h3 id="1-toolbar-mode">1. Toolbar Mode</h3>
+<p>When you want to use the ribbon as a toolbar without visible tab headers:</p>
+<pre><code class="lang-csharp">// Set no tab to create a toolbar-like interface
+kryptonRibbon1.SelectedTab = null;
+</code></pre>
+<h3 id="2-dynamic-tab-management">2. Dynamic Tab Management</h3>
+<p>For applications that need to dynamically show/hide tabs:</p>
+<pre><code class="lang-csharp">// Hide all tabs (toolbar mode)
+kryptonRibbon1.SelectedTab = null;
+
+// Show tabs when needed
+if (kryptonRibbon1.RibbonTabs.Count &gt; 0)
+{
+    kryptonRibbon1.SelectedTab = kryptonRibbon1.RibbonTabs[0];
+}
+</code></pre>
+<h3 id="3-context-sensitive-ribbons">3. Context-Sensitive Ribbons</h3>
+<p>For ribbons that change behavior based on application state:</p>
+<pre><code class="lang-csharp">private void SwitchToToolbarMode()
+{
+    kryptonRibbon1.SelectedTab = null;
+    // Ribbon now functions as a toolbar
+}
+
+private void SwitchToTabMode()
+{
+    if (kryptonRibbon1.RibbonTabs.Count &gt; 0)
+    {
+        kryptonRibbon1.SelectedTab = kryptonRibbon1.RibbonTabs[0];
+    }
+}
+</code></pre>
+<h2 id="benefits">Benefits</h2>
+<ol>
+<li><strong>Designer Integration</strong>: Easy toggling between tab and no-tab modes in Visual Studio designer</li>
+<li><strong>Visual Feedback</strong>: Verbs are dynamically enabled/disabled based on current state</li>
+<li><strong>Undo/Redo Support</strong>: All changes are wrapped in designer transactions</li>
+<li><strong>Consistency</strong>: Follows existing designer verb patterns in the codebase</li>
+<li><strong>Flexibility</strong>: Supports both designer and programmatic usage</li>
+</ol>
+<h2 id="related-issues">Related Issues</h2>
+<ul>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/331">GitHub Issue #331</a> - Original feature request</li>
+<li><a href="https://github.com/ComponentFactory/Krypton/issues/99#issuecomment-914968988">GitHub Issue #99</a> - Related discussion about removing ribbon header</li>
+</ul>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<p>Potential future enhancements could include:</p>
+<ol>
+<li><strong>Context Menu Integration</strong>: Add the verbs to the ribbon's context menu</li>
+<li><strong>Keyboard Shortcuts</strong>: Add keyboard shortcuts for quick toggling</li>
+<li><strong>Visual Indicators</strong>: Add visual indicators in the designer to show no-tab state</li>
+<li><strong>Bulk Operations</strong>: Allow setting no-tab state for multiple ribbons at once</li>
+</ol>
+<h2 id="compatibility">Compatibility</h2>
+<p>This feature is compatible with:</p>
+<ul>
+<li>.NET Framework 4.7.2 and later</li>
+<li>.NET 8.0 Windows and later</li>
+<li>Visual Studio 2022 and later</li>
+<li>All existing Krypton Ribbon functionality</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>The &quot;No Tab&quot; designer feature successfully addresses the user requests in GitHub issues #331 and #99, providing a clean and intuitive way to toggle between tab and toolbar modes in the Krypton Ribbon control. The implementation follows established patterns in the codebase and provides full designer integration with proper transaction support.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

@@ -69,6 +69,718 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonthemecombobox">KryptonThemeComboBox</h1>
 
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonThemeComboBox</code> class provides a Krypton-themed ComboBox control that allows users to select from available Krypton themes. It inherits from <code>KryptonComboBox</code> and implements <code>IKryptonThemeSelectorBase</code> to provide theme selection functionality with automatic synchronization with the global palette system.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── System.Windows.Forms.Control
+            └── System.Windows.Forms.ComboBox
+                └── Krypton.Toolkit.KryptonComboBox
+                    └── Krypton.Toolkit.KryptonThemeComboBox
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonThemeComboBox()
+</code></pre>
+<p>The constructor initializes enhanced features:</p>
+<ul>
+<li><strong>KryptonManager Integration</strong>: Creates local KryptonManager instance for theme management</li>
+<li><strong>Theme Population</strong>: Automatically populates with available themes using <code>CommonHelperThemeSelectors.GetThemesArray()</code></li>
+<li><strong>Initial Selection</strong>: Sets initial selected index based on current global palette</li>
+<li><strong>Event Handling</strong>: Sets up global palette change event handling</li>
+<li><strong>Synchronization</strong>: Maintains synchronization between local and global palette changes</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="kryptoncustompalette-property">KryptonCustomPalette Property</h3>
+<pre><code class="lang-csharp">[Obsolete(&quot;Deprecated and will be removed in V110. Set a global custom palette through 'ThemeManager.ApplyTheme(...)'.&quot;)]
+public KryptonCustomPaletteBase? KryptonCustomPalette { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Custom palette assignment (deprecated)</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Status</strong>: Obsolete - will be removed in V110</li>
+<li><strong>Alternative</strong>: Use <code>ThemeManager.ApplyTheme(...)</code> for global custom palettes</li>
+<li><strong>Default Value</strong>: null</li>
+</ul>
+<h3 id="defaultpalette-property">DefaultPalette Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(PaletteMode.Global)]
+public PaletteMode DefaultPalette { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Sets the default palette mode for the control</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Default Value</strong>: <code>PaletteMode.Global</code></li>
+<li><strong>Effect</strong>: Updates selected index when changed</li>
+<li><strong>Usage</strong>: Controls which palette is selected by default</li>
+</ul>
+<h3 id="hidden-properties">Hidden Properties</h3>
+<p>The following properties are hidden from the designer but remain accessible:</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+public override string Text { get; set; }
+
+[Browsable(false)]
+public new string FormatString { get; set; }
+
+[Browsable(false)]
+public new ListBox.ObjectCollection Items { get; }
+
+[Browsable(false)]
+public new int SelectedIndex { get; set; }
+</code></pre>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="basic-theme-selection">Basic Theme Selection</h3>
+<pre><code class="lang-csharp">public void SetupBasicThemeComboBox()
+{
+    var themeComboBox = new KryptonThemeComboBox
+    {
+        Dock = DockStyle.Fill,
+        DropDownStyle = ComboBoxStyle.DropDownList
+    };
+
+    // Handle theme selection
+    themeComboBox.SelectedIndexChanged += OnThemeSelectionChanged;
+
+    Controls.Add(themeComboBox);
+}
+
+private void OnThemeSelectionChanged(object? sender, EventArgs e)
+{
+    if (sender is KryptonThemeComboBox comboBox)
+    {
+        // Theme selection is automatically handled by the control
+        // The global palette will be updated automatically
+        Console.WriteLine($&quot;Selected theme: {comboBox.SelectedItem}&quot;);
+    }
+}
+</code></pre>
+<h3 id="settings-dialog-integration">Settings Dialog Integration</h3>
+<pre><code class="lang-csharp">public class SettingsDialog : Form
+{
+    private KryptonThemeComboBox themeComboBox;
+    private KryptonLabel themeLabel;
+
+    public SettingsDialog()
+    {
+        InitializeComponent();
+        SetupThemeSelection();
+    }
+
+    private void SetupThemeSelection()
+    {
+        // Theme label
+        themeLabel = new KryptonLabel
+        {
+            Text = &quot;Application Theme:&quot;,
+            Dock = DockStyle.Fill,
+            LabelStyle = LabelStyle.NormalControl
+        };
+
+        // Theme combo box
+        themeComboBox = new KryptonThemeComboBox
+        {
+            Dock = DockStyle.Fill,
+            DropDownStyle = ComboBoxStyle.DropDownList
+        };
+
+        // Add to layout
+        var themeLayout = new KryptonTableLayoutPanel
+        {
+            ColumnCount = 2,
+            RowCount = 1,
+            Dock = DockStyle.Fill
+        };
+
+        themeLayout.Controls.Add(themeLabel, 0, 0);
+        themeLayout.Controls.Add(themeComboBox, 1, 0);
+
+        Controls.Add(themeLayout);
+    }
+}
+</code></pre>
+<h3 id="advanced-theme-management">Advanced Theme Management</h3>
+<pre><code class="lang-csharp">public class AdvancedThemeManager
+{
+    private KryptonThemeComboBox themeComboBox;
+    private KryptonButton applyButton;
+    private KryptonButton resetButton;
+    private PaletteMode originalTheme;
+
+    public AdvancedThemeManager()
+    {
+        InitializeComponents();
+        SetupEventHandling();
+    }
+
+    private void InitializeComponents()
+    {
+        themeComboBox = new KryptonThemeComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList
+        };
+
+        applyButton = new KryptonButton
+        {
+            Text = &quot;Apply Theme&quot;,
+            Enabled = false
+        };
+
+        resetButton = new KryptonButton
+        {
+            Text = &quot;Reset to Default&quot;
+        };
+
+        // Store original theme
+        originalTheme = KryptonManager.CurrentGlobalPaletteMode;
+    }
+
+    private void SetupEventHandling()
+    {
+        themeComboBox.SelectedIndexChanged += OnThemeSelectionChanged;
+        applyButton.Click += OnApplyButtonClick;
+        resetButton.Click += OnResetButtonClick;
+    }
+
+    private void OnThemeSelectionChanged(object? sender, EventArgs e)
+    {
+        // Enable apply button when theme changes
+        applyButton.Enabled = true;
+    }
+
+    private void OnApplyButtonClick(object? sender, EventArgs e)
+    {
+        // Theme is already applied automatically by KryptonThemeComboBox
+        // This is just for user feedback
+        MessageBox.Show(&quot;Theme applied successfully!&quot;, &quot;Theme Changed&quot;, 
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
+        
+        applyButton.Enabled = false;
+    }
+
+    private void OnResetButtonClick(object? sender, EventArgs e)
+    {
+        // Reset to original theme
+        KryptonManager.GlobalPaletteMode = originalTheme;
+        applyButton.Enabled = false;
+    }
+}
+</code></pre>
+<h3 id="theme-preview-system">Theme Preview System</h3>
+<pre><code class="lang-csharp">public class ThemePreviewManager
+{
+    private KryptonThemeComboBox themeComboBox;
+    private KryptonPanel previewPanel;
+    private Timer previewTimer;
+
+    public ThemePreviewManager()
+    {
+        InitializeComponents();
+        SetupPreviewSystem();
+    }
+
+    private void InitializeComponents()
+    {
+        themeComboBox = new KryptonThemeComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList
+        };
+
+        previewPanel = new KryptonPanel
+        {
+            Size = new Size(200, 100),
+            PanelBackStyle = PaletteBackStyle.PanelClient
+        };
+
+        // Add sample controls to preview panel
+        var sampleButton = new KryptonButton
+        {
+            Text = &quot;Sample Button&quot;,
+            Location = new Point(10, 10)
+        };
+
+        var sampleLabel = new KryptonLabel
+        {
+            Text = &quot;Sample Label&quot;,
+            Location = new Point(10, 40)
+        };
+
+        previewPanel.Controls.Add(sampleButton);
+        previewPanel.Controls.Add(sampleLabel);
+    }
+
+    private void SetupPreviewSystem()
+    {
+        // Setup preview timer for delayed preview
+        previewTimer = new Timer { Interval = 500 }; // 500ms delay
+        previewTimer.Tick += OnPreviewTimerTick;
+
+        themeComboBox.SelectedIndexChanged += OnThemeSelectionChanged;
+    }
+
+    private void OnThemeSelectionChanged(object? sender, EventArgs e)
+    {
+        // Start preview timer
+        previewTimer.Stop();
+        previewTimer.Start();
+    }
+
+    private void OnPreviewTimerTick(object? sender, EventArgs e)
+    {
+        previewTimer.Stop();
+        
+        // Update preview panel with selected theme
+        UpdatePreviewPanel();
+    }
+
+    private void UpdatePreviewPanel()
+    {
+        // The preview panel will automatically update with the new theme
+        // since it uses the global palette system
+        previewPanel.Invalidate();
+    }
+}
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="main-form-theme-selector">Main Form Theme Selector</h3>
+<pre><code class="lang-csharp">public partial class MainForm : Form
+{
+    private KryptonThemeComboBox themeComboBox;
+    private KryptonStatusStrip statusStrip;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        SetupThemeSelector();
+    }
+
+    private void SetupThemeSelector()
+    {
+        // Create theme combo box
+        themeComboBox = new KryptonThemeComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            Width = 150
+        };
+
+        // Add to status strip
+        statusStrip = new KryptonStatusStrip();
+        statusStrip.Items.Add(new ToolStripSeparator());
+        statusStrip.Items.Add(new ToolStripLabel(&quot;Theme:&quot;));
+        statusStrip.Items.Add(new ToolStripControlHost(themeComboBox));
+
+        Controls.Add(statusStrip);
+    }
+}
+</code></pre>
+<h3 id="configuration-panel-integration">Configuration Panel Integration</h3>
+<pre><code class="lang-csharp">public class ConfigurationPanel : UserControl
+{
+    private KryptonThemeComboBox themeComboBox;
+    private KryptonHeaderGroup appearanceGroup;
+
+    public ConfigurationPanel()
+    {
+        InitializeComponent();
+        SetupAppearanceSection();
+    }
+
+    private void SetupAppearanceSection()
+    {
+        // Appearance group
+        appearanceGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel
+        };
+        appearanceGroup.HeaderPrimary.Content.ShortText = &quot;Appearance&quot;;
+
+        // Theme selection
+        var themeLayout = new KryptonTableLayoutPanel
+        {
+            ColumnCount = 2,
+            RowCount = 1,
+            Dock = DockStyle.Fill
+        };
+
+        var themeLabel = new KryptonLabel
+        {
+            Text = &quot;Theme:&quot;,
+            Dock = DockStyle.Fill,
+            LabelStyle = LabelStyle.NormalControl
+        };
+
+        themeComboBox = new KryptonThemeComboBox
+        {
+            Dock = DockStyle.Fill,
+            DropDownStyle = ComboBoxStyle.DropDownList
+        };
+
+        themeLayout.Controls.Add(themeLabel, 0, 0);
+        themeLayout.Controls.Add(themeComboBox, 1, 0);
+
+        appearanceGroup.Panel.Controls.Add(themeLayout);
+        Controls.Add(appearanceGroup);
+    }
+}
+</code></pre>
+<h3 id="dynamic-theme-switching">Dynamic Theme Switching</h3>
+<pre><code class="lang-csharp">public class DynamicThemeSwitcher : UserControl
+{
+    private KryptonThemeComboBox themeComboBox;
+    private KryptonButton applyButton;
+    private KryptonButton previewButton;
+    private Form previewForm;
+
+    public DynamicThemeSwitcher()
+    {
+        InitializeComponent();
+        SetupThemeSwitcher();
+    }
+
+    private void SetupThemeSwitcher()
+    {
+        themeComboBox = new KryptonThemeComboBox
+        {
+            DropDownStyle = ComboBoxStyle.DropDownList
+        };
+
+        applyButton = new KryptonButton
+        {
+            Text = &quot;Apply Theme&quot;
+        };
+
+        previewButton = new KryptonButton
+        {
+            Text = &quot;Preview Theme&quot;
+        };
+
+        // Event handlers
+        applyButton.Click += OnApplyButtonClick;
+        previewButton.Click += OnPreviewButtonClick;
+
+        // Layout
+        var layout = new KryptonTableLayoutPanel
+        {
+            ColumnCount = 3,
+            RowCount = 1,
+            Dock = DockStyle.Fill
+        };
+
+        layout.Controls.Add(themeComboBox, 0, 0);
+        layout.Controls.Add(previewButton, 1, 0);
+        layout.Controls.Add(applyButton, 2, 0);
+
+        Controls.Add(layout);
+    }
+
+    private void OnApplyButtonClick(object? sender, EventArgs e)
+    {
+        // Theme is automatically applied by KryptonThemeComboBox
+        MessageBox.Show(&quot;Theme applied to all open windows!&quot;, &quot;Theme Applied&quot;, 
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
+    }
+
+    private void OnPreviewButtonClick(object? sender, EventArgs e)
+    {
+        ShowThemePreview();
+    }
+
+    private void ShowThemePreview()
+    {
+        if (previewForm == null || previewForm.IsDisposed)
+        {
+            previewForm = new Form
+            {
+                Text = &quot;Theme Preview&quot;,
+                Size = new Size(400, 300),
+                StartPosition = FormStartPosition.CenterParent
+            };
+
+            // Add sample controls to preview form
+            var samplePanel = new KryptonPanel
+            {
+                Dock = DockStyle.Fill,
+                PanelBackStyle = PaletteBackStyle.PanelClient
+            };
+
+            var sampleButton = new KryptonButton
+            {
+                Text = &quot;Sample Button&quot;,
+                Location = new Point(50, 50)
+            };
+
+            var sampleLabel = new KryptonLabel
+            {
+                Text = &quot;Sample Label&quot;,
+                Location = new Point(50, 100)
+            };
+
+            samplePanel.Controls.Add(sampleButton);
+            samplePanel.Controls.Add(sampleLabel);
+            previewForm.Controls.Add(samplePanel);
+        }
+
+        previewForm.ShowDialog(this);
+    }
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Theme Synchronization</strong>: Efficient synchronization with global palette changes</li>
+<li><strong>Event Handling</strong>: Optimized event handling to prevent unnecessary updates</li>
+<li><strong>Memory Management</strong>: Proper disposal of local KryptonManager instance</li>
+<li><strong>Theme Loading</strong>: Efficient theme array loading and population</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="theme-not-updating">Theme Not Updating</h3>
+<p><strong>Issue</strong>: Selected theme not applying to the application<br>
+<strong>Solution</strong>: Ensure proper event handling and synchronization:</p>
+<pre><code class="lang-csharp">themeComboBox.SelectedIndexChanged += (sender, e) =&gt;
+{
+    // Theme is automatically applied by the control
+    // No additional code needed
+};
+</code></pre>
+<h3 id="custom-palette-issues">Custom Palette Issues</h3>
+<p><strong>Issue</strong>: Custom palette not working with deprecated property<br>
+<strong>Solution</strong>: Use the new ThemeManager approach:</p>
+<pre><code class="lang-csharp">// Old way (deprecated)
+// themeComboBox.KryptonCustomPalette = customPalette;
+
+// New way
+ThemeManager.ApplyTheme(customPalette);
+</code></pre>
+<h3 id="selection-not-synchronized">Selection Not Synchronized</h3>
+<p><strong>Issue</strong>: ComboBox selection not synchronized with global palette<br>
+<strong>Solution</strong>: Ensure proper initialization and event handling:</p>
+<pre><code class="lang-csharp">// The control automatically synchronizes with global palette changes
+// Make sure the control is properly initialized
+var themeComboBox = new KryptonThemeComboBox();
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Designer</strong>: Uses <code>KryptonStubDesigner</code> for design-time support</li>
+<li><strong>Toolbox</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: Theme-specific properties available</li>
+<li><strong>Theme Population</strong>: Automatically populated with available themes</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Visuals</strong>: Theme-related properties (<code>KryptonCustomPalette</code>, <code>DefaultPalette</code>)</li>
+<li><strong>Behavior</strong>: Standard ComboBox behavior properties</li>
+<li><strong>Layout</strong>: Standard layout properties</li>
+</ul>
+<h2 id="migration-and-compatibility">Migration and Compatibility</h2>
+<h3 id="from-standard-combobox">From Standard ComboBox</h3>
+<pre><code class="lang-csharp">// Old way
+ComboBox themeComboBox = new ComboBox();
+// Manual theme population and handling
+
+// New way
+KryptonThemeComboBox themeComboBox = new KryptonThemeComboBox();
+// Automatic theme population and synchronization
+</code></pre>
+<h3 id="from-deprecated-custom-palette">From Deprecated Custom Palette</h3>
+<pre><code class="lang-csharp">// Old way (deprecated)
+themeComboBox.KryptonCustomPalette = customPalette;
+
+// New way
+ThemeManager.ApplyTheme(customPalette);
+// Then use the theme combo box normally
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="application-settings-form">Application Settings Form</h3>
+<pre><code class="lang-csharp">public partial class ApplicationSettingsForm : Form
+{
+    private KryptonThemeComboBox themeComboBox;
+    private KryptonButton okButton;
+    private KryptonButton cancelButton;
+
+    public ApplicationSettingsForm()
+    {
+        InitializeComponent();
+        SetupThemeSettings();
+    }
+
+    private void SetupThemeSettings()
+    {
+        // Theme selection section
+        var themeGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel
+        };
+        themeGroup.HeaderPrimary.Content.ShortText = &quot;Theme Settings&quot;;
+
+        var themeLayout = new KryptonTableLayoutPanel
+        {
+            ColumnCount = 2,
+            RowCount = 2,
+            Dock = DockStyle.Fill,
+            Padding = new Padding(10)
+        };
+
+        // Theme label
+        var themeLabel = new KryptonLabel
+        {
+            Text = &quot;Application Theme:&quot;,
+            Dock = DockStyle.Fill,
+            LabelStyle = LabelStyle.NormalControl
+        };
+
+        // Theme combo box
+        themeComboBox = new KryptonThemeComboBox
+        {
+            Dock = DockStyle.Fill,
+            DropDownStyle = ComboBoxStyle.DropDownList
+        };
+
+        // Description label
+        var descriptionLabel = new KryptonLabel
+        {
+            Text = &quot;Select a theme for the application interface. Changes will be applied immediately.&quot;,
+            Dock = DockStyle.Fill,
+            LabelStyle = LabelStyle.NormalControl
+        };
+
+        // Add to layout
+        themeLayout.Controls.Add(themeLabel, 0, 0);
+        themeLayout.Controls.Add(themeComboBox, 1, 0);
+        themeLayout.Controls.Add(descriptionLabel, 0, 1);
+        themeLayout.SetColumnSpan(descriptionLabel, 2);
+
+        themeGroup.Panel.Controls.Add(themeLayout);
+
+        // Buttons
+        okButton = new KryptonButton
+        {
+            Text = &quot;OK&quot;,
+            DialogResult = DialogResult.OK
+        };
+
+        cancelButton = new KryptonButton
+        {
+            Text = &quot;Cancel&quot;,
+            DialogResult = DialogResult.Cancel
+        };
+
+        // Main layout
+        var mainLayout = new KryptonTableLayoutPanel
+        {
+            ColumnCount = 1,
+            RowCount = 2,
+            Dock = DockStyle.Fill
+        };
+
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+
+        mainLayout.Controls.Add(themeGroup, 0, 0);
+        
+        var buttonLayout = new KryptonTableLayoutPanel
+        {
+            ColumnCount = 2,
+            RowCount = 1,
+            Dock = DockStyle.Fill
+        };
+
+        buttonLayout.Controls.Add(okButton, 0, 0);
+        buttonLayout.Controls.Add(cancelButton, 1, 0);
+
+        mainLayout.Controls.Add(buttonLayout, 0, 1);
+
+        Controls.Add(mainLayout);
+    }
+}
+</code></pre>
+<h3 id="welcome-wizard-theme-selection">Welcome Wizard Theme Selection</h3>
+<pre><code class="lang-csharp">public class WelcomeWizardThemeStep : UserControl
+{
+    private KryptonThemeComboBox themeComboBox;
+    private KryptonLabel descriptionLabel;
+    private KryptonPanel previewPanel;
+
+    public WelcomeWizardThemeStep()
+    {
+        InitializeComponent();
+        SetupThemeSelectionStep();
+    }
+
+    private void SetupThemeSelectionStep()
+    {
+        // Description
+        descriptionLabel = new KryptonLabel
+        {
+            Text = &quot;Choose a theme that best suits your preferences. You can change this later in settings.&quot;,
+            Dock = DockStyle.Top,
+            LabelStyle = LabelStyle.TitlePanel,
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+
+        // Theme selection
+        var themeLayout = new KryptonTableLayoutPanel
+        {
+            ColumnCount = 2,
+            RowCount = 1,
+            Dock = DockStyle.Top
+        };
+
+        var themeLabel = new KryptonLabel
+        {
+            Text = &quot;Theme:&quot;,
+            Dock = DockStyle.Fill,
+            LabelStyle = LabelStyle.NormalControl
+        };
+
+        themeComboBox = new KryptonThemeComboBox
+        {
+            Dock = DockStyle.Fill,
+            DropDownStyle = ComboBoxStyle.DropDownList
+        };
+
+        themeLayout.Controls.Add(themeLabel, 0, 0);
+        themeLayout.Controls.Add(themeComboBox, 1, 0);
+
+        // Preview panel
+        previewPanel = new KryptonPanel
+        {
+            Dock = DockStyle.Fill,
+            PanelBackStyle = PaletteBackStyle.PanelClient
+        };
+
+        // Add sample controls to preview
+        var sampleButton = new KryptonButton
+        {
+            Text = &quot;Sample Button&quot;,
+            Location = new Point(50, 50)
+        };
+
+        var sampleLabel = new KryptonLabel
+        {
+            Text = &quot;Sample Label&quot;,
+            Location = new Point(50, 100)
+        };
+
+        previewPanel.Controls.Add(sampleButton);
+        previewPanel.Controls.Add(sampleLabel);
+
+        // Main layout
+        var mainLayout = new KryptonTableLayoutPanel
+        {
+            ColumnCount = 1,
+            RowCount = 3,
+            Dock = DockStyle.Fill
+        };
+
+        mainLayout.Controls.Add(descriptionLabel, 0, 0);
+        mainLayout.Controls.Add(themeLayout, 0, 1);
+        mainLayout.Controls.Add(previewPanel, 0, 2);
+
+        Controls.Add(mainLayout);
+    }
+}
+</code></pre>
 
 </article>
           </div>

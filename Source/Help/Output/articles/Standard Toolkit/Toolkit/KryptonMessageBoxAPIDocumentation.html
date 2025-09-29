@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonMessageBox API Documentation | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonMessageBox API Documentation | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonmessagebox-api-documentation">KryptonMessageBox API Documentation</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#basic-usage">Basic Usage</a></li>
+<li><a href="#method-overloads">Method Overloads</a></li>
+<li><a href="#enumerations">Enumerations</a></li>
+<li><a href="#advanced-features">Advanced Features</a></li>
+<li><a href="#customization">Customization</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#migration-from-messagebox">Migration from MessageBox</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonMessageBox</code> is a themed replacement for the standard Windows Forms <code>MessageBox</code> that provides a consistent look and feel with the Krypton Toolkit Suite. It offers enhanced functionality while maintaining API compatibility with the standard MessageBox.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Type:</strong> <code>public static class KryptonMessageBox</code><br>
+<strong>Location:</strong> <code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonMessageBox.cs</code></p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Theme Integration</strong>: Automatically follows the current Krypton theme</li>
+<li><strong>Enhanced Functionality</strong>: Additional options not available in standard MessageBox</li>
+<li><strong>API Compatibility</strong>: Drop-in replacement for MessageBox.Show()</li>
+<li><strong>RTL Support</strong>: Built-in right-to-left language support</li>
+<li><strong>Customizable</strong>: Extensive customization options</li>
+<li><strong>Help Integration</strong>: Built-in help button support</li>
+<li><strong>Copy Functionality</strong>: Optional Ctrl+C copy support</li>
+</ul>
+<h3 id="advantages-over-standard-messagebox">Advantages Over Standard MessageBox</h3>
+<ol>
+<li><strong>Consistent Theming</strong>: Matches your application's Krypton theme</li>
+<li><strong>Enhanced Options</strong>: More control over appearance and behavior</li>
+<li><strong>Better Integration</strong>: Seamlessly integrates with Krypton controls</li>
+<li><strong>Modern Appearance</strong>: Professional, modern look and feel</li>
+<li><strong>Accessibility</strong>: Better accessibility features</li>
+</ol>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="simple-message-box">Simple Message Box</h3>
+<p>The simplest way to display a message box:</p>
+<pre><code class="lang-csharp">// Basic message box
+KryptonMessageBox.Show(&quot;Hello, World!&quot;);
+
+// With caption
+KryptonMessageBox.Show(&quot;Hello, World!&quot;, &quot;Greeting&quot;);
+</code></pre>
+<h3 id="with-buttons-and-icons">With Buttons and Icons</h3>
+<pre><code class="lang-csharp">// Message box with buttons and icon
+var result = KryptonMessageBox.Show(
+    &quot;Do you want to save changes?&quot;, 
+    &quot;Save Document&quot;, 
+    KryptonMessageBoxButtons.YesNo, 
+    KryptonMessageBoxIcon.Question
+);
+
+if (result == DialogResult.Yes)
+{
+    // Save changes
+}
+</code></pre>
+<h3 id="with-owner-window">With Owner Window</h3>
+<pre><code class="lang-csharp">// Message box with owner window
+var result = KryptonMessageBox.Show(
+    this, // Owner window
+    &quot;Are you sure you want to exit?&quot;, 
+    &quot;Exit Application&quot;, 
+    KryptonMessageBoxButtons.YesNo, 
+    KryptonMessageBoxIcon.Warning
+);
+</code></pre>
+<h2 id="method-overloads">Method Overloads</h2>
+<p>The <code>KryptonMessageBox.Show()</code> method provides multiple overloads to accommodate different scenarios:</p>
+<h3 id="1-basic-overloads">1. Basic Overloads</h3>
+<pre><code class="lang-csharp">// Text only
+public static DialogResult Show(string text)
+
+// Text and caption
+public static DialogResult Show(string text, string caption)
+
+// Text, caption, and buttons
+public static DialogResult Show(string text, string caption, KryptonMessageBoxButtons buttons)
+
+// Text, caption, buttons, and icon
+public static DialogResult Show(string text, string caption, KryptonMessageBoxButtons buttons, KryptonMessageBoxIcon icon)
+</code></pre>
+<h3 id="2-advanced-overloads">2. Advanced Overloads</h3>
+<pre><code class="lang-csharp">// With default button
+public static DialogResult Show(string text, string caption, KryptonMessageBoxButtons buttons, 
+    KryptonMessageBoxIcon icon, KryptonMessageBoxDefaultButton defaultButton)
+
+// With options
+public static DialogResult Show(string text, string caption, KryptonMessageBoxButtons buttons, 
+    KryptonMessageBoxIcon icon, KryptonMessageBoxDefaultButton defaultButton, MessageBoxOptions options)
+
+// With help information
+public static DialogResult Show(string text, string caption, KryptonMessageBoxButtons buttons, 
+    KryptonMessageBoxIcon icon, KryptonMessageBoxDefaultButton defaultButton, MessageBoxOptions options, 
+    HelpInfo helpInfo)
+</code></pre>
+<h3 id="3-owner-window-overloads">3. Owner Window Overloads</h3>
+<p>All overloads also support an owner window parameter:</p>
+<pre><code class="lang-csharp">// With owner window
+public static DialogResult Show(IWin32Window owner, string text)
+public static DialogResult Show(IWin32Window owner, string text, string caption)
+// ... and so on for all overloads
+</code></pre>
+<h3 id="4-enhanced-parameters">4. Enhanced Parameters</h3>
+<p>All overloads support additional parameters:</p>
+<pre><code class="lang-csharp">// Enhanced parameters available in all overloads
+bool? showCtrlCopy = null,        // Show Ctrl+C copy functionality
+bool? showCloseButton = null      // Show close button
+</code></pre>
+<h2 id="enumerations">Enumerations</h2>
+<h3 id="kryptonmessageboxbuttons">KryptonMessageBoxButtons</h3>
+<p>Defines the buttons to display in the message box:</p>
+<pre><code class="lang-csharp">public enum KryptonMessageBoxButtons
+{
+    OK = 0,                    // OK button only
+    OKCancel = 1,              // OK and Cancel buttons
+    AbortRetryIgnore = 2,      // Abort, Retry, and Ignore buttons
+    YesNoCancel = 3,           // Yes, No, and Cancel buttons
+    YesNo = 4,                 // Yes and No buttons
+    RetryCancel = 5            // Retry and Cancel buttons
+}
+</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Different button combinations
+KryptonMessageBox.Show(&quot;Save changes?&quot;, &quot;Save&quot;, KryptonMessageBoxButtons.YesNo);
+KryptonMessageBox.Show(&quot;Error occurred&quot;, &quot;Error&quot;, KryptonMessageBoxButtons.OK);
+KryptonMessageBox.Show(&quot;Retry operation?&quot;, &quot;Retry&quot;, KryptonMessageBoxButtons.RetryCancel);
+</code></pre>
+<h3 id="kryptonmessageboxicon">KryptonMessageBoxIcon</h3>
+<p>Defines the icon to display in the message box:</p>
+<pre><code class="lang-csharp">public enum KryptonMessageBoxIcon
+{
+    None = 0,                  // No icon
+    Error = 16,               // Error icon (red X)
+    Question = 32,            // Question icon (question mark)
+    Warning = 48,             // Warning icon (yellow triangle)
+    Information = 64          // Information icon (blue i)
+}
+</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Different icon types
+KryptonMessageBox.Show(&quot;File saved successfully&quot;, &quot;Success&quot;, KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information);
+KryptonMessageBox.Show(&quot;File not found&quot;, &quot;Error&quot;, KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Error);
+KryptonMessageBox.Show(&quot;Are you sure?&quot;, &quot;Confirm&quot;, KryptonMessageBoxButtons.YesNo, KryptonMessageBoxIcon.Question);
+</code></pre>
+<h3 id="kryptonmessageboxdefaultbutton">KryptonMessageBoxDefaultButton</h3>
+<p>Defines which button is the default:</p>
+<pre><code class="lang-csharp">public enum KryptonMessageBoxDefaultButton
+{
+    Button1 = 0,              // First button (default)
+    Button2 = 256,            // Second button
+    Button3 = 512             // Third button
+}
+</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Set default button
+KryptonMessageBox.Show(&quot;Delete file?&quot;, &quot;Delete&quot;, KryptonMessageBoxButtons.YesNo, 
+    KryptonMessageBoxIcon.Warning, KryptonMessageBoxDefaultButton.Button2); // No is default
+</code></pre>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="copy-functionality">Copy Functionality</h3>
+<p>Enable Ctrl+C copy functionality to allow users to copy the message text:</p>
+<pre><code class="lang-csharp">// Enable copy functionality
+KryptonMessageBox.Show(&quot;Error details here&quot;, &quot;Error&quot;, KryptonMessageBoxButtons.OK, 
+    KryptonMessageBoxIcon.Error, showCtrlCopy: true);
+
+// Copy functionality is automatically enabled for Error and Warning icons
+KryptonMessageBox.Show(&quot;Warning message&quot;, &quot;Warning&quot;, KryptonMessageBoxButtons.OK, 
+    KryptonMessageBoxIcon.Warning); // Copy automatically enabled
+</code></pre>
+<h3 id="close-button-control">Close Button Control</h3>
+<p>Control whether the close button (X) is displayed:</p>
+<pre><code class="lang-csharp">// Hide close button
+KryptonMessageBox.Show(&quot;Important message&quot;, &quot;Important&quot;, KryptonMessageBoxButtons.OK, 
+    KryptonMessageBoxIcon.Information, showCloseButton: false);
+
+// Show close button (default)
+KryptonMessageBox.Show(&quot;Regular message&quot;, &quot;Info&quot;, KryptonMessageBoxButtons.OK, 
+    KryptonMessageBoxIcon.Information, showCloseButton: true);
+</code></pre>
+<h3 id="help-integration">Help Integration</h3>
+<p>Add help functionality to message boxes:</p>
+<pre><code class="lang-csharp">// Create help information
+var helpInfo = new HelpInfo(&quot;https://example.com/help&quot;, &quot;MessageBoxHelp&quot;);
+
+// Show message box with help
+KryptonMessageBox.Show(&quot;Need help?&quot;, &quot;Help Available&quot;, KryptonMessageBoxButtons.OK, 
+    KryptonMessageBoxIcon.Question, KryptonMessageBoxDefaultButton.Button1, 
+    MessageBoxOptions.None, helpInfo);
+</code></pre>
+<h3 id="rtl-support">RTL Support</h3>
+<p>Support for right-to-left languages:</p>
+<pre><code class="lang-csharp">// RTL support
+KryptonMessageBox.Show(&quot;Arabic text here&quot;, &quot;Title&quot;, KryptonMessageBoxButtons.OK, 
+    KryptonMessageBoxIcon.Information, KryptonMessageBoxDefaultButton.Button1, 
+    MessageBoxOptions.RtlReading);
+</code></pre>
+<h2 id="customization">Customization</h2>
+<h3 id="theme-integration">Theme Integration</h3>
+<p>KryptonMessageBox automatically follows the current Krypton theme:</p>
+<pre><code class="lang-csharp">// Set theme before showing message box
+KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
+KryptonMessageBox.Show(&quot;Themed message box&quot;, &quot;Theme Demo&quot;);
+
+// Switch theme
+KryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;
+KryptonMessageBox.Show(&quot;Different theme&quot;, &quot;Theme Demo&quot;);
+</code></pre>
+<h3 id="custom-styling">Custom Styling</h3>
+<p>While KryptonMessageBox follows the global theme, you can customize individual message boxes:</p>
+<pre><code class="lang-csharp">// Custom message box with specific settings
+var result = KryptonMessageBox.Show(
+    &quot;Custom styled message&quot;, 
+    &quot;Custom Title&quot;, 
+    KryptonMessageBoxButtons.YesNo, 
+    KryptonMessageBoxIcon.Question,
+    KryptonMessageBoxDefaultButton.Button2,
+    MessageBoxOptions.None,
+    showCtrlCopy: true,
+    showCloseButton: false
+);
+</code></pre>
+<h3 id="string-localization">String Localization</h3>
+<p>Use localized strings for message boxes:</p>
+<pre><code class="lang-csharp">// Use localized strings
+var message = KryptonLanguageManager.Strings.GeneralStrings.SaveConfirmation;
+var title = KryptonLanguageManager.Strings.GeneralStrings.SaveTitle;
+var result = KryptonMessageBox.Show(message, title, KryptonMessageBoxButtons.YesNo, 
+    KryptonMessageBoxIcon.Question);
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-use-appropriate-icons">1. Use Appropriate Icons</h3>
+<p>Choose the right icon for your message type:</p>
+<pre><code class="lang-csharp">// Good - appropriate icon usage
+KryptonMessageBox.Show(&quot;File saved successfully&quot;, &quot;Success&quot;, KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information);
+KryptonMessageBox.Show(&quot;File not found&quot;, &quot;Error&quot;, KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Error);
+KryptonMessageBox.Show(&quot;Are you sure?&quot;, &quot;Confirm&quot;, KryptonMessageBoxButtons.YesNo, KryptonMessageBoxIcon.Question);
+KryptonMessageBox.Show(&quot;Disk space low&quot;, &quot;Warning&quot;, KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Warning);
+
+// Avoid - inappropriate icon usage
+KryptonMessageBox.Show(&quot;Error occurred&quot;, &quot;Error&quot;, KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information); // Should use Error icon
+</code></pre>
+<h3 id="2-provide-clear-messages">2. Provide Clear Messages</h3>
+<p>Write clear, concise messages:</p>
+<pre><code class="lang-csharp">// Good - clear and specific
+KryptonMessageBox.Show(&quot;The file 'document.docx' has been saved successfully.&quot;, &quot;File Saved&quot;, KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information);
+
+// Avoid - vague messages
+KryptonMessageBox.Show(&quot;Done&quot;, &quot;Status&quot;, KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information);
+</code></pre>
+<h3 id="3-use-appropriate-button-combinations">3. Use Appropriate Button Combinations</h3>
+<p>Choose the right buttons for the situation:</p>
+<pre><code class="lang-csharp">// Good - appropriate button choices
+KryptonMessageBox.Show(&quot;Save changes before closing?&quot;, &quot;Save&quot;, KryptonMessageBoxButtons.YesNoCancel);
+KryptonMessageBox.Show(&quot;Operation failed. Retry?&quot;, &quot;Error&quot;, KryptonMessageBoxButtons.RetryCancel);
+KryptonMessageBox.Show(&quot;File deleted successfully&quot;, &quot;Deleted&quot;, KryptonMessageBoxButtons.OK);
+
+// Avoid - inappropriate button choices
+KryptonMessageBox.Show(&quot;Save changes?&quot;, &quot;Save&quot;, KryptonMessageBoxButtons.AbortRetryIgnore); // Too many options
+</code></pre>
+<h3 id="4-set-appropriate-default-buttons">4. Set Appropriate Default Buttons</h3>
+<p>Choose the safest default button:</p>
+<pre><code class="lang-csharp">// Good - safe defaults
+KryptonMessageBox.Show(&quot;Delete file?&quot;, &quot;Delete&quot;, KryptonMessageBoxButtons.YesNo, 
+    KryptonMessageBoxIcon.Warning, KryptonMessageBoxDefaultButton.Button2); // No is default
+
+KryptonMessageBox.Show(&quot;Save changes?&quot;, &quot;Save&quot;, KryptonMessageBoxButtons.YesNoCancel, 
+    KryptonMessageBoxIcon.Question, KryptonMessageBoxDefaultButton.Button1); // Yes is default
+
+// Avoid - dangerous defaults
+KryptonMessageBox.Show(&quot;Delete all files?&quot;, &quot;Delete&quot;, KryptonMessageBoxButtons.YesNo, 
+    KryptonMessageBoxIcon.Warning, KryptonMessageBoxDefaultButton.Button1); // Yes is default - dangerous!
+</code></pre>
+<h3 id="5-handle-results-properly">5. Handle Results Properly</h3>
+<p>Always handle the dialog result:</p>
+<pre><code class="lang-csharp">// Good - proper result handling
+var result = KryptonMessageBox.Show(&quot;Save changes?&quot;, &quot;Save&quot;, KryptonMessageBoxButtons.YesNoCancel, KryptonMessageBoxIcon.Question);
+
+switch (result)
+{
+    case DialogResult.Yes:
+        SaveDocument();
+        break;
+    case DialogResult.No:
+        // Don't save
+        break;
+    case DialogResult.Cancel:
+        // Cancel operation
+        return;
+}
+
+// Avoid - ignoring results
+KryptonMessageBox.Show(&quot;Save changes?&quot;, &quot;Save&quot;, KryptonMessageBoxButtons.YesNo, KryptonMessageBoxIcon.Question);
+// What happens next? User choice is ignored!
+</code></pre>
+<h2 id="migration-from-messagebox">Migration from MessageBox</h2>
+<h3 id="simple-migration">Simple Migration</h3>
+<p>For basic usage, KryptonMessageBox is a drop-in replacement:</p>
+<pre><code class="lang-csharp">// Before (standard MessageBox)
+MessageBox.Show(&quot;Hello, World!&quot;);
+MessageBox.Show(&quot;Hello, World!&quot;, &quot;Title&quot;);
+MessageBox.Show(&quot;Save changes?&quot;, &quot;Save&quot;, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+// After (KryptonMessageBox)
+KryptonMessageBox.Show(&quot;Hello, World!&quot;);
+KryptonMessageBox.Show(&quot;Hello, World!&quot;, &quot;Title&quot;);
+KryptonMessageBox.Show(&quot;Save changes?&quot;, &quot;Save&quot;, KryptonMessageBoxButtons.YesNo, KryptonMessageBoxIcon.Question);
+</code></pre>
+<h3 id="migration-script">Migration Script</h3>
+<p>Here's a simple migration script to help convert existing MessageBox calls:</p>
+<pre><code class="lang-csharp">public static class MessageBoxMigrationHelper
+{
+    public static void MigrateMessageBoxCalls()
+    {
+        // Find and replace patterns:
+        // MessageBox.Show -&gt; KryptonMessageBox.Show
+        // MessageBoxButtons -&gt; KryptonMessageBoxButtons
+        // MessageBoxIcon -&gt; KryptonMessageBoxIcon
+        // MessageBoxDefaultButton -&gt; KryptonMessageBoxDefaultButton
+        
+        // Example conversions:
+        ConvertMessageBox(&quot;MessageBox.Show(\&quot;text\&quot;);&quot;, &quot;KryptonMessageBox.Show(\&quot;text\&quot;);&quot;);
+        ConvertMessageBox(&quot;MessageBox.Show(\&quot;text\&quot;, \&quot;title\&quot;);&quot;, &quot;KryptonMessageBox.Show(\&quot;text\&quot;, \&quot;title\&quot;);&quot;);
+        ConvertMessageBox(&quot;MessageBox.Show(\&quot;text\&quot;, \&quot;title\&quot;, MessageBoxButtons.YesNo);&quot;, 
+            &quot;KryptonMessageBox.Show(\&quot;text\&quot;, \&quot;title\&quot;, KryptonMessageBoxButtons.YesNo);&quot;);
+    }
+    
+    private static void ConvertMessageBox(string oldPattern, string newPattern)
+    {
+        // Implementation would depend on your specific migration needs
+        Console.WriteLine($&quot;Convert: {oldPattern} -&gt; {newPattern}&quot;);
+    }
+}
+</code></pre>
+<h3 id="enhanced-migration">Enhanced Migration</h3>
+<p>Take advantage of KryptonMessageBox's enhanced features:</p>
+<pre><code class="lang-csharp">// Before (standard MessageBox)
+var result = MessageBox.Show(&quot;Error occurred&quot;, &quot;Error&quot;, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+// After (enhanced KryptonMessageBox)
+var result = KryptonMessageBox.Show(&quot;Error occurred&quot;, &quot;Error&quot;, KryptonMessageBoxButtons.OK, 
+    KryptonMessageBoxIcon.Error, showCtrlCopy: true); // Enable copy functionality
+</code></pre>
+<h2 id="examples">Examples</h2>
+<h3 id="common-scenarios">Common Scenarios</h3>
+<h4 id="1-confirmation-dialogs">1. Confirmation Dialogs</h4>
+<pre><code class="lang-csharp">public static class ConfirmationDialogs
+{
+    public static bool ConfirmSave()
+    {
+        var result = KryptonMessageBox.Show(
+            &quot;Do you want to save changes to this document?&quot;, 
+            &quot;Save Document&quot;, 
+            KryptonMessageBoxButtons.YesNoCancel, 
+            KryptonMessageBoxIcon.Question,
+            KryptonMessageBoxDefaultButton.Button1
+        );
+        
+        return result == DialogResult.Yes;
+    }
+    
+    public static bool ConfirmDelete()
+    {
+        var result = KryptonMessageBox.Show(
+            &quot;Are you sure you want to delete this item? This action cannot be undone.&quot;, 
+            &quot;Delete Item&quot;, 
+            KryptonMessageBoxButtons.YesNo, 
+            KryptonMessageBoxIcon.Warning,
+            KryptonMessageBoxDefaultButton.Button2 // No is default
+        );
+        
+        return result == DialogResult.Yes;
+    }
+    
+    public static bool ConfirmExit()
+    {
+        var result = KryptonMessageBox.Show(
+            &quot;Are you sure you want to exit the application?&quot;, 
+            &quot;Exit Application&quot;, 
+            KryptonMessageBoxButtons.YesNo, 
+            KryptonMessageBoxIcon.Question,
+            KryptonMessageBoxDefaultButton.Button2 // No is default
+        );
+        
+        return result == DialogResult.Yes;
+    }
+}
+</code></pre>
+<h4 id="2-error-handling">2. Error Handling</h4>
+<pre><code class="lang-csharp">public static class ErrorDialogs
+{
+    public static void ShowError(string message, string title = &quot;Error&quot;)
+    {
+        KryptonMessageBox.Show(
+            message, 
+            title, 
+            KryptonMessageBoxButtons.OK, 
+            KryptonMessageBoxIcon.Error,
+            showCtrlCopy: true // Enable copy for error messages
+        );
+    }
+    
+    public static void ShowError(Exception ex, string context = &quot;&quot;)
+    {
+        var message = string.IsNullOrEmpty(context) 
+            ? ex.Message 
+            : $&quot;{context}: {ex.Message}&quot;;
+            
+        KryptonMessageBox.Show(
+            message, 
+            &quot;Error&quot;, 
+            KryptonMessageBoxButtons.OK, 
+            KryptonMessageBoxIcon.Error,
+            showCtrlCopy: true
+        );
+    }
+    
+    public static DialogResult ShowRetryError(string message, string title = &quot;Error&quot;)
+    {
+        return KryptonMessageBox.Show(
+            message, 
+            title, 
+            KryptonMessageBoxButtons.RetryCancel, 
+            KryptonMessageBoxIcon.Error,
+            KryptonMessageBoxDefaultButton.Button1, // Retry is default
+            showCtrlCopy: true
+        );
+    }
+}
+</code></pre>
+<h4 id="3-information-dialogs">3. Information Dialogs</h4>
+<pre><code class="lang-csharp">public static class InformationDialogs
+{
+    public static void ShowInfo(string message, string title = &quot;Information&quot;)
+    {
+        KryptonMessageBox.Show(
+            message, 
+            title, 
+            KryptonMessageBoxButtons.OK, 
+            KryptonMessageBoxIcon.Information
+        );
+    }
+    
+    public static void ShowSuccess(string message, string title = &quot;Success&quot;)
+    {
+        KryptonMessageBox.Show(
+            message, 
+            title, 
+            KryptonMessageBoxButtons.OK, 
+            KryptonMessageBoxIcon.Information
+        );
+    }
+    
+    public static void ShowWarning(string message, string title = &quot;Warning&quot;)
+    {
+        KryptonMessageBox.Show(
+            message, 
+            title, 
+            KryptonMessageBoxButtons.OK, 
+            KryptonMessageBoxIcon.Warning,
+            showCtrlCopy: true // Enable copy for warnings
+        );
+    }
+}
+</code></pre>
+<h4 id="4-custom-message-boxes">4. Custom Message Boxes</h4>
+<pre><code class="lang-csharp">public static class CustomMessageBoxes
+{
+    public static void ShowAbout()
+    {
+        var aboutText = &quot;My Application v1.0\n\n&quot; +
+                       &quot;A sample application built with Krypton Toolkit Suite.\n\n&quot; +
+                       &quot;Copyright © 2025 My Company&quot;;
+                       
+        KryptonMessageBox.Show(
+            aboutText, 
+            &quot;About&quot;, 
+            KryptonMessageBoxButtons.OK, 
+            KryptonMessageBoxIcon.Information
+        );
+    }
+    
+    public static bool ShowLicenseAgreement()
+    {
+        var licenseText = &quot;Do you agree to the terms of the license agreement?\n\n&quot; +
+                         &quot;By clicking 'Yes', you agree to be bound by the terms and conditions.&quot;;
+                         
+        var result = KryptonMessageBox.Show(
+            licenseText, 
+            &quot;License Agreement&quot;, 
+            KryptonMessageBoxButtons.YesNo, 
+            KryptonMessageBoxIcon.Question,
+            KryptonMessageBoxDefaultButton.Button2 // No is default
+        );
+        
+        return result == DialogResult.Yes;
+    }
+    
+    public static void ShowHelp(string helpText, string title = &quot;Help&quot;)
+    {
+        var helpInfo = new HelpInfo(&quot;https://example.com/help&quot;, &quot;MessageBoxHelp&quot;);
+        
+        KryptonMessageBox.Show(
+            helpText, 
+            title, 
+            KryptonMessageBoxButtons.OK, 
+            KryptonMessageBoxIcon.Information,
+            KryptonMessageBoxDefaultButton.Button1,
+            MessageBoxOptions.None,
+            helpInfo
+        );
+    }
+}
+</code></pre>
+<h4 id="5-localized-message-boxes">5. Localized Message Boxes</h4>
+<pre><code class="lang-csharp">public static class LocalizedMessageBoxes
+{
+    public static bool ConfirmSave()
+    {
+        var message = KryptonLanguageManager.Strings.GeneralStrings.SaveConfirmation;
+        var title = KryptonLanguageManager.Strings.GeneralStrings.SaveTitle;
+        
+        var result = KryptonMessageBox.Show(
+            message, 
+            title, 
+            KryptonMessageBoxButtons.YesNoCancel, 
+            KryptonMessageBoxIcon.Question
+        );
+        
+        return result == DialogResult.Yes;
+    }
+    
+    public static void ShowError(string errorKey)
+    {
+        var message = KryptonLanguageManager.Strings.ErrorStrings.GetString(errorKey);
+        var title = KryptonLanguageManager.Strings.ErrorStrings.ErrorTitle;
+        
+        KryptonMessageBox.Show(
+            message, 
+            title, 
+            KryptonMessageBoxButtons.OK, 
+            KryptonMessageBoxIcon.Error,
+            showCtrlCopy: true
+        );
+    }
+}
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="1-message-box-not-themed">1. Message Box Not Themed</h4>
+<p><strong>Problem</strong>: Message box appears with standard Windows styling instead of Krypton theme.</p>
+<p><strong>Solution</strong>: Ensure KryptonManager is properly initialized:</p>
+<pre><code class="lang-csharp">// Fix: Initialize KryptonManager first
+KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
+KryptonMessageBox.Show(&quot;Themed message&quot;);
+</code></pre>
+<h4 id="2-copy-functionality-not-working">2. Copy Functionality Not Working</h4>
+<p><strong>Problem</strong>: Ctrl+C doesn't copy the message text.</p>
+<p><strong>Solution</strong>: Enable copy functionality explicitly:</p>
+<pre><code class="lang-csharp">// Fix: Enable copy functionality
+KryptonMessageBox.Show(&quot;Error message&quot;, &quot;Error&quot;, KryptonMessageBoxButtons.OK, 
+    KryptonMessageBoxIcon.Error, showCtrlCopy: true);
+</code></pre>
+<h4 id="3-help-button-not-appearing">3. Help Button Not Appearing</h4>
+<p><strong>Problem</strong>: Help button doesn't show even when HelpInfo is provided.</p>
+<p><strong>Solution</strong>: Ensure HelpInfo is properly constructed:</p>
+<pre><code class="lang-csharp">// Fix: Proper HelpInfo construction
+var helpInfo = new HelpInfo(&quot;https://example.com/help&quot;, &quot;HelpTopic&quot;);
+KryptonMessageBox.Show(&quot;Message&quot;, &quot;Title&quot;, KryptonMessageBoxButtons.OK, 
+    KryptonMessageBoxIcon.Information, KryptonMessageBoxDefaultButton.Button1, 
+    MessageBoxOptions.None, helpInfo);
+</code></pre>
+<h4 id="4-rtl-text-not-displaying-correctly">4. RTL Text Not Displaying Correctly</h4>
+<p><strong>Problem</strong>: Right-to-left text appears incorrectly.</p>
+<p><strong>Solution</strong>: Use MessageBoxOptions.RtlReading:</p>
+<pre><code class="lang-csharp">// Fix: Enable RTL reading
+KryptonMessageBox.Show(&quot;Arabic text&quot;, &quot;Title&quot;, KryptonMessageBoxButtons.OK, 
+    KryptonMessageBoxIcon.Information, KryptonMessageBoxDefaultButton.Button1, 
+    MessageBoxOptions.RtlReading);
+</code></pre>
+<h3 id="debugging-tips">Debugging Tips</h3>
+<h4 id="1-check-current-theme">1. Check Current Theme</h4>
+<pre><code class="lang-csharp">public static void DebugCurrentTheme()
+{
+    Console.WriteLine($&quot;Current Theme: {KryptonManager.GlobalPaletteMode}&quot;);
+    Console.WriteLine($&quot;Theme Applied: {KryptonManager.GlobalPaletteMode != PaletteMode.Custom}&quot;);
+}
+</code></pre>
+<h4 id="2-test-different-overloads">2. Test Different Overloads</h4>
+<pre><code class="lang-csharp">public static void TestMessageBoxOverloads()
+{
+    // Test basic overload
+    KryptonMessageBox.Show(&quot;Basic test&quot;);
+    
+    // Test with buttons
+    KryptonMessageBox.Show(&quot;Button test&quot;, &quot;Test&quot;, KryptonMessageBoxButtons.YesNo);
+    
+    // Test with icon
+    KryptonMessageBox.Show(&quot;Icon test&quot;, &quot;Test&quot;, KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information);
+    
+    // Test with all options
+    KryptonMessageBox.Show(&quot;Full test&quot;, &quot;Test&quot;, KryptonMessageBoxButtons.YesNo, 
+        KryptonMessageBoxIcon.Question, KryptonMessageBoxDefaultButton.Button1, 
+        MessageBoxOptions.None, showCtrlCopy: true, showCloseButton: true);
+}
+</code></pre>
+<h4 id="3-validate-parameters">3. Validate Parameters</h4>
+<pre><code class="lang-csharp">public static bool ValidateMessageBoxParameters(string text, string caption, 
+    KryptonMessageBoxButtons buttons, KryptonMessageBoxIcon icon)
+{
+    try
+    {
+        // Validate text
+        if (string.IsNullOrEmpty(text))
+        {
+            Console.WriteLine(&quot;Error: Text cannot be null or empty&quot;);
+            return false;
+        }
+        
+        // Validate button and icon combination
+        if (buttons == KryptonMessageBoxButtons.AbortRetryIgnore &amp;&amp; icon == KryptonMessageBoxIcon.Question)
+        {
+            Console.WriteLine(&quot;Warning: AbortRetryIgnore with Question icon may be confusing&quot;);
+        }
+        
+        return true;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($&quot;Validation error: {ex.Message}&quot;);
+        return false;
+    }
+}
+</code></pre>
+<p>This comprehensive documentation provides developers with complete information about using the KryptonMessageBox API effectively in their Krypton Toolkit Suite applications.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

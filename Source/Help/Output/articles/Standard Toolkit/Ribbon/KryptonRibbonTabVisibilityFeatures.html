@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Ribbon Tab Visibility Features | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Ribbon Tab Visibility Features | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-ribbon-tab-visibility-features">Krypton Ribbon Tab Visibility Features</h1>
+
+<h2 id="overview">Overview</h2>
+<p>This document describes the implementation of comprehensive tab visibility features for the Krypton Ribbon control, addressing <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/331">GitHub Issue #331</a> and the related <a href="https://github.com/ComponentFactory/Krypton/issues/99#issuecomment-914968988">Issue #99</a>.</p>
+<h2 id="feature-description">Feature Description</h2>
+<p>The Krypton Ribbon now supports two complementary features for creating flexible ribbon interfaces:</p>
+<ol>
+<li><strong>&quot;No Tab&quot; Mode</strong>: Allows setting <code>SelectedTab</code> to <code>null</code>, creating a ribbon with tabs but no active tab selected</li>
+<li><strong>&quot;Hide Tabs&quot; Mode</strong>: Completely hides the tab area, creating a clean toolbar-like interface</li>
+</ol>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="files-modified">Files Modified</h3>
+<ul>
+<li><code>Source/Krypton Components/Krypton.Ribbon/Controls Ribbon/KryptonRibbon.cs</code></li>
+<li><code>Source/Krypton Components/Krypton.Ribbon/Designers/Designers/KryptonRibbonDesigner.cs</code></li>
+</ul>
+<h3 id="key-changes">Key Changes</h3>
+<h4 id="1-new-properties">1. New Properties</h4>
+<p><strong>ShowTabs Property</strong>:</p>
+<pre><code class="lang-csharp">/// &lt;summary&gt;
+/// Gets and sets a value indicating if ribbon tabs are visible.
+/// &lt;/summary&gt;
+[Category(@&quot;Values&quot;)]
+[Description(@&quot;Determines if ribbon tabs are visible.&quot;)]
+[DefaultValue(true)]
+public bool ShowTabs { get; set; }
+</code></pre>
+<p><strong>SelectedTab Property Enhancement</strong>:</p>
+<ul>
+<li>Modified to allow setting <code>SelectedTab</code> to <code>null</code> for &quot;no tab&quot; mode</li>
+<li>Changed validation logic from <code>(value != null)</code> to <code>(value == null) ||</code> to permit null values</li>
+</ul>
+<h4 id="2-new-designer-verbs">2. New Designer Verbs</h4>
+<p>Four new designer verbs have been added to the <code>KryptonRibbonDesigner</code> class:</p>
+<ul>
+<li><strong>&quot;Clear Tab Selection&quot;</strong> - Clears the selected tab, enabling toolbar mode</li>
+<li><strong>&quot;Select First Tab&quot;</strong> - Sets the first available tab as selected</li>
+<li><strong>&quot;Hide Tab Headers&quot;</strong> - Hides the ribbon tab headers completely</li>
+<li><strong>&quot;Show Tab Headers&quot;</strong> - Shows the ribbon tab headers</li>
+</ul>
+<h4 id="3-dynamic-verb-management">3. Dynamic Verb Management</h4>
+<p>Verbs are automatically enabled/disabled based on current ribbon state:</p>
+<ul>
+<li><strong>No Tab Mode</strong>: &quot;Clear Tab Selection&quot; disabled, &quot;Select First Tab&quot; enabled</li>
+<li><strong>Tab Selected</strong>: &quot;Clear Tab Selection&quot; enabled, &quot;Select First Tab&quot; disabled</li>
+<li><strong>Tab Headers Visible</strong>: &quot;Hide Tab Headers&quot; enabled, &quot;Show Tab Headers&quot; disabled</li>
+<li><strong>Tab Headers Hidden</strong>: &quot;Hide Tab Headers&quot; disabled, &quot;Show Tab Headers&quot; enabled</li>
+</ul>
+<h4 id="4-view-layout-management">4. View Layout Management</h4>
+<p>The <code>UpdateTabVisibility()</code> method dynamically adds or removes both the <code>TabsArea</code> and <code>CaptionArea</code> from the <code>_ribbonDocker</code> based on the <code>ShowTabs</code> property:</p>
+<pre><code class="lang-csharp">private void UpdateTabVisibility()
+{
+    if (_ribbonDocker == null || TabsArea == null || CaptionArea == null)
+    {
+        return;
+    }
+
+    if (_showTabs)
+    {
+        // Add tabs area if not already present
+        if (!_ribbonDocker.Contains(TabsArea))
+        {
+            _ribbonDocker.Add(TabsArea, ViewDockStyle.Top);
+        }
+        
+        // Add caption area if not already present
+        if (!_ribbonDocker.Contains(CaptionArea))
+        {
+            _ribbonDocker.Add(CaptionArea, ViewDockStyle.Top);
+        }
+    }
+    else
+    {
+        // Remove tabs area if present
+        if (_ribbonDocker.Contains(TabsArea))
+        {
+            _ribbonDocker.Remove(TabsArea);
+        }
+        
+        // Remove caption area if present
+        if (_ribbonDocker.Contains(CaptionArea))
+        {
+            _ribbonDocker.Remove(CaptionArea);
+        }
+    }
+}
+</code></pre>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="designer-usage">Designer Usage</h3>
+<ol>
+<li><strong>Right-click on a KryptonRibbon control</strong> in the Visual Studio designer</li>
+<li><strong>Select from the context menu</strong>:
+<ul>
+<li>&quot;Clear Tab Selection&quot; - Creates a ribbon with tabs but no active selection</li>
+<li>&quot;Hide Tab Headers&quot; - Completely hides the tab headers for a toolbar-like appearance</li>
+<li>&quot;Select First Tab&quot; - Restores tab selection (when in no-tab mode)</li>
+<li>&quot;Show Tab Headers&quot; - Restores tab header visibility (when headers are hidden)</li>
+</ul>
+</li>
+</ol>
+<h3 id="programmatic-usage">Programmatic Usage</h3>
+<pre><code class="lang-csharp">// Hide tabs completely for toolbar-like interface
+ribbon.ShowTabs = false;
+
+// Set no tab selected (tabs still visible)
+ribbon.SelectedTab = null;
+
+// Restore normal ribbon behavior
+ribbon.ShowTabs = true;
+ribbon.SelectedTab = ribbon.RibbonTabs[0];
+</code></pre>
+<h2 id="visual-comparison">Visual Comparison</h2>
+<h3 id="normal-ribbon-showtabs--true-selectedtab--tab1">Normal Ribbon (ShowTabs = true, SelectedTab = Tab1)</h3>
+<pre><code>┌─────────────────────────────────────┐
+│ [Home] [Insert] [View] [Design]     │ ← Tab Headers
+├─────────────────────────────────────┤
+│ [Paste] [Cut] [Copy] [Format]       │ ← Ribbon Groups
+│ Clipboard Group                     │
+└─────────────────────────────────────┘
+</code></pre>
+<h3 id="no-tab-mode-showtabs--true-selectedtab--null">No Tab Mode (ShowTabs = true, SelectedTab = null)</h3>
+<pre><code>┌─────────────────────────────────────┐
+│ [Home] [Insert] [View] [Design]     │ ← Tab Headers (visible but none selected)
+├─────────────────────────────────────┤
+│ (No content - no tab selected)      │ ← No groups displayed
+└─────────────────────────────────────┘
+</code></pre>
+<h3 id="hidden-tab-headers-mode-showtabs--false">Hidden Tab Headers Mode (ShowTabs = false)</h3>
+<pre><code>┌─────────────────────────────────────┐
+│ [Paste] [Cut] [Copy] [Format]       │ ← Ribbon Groups (directly visible)
+│ Clipboard Group                     │
+└─────────────────────────────────────┘
+</code></pre>
+<h2 id="benefits">Benefits</h2>
+<ol>
+<li><strong>Flexible UI Design</strong>: Developers can choose between full ribbon, no-tab ribbon, or toolbar-like interfaces</li>
+<li><strong>Designer Integration</strong>: Easy toggling between modes in Visual Studio designer</li>
+<li><strong>Undo/Redo Support</strong>: All changes support designer transactions for undo/redo functionality</li>
+<li><strong>Runtime Flexibility</strong>: Properties can be changed programmatically at runtime</li>
+<li><strong>Clean Implementation</strong>: Uses existing view layout system without reflection hacks</li>
+</ol>
+<h2 id="technical-notes">Technical Notes</h2>
+<ul>
+<li><strong>Backward Compatibility</strong>: All existing functionality is preserved</li>
+<li><strong>Performance</strong>: Minimal overhead, only affects view layout when properties change</li>
+<li><strong>Designer Support</strong>: Full integration with Visual Studio designer including property grid</li>
+<li><strong>Transaction Support</strong>: All designer verbs use proper transactions for undo/redo</li>
+</ul>
+<h2 id="use-cases">Use Cases</h2>
+<h3 id="1-toolbar-mode">1. Toolbar Mode</h3>
+<p>When you want to use the ribbon as a toolbar without visible tab headers:</p>
+<pre><code class="lang-csharp">// Hide tabs completely for toolbar-like interface
+ribbon.ShowTabs = false;
+</code></pre>
+<h3 id="2-dynamic-tab-management">2. Dynamic Tab Management</h3>
+<p>For applications that need to dynamically show/hide tabs:</p>
+<pre><code class="lang-csharp">// Hide all tabs (toolbar mode)
+ribbon.ShowTabs = false;
+
+// Show tabs when needed
+ribbon.ShowTabs = true;
+if (ribbon.RibbonTabs.Count &gt; 0)
+{
+    ribbon.SelectedTab = ribbon.RibbonTabs[0];
+}
+</code></pre>
+<h3 id="3-context-sensitive-ribbons">3. Context-Sensitive Ribbons</h3>
+<p>For ribbons that change behavior based on application state:</p>
+<pre><code class="lang-csharp">private void SwitchToToolbarMode()
+{
+    ribbon.ShowTabs = false;
+    // Ribbon now functions as a toolbar
+}
+
+private void SwitchToTabMode()
+{
+    ribbon.ShowTabs = true;
+    if (ribbon.RibbonTabs.Count &gt; 0)
+    {
+        ribbon.SelectedTab = ribbon.RibbonTabs[0];
+    }
+}
+</code></pre>
+<h2 id="edge-cases-and-robustness">Edge Cases and Robustness</h2>
+<p>The implementation handles several edge cases to ensure robust behavior:</p>
+<h3 id="1-tab-validation">1. Tab Validation</h3>
+<p>The <code>ValidateSelectedTab()</code> method respects the <code>ShowTabs</code> property:</p>
+<ul>
+<li><strong>When <code>ShowTabs = false</code></strong>: Allows <code>SelectedTab</code> to remain <code>null</code> (toolbar mode)</li>
+<li><strong>When <code>ShowTabs = true</code></strong>: Automatically selects a valid tab if none is selected</li>
+</ul>
+<h3 id="2-focus-management">2. Focus Management</h3>
+<p>The <code>OnGotFocus()</code> method handles focus appropriately:</p>
+<ul>
+<li><strong>Toolbar Mode</strong>: Focuses on groups area or QAT instead of trying to focus hidden tabs</li>
+<li><strong>Normal Mode</strong>: Focuses on selected tab or first available tab</li>
+</ul>
+<h3 id="3-keyboard-navigation">3. Keyboard Navigation</h3>
+<p>The <code>RibbonTabController</code> already handles keyboard navigation correctly:</p>
+<ul>
+<li><strong>When <code>SelectedTab = null</code></strong>: Converts Tab/Shift+Tab to Right/Left arrow keys</li>
+<li><strong>Toolbar Mode</strong>: Navigation works through groups and QAT elements</li>
+</ul>
+<h3 id="4-contextual-tabs">4. Contextual Tabs</h3>
+<p>Both regular tabs and contextual tab headers are properly hidden when <code>ShowTabs = false</code>.</p>
+<h2 id="related-issues">Related Issues</h2>
+<ul>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/331">GitHub Issue #331</a> - Original &quot;No Tab in a ribbon Solution&quot; request</li>
+<li><a href="https://github.com/ComponentFactory/Krypton/issues/99#issuecomment-914968988">GitHub Issue #99</a> - Related ribbon header removal request</li>
+</ul>
+<h2 id="future-enhancements">Future Enhancements</h2>
+<p>Potential future improvements could include:</p>
+<ul>
+<li>Animation support for tab show/hide transitions</li>
+<li>Additional layout options for hidden tab mode</li>
+<li>Custom styling options for toolbar mode</li>
+<li>Context menu integration for runtime switching</li>
+</ul>
+<h2 id="compatibility">Compatibility</h2>
+<p>This feature is compatible with:</p>
+<ul>
+<li>.NET Framework 4.7.2 and later</li>
+<li>.NET 8.0 Windows and later</li>
+<li>Visual Studio 2022 and later</li>
+<li>All existing Krypton Ribbon functionality</li>
+</ul>
+<h2 id="conclusion">Conclusion</h2>
+<p>The tab visibility features successfully address the user requests in GitHub issues #331 and #99, providing comprehensive control over ribbon tab visibility and selection. The implementation follows established patterns in the codebase and provides full designer integration with proper transaction support, enabling developers to create flexible ribbon interfaces that can function as both traditional ribbons and modern toolbars.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

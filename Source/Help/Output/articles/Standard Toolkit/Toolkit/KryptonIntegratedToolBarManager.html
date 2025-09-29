@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title> | Krypton Standard Toolkit Documentation </title>
+      <title>KryptonIntegratedToolBarManager | Krypton Standard Toolkit Documentation </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content=" | Krypton Standard Toolkit Documentation ">
+      <meta name="title" content="KryptonIntegratedToolBarManager | Krypton Standard Toolkit Documentation ">
     
     
       <link rel="shortcut icon" href="../../../Krypton.ico">
@@ -67,7 +67,1108 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonintegratedtoolbarmanager">KryptonIntegratedToolBarManager</h1>
 
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonIntegratedToolBarManager</code> class provides a comprehensive toolbar management system for Krypton forms. It inherits from <code>Component</code> and offers integrated toolbar functionality with 14 predefined buttons, customizable orientation, alignment, and visibility controls. The manager handles the creation, attachment, and management of toolbar buttons within Krypton forms.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── Krypton.Toolkit.KryptonIntegratedToolBarManager
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonIntegratedToolBarManager()
+</code></pre>
+<p>The constructor initializes enhanced features:</p>
+<ul>
+<li><strong>Toolbar Setup</strong>: Creates 14 predefined toolbar buttons with default configurations</li>
+<li><strong>Default Values</strong>: Sets up default orientation, alignment, and visibility settings</li>
+<li><strong>Button Array</strong>: Initializes the integrated toolbar button array with all button types</li>
+<li><strong>Static Properties</strong>: Provides access to shared button and command values</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="core-properties">Core Properties</h3>
+<h4 id="integratedtoolbarbuttons-property">IntegratedToolBarButtons Property</h4>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;), DefaultValue(null)]
+public ButtonSpecAny[] IntegratedToolBarButtons { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Contains all the integrated toolbar buttons</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Type</strong>: Array of <code>ButtonSpecAny</code> objects</li>
+<li><strong>Usage</strong>: Access to individual toolbar buttons for customization</li>
+</ul>
+<h4 id="integratedtoolbarbuttonorientation-property">IntegratedToolBarButtonOrientation Property</h4>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;), DefaultValue(PaletteButtonOrientation.FixedTop)]
+public PaletteButtonOrientation IntegratedToolBarButtonOrientation { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls the orientation of toolbar buttons</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Available Values</strong>:
+<ul>
+<li><code>Inherit</code>: Inherit orientation from parent</li>
+<li><code>Auto</code>: Automatic orientation</li>
+<li><code>FixedTop</code>: Fixed top orientation (default)</li>
+<li><code>FixedBottom</code>: Fixed bottom orientation</li>
+<li><code>FixedLeft</code>: Fixed left orientation</li>
+<li><code>FixedRight</code>: Fixed right orientation</li>
+</ul>
+</li>
+</ul>
+<h4 id="integratedtoolbarbuttonalignment-property">IntegratedToolBarButtonAlignment Property</h4>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;), DefaultValue(PaletteRelativeEdgeAlign.Far)]
+public PaletteRelativeEdgeAlign IntegratedToolBarButtonAlignment { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls the alignment of toolbar buttons</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Available Values</strong>:
+<ul>
+<li><code>Inherit</code>: Inherit alignment from parent</li>
+<li><code>Near</code>: Near alignment</li>
+<li><code>Far</code>: Far alignment (default)</li>
+</ul>
+</li>
+</ul>
+<h4 id="parentform-property">ParentForm Property</h4>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;), DefaultValue(null)]
+public KryptonForm? ParentForm { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: The parent form that contains the toolbar</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Type</strong>: <code>KryptonForm</code> or null</li>
+<li><strong>Usage</strong>: Associates the toolbar manager with a specific form</li>
+</ul>
+<h3 id="button-visibility-properties">Button Visibility Properties</h3>
+<p>All button visibility properties follow the same pattern:</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;), DefaultValue(false)]
+public bool ShowNewButton { get; set; }
+public bool ShowOpenButton { get; set; }
+public bool ShowSaveButton { get; set; }
+public bool ShowSaveAllButton { get; set; }
+public bool ShowSaveAsButton { get; set; }
+public bool ShowCutButton { get; set; }
+public bool ShowCopyButton { get; set; }
+public bool ShowPasteButton { get; set; }
+public bool ShowUndoButton { get; set; }
+public bool ShowRedoButton { get; set; }
+public bool ShowPageSetupButton { get; set; }
+public bool ShowPrintPreviewButton { get; set; }
+public bool ShowPrintButton { get; set; }
+public bool ShowQuickPrintButton { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Control the visibility of individual toolbar buttons</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Default Value</strong>: false (all buttons hidden by default)</li>
+<li><strong>Effect</strong>: Automatically toggles button visibility when changed</li>
+</ul>
+<h3 id="static-properties">Static Properties</h3>
+<pre><code class="lang-csharp">public static IntegratedToolBarButtonValues IntegratedToolBarButtonValues { get; }
+public static IntegratedToolBarCommandValues IntegratedToolBarCommandValues { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Shared button and command values across all instances</li>
+<li><strong>Type</strong>: Static properties for global configuration</li>
+<li><strong>Usage</strong>: Centralized configuration for all toolbar managers</li>
+</ul>
+<h2 id="key-methods">Key Methods</h2>
+<h3 id="core-management-methods">Core Management Methods</h3>
+<h4 id="reset-method">Reset Method</h4>
+<pre><code class="lang-csharp">public void Reset()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Resets the toolbar manager to default settings</li>
+<li><strong>Effect</strong>: Restores all properties to their default values</li>
+<li><strong>Usage</strong>: Initialize or restore toolbar to default state</li>
+</ul>
+<h4 id="showintegratetoolbar-method">ShowIntegrateToolBar Method</h4>
+<pre><code class="lang-csharp">public void ShowIntegrateToolBar(bool showIntegratedToolBar, KryptonForm parentForm)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Shows or hides the integrated toolbar on the parent form</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>showIntegratedToolBar</code>: Whether to show the toolbar</li>
+<li><code>parentForm</code>: The form to attach/detach the toolbar from</li>
+</ul>
+</li>
+<li><strong>Usage</strong>: Toggle toolbar visibility on a form</li>
+</ul>
+<h4 id="attachintegratedtoolbartoparent-method">AttachIntegratedToolBarToParent Method</h4>
+<pre><code class="lang-csharp">public void AttachIntegratedToolBarToParent(KryptonForm? parentForm)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Attaches the integrated toolbar to the specified parent form</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>parentForm</code>: The form to attach the toolbar to</li>
+</ul>
+</li>
+<li><strong>Exception</strong>: <code>ArgumentNullException</code> if parentForm is null</li>
+<li><strong>Usage</strong>: Add toolbar buttons to a form</li>
+</ul>
+<h4 id="detachintegratedtoolbarfromparent-method">DetachIntegratedToolBarFromParent Method</h4>
+<pre><code class="lang-csharp">public void DetachIntegratedToolBarFromParent(KryptonForm? parentForm)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Detaches the integrated toolbar from the specified parent form</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>parentForm</code>: The form to detach the toolbar from</li>
+</ul>
+</li>
+<li><strong>Exception</strong>: <code>ArgumentNullException</code> if parentForm is null</li>
+<li><strong>Usage</strong>: Remove toolbar buttons from a form</li>
+</ul>
+<h3 id="configuration-methods">Configuration Methods</h3>
+<h4 id="updatebuttonorientation-method">UpdateButtonOrientation Method</h4>
+<pre><code class="lang-csharp">public void UpdateButtonOrientation(PaletteButtonOrientation buttonOrientation)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Updates the orientation of all toolbar buttons</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>buttonOrientation</code>: The new orientation for all buttons</li>
+</ul>
+</li>
+<li><strong>Exception</strong>: <code>ArgumentOutOfRangeException</code> for invalid orientation</li>
+<li><strong>Usage</strong>: Change button orientation dynamically</li>
+</ul>
+<h4 id="updatebuttonalignment-method">UpdateButtonAlignment Method</h4>
+<pre><code class="lang-csharp">public void UpdateButtonAlignment(PaletteRelativeEdgeAlign buttonAlignment)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Updates the alignment of all toolbar buttons</li>
+<li><strong>Parameters</strong>:
+<ul>
+<li><code>buttonAlignment</code>: The new alignment for all buttons</li>
+</ul>
+</li>
+<li><strong>Exception</strong>: <code>ArgumentOutOfRangeException</code> for invalid alignment</li>
+<li><strong>Usage</strong>: Change button alignment dynamically</li>
+</ul>
+<h3 id="utility-methods">Utility Methods</h3>
+<h4 id="returnintegratedtoolbarbuttonarray-method">ReturnIntegratedToolBarButtonArray Method</h4>
+<pre><code class="lang-csharp">public ButtonSpecAny[] ReturnIntegratedToolBarButtonArray()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Returns the array of integrated toolbar buttons</li>
+<li><strong>Returns</strong>: Array of <code>ButtonSpecAny</code> objects</li>
+<li><strong>Usage</strong>: Access to the button array for custom operations</li>
+</ul>
+<h4 id="returnisbuttonarrayflipped-method">ReturnIsButtonArrayFlipped Method</h4>
+<pre><code class="lang-csharp">public bool ReturnIsButtonArrayFlipped()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Returns whether the button array is flipped</li>
+<li><strong>Returns</strong>: Boolean indicating if the array is flipped</li>
+<li><strong>Usage</strong>: Check the current state of the button array</li>
+</ul>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="basic-toolbar-setup">Basic Toolbar Setup</h3>
+<pre><code class="lang-csharp">public void SetupBasicToolbar()
+{
+    var toolbarManager = new KryptonIntegratedToolBarManager();
+    
+    // Configure button visibility
+    toolbarManager.ShowNewButton = true;
+    toolbarManager.ShowOpenButton = true;
+    toolbarManager.ShowSaveButton = true;
+    toolbarManager.ShowCutButton = true;
+    toolbarManager.ShowCopyButton = true;
+    toolbarManager.ShowPasteButton = true;
+    
+    // Set orientation and alignment
+    toolbarManager.IntegratedToolBarButtonOrientation = PaletteButtonOrientation.FixedTop;
+    toolbarManager.IntegratedToolBarButtonAlignment = PaletteRelativeEdgeAlign.Far;
+    
+    // Attach to parent form
+    toolbarManager.AttachIntegratedToolBarToParent(this);
+}
+</code></pre>
+<h3 id="dynamic-toolbar-configuration">Dynamic Toolbar Configuration</h3>
+<pre><code class="lang-csharp">public class DynamicToolbarManager
+{
+    private KryptonIntegratedToolBarManager toolbarManager;
+    private KryptonForm parentForm;
+
+    public DynamicToolbarManager(KryptonForm form)
+    {
+        parentForm = form;
+        toolbarManager = new KryptonIntegratedToolBarManager
+        {
+            ParentForm = form
+        };
+    }
+
+    public void ConfigureToolbarForDocumentEditor()
+    {
+        // Show document-related buttons
+        toolbarManager.ShowNewButton = true;
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveButton = true;
+        toolbarManager.ShowSaveAsButton = true;
+        toolbarManager.ShowSaveAllButton = true;
+        
+        // Show editing buttons
+        toolbarManager.ShowCutButton = true;
+        toolbarManager.ShowCopyButton = true;
+        toolbarManager.ShowPasteButton = true;
+        toolbarManager.ShowUndoButton = true;
+        toolbarManager.ShowRedoButton = true;
+        
+        // Show print buttons
+        toolbarManager.ShowPageSetupButton = true;
+        toolbarManager.ShowPrintPreviewButton = true;
+        toolbarManager.ShowPrintButton = true;
+        toolbarManager.ShowQuickPrintButton = true;
+        
+        // Attach to form
+        toolbarManager.AttachIntegratedToolBarToParent(parentForm);
+    }
+
+    public void ConfigureToolbarForImageViewer()
+    {
+        // Show only relevant buttons for image viewer
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveAsButton = true;
+        toolbarManager.ShowPrintPreviewButton = true;
+        toolbarManager.ShowPrintButton = true;
+        
+        // Attach to form
+        toolbarManager.AttachIntegratedToolBarToParent(parentForm);
+    }
+
+    public void UpdateToolbarOrientation(PaletteButtonOrientation orientation)
+    {
+        toolbarManager.IntegratedToolBarButtonOrientation = orientation;
+    }
+
+    public void UpdateToolbarAlignment(PaletteRelativeEdgeAlign alignment)
+    {
+        toolbarManager.IntegratedToolBarButtonAlignment = alignment;
+    }
+}
+</code></pre>
+<h3 id="context-aware-toolbar">Context-Aware Toolbar</h3>
+<pre><code class="lang-csharp">public class ContextAwareToolbarManager
+{
+    private KryptonIntegratedToolBarManager toolbarManager;
+    private KryptonForm parentForm;
+    private string currentContext;
+
+    public ContextAwareToolbarManager(KryptonForm form)
+    {
+        parentForm = form;
+        toolbarManager = new KryptonIntegratedToolBarManager
+        {
+            ParentForm = form
+        };
+        currentContext = &quot;Default&quot;;
+    }
+
+    public void SetContext(string context)
+    {
+        if (currentContext != context)
+        {
+            // Detach current toolbar
+            toolbarManager.DetachIntegratedToolBarFromParent(parentForm);
+            
+            // Configure for new context
+            ConfigureForContext(context);
+            
+            // Attach updated toolbar
+            toolbarManager.AttachIntegratedToolBarToParent(parentForm);
+            
+            currentContext = context;
+        }
+    }
+
+    private void ConfigureForContext(string context)
+    {
+        // Reset all buttons
+        ResetAllButtons();
+        
+        switch (context)
+        {
+            case &quot;DocumentEditor&quot;:
+                ConfigureDocumentEditorButtons();
+                break;
+            case &quot;ImageViewer&quot;:
+                ConfigureImageViewerButtons();
+                break;
+            case &quot;DataViewer&quot;:
+                ConfigureDataViewerButtons();
+                break;
+            case &quot;Minimal&quot;:
+                ConfigureMinimalButtons();
+                break;
+            default:
+                ConfigureDefaultButtons();
+                break;
+        }
+    }
+
+    private void ResetAllButtons()
+    {
+        toolbarManager.ShowNewButton = false;
+        toolbarManager.ShowOpenButton = false;
+        toolbarManager.ShowSaveButton = false;
+        toolbarManager.ShowSaveAllButton = false;
+        toolbarManager.ShowSaveAsButton = false;
+        toolbarManager.ShowCutButton = false;
+        toolbarManager.ShowCopyButton = false;
+        toolbarManager.ShowPasteButton = false;
+        toolbarManager.ShowUndoButton = false;
+        toolbarManager.ShowRedoButton = false;
+        toolbarManager.ShowPageSetupButton = false;
+        toolbarManager.ShowPrintPreviewButton = false;
+        toolbarManager.ShowPrintButton = false;
+        toolbarManager.ShowQuickPrintButton = false;
+    }
+
+    private void ConfigureDocumentEditorButtons()
+    {
+        toolbarManager.ShowNewButton = true;
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveButton = true;
+        toolbarManager.ShowSaveAsButton = true;
+        toolbarManager.ShowCutButton = true;
+        toolbarManager.ShowCopyButton = true;
+        toolbarManager.ShowPasteButton = true;
+        toolbarManager.ShowUndoButton = true;
+        toolbarManager.ShowRedoButton = true;
+        toolbarManager.ShowPrintPreviewButton = true;
+        toolbarManager.ShowPrintButton = true;
+    }
+
+    private void ConfigureImageViewerButtons()
+    {
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveAsButton = true;
+        toolbarManager.ShowPrintPreviewButton = true;
+        toolbarManager.ShowPrintButton = true;
+    }
+
+    private void ConfigureDataViewerButtons()
+    {
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveAsButton = true;
+        toolbarManager.ShowPrintButton = true;
+    }
+
+    private void ConfigureMinimalButtons()
+    {
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveButton = true;
+    }
+
+    private void ConfigureDefaultButtons()
+    {
+        toolbarManager.ShowNewButton = true;
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveButton = true;
+    }
+}
+</code></pre>
+<h3 id="custom-button-event-handling">Custom Button Event Handling</h3>
+<pre><code class="lang-csharp">public class CustomToolbarEventHandler
+{
+    private KryptonIntegratedToolBarManager toolbarManager;
+    private KryptonForm parentForm;
+
+    public CustomToolbarEventHandler(KryptonForm form)
+    {
+        parentForm = form;
+        toolbarManager = new KryptonIntegratedToolBarManager
+        {
+            ParentForm = form
+        };
+        
+        SetupToolbar();
+        AttachEventHandlers();
+    }
+
+    private void SetupToolbar()
+    {
+        // Configure visible buttons
+        toolbarManager.ShowNewButton = true;
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveButton = true;
+        toolbarManager.ShowCutButton = true;
+        toolbarManager.ShowCopyButton = true;
+        toolbarManager.ShowPasteButton = true;
+        
+        // Attach to form
+        toolbarManager.AttachIntegratedToolBarToParent(parentForm);
+    }
+
+    private void AttachEventHandlers()
+    {
+        var buttons = toolbarManager.IntegratedToolBarButtons;
+        
+        // Attach event handlers to specific buttons
+        if (buttons[0] != null) // New button
+        {
+            buttons[0].Click += OnNewButtonClick;
+        }
+        
+        if (buttons[1] != null) // Open button
+        {
+            buttons[1].Click += OnOpenButtonClick;
+        }
+        
+        if (buttons[2] != null) // Save button
+        {
+            buttons[2].Click += OnSaveButtonClick;
+        }
+        
+        // Add more event handlers as needed
+    }
+
+    private void OnNewButtonClick(object? sender, EventArgs e)
+    {
+        // Handle new button click
+        MessageBox.Show(&quot;New button clicked!&quot;, &quot;Toolbar Event&quot;);
+    }
+
+    private void OnOpenButtonClick(object? sender, EventArgs e)
+    {
+        // Handle open button click
+        using var openDialog = new OpenFileDialog();
+        if (openDialog.ShowDialog() == DialogResult.OK)
+        {
+            MessageBox.Show($&quot;Opening file: {openDialog.FileName}&quot;, &quot;Toolbar Event&quot;);
+        }
+    }
+
+    private void OnSaveButtonClick(object? sender, EventArgs e)
+    {
+        // Handle save button click
+        MessageBox.Show(&quot;Save button clicked!&quot;, &quot;Toolbar Event&quot;);
+    }
+}
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="main-form-integration">Main Form Integration</h3>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    private KryptonIntegratedToolBarManager toolbarManager;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        SetupToolbar();
+    }
+
+    private void SetupToolbar()
+    {
+        toolbarManager = new KryptonIntegratedToolBarManager
+        {
+            ParentForm = this,
+            IntegratedToolBarButtonOrientation = PaletteButtonOrientation.FixedTop,
+            IntegratedToolBarButtonAlignment = PaletteRelativeEdgeAlign.Far
+        };
+
+        // Configure button visibility based on application type
+        ConfigureToolbarButtons();
+        
+        // Attach toolbar to form
+        toolbarManager.AttachIntegratedToolBarToParent(this);
+    }
+
+    private void ConfigureToolbarButtons()
+    {
+        // Show standard buttons
+        toolbarManager.ShowNewButton = true;
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveButton = true;
+        toolbarManager.ShowSaveAsButton = true;
+        
+        // Show editing buttons
+        toolbarManager.ShowCutButton = true;
+        toolbarManager.ShowCopyButton = true;
+        toolbarManager.ShowPasteButton = true;
+        toolbarManager.ShowUndoButton = true;
+        toolbarManager.ShowRedoButton = true;
+        
+        // Show print buttons
+        toolbarManager.ShowPrintPreviewButton = true;
+        toolbarManager.ShowPrintButton = true;
+    }
+
+    protected override void OnFormClosed(FormClosedEventArgs e)
+    {
+        // Clean up toolbar
+        toolbarManager?.DetachIntegratedToolBarFromParent(this);
+        base.OnFormClosed(e);
+    }
+}
+</code></pre>
+<h3 id="document-editor-integration">Document Editor Integration</h3>
+<pre><code class="lang-csharp">public class DocumentEditorForm : KryptonForm
+{
+    private KryptonIntegratedToolBarManager toolbarManager;
+    private RichTextBox documentEditor;
+
+    public DocumentEditorForm()
+    {
+        InitializeComponent();
+        SetupDocumentEditor();
+        SetupToolbar();
+    }
+
+    private void SetupDocumentEditor()
+    {
+        documentEditor = new RichTextBox
+        {
+            Dock = DockStyle.Fill,
+            Font = new Font(&quot;Consolas&quot;, 10)
+        };
+        
+        Controls.Add(documentEditor);
+    }
+
+    private void SetupToolbar()
+    {
+        toolbarManager = new KryptonIntegratedToolBarManager
+        {
+            ParentForm = this,
+            IntegratedToolBarButtonOrientation = PaletteButtonOrientation.FixedTop,
+            IntegratedToolBarButtonAlignment = PaletteRelativeEdgeAlign.Far
+        };
+
+        // Configure all document editor buttons
+        toolbarManager.ShowNewButton = true;
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveButton = true;
+        toolbarManager.ShowSaveAsButton = true;
+        toolbarManager.ShowSaveAllButton = true;
+        toolbarManager.ShowCutButton = true;
+        toolbarManager.ShowCopyButton = true;
+        toolbarManager.ShowPasteButton = true;
+        toolbarManager.ShowUndoButton = true;
+        toolbarManager.ShowRedoButton = true;
+        toolbarManager.ShowPageSetupButton = true;
+        toolbarManager.ShowPrintPreviewButton = true;
+        toolbarManager.ShowPrintButton = true;
+        toolbarManager.ShowQuickPrintButton = true;
+        
+        // Attach toolbar
+        toolbarManager.AttachIntegratedToolBarToParent(this);
+        
+        // Attach event handlers
+        AttachToolbarEventHandlers();
+    }
+
+    private void AttachToolbarEventHandlers()
+    {
+        var buttons = toolbarManager.IntegratedToolBarButtons;
+        
+        // Attach handlers for document operations
+        if (buttons[0] != null) buttons[0].Click += OnNewDocument;
+        if (buttons[1] != null) buttons[1].Click += OnOpenDocument;
+        if (buttons[2] != null) buttons[2].Click += OnSaveDocument;
+        if (buttons[3] != null) buttons[3].Click += OnSaveAsDocument;
+        if (buttons[4] != null) buttons[4].Click += OnSaveAllDocuments;
+        if (buttons[5] != null) buttons[5].Click += OnCutText;
+        if (buttons[6] != null) buttons[6].Click += OnCopyText;
+        if (buttons[7] != null) buttons[7].Click += OnPasteText;
+        if (buttons[8] != null) buttons[8].Click += OnUndo;
+        if (buttons[9] != null) buttons[9].Click += OnRedo;
+        if (buttons[10] != null) buttons[10].Click += OnPageSetup;
+        if (buttons[11] != null) buttons[11].Click += OnPrintPreview;
+        if (buttons[12] != null) buttons[12].Click += OnPrint;
+        if (buttons[13] != null) buttons[13].Click += OnQuickPrint;
+    }
+
+    private void OnNewDocument(object? sender, EventArgs e)
+    {
+        documentEditor.Clear();
+        Text = &quot;New Document - Document Editor&quot;;
+    }
+
+    private void OnOpenDocument(object? sender, EventArgs e)
+    {
+        using var openDialog = new OpenFileDialog
+        {
+            Filter = &quot;Rich Text Files (*.rtf)|*.rtf|Text Files (*.txt)|*.txt|All Files (*.*)|*.*&quot;
+        };
+        
+        if (openDialog.ShowDialog() == DialogResult.OK)
+        {
+            documentEditor.LoadFile(openDialog.FileName);
+            Text = $&quot;{Path.GetFileName(openDialog.FileName)} - Document Editor&quot;;
+        }
+    }
+
+    private void OnSaveDocument(object? sender, EventArgs e)
+    {
+        // Implementation for save document
+        MessageBox.Show(&quot;Save document functionality&quot;, &quot;Toolbar Event&quot;);
+    }
+
+    private void OnSaveAsDocument(object? sender, EventArgs e)
+    {
+        using var saveDialog = new SaveFileDialog
+        {
+            Filter = &quot;Rich Text Files (*.rtf)|*.rtf|Text Files (*.txt)|*.txt|All Files (*.*)|*.*&quot;
+        };
+        
+        if (saveDialog.ShowDialog() == DialogResult.OK)
+        {
+            documentEditor.SaveFile(saveDialog.FileName);
+            Text = $&quot;{Path.GetFileName(saveDialog.FileName)} - Document Editor&quot;;
+        }
+    }
+
+    private void OnSaveAllDocuments(object? sender, EventArgs e)
+    {
+        MessageBox.Show(&quot;Save all documents functionality&quot;, &quot;Toolbar Event&quot;);
+    }
+
+    private void OnCutText(object? sender, EventArgs e)
+    {
+        documentEditor.Cut();
+    }
+
+    private void OnCopyText(object? sender, EventArgs e)
+    {
+        documentEditor.Copy();
+    }
+
+    private void OnPasteText(object? sender, EventArgs e)
+    {
+        documentEditor.Paste();
+    }
+
+    private void OnUndo(object? sender, EventArgs e)
+    {
+        documentEditor.Undo();
+    }
+
+    private void OnRedo(object? sender, EventArgs e)
+    {
+        documentEditor.Redo();
+    }
+
+    private void OnPageSetup(object? sender, EventArgs e)
+    {
+        MessageBox.Show(&quot;Page setup functionality&quot;, &quot;Toolbar Event&quot;);
+    }
+
+    private void OnPrintPreview(object? sender, EventArgs e)
+    {
+        MessageBox.Show(&quot;Print preview functionality&quot;, &quot;Toolbar Event&quot;);
+    }
+
+    private void OnPrint(object? sender, EventArgs e)
+    {
+        MessageBox.Show(&quot;Print functionality&quot;, &quot;Toolbar Event&quot;);
+    }
+
+    private void OnQuickPrint(object? sender, EventArgs e)
+    {
+        MessageBox.Show(&quot;Quick print functionality&quot;, &quot;Toolbar Event&quot;);
+    }
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Button Array Management</strong>: Efficient array-based button management</li>
+<li><strong>Event Handling</strong>: Optimized event attachment and detachment</li>
+<li><strong>Memory Management</strong>: Proper cleanup of toolbar resources</li>
+<li><strong>Orientation Updates</strong>: Efficient orientation and alignment updates</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="toolbar-not-showing">Toolbar Not Showing</h3>
+<p><strong>Issue</strong>: Toolbar buttons not appearing on the form<br>
+<strong>Solution</strong>: Ensure proper attachment and visibility:</p>
+<pre><code class="lang-csharp">toolbarManager.ShowNewButton = true; // Enable button visibility
+toolbarManager.AttachIntegratedToolBarToParent(parentForm); // Attach to form
+</code></pre>
+<h3 id="buttons-not-responding">Buttons Not Responding</h3>
+<p><strong>Issue</strong>: Toolbar buttons not responding to clicks<br>
+<strong>Solution</strong>: Attach event handlers to buttons:</p>
+<pre><code class="lang-csharp">var buttons = toolbarManager.IntegratedToolBarButtons;
+if (buttons[0] != null) // New button
+{
+    buttons[0].Click += OnNewButtonClick;
+}
+</code></pre>
+<h3 id="orientation-not-updating">Orientation Not Updating</h3>
+<p><strong>Issue</strong>: Button orientation not changing<br>
+<strong>Solution</strong>: Ensure parent form is set before updating orientation:</p>
+<pre><code class="lang-csharp">toolbarManager.ParentForm = parentForm;
+toolbarManager.IntegratedToolBarButtonOrientation = PaletteButtonOrientation.FixedBottom;
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: All toolbar properties available for configuration</li>
+<li><strong>Designer Support</strong>: Full design-time support for toolbar configuration</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Visuals</strong>: Core toolbar properties (<code>IntegratedToolBarButtons</code>, <code>IntegratedToolBarButtonOrientation</code>, <code>IntegratedToolBarButtonAlignment</code>, <code>ParentForm</code>)</li>
+<li><strong>Button Visibility</strong>: Individual button visibility controls</li>
+<li><strong>Behavior</strong>: Toolbar behavior and event handling</li>
+</ul>
+<h2 id="migration-and-compatibility">Migration and Compatibility</h2>
+<h3 id="from-standard-toolstrip">From Standard ToolStrip</h3>
+<pre><code class="lang-csharp">// Old way
+ToolStrip toolStrip = new ToolStrip();
+toolStrip.Items.Add(new ToolStripButton(&quot;New&quot;));
+toolStrip.Items.Add(new ToolStripButton(&quot;Open&quot;));
+
+// New way
+var toolbarManager = new KryptonIntegratedToolBarManager();
+toolbarManager.ShowNewButton = true;
+toolbarManager.ShowOpenButton = true;
+toolbarManager.AttachIntegratedToolBarToParent(parentForm);
+</code></pre>
+<h3 id="from-custom-toolbar">From Custom Toolbar</h3>
+<pre><code class="lang-csharp">// Old way (custom toolbar implementation)
+// CustomToolbar customToolbar = new CustomToolbar();
+
+// New way
+var toolbarManager = new KryptonIntegratedToolBarManager();
+// Configure and attach toolbar
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="application-main-toolbar">Application Main Toolbar</h3>
+<pre><code class="lang-csharp">public partial class MainApplicationForm : KryptonForm
+{
+    private KryptonIntegratedToolBarManager mainToolbarManager;
+    private KryptonIntegratedToolBarManager secondaryToolbarManager;
+
+    public MainApplicationForm()
+    {
+        InitializeComponent();
+        SetupMainToolbar();
+        SetupSecondaryToolbar();
+    }
+
+    private void SetupMainToolbar()
+    {
+        mainToolbarManager = new KryptonIntegratedToolBarManager
+        {
+            ParentForm = this,
+            IntegratedToolBarButtonOrientation = PaletteButtonOrientation.FixedTop,
+            IntegratedToolBarButtonAlignment = PaletteRelativeEdgeAlign.Far
+        };
+
+        // Configure main toolbar buttons
+        mainToolbarManager.ShowNewButton = true;
+        mainToolbarManager.ShowOpenButton = true;
+        mainToolbarManager.ShowSaveButton = true;
+        mainToolbarManager.ShowSaveAsButton = true;
+        mainToolbarManager.ShowCutButton = true;
+        mainToolbarManager.ShowCopyButton = true;
+        mainToolbarManager.ShowPasteButton = true;
+        mainToolbarManager.ShowUndoButton = true;
+        mainToolbarManager.ShowRedoButton = true;
+        
+        // Attach main toolbar
+        mainToolbarManager.AttachIntegratedToolBarToParent(this);
+    }
+
+    private void SetupSecondaryToolbar()
+    {
+        secondaryToolbarManager = new KryptonIntegratedToolBarManager
+        {
+            ParentForm = this,
+            IntegratedToolBarButtonOrientation = PaletteButtonOrientation.FixedTop,
+            IntegratedToolBarButtonAlignment = PaletteRelativeEdgeAlign.Near
+        };
+
+        // Configure secondary toolbar buttons
+        secondaryToolbarManager.ShowPageSetupButton = true;
+        secondaryToolbarManager.ShowPrintPreviewButton = true;
+        secondaryToolbarManager.ShowPrintButton = true;
+        secondaryToolbarManager.ShowQuickPrintButton = true;
+        
+        // Attach secondary toolbar
+        secondaryToolbarManager.AttachIntegratedToolBarToParent(this);
+    }
+
+    public void UpdateToolbarForContext(string context)
+    {
+        switch (context)
+        {
+            case &quot;Document&quot;:
+                UpdateToolbarForDocument();
+                break;
+            case &quot;Image&quot;:
+                UpdateToolbarForImage();
+                break;
+            case &quot;Data&quot;:
+                UpdateToolbarForData();
+                break;
+        }
+    }
+
+    private void UpdateToolbarForDocument()
+    {
+        // Show all document-related buttons
+        mainToolbarManager.ShowNewButton = true;
+        mainToolbarManager.ShowOpenButton = true;
+        mainToolbarManager.ShowSaveButton = true;
+        mainToolbarManager.ShowSaveAsButton = true;
+        mainToolbarManager.ShowCutButton = true;
+        mainToolbarManager.ShowCopyButton = true;
+        mainToolbarManager.ShowPasteButton = true;
+        mainToolbarManager.ShowUndoButton = true;
+        mainToolbarManager.ShowRedoButton = true;
+    }
+
+    private void UpdateToolbarForImage()
+    {
+        // Show only image-related buttons
+        mainToolbarManager.ShowNewButton = false;
+        mainToolbarManager.ShowOpenButton = true;
+        mainToolbarManager.ShowSaveButton = false;
+        mainToolbarManager.ShowSaveAsButton = true;
+        mainToolbarManager.ShowCutButton = false;
+        mainToolbarManager.ShowCopyButton = true;
+        mainToolbarManager.ShowPasteButton = false;
+        mainToolbarManager.ShowUndoButton = false;
+        mainToolbarManager.ShowRedoButton = false;
+    }
+
+    private void UpdateToolbarForData()
+    {
+        // Show data-related buttons
+        mainToolbarManager.ShowNewButton = true;
+        mainToolbarManager.ShowOpenButton = true;
+        mainToolbarManager.ShowSaveButton = true;
+        mainToolbarManager.ShowSaveAsButton = true;
+        mainToolbarManager.ShowCutButton = false;
+        mainToolbarManager.ShowCopyButton = true;
+        mainToolbarManager.ShowPasteButton = false;
+        mainToolbarManager.ShowUndoButton = false;
+        mainToolbarManager.ShowRedoButton = false;
+    }
+}
+</code></pre>
+<h3 id="multi-document-interface-toolbar">Multi-Document Interface Toolbar</h3>
+<pre><code class="lang-csharp">public class MDIToolbarManager
+{
+    private KryptonIntegratedToolBarManager toolbarManager;
+    private KryptonForm parentForm;
+    private List&lt;KryptonForm&gt; childForms;
+
+    public MDIToolbarManager(KryptonForm parent)
+    {
+        parentForm = parent;
+        childForms = new List&lt;KryptonForm&gt;();
+        SetupToolbar();
+    }
+
+    private void SetupToolbar()
+    {
+        toolbarManager = new KryptonIntegratedToolBarManager
+        {
+            ParentForm = parentForm,
+            IntegratedToolBarButtonOrientation = PaletteButtonOrientation.FixedTop,
+            IntegratedToolBarButtonAlignment = PaletteRelativeEdgeAlign.Far
+        };
+
+        // Configure MDI toolbar
+        toolbarManager.ShowNewButton = true;
+        toolbarManager.ShowOpenButton = true;
+        toolbarManager.ShowSaveButton = true;
+        toolbarManager.ShowSaveAsButton = true;
+        toolbarManager.ShowSaveAllButton = true;
+        toolbarManager.ShowCutButton = true;
+        toolbarManager.ShowCopyButton = true;
+        toolbarManager.ShowPasteButton = true;
+        toolbarManager.ShowUndoButton = true;
+        toolbarManager.ShowRedoButton = true;
+        toolbarManager.ShowPrintPreviewButton = true;
+        toolbarManager.ShowPrintButton = true;
+        
+        // Attach toolbar
+        toolbarManager.AttachIntegratedToolBarToParent(parentForm);
+        
+        // Attach event handlers
+        AttachMDIEventHandlers();
+    }
+
+    private void AttachMDIEventHandlers()
+    {
+        var buttons = toolbarManager.IntegratedToolBarButtons;
+        
+        if (buttons[0] != null) buttons[0].Click += OnNewDocument;
+        if (buttons[1] != null) buttons[1].Click += OnOpenDocument;
+        if (buttons[2] != null) buttons[2].Click += OnSaveDocument;
+        if (buttons[3] != null) buttons[3].Click += OnSaveAsDocument;
+        if (buttons[4] != null) buttons[4].Click += OnSaveAllDocuments;
+        if (buttons[5] != null) buttons[5].Click += OnCut;
+        if (buttons[6] != null) buttons[6].Click += OnCopy;
+        if (buttons[7] != null) buttons[7].Click += OnPaste;
+        if (buttons[8] != null) buttons[8].Click += OnUndo;
+        if (buttons[9] != null) buttons[9].Click += OnRedo;
+        if (buttons[11] != null) buttons[11].Click += OnPrintPreview;
+        if (buttons[12] != null) buttons[12].Click += OnPrint;
+    }
+
+    public void AddChildForm(KryptonForm childForm)
+    {
+        childForms.Add(childForm);
+        UpdateToolbarState();
+    }
+
+    public void RemoveChildForm(KryptonForm childForm)
+    {
+        childForms.Remove(childForm);
+        UpdateToolbarState();
+    }
+
+    private void UpdateToolbarState()
+    {
+        bool hasActiveChild = childForms.Count &gt; 0;
+        
+        // Enable/disable buttons based on child form state
+        var buttons = toolbarManager.IntegratedToolBarButtons;
+        
+        // Update button states based on active child form
+        // Implementation depends on specific requirements
+    }
+
+    private void OnNewDocument(object? sender, EventArgs e)
+    {
+        // Create new child document
+        var newDocument = new DocumentForm();
+        AddChildForm(newDocument);
+        newDocument.Show();
+    }
+
+    private void OnOpenDocument(object? sender, EventArgs e)
+    {
+        using var openDialog = new OpenFileDialog();
+        if (openDialog.ShowDialog() == DialogResult.OK)
+        {
+            var document = new DocumentForm();
+            document.LoadFile(openDialog.FileName);
+            AddChildForm(document);
+            document.Show();
+        }
+    }
+
+    private void OnSaveDocument(object? sender, EventArgs e)
+    {
+        // Save active child document
+        var activeChild = GetActiveChildForm();
+        if (activeChild != null)
+        {
+            // Save document logic
+        }
+    }
+
+    private void OnSaveAsDocument(object? sender, EventArgs e)
+    {
+        // Save active child document as
+        var activeChild = GetActiveChildForm();
+        if (activeChild != null)
+        {
+            // Save as logic
+        }
+    }
+
+    private void OnSaveAllDocuments(object? sender, EventArgs e)
+    {
+        // Save all child documents
+        foreach (var child in childForms)
+        {
+            // Save each document
+        }
+    }
+
+    private void OnCut(object? sender, EventArgs e)
+    {
+        // Cut from active child
+        var activeChild = GetActiveChildForm();
+        if (activeChild != null)
+        {
+            // Cut logic
+        }
+    }
+
+    private void OnCopy(object? sender, EventArgs e)
+    {
+        // Copy from active child
+        var activeChild = GetActiveChildForm();
+        if (activeChild != null)
+        {
+            // Copy logic
+        }
+    }
+
+    private void OnPaste(object? sender, EventArgs e)
+    {
+        // Paste to active child
+        var activeChild = GetActiveChildForm();
+        if (activeChild != null)
+        {
+            // Paste logic
+        }
+    }
+
+    private void OnUndo(object? sender, EventArgs e)
+    {
+        // Undo in active child
+        var activeChild = GetActiveChildForm();
+        if (activeChild != null)
+        {
+            // Undo logic
+        }
+    }
+
+    private void OnRedo(object? sender, EventArgs e)
+    {
+        // Redo in active child
+        var activeChild = GetActiveChildForm();
+        if (activeChild != null)
+        {
+            // Redo logic
+        }
+    }
+
+    private void OnPrintPreview(object? sender, EventArgs e)
+    {
+        // Print preview for active child
+        var activeChild = GetActiveChildForm();
+        if (activeChild != null)
+        {
+            // Print preview logic
+        }
+    }
+
+    private void OnPrint(object? sender, EventArgs e)
+    {
+        // Print active child
+        var activeChild = GetActiveChildForm();
+        if (activeChild != null)
+        {
+            // Print logic
+        }
+    }
+
+    private KryptonForm? GetActiveChildForm()
+    {
+        // Get the currently active child form
+        return childForms.FirstOrDefault(f =&gt; f.ContainsFocus);
+    }
+}
+</code></pre>
+<h2 id="license-and-attribution">License and Attribution</h2>
+<p>This class is part of the Krypton Toolkit Suite under the BSD 3-Clause License. It provides comprehensive toolbar management functionality with 14 predefined buttons, customizable orientation and alignment, and seamless integration with Krypton forms, enabling consistent toolbar experiences across Krypton applications.</p>
 
 </article>
           </div>
