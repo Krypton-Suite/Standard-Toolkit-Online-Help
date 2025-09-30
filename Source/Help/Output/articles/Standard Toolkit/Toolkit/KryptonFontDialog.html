@@ -69,7 +69,441 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonfontdialog">KryptonFontDialog</h1>
 
-<p><img src="KryptonFontDialog.png" alt=""></p>
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonFontDialog</code> class provides a Krypton-themed wrapper around the standard Windows font selection dialog. It inherits from <code>System.Windows.Forms.FontDialog</code> and enhances it with Krypton styling, custom icons, titles, high-DPI support, and optional extended color selection capabilities for font styling.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.ComponentModel.Component
+    └── System.Windows.Forms.CommonDialog
+        └── System.Windows.Forms.FontDialog
+            └── Krypton.Toolkit.KryptonFontDialog
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonFontDialog()
+</code></pre>
+<p>The constructor initializes the enhanced features:</p>
+<ul>
+<li><strong>CommonDialogHandler</strong>: Manages Krypton theming and window behavior</li>
+<li><strong>Default Icon</strong>: Uses <code>DialogImageResources.font</code></li>
+<li><strong>Default Icon Display</strong>: <code>ShowIcon = false</code></li>
+<li><strong>Click Callback</strong>: Handles dialog-specific button interactions</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="title-property">Title Property</h3>
+<pre><code class="lang-csharp">public string Title { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Sets the caption text shown in the dialog's title bar</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: Empty string (uses system default)</li>
+<li><strong>Designer Visible</strong>: Yes</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonFontDialog
+{
+    Title = &quot;Choose Document Font&quot;
+};
+</code></pre>
+<h3 id="icon-property">Icon Property</h3>
+<pre><code class="lang-csharp">public Icon Icon { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Sets a custom icon displayed in the dialog's title bar</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: <code>DialogImageResources.font</code></li>
+<li><strong>Designer Visible</strong>: Yes</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonFontDialog
+{
+    Icon = MyApplicationIcon,
+    ShowIcon = true
+};
+</code></pre>
+<h3 id="showicon-property">ShowIcon Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool ShowIcon { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls whether the dialog displays an icon in the title bar</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: <code>false</code></li>
+</ul>
+<h3 id="displayextendedcolorsbutton-property">DisplayExtendedColorsButton Property</h3>
+<pre><code class="lang-csharp">public bool DisplayExtendedColorsButton { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Shows an enhanced color selection interface instead of the basic color dropdown</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: <code>false</code></li>
+<li><strong>Side Effects</strong>: Automatically enables <code>ShowColor</code> when set to <code>true</code></li>
+</ul>
+<p><strong>Enhanced Color Selection:</strong>
+When enabled, replaces the standard color combobox with:</p>
+<ul>
+<li><strong>KryptonColorButton</strong>: Full-featured color selection</li>
+<li><strong>Scheme Support</strong>: Office themes and basic 16-color schemes</li>
+<li><strong>Enhanced UX</strong>: Better visual feedback and color preview</li>
+<li><strong>Custom Color Support</strong>: Selection beyond basic palette</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonFontDialog
+{
+    DisplayExtendedColorsButton = true,
+    ShowColor = true,  // Automatically enabled
+    Title = &quot;Font &amp; Color Selection&quot;
+};
+</code></pre>
+<h3 id="displayisprinterfontdescription-property">DisplayIsPrinterFontDescription Property</h3>
+<pre><code class="lang-csharp">public bool DisplayIsPrinterFontDescription { get; set; }
+</code></pre>
+<p><strong>Purpose</strong>: Shows informational text about printer compatibility</p>
+<ul>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Implementation</strong>: Uses internal Win32 dialog options</li>
+<li><strong>Use Case</strong>: Warns users when selected fonts may not print correctly</li>
+</ul>
+<p><strong>Internal Implementation:</strong></p>
+<ul>
+<li>Accesses private <code>GetOption</code> and <code>SetOption</code> methods via reflection</li>
+<li>Controls bit 0x02 in internal dialog options</li>
+<li>Provides printer compatibility warnings</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonFontDialog
+{
+    DisplayIsPrinterFontDescription = true,
+    Title = &quot;Font Selection (Printer Compatible)&quot;
+};
+</code></pre>
+<h2 id="standard-fontdialog-properties">Standard FontDialog Properties</h2>
+<p>The dialog inherits all standard <code>FontDialog</code> properties with full compatibility:</p>
+<ul>
+<li><strong>AllowSimulations</strong>: Allows font simulation options</li>
+<li><strong>AllowVectorFonts</strong>: Permits vector font selection</li>
+<li><strong>AllowVerticalFonts</strong>: Enables vertical font selection</li>
+<li><strong>Color</strong>: Font color selection</li>
+<li><strong>FixedPitchOnly</strong>: Restricts to fixed-width fonts only</li>
+<li><strong>Font</strong>: Selected font object</li>
+<li><strong>MaxSize</strong>: Maximum font size allowed</li>
+<li><strong>MinSize</strong>: Minimum font size allowed</li>
+<li><strong>ScriptsOnly</strong>: Restricts to specific script subsets</li>
+<li><strong>ShowApply</strong>: Shows Apply button</li>
+<li><strong>ShowColor</strong>: Enables color selection</li>
+<li><strong>ShowEffects</strong>: Displays strikethrough and underline options</li>
+<li><strong>ShowHelp</strong>: Shows Help button</li>
+</ul>
+<h2 id="enhanced-features">Enhanced Features</h2>
+<h3 id="custom-color-button-integration">Custom Color Button Integration</h3>
+<p>When <code>DisplayExtendedColorsButton</code> is enabled:</p>
+<pre><code class="lang-csharp">public void ConfigureRichTextFont()
+{
+    var dialog = new KryptonFontDialog
+    {
+        Title = &quot;Rich Text Font Selection&quot;,
+        DisplayExtendedColorsButton = true,
+        ShowEffects = true,
+        AllowVectorFonts = true,
+        MaxSize = 24,
+        MinSize = 8
+    };
+
+    if (dialog.ShowDialog() == DialogResult.OK)
+    {
+        RichTextBox richTextBox = GetActiveRichTextBox();
+        richTextBox.SelectionFont = dialog.Font;
+        richTextBox.SelectionColor = dialog.Color;
+    }
+}
+</code></pre>
+<h3 id="theme-integration">Theme Integration</h3>
+<p>The dialog automatically applies Krypton theming:</p>
+<ul>
+<li><strong>CommonDialogHandler</strong>: Provides consistent window styling</li>
+<li><strong>DPI Scaling</strong>: Automatic scaling for high-DPI displays</li>
+<li><strong>Palette Awareness</strong>: Respects global Krypton palette settings</li>
+<li><strong>Consistent UI</strong>: Matches other Krypton-themed dialogs</li>
+</ul>
+<h3 id="native-integration">Native Integration</h3>
+<p>Special considerations for font dialog behavior:</p>
+<ul>
+<li><strong>Limited Embedding</strong>: Avoids breaking modal loops</li>
+<li><strong>Control Substitution</strong>: Seamlessly replaces color combobox</li>
+<li><strong>Event Handling</strong>: Proper message routing and button states</li>
+<li><strong>Print Awareness</strong>: Printer compatibility information</li>
+</ul>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="font-family-management">Font Family Management</h3>
+<pre><code class="lang-csharp">public class FontManager
+{
+    private Font _defaultFont = new Font(&quot;Segoe UI&quot;, 12F);
+    private Color _defaultColor = Color.Black;
+
+    public FontInfo SelectFont(FontInfo currentFont)
+    {
+        var dialog = new KryptonFontDialog
+        {
+            Title = &quot;Font Configuration&quot;,
+            ShowIcon = true,
+            Icon = SystemIcons.Information,
+            DisplayExtendedColorsButton = true,
+            Font = currentFont?.Font ?? _defaultFont,
+            Color = currentFont?.Color ?? _defaultColor,
+            ShowEffects = true,
+            AllowVectorFonts = true
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            return new FontInfo
+            {
+                Font = dialog.Font,
+                Color = dialog.Color,
+                IsPrinterCompatible = IsPrinterFont(dialog.Font)
+            };
+        }
+
+        return currentFont;
+    }
+
+    private static bool IsPrinterFont(Font font)
+    {
+        // Check if font has printer-compatible alternatives
+        return !font.GdiVerticalFont &amp;&amp; !font.GdiCharSet.Equals(1);
+    }
+}
+</code></pre>
+<h3 id="document-formatting-application">Document Formatting Application</h3>
+<pre><code class="lang-csharp">public class DocumentFormatter
+{
+    public void ApplyFontToSelection()
+    {
+        var currentSelection = GetSelectedTextProperties();
+        
+        var dialog = new KryptonFontDialog
+        {
+            Title = &quot;Font Properties&quot;,
+            DisplayExtendedColorsButton = true,
+            Font = currentSelection.Font,
+            Color = currentSelection.Color,
+            ShowEffects = true,
+            ShowApply = true,  // Allows preview without closing dialog
+            AllowVectorFonts = true
+        };
+
+        // Handle Apply button for live preview
+        dialog.Apply += (sender, e) =&gt; 
+        {
+            PreviewFontChange(dialog.Font, dialog.Color);
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            ApplyFontChange(dialog.Font, dialog.Color);
+        }
+    }
+
+    private void PreviewFontChange(Font font, Color color)
+    {
+        // Temporarily apply changes for preview
+        SetSelectionProperties(font, color);
+    }
+
+    private void ApplyFontChange(Font font, Color color)
+    {
+        // Apply final changes
+        SetSelectionProperties(font, color);
+        SaveDocument();
+    }
+}
+</code></pre>
+<h3 id="multi-language-font-selection">Multi-Language Font Selection</h3>
+<pre><code class="lang-csharp">public class LocalizationFontSelector
+{
+    public FontInfo SelectLocalizedFont(LanguageInfo language)
+    {
+        var dialog = new KryptonFontDialog
+        {
+            Title = $&quot;Font for {language.DisplayName}&quot;,
+            DisplayIsPrinterFontDescription = true,
+            DisplayExtendedColorsButton = true,
+            ScriptsOnly = GetScriptCode(language),
+            AllowVectorFonts = language.SupportsVectorFonts,
+            MinSize = language.MinimumFontSize,
+            MaxSize = language.MaximumFontSize
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            return new FontInfo
+            {
+                Font = dialog.Font,
+                Color = dialog.Color,
+                Language = language,
+                SupportsUnicode = CheckUnicodeSupport(dialog.Font)
+            };
+        }
+
+        return null;
+    }
+
+    private UInt32 GetScriptCode(LanguageInfo language)
+    {
+        return language.ScriptCode switch
+        {
+            &quot;Latin&quot; =&gt; 0x0001,      // ANSI_CHARSET
+            &quot;Arabic&quot; =&gt; 0x0002,     // SYMBOL_CHARSET  
+            &quot;Cyrillic&quot; =&gt; 0x0004,   // SHIFTJIS_CHARSET
+            &quot;Chinese&quot; =&gt; 0x0005,     // HANGEUL_CHARSET
+            _ =&gt; 0x0000             // DEFAULT_CHARSET
+        };
+    };
+}
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox Integration</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: All properties properly categorized and exposed</li>
+<li><strong>Custom Editors</strong>: Specialized editors for font and color properties</li>
+<li><strong>Serialization</strong>: Design-time settings saved to designer files</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Data</strong>: Core font selection properties (<code>Font</code>, <code>Color</code>)</li>
+<li><strong>Behavior</strong>: Control behavior (<code>ShowColor</code>, <code>ShowEffects</code>, <code>ShowApply</code>)</li>
+<li><strong>Appearance</strong>: Visual customization (<code>Title</code>, <code>Icon</code>, <code>ShowIcon</code>, <code>DisplayExtendedColorsButton</code>)</li>
+</ul>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Lazy Color Button</strong>: Enhanced color button created only when needed</li>
+<li><strong>Memory Management</strong>: Proper cleanup of embedded controls</li>
+<li><strong>Event Handling</strong>: Optimized message routing for responsive UI</li>
+<li><strong>DPI Scaling</strong>: Automatic scaling prevents layout issues</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="color-button-not-appearing">Color Button Not Appearing</h3>
+<p><strong>Issue</strong>: Extended color button not visible despite enabling <code>DisplayExtendedColorsButton</code><br>
+<strong>Solution</strong>: Ensures <code>ShowColor</code> is enabled (automatically handled by setter)</p>
+<h3 id="font-compatibility-warnings">Font Compatibility Warnings</h3>
+<p><strong>Issue</strong>: Printer compatibility information not showing<br>
+<strong>Solution</strong>: Enable <code>DisplayIsPrinterFontDescription</code> and ensure printer fonts are available</p>
+<h3 id="performance-with-many-fonts">Performance with Many Fonts</h3>
+<p><strong>Issue</strong>: Slow font enumeration on systems with many fonts<br>
+<strong>Solution</strong>: Font dialog handles this internally; consider caching common fonts</p>
+<h3 id="theme-inconsistencies">Theme Inconsistencies</h3>
+<p><strong>Issue</strong>: Dialog doesn't match application theme<br>
+<strong>Solution</strong>: Ensure global Krypton palette is properly initialized</p>
+<h2 id="migration-from-standard-fontdialog">Migration from Standard FontDialog</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+using FontDialog = System.Windows.Forms.FontDialog;
+var dialog = new FontDialog();
+
+// New code
+var dialog = new KryptonFontDialog();
+</code></pre>
+<h3 id="enhanced-features-1">Enhanced Features</h3>
+<pre><code class="lang-csharp">// Standard FontDialog (basic)
+var standardDialog = new FontDialog();
+
+// KryptonFontDialog (enhanced)
+var kryptonDialog = new KryptonFontDialog
+{
+    Title = &quot;Enhanced Font Selection&quot;,
+    Icon = applicationIcon,
+    ShowIcon = true,
+    DisplayExtendedColorsButton = true,  // Enhanced color selection
+    DisplayIsPrinterFontDescription = true  // Printer compatibility info
+};
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="text-editor-font-panel">Text Editor Font Panel</h3>
+<pre><code class="lang-csharp">public partial class TextEditorForm : Form
+{
+    private void ShowFontDialog()
+    {
+        var dialog = new KryptonFontDialog
+        {
+            Title = &quot;Font Settings&quot;,
+            Font = textEditor.SelectionFont ?? textEditor.Font,
+            Color = textEditor.SelectionColor,
+            DisplayExtendedColorsButton = true,
+            ShowEffects = true,
+            ShowApply = true
+        };
+
+        // Live preview on Apply
+        dialog.Apply += (sender, e) =&gt;
+        {
+            PreviewFont(dialog.Font, dialog.Color);
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            ApplyFont(dialog.Font, dialog.Color);
+        }
+    }
+
+    private void PreviewFont(Font font, Color color)
+    {
+        textEditor.SelectionFont = font;
+        textEditor.SelectionColor = color;
+        
+        // Highlight preview
+        var oldBackColor = textEditor.SelectionBackColor;
+        textEditor.SelectionBackColor = Color.LightYellow;
+        
+        // Restore after short delay
+        var timer = new System.Windows.Forms.Timer { Interval = 2000 };
+        timer.Tick += (s, e) =&gt;
+        {
+            textEditor.SelectionBackColor = oldBackColor;
+            timer.Stop();
+            timer.Dispose();
+        };
+        timer.Start();
+    }
+}
+</code></pre>
+<h3 id="document-template-designer">Document Template Designer</h3>
+<pre><code class="lang-csharp">public class DocumentTemplateDesigner : Form
+{
+    public void ConfigureStyles()
+    {
+        var styles = new[]
+        {
+            (&quot;Heading&quot;, FontStyle.Bold),
+            (&quot;Subheading&quot;, FontStyle.Regular),
+            (&quot;Body&quot;, FontStyle.Regular),
+            (&quot;Caption&quot;, FontStyle.Italic)
+        };
+
+        foreach (var (styleName, defaultStyle) in styles)
+        {
+            ConfigureStyle(styleName, defaultStyle);
+        }
+    }
+
+    private void ConfigureStyle(string styleName, FontStyle defaultStyle)
+    {
+        var dialog = new KryptonFontDialog
+        {
+            Title = $&quot;Configure {styleName} Style&quot;,
+            Style = defaultStyle,
+            DisplayIsPrinterFontDescription = true,
+            DisplayExtendedColorsButton = true,
+            ShowIcon = true,
+            Icon = GetStyleIcon(styleName)
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            UpdateStyleTemplate(styleName, dialog.Font, dialog.Color);
+        }
+    }
+}
+</code></pre>
 
 </article>
           </div>

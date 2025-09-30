@@ -69,6 +69,327 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonfolderbrowserdialog">KryptonFolderBrowserDialog</h1>
 
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonFolderBrowserDialog</code> class provides a Krypton-themed wrapper around the standard Windows folder browser dialog. It inherits from <code>ShellDialogWrapper</code> and implements <code>IDisposable</code> to provide enhanced appearance, consistent theming, and modern .NET functionality while maintaining compatibility across different framework versions.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── Krypton.Toolkit.ShellDialogWrapper (abstract)
+    └── Krypton.Toolkit.KryptonFolderBrowserDialog
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonFolderBrowserDialog()
+</code></pre>
+<p>The constructor initializes the appropriate internal dialog implementation based on the target framework version:</p>
+<ul>
+<li><strong>.NET 8.0 or later</strong>: Uses the modern <code>FolderBrowserDialog</code> class</li>
+<li><strong>Earlier frameworks</strong>: Uses the custom <code>ShellBrowserDialogTFM</code> implementation</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="selectedpath-property">SelectedPath Property</h3>
+<pre><code class="lang-csharp">[AllowNull]
+public string SelectedPath { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets or sets the directory path of the initial folder shown in the dialog</li>
+<li><strong>Category</strong>: FolderBrowsing</li>
+<li><strong>Default Value</strong>: Empty string</li>
+<li><strong>Editor</strong>: Uses <code>System.Windows.Forms.Design.SelectedPathEditor</code> for Visual Studio integration</li>
+<li><strong>Localizable</strong>: Yes</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonFolderBrowserDialog
+{
+    SelectedPath = @&quot;C:\Users\UserName\Documents&quot;
+};
+</code></pre>
+<h3 id="rootfolder-property">RootFolder Property</h3>
+<pre><code class="lang-csharp">public Environment.SpecialFolder RootFolder { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets or sets the root node of the directory tree</li>
+<li><strong>Type</strong>: <code>Environment.SpecialFolder</code></li>
+<li><strong>Default Value</strong>: <code>Environment.SpecialFolder.Desktop</code></li>
+<li><strong>Category</strong>: FolderBrowsing</li>
+</ul>
+<p><strong>Available Root Folders:</strong></p>
+<ul>
+<li><code>Desktop</code> (default)</li>
+<li><code>MyComputer</code></li>
+<li><code>Favorites</code></li>
+<li><code>Recent</code></li>
+<li><code>SendTo</code></li>
+<li><code>StartMenu</code></li>
+<li><code>MyDocuments</code></li>
+<li><code>ProgramFiles</code></li>
+<li><code>MyMusic</code></li>
+<li><code>MyPictures</code></li>
+<li><code>Personal</code></li>
+<li><code>ProgramFilesCommon</code></li>
+<li><code>Programs</code></li>
+<li><code>Startup</code></li>
+<li><code>Startup</code></li>
+<li><code>System</code></li>
+<li><code>Templates</code></li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonFolderBrowserDialog
+{
+    RootFolder = Environment.SpecialFolder.MyDocuments
+};
+</code></pre>
+<h3 id="title-property">Title Property</h3>
+<pre><code class="lang-csharp">[AllowNull]
+public override string Title { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets or sets the dialog title displayed in the window caption</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: Empty string</li>
+<li><strong>Localizable</strong>: Yes</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonFolderBrowserDialog
+{
+    Title = &quot;Select Destination Folder&quot;
+};
+</code></pre>
+<h2 id="framework-specific-properties-net-80">Framework-Specific Properties (.NET 8.0+)</h2>
+<h3 id="initialdirectory-property">InitialDirectory Property</h3>
+<pre><code class="lang-csharp">[AllowNull]
+public string InitialDirectory { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets or sets the initial directory displayed by the folder browser dialog</li>
+<li><strong>Category</strong>: FolderBrowsing</li>
+<li><strong>Default Value</strong>: Empty string</li>
+<li><strong>Editor</strong>: Uses custom <code>KryptonInitialDirectoryEditor</code></li>
+<li><strong>Availability</strong>: .NET 8.0 and later</li>
+</ul>
+<h3 id="clientguid-property">ClientGuid Property</h3>
+<pre><code class="lang-csharp">public override Guid? ClientGuid { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Associates a GUID with dialog state for persistence</li>
+<li><strong>Availability</strong>: .NET 8.0 and later</li>
+<li><strong>Use Cases</strong>: Different dialog instances can have separate persisted states (position, size, last visited folder)</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonFolderBrowserDialog
+{
+    ClientGuid = Guid.Parse(&quot;12345678-1234-1234-1234-123456789012&quot;)
+};
+</code></pre>
+<h2 id="methods">Methods</h2>
+<h3 id="showdialog-methods">ShowDialog Methods</h3>
+<pre><code class="lang-csharp">public DialogResult ShowDialog()
+public DialogResult ShowDialog(IWin32Window? owner)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Displays the folder browser dialog</li>
+<li><strong>Overloads</strong>:
+<ul>
+<li>Non-modal (no owner window)</li>
+<li>Modal with parent window</li>
+</ul>
+</li>
+<li><strong>Returns</strong>: <code>DialogResult</code> enumeration value</li>
+</ul>
+<p><strong>Usage Examples:</strong></p>
+<pre><code class="lang-csharp">// Simple usage
+var dialog = new KryptonFolderBrowserDialog();
+var result = dialog.ShowDialog();
+
+if (result == DialogResult.OK)
+{
+    string selectedPath = dialog.SelectedPath;
+    // Process selected path
+}
+
+// With parent window
+var result = dialog.ShowDialog(this);
+</code></pre>
+<h3 id="reset-method">Reset Method</h3>
+<pre><code class="lang-csharp">public override void Reset()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Resets all properties to their default values</li>
+<li><strong>Usage</strong>: Clears customization and returns dialog to initial state</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">dialog.Reset(); // Clears all custom settings
+</code></pre>
+<h3 id="tostring-method">ToString Method</h3>
+<pre><code class="lang-csharp">public override string ToString()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Provides a string representation of the dialog object</li>
+<li><strong>Returns</strong>: String describing the dialog state</li>
+</ul>
+<h3 id="dispose-method">Dispose Method</h3>
+<pre><code class="lang-csharp">public void Dispose()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Releases all resources used by the dialog</li>
+<li><strong>Implementation</strong>: Calls <code>IDisposable.Dispose()</code> on internal dialog</li>
+<li><strong>Note</strong>: Important for proper resource management, though not strictly required for dialog objects</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">using (var dialog = new KryptonFolderBrowserDialog())
+{
+    var result = dialog.ShowDialog();
+    // Dialog automatically disposed
+}
+</code></pre>
+<h2 id="dialog-operation">Dialog Operation</h2>
+<h3 id="display-behavior">Display Behavior</h3>
+<p>The dialog automatically handles:</p>
+<ul>
+<li><strong>Theme Integration</strong>: Uses Krypton styling instead of Windows native appearance</li>
+<li><strong>DPI Scaling</strong>: Automatically adapts to different display scaling factors</li>
+<li><strong>Window Management</strong>: Ensures proper parent-child relationships and window state</li>
+<li><strong>Cross-Platform Compatibility</strong>: Adapts behavior based on target framework</li>
+</ul>
+<h3 id="user-interaction">User Interaction</h3>
+<ol>
+<li><strong>Initial Display</strong>: Shows the folder tree starting from the <code>RootFolder</code> location</li>
+<li><strong>Navigation</strong>: Users can browse through the folder hierarchy</li>
+<li><strong>Selection</strong>: Users click &quot;OK&quot; to select a folder or &quot;Cancel&quot; to abort</li>
+<li><strong>Result</strong>: Returns <code>DialogResult.OK</code> with <code>SelectedPath</code> populated, or <code>DialogResult.Cancel</code></li>
+</ol>
+<h2 id="internal-implementation-details">Internal Implementation Details</h2>
+<h3 id="target-framework-behavior">Target Framework Behavior</h3>
+<h4 id="net-80-and-later">.NET 8.0 and Later</h4>
+<ul>
+<li>Uses modern <code>System.Windows.Forms.FolderBrowserDialog</code></li>
+<li>Supports <code>ClientGuid</code> for state persistence</li>
+<li>Includes <code>InitialDirectory</code> property</li>
+<li>Native folder picker with enhanced UX</li>
+</ul>
+<h4 id="earlier-frameworks">Earlier Frameworks</h4>
+<ul>
+<li>Uses custom <code>ShellBrowserDialogTFM</code> wrapper</li>
+<li>Based on <code>OpenFileDialog</code> with folder selection modifications</li>
+<li>Customized button text (&quot;Select Folder&quot; instead of &quot;Open&quot;)</li>
+<li>Hidden file input controls transformed for folder selection</li>
+</ul>
+<h3 id="theme-integration">Theme Integration</h3>
+<p>The dialog integrates with Krypton themING through:</p>
+<ul>
+<li><strong>ShellDialogWrapper</strong>: Base class provides theme-aware window management</li>
+<li><strong>Window Hooking</strong>: Custom window procedures for styling injection</li>
+<li><strong>DPI Handling</strong>: Automatic scaling for high-DPI displays</li>
+<li><strong>Button Customization</strong>: Themed OK/Cancel buttons with proper positioning</li>
+</ul>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="folder-selection-workflow">Folder Selection Workflow</h3>
+<pre><code class="lang-csharp">public string BrowseForFolder(string initialPath = null)
+{
+    using var dialog = new KryptonFolderBrowserDialog
+    {
+        Title = &quot;Choose Destination Folder&quot;,
+        RootFolder = Environment.SpecialFolder.MyComputer,
+        SelectedPath = initialPath ?? Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+    };
+
+#if NET8_0_OR_GREATER
+    dialog.ClientGuid = new Guid(&quot;Your-Unique-Dialog-ID&quot;);
+#endif
+
+    return dialog.ShowDialog() == DialogResult.OK 
+        ? dialog.SelectedPath 
+        : null;
+}
+</code></pre>
+<h3 id="validation-and-error-handling">Validation and Error Handling</h3>
+<pre><code class="lang-csharp">public bool ValidateFolderSelection(string path)
+{
+    try
+    {
+        return !string.IsNullOrWhiteSpace(path) &amp;&amp; 
+               Directory.Exists(path);
+    }
+    catch (ArgumentException)
+    {
+        return false;
+    }
+}
+</code></pre>
+<h3 id="multi-dialog-coordination">Multi-Dialog Coordination</h3>
+<pre><code class="lang-csharp">public class FolderSelectionService
+{
+    private static readonly Guid ImportDialogId = new(&quot;Import-Dialog-ID&quot;);
+    private static readonly Guid ExportDialogId = new(&quot;Export-Dialog-ID&quot;);
+
+    public string BrowseForImportFolder() =&gt; 
+        ShowDialogWithId(&quot;Select Import Folder&quot;, ImportDialogId);
+
+    public string BrowseForExportFolder() =&gt; 
+        ShowDialogWithId(&quot;Select Export Folder&quot;, ExportDialogId);
+
+    private string ShowDialogWithId(string title, Guid clientId)
+    {
+        using var dialog = new KryptonFolderBrowserDialog
+        {
+            Title = title,
+            RootFolder = Environment.SpecialFolder.MyDocuments
+        };
+
+#if NET8_0_OR_GREATER
+        dialog.ClientGuid = clientId;
+#endif
+
+        return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : null;
+    }
+}
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer-support">Visual Studio Designer Support</h3>
+<ul>
+<li><strong>Toolbox</strong>: Appears in Visual Studio toolbox with custom bitmap</li>
+<li><strong>Properties Window</strong>: All properties exposed with appropriate categories</li>
+<li><strong>Property Editors</strong>: Specialized editors for folder paths and directory selection</li>
+<li><strong>Serialization</strong>: Design-time settings preserved in form resources</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>FolderBrowsing</strong>: Core folder selection properties</li>
+<li><strong>Appearance</strong>: Visual customization properties</li>
+<li><strong>Behavior</strong>: Dialog operational settings</li>
+</ul>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Lazy Initialization</strong>: Dialog resources created only when needed</li>
+<li><strong>Memory Management</strong>: Proper disposal prevents memory leaks</li>
+<li><strong>Thread Safety</strong>: Dialog should be created and used on UI thread</li>
+<li><strong>State Persistence</strong>: ClientGuid usage may have minor storage overhead</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="directory-not-found">Directory Not Found</h3>
+<p><strong>Issue</strong>: SelectedPath refers to non-existent directory
+<strong>Solution</strong>: Validate before setting or handle gracefully in user code</p>
+<h3 id="permission-denied">Permission Denied</h3>
+<p><strong>Issue</strong>: User lacks access to selected folder
+<strong>Solution</strong>: Implement proper access validation or provide meaningful error messages</p>
+<h3 id="cross-framework-compatibility">Cross-Framework Compatibility</h3>
+<p><strong>Issue</strong>: Code relying on .NET 8.0+ specific features
+<strong>Solution</strong>: Use conditional compilation or feature detection</p>
+<h2 id="migration-from-standard-folderbrowserdialog">Migration from Standard FolderBrowserDialog</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+using FolderBrowserDialog = System.Windows.Forms.FolderBrowserDialog;
+var dialog = new FolderBrowserDialog();
+
+// New code
+var dialog = new KryptonFolderBrowserDialog();
+</code></pre>
+<h3 id="feature-parity-migration">Feature Parity Migration</h3>
+<p>Most <code>System.Windows.Forms.FolderBrowserDialog</code> APIs have direct equivalents:</p>
+<ul>
+<li><code>SelectedPath</code> → <code>SelectedPath</code></li>
+<li><code>RootFolder</code> → <code>RootFolder</code></li>
+<li><code>Description</code> → Not available (by design)</li>
+<li><code>ShowDialog()</code> → <code>ShowDialog()</code></li>
+</ul>
 
 </article>
           </div>

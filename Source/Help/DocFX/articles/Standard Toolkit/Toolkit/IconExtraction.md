@@ -6,10 +6,10 @@ Extract Windows system icons with a single method call:
 
 ```csharp
 // Extract a shield icon at default size (32x32)
-var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield);
 
 // Extract a lock icon at large size (96x96)
-var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Lock, IconSize.Large);
+var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Lock, IconSize.Large);
 ```
 
 ## What You Need to Know
@@ -46,42 +46,42 @@ public static Icon? ExtractIconFromImageres(int iconId, IconSize iconSize = Icon
 
 ### Security Icons
 ```csharp
-var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
-var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Lock);
-var unlockIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Unlock);
-var keyIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Key);
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield);
+var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Lock);
+var unlockIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Unlock);
+var keyIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Key);
 ```
 
 ### User & System Icons
 ```csharp
-var userIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.User);
-var usersIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Users);
-var computerIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Computer);
-var networkIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Network);
+var userIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.User);
+var usersIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Users);
+var computerIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Computer);
+var networkIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Network);
 ```
 
 ### File & Folder Icons
 ```csharp
-var folderIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Folder);
-var fileIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.File);
-var fileTextIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.FileText);
-var fileImageIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.FileImage);
+var folderIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Folder);
+var fileIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.File);
+var fileTextIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.FileText);
+var fileImageIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.FileImage);
 ```
 
 ### Application Icons
 ```csharp
-var settingsIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationSettings);
-var helpIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationHelp);
-var infoIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationInfo);
-var warningIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationWarning);
+var settingsIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationSettings);
+var helpIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationHelp);
+var infoIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationInfo);
+var warningIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationWarning);
 ```
 
 ### Media Icons
 ```csharp
-var playIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaPlay);
-var pauseIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaPause);
-var stopIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaStop);
-var volumeIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaVolume);
+var playIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.MediaPlay);
+var pauseIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.MediaPause);
+var stopIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.MediaStop);
+var volumeIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.MediaVolume);
 ```
 
 ## Practical Examples
@@ -91,22 +91,22 @@ var volumeIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIcon
 // Create a button with a shield icon
 var button = new KryptonButton();
 button.Text = "Run as Administrator";
-button.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Small)?.ToBitmap();
+button.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield, IconSize.Small)?.ToBitmap();
 
 // Create a settings button
 var settingsButton = new KryptonButton();
 settingsButton.Text = "Settings";
-settingsButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationSettings, IconSize.Small)?.ToBitmap();
+settingsButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationSettings, IconSize.Small)?.ToBitmap();
 ```
 
 ### 2. Menu Items
 ```csharp
 // Add icons to menu items
 var menuItem = new KryptonContextMenuItem("Save");
-menuItem.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionSave, IconSize.Small)?.ToBitmap();
+menuItem.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ActionSave, IconSize.Small)?.ToBitmap();
 
 var helpMenuItem = new KryptonContextMenuItem("Help");
-helpMenuItem.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationHelp, IconSize.Small)?.ToBitmap();
+helpMenuItem.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationHelp, IconSize.Small)?.ToBitmap();
 ```
 
 ### 3. Toolbar Icons
@@ -115,11 +115,11 @@ helpMenuItem.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.Imageres
 var toolbar = new KryptonToolStrip();
 
 var newButton = new KryptonToolStripButton();
-newButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionAdd, IconSize.Small)?.ToBitmap();
+newButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ActionAdd, IconSize.Small)?.ToBitmap();
 newButton.Text = "New";
 
 var openButton = new KryptonToolStripButton();
-openButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionOpen, IconSize.Small)?.ToBitmap();
+openButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ActionOpen, IconSize.Small)?.ToBitmap();
 openButton.Text = "Open";
 
 toolbar.Items.Add(newButton);
@@ -132,7 +132,7 @@ toolbar.Items.Add(openButton);
 var statusStrip = new KryptonStatusStrip();
 
 var statusLabel = new KryptonStatusStripLabel();
-statusLabel.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.SystemStatusOk, IconSize.Small)?.ToBitmap();
+statusLabel.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.SystemStatusOk, IconSize.Small)?.ToBitmap();
 statusLabel.Text = "Ready";
 
 statusStrip.Items.Add(statusLabel);
@@ -157,7 +157,7 @@ public Image? GetSafeIcon(int iconId, IconSize size = IconSize.Medium)
 }
 
 // Usage
-var icon = GetSafeIcon((int)PI.ImageresIconID.Shield) ?? Properties.Resources.DefaultShield;
+var icon = GetSafeIcon((int)ImageresIconID.Shield) ?? Properties.Resources.DefaultShield;
 ```
 
 ### 6. Theme-Aware Icons
@@ -172,8 +172,8 @@ KryptonManager.GlobalPaletteChanged += (sender, e) =>
 private void RefreshAllIcons()
 {
     // Re-extract all icons used in your application
-    button1.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Small)?.ToBitmap();
-    button2.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationSettings, IconSize.Small)?.ToBitmap();
+    button1.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield, IconSize.Small)?.ToBitmap();
+    button2.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationSettings, IconSize.Small)?.ToBitmap();
     // ... refresh other icons
 }
 ```
@@ -183,7 +183,7 @@ private void RefreshAllIcons()
 // Show different icons based on application state
 public void UpdateStatusIcon(bool isConnected)
 {
-    var iconId = isConnected ? (int)PI.ImageresIconID.SystemStatusOk : (int)PI.ImageresIconID.SystemStatusError;
+    var iconId = isConnected ? (int)ImageresIconID.SystemStatusOk : (int)ImageresIconID.SystemStatusError;
     statusLabel.Image = GraphicsExtensions.ExtractIconFromImageres(iconId, IconSize.Small)?.ToBitmap();
 }
 ```
@@ -193,10 +193,10 @@ public void UpdateStatusIcon(bool isConnected)
 ### 1. Choose Appropriate Sizes
 ```csharp
 // Use smaller sizes for toolbars and menus
-var toolbarIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionSave, IconSize.Small);
+var toolbarIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ActionSave, IconSize.Small);
 
 // Use larger sizes for buttons and dialogs
-var buttonIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Medium);
+var buttonIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield, IconSize.Medium);
 ```
 
 ### 2. Cache Frequently Used Icons
@@ -220,7 +220,7 @@ public static Image? GetCachedIcon(int iconId, IconSize size = IconSize.Medium)
 ### 3. Handle Null Returns
 ```csharp
 // Always check for null returns
-var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+var icon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield);
 if (icon != null)
 {
     button.Image = icon.ToBitmap();
@@ -235,7 +235,7 @@ else
 ### 4. Dispose Icons Properly
 ```csharp
 // Icons should be disposed when no longer needed
-using var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+using var icon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield);
 if (icon != null)
 {
     button.Image = icon.ToBitmap();
@@ -249,34 +249,34 @@ if (icon != null)
 // Create an "Run as Administrator" button
 var adminButton = new KryptonButton();
 adminButton.Text = "Run as Administrator";
-adminButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Small)?.ToBitmap();
+adminButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield, IconSize.Small)?.ToBitmap();
 ```
 
 ### Security Dialogs
 ```csharp
 // Use lock icon for security dialogs
 var securityForm = new KryptonForm();
-securityForm.Icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Lock, IconSize.Medium);
+securityForm.Icon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Lock, IconSize.Medium);
 ```
 
 ### File Operations
 ```csharp
 // Use appropriate icons for file operations
 var openButton = new KryptonButton();
-openButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionOpen, IconSize.Small)?.ToBitmap();
+openButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ActionOpen, IconSize.Small)?.ToBitmap();
 
 var saveButton = new KryptonButton();
-saveButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ActionSave, IconSize.Small)?.ToBitmap();
+saveButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ActionSave, IconSize.Small)?.ToBitmap();
 ```
 
 ### Application Settings
 ```csharp
 // Settings and configuration icons
 var settingsButton = new KryptonButton();
-settingsButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationSettings, IconSize.Small)?.ToBitmap();
+settingsButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationSettings, IconSize.Small)?.ToBitmap();
 
 var helpButton = new KryptonButton();
-helpButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationHelp, IconSize.Small)?.ToBitmap();
+helpButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationHelp, IconSize.Small)?.ToBitmap();
 ```
 
 ## Troubleshooting
@@ -284,7 +284,7 @@ helpButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIc
 ### Icon Not Found
 ```csharp
 // Check if icon extraction failed
-var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+var icon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield);
 if (icon == null)
 {
     // Icon extraction failed - use fallback
@@ -301,7 +301,7 @@ public static Image GetShieldIcon()
 {
     if (_cachedShieldIcon == null)
     {
-        var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
+        var icon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield);
         _cachedShieldIcon = icon?.ToBitmap();
     }
     return _cachedShieldIcon;

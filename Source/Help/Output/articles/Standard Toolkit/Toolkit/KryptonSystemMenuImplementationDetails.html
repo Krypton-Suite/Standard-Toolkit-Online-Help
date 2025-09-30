@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonSystemMenu Implementation Details | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonSystemMenu Implementation Details | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonsystemmenu-implementation-details">KryptonSystemMenu Implementation Details</h1>
+
+<h2 id="overview">Overview</h2>
+<p>This document provides detailed technical information about the internal implementation of the <code>KryptonSystemMenu</code> class, including architecture decisions, performance optimizations, and technical considerations.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#internal-architecture">Internal Architecture</a></li>
+<li><a href="#performance-optimizations">Performance Optimizations</a></li>
+<li><a href="#memory-management">Memory Management</a></li>
+<li><a href="#error-handling-strategy">Error Handling Strategy</a></li>
+<li><a href="#theme-system-implementation">Theme System Implementation</a></li>
+<li><a href="#state-management-implementation">State Management Implementation</a></li>
+<li><a href="#icon-system-implementation">Icon System Implementation</a></li>
+<li><a href="#event-system-implementation">Event System Implementation</a></li>
+<li><a href="#resource-management">Resource Management</a></li>
+<li><a href="#thread-safety-considerations">Thread Safety Considerations</a></li>
+</ol>
+<h2 id="internal-architecture">Internal Architecture</h2>
+<h3 id="class-structure">Class Structure</h3>
+<pre><code class="lang-csharp">public class KryptonSystemMenu : IKryptonSystemMenu, IDisposable
+{
+    #region Instance Fields
+    private readonly KryptonForm _form;
+    private readonly KryptonContextMenu _contextMenu;
+    private bool _disposed;
+
+    // Direct field references for performance
+    private KryptonContextMenuItem? _menuItemRestore;
+    private KryptonContextMenuItem? _menuItemMove;
+    private KryptonContextMenuItem? _menuItemSize;
+    private KryptonContextMenuItem? _menuItemMinimize;
+    private KryptonContextMenuItem? _menuItemMaximize;
+    private KryptonContextMenuItem? _menuItemClose;
+    #endregion
+}
+</code></pre>
+<h3 id="key-design-decisions">Key Design Decisions</h3>
+<h4 id="1-direct-field-references">1. Direct Field References</h4>
+<p><strong>Decision</strong>: Use direct field references instead of collection lookups
+<strong>Rationale</strong>:</p>
+<ul>
+<li>Performance optimization for frequent state updates</li>
+<li>Eliminates need for string-based searches</li>
+<li>Provides compile-time safety</li>
+<li>Reduces memory allocations</li>
+</ul>
+<pre><code class="lang-csharp">// Direct access (fast)
+if (_menuItemRestore != null) 
+{
+    _menuItemRestore.Enabled = (windowState != FormWindowState.Normal);
+}
+
+// vs Collection lookup (slower)
+var restoreItem = _contextMenu.Items.OfType&lt;KryptonContextMenuItem&gt;()
+    .FirstOrDefault(item =&gt; item.Text.Contains(&quot;Restore&quot;));
+</code></pre>
+<h4 id="2-lazy-menu-creation">2. Lazy Menu Creation</h4>
+<p><strong>Decision</strong>: Create menu items only when needed
+<strong>Rationale</strong>:</p>
+<ul>
+<li>Reduces initial memory footprint</li>
+<li>Allows for dynamic menu structure</li>
+<li>Supports conditional item display</li>
+</ul>
+<pre><code class="lang-csharp">// Menu items are created in CreateBasicMenuItems() only when needed
+private void CreateBasicMenuItems()
+{
+    // Conditional creation based on form state and properties
+    if (_form.WindowState != FormWindowState.Normal &amp;&amp; (_form.MinimizeBox || _form.MaximizeBox))
+    {
+        _menuItemRestore = new KryptonContextMenuItem(KryptonManager.Strings.SystemMenuStrings.Restore);
+        // ... setup
+    }
+}
+</code></pre>
+<h4 id="3-composition-over-inheritance">3. Composition over Inheritance</h4>
+<p><strong>Decision</strong>: Use composition with KryptonContextMenu
+<strong>Rationale</strong>:</p>
+<ul>
+<li>Leverages existing KryptonContextMenu functionality</li>
+<li>Maintains separation of concerns</li>
+<li>Enables reuse of proven UI components</li>
+</ul>
+<h2 id="performance-optimizations">Performance Optimizations</h2>
+<h3 id="1-efficient-state-updates">1. Efficient State Updates</h3>
+<pre><code class="lang-csharp">private void UpdateMenuItemsState()
+{
+    var windowState = _form.GetWindowState();
+
+    // Batch state updates using direct field references
+    if (_menuItemRestore != null) 
+        _menuItemRestore.Enabled = (windowState != FormWindowState.Normal);
+    
+    if (_menuItemMinimize != null) 
+        _menuItemMinimize.Enabled = _form.MinimizeBox &amp;&amp; (windowState != FormWindowState.Minimized);
+    
+    // ... other updates
+}
+</code></pre>
+<h3 id="2-icon-caching-strategy">2. Icon Caching Strategy</h3>
+<pre><code class="lang-csharp">private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
+{
+    // Try theme-specific icons first
+    var currentTheme = GetCurrentTheme();
+    var icon = GetThemeIcon(currentTheme, iconType);
+    
+    if (icon != null)
+    {
+        // Process for transparency if needed
+        var processedIcon = ProcessImageForTransparency(icon);
+        if (processedIcon != null)
+        {
+            return processedIcon;
+        }
+    }
+
+    // Fallback to custom drawing
+    return GetDrawnIcon(iconType);
+}
+</code></pre>
+<h3 id="3-smart-positioning-algorithm">3. Smart Positioning Algorithm</h3>
+<pre><code class="lang-csharp">private Point AdjustMenuPosition(Point originalLocation)
+{
+    var screenBounds = Screen.FromControl(_form).Bounds;
+    
+    // Estimate menu dimensions (avoids expensive measurement)
+    var estimatedMenuWidth = 200;
+    var estimatedMenuHeight = _contextMenu.Items.Count * 25;
+
+    // Adjust position to stay within bounds
+    if (originalLocation.X + estimatedMenuWidth &gt; screenBounds.Right)
+        originalLocation.X = screenBounds.Right - estimatedMenuWidth;
+    
+    // ... other adjustments
+    
+    return originalLocation;
+}
+</code></pre>
+<h2 id="memory-management">Memory Management</h2>
+<h3 id="1-resource-disposal-pattern">1. Resource Disposal Pattern</h3>
+<pre><code class="lang-csharp">protected virtual void Dispose(bool disposing)
+{
+    if (!_disposed)
+    {
+        if (disposing)
+        {
+            // Dispose managed resources
+            _contextMenu.Dispose();
+        }
+        _disposed = true;
+    }
+}
+</code></pre>
+<h3 id="2-graphics-resource-management">2. Graphics Resource Management</h3>
+<pre><code class="lang-csharp">private void DrawRestoreIcon(Graphics graphics, int size, Color foregroundColor, Color backgroundColor)
+{
+    var pen = new Pen(foregroundColor, 1);
+    var brush = new SolidBrush(backgroundColor);
+
+    try
+    {
+        // Drawing operations
+    }
+    finally
+    {
+        // Ensure resources are always disposed
+        pen.Dispose();
+        brush.Dispose();
+    }
+}
+</code></pre>
+<h3 id="3-image-processing">3. Image Processing</h3>
+<pre><code class="lang-csharp">private Image? ProcessImageForTransparency(Image? originalImage)
+{
+    if (originalImage?.PixelFormat == PixelFormat.Format32bppArgb)
+    {
+        return originalImage; // Already correct format
+    }
+
+    // Create new bitmap with proper format
+    var bitmap = new Bitmap(originalImage.Width, originalImage.Height, PixelFormat.Format32bppArgb);
+    using (var graphics = Graphics.FromImage(bitmap))
+    {
+        graphics.Clear(Color.Transparent);
+        graphics.DrawImage(originalImage, 0, 0);
+    }
+    return bitmap;
+}
+</code></pre>
+<h2 id="error-handling-strategy">Error Handling Strategy</h2>
+<h3 id="1-graceful-degradation">1. Graceful Degradation</h3>
+<pre><code class="lang-csharp">private void BuildSystemMenu()
+{
+    try
+    {
+        _contextMenu.Items.Clear();
+        CreateBasicMenuItems();
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($&quot;Error building system menu: {ex.Message}&quot;);
+        
+        // Ensure we always have a basic menu
+        if (_contextMenu.Items.Count == 0)
+        {
+            CreateBasicMenuItems();
+        }
+    }
+}
+</code></pre>
+<h3 id="2-fallback-mechanisms">2. Fallback Mechanisms</h3>
+<pre><code class="lang-csharp">private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
+{
+    try
+    {
+        // Try theme-specific icons
+        var icon = GetThemeIcon(GetCurrentTheme(), iconType);
+        if (icon != null) return ProcessImageForTransparency(icon);
+        
+        // Fallback to custom drawing
+        return GetDrawnIcon(iconType);
+    }
+    catch
+    {
+        // Ultimate fallback - no icon
+        return null;
+    }
+}
+</code></pre>
+<h3 id="3-disposal-safety">3. Disposal Safety</h3>
+<pre><code class="lang-csharp">public void Show(Point screenLocation)
+{
+    ThrowIfDisposed();
+    if (Enabled &amp;&amp; _contextMenu.Items.Count &gt; 0)
+    {
+        var adjustedLocation = AdjustMenuPosition(screenLocation);
+        _contextMenu.Show(_form, adjustedLocation);
+    }
+}
+
+private void ThrowIfDisposed()
+{
+    if (_disposed)
+    {
+        throw new ObjectDisposedException(nameof(KryptonSystemMenu));
+    }
+}
+</code></pre>
+<h2 id="theme-system-implementation">Theme System Implementation</h2>
+<h3 id="1-color-based-theme-detection">1. Color-Based Theme Detection</h3>
+<pre><code class="lang-csharp">public string GetCurrentTheme()
+{
+    try
+    {
+        var palette = _form.GetResolvedPalette();
+        var headerColor = palette.GetBackColor1(PaletteBackStyle.HeaderForm, PaletteState.Normal);
+
+        return headerColor switch
+        {
+            var color when IsLightColor(color) =&gt; &quot;Office2013&quot;,
+            var color when IsBlueTone(color) =&gt; &quot;Office2010&quot;,
+            var color when IsDarkBlueTone(color) =&gt; &quot;Office2007&quot;,
+            var color when IsVibrantColor(color) =&gt; &quot;Sparkle&quot;,
+            var color when IsNeutralTone(color) =&gt; &quot;Professional&quot;,
+            var color when IsModernColor(color) =&gt; &quot;Microsoft365&quot;,
+            var color when IsClassicColor(color) =&gt; &quot;Office2003&quot;,
+            _ =&gt; &quot;Office2013&quot; // default fallback
+        };
+    }
+    catch
+    {
+        return &quot;Office2013&quot;; // fallback on error
+    }
+}
+</code></pre>
+<h3 id="2-color-analysis-algorithms">2. Color Analysis Algorithms</h3>
+<pre><code class="lang-csharp">private bool IsLightColor(Color color)
+{
+    // Calculate perceived brightness using luminance formula
+    var brightness = (0.299 * color.R + 0.587 * color.G + 0.114 * color.B) / 255;
+    return brightness &gt; 0.6;
+}
+
+private bool IsBlueTone(Color color)
+{
+    return color.B &gt; color.R &amp;&amp; color.B &gt; color.G &amp;&amp; color.B &gt; 100;
+}
+
+private bool IsVibrantColor(Color color)
+{
+    var saturation = Math.Max(color.R, Math.Max(color.G, color.B)) - 
+                     Math.Min(color.R, Math.Min(color.G, color.B));
+    return saturation &gt; 100;
+}
+</code></pre>
+<h3 id="3-theme-resource-management">3. Theme Resource Management</h3>
+<pre><code class="lang-csharp">private Image? GetThemeIcon(string theme, SystemMenuIconType iconType)
+{
+    try
+    {
+        return theme switch
+        {
+            &quot;Office2013&quot; =&gt; GetOffice2013Icon(iconType),
+            &quot;Office2010&quot; =&gt; GetOffice2010Icon(iconType),
+            &quot;Office2007&quot; =&gt; GetOffice2007Icon(iconType),
+            &quot;Sparkle&quot; =&gt; GetSparkleIcon(iconType),
+            &quot;Professional&quot; =&gt; GetProfessionalIcon(iconType),
+            &quot;Microsoft365&quot; =&gt; GetMicrosoft365Icon(iconType),
+            &quot;Office2003&quot; =&gt; GetOffice2003Icon(iconType),
+            _ =&gt; null
+        };
+    }
+    catch
+    {
+        return null;
+    }
+}
+</code></pre>
+<h2 id="state-management-implementation">State Management Implementation</h2>
+<h3 id="1-form-state-integration">1. Form State Integration</h3>
+<pre><code class="lang-csharp">private void UpdateMenuItemsState()
+{
+    var windowState = _form.GetWindowState();
+
+    // Restore: enabled when window is not in normal state
+    if (_menuItemRestore != null) 
+        _menuItemRestore.Enabled = (windowState != FormWindowState.Normal);
+    
+    // Minimize: enabled only if MinimizeBox is true and not already minimized
+    if (_menuItemMinimize != null) 
+        _menuItemMinimize.Enabled = _form.MinimizeBox &amp;&amp; (windowState != FormWindowState.Minimized);
+
+    // Maximize: enabled only if MaximizeBox is true and not already maximized
+    if (_menuItemMaximize != null)
+        _menuItemMaximize.Enabled = _form.MaximizeBox &amp;&amp; (windowState != FormWindowState.Maximized);
+    
+    // Move: enabled when window is in Normal state or minimized
+    if (_menuItemMove != null)
+        _menuItemMove.Enabled = (windowState == FormWindowState.Normal) || (windowState == FormWindowState.Minimized);
+    
+    // Size: enabled when window is in Normal state and form is sizable
+    if (_menuItemSize != null)
+        _menuItemSize.Enabled = (windowState == FormWindowState.Normal) &amp;&amp;
+                               (_form.FormBorderStyle == FormBorderStyle.Sizable || 
+                                _form.FormBorderStyle == FormBorderStyle.SizableToolWindow);
+}
+</code></pre>
+<h3 id="2-conditional-menu-creation">2. Conditional Menu Creation</h3>
+<pre><code class="lang-csharp">private void CreateBasicMenuItems()
+{
+    // Restore: only if window is not in normal state and either minimize or maximize is enabled
+    if (_form.WindowState != FormWindowState.Normal &amp;&amp; (_form.MinimizeBox || _form.MaximizeBox))
+    {
+        _menuItemRestore = new KryptonContextMenuItem(KryptonManager.Strings.SystemMenuStrings.Restore);
+        _menuItemRestore.Image = GetSystemMenuIcon(SystemMenuIconType.Restore);
+        _menuItemRestore.Click += OnRestoreItemOnClick;
+        _contextMenu.Items.Add(_menuItemRestore);
+    }
+
+    // Move and Size: only if the window is resizable
+    if (_form.FormBorderStyle != FormBorderStyle.FixedSingle &amp;&amp; 
+        _form.FormBorderStyle != FormBorderStyle.Fixed3D &amp;&amp; 
+        _form.FormBorderStyle != FormBorderStyle.FixedDialog)
+    {
+        _menuItemMove = new KryptonContextMenuItem(KryptonManager.Strings.SystemMenuStrings.Move);
+        _menuItemMove.Click += (sender, e) =&gt; ExecuteMove();
+        _contextMenu.Items.Add(_menuItemMove);
+
+        _menuItemSize = new KryptonContextMenuItem(KryptonManager.Strings.SystemMenuStrings.Size);
+        _menuItemSize.Click += (sender, e) =&gt; ExecuteSize();
+        _contextMenu.Items.Add(_menuItemSize);
+    }
+
+    // Separator logic
+    if (_contextMenu.Items.Count &gt; 0 &amp;&amp; (_form.MinimizeBox || _form.MaximizeBox))
+    {
+        _contextMenu.Items.Add(new KryptonContextMenuSeparator());
+    }
+
+    // Always add minimize and maximize (but enable/disable based on properties)
+    _menuItemMinimize = new KryptonContextMenuItem(KryptonManager.Strings.SystemMenuStrings.Minimize);
+    _menuItemMinimize.Image = GetSystemMenuIcon(SystemMenuIconType.Minimize);
+    _menuItemMinimize.Click += OnMinimizeItemOnClick;
+    _contextMenu.Items.Add(_menuItemMinimize);
+
+    _menuItemMaximize = new KryptonContextMenuItem(KryptonManager.Strings.SystemMenuStrings.Maximize);
+    _menuItemMaximize.Image = GetSystemMenuIcon(SystemMenuIconType.Maximize);
+    _menuItemMaximize.Click += OnMaximizeItemOnClick;
+    _contextMenu.Items.Add(_menuItemMaximize);
+
+    // Final separator
+    if (_contextMenu.Items.Count &gt; 0)
+    {
+        _contextMenu.Items.Add(new KryptonContextMenuSeparator());
+    }
+
+    // Close: only if ControlBox is enabled
+    if (_form.ControlBox)
+    {
+        _menuItemClose = new KryptonContextMenuItem($&quot;{KryptonManager.Strings.SystemMenuStrings.Close}\tAlt+F4&quot;);
+        _menuItemClose.Image = GetSystemMenuIcon(SystemMenuIconType.Close);
+        _menuItemClose.Click += OnCloseItemOnClick;
+        _contextMenu.Items.Add(_menuItemClose);
+    }
+}
+</code></pre>
+<h2 id="icon-system-implementation">Icon System Implementation</h2>
+<h3 id="1-icon-loading-strategy">1. Icon Loading Strategy</h3>
+<pre><code class="lang-csharp">private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
+{
+    try
+    {
+        // Try to get theme-specific icon
+        var currentTheme = GetCurrentTheme();
+        var icon = GetThemeIcon(currentTheme, iconType);
+        
+        if (icon != null)
+        {
+            // Process for proper transparency
+            var processedIcon = ProcessImageForTransparency(icon);
+            if (processedIcon != null)
+            {
+                return processedIcon;
+            }
+        }
+
+        // Fallback to custom drawing
+        return GetDrawnIcon(iconType);
+    }
+    catch
+    {
+        return null; // No icon on error
+    }
+}
+</code></pre>
+<h3 id="2-custom-icon-drawing">2. Custom Icon Drawing</h3>
+<pre><code class="lang-csharp">private Image? GetDrawnIcon(SystemMenuIconType iconType)
+{
+    try
+    {
+        const int iconSize = 16;
+        var bitmap = new Bitmap(iconSize, iconSize);
+
+        using (var graphics = Graphics.FromImage(bitmap))
+        {
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            graphics.Clear(Color.Transparent);
+
+            var foregroundColor = GetThemeForegroundColor();
+            var backgroundColor = GetThemeBackgroundColor();
+
+            switch (iconType)
+            {
+                case SystemMenuIconType.Restore:
+                    DrawRestoreIcon(graphics, iconSize, foregroundColor, backgroundColor);
+                    break;
+                case SystemMenuIconType.Minimize:
+                    DrawMinimizeIcon(graphics, iconSize, foregroundColor);
+                    break;
+                case SystemMenuIconType.Maximize:
+                    DrawMaximizeIcon(graphics, iconSize, foregroundColor);
+                    break;
+                case SystemMenuIconType.Close:
+                    DrawCloseIcon(graphics, iconSize, foregroundColor);
+                    break;
+            }
+        }
+
+        return bitmap;
+    }
+    catch
+    {
+        return null;
+    }
+}
+</code></pre>
+<h3 id="3-theme-color-integration">3. Theme Color Integration</h3>
+<pre><code class="lang-csharp">private Color GetThemeForegroundColor()
+{
+    try
+    {
+        var palette = _form.GetResolvedPalette();
+        if (palette != null)
+        {
+            return palette.GetContentShortTextColor1(PaletteContentStyle.HeaderForm, PaletteState.Normal);
+        }
+    }
+    catch
+    {
+        // Fallback on error
+    }
+    return Color.Black;
+}
+
+private Color GetThemeBackgroundColor()
+{
+    try
+    {
+        var palette = _form.GetResolvedPalette();
+        if (palette != null)
+        {
+            return palette.GetBackColor1(PaletteBackStyle.HeaderForm, PaletteState.Normal);
+        }
+    }
+    catch
+    {
+        // Fallback on error
+    }
+    return Color.White;
+}
+</code></pre>
+<h2 id="event-system-implementation">Event System Implementation</h2>
+<h3 id="1-action-execution">1. Action Execution</h3>
+<pre><code class="lang-csharp">private void ExecuteRestore()
+{
+    try
+    {
+        if (_form.WindowState != FormWindowState.Normal)
+        {
+            _form.WindowState = FormWindowState.Normal;
+        }
+        else
+        {
+            SendSysCommand(PI.SC_.RESTORE);
+        }
+    }
+    catch
+    {
+        SendSysCommand(PI.SC_.RESTORE);
+    }
+}
+
+private void ExecuteMove()
+{
+    try
+    {
+        SendSysCommand(PI.SC_.MOVE);
+    }
+    catch
+    {
+        SendSysCommand(PI.SC_.MOVE);
+    }
+}
+
+private void ExecuteSize()
+{
+    try
+    {
+        SendSysCommand(PI.SC_.SIZE);
+    }
+    catch
+    {
+        SendSysCommand(PI.SC_.SIZE);
+    }
+}
+
+private void ExecuteMinimize()
+{
+    try
+    {
+        if (_form.WindowState != FormWindowState.Minimized)
+        {
+            _form.WindowState = FormWindowState.Minimized;
+        }
+        else
+        {
+            SendSysCommand(PI.SC_.MINIMIZE);
+        }
+    }
+    catch
+    {
+        SendSysCommand(PI.SC_.MINIMIZE);
+    }
+}
+
+private void ExecuteMaximize()
+{
+    try
+    {
+        if (_form.WindowState != FormWindowState.Maximized)
+        {
+            _form.WindowState = FormWindowState.Maximized;
+        }
+        else
+        {
+            SendSysCommand(PI.SC_.MAXIMIZE);
+        }
+    }
+    catch
+    {
+        SendSysCommand(PI.SC_.MAXIMIZE);
+    }
+}
+
+private void ExecuteClose()
+{
+    try
+    {
+        _form.Close();
+    }
+    catch
+    {
+        SendSysCommand(PI.SC_.CLOSE);
+    }
+}
+</code></pre>
+<h3 id="2-system-command-integration">2. System Command Integration</h3>
+<pre><code class="lang-csharp">private void SendSysCommand(PI.SC_ command)
+{
+    // Convert screen position to LPARAM format
+    var screenPos = Control.MousePosition;
+    var lParam = (IntPtr)(PI.MAKELOWORD(screenPos.X) | PI.MAKEHIWORD(screenPos.Y));
+
+    // Send the system command
+    _form.SendSysCommand(command, lParam);
+}
+</code></pre>
+<h3 id="3-keyboard-shortcut-handling">3. Keyboard Shortcut Handling</h3>
+<pre><code class="lang-csharp">public bool HandleKeyboardShortcut(Keys keyData)
+{
+    ThrowIfDisposed();
+    if (!Enabled)
+    {
+        return false;
+    }
+
+    // Handle Alt+F4 for Close
+    if (keyData == (Keys.Alt | Keys.F4))
+    {
+        ExecuteClose();
+        return true;
+    }
+
+    // Handle Alt+Space for showing the menu
+    if (keyData == (Keys.Alt | Keys.Space) &amp;&amp; ShowOnAltSpace)
+    {
+        ShowAtFormTopLeft();
+        return true;
+    }
+
+    return false;
+}
+</code></pre>
+<h2 id="resource-management">Resource Management</h2>
+<h3 id="1-disposal-pattern">1. Disposal Pattern</h3>
+<pre><code class="lang-csharp">public void Dispose()
+{
+    Dispose(true);
+    GC.SuppressFinalize(this);
+}
+
+protected virtual void Dispose(bool disposing)
+{
+    if (!_disposed)
+    {
+        if (disposing)
+        {
+            // Dispose managed resources
+            _contextMenu.Dispose();
+        }
+        _disposed = true;
+    }
+}
+
+~KryptonSystemMenu()
+{
+    Dispose(false);
+}
+</code></pre>
+<h3 id="2-graphics-resource-management-1">2. Graphics Resource Management</h3>
+<pre><code class="lang-csharp">private void DrawRestoreIcon(Graphics graphics, int size, Color foregroundColor, Color backgroundColor)
+{
+    var pen = new Pen(foregroundColor, 1);
+    var brush = new SolidBrush(backgroundColor);
+
+    try
+    {
+        // Draw the main square
+        var rect = new Rectangle(2, 2, size - 4, size - 4);
+        graphics.FillRectangle(brush, rect);
+        graphics.DrawRectangle(pen, rect);
+
+        // Draw the arrow pointing to the square
+        var arrowPoints = new Point[]
+        {
+            new Point(size - 6, 4),
+            new Point(size - 6, size - 6),
+            new Point(4, size - 6)
+        };
+        graphics.FillPolygon(brush, arrowPoints);
+        graphics.DrawPolygon(pen, arrowPoints);
+    }
+    finally
+    {
+        // Ensure resources are always disposed
+        pen.Dispose();
+        brush.Dispose();
+    }
+}
+</code></pre>
+<h2 id="thread-safety-considerations">Thread Safety Considerations</h2>
+<h3 id="1-ui-thread-requirements">1. UI Thread Requirements</h3>
+<ul>
+<li>All operations must be performed on the UI thread</li>
+<li>No cross-thread operations are supported</li>
+<li>Disposal can be called from any thread</li>
+</ul>
+<h3 id="2-disposal-safety">2. Disposal Safety</h3>
+<pre><code class="lang-csharp">private void ThrowIfDisposed()
+{
+    if (_disposed)
+    {
+        throw new ObjectDisposedException(nameof(KryptonSystemMenu));
+    }
+}
+
+public void Show(Point screenLocation)
+{
+    ThrowIfDisposed();
+    if (Enabled &amp;&amp; _contextMenu.Items.Count &gt; 0)
+    {
+        var adjustedLocation = AdjustMenuPosition(screenLocation);
+        _contextMenu.Show(_form, adjustedLocation);
+    }
+}
+</code></pre>
+<h3 id="3-state-consistency">3. State Consistency</h3>
+<ul>
+<li>All state changes are atomic</li>
+<li>No partial state updates</li>
+<li>Consistent state maintained across operations</li>
+</ul>
+<p>This implementation provides a robust, performant, and maintainable system menu implementation that integrates seamlessly with the Krypton Toolkit ecosystem while providing comprehensive functionality and excellent user experience.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

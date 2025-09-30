@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title> | Krypton Standard Toolkit Documentation </title>
+      <title>KryptonTableLayoutPanel | Krypton Standard Toolkit Documentation </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content=" | Krypton Standard Toolkit Documentation ">
+      <meta name="title" content="KryptonTableLayoutPanel | Krypton Standard Toolkit Documentation ">
     
     
       <link rel="shortcut icon" href="../../../Krypton.ico">
@@ -67,7 +67,853 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptontablelayoutpanel">KryptonTableLayoutPanel</h1>
 
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonTableLayoutPanel</code> class provides a Krypton-themed replacement for the standard Windows <code>TableLayoutPanel</code>. It inherits from <code>TableLayoutPanel</code> and offers enhanced visual styling, seamless theme integration, and improved appearance while maintaining full compatibility with the standard <code>TableLayoutPanel</code> functionality.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── System.Windows.Forms.Control
+            └── System.Windows.Forms.TableLayoutPanel
+                └── Krypton.Toolkit.KryptonTableLayoutPanel
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonTableLayoutPanel()
+</code></pre>
+<p>The constructor initializes enhanced features:</p>
+<ul>
+<li><strong>Background Panel</strong>: Creates an internal <code>KryptonPanel</code> for enhanced theming</li>
+<li><strong>Palette Integration</strong>: Automatic Krypton theme detection and application</li>
+<li><strong>Visual States</strong>: Common, Normal, and Disabled state management</li>
+<li><strong>Layout Management</strong>: Enhanced layout handling with Krypton styling</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="visual-state-properties">Visual State Properties</h3>
+<pre><code class="lang-csharp">public PaletteMode PaletteMode { get; set; }
+public PaletteBackStyle PanelBackStyle { get; set; }
+public PaletteTripleRedirect StateCommon { get; }
+public PaletteTriple StateDisabled { get; }
+public PaletteTriple StateNormal { get; }
+</code></pre>
+<ul>
+<li><strong>PaletteMode</strong>: Controls which palette to use for theming</li>
+<li><strong>PanelBackStyle</strong>: Background style for the panel</li>
+<li><strong>StateCommon</strong>: Base styling configuration for all states</li>
+<li><strong>StateNormal</strong>: Default appearance when enabled</li>
+<li><strong>StateDisabled</strong>: Appearance when control is disabled</li>
+</ul>
+<h3 id="hidden-properties">Hidden Properties</h3>
+<p>The following properties are hidden from the designer but remain accessible:</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+public override Color BackColor { get; set; }
+
+[Browsable(false)]
+public override Image? BackgroundImage { get; set; }
+
+[Browsable(false)]
+public override ImageLayout BackgroundImageLayout { get; set; }
+
+[Browsable(false)]
+public override Font Font { get; set; }
+
+[Browsable(false)]
+public override Color ForeColor { get; set; }
+
+[Browsable(false)]
+public override string Text { get; set; }
+</code></pre>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="basic-table-layout-setup">Basic Table Layout Setup</h3>
+<pre><code class="lang-csharp">public void SetupBasicTableLayout()
+{
+    var tableLayout = new KryptonTableLayoutPanel
+    {
+        Dock = DockStyle.Fill,
+        ColumnCount = 3,
+        RowCount = 3,
+        BackColor = Color.Transparent
+    };
+
+    // Set column styles
+    tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+    tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+    tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+
+    // Set row styles
+    tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
+    tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
+    tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
+
+    // Add controls
+    for (int row = 0; row &lt; 3; row++)
+    {
+        for (int col = 0; col &lt; 3; col++)
+        {
+            var button = new KryptonButton
+            {
+                Text = $&quot;Button {row},{col}&quot;,
+                Dock = DockStyle.Fill
+            };
+            tableLayout.Controls.Add(button, col, row);
+        }
+    }
+
+    Controls.Add(tableLayout);
+}
+</code></pre>
+<h3 id="form-layout-with-kryptontablelayoutpanel">Form Layout with KryptonTableLayoutPanel</h3>
+<pre><code class="lang-csharp">public class FormLayout : Form
+{
+    private KryptonTableLayoutPanel mainLayout;
+    private KryptonHeaderGroup headerGroup;
+    private KryptonPanel contentPanel;
+    private KryptonStatusStrip statusStrip;
+
+    public FormLayout()
+    {
+        InitializeComponent();
+        SetupLayout();
+    }
+
+    private void SetupLayout()
+    {
+        // Main table layout
+        mainLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 3,
+            BackColor = Color.Transparent
+        };
+
+        // Set row styles
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F)); // Header
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Content
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 25F)); // Status
+
+        // Header group
+        headerGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel,
+            HeaderStyleSecondary = HeaderStyle.Panel
+        };
+        headerGroup.HeaderPrimary.Content.ShortText = &quot;Application Title&quot;;
+        headerGroup.HeaderSecondary.Content.ShortText = &quot;Subtitle&quot;;
+
+        // Content panel
+        contentPanel = new KryptonPanel
+        {
+            Dock = DockStyle.Fill,
+            PanelBackStyle = PaletteBackStyle.PanelClient
+        };
+
+        // Status strip
+        statusStrip = new KryptonStatusStrip();
+
+        // Add controls to layout
+        mainLayout.Controls.Add(headerGroup, 0, 0);
+        mainLayout.Controls.Add(contentPanel, 0, 1);
+        mainLayout.Controls.Add(statusStrip, 0, 2);
+
+        Controls.Add(mainLayout);
+    }
+}
+</code></pre>
+<h3 id="dynamic-table-layout">Dynamic Table Layout</h3>
+<pre><code class="lang-csharp">public class DynamicTableLayout : UserControl
+{
+    private KryptonTableLayoutPanel tableLayout;
+    private KryptonButton addRowButton;
+    private KryptonButton addColumnButton;
+    private KryptonButton removeRowButton;
+    private KryptonButton removeColumnButton;
+
+    public DynamicTableLayout()
+    {
+        InitializeComponent();
+        SetupTableLayout();
+    }
+
+    private void SetupTableLayout()
+    {
+        // Main table layout
+        tableLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 2,
+            BackColor = Color.Transparent
+        };
+
+        // Control buttons
+        addRowButton = new KryptonButton { Text = &quot;Add Row&quot;, Dock = DockStyle.Fill };
+        addColumnButton = new KryptonButton { Text = &quot;Add Column&quot;, Dock = DockStyle.Fill };
+        removeRowButton = new KryptonButton { Text = &quot;Remove Row&quot;, Dock = DockStyle.Fill };
+        removeColumnButton = new KryptonButton { Text = &quot;Remove Column&quot;, Dock = DockStyle.Fill };
+
+        // Event handlers
+        addRowButton.Click += AddRowButton_Click;
+        addColumnButton.Click += AddColumnButton_Click;
+        removeRowButton.Click += RemoveRowButton_Click;
+        removeColumnButton.Click += RemoveColumnButton_Click;
+
+        // Add buttons to layout
+        tableLayout.Controls.Add(addRowButton, 0, 0);
+        tableLayout.Controls.Add(addColumnButton, 1, 0);
+        tableLayout.Controls.Add(removeRowButton, 0, 1);
+        tableLayout.Controls.Add(removeColumnButton, 1, 1);
+
+        Controls.Add(tableLayout);
+    }
+
+    private void AddRowButton_Click(object? sender, EventArgs e)
+    {
+        tableLayout.RowCount++;
+        tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F / tableLayout.RowCount));
+        
+        // Adjust existing row styles
+        for (int i = 0; i &lt; tableLayout.RowCount - 1; i++)
+        {
+            tableLayout.RowStyles[i].SizeType = SizeType.Percent;
+            tableLayout.RowStyles[i].Height = 100F / tableLayout.RowCount;
+        }
+    }
+
+    private void AddColumnButton_Click(object? sender, EventArgs e)
+    {
+        tableLayout.ColumnCount++;
+        tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F / tableLayout.ColumnCount));
+        
+        // Adjust existing column styles
+        for (int i = 0; i &lt; tableLayout.ColumnCount - 1; i++)
+        {
+            tableLayout.ColumnStyles[i].SizeType = SizeType.Percent;
+            tableLayout.ColumnStyles[i].Width = 100F / tableLayout.ColumnCount;
+        }
+    }
+
+    private void RemoveRowButton_Click(object? sender, EventArgs e)
+    {
+        if (tableLayout.RowCount &gt; 1)
+        {
+            // Remove controls in the last row
+            for (int col = 0; col &lt; tableLayout.ColumnCount; col++)
+            {
+                var control = tableLayout.GetControlFromPosition(col, tableLayout.RowCount - 1);
+                if (control != null)
+                {
+                    tableLayout.Controls.Remove(control);
+                }
+            }
+
+            tableLayout.RowCount--;
+            tableLayout.RowStyles.RemoveAt(tableLayout.RowStyles.Count - 1);
+            
+            // Adjust remaining row styles
+            for (int i = 0; i &lt; tableLayout.RowCount; i++)
+            {
+                tableLayout.RowStyles[i].SizeType = SizeType.Percent;
+                tableLayout.RowStyles[i].Height = 100F / tableLayout.RowCount;
+            }
+        }
+    }
+
+    private void RemoveColumnButton_Click(object? sender, EventArgs e)
+    {
+        if (tableLayout.ColumnCount &gt; 1)
+        {
+            // Remove controls in the last column
+            for (int row = 0; row &lt; tableLayout.RowCount; row++)
+            {
+                var control = tableLayout.GetControlFromPosition(tableLayout.ColumnCount - 1, row);
+                if (control != null)
+                {
+                    tableLayout.Controls.Remove(control);
+                }
+            }
+
+            tableLayout.ColumnCount--;
+            tableLayout.ColumnStyles.RemoveAt(tableLayout.ColumnStyles.Count - 1);
+            
+            // Adjust remaining column styles
+            for (int i = 0; i &lt; tableLayout.ColumnCount; i++)
+            {
+                tableLayout.ColumnStyles[i].SizeType = SizeType.Percent;
+                tableLayout.ColumnStyles[i].Width = 100F / tableLayout.ColumnCount;
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="data-entry-form-layout">Data Entry Form Layout</h3>
+<pre><code class="lang-csharp">public class DataEntryForm : UserControl
+{
+    private KryptonTableLayoutPanel mainLayout;
+    private List&lt;KryptonTextBox&gt; inputFields;
+    private List&lt;KryptonLabel&gt; labels;
+
+    public DataEntryForm()
+    {
+        InitializeComponent();
+        SetupDataEntryLayout();
+    }
+
+    private void SetupDataEntryLayout()
+    {
+        mainLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 5,
+            BackColor = Color.Transparent,
+            Padding = new Padding(10)
+        };
+
+        // Set column styles
+        mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120F)); // Labels
+        mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F)); // Inputs
+
+        // Set row styles
+        for (int i = 0; i &lt; 5; i++)
+        {
+            mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 30F));
+        }
+
+        inputFields = new List&lt;KryptonTextBox&gt;();
+        labels = new List&lt;KryptonLabel&gt;();
+
+        // Create form fields
+        string[] fieldNames = { &quot;First Name:&quot;, &quot;Last Name:&quot;, &quot;Email:&quot;, &quot;Phone:&quot;, &quot;Address:&quot; };
+
+        for (int i = 0; i &lt; fieldNames.Length; i++)
+        {
+            // Label
+            var label = new KryptonLabel
+            {
+                Text = fieldNames[i],
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleRight,
+                LabelStyle = LabelStyle.NormalControl
+            };
+            labels.Add(label);
+
+            // Input field
+            var textBox = new KryptonTextBox
+            {
+                Dock = DockStyle.Fill,
+                Margin = new Padding(5, 0, 0, 0)
+            };
+            inputFields.Add(textBox);
+
+            // Add to layout
+            mainLayout.Controls.Add(label, 0, i);
+            mainLayout.Controls.Add(textBox, 1, i);
+        }
+    }
+
+    public Dictionary&lt;string, string&gt; GetFormData()
+    {
+        var data = new Dictionary&lt;string, string&gt;();
+        string[] fieldNames = { &quot;FirstName&quot;, &quot;LastName&quot;, &quot;Email&quot;, &quot;Phone&quot;, &quot;Address&quot; };
+
+        for (int i = 0; i &lt; inputFields.Count &amp;&amp; i &lt; fieldNames.Length; i++)
+        {
+            data[fieldNames[i]] = inputFields[i].Text;
+        }
+
+        return data;
+    }
+
+    public void SetFormData(Dictionary&lt;string, string&gt; data)
+    {
+        string[] fieldNames = { &quot;FirstName&quot;, &quot;LastName&quot;, &quot;Email&quot;, &quot;Phone&quot;, &quot;Address&quot; };
+
+        for (int i = 0; i &lt; inputFields.Count &amp;&amp; i &lt; fieldNames.Length; i++)
+        {
+            if (data.TryGetValue(fieldNames[i], out string value))
+            {
+                inputFields[i].Text = value;
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="settings-dialog-layout">Settings Dialog Layout</h3>
+<pre><code class="lang-csharp">public class SettingsDialog : Form
+{
+    private KryptonTableLayoutPanel mainLayout;
+    private KryptonHeaderGroup generalGroup;
+    private KryptonHeaderGroup appearanceGroup;
+    private KryptonHeaderGroup advancedGroup;
+
+    public SettingsDialog()
+    {
+        InitializeComponent();
+        SetupSettingsLayout();
+    }
+
+    private void SetupSettingsLayout()
+    {
+        // Main layout
+        mainLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 3,
+            BackColor = Color.Transparent,
+            Padding = new Padding(10)
+        };
+
+        // Set row styles
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
+
+        // General settings group
+        generalGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel,
+            HeaderStyleSecondary = HeaderStyle.Panel
+        };
+        generalGroup.HeaderPrimary.Content.ShortText = &quot;General Settings&quot;;
+        SetupGeneralSettings(generalGroup);
+
+        // Appearance settings group
+        appearanceGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel,
+            HeaderStyleSecondary = HeaderStyle.Panel
+        };
+        appearanceGroup.HeaderPrimary.Content.ShortText = &quot;Appearance&quot;;
+        SetupAppearanceSettings(appearanceGroup);
+
+        // Advanced settings group
+        advancedGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel,
+            HeaderStyleSecondary = HeaderStyle.Panel
+        };
+        advancedGroup.HeaderPrimary.Content.ShortText = &quot;Advanced&quot;;
+        SetupAdvancedSettings(advancedGroup);
+
+        // Add groups to layout
+        mainLayout.Controls.Add(generalGroup, 0, 0);
+        mainLayout.Controls.Add(appearanceGroup, 0, 1);
+        mainLayout.Controls.Add(advancedGroup, 0, 2);
+    }
+
+    private void SetupGeneralSettings(KryptonHeaderGroup group)
+    {
+        var layout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 3,
+            BackColor = Color.Transparent
+        };
+
+        // Add general settings controls
+        // Implementation details...
+    }
+
+    private void SetupAppearanceSettings(KryptonHeaderGroup group)
+    {
+        var layout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 3,
+            BackColor = Color.Transparent
+        };
+
+        // Add appearance settings controls
+        // Implementation details...
+    }
+
+    private void SetupAdvancedSettings(KryptonHeaderGroup group)
+    {
+        var layout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 3,
+            BackColor = Color.Transparent
+        };
+
+        // Add advanced settings controls
+        // Implementation details...
+    }
+}
+</code></pre>
+<h3 id="dashboard-layout">Dashboard Layout</h3>
+<pre><code class="lang-csharp">public class DashboardLayout : UserControl
+{
+    private KryptonTableLayoutPanel dashboardLayout;
+    private KryptonHeaderGroup statsGroup;
+    private KryptonHeaderGroup chartsGroup;
+    private KryptonHeaderGroup recentActivityGroup;
+
+    public DashboardLayout()
+    {
+        InitializeComponent();
+        SetupDashboardLayout();
+    }
+
+    private void SetupDashboardLayout()
+    {
+        // Main dashboard layout
+        dashboardLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 2,
+            BackColor = Color.Transparent,
+            Padding = new Padding(10)
+        };
+
+        // Set column styles
+        dashboardLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+        dashboardLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+
+        // Set row styles
+        dashboardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+        dashboardLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+
+        // Statistics group
+        statsGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel
+        };
+        statsGroup.HeaderPrimary.Content.ShortText = &quot;Statistics&quot;;
+        SetupStatisticsGroup(statsGroup);
+
+        // Charts group
+        chartsGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel
+        };
+        chartsGroup.HeaderPrimary.Content.ShortText = &quot;Charts&quot;;
+        SetupChartsGroup(chartsGroup);
+
+        // Recent activity group
+        recentActivityGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel
+        };
+        recentActivityGroup.HeaderPrimary.Content.ShortText = &quot;Recent Activity&quot;;
+        SetupRecentActivityGroup(recentActivityGroup);
+
+        // Add groups to layout
+        dashboardLayout.Controls.Add(statsGroup, 0, 0);
+        dashboardLayout.Controls.Add(chartsGroup, 1, 0);
+        dashboardLayout.Controls.Add(recentActivityGroup, 0, 1);
+        // Leave position (1,1) empty for future use
+    }
+
+    private void SetupStatisticsGroup(KryptonHeaderGroup group)
+    {
+        var statsLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 2,
+            BackColor = Color.Transparent
+        };
+
+        // Add statistics controls
+        // Implementation details...
+    }
+
+    private void SetupChartsGroup(KryptonHeaderGroup group)
+    {
+        var chartsLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 1,
+            BackColor = Color.Transparent
+        };
+
+        // Add chart controls
+        // Implementation details...
+    }
+
+    private void SetupRecentActivityGroup(KryptonHeaderGroup group)
+    {
+        var activityLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 1,
+            BackColor = Color.Transparent
+        };
+
+        // Add activity controls
+        // Implementation details...
+    }
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Theme Integration</strong>: Lightweight wrapper with minimal overhead</li>
+<li><strong>Layout Performance</strong>: Efficient layout calculations with Krypton styling</li>
+<li><strong>Memory Management</strong>: Proper disposal of internal panel resources</li>
+<li><strong>Rendering</strong>: Optimized background panel rendering</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="background-not-visible">Background Not Visible</h3>
+<p><strong>Issue</strong>: KryptonTableLayoutPanel background not showing<br>
+<strong>Solution</strong>: Ensure proper panel back style:</p>
+<pre><code class="lang-csharp">tableLayout.PanelBackStyle = PaletteBackStyle.PanelClient;
+tableLayout.StateNormal.Back.Color1 = Color.LightGray;
+</code></pre>
+<h3 id="layout-not-updating">Layout Not Updating</h3>
+<p><strong>Issue</strong>: Layout not updating when controls are added/removed<br>
+<strong>Solution</strong>: Force layout update:</p>
+<pre><code class="lang-csharp">tableLayout.PerformLayout();
+tableLayout.Invalidate();
+</code></pre>
+<h3 id="theme-not-applied">Theme Not Applied</h3>
+<p><strong>Issue</strong>: Theme not applied to table layout panel<br>
+<strong>Solution</strong>: Ensure proper palette mode:</p>
+<pre><code class="lang-csharp">tableLayout.PaletteMode = PaletteMode.Global;
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox Integration</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: All standard TableLayoutPanel properties available</li>
+<li><strong>Theme Integration</strong>: Automatic Krypton theming applied</li>
+<li><strong>Layout Editor</strong>: Standard TableLayoutPanel layout editor</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Layout</strong>: Core layout properties (<code>ColumnCount</code>, <code>RowCount</code>, <code>ColumnStyles</code>, <code>RowStyles</code>)</li>
+<li><strong>Appearance</strong>: Visual properties (<code>PaletteMode</code>, <code>PanelBackStyle</code>)</li>
+<li><strong>Visuals</strong>: Theme and styling properties (<code>StateCommon</code>, <code>StateNormal</code>, <code>StateDisabled</code>)</li>
+</ul>
+<h2 id="migration-from-standard-tablelayoutpanel">Migration from Standard TableLayoutPanel</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+TableLayoutPanel tableLayout = new TableLayoutPanel();
+
+// New code
+KryptonTableLayoutPanel tableLayout = new KryptonTableLayoutPanel();
+</code></pre>
+<h3 id="enhanced-features">Enhanced Features</h3>
+<pre><code class="lang-csharp">// Standard TableLayoutPanel (basic)
+var standardTlp = new TableLayoutPanel();
+
+// KryptonTableLayoutPanel (enhanced)
+var kryptonTlp = new KryptonTableLayoutPanel
+{
+    PaletteMode = PaletteMode.Global,
+    PanelBackStyle = PaletteBackStyle.PanelClient,
+    StateNormal = // Full theme control
+};
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="application-main-layout">Application Main Layout</h3>
+<pre><code class="lang-csharp">public partial class MainApplicationForm : Form
+{
+    private KryptonTableLayoutPanel mainLayout;
+    private KryptonHeaderGroup menuGroup;
+    private KryptonPanel contentPanel;
+    private KryptonStatusStrip statusStrip;
+
+    public MainApplicationForm()
+    {
+        InitializeComponent();
+        SetupMainLayout();
+    }
+
+    private void SetupMainLayout()
+    {
+        // Main layout
+        mainLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 3,
+            BackColor = Color.Transparent
+        };
+
+        // Set row styles
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F)); // Menu
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // Content
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 25F)); // Status
+
+        // Menu group
+        menuGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel
+        };
+        menuGroup.HeaderPrimary.Content.ShortText = &quot;Main Menu&quot;;
+        SetupMenuGroup(menuGroup);
+
+        // Content panel
+        contentPanel = new KryptonPanel
+        {
+            Dock = DockStyle.Fill,
+            PanelBackStyle = PaletteBackStyle.PanelClient
+        };
+
+        // Status strip
+        statusStrip = new KryptonStatusStrip();
+
+        // Add to layout
+        mainLayout.Controls.Add(menuGroup, 0, 0);
+        mainLayout.Controls.Add(contentPanel, 0, 1);
+        mainLayout.Controls.Add(statusStrip, 0, 2);
+
+        Controls.Add(mainLayout);
+    }
+
+    private void SetupMenuGroup(KryptonHeaderGroup group)
+    {
+        var menuLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 5,
+            RowCount = 1,
+            BackColor = Color.Transparent
+        };
+
+        // Add menu buttons
+        var fileButton = new KryptonButton { Text = &quot;File&quot;, Dock = DockStyle.Fill };
+        var editButton = new KryptonButton { Text = &quot;Edit&quot;, Dock = DockStyle.Fill };
+        var viewButton = new KryptonButton { Text = &quot;View&quot;, Dock = DockStyle.Fill };
+        var toolsButton = new KryptonButton { Text = &quot;Tools&quot;, Dock = DockStyle.Fill };
+        var helpButton = new KryptonButton { Text = &quot;Help&quot;, Dock = DockStyle.Fill };
+
+        menuLayout.Controls.Add(fileButton, 0, 0);
+        menuLayout.Controls.Add(editButton, 1, 0);
+        menuLayout.Controls.Add(viewButton, 2, 0);
+        menuLayout.Controls.Add(toolsButton, 3, 0);
+        menuLayout.Controls.Add(helpButton, 4, 0);
+
+        group.Panel.Controls.Add(menuLayout);
+    }
+}
+</code></pre>
+<h3 id="configuration-panel-layout">Configuration Panel Layout</h3>
+<pre><code class="lang-csharp">public class ConfigurationPanel : UserControl
+{
+    private KryptonTableLayoutPanel configLayout;
+    private KryptonHeaderGroup databaseGroup;
+    private KryptonHeaderGroup networkGroup;
+    private KryptonHeaderGroup securityGroup;
+
+    public ConfigurationPanel()
+    {
+        InitializeComponent();
+        SetupConfigurationLayout();
+    }
+
+    private void SetupConfigurationLayout()
+    {
+        // Configuration layout
+        configLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 3,
+            BackColor = Color.Transparent,
+            Padding = new Padding(10)
+        };
+
+        // Set row styles
+        configLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
+        configLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
+        configLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33F));
+
+        // Database configuration group
+        databaseGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel
+        };
+        databaseGroup.HeaderPrimary.Content.ShortText = &quot;Database Configuration&quot;;
+        SetupDatabaseGroup(databaseGroup);
+
+        // Network configuration group
+        networkGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel
+        };
+        networkGroup.HeaderPrimary.Content.ShortText = &quot;Network Configuration&quot;;
+        SetupNetworkGroup(networkGroup);
+
+        // Security configuration group
+        securityGroup = new KryptonHeaderGroup
+        {
+            Dock = DockStyle.Fill,
+            HeaderStylePrimary = HeaderStyle.Panel
+        };
+        securityGroup.HeaderPrimary.Content.ShortText = &quot;Security Configuration&quot;;
+        SetupSecurityGroup(securityGroup);
+
+        // Add groups to layout
+        configLayout.Controls.Add(databaseGroup, 0, 0);
+        configLayout.Controls.Add(networkGroup, 0, 1);
+        configLayout.Controls.Add(securityGroup, 0, 2);
+    }
+
+    private void SetupDatabaseGroup(KryptonHeaderGroup group)
+    {
+        var dbLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 4,
+            BackColor = Color.Transparent
+        };
+
+        // Database configuration controls
+        // Implementation details...
+    }
+
+    private void SetupNetworkGroup(KryptonHeaderGroup group)
+    {
+        var netLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 4,
+            BackColor = Color.Transparent
+        };
+
+        // Network configuration controls
+        // Implementation details...
+    }
+
+    private void SetupSecurityGroup(KryptonHeaderGroup group)
+    {
+        var secLayout = new KryptonTableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 4,
+            BackColor = Color.Transparent
+        };
+
+        // Security configuration controls
+        // Implementation details...
+    }
+}
+</code></pre>
 
 </article>
           </div>

@@ -69,8 +69,769 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonscrollbar">KryptonScrollBar</h1>
 
-<h2 id="kryptonscrollbar-1">KryptonScrollBar</h2>
-<p>The <code>KryptonScrollBar</code></p>
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonScrollBar</code> class provides a custom scrollbar control with Krypton theming. It inherits from <code>Control</code> and offers enhanced visual styling, smooth animations, context menu support, and comprehensive keyboard/mouse interaction while maintaining compatibility with standard scrollbar patterns.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── System.Windows.Forms.Control
+            └── Krypton.Toolkit.KryptonScrollBar
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonScrollBar()
+</code></pre>
+<p>The constructor initializes enhanced features:</p>
+<ul>
+<li><strong>Custom Rendering</strong>: Optimized double buffering and custom paint handling</li>
+<li><strong>Context Menu</strong>: Built-in context menu with scroll actions</li>
+<li><strong>Animation Timer</strong>: Smooth thumb movement and button interactions</li>
+<li><strong>Palette Integration</strong>: Automatic Krypton theme detection and application</li>
+<li><strong>Default Values</strong>: Standard scrollbar range (0-100), step values, and sizing</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="orientation-property">Orientation Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(ScrollBarOrientation.Vertical)]
+public ScrollBarOrientation Orientation { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls scrollbar orientation (horizontal or vertical)</li>
+<li><strong>Category</strong>: Layout</li>
+<li><strong>Available Values</strong>:
+<ul>
+<li><code>Vertical</code>: Standard vertical scrollbar (default)</li>
+<li><code>Horizontal</code>: Horizontal scrollbar</li>
+</ul>
+</li>
+<li><strong>Effect</strong>: Automatically adjusts context menu text and layout</li>
+</ul>
+<h3 id="range-and-value-properties">Range and Value Properties</h3>
+<pre><code class="lang-csharp">[DefaultValue(0)]
+public int Minimum { get; set; }
+
+[DefaultValue(100)]
+public int Maximum { get; set; }
+
+[DefaultValue(0)]
+public int Value { get; set; }
+
+[DefaultValue(1)]
+public int SmallChange { get; set; }
+
+[DefaultValue(10)]
+public int LargeChange { get; set; }
+</code></pre>
+<p><strong>Range Management:</strong></p>
+<ul>
+<li><strong>Validation</strong>: Automatic bounds checking and adjustment</li>
+<li><strong>Value Constraints</strong>: Ensures Value stays within Minimum-Maximum range</li>
+<li><strong>Step Control</strong>: Defines increment amounts for different scroll actions</li>
+</ul>
+<h3 id="visual-properties">Visual Properties</h3>
+<pre><code class="lang-csharp">[DefaultValue(typeof(Color), &quot;Color.FromARGB(93, 140, 201)&quot;)]
+public Color BorderColor { get; set; }
+
+[DefaultValue(typeof(Color), &quot;Color.Gray&quot;)]
+public Color DisabledBorderColor { get; set; }
+
+[DefaultValue(1)]
+public double Opacity { get; set; }
+</code></pre>
+<ul>
+<li><strong>BorderColor</strong>: Color of the scrollbar border when enabled</li>
+<li><strong>DisabledBorderColor</strong>: Color of the scrollbar border when disabled</li>
+<li><strong>Opacity</strong>: Context menu opacity (0-1 range)</li>
+</ul>
+<h3 id="scrollbarwidth-property">ScrollBarWidth Property</h3>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+public int ScrollBarWidth
+{
+    get =&gt; Width; 
+    set =&gt; Width = value;
+}
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls the width of the scrollbar</li>
+<li><strong>Category</strong>: Layout</li>
+<li><strong>Usage</strong>: Designer-friendly property for width control</li>
+</ul>
+<h2 id="events">Events</h2>
+<h3 id="scroll-event">Scroll Event</h3>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[Description(&quot;Is raised, when the scrollbar was scrolled.&quot;)]
+public event ScrollEventHandler? Scroll;
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Fired when the scrollbar value changes</li>
+<li><strong>Type</strong>: <code>ScrollEventHandler</code></li>
+<li><strong>Usage</strong>: Handle scroll position changes and update content</li>
+</ul>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="basic-scrollbar-setup">Basic Scrollbar Setup</h3>
+<pre><code class="lang-csharp">public void SetupBasicScrollbar()
+{
+    var scrollBar = new KryptonScrollBar
+    {
+        Orientation = ScrollBarOrientation.Vertical,
+        Minimum = 0,
+        Maximum = 1000,
+        Value = 0,
+        SmallChange = 10,
+        LargeChange = 100,
+        Width = 20,
+        Height = 200
+    };
+
+    scrollBar.Scroll += OnScrollBarScroll;
+    Controls.Add(scrollBar);
+}
+
+private void OnScrollBarScroll(object? sender, ScrollEventArgs e)
+{
+    // Update content based on scroll position
+    UpdateContentPosition(e.NewValue);
+}
+</code></pre>
+<h3 id="content-scrolling-integration">Content Scrolling Integration</h3>
+<pre><code class="lang-csharp">public class ScrollableContent : UserControl
+{
+    private KryptonScrollBar verticalScrollBar;
+    private KryptonScrollBar horizontalScrollBar;
+    private Panel contentPanel;
+    private int contentWidth = 2000;
+    private int contentHeight = 1500;
+
+    public ScrollableContent()
+    {
+        InitializeScrollbars();
+        SetupContent();
+    }
+
+    private void InitializeScrollbars()
+    {
+        // Vertical scrollbar
+        verticalScrollBar = new KryptonScrollBar
+        {
+            Orientation = ScrollBarOrientation.Vertical,
+            Dock = DockStyle.Right,
+            Width = 20,
+            Minimum = 0,
+            Maximum = contentHeight - Height,
+            SmallChange = 10,
+            LargeChange = Height / 2
+        };
+
+        // Horizontal scrollbar
+        horizontalScrollBar = new KryptonScrollBar
+        {
+            Orientation = ScrollBarOrientation.Horizontal,
+            Dock = DockStyle.Bottom,
+            Height = 20,
+            Minimum = 0,
+            Maximum = contentWidth - Width,
+            SmallChange = 10,
+            LargeChange = Width / 2
+        };
+
+        verticalScrollBar.Scroll += OnVerticalScroll;
+        horizontalScrollBar.Scroll += OnHorizontalScroll;
+
+        Controls.Add(verticalScrollBar);
+        Controls.Add(horizontalScrollBar);
+    }
+
+    private void OnVerticalScroll(object? sender, ScrollEventArgs e)
+    {
+        contentPanel.Top = -e.NewValue;
+    }
+
+    private void OnHorizontalScroll(object? sender, ScrollEventArgs e)
+    {
+        contentPanel.Left = -e.NewValue;
+    }
+
+    private void SetupContent()
+    {
+        contentPanel = new Panel
+        {
+            Size = new Size(contentWidth, contentHeight),
+            BackColor = Color.LightBlue
+        };
+
+        Controls.Add(contentPanel);
+        contentPanel.BringToFront();
+    }
+}
+</code></pre>
+<h3 id="custom-scrollbar-with-smooth-scrolling">Custom Scrollbar with Smooth Scrolling</h3>
+<pre><code class="lang-csharp">public class SmoothScrollBar : KryptonScrollBar
+{
+    private Timer smoothTimer;
+    private float targetValue;
+    private float currentValue;
+    private float smoothStep = 0.1f;
+
+    public SmoothScrollBar()
+    {
+        smoothTimer = new Timer { Interval = 16 }; // ~60 FPS
+        smoothTimer.Tick += OnSmoothTimerTick;
+    }
+
+    public void SmoothScrollTo(int value)
+    {
+        targetValue = value;
+        if (!smoothTimer.Enabled)
+        {
+            smoothTimer.Start();
+        }
+    }
+
+    private void OnSmoothTimerTick(object? sender, EventArgs e)
+    {
+        float difference = targetValue - currentValue;
+        
+        if (Math.Abs(difference) &lt; 0.5f)
+        {
+            currentValue = targetValue;
+            smoothTimer.Stop();
+        }
+        else
+        {
+            currentValue += difference * smoothStep;
+        }
+
+        // Update the actual scrollbar value
+        Value = (int)Math.Round(currentValue);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            smoothTimer?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+}
+</code></pre>
+<h3 id="scrollbar-with-custom-context-menu">Scrollbar with Custom Context Menu</h3>
+<pre><code class="lang-csharp">public class EnhancedScrollBar : KryptonScrollBar
+{
+    private ContextMenuStrip customContextMenu;
+
+    public EnhancedScrollBar()
+    {
+        CreateCustomContextMenu();
+    }
+
+    private void CreateCustomContextMenu()
+    {
+        customContextMenu = new ContextMenuStrip();
+
+        // Add custom menu items
+        var scrollToTopItem = new ToolStripMenuItem(&quot;Scroll to Top&quot;);
+        scrollToTopItem.Click += (s, e) =&gt; Value = Minimum;
+
+        var scrollToBottomItem = new ToolStripMenuItem(&quot;Scroll to Bottom&quot;);
+        scrollToBottomItem.Click += (s, e) =&gt; Value = Maximum;
+
+        var scrollToMiddleItem = new ToolStripMenuItem(&quot;Scroll to Middle&quot;);
+        scrollToMiddleItem.Click += (s, e) =&gt; Value = (Minimum + Maximum) / 2;
+
+        customContextMenu.Items.AddRange(new ToolStripItem[]
+        {
+            scrollToTopItem,
+            scrollToBottomItem,
+            scrollToMiddleItem,
+            new ToolStripSeparator(),
+            new ToolStripMenuItem(&quot;Properties...&quot;, null, OnPropertiesClick)
+        });
+    }
+
+    private void OnPropertiesClick(object? sender, EventArgs e)
+    {
+        // Show custom properties dialog
+        using var dialog = new ScrollBarPropertiesDialog(this);
+        dialog.ShowDialog();
+    }
+
+    protected override void OnMouseDown(MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Right)
+        {
+            customContextMenu.Show(this, e.Location);
+            return;
+        }
+        base.OnMouseDown(e);
+    }
+}
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="listbox-with-custom-scrollbar">ListBox with Custom Scrollbar</h3>
+<pre><code class="lang-csharp">public class CustomListBox : UserControl
+{
+    private ListBox listBox;
+    private KryptonScrollBar scrollBar;
+
+    public CustomListBox()
+    {
+        InitializeComponents();
+        SetupScrolling();
+    }
+
+    private void InitializeComponents()
+    {
+        listBox = new ListBox
+        {
+            Dock = DockStyle.Fill,
+            BorderStyle = BorderStyle.None,
+            ScrollAlwaysVisible = false
+        };
+
+        scrollBar = new KryptonScrollBar
+        {
+            Orientation = ScrollBarOrientation.Vertical,
+            Dock = DockStyle.Right,
+            Width = 20
+        };
+
+        Controls.Add(listBox);
+        Controls.Add(scrollBar);
+    }
+
+    private void SetupScrolling()
+    {
+        listBox.Items.AddRange(Enumerable.Range(1, 100).Select(i =&gt; $&quot;Item {i}&quot;).ToArray());
+        
+        scrollBar.Minimum = 0;
+        scrollBar.Maximum = listBox.Items.Count - 1;
+        scrollBar.LargeChange = listBox.VisibleItemCount;
+        scrollBar.SmallChange = 1;
+
+        scrollBar.Scroll += OnScrollBarScroll;
+        listBox.SelectedIndexChanged += OnListBoxSelectionChanged;
+    }
+
+    private void OnScrollBarScroll(object? sender, ScrollEventArgs e)
+    {
+        if (listBox.SelectedIndex != e.NewValue)
+        {
+            listBox.SelectedIndex = e.NewValue;
+            listBox.TopIndex = e.NewValue;
+        }
+    }
+
+    private void OnListBoxSelectionChanged(object? sender, EventArgs e)
+    {
+        if (scrollBar.Value != listBox.SelectedIndex)
+        {
+            scrollBar.Value = listBox.SelectedIndex;
+        }
+    }
+}
+</code></pre>
+<h3 id="datagridview-with-custom-scrollbars">DataGridView with Custom Scrollbars</h3>
+<pre><code class="lang-csharp">public class CustomDataGridView : UserControl
+{
+    private DataGridView dataGridView;
+    private KryptonScrollBar verticalScrollBar;
+    private KryptonScrollBar horizontalScrollBar;
+
+    public CustomDataGridView()
+    {
+        InitializeComponents();
+        SetupDataGridView();
+    }
+
+    private void InitializeComponents()
+    {
+        dataGridView = new DataGridView
+        {
+            Dock = DockStyle.Fill,
+            ScrollBars = ScrollBars.None, // Disable built-in scrollbars
+            RowHeadersVisible = false,
+            ColumnHeadersVisible = true
+        };
+
+        verticalScrollBar = new KryptonScrollBar
+        {
+            Orientation = ScrollBarOrientation.Vertical,
+            Dock = DockStyle.Right,
+            Width = 20
+        };
+
+        horizontalScrollBar = new KryptonScrollBar
+        {
+            Orientation = ScrollBarOrientation.Horizontal,
+            Dock = DockStyle.Bottom,
+            Height = 20
+        };
+
+        Controls.Add(dataGridView);
+        Controls.Add(verticalScrollBar);
+        Controls.Add(horizontalScrollBar);
+    }
+
+    private void SetupDataGridView()
+    {
+        // Add sample data
+        dataGridView.Columns.Add(&quot;Name&quot;, &quot;Name&quot;);
+        dataGridView.Columns.Add(&quot;Age&quot;, &quot;Age&quot;);
+        dataGridView.Columns.Add(&quot;City&quot;, &quot;City&quot;);
+
+        for (int i = 0; i &lt; 100; i++)
+        {
+            dataGridView.Rows.Add($&quot;Person {i}&quot;, 20 + i, $&quot;City {i % 10}&quot;);
+        }
+
+        // Setup scrollbars
+        UpdateScrollBars();
+        
+        verticalScrollBar.Scroll += OnVerticalScroll;
+        horizontalScrollBar.Scroll += OnHorizontalScroll;
+        
+        dataGridView.Scroll += OnDataGridViewScroll;
+        dataGridView.Resize += OnDataGridViewResize;
+    }
+
+    private void UpdateScrollBars()
+    {
+        // Vertical scrollbar
+        verticalScrollBar.Minimum = 0;
+        verticalScrollBar.Maximum = Math.Max(0, dataGridView.Rows.Count - dataGridView.DisplayedRowCount(false));
+        verticalScrollBar.LargeChange = dataGridView.DisplayedRowCount(false);
+        verticalScrollBar.SmallChange = 1;
+
+        // Horizontal scrollbar
+        horizontalScrollBar.Minimum = 0;
+        horizontalScrollBar.Maximum = Math.Max(0, dataGridView.Columns.GetColumnsWidth(DataGridViewElementStates.Visible) - dataGridView.ClientSize.Width);
+        horizontalScrollBar.LargeChange = dataGridView.ClientSize.Width / 2;
+        horizontalScrollBar.SmallChange = 20;
+    }
+
+    private void OnVerticalScroll(object? sender, ScrollEventArgs e)
+    {
+        if (dataGridView.FirstDisplayedScrollingRowIndex != e.NewValue)
+        {
+            dataGridView.FirstDisplayedScrollingRowIndex = e.NewValue;
+        }
+    }
+
+    private void OnHorizontalScroll(object? sender, ScrollEventArgs e)
+    {
+        if (dataGridView.HorizontalScrollingOffset != e.NewValue)
+        {
+            dataGridView.HorizontalScrollingOffset = e.NewValue;
+        }
+    }
+
+    private void OnDataGridViewScroll(object? sender, ScrollEventArgs e)
+    {
+        if (e.ScrollOrientation == ScrollOrientation.VerticalScroll)
+        {
+            verticalScrollBar.Value = dataGridView.FirstDisplayedScrollingRowIndex;
+        }
+        else if (e.ScrollOrientation == ScrollOrientation.HorizontalScroll)
+        {
+            horizontalScrollBar.Value = dataGridView.HorizontalScrollingOffset;
+        }
+    }
+
+    private void OnDataGridViewResize(object? sender, EventArgs e)
+    {
+        UpdateScrollBars();
+    }
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Double Buffering</strong>: Eliminates flicker during scrolling</li>
+<li><strong>Optimized Rendering</strong>: Efficient graphics operations for smooth animation</li>
+<li><strong>Memory Management</strong>: Proper disposal of timers and graphics resources</li>
+<li><strong>Theme Integration</strong>: Lightweight palette switching without full repaints</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="scrollbar-not-responding">Scrollbar Not Responding</h3>
+<p><strong>Issue</strong>: Scrollbar doesn't respond to mouse clicks<br>
+<strong>Solution</strong>: Ensure proper event handling and focus:</p>
+<pre><code class="lang-csharp">scrollBar.Focus();
+scrollBar.TabStop = true;
+scrollBar.Enabled = true;
+</code></pre>
+<h3 id="smooth-scrolling-issues">Smooth Scrolling Issues</h3>
+<p><strong>Issue</strong>: Jerky or choppy scrolling animation<br>
+<strong>Solution</strong>: Adjust timer interval and animation step:</p>
+<pre><code class="lang-csharp">animationTimer.Interval = 16; // 60 FPS
+float smoothStep = 0.1f; // Adjust for smoothness
+</code></pre>
+<h3 id="context-menu-not-showing">Context Menu Not Showing</h3>
+<p><strong>Issue</strong>: Right-click context menu doesn't appear<br>
+<strong>Solution</strong>: Ensure proper mouse event handling:</p>
+<pre><code class="lang-csharp">protected override void OnMouseDown(MouseEventArgs e)
+{
+    if (e.Button == MouseButtons.Right)
+    {
+        contextMenu.Show(this, e.Location);
+        return;
+    }
+    base.OnMouseDown(e);
+}
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Designer</strong>: Custom <code>KryptonScrollBarDesigner</code> provides enhanced design-time experience</li>
+<li><strong>Toolbox</strong>: Available with specialized bitmap representation</li>
+<li><strong>Property Window</strong>: Comprehensive visual state configuration</li>
+<li><strong>Default Events</strong>: Scroll event configured as default</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Behavior</strong>: Core functionality (<code>Minimum</code>, <code>Maximum</code>, <code>Value</code>, <code>SmallChange</code>, <code>LargeChange</code>)</li>
+<li><strong>Layout</strong>: Orientation and sizing (<code>Orientation</code>, <code>ScrollBarWidth</code>)</li>
+<li><strong>Appearance</strong>: Visual properties (<code>BorderColor</code>, <code>DisabledBorderColor</code>, <code>Opacity</code>)</li>
+</ul>
+<h2 id="migration-from-standard-scrollbar">Migration from Standard ScrollBar</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+VScrollBar scrollBar = new VScrollBar();
+
+// New code
+KryptonScrollBar scrollBar = new KryptonScrollBar
+{
+    Orientation = ScrollBarOrientation.Vertical
+};
+</code></pre>
+<h3 id="enhanced-features">Enhanced Features</h3>
+<pre><code class="lang-csharp">// Standard ScrollBar (basic)
+var standardSb = new VScrollBar();
+
+// KryptonScrollBar (enhanced)
+var kryptonSb = new KryptonScrollBar
+{
+    Orientation = ScrollBarOrientation.Vertical,
+    BorderColor = Color.FromArgb(93, 140, 201),
+    DisabledBorderColor = Color.Gray,
+    Opacity = 1.0,
+    // Built-in context menu and smooth animations
+};
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="custom-text-editor-with-scrollbars">Custom Text Editor with Scrollbars</h3>
+<pre><code class="lang-csharp">public class CustomTextEditor : UserControl
+{
+    private RichTextBox textBox;
+    private KryptonScrollBar verticalScrollBar;
+    private KryptonScrollBar horizontalScrollBar;
+
+    public CustomTextEditor()
+    {
+        InitializeComponents();
+        SetupScrolling();
+    }
+
+    private void InitializeComponents()
+    {
+        textBox = new RichTextBox
+        {
+            Dock = DockStyle.Fill,
+            BorderStyle = BorderStyle.None,
+            ScrollBars = RichTextBoxScrollBars.None
+        };
+
+        verticalScrollBar = new KryptonScrollBar
+        {
+            Orientation = ScrollBarOrientation.Vertical,
+            Dock = DockStyle.Right,
+            Width = 20
+        };
+
+        horizontalScrollBar = new KryptonScrollBar
+        {
+            Orientation = ScrollBarOrientation.Horizontal,
+            Dock = DockStyle.Bottom,
+            Height = 20
+        };
+
+        Controls.Add(textBox);
+        Controls.Add(verticalScrollBar);
+        Controls.Add(horizontalScrollBar);
+    }
+
+    private void SetupScrolling()
+    {
+        // Load sample text
+        textBox.Text = GenerateSampleText();
+
+        // Setup scrollbars
+        UpdateScrollBars();
+
+        // Event handlers
+        verticalScrollBar.Scroll += OnVerticalScroll;
+        horizontalScrollBar.Scroll += OnHorizontalScroll;
+        textBox.TextChanged += OnTextChanged;
+        textBox.VScroll += OnTextBoxVScroll;
+        textBox.HScroll += OnTextBoxHScroll;
+    }
+
+    private void UpdateScrollBars()
+    {
+        // Calculate content dimensions
+        int contentHeight = textBox.GetLineFromCharIndex(textBox.Text.Length) * textBox.Font.Height;
+        int contentWidth = (int)textBox.CreateGraphics().MeasureString(textBox.Text, textBox.Font).Width;
+
+        // Vertical scrollbar
+        verticalScrollBar.Minimum = 0;
+        verticalScrollBar.Maximum = Math.Max(0, contentHeight - textBox.ClientSize.Height);
+        verticalScrollBar.LargeChange = textBox.ClientSize.Height / 2;
+        verticalScrollBar.SmallChange = textBox.Font.Height;
+
+        // Horizontal scrollbar
+        horizontalScrollBar.Minimum = 0;
+        horizontalScrollBar.Maximum = Math.Max(0, contentWidth - textBox.ClientSize.Width);
+        horizontalScrollBar.LargeChange = textBox.ClientSize.Width / 2;
+        horizontalScrollBar.SmallChange = 20;
+    }
+
+    private void OnVerticalScroll(object? sender, ScrollEventArgs e)
+    {
+        textBox.SelectionStart = textBox.GetCharIndexFromPosition(new Point(0, e.NewValue));
+        textBox.ScrollToCaret();
+    }
+
+    private void OnHorizontalScroll(object? sender, ScrollEventArgs e)
+    {
+        // Horizontal scrolling implementation
+        textBox.SelectionStart = textBox.GetCharIndexFromPosition(new Point(e.NewValue, 0));
+        textBox.ScrollToCaret();
+    }
+
+    private void OnTextChanged(object? sender, EventArgs e)
+    {
+        UpdateScrollBars();
+    }
+
+    private void OnTextBoxVScroll(object? sender, EventArgs e)
+    {
+        verticalScrollBar.Value = textBox.SelectionStart;
+    }
+
+    private void OnTextBoxHScroll(object? sender, EventArgs e)
+    {
+        horizontalScrollBar.Value = textBox.SelectionStart;
+    }
+
+    private string GenerateSampleText()
+    {
+        var sb = new StringBuilder();
+        for (int i = 0; i &lt; 100; i++)
+        {
+            sb.AppendLine($&quot;This is line {i + 1} of sample text for testing the scrollbar functionality.&quot;);
+        }
+        return sb.ToString();
+    }
+}
+</code></pre>
+<h3 id="image-viewer-with-zoom-and-scroll">Image Viewer with Zoom and Scroll</h3>
+<pre><code class="lang-csharp">public class ImageViewer : UserControl
+{
+    private PictureBox pictureBox;
+    private KryptonScrollBar horizontalScrollBar;
+    private KryptonScrollBar verticalScrollBar;
+    private float zoomFactor = 1.0f;
+
+    public ImageViewer()
+    {
+        InitializeComponents();
+        SetupScrolling();
+    }
+
+    private void InitializeComponents()
+    {
+        pictureBox = new PictureBox
+        {
+            Dock = DockStyle.Fill,
+            SizeMode = PictureBoxSizeMode.AutoSize
+        };
+
+        horizontalScrollBar = new KryptonScrollBar
+        {
+            Orientation = ScrollBarOrientation.Horizontal,
+            Dock = DockStyle.Bottom,
+            Height = 20
+        };
+
+        verticalScrollBar = new KryptonScrollBar
+        {
+            Orientation = ScrollBarOrientation.Vertical,
+            Dock = DockStyle.Right,
+            Width = 20
+        };
+
+        Controls.Add(pictureBox);
+        Controls.Add(horizontalScrollBar);
+        Controls.Add(verticalScrollBar);
+    }
+
+    private void SetupScrolling()
+    {
+        horizontalScrollBar.Scroll += OnHorizontalScroll;
+        verticalScrollBar.Scroll += OnVerticalScroll;
+        pictureBox.SizeChanged += OnPictureBoxSizeChanged;
+    }
+
+    public void LoadImage(string imagePath)
+    {
+        pictureBox.Image = Image.FromFile(imagePath);
+        UpdateScrollBars();
+    }
+
+    public void SetZoom(float zoom)
+    {
+        zoomFactor = zoom;
+        if (pictureBox.Image != null)
+        {
+            pictureBox.Size = new Size(
+                (int)(pictureBox.Image.Width * zoomFactor),
+                (int)(pictureBox.Image.Height * zoomFactor)
+            );
+            UpdateScrollBars();
+        }
+    }
+
+    private void UpdateScrollBars()
+    {
+        if (pictureBox.Image == null) return;
+
+        // Horizontal scrollbar
+        horizontalScrollBar.Minimum = 0;
+        horizontalScrollBar.Maximum = Math.Max(0, pictureBox.Width - ClientSize.Width + verticalScrollBar.Width);
+        horizontalScrollBar.LargeChange = ClientSize.Width / 2;
+        horizontalScrollBar.SmallChange = 20;
+
+        // Vertical scrollbar
+        verticalScrollBar.Minimum = 0;
+        verticalScrollBar.Maximum = Math.Max(0, pictureBox.Height - ClientSize.Height + horizontalScrollBar.Height);
+        verticalScrollBar.LargeChange = ClientSize.Height / 2;
+        verticalScrollBar.SmallChange = 20;
+    }
+
+    private void OnHorizontalScroll(object? sender, ScrollEventArgs e)
+    {
+        pictureBox.Left = -e.NewValue;
+    }
+
+    private void OnVerticalScroll(object? sender, ScrollEventArgs e)
+    {
+        pictureBox.Top = -e.NewValue;
+    }
+
+    private void OnPictureBoxSizeChanged(object? sender, EventArgs e)
+    {
+        UpdateScrollBars();
+    }
+}
+</code></pre>
 
 </article>
           </div>

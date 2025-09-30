@@ -69,9 +69,388 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptoncolordialog">KryptonColorDialog</h1>
 
-<p>The <em>KryptonColorDialog</em> is a Kryptonized version of the standard <em>Windows Forms</em> <em>ColorDialog</em> component.</p>
-<p><img src="Images/KryptonColorDialog.png" alt=""></p>
-<p><img src="Images/KryptonColorDialogExpanded.png" alt=""></p>
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonColorDialog</code> class provides a Krypton-themed wrapper around the standard Windows color selection dialog. It inherits from <code>System.Windows.Forms.ColorDialog</code> and enhances it with Krypton styling, custom icons, titles, high-DPI support, and an optional alpha (transparency) slider for color selection with alpha channel support.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.ComponentModel.Component
+    └── System.Windows.Forms.CommonDialog
+        └── System.Windows.Forms.ColorDialog
+            └── Krypton.Toolkit.KryptonColorDialog
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonColorDialog()
+</code></pre>
+<p>The constructor initializes all the enhanced components:</p>
+<ul>
+<li><strong>CommonDialogHandler</strong>: Manages Krypton theming and window behavior</li>
+<li><strong>Alpha Components</strong>: Creates alpha slider, label, and preview panel for transparency support</li>
+<li><strong>Timer</strong>: Handles real-time alpha value updates</li>
+<li><strong>Default Icon</strong>: Uses <code>DialogImageResources.Colour_V10</code></li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="title-property">Title Property</h3>
+<pre><code class="lang-csharp">public string Title { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Sets the caption text shown in the dialog's title bar</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: Empty string (uses system default)</li>
+<li><strong>Designer Visible</strong>: Yes</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonColorDialog
+{
+    Title = &quot;Choose Document Foreground Color&quot;
+};
+</code></pre>
+<h3 id="icon-property">Icon Property</h3>
+<pre><code class="lang-csharp">public Icon Icon { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Sets a custom icon displayed in the dialog's title bar</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: <code>DialogImageResources.Colour_V10</code></li>
+<li><strong>Designer Visible</strong>: Yes</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonColorDialog
+{
+    Icon = MyAppIcon  // Custom application icon
+};
+</code></pre>
+<h3 id="showicon-property">ShowIcon Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool ShowIcon { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls whether the dialog displays an icon in the title bar</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: <code>false</code></li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonColorDialog
+{
+    ShowIcon = true,
+    Icon = myCustomIcon
+};
+</code></pre>
+<h3 id="showalphaslider-property">ShowAlphaSlider Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool ShowAlphaSlider { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Enables the alpha (transparency) slider for selecting colors with alpha channel</li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Default Value</strong>: <code>false</code></li>
+<li><strong>Side Effects</strong>: Automatically enables <code>AllowFullOpen</code> and <code>FullOpen</code> when set to <code>true</code></li>
+</ul>
+<p><strong>Important Notes:</strong></p>
+<ul>
+<li>When enabled, forces the dialog into full-open mode</li>
+<li>Adds a vertical alpha slider with real-time preview</li>
+<li>Updates the <code>Color</code> property to include alpha values</li>
+<li>Displays alpha values as tooltips and labels</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonColorDialog
+{
+    ShowAlphaSlider = true,
+    Color = Color.FromArgb(128, Color.Red)  // Semi-transparent red
+};
+</code></pre>
+<h3 id="color-property-enhanced">Color Property (Enhanced)</h3>
+<pre><code class="lang-csharp">public new Color Color { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets or sets the selected color, with alpha channel support when <code>ShowAlphaSlider</code> is enabled</li>
+<li><strong>Category</strong>: Data</li>
+<li><strong>Returns</strong>: Full color including alpha when alpha slider is active</li>
+<li><strong>Side Effects</strong>: Updates alpha slider value when color is set programmatically</li>
+</ul>
+<p><strong>Alpha-Aware Behavior:</strong></p>
+<pre><code class="lang-csharp">dialog.ShowAlphaSlider = true;
+dialog.Color = Color.FromArgb(180, Color.Blue);
+
+// Later...
+Color selectedColor = dialog.Color;  
+// Returns: Color with alpha = 180
+
+dialog.ShowAlphaSlider = false;
+dialog.Color = Color.Red;
+// Returns: Color with alpha = 255 (opaque)
+</code></pre>
+<h2 id="standard-colordialog-properties">Standard ColorDialog Properties</h2>
+<p>The dialog inherits all standard <code>ColorDialog</code> properties with full compatibility:</p>
+<ul>
+<li><strong>AllowFullOpen</strong>: Controls access to advanced color options</li>
+<li><strong>AnyColor</strong>: Allows selection of custom colors beyond palette</li>
+<li><strong>Color</strong>: The selected color (enhanced with alpha support)</li>
+<li><strong>CustomColors</strong>: Array of available custom colors</li>
+<li><strong>FullOpen</strong>: Whether advanced options panel is initially open</li>
+<li><strong>SolidColorOnly</strong>: Restricts selection to solid colors only</li>
+</ul>
+<h2 id="display-behavior-and-layout">Display Behavior and Layout</h2>
+<h3 id="compact-mode-fullopen--false">Compact Mode (FullOpen = false)</h3>
+<ul>
+<li>Displays basic color palette</li>
+<li>Customizable window title and icon</li>
+<li>Optimized layout size (automatically calculated)</li>
+<li>Alpha slider available if enabled</li>
+</ul>
+<h3 id="full-open-mode-fullopen--true">Full Open Mode (FullOpen = true)</h3>
+<ul>
+<li>Shows advanced color selection controls</li>
+<li>RGB editing fields</li>
+<li>Custom color definition area</li>
+<li>Alpha slider integrated seamlessly (when enabled)</li>
+</ul>
+<h3 id="alpha-slider-integration">Alpha Slider Integration</h3>
+<p>When <code>ShowAlphaSlider</code> is enabled:</p>
+<ul>
+<li><strong>Vertical Slider</strong>: Positioned to right of RGB fields</li>
+<li><strong>Range</strong>: 0-255 (fully transparent to fully opaque)</li>
+<li><strong>Real-time Preview</strong>: Updates color preview panel</li>
+<li><strong>Tooltips</strong>: Shows current alpha value</li>
+<li><strong>Labels</strong>: Displays alpha value numerically</li>
+</ul>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="alpha-channel-management">Alpha Channel Management</h3>
+<pre><code class="lang-csharp">public void SelectColorWithTransparency()
+{
+    var dialog = new KryptonColorDialog
+    {
+        ShowAlphaSlider = true,
+        AllowFullOpen = true,  // Automatically set by ShowAlphaSlider
+        Color = Color.FromArgb(200, Color.Green),
+        Title = &quot;Select With Transparency&quot;
+    };
+
+    if (dialog.ShowDialog() == DialogResult.OK)
+    {
+        Color selectedColor = dialog.Color;
+        int alpha = selectedColor.A;  // Alpha channel value
+        Color baseColor = Color.FromArgb(red: 255, green: 128, blue: 64);
+        // Use selectedColor.A as alpha value
+    }
+}
+</code></pre>
+<h3 id="theme-integration">Theme Integration</h3>
+<p>The dialog automatically applies Krypton theming through:</p>
+<ul>
+<li><strong>CommonDialogHandler</strong>: Provides window management and styling</li>
+<li><strong>DPI Scaling</strong>: Automatic scaling for high-DPI displays</li>
+<li><strong>Palette Support</strong>: Respects global Krypton palette settings</li>
+<li><strong>Consistent Appearance</strong>: Matches other Krypton dialogs</li>
+</ul>
+<h3 id="custom-icon-workflow">Custom Icon Workflow</h3>
+<pre><code class="lang-csharp">public class ColorSelectionService
+{
+    private static readonly Icon AppIcon = LoadApplicationIcon();
+
+    public Color ShowColorDialog(string title, Color defaultColor, bool withAlpha = false)
+    {
+        using var dialog = new KryptonColorDialog
+        {
+            Title = title,
+            Icon = AppIcon,
+            ShowIcon = true,
+            ShowAlphaSlider = withAlpha,
+            Color = defaultColor
+        };
+
+        return dialog.ShowDialog() == DialogResult.OK ? dialog.Color : defaultColor;
+    }
+
+    public Color SelectTextColor() =&gt; ShowColorDialog(&quot;Text Color&quot;, Color.Black, false);
+    public Color SelectBackgroundColor() =&gt; ShowColorDialog(&quot;Background&quot;, Color.White, true);
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Lazy Alpha Components</strong>: Alpha slider created only when needed</li>
+<li><strong>Timer Management</strong>: Alpha update timer disabled when not in use</li>
+<li><strong>Memory Cleanup</strong>: Proper disposal patterns for embedded controls</li>
+<li><strong>DPI Handling</strong>: Automatic scaling prevents layout issues</li>
+</ul>
+<h2 id="usage-patterns">Usage Patterns</h2>
+<h3 id="basic-color-selection">Basic Color Selection</h3>
+<pre><code class="lang-csharp">private Color GetUserColorChoice()
+{
+    var dialog = new KryptonColorDialog
+    {
+        Title = &quot;Choose Primary Color&quot;
+    };
+
+    return dialog.ShowDialog() == DialogResult.OK ? dialog.Color : Color.Black;
+}
+</code></pre>
+<h3 id="advanced-color-selection-with-alpha">Advanced Color Selection with Alpha</h3>
+<pre><code class="lang-csharp">private void ConfigureButtonBackground()
+{
+    var dialog = new KryptonColorDialog
+    {
+        Title = &quot;Button Background (support transparency)&quot;,
+        ShowAlphaSlider = true,
+        AllowFullOpen = true,
+        AnyColor = true
+    };
+
+    if (dialog.ShowDialog() == DialogResult.OK)
+    {
+        myButton.BackColor = dialog.Color;
+        // Color includes alpha: rgba(red, green, blue, alpha)
+    }
+}
+</code></pre>
+<h3 id="theme-aware-color-selection">Theme-Aware Color Selection</h3>
+<pre><code class="lang-csharp">public class ThemedColorSelector
+{
+    public Color ShowDialog(IPalette palette, string title)
+    {
+        var dialog = new KryptonColorDialog
+        {
+            Title = title,
+            Icon = palette.GetThemedIcon()  // Assuming palette provides themed icons
+        };
+
+        return dialog.ShowDialog() == DialogResult.OK ? dialog.Color : Color.Empty;
+    }
+}
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox Integration</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: All properties properly categorized and exposed</li>
+<li><strong>Icon Selection</strong>: Type editor for icon selection</li>
+<li><strong>Serialization</strong>: Design-time settings saved to designer files</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Data</strong>: Core color selection properties (<code>Color</code>, <code>CustomColors</code>)</li>
+<li><strong>Behavior</strong>: Control behavior (<code>ShowAlphaSlider</code>, <code>AllowFullOpen</code>)</li>
+<li><strong>Appearance</strong>: Visual customization (<code>Title</code>, <code>Icon</code>, <code>ShowIcon</code>)</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="alpha-slider-not-appearing">Alpha Slider Not Appearing</h3>
+<p><strong>Issue</strong>: Alpha slider not visible despite enabling <code>ShowAlphaSlider</code><br>
+<strong>Solution</strong>: Ensure <code>AllowFullOpen</code> or <code>FullOpen</code> is enabled (automatically handled)</p>
+<h3 id="custom-colors-not-persisting">Custom Colors Not Persisting</h3>
+<p><strong>Issue</strong>: Custom colors lost between dialog instances<br>
+<strong>Solution</strong>: Store <code>CustomColors</code> array and restore between uses:</p>
+<pre><code class="lang-csharp">private static int[] _savedCustomColors = new int[16];
+
+var dialog = new KryptonColorDialog
+{
+    CustomColors = _savedCustomColors  // Restore previous custom colors
+};
+
+if (dialog.ShowDialog() == DialogResult.OK)
+{
+    _savedCustomColors = dialog.CustomColors;  // Save current state
+}
+</code></pre>
+<h3 id="dpi-scaling-issues">DPI Scaling Issues</h3>
+<p><strong>Issue</strong>: Dialog appears incorrectly scaled on high-DPI displays<br>
+<strong>Solution</strong>: Automatic handling by <code>CommonDialogHandler</code>, no additional code needed</p>
+<h3 id="performance-with-alpha-animations">Performance with Alpha Animations</h3>
+<p><strong>Issue</strong>: Dialog slows down with continuous alpha slider updates<br>
+<strong>Solution</strong>: Timer-based updates are optimized; alpha slider provides immediate feedback</p>
+<h2 id="migration-from-standard-colordialog">Migration from Standard ColorDialog</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+using ColorDialog = System.Windows.Forms.ColorDialog;
+var dialog = new ColorDialog();
+
+// New code  
+var dialog = new KryptonColorDialog();
+</code></pre>
+<h3 id="enhanced-features">Enhanced Features</h3>
+<pre><code class="lang-csharp">// Standard ColorDialog (limited)
+var standardDialog = new ColorDialog();
+
+// KryptonColorDialog (enhanced)
+var kryptonDialog = new KryptonColorDialog
+{
+    Title = &quot;Enhanced Color Selection&quot;,
+    Icon = applicationIcon,
+    ShowIcon = true,
+    ShowAlphaSlider = true  // Alpha channel support!
+};
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="color-palette-editor">Color Palette Editor</h3>
+<pre><code class="lang-csharp">public class PaletteEditor : Form
+{
+    public PaletteEditor()
+    {
+        InitializeComponent();
+    }
+
+    private void EditColor(Control targetControl)
+    {
+        var dialog = new KryptonColorDialog
+        {
+            Title = $&quot;Edit {targetControl.Name} Color&quot;,
+            ShowAlphaSlider = SupportsTransparency(targetControl),
+            Color = targetControl.BackColor,
+            AllowFullOpen = true,
+            AnyColor = true
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            targetControl.BackColor = dialog.Color;
+            targetControl.Invalidate(); // Refresh display
+        }
+    }
+
+    private static bool SupportsTransparency(Control control) =&gt; 
+        control.SupportsTransparency() || control is Panel;
+}
+</code></pre>
+<h3 id="multi-step-color-workflow">Multi-Step Color Workflow</h3>
+<pre><code class="lang-csharp">public class DocumentStyler
+{
+    public DocumentStyle ConfigureStyling()
+    {
+        var style = new DocumentStyle();
+
+        // Step 1: Main text color
+        var textDialog = new KryptonColorDialog
+        {
+            Title = &quot;Step 1: Main Text Color&quot;,
+            Color = Color.Black
+        };
+        if (textDialog.ShowDialog() == DialogResult.OK)
+            style.TextColor = textDialog.Color;
+
+        // Step 2: Background with transparency option
+        var bgDialog = new KryptonColorDialog
+        {
+            Title = &quot;Step 2: Background Color&quot;,
+            ShowAlphaSlider = true,
+            Color = Color.FromArgb(240, Color.White) // Semi-transparent white
+        };
+        if (bgDialog.ShowDialog() == DialogResult.OK)
+            style.BackgroundColor = bgDialog.Color;
+
+        // Step 3: Accent color
+        var accentDialog = new KryptonColorDialog
+        {
+            Title = &quot;Step 3: Accent Color&quot;,
+            ShowIcon = true,
+            Icon = SystemIcons.Information,
+            Color = Color.Blue
+        };
+        if (accentDialog.ShowDialog() == DialogResult.OK)
+            style.AccentColor = accentDialog.Color;
+
+        return style;
+    }
+}
+</code></pre>
 
 </article>
           </div>

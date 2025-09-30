@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title> | Krypton Standard Toolkit Documentation </title>
+      <title>KryptonPictureBox | Krypton Standard Toolkit Documentation </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content=" | Krypton Standard Toolkit Documentation ">
+      <meta name="title" content="KryptonPictureBox | Krypton Standard Toolkit Documentation ">
     
     
       <link rel="shortcut icon" href="../../../Krypton.ico">
@@ -67,7 +67,602 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonpicturebox">KryptonPictureBox</h1>
 
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonPictureBox</code> class provides a Krypton-themed wrapper around the standard Windows PictureBox control. It inherits from <code>System.Windows.Forms.PictureBox</code> and enhances it with integrated tooltip support, consistent theming, DPI-aware scaling, and improved visual integration with Krypton Toolkit applications.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── System.Windows.Forms.Control
+            └── System.Windows.Forms.PictureBox
+                └── Krypton.Toolkit.KryptonPictureBox
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonPictureBox()
+</code></pre>
+<p>The constructor initializes enhanced features:</p>
+<ul>
+<li><strong>Transparent Background</strong>: Sets <code>BackColor = Color.Transparent</code></li>
+<li><strong>ToolTip Support</strong>: Creates <code>ToolTipManager</code> with DPI-aware scaling</li>
+<li><strong>Event Handling</strong>: Sets up mouse event handlers for tooltip functionality</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="tooltipvalues-property">ToolTipValues Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;ToolTip&quot;)]
+[Description(&quot;Control ToolTip Text&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public ToolTipValues ToolTipValues { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Provides access to tooltip text, styling, and behavior</li>
+<li><strong>Category</strong>: ToolTip</li>
+<li><strong>Type</strong>: <code>ToolTipValues</code> - Rich tooltip configuration object</li>
+<li>• <strong>Designer Visible</strong>: Yes (expandable in property grid)</li>
+</ul>
+<p><strong>ToolTipValues Features:</strong></p>
+<ul>
+<li><strong>Text Configuration</strong>: Heading, description, and footnotes</li>
+<li><strong>Style Options</strong>: Normal, SuperTip, and non-focusable variants</li>
+<li><strong>Shadow Effects</strong>: Configurable drop shadows</li>
+<li><strong>Enable/Disable</strong>: Toggle tooltip display</li>
+<li><strong>DPI Aware</strong>: Automatic scaling based on current DPI</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">pictureBox.ToolTipValues.Heading = &quot;Image Information&quot;;
+pictureBox.ToolTipValues.Description = &quot;Resolution: 1920x1080\nFormat: JPEG\nSize: 2.3 MB&quot;;
+pictureBox.ToolTipValues.EnableToolTips = true;
+</code></pre>
+<h3 id="tooltipmanager-property">ToolTipManager Property</h3>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public ToolTipManager ToolTipManager { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Provides direct access to the underlying tooltip management system</li>
+<li><strong>Availability</strong>: Runtime only (not visible in designer)</li>
+<li><strong>Use Cases</strong>: Advanced tooltip customization or integration with custom tooltip systems</li>
+</ul>
+<h3 id="backcolor-property-hidden">BackColor Property (Hidden)</h3>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public new Color BackColor { get =&gt; base.BackColor; set =&gt; base.BackColor = value; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Forces transparent background for consistent theming</li>
+<li><strong>Default Value</strong>: <code>Color.Transparent</code></li>
+<li><strong>Designer Visibility</strong>: Hidden (prevents accidental modification)</li>
+<li><strong>Rationale</strong>: Ensures proper background integration with parent controls</li>
+</ul>
+<h2 id="tooltip-configuration">ToolTip Configuration</h2>
+<h3 id="basic-tooltip-setup">Basic ToolTip Setup</h3>
+<pre><code class="lang-csharp">public void SetupImagePreview()
+{
+    var pictureBox = new KryptonPictureBox
+    {
+        SizeMode = PictureBoxSizeMode.Zoom,
+        Image = LoadSampleImage()
+    };
+
+    // Configure tooltip
+    pictureBox.ToolTipValues.Heading = &quot;Image Preview&quot;;
+    pictureBox.ToolTipValues.Description = GetImageDetails();
+    pictureBox.ToolTipValues.EnableToolTips = true;
+    pictureBox.ToolTipValues.ToolTipStyle = LabelStyle.SuperTip;
+    
+    Controls.Add(pictureBox);
+}
+
+private string GetImageDetails()
+{
+    var image = pictureBox.Image;
+    if (image != null)
+    {
+        return $&quot;Size: {image.Width}x{image.Height}\n&quot; +
+               $&quot;Format: {GetImageFormat(image)}\n&quot; +
+               $&quot;DPI: {GetHorizontalDpi(image):F1}x{GetVerticalDpi(image):F1}&quot;;
+    }
+    return &quot;No image loaded&quot;;
+}
+</code></pre>
+<h3 id="advanced-tooltip-customization">Advanced ToolTip Customization</h3>
+<pre><code class="lang-csharp">public void SetupDetailedToolTip()
+{
+    pictureBox.ToolTipValues.Heading = &quot;Photo Details&quot;;
+    pictureBox.ToolTipValues.Description = &quot;&quot;&quot;
+        Resolution: 3840x2160 (4K UHD)
+        Color Depth: 24-bit RGB
+        JPEG Quality: 95%
+        File Size: 8.7 MB
+        Date Taken: March 15, 2024
+        Camera: EXIF data available
+        &quot;&quot;&quot;;
+    pictureBox.ToolTipValues.Footnote = &quot;Click to view in full resolution&quot;;
+    
+    // Advanced styling
+    pictureBox.ToolTipValues.ToolTipStyle = LabelStyle.SuperTip;
+    pictureBox.ToolTipValues.ToolTipShadow = true;
+}
+</code></pre>
+<h3 id="dynamic-tooltip-updates">Dynamic ToolTip Updates</h3>
+<pre><code class="lang-csharp">public class DynamicImageGallery : Form
+{
+    private Dictionary&lt;KryptonPictureBox, ImageMetadata&gt; imageMetadata = new();
+
+    public void LoadImage(KryptonPictureBox pictureBox, Image image, string filePath)
+    {
+        pictureBox.Image = image;
+        
+        // Calculate metadata
+        var metadata = new ImageMetadata
+        {
+            FilePath = filePath,
+            Width = image.Width,
+            Height = image.Height,
+            FileSize = new FileInfo(filePath).Length,
+            CreatedDate = File.GetCreationTime(filePath)
+        };
+
+        imageMetadata[pictureBox] = metadata;
+        
+        // Update tooltip dynamically
+        UpdateToolTip(pictureBox, metadata);
+        
+        // Setup dynamic updates
+        pictureBox.ImageChanged += (s, e) =&gt; RefreshToolTip(s as KryptonPictureBox);
+    }
+
+    private void UpdateToolTip(KryptonPictureBox pictureBox, ImageMetadata metadata)
+    {
+        pictureBox.ToolTipValues.Heading = Path.GetFileName(metadata.FilePath);
+        pictureBox.ToolTipValues.Description = string.Format(&quot;&quot;&quot;
+            Resolution: {0}x{1}
+            File Size: {2:N0} bytes ({3:F1} MB)
+            Created: {4:yyyy-MM-dd HH:mm}
+            Format: {5}
+            &quot;&quot;&quot;, 
+            metadata.Width, metadata.Height, 
+            metadata.FileSize, metadata.FileSize / 1024.0 / 1024.0,
+            metadata.CreatedDate, 
+            Path.GetExtension(metadata.FilePath).ToUpper());
+    }
+}
+</code></pre>
+<h2 id="event-integration">Event Integration</h2>
+<h3 id="mouse-event-enhancement">Mouse Event Enhancement</h3>
+<p>The control automatically handles mouse events for tooltip management:</p>
+<ul>
+<li><strong>MouseEnter</strong>: Initiates tooltip display process</li>
+<li><strong>MouseMove</strong>: Updates tooltip position and delay timing</li>
+<li><strong>MouseDown/MouseUp</strong>: Manages tooltip state during interactions</li>
+<li><strong>MouseLeave</strong>: Cancels tooltip display</li>
+</ul>
+<p><strong>Custom Mouse Handling:</strong></p>
+<pre><code class="lang-csharp">public class InteractiveImageControl : KryptonPictureBox
+{
+    public event EventHandler&lt;ImageClickEventArgs&gt; ImageClicked;
+
+    protected override void OnMouseClick(MouseEventArgs e)
+    {
+        base.OnMouseClick(e);
+        
+        if (Image != null)
+        {
+            var imageCoordinates = PointToImageCoordinates(e.Location);
+            OnImageClicked(new ImageClickEventArgs(imageCoordinates, e.Button));
+        }
+    }
+
+    protected virtual void OnImageClicked(ImageClickEventArgs e)
+    {
+        ImageClicked?.Invoke(this, e);
+    }
+
+    private Point PointToImageCoordinates(Point screenPoint)
+    {
+        // Convert screen coordinates to image coordinates based on SizeMode
+        // Implementation depends on SizeMode (Normal, StretchImage, Zoom, etc.)
+        return CalculateImagePoint(screenPoint);
+    }
+}
+</code></pre>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="image-gallery-implementation">Image Gallery Implementation</h3>
+<pre><code class="lang-csharp">public class ImageGallery : UserControl
+{
+    private readonly FlowLayoutPanel flowPanel = new FlowLayoutPanel
+    {
+        Dock = DockStyle.Fill,
+        AutoScroll = true,
+        WrapContents = true
+    };
+
+    public void AddImage(string imagePath)
+    {
+        var thumbnailBox = new KryptonPictureBox
+        {
+            Size = new Size(150, 150),
+            SizeMode = PictureBoxSizeMode.Zoom,
+            BorderStyle = BorderStyle.FixedSingle,
+            Margin = new Padding(5),
+            Image = LoadThumbnail(imagePath)
+        };
+
+        // Setup tooltip with image metadata
+        SetupThumbnailToolTip(thumbnailBox, imagePath);
+        
+        // Add click handler
+        thumbnailBox.Click += (s, e) =&gt; OnThumbnailClick(imagePath);
+        
+        flowPanel.Controls.Add(thumbnailBox);
+    }
+
+    private void SetupThumbnailToolTip(KryptonPictureBox pictureBox, string imagePath)
+    {
+        var imageInfo = new FileInfo(imagePath);
+        var image = Image.FromFile(imagePath);
+        
+        pictureBox.ToolTipValues.Heading = Path.GetFileName(imagePath);
+        pictureBox.ToolTipValues.Description = $&quot;&quot;&quot;
+            Resolution: {image.Width}x{image.Height}
+            Size: {FormatFileSize(imageInfo.Length)}
+            Modified: {imageInfo.LastWriteTime:yyyy-MM-dd HH:mm}
+            &quot;&quot;&quot;;
+        pictureBox.ToolTipValues.EnableToolTips = true;
+        
+        image.Dispose(); // Clean up temporary image
+    }
+}
+</code></pre>
+<h3 id="dynamic-image-loading">Dynamic Image Loading</h3>
+<pre><code class="lang-csharp">public class LazyImageLoader : KryptonPictureBox
+{
+    private string? pendingImagePath;
+
+    public string? ImagePath
+    {
+        get =&gt; pendingImagePath;
+        set
+        {
+            pendingImagePath = value;
+            if (value != null)
+            {
+                LoadImageAsync(value);
+            }
+        }
+    }
+
+    private async void LoadImageAsync(string imagePath)
+    {
+        // Show loading state
+        ToolTipValues.Heading = &quot;Loading...&quot;;
+        ToolTipValues.Description = &quot;Please wait while image loads&quot;;
+        ToolTipValues.EnableToolTips = true;
+
+        try
+        {
+            // Load image on background thread
+            var image = await Task.Run(() =&gt; Image.FromFile(imagePath));
+            
+            // Update UI on main thread
+            this.Invoke(() =&gt;
+            {
+                Image = image;
+                UpdateToolTipWithImageInfo(imagePath, image);
+            });
+        }
+        catch (Exception ex)
+        {
+            this.Invoke(() =&gt;
+            {
+                ToolTipValues.Heading = &quot;Error&quot;;
+                ToolTipValues.Description = $&quot;Failed to load image: {ex.Message}&quot;;
+            });
+        }
+    }
+
+    private void UpdateToolTipWithImageInfo(string imagePath, Image image)
+    {
+        ToolTipValues.Heading = Path.GetFileName(imagePath);
+        ToolTipValues.Description = $&quot;&quot;&quot;
+            Resolution: {image.Width}x{image.Height}
+            Format: {image.PixelFormat}
+            Physical Size: {image.HorizontalResolution:F1}x{image.VerticalResolution:F1} DPI
+            &quot;&quot;&quot;;
+    }
+}
+</code></pre>
+<h3 id="image-metadata-display">Image Metadata Display</h3>
+<pre><code class="lang-csharp">public class MetadataToolTipHandler
+{
+    public static void AttachMetadataToolTip(KryptonPictureBox pictureBox)
+    {
+        // Attach to image changes
+        pictureBox.ImageChanged += OnImageChanged;
+        
+        // Store original image path if available
+        if (pictureBox.Tag is string imagePath)
+        {
+            SetupFileMetadataToolTip(pictureBox, imagePath);
+        }
+    }
+
+    private static void OnImageChanged(object? sender, EventArgs e)
+    {
+        if (sender is KryptonPictureBox pictureBox)
+        {
+            RefreshMetatadataToolTip(pictureBox);
+        }
+    }
+
+    private static void SetupFileMetadataToolTip(KryptonPictureBox pictureBox, string filePath)
+    {
+        try
+        {
+            var image = Image.FromFile(filePath);
+            var fileInfo = new FileInfo(filePath);
+            
+            pictureBox.ToolTipValues.Heading = Path.GetFileName(filePath);
+            pictureBox.ToolTipValues.Description = $&quot;&quot;&quot;
+                File: {fileInfo.Name}
+                Path: {fileInfo.DirectoryName}
+                Resolution: {image.Width}x{image.Height}
+                File Size: {FormatBytes(fileInfo.Length)}
+                Created: {fileInfo.CreationTime:yyyy-MM-dd HH:mm}
+                Modified: {fileInfo.LastWriteTime:yyyy-MM-dd HH:mm}
+                &quot;&quot;&quot;;
+
+            image.Dispose();
+        }
+        catch (Exception)
+        {
+            // Handle errors gracefully
+            pictureBox.ToolTipValues.Description = &quot;Metadata unavailable&quot;;
+        }
+    }
+
+    private static string FormatBytes(long bytes)
+    {
+        string[] suffixes = { &quot;B&quot;, &quot;KB&quot;, &quot;MB&quot;, &quot;GB&quot; };
+        double size = bytes;
+        int suffixIndex = 0;
+        
+        while (size &gt;= 1024 &amp;&amp; suffixIndex &lt; suffixes.Length - 1)
+        {
+            size /= 1024;
+            suffixIndex++;
+        }
+        
+        return $&quot;{size:F1} {suffixes[suffixIndex]}&quot;;
+    }
+}
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox Integration</strong>: Available with <code>PictureBox</code> bitmap representation</li>
+<li><strong>Property Window</strong>: ToolTip properties expandable in designer</li>
+<li><strong>Custom Editors</strong>: Rich tooltip text editing capabilities</li>
+<li><strong>Serialization</strong>: ToolTip settings saved to designer files</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>ToolTip</strong>: All tooltip-related properties (<code>ToolTipValues</code>)</li>
+<li><strong>Appearance</strong>: Image display properties (inherited from <code>PictureBox</code>)</li>
+<li><strong>Behavior</strong>: Control behavior properties (inherited from <code>PictureBox</code>)</li>
+<li><strong>Layout</strong>: Size and positioning properties (inherited from <code>PictureBox</code>)</li>
+</ul>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Image Memory</strong>: Large images consume significant memory; consider thumbnail generation</li>
+<li><strong>ToolTip Performance</strong>: ToolTip rendering is optimized for Responsive performance</li>
+<li><strong>DPI Scaling</strong>: Automatic tooltip scale calculation prevents layout issues</li>
+<li><strong>Image Disposal</strong>: Proper image disposal prevents memory leaks</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="tooltip-not-displaying">ToolTip Not Displaying</h3>
+<p><strong>Issue</strong>: ToolTip not appearing despite being enabled<br>
+<strong>Solution</strong>: Check form focus and ensure control is visible:</p>
+<pre><code class="lang-csharp">pictureBox.ToolTipValues.EnableToolTips = true;
+// Ensure form has focus
+FindForm()?.Focus();
+</code></pre>
+<h3 id="large-image-memory-usage">Large Image Memory Usage</h3>
+<p><strong>Issue</strong>: High memory consumption with large images<br>
+<strong>Solution</strong>: Scale images before loading or generate thumbnails:</p>
+<pre><code class="lang-csharp">public static Image CreateThumbnail(string imagePath, int maxWidth, int maxHeight)
+{
+    using var originalImage = Image.FromFile(imagePath);
+    return originalImage.GetThumbnailImage(maxWidth, maxHeight, null, IntPtr.Zero);
+}
+</code></pre>
+<h3 id="dpi-scaling-issues">DPI Scaling Issues</h3>
+<p><strong>Issue</strong>: Tooltip appears incorrectly sized on high-DPI displays<br>
+<strong>Solution</strong>: Automatic DPI scaling is handled internally; ensure proper DPI awareness:</p>
+<pre><code class="lang-csharp">// Ensure DPI awareness in application
+[STAThread]
+static void Main()
+{
+    Application.EnableVisualStyles();
+    Application.SetCompatibleTextRenderingDefault(false);
+    Application.Run(new MainForm());
+}
+</code></pre>
+<h3 id="background-transparency-problems">Background Transparency Problems</h3>
+<p><strong>Issue</strong>: Control shows unwanted background color<br>
+<strong>Solution</strong>: Background transparency is enforced; override <code>OnPaintBackground</code> for custom backgrounds:</p>
+<pre><code class="lang-csharp">protected override void OnPaintBackground(PaintEventArgs e)
+{
+    if (Image == null &amp;&amp; Parent != null)
+    {
+        // Use parent's background
+        var rect = RectangleToScreen(ClientRectangle);
+        var parentRect = Parent.RectangleToScreen(Parent.ClientRectangle);
+        rect.Intersect(parentRect);
+        
+        if (!rect.IsEmpty)
+        {
+            ControlPaint.DrawReversibleFrame(rect, Parent.BackColor, FrameStyle.Dashed);
+        }
+    }
+    else
+    {
+        base.OnPaintBackground(e);
+    }
+}
+</code></pre>
+<h2 id="migration-from-standard-picturebox">Migration from Standard PictureBox</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+PictureBox pictureBox = new PictureBox();
+
+// New code
+KryptonPictureBox pictureBox = new KryptonPictureBox();
+</code></pre>
+<h3 id="enhanced-features">Enhanced Features</h3>
+<pre><code class="lang-csharp">// Standard PictureBox (basic)
+var standardPictureBox = new PictureBox();
+
+// KryptonPictureBox (enhanced)
+var kryptonPictureBox = new KryptonPictureBox
+{
+    SizeMode = PictureBoxSizeMode.Zoom,
+    ToolTipValues = new ToolTipValues
+    {
+        Heading = &quot;Image Preview&quot;,
+        Description = &quot;Click for full size&quot;,
+        EnableToolTips = true
+    }
+};
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="photo-viewer-application">Photo Viewer Application</h3>
+<pre><code class="lang-csharp">public partial class PhotoViewerForm : Form
+{
+    private KryptonPictureBox pictureBox;
+
+    public PhotoViewerForm()
+    {
+        InitializeComponent();
+        InitializePictureBox();
+    }
+
+    private void InitializePictureBox()
+    {
+        pictureBox = new KryptonPictureBox
+        {
+            Dock = DockStyle.Fill,
+            SizeMode = PictureBoxSizeMode.Zoom,
+            BackColor = Color.Transparent
+        };
+
+        // Setup metadata tooltip
+        pictureBox.ToolTipValues.ToolTipStyle = LabelStyle.SuperTip;
+        pictureBox.ToolTipValues.ToolTipShadow = true;
+        
+        Controls.Add(pictureBox);
+    }
+
+    public void LoadImage(string imagePath)
+    {
+        try
+        {
+            var image = Image.FromFile(imagePath);
+            pictureBox.Image = image;
+            
+            // Update tooltip with image info
+            UpdateImageToolTip(imagePath, image);
+            
+            Text = $&quot;Photo Viewer - {Path.GetFileName(imagePath)}&quot;;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($&quot;Error loading image: {ex.Message}&quot;, &quot;Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void UpdateImageToolTip(string path, Image image)
+    {
+        var fileInfo = new FileInfo(path);
+        var exifData = ExtractExifData(image);
+
+        pictureBox.ToolTipValues.Heading = Path.GetFileName(path);
+        pictureBox.ToolTipValues.Description = $&quot;&quot;&quot;
+            Resolution: {image.Width}x{image.Height}
+            File Size: {fileInfo.Length:N0} bytes
+            Created: {fileInfo.CreationTime:yyyy-MM-dd HH:mm}
+            Modified: {fileInfo.LastWriteTime:yyyy-MM-dd HH:mm}
+            {exifData}
+            &quot;&quot;&quot;;
+    }
+}
+</code></pre>
+<h3 id="drag-and-drop-image-handler">Drag-and-Drop Image Handler</h3>
+<pre><code class="lang-csharp">public class DragDropImageHandler : KryptonPictureBox
+{
+    public event EventHandler&lt;ImageDroppedEventArgs&gt;? ImageDropped;
+
+    public DragDropImageHandler()
+    {
+        InitializeDragAndDrop();
+    }
+
+    private void InitializeDragAndDrop()
+    {
+        AllowDrop = true;
+        
+        DragEnter += OnDragEnter;
+        DragDrop += OnDragDrop;
+
+        // Default tooltip
+        ToolTipValues.Heading = &quot;Image Drop Zone&quot;;
+        ToolTipValues.Description = &quot;Drag and drop image files here&quot;;
+        ToolTipValues.EnableToolTips = true;
+    }
+
+    private void OnDragEnter(object? sender, DragEventArgs e)
+    {
+        e.Effect = e.Data!.GetDataPresent(DataFormats.FileDrop) 
+            ? DragDropEffects.Copy 
+            : DragDropEffects.None;
+    }
+
+    private void OnDragDrop(object? sender, DragEventArgs e)
+    {
+        var files = (string[])e.Data!.GetData(DataFormats.FileDrop)!;
+        
+        foreach (string file in files)
+        {
+            if (IsImageFile(file))
+            {
+                OnImageDropped(file);
+                break; // Handle first image file only
+            }
+        }
+    }
+
+    private void OnImageDropped(string filePath)
+    {
+        ImageDropped?.Invoke(this, new ImageDroppedEventArgs(filePath));
+        
+        // Update tooltip
+        ToolTipValues.Heading = Path.GetFileName(filePath);
+        ToolTipValues.Description = $&quot;Loaded: {filePath}&quot;;
+    }
+}
+
+public class ImageDroppedEventArgs : EventArgs
+{
+    public string FilePath { get; }
+    
+    public ImageDroppedEventArgs(string filePath)
+    {
+        FilePath = filePath;
+    }
+}
+</code></pre>
 
 </article>
           </div>

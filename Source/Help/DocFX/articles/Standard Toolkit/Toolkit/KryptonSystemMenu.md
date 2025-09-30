@@ -1,148 +1,161 @@
-## KryptonSystemMenu
+# KryptonSystemMenu Documentation Index
 
-This guide explains how to use the themed system menu that replaces the native Windows system menu on `KryptonForm`. It covers wiring, APIs, customization, theming, designer usage, and troubleshooting.
+## Overview
 
-### Types and locations
+This document serves as a comprehensive index to all KryptonSystemMenu documentation, providing easy navigation to the information you need.
 
-- `KryptonSystemMenu` — `Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonSystemMenu.cs`
-- `KryptonSystemMenuService` — `Source/Krypton Components/Krypton.Toolkit/General/KryptonSystemMenuService.cs`
-- `IKryptonSystemMenu` — `Source/Krypton Components/Krypton.Toolkit/General/Definitions.cs`
-- `SystemMenuValues` — `Source/Krypton Components/Krypton.Toolkit/Values/SystemMenuValues.cs`
-- `SystemMenuItemCollection` — `Source/Krypton Components/Krypton.Toolkit/General/SystemMenuItemCollection.cs`
-- `SystemMenuItemValues` — `Source/Krypton Components/Krypton.Toolkit/Values/SystemMenuItemValues.cs`
-- `KryptonSystemMenuItemsEditor` — `Source/Krypton Components/Krypton.Toolkit/Designers/Editors/KryptonSystemMenuItemsEditor.cs`
-- `KryptonSystemMenuConverter` — `Source/Krypton Components/Krypton.Toolkit/Converters/KryptonSystemMenuConverter.cs`
+## Documentation Structure
 
-### What you get
+### 📚 **Core Documentation**
 
-- **Themed menu**: A `KryptonContextMenu` that mirrors the Windows system menu (Restore, Move, Size, Minimize, Maximize, Close) and adapts to the active palette.
-- **Consistent composition**: Items are always built by Krypton; no Win32 menu parsing. Enablement follows form state and properties.
-- **Custom items**: Insert your commands above the Close item (with a separator) or append at the end.
-- **Icon theming**: Uses theme-appropriate icons; falls back to crisp drawn glyphs.
-- **Triggers**: Show on right-click in the title bar, Alt+Space, and optionally icon click/left-click.
+#### 1. [KryptonSystemMenu Developer Guide](./KryptonSystemMenuDeveloperGuide.md)
+**Purpose**: Main developer documentation with comprehensive usage information
+**Audience**: Developers implementing KryptonSystemMenu in their applications
+**Content**:
+- Getting started guide
+- API reference with examples
+- Theming and icon system
+- Best practices and troubleshooting
+- Integration patterns
 
-### Quick start
+#### 2. [KryptonSystemMenu API Reference](./KryptonSystemMenuAPIReference.md)
+**Purpose**: Complete technical API documentation
+**Audience**: Developers needing detailed method signatures and parameters
+**Content**:
+- All public properties and methods
+- Parameter descriptions and return types
+- Exception handling information
+- Interface implementations
+- Dependencies and requirements
 
-```csharp
-// In your KryptonForm subclass or instance code
-// Add an item above Close, insert a separator, and refresh enablement/icons
-KryptonSystemMenu?.AddCustomMenuItem("About", (s, e) => KryptonMessageBox.Show("About Krypton"));
-KryptonSystemMenu?.AddSeparator();
-KryptonSystemMenu?.Refresh();
+#### 3. [KryptonSystemMenu Quick Reference](./KryptonSystemMenuQuickReference.md)
+**Purpose**: Quick lookup guide for common tasks
+**Audience**: Developers needing fast access to common patterns
+**Content**:
+- Quick start code snippets
+- Common task examples
+- Keyboard shortcuts reference
+- Theme mappings
+- Troubleshooting quick fixes
 
-// Programmatically show at the classic Alt+Space location
-KryptonSystemMenu?.ShowAtFormTopLeft();
-```
+### 🔧 **Technical Documentation**
 
-### How it’s wired into KryptonForm
+#### 4. [KryptonSystemMenu Complete Features Reference](./KryptonSystemMenuFeaturesReference.md)
+**Purpose**: Comprehensive feature documentation
+**Audience**: Developers needing detailed feature information
+**Content**:
+- Complete feature breakdown
+- Implementation details for each feature
+- Menu item management
+- Icon system details
+- Theme integration specifics
+- Performance features
+- Advanced capabilities
 
-- `KryptonForm` constructs a `KryptonSystemMenuService` and a `SystemMenuValues` store, and keeps them synchronized.
-- `KryptonForm` exposes the menu via `public override IKryptonSystemMenu? KryptonSystemMenu`.
-- Title bar interactions (non-client area) use `SystemMenuValues` to determine when to show the menu (right-click, Alt+Space, icon click).
-- Setting `MinimizeBox`, `MaximizeBox`, `ControlBox`, or `FormBorderStyle` triggers a rebuild of menu enablement.
+#### 5. [KryptonSystemMenu Implementation Details](./KryptonSystemMenuImplementationDetails.md)
+**Purpose**: Deep technical implementation information
+**Audience**: Developers modifying or extending the system menu
+**Content**:
+- Internal architecture decisions
+- Performance optimization strategies
+- Memory management patterns
+- Error handling implementation
+- Theme system technical details
+- Resource management patterns
 
-### Enabling and triggers
+### 💻 **Code Examples**
 
-- Configure via `KryptonForm.SystemMenuValues`:
-  - **Enabled**: Turns the themed system menu on/off.
-  - **ShowOnRightClick**: Show when right-clicking the title bar (default true).
-  - **ShowOnAltSpace**: Show on Alt+Space (default true).
-  - **ShowOnIconClick**: Show when left-clicking the window icon (default true).
-- At the service layer (`KryptonSystemMenuService`):
-  - `UseSystemMenu`, `ShowSystemMenuOnRightClick`, `ShowSystemMenuOnAltSpace`, `ShowSystemMenuOnLeftClick` mirror the toggles.
-  - Typical usage is indirect via `SystemMenuValues` on the form.
+#### 6. [KryptonSystemMenu Examples](./KryptonSystemMenuExamples.md)
+**Purpose**: Comprehensive code examples and patterns
+**Audience**: Developers learning implementation patterns
+**Content**:
+- 9 complete implementation examples
+- Basic to advanced usage scenarios
+- Error handling patterns
+- Performance optimization examples
+- Configuration management
+- Event integration patterns
 
-### IKryptonSystemMenu surface
+## Quick Navigation
 
-- **Properties**
-  - `bool Enabled`
-  - `bool ShowOnLeftClick`
-  - `bool ShowOnRightClick`
-  - `bool ShowOnAltSpace`
-  - `int MenuItemCount`
-  - `bool HasMenuItems`
-  - `string CurrentIconTheme`
-- **Methods**
-  - `void Show(Point screenLocation)`
-  - `void ShowAtFormTopLeft()`
-  - `void Refresh()`
-  - `bool HandleKeyboardShortcut(Keys keyData)`
-  - `void AddCustomMenuItem(string text, EventHandler? clickHandler, bool insertBeforeClose = true)`
-  - `void AddSeparator(bool insertBeforeClose = true)`
-  - `void ClearCustomItems()`
-  - `List<string> GetCustomMenuItems()`
-  - `void RefreshThemeIcons()`
-  - `void SetIconTheme(string themeName)`
-  - `void SetThemeType(ThemeType themeType)`
+### 🚀 **Getting Started**
+- **New to KryptonSystemMenu?** → Start with [Developer Guide](./KryptonSystemMenu-Developer-Guide.md#getting-started)
+- **Need quick examples?** → Check [Quick Reference](./KryptonSystemMenuQuickReference.md#quick-start)
+- **Want to see code?** → Look at [Examples](./KryptonSystemMenuExamples.md#example-1-basic-kryptonsystemmenu-integration)
 
-### Menu composition and enablement
+### 📖 **Learning Path**
 
-- **Restore**: Added only when `WindowState != Normal` and (`MinimizeBox` or `MaximizeBox`) is true; enabled when not Normal.
-- **Move / Size**: Added only for sizable borders (`FormBorderStyle.Sizable` or `SizableToolWindow`).
-- **Minimize**: Enabled when `MinimizeBox` is true and window is not minimized.
-- **Maximize**: Enabled when `MaximizeBox` is true and window is not maximized.
-- **Close**: Always present when `ControlBox` is true; shows `Alt+F4` hint.
-- **Custom items**: Inserted above Close (with a separator). If appended, call `AddSeparator(insertBeforeClose: false)` to group them.
+#### Beginner Level
+1. [Developer Guide - Getting Started](./KryptonSystemMenuDeveloperGuide.md#getting-started)
+2. [Quick Reference - Common Tasks](./KryptonSystemMenuQuickReference.md#common-tasks)
+3. [Examples - Basic Integration](./KryptonSystemMenuExamples.md#example-1-basic-kryptonsystemmenu-integration)
 
-### Theming and icons
+#### Intermediate Level
+1. [Developer Guide - API Reference](./KryptonSystemMenuDeveloperGuide.md#api-reference)
+2. [Features Reference - Menu Item Management](./KryptonSystemMenuFeaturesReference.md#menu-item-management)
+3. [Examples - Advanced Usage](./KryptonSystemMenuExamples.md#example-2-advanced-system-menu-with-custom-positioning)
 
-- `CurrentIconTheme` may resolve to: `Office2013`, `Office2010`, `Office2007`, `Sparkle`, `Professional`, `Microsoft365`, `Office2003`.
-- Icons follow the active palette; if a themed resource is unavailable, glyphs are drawn at 16px with palette-derived colors.
-- Call `RefreshThemeIcons()` after palette/theme changes to rebind images.
-- You can force selection via `SetIconTheme(string)` or by convenience `SetThemeType(ThemeType)`.
+#### Advanced Level
+1. [Features Reference - Complete Feature List](./KryptonSystemMenuFeaturesReference.md)
+2. [Implementation Details - Architecture](./KryptonSystemMenuImplementationDetails.md#internal-architecture)
+3. [Examples - Performance Optimization](./KryptonSystemMenuExamples.md#example-7-performance-optimization-and-best-practices)
 
-### Programmatic customization examples
+### 🔍 **Specific Topics**
 
-```csharp
-// Add a settings command above Close
-KryptonSystemMenu?.AddCustomMenuItem("Settings", (s, e) => OpenSettings(), insertBeforeClose: true);
+#### Theming and Icons
+- **Overview**: [Developer Guide - Theming](./KryptonSystemMenuDeveloperGuide.md#theming-and-icons)
+- **Details**: [Features Reference - Icon System](./KryptonSystemMenuFeaturesReference.md#icon-system)
+- **Implementation**: [Implementation Details - Theme System](./KryptonSystemMenuImplementationDetails.md#theme-system-implementation)
+- **Examples**: [Examples - Theme Integration](./KryptonSystemMenuExamples.md#example-3-theme-integration-and-management)
 
-// Append a group to the end (always separated from system items)
-KryptonSystemMenu?.AddSeparator(insertBeforeClose: false);
-KryptonSystemMenu?.AddCustomMenuItem("Action 1", OnAction1, insertBeforeClose: false);
-KryptonSystemMenu?.AddCustomMenuItem("Action 2", OnAction2, insertBeforeClose: false);
+#### Performance and Optimization
+- **Overview**: [Developer Guide - Best Practices](./KryptonSystemMenuDeveloperGuide.md#best-practices)
+- **Details**: [Features Reference - Performance Features](./KryptonSystemMenuFeaturesReference.md#performance-features)
+- **Implementation**: [Implementation Details - Performance](./KryptonSystemMenuImplementationDetails.md#performance-optimizations)
+- **Examples**: [Examples - Performance Optimization](./KryptonSystemMenuExamples.md#example-7-performance-optimization-and-best-practices)
 
-// Recompute enablement after changing window chrome/state
-KryptonSystemMenu?.Refresh();
+#### Error Handling
+- **Overview**: [Developer Guide - Troubleshooting](./KryptonSystemMenuDeveloperGuide.md#troubleshooting)
+- **Details**: [Features Reference - Error Handling](./KryptonSystemMenuFeaturesReference.md#error-handling)
+- **Implementation**: [Implementation Details - Error Handling](./KryptonSystemMenuImplementationDetails.md#error-handling-strategy)
+- **Examples**: [Examples - Error Handling](./KryptonSystemMenuExamples.md#example-6-error-handling-and-robustness)
 
-// Keyboard shortcuts: Alt+F4 is handled; Alt+Space can invoke ShowAtFormTopLeft
-protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-{
-    if (KryptonSystemMenu?.HandleKeyboardShortcut(keyData) == true)
-    {
-        return true;
-    }
-    return base.ProcessCmdKey(ref msg, keyData);
-}
-```
+#### API Reference
+- **Complete Reference**: [API Reference](./KryptonSystemMenuAPIReference.md)
+- **Quick Lookup**: [Quick Reference](./KryptonSystemMenuQuickReference.md)
+- **Usage Examples**: [Developer Guide - API Reference](./KryptonSystemMenuDeveloperGuide.md#api-reference)
 
-### Designer integration
+## Documentation Features
 
-- Configure `KryptonForm.SystemMenuValues` in the designer:
-  - **Enabled**, **ShowOnRightClick**, **ShowOnAltSpace**, **ShowOnIconClick**.
-  - **CustomMenuItems**: Edit via `KryptonSystemMenuItemsEditor`. Items have `Text`, optional `Shortcut` (displayed as `Text\tShortcut`), `Image`, `Enabled`, `Visible`, and `InsertBeforeClose`.
-- At runtime, designer items become `KryptonContextMenuItem` entries; you can also associate a `KryptonCommand` via `SystemMenuItemValues.Command` for decoupled invocation.
+### 📋 **Cross-References**
+Each document contains cross-references to related sections in other documents for comprehensive coverage.
 
-### Showing the menu
+### 🎯 **Target Audiences**
+- **Application Developers**: Use Developer Guide and Quick Reference
+- **Framework Developers**: Use Features Reference and Implementation Details
+- **Technical Writers**: Use all documents for comprehensive understanding
+- **Support Teams**: Use Quick Reference and Troubleshooting sections
 
-- **Auto**: Right-click title bar or press Alt+Space (depending on `SystemMenuValues`).
-- **Programmatic**: `KryptonSystemMenu.Show(screenPoint)` or `KryptonSystemMenu.ShowAtFormTopLeft()`.
+### 🔄 **Documentation Maintenance**
+- All documents are synchronized with the actual implementation
+- Examples are tested and verified
+- API references are generated from actual code
+- Cross-references are maintained across documents
 
-### Diagnostics and troubleshooting
+## Getting Help
 
-- **No icons or wrong icons**: Call `RefreshThemeIcons()`. Verify the active palette if custom.
-- **Items disabled unexpectedly**: Check `MinimizeBox`, `MaximizeBox`, `FormBorderStyle`, and actual window state (`KryptonForm.GetWindowState()`), then call `Refresh()`.
-- **Menu not appearing**: Ensure `SystemMenuValues.Enabled` and the relevant trigger flag are true. For icon-click, `SystemMenuValues.ShowOnIconClick` must be true and the click must be on the window icon area.
-- **Locate custom items**: `GetCustomMenuItems()` returns the non-standard item texts currently present.
+### 📚 **Documentation Resources**
+1. **Start with**: [Developer Guide](./KryptonSystemMenuDeveloperGuide.md)
+2. **Quick questions**: [Quick Reference](./KryptonSystemMenuQuickReference.md)
+3. **Deep dive**: [Features Reference](./KryptonSystemMenuFeaturesReference.md)
+4. **Implementation**: [Implementation Details](./KryptonSystemMenuImplementationDetails.md)
 
-### Notes and compatibility
+### 🛠️ **Code Resources**
+- **Examples**: [Complete Examples File](./KryptonSystemMenuExamples.md)
+- **API**: [API Reference](./KryptonSystemMenuAPIReference.md)
+- **Quick Code**: [Quick Reference Code Snippets](./KryptonSystemMenuQuickReference.md)
 
-- **Target forms**: Designed for `KryptonForm`. Custom hosts can use `KryptonSystemMenuService` directly if needed.
-- **TFMs**: Compatible with toolkit target frameworks including `net472` and newer Windows TFMs.
-- **Localization**: Built-in system item text is sourced from `KryptonManager.Strings.SystemMenuStrings` so it follows your localization settings.
-
-### Migration (from older themed menu implementations)
-
-- The class is `KryptonSystemMenu`. Win32 system menu parsing was removed in favor of consistently built Krypton menus.
-- Familiar members remain: `Show`, `Refresh`, `AddCustomMenuItem`, `AddSeparator`, `ClearCustomItems`.
-- Designer/editor types: `KryptonSystemMenuItemsEditor`, `SystemMenuValues`, `KryptonSystemMenuConverter`.
+### 🐛 **Troubleshooting**
+- **Common Issues**: [Developer Guide - Troubleshooting](./KryptonSystemMenuDeveloperGuide.md#troubleshooting)
+- **Quick Fixes**: [Quick Reference - Troubleshooting](./KryptonSystemMenuQuickReference.md#troubleshooting)
+- **Error Patterns**: [Examples - Error Handling](./KryptonSystemMenuExamples.md#example-6-error-handling-and-robustness)

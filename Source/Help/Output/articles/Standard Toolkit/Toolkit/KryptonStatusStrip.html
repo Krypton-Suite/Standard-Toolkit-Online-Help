@@ -69,6 +69,767 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonstatusstrip">KryptonStatusStrip</h1>
 
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonStatusStrip</code> class provides a Krypton-themed replacement for the standard Windows <code>StatusStrip</code>. It inherits from <code>StatusStrip</code> and offers enhanced visual styling, seamless theme integration, and improved appearance while maintaining full compatibility with the standard <code>StatusStrip</code> functionality.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── System.Windows.Forms.Control
+            └── System.Windows.Forms.ToolStrip
+                └── System.Windows.Forms.StatusStrip
+                    └── Krypton.Toolkit.KryptonStatusStrip
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonStatusStrip()
+</code></pre>
+<p>The constructor initializes enhanced features:</p>
+<ul>
+<li><strong>Krypton Rendering</strong>: Sets <code>RenderMode</code> to <code>ToolStripRenderMode.ManagerRenderMode</code> for automatic Krypton theming</li>
+<li><strong>Palette Integration</strong>: Automatic theme detection and application</li>
+<li><strong>Visual States</strong>: Common, Normal, and Disabled state management</li>
+<li><strong>Progress Bar Support</strong>: Enhanced progress bar integration</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="progressbars-property">ProgressBars Property</h3>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+public ToolStripProgressBar[] ProgressBars { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Array of progress bars for enhanced progress tracking</li>
+<li><strong>Category</strong>: Runtime</li>
+<li><strong>Usage</strong>: Multiple progress indicators for complex operations</li>
+<li><strong>Integration</strong>: Automatically styled with Krypton themes</li>
+</ul>
+<h3 id="visual-state-properties">Visual State Properties</h3>
+<pre><code class="lang-csharp">public PaletteBack StateCommon { get; }
+public PaletteBack StateDisabled { get; }
+public PaletteBack StateNormal { get; }
+</code></pre>
+<ul>
+<li><strong>StateCommon</strong>: Base styling configuration for all states</li>
+<li><strong>StateNormal</strong>: Default appearance when enabled</li>
+<li><strong>StateDisabled</strong>: Appearance when control is disabled</li>
+</ul>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="basic-status-strip-setup">Basic Status Strip Setup</h3>
+<pre><code class="lang-csharp">public void SetupBasicStatusStrip()
+{
+    var statusStrip = new KryptonStatusStrip();
+    
+    // Add status label
+    var statusLabel = new ToolStripStatusLabel(&quot;Ready&quot;);
+    statusStrip.Items.Add(statusLabel);
+    
+    // Add progress bar
+    var progressBar = new ToolStripProgressBar();
+    statusStrip.Items.Add(progressBar);
+    
+    // Add separator
+    statusStrip.Items.Add(new ToolStripSeparator());
+    
+    // Add time label
+    var timeLabel = new ToolStripStatusLabel();
+    timeLabel.Spring = true; // Fill remaining space
+    timeLabel.TextAlign = ContentAlignment.MiddleRight;
+    statusStrip.Items.Add(timeLabel);
+    
+    Controls.Add(statusStrip);
+}
+</code></pre>
+<h3 id="enhanced-status-strip-with-multiple-progress-bars">Enhanced Status Strip with Multiple Progress Bars</h3>
+<pre><code class="lang-csharp">public class EnhancedStatusStrip : KryptonStatusStrip
+{
+    private ToolStripStatusLabel statusLabel;
+    private ToolStripProgressBar mainProgressBar;
+    private ToolStripProgressBar secondaryProgressBar;
+    private ToolStripStatusLabel timeLabel;
+    private ToolStripStatusLabel memoryLabel;
+    private Timer updateTimer;
+
+    public EnhancedStatusStrip()
+    {
+        InitializeComponents();
+        SetupTimer();
+    }
+
+    private void InitializeComponents()
+    {
+        // Main status label
+        statusLabel = new ToolStripStatusLabel(&quot;Ready&quot;)
+        {
+            Spring = true,
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+
+        // Main progress bar
+        mainProgressBar = new ToolStripProgressBar
+        {
+            Name = &quot;MainProgress&quot;,
+            Visible = false
+        };
+
+        // Secondary progress bar
+        secondaryProgressBar = new ToolStripProgressBar
+        {
+            Name = &quot;SecondaryProgress&quot;,
+            Visible = false
+        };
+
+        // Time label
+        timeLabel = new ToolStripStatusLabel
+        {
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        // Memory label
+        memoryLabel = new ToolStripStatusLabel
+        {
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        // Add items to status strip
+        Items.AddRange(new ToolStripItem[]
+        {
+            statusLabel,
+            new ToolStripSeparator(),
+            mainProgressBar,
+            secondaryProgressBar,
+            new ToolStripSeparator(),
+            memoryLabel,
+            timeLabel
+        });
+
+        // Store progress bars for easy access
+        ProgressBars = new[] { mainProgressBar, secondaryProgressBar };
+    }
+
+    private void SetupTimer()
+    {
+        updateTimer = new Timer { Interval = 1000 }; // Update every second
+        updateTimer.Tick += OnTimerTick;
+        updateTimer.Start();
+    }
+
+    private void OnTimerTick(object? sender, EventArgs e)
+    {
+        // Update time
+        timeLabel.Text = DateTime.Now.ToString(&quot;HH:mm:ss&quot;);
+
+        // Update memory usage
+        var memoryUsage = GC.GetTotalMemory(false);
+        memoryLabel.Text = $&quot;Memory: {memoryUsage / 1024 / 1024:F1} MB&quot;;
+    }
+
+    public void SetStatus(string message)
+    {
+        statusLabel.Text = message;
+    }
+
+    public void ShowMainProgress(int value, int maximum = 100)
+    {
+        mainProgressBar.Maximum = maximum;
+        mainProgressBar.Value = value;
+        mainProgressBar.Visible = true;
+    }
+
+    public void HideMainProgress()
+    {
+        mainProgressBar.Visible = false;
+    }
+
+    public void ShowSecondaryProgress(int value, int maximum = 100)
+    {
+        secondaryProgressBar.Maximum = maximum;
+        secondaryProgressBar.Value = value;
+        secondaryProgressBar.Visible = true;
+    }
+
+    public void HideSecondaryProgress()
+    {
+        secondaryProgressBar.Visible = false;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            updateTimer?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+}
+</code></pre>
+<h3 id="application-status-manager">Application Status Manager</h3>
+<pre><code class="lang-csharp">public class ApplicationStatusManager
+{
+    private readonly KryptonStatusStrip statusStrip;
+    private readonly Dictionary&lt;string, ToolStripStatusLabel&gt; statusLabels;
+    private readonly Dictionary&lt;string, ToolStripProgressBar&gt; progressBars;
+
+    public ApplicationStatusManager(KryptonStatusStrip statusStrip)
+    {
+        this.statusStrip = statusStrip;
+        statusLabels = new Dictionary&lt;string, ToolStripStatusLabel&gt;();
+        progressBars = new Dictionary&lt;string, ToolStripProgressBar&gt;();
+    }
+
+    public void AddStatusLabel(string key, string text, bool spring = false)
+    {
+        var label = new ToolStripStatusLabel(text)
+        {
+            Spring = spring
+        };
+
+        statusLabels[key] = label;
+        statusStrip.Items.Add(label);
+    }
+
+    public void AddProgressBar(string key, bool visible = false)
+    {
+        var progressBar = new ToolStripProgressBar
+        {
+            Name = key,
+            Visible = visible
+        };
+
+        progressBars[key] = progressBar;
+        statusStrip.Items.Add(progressBar);
+    }
+
+    public void UpdateStatus(string key, string text)
+    {
+        if (statusLabels.TryGetValue(key, out var label))
+        {
+            label.Text = text;
+        }
+    }
+
+    public void UpdateProgress(string key, int value, int maximum = 100)
+    {
+        if (progressBars.TryGetValue(key, out var progressBar))
+        {
+            progressBar.Maximum = maximum;
+            progressBar.Value = value;
+            progressBar.Visible = true;
+        }
+    }
+
+    public void HideProgress(string key)
+    {
+        if (progressBars.TryGetValue(key, out var progressBar))
+        {
+            progressBar.Visible = false;
+        }
+    }
+
+    public void ShowProgress(string key)
+    {
+        if (progressBars.TryGetValue(key, out var progressBar))
+        {
+            progressBar.Visible = true;
+        }
+    }
+}
+</code></pre>
+<h3 id="file-operation-status-strip">File Operation Status Strip</h3>
+<pre><code class="lang-csharp">public class FileOperationStatusStrip : KryptonStatusStrip
+{
+    private ToolStripStatusLabel operationLabel;
+    private ToolStripProgressBar operationProgressBar;
+    private ToolStripStatusLabel fileLabel;
+    private ToolStripStatusLabel speedLabel;
+    private ToolStripStatusLabel timeLabel;
+
+    public FileOperationStatusStrip()
+    {
+        InitializeComponents();
+    }
+
+    private void InitializeComponents()
+    {
+        // Operation label
+        operationLabel = new ToolStripStatusLabel(&quot;Ready&quot;)
+        {
+            Spring = true
+        };
+
+        // Operation progress bar
+        operationProgressBar = new ToolStripProgressBar
+        {
+            Name = &quot;OperationProgress&quot;,
+            Visible = false
+        };
+
+        // File label
+        fileLabel = new ToolStripStatusLabel
+        {
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        // Speed label
+        speedLabel = new ToolStripStatusLabel
+        {
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        // Time label
+        timeLabel = new ToolStripStatusLabel
+        {
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        Items.AddRange(new ToolStripItem[]
+        {
+            operationLabel,
+            new ToolStripSeparator(),
+            operationProgressBar,
+            new ToolStripSeparator(),
+            fileLabel,
+            speedLabel,
+            timeLabel
+        });
+
+        ProgressBars = new[] { operationProgressBar };
+    }
+
+    public void StartFileOperation(string operation, string fileName)
+    {
+        operationLabel.Text = operation;
+        fileLabel.Text = Path.GetFileName(fileName);
+        operationProgressBar.Visible = true;
+        operationProgressBar.Value = 0;
+    }
+
+    public void UpdateFileOperation(int progress, string speed, string timeRemaining)
+    {
+        operationProgressBar.Value = progress;
+        speedLabel.Text = speed;
+        timeLabel.Text = timeRemaining;
+    }
+
+    public void CompleteFileOperation()
+    {
+        operationLabel.Text = &quot;Ready&quot;;
+        fileLabel.Text = string.Empty;
+        speedLabel.Text = string.Empty;
+        timeLabel.Text = string.Empty;
+        operationProgressBar.Visible = false;
+    }
+}
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="main-form-status-strip">Main Form Status Strip</h3>
+<pre><code class="lang-csharp">public partial class MainForm : Form
+{
+    private KryptonStatusStrip statusStrip;
+    private ToolStripStatusLabel statusLabel;
+    private ToolStripProgressBar progressBar;
+    private ToolStripStatusLabel timeLabel;
+    private ToolStripStatusLabel userLabel;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        SetupStatusStrip();
+    }
+
+    private void SetupStatusStrip()
+    {
+        statusStrip = new KryptonStatusStrip();
+
+        // Status label
+        statusLabel = new ToolStripStatusLabel(&quot;Ready&quot;)
+        {
+            Spring = true
+        };
+
+        // Progress bar
+        progressBar = new ToolStripProgressBar
+        {
+            Visible = false
+        };
+
+        // Time label
+        timeLabel = new ToolStripStatusLabel
+        {
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        // User label
+        userLabel = new ToolStripStatusLabel
+        {
+            Text = Environment.UserName,
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        statusStrip.Items.AddRange(new ToolStripItem[]
+        {
+            statusLabel,
+            new ToolStripSeparator(),
+            progressBar,
+            new ToolStripSeparator(),
+            timeLabel,
+            userLabel
+        });
+
+        Controls.Add(statusStrip);
+
+        // Update time every second
+        var timer = new Timer { Interval = 1000 };
+        timer.Tick += (s, e) =&gt; timeLabel.Text = DateTime.Now.ToString(&quot;HH:mm:ss&quot;);
+        timer.Start();
+    }
+
+    public void SetStatus(string message)
+    {
+        statusLabel.Text = message;
+    }
+
+    public void ShowProgress(int value, int maximum = 100)
+    {
+        progressBar.Maximum = maximum;
+        progressBar.Value = value;
+        progressBar.Visible = true;
+    }
+
+    public void HideProgress()
+    {
+        progressBar.Visible = false;
+    }
+}
+</code></pre>
+<h3 id="document-editor-status-strip">Document Editor Status Strip</h3>
+<pre><code class="lang-csharp">public class DocumentEditorStatusStrip : KryptonStatusStrip
+{
+    private ToolStripStatusLabel documentLabel;
+    private ToolStripStatusLabel positionLabel;
+    private ToolStripStatusLabel selectionLabel;
+    private ToolStripStatusLabel zoomLabel;
+    private ToolStripStatusLabel modeLabel;
+
+    public DocumentEditorStatusStrip()
+    {
+        InitializeComponents();
+    }
+
+    private void InitializeComponents()
+    {
+        // Document label
+        documentLabel = new ToolStripStatusLabel(&quot;Untitled&quot;)
+        {
+            Spring = true
+        };
+
+        // Position label
+        positionLabel = new ToolStripStatusLabel(&quot;Line 1, Col 1&quot;);
+
+        // Selection label
+        selectionLabel = new ToolStripStatusLabel(&quot;No selection&quot;);
+
+        // Zoom label
+        zoomLabel = new ToolStripStatusLabel(&quot;100%&quot;);
+
+        // Mode label
+        modeLabel = new ToolStripStatusLabel(&quot;Insert&quot;);
+
+        Items.AddRange(new ToolStripItem[]
+        {
+            documentLabel,
+            new ToolStripSeparator(),
+            positionLabel,
+            selectionLabel,
+            zoomLabel,
+            modeLabel
+        });
+    }
+
+    public void UpdateDocumentInfo(string fileName, bool isModified)
+    {
+        string displayName = string.IsNullOrEmpty(fileName) ? &quot;Untitled&quot; : Path.GetFileName(fileName);
+        if (isModified)
+        {
+            displayName += &quot; *&quot;;
+        }
+        documentLabel.Text = displayName;
+    }
+
+    public void UpdateCursorPosition(int line, int column)
+    {
+        positionLabel.Text = $&quot;Line {line}, Col {column}&quot;;
+    }
+
+    public void UpdateSelection(string selection)
+    {
+        selectionLabel.Text = string.IsNullOrEmpty(selection) ? &quot;No selection&quot; : $&quot;{selection.Length} characters selected&quot;;
+    }
+
+    public void UpdateZoom(int zoomPercentage)
+    {
+        zoomLabel.Text = $&quot;{zoomPercentage}%&quot;;
+    }
+
+    public void UpdateMode(bool insertMode)
+    {
+        modeLabel.Text = insertMode ? &quot;Insert&quot; : &quot;Overwrite&quot;;
+    }
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Theme Integration</strong>: Lightweight wrapper with minimal overhead</li>
+<li><strong>Memory Management</strong>: Proper disposal of timers and resources</li>
+<li><strong>Rendering</strong>: Optimized Krypton rendering through ManagerRenderMode</li>
+<li><strong>Progress Bar Updates</strong>: Efficient progress bar styling and updates</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="progress-bar-not-visible">Progress Bar Not Visible</h3>
+<p><strong>Issue</strong>: Progress bar not showing in status strip<br>
+<strong>Solution</strong>: Ensure proper visibility and sizing:</p>
+<pre><code class="lang-csharp">progressBar.Visible = true;
+progressBar.Size = new Size(200, 16); // Set explicit size
+</code></pre>
+<h3 id="status-text-not-updating">Status Text Not Updating</h3>
+<p><strong>Issue</strong>: Status label text not updating<br>
+<strong>Solution</strong>: Ensure proper thread safety for UI updates:</p>
+<pre><code class="lang-csharp">if (InvokeRequired)
+{
+    Invoke(new Action(() =&gt; statusLabel.Text = message));
+}
+else
+{
+    statusLabel.Text = message;
+}
+</code></pre>
+<h3 id="theme-not-applied">Theme Not Applied</h3>
+<p><strong>Issue</strong>: Status strip not using Krypton theme<br>
+<strong>Solution</strong>: Ensure RenderMode is set correctly:</p>
+<pre><code class="lang-csharp">statusStrip.RenderMode = ToolStripRenderMode.ManagerRenderMode;
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox Integration</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: All standard StatusStrip properties available</li>
+<li><strong>Theme Integration</strong>: Automatic Krypton theming applied</li>
+<li><strong>Item Collection</strong>: Standard ToolStrip item collection editor</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Appearance</strong>: Visual properties and styling</li>
+<li><strong>Behavior</strong>: Functional properties and events</li>
+<li><strong>Layout</strong>: Sizing and positioning properties</li>
+</ul>
+<h2 id="migration-from-standard-statusstrip">Migration from Standard StatusStrip</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+StatusStrip statusStrip = new StatusStrip();
+
+// New code
+KryptonStatusStrip statusStrip = new KryptonStatusStrip();
+</code></pre>
+<h3 id="enhanced-features">Enhanced Features</h3>
+<pre><code class="lang-csharp">// Standard StatusStrip (basic)
+var standardSs = new StatusStrip();
+
+// KryptonStatusStrip (enhanced)
+var kryptonSs = new KryptonStatusStrip
+{
+    // Automatic Krypton theming
+    // Enhanced progress bar support
+    // Improved visual styling
+};
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="application-main-status-strip">Application Main Status Strip</h3>
+<pre><code class="lang-csharp">public partial class MainApplicationForm : Form
+{
+    private KryptonStatusStrip mainStatusStrip;
+    private ToolStripStatusLabel statusLabel;
+    private ToolStripProgressBar mainProgressBar;
+    private ToolStripStatusLabel connectionLabel;
+    private ToolStripStatusLabel timeLabel;
+    private ToolStripStatusLabel versionLabel;
+
+    public MainApplicationForm()
+    {
+        InitializeComponent();
+        SetupMainStatusStrip();
+    }
+
+    private void SetupMainStatusStrip()
+    {
+        mainStatusStrip = new KryptonStatusStrip();
+
+        // Main status label
+        statusLabel = new ToolStripStatusLabel(&quot;Application Ready&quot;)
+        {
+            Spring = true,
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+
+        // Main progress bar
+        mainProgressBar = new ToolStripProgressBar
+        {
+            Name = &quot;MainProgress&quot;,
+            Visible = false,
+            Size = new Size(200, 16)
+        };
+
+        // Connection status
+        connectionLabel = new ToolStripStatusLabel(&quot;Disconnected&quot;)
+        {
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        // Time display
+        timeLabel = new ToolStripStatusLabel
+        {
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        // Version info
+        versionLabel = new ToolStripStatusLabel($&quot;v{Application.ProductVersion}&quot;)
+        {
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        mainStatusStrip.Items.AddRange(new ToolStripItem[]
+        {
+            statusLabel,
+            new ToolStripSeparator(),
+            mainProgressBar,
+            new ToolStripSeparator(),
+            connectionLabel,
+            timeLabel,
+            versionLabel
+        });
+
+        Controls.Add(mainStatusStrip);
+
+        // Update time every second
+        var timer = new Timer { Interval = 1000 };
+        timer.Tick += OnTimerTick;
+        timer.Start();
+    }
+
+    private void OnTimerTick(object? sender, EventArgs e)
+    {
+        timeLabel.Text = DateTime.Now.ToString(&quot;HH:mm:ss&quot;);
+    }
+
+    public void SetStatus(string message)
+    {
+        statusLabel.Text = message;
+    }
+
+    public void ShowProgress(int value, int maximum = 100)
+    {
+        mainProgressBar.Maximum = maximum;
+        mainProgressBar.Value = value;
+        mainProgressBar.Visible = true;
+    }
+
+    public void HideProgress()
+    {
+        mainProgressBar.Visible = false;
+    }
+
+    public void UpdateConnectionStatus(bool connected)
+    {
+        connectionLabel.Text = connected ? &quot;Connected&quot; : &quot;Disconnected&quot;;
+        connectionLabel.ForeColor = connected ? Color.Green : Color.Red;
+    }
+}
+</code></pre>
+<h3 id="database-operation-status-strip">Database Operation Status Strip</h3>
+<pre><code class="lang-csharp">public class DatabaseStatusStrip : KryptonStatusStrip
+{
+    private ToolStripStatusLabel operationLabel;
+    private ToolStripProgressBar operationProgressBar;
+    private ToolStripStatusLabel recordLabel;
+    private ToolStripStatusLabel speedLabel;
+    private ToolStripStatusLabel connectionLabel;
+
+    public DatabaseStatusStrip()
+    {
+        InitializeComponents();
+    }
+
+    private void InitializeComponents()
+    {
+        // Operation label
+        operationLabel = new ToolStripStatusLabel(&quot;Ready&quot;)
+        {
+            Spring = true
+        };
+
+        // Operation progress bar
+        operationProgressBar = new ToolStripProgressBar
+        {
+            Name = &quot;OperationProgress&quot;,
+            Visible = false,
+            Size = new Size(150, 16)
+        };
+
+        // Record label
+        recordLabel = new ToolStripStatusLabel(&quot;0 records&quot;);
+
+        // Speed label
+        speedLabel = new ToolStripStatusLabel(&quot;0 records/sec&quot;);
+
+        // Connection label
+        connectionLabel = new ToolStripStatusLabel(&quot;Disconnected&quot;)
+        {
+            TextAlign = ContentAlignment.MiddleRight
+        };
+
+        Items.AddRange(new ToolStripItem[]
+        {
+            operationLabel,
+            new ToolStripSeparator(),
+            operationProgressBar,
+            new ToolStripSeparator(),
+            recordLabel,
+            speedLabel,
+            connectionLabel
+        });
+
+        ProgressBars = new[] { operationProgressBar };
+    }
+
+    public void StartDatabaseOperation(string operation, int totalRecords)
+    {
+        operationLabel.Text = operation;
+        operationProgressBar.Maximum = totalRecords;
+        operationProgressBar.Value = 0;
+        operationProgressBar.Visible = true;
+        recordLabel.Text = &quot;0 records&quot;;
+        speedLabel.Text = &quot;0 records/sec&quot;;
+    }
+
+    public void UpdateDatabaseOperation(int processedRecords, double recordsPerSecond)
+    {
+        operationProgressBar.Value = processedRecords;
+        recordLabel.Text = $&quot;{processedRecords} records&quot;;
+        speedLabel.Text = $&quot;{recordsPerSecond:F1} records/sec&quot;;
+    }
+
+    public void CompleteDatabaseOperation()
+    {
+        operationLabel.Text = &quot;Ready&quot;;
+        operationProgressBar.Visible = false;
+        recordLabel.Text = &quot;0 records&quot;;
+        speedLabel.Text = &quot;0 records/sec&quot;;
+    }
+
+    public void UpdateConnectionStatus(bool connected, string serverName = &quot;&quot;)
+    {
+        connectionLabel.Text = connected ? $&quot;Connected to {serverName}&quot; : &quot;Disconnected&quot;;
+        connectionLabel.ForeColor = connected ? Color.Green : Color.Red;
+    }
+}
+</code></pre>
 
 </article>
           </div>
