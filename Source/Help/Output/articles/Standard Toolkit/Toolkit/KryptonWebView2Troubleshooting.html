@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonWebView2 Troubleshooting and FAQ | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonWebView2 Troubleshooting and FAQ | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonwebview2-troubleshooting-and-faq">KryptonWebView2 Troubleshooting and FAQ</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#common-issues">Common Issues</a></li>
+<li><a href="#installation-problems">Installation Problems</a></li>
+<li><a href="#runtime-errors">Runtime Errors</a></li>
+<li><a href="#performance-issues">Performance Issues</a></li>
+<li><a href="#theming-problems">Theming Problems</a></li>
+<li><a href="#javascript-integration-issues">JavaScript Integration Issues</a></li>
+<li><a href="#context-menu-issues">Context Menu Issues</a></li>
+<li><a href="#frequently-asked-questions">Frequently Asked Questions</a></li>
+</ol>
+<h2 id="common-issues">Common Issues</h2>
+<h3 id="issue-webview2-runtime-not-found">Issue: WebView2 Runtime Not Found</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>WebView2RuntimeNotFoundException</code> when calling <code>EnsureCoreWebView2Async()</code></li>
+<li>Control fails to initialize</li>
+<li>Error message about missing WebView2 runtime</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Install WebView2 Runtime:</strong></p>
+<pre><code class="lang-csharp">try
+{
+    await webView.EnsureCoreWebView2Async();
+}
+catch (WebView2RuntimeNotFoundException)
+{
+    var result = MessageBox.Show(
+        &quot;WebView2 Runtime is not installed. Would you like to download it?&quot;,
+        &quot;WebView2 Runtime Required&quot;,
+        MessageBoxButtons.YesNo,
+        MessageBoxIcon.Warning);
+
+    if (result == DialogResult.Yes)
+    {
+        Process.Start(&quot;https://developer.microsoft.com/en-us/microsoft-edge/webview2/&quot;);
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Check Runtime Installation:</strong></p>
+<pre><code class="lang-csharp">private bool IsWebView2RuntimeInstalled()
+{
+    try
+    {
+        var version = CoreWebView2Environment.GetAvailableBrowserVersionString();
+        return !string.IsNullOrEmpty(version);
+    }
+    catch
+    {
+        return false;
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Use Fixed Version Runtime:</strong></p>
+<pre><code class="lang-csharp">var options = new CoreWebView2EnvironmentOptions();
+var environment = await CoreWebView2Environment.CreateAsync(null, null, options);
+await webView.EnsureCoreWebView2Async(environment);
+</code></pre>
+</li>
+</ol>
+<h3 id="issue-control-not-appearing-in-toolbox">Issue: Control Not Appearing in Toolbox</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>KryptonWebView2 not visible in Visual Studio toolbox</li>
+<li>Cannot drag control onto form</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Check Conditional Compilation:</strong></p>
+<ul>
+<li>Ensure <code>WEBVIEW2_AVAILABLE</code> is defined in project settings</li>
+<li>Verify WebView2 NuGet package is installed</li>
+</ul>
+</li>
+<li><p><strong>Rebuild Solution:</strong></p>
+<pre><code class="lang-cmd">dotnet clean
+dotnet build
+</code></pre>
+</li>
+<li><p><strong>Reset Toolbox:</strong></p>
+<ul>
+<li>Right-click toolbox → Reset Toolbox</li>
+<li>Or Tools → Options → Windows Forms Designer → General → Reset Toolbox</li>
+</ul>
+</li>
+</ol>
+<h3 id="issue-designer-errors">Issue: Designer Errors</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Designer shows errors when WebView2 control is on form</li>
+<li>Cannot open form in designer</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Add Designer Support:</strong></p>
+<pre><code class="lang-csharp">[Designer(typeof(KryptonWebView2Designer))]
+public class KryptonWebView2 : WebView2
+</code></pre>
+</li>
+<li><p><strong>Handle Designer Mode:</strong></p>
+<pre><code class="lang-csharp">public KryptonWebView2()
+{
+    if (!DesignMode)
+    {
+        // Only initialize WebView2 in runtime
+        _ = InitializeWebView2Async();
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h2 id="installation-problems">Installation Problems</h2>
+<h3 id="issue-nuget-package-installation-fails">Issue: NuGet Package Installation Fails</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>dotnet add package Microsoft.Web.WebView2</code> fails</li>
+<li>Package restore errors</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Clear NuGet Cache:</strong></p>
+<pre><code class="lang-cmd">dotnet nuget locals all --clear
+</code></pre>
+</li>
+<li><p><strong>Update NuGet Sources:</strong></p>
+<pre><code class="lang-cmd">dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org
+</code></pre>
+</li>
+<li><p><strong>Manual Package Installation:</strong></p>
+<ul>
+<li>Download package from NuGet.org</li>
+<li>Install manually via Package Manager Console</li>
+</ul>
+</li>
+</ol>
+<h3 id="issue-assembly-loading-errors">Issue: Assembly Loading Errors</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>FileNotFoundException</code> for WebView2 assemblies</li>
+<li><code>BadImageFormatException</code></li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Check Target Framework:</strong></p>
+<ul>
+<li>Ensure project targets .NET Framework 4.7.2+ or .NET 8+</li>
+<li>Verify platform target matches (x86/x64/AnyCPU)</li>
+</ul>
+</li>
+<li><p><strong>Copy Assemblies Manually:</strong></p>
+<pre><code class="lang-csharp">// Copy WebView2 assemblies to output directory
+&lt;ItemGroup&gt;
+  &lt;Content Include=&quot;WebView2SDK\*.dll&quot;&gt;
+    &lt;CopyToOutputDirectory&gt;PreserveNewest&lt;/CopyToOutputDirectory&gt;
+  &lt;/Content&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+</li>
+</ol>
+<h2 id="runtime-errors">Runtime Errors</h2>
+<h3 id="issue-navigation-failures">Issue: Navigation Failures</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>NavigationCompleted</code> event shows <code>IsSuccess = false</code></li>
+<li>Pages fail to load</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Handle Navigation Errors:</strong></p>
+<pre><code class="lang-csharp">private void OnNavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+{
+    if (!e.IsSuccess)
+    {
+        string errorMessage = e.WebErrorStatus switch
+        {
+            CoreWebView2WebErrorStatus.ConnectionTimedOut =&gt; &quot;Connection timed out&quot;,
+            CoreWebView2WebErrorStatus.ConnectionRefused =&gt; &quot;Connection refused&quot;,
+            CoreWebView2WebErrorStatus.HostNameMismatch =&gt; &quot;Host name mismatch&quot;,
+            _ =&gt; $&quot;Navigation failed: {e.WebErrorStatus}&quot;
+        };
+
+        MessageBox.Show(errorMessage, &quot;Navigation Error&quot;, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Retry Failed Navigations:</strong></p>
+<pre><code class="lang-csharp">private async Task NavigateWithRetry(string url, int maxRetries = 3)
+{
+    for (int i = 0; i &lt; maxRetries; i++)
+    {
+        try
+        {
+            webView.CoreWebView2?.Navigate(url);
+            return;
+        }
+        catch (Exception ex)
+        {
+            if (i == maxRetries - 1)
+            {
+                MessageBox.Show($&quot;Failed to navigate after {maxRetries} attempts: {ex.Message}&quot;);
+            }
+            else
+            {
+                await Task.Delay(1000 * (i + 1)); // Exponential backoff
+            }
+        }
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h3 id="issue-process-failures">Issue: Process Failures</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>ProcessFailed</code> event fires</li>
+<li>Browser process exits unexpectedly</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Handle Process Failures:</strong></p>
+<pre><code class="lang-csharp">private void OnProcessFailed(object? sender, CoreWebView2ProcessFailedEventArgs e)
+{
+    switch (e.ProcessFailedKind)
+    {
+        case CoreWebView2ProcessFailedKind.BrowserProcessExited:
+            // Restart browser process
+            _ = Task.Run(async () =&gt; await RestartWebView2());
+            break;
+        case CoreWebView2ProcessFailedKind.RenderProcessExited:
+            // Reload page
+            Reload();
+            break;
+        case CoreWebView2ProcessFailedKind.RenderProcessUnresponsive:
+            // Show user notification
+            MessageBox.Show(&quot;Page is unresponsive. Reloading...&quot;);
+            Reload();
+            break;
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Restart WebView2:</strong></p>
+<pre><code class="lang-csharp">private async Task RestartWebView2()
+{
+    try
+    {
+        await EnsureCoreWebView2Async();
+        // Reconfigure settings and event handlers
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($&quot;Failed to restart WebView2: {ex.Message}&quot;);
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h2 id="performance-issues">Performance Issues</h2>
+<h3 id="issue-slow-initialization">Issue: Slow Initialization</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>EnsureCoreWebView2Async()</code> takes a long time</li>
+<li>UI freezes during initialization</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Async Initialization:</strong></p>
+<pre><code class="lang-csharp">private async void Form_Load(object sender, EventArgs e)
+{
+    // Show loading indicator
+    ShowLoadingIndicator();
+
+    try
+    {
+        await webView.EnsureCoreWebView2Async();
+        ConfigureWebView2Settings();
+    }
+    catch (Exception ex)
+    {
+        MessageBox.Show($&quot;Initialization failed: {ex.Message}&quot;);
+    }
+    finally
+    {
+        HideLoadingIndicator();
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Preload WebView2:</strong></p>
+<pre><code class="lang-csharp">// Initialize WebView2 in background thread
+private async Task PreloadWebView2()
+{
+    await Task.Run(async () =&gt;
+    {
+        await webView.EnsureCoreWebView2Async();
+    });
+}
+</code></pre>
+</li>
+</ol>
+<h3 id="issue-high-memory-usage">Issue: High Memory Usage</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Application memory usage increases over time</li>
+<li>OutOfMemoryException</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Monitor Memory Usage:</strong></p>
+<pre><code class="lang-csharp">private async void MonitorMemoryUsage()
+{
+    if (webView.CoreWebView2 != null)
+    {
+        var memoryInfo = await webView.CoreWebView2.CallDevToolsProtocolMethodAsync(&quot;Runtime.getHeapUsage&quot;, &quot;{}&quot;);
+        Debug.WriteLine($&quot;Memory usage: {memoryInfo}&quot;);
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Optimize Settings:</strong></p>
+<pre><code class="lang-csharp">private void OptimizeForMemory()
+{
+    if (webView.CoreWebView2 != null)
+    {
+        var settings = webView.CoreWebView2.Settings;
+        settings.IsGeneralAutofillEnabled = false;
+        settings.IsPasswordAutosaveEnabled = false;
+        settings.AreDefaultContextMenusEnabled = false;
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h2 id="theming-problems">Theming Problems</h2>
+<h3 id="issue-theme-not-applied">Issue: Theme Not Applied</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>WebView2 doesn't reflect Krypton theme changes</li>
+<li>Inconsistent appearance</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Force Theme Update:</strong></p>
+<pre><code class="lang-csharp">protected override void OnGlobalPaletteChanged(object? sender, EventArgs e)
+{
+    base.OnGlobalPaletteChanged(sender, e);
+    _ = ApplyThemeToWebContent();
+}
+
+private async Task ApplyThemeToWebContent()
+{
+    if (webView.CoreWebView2 != null)
+    {
+        var palette = webView.GetResolvedPalette();
+        var primaryColor = palette.GetColorTable().Color1;
+
+        var script = $@&quot;
+            document.documentElement.style.setProperty('--krypton-primary', '{primaryColor}');
+        &quot;;
+
+        await webView.CoreWebView2.ExecuteScriptAsync(script);
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Inject Theme CSS:</strong></p>
+<pre><code class="lang-csharp">private async Task InjectThemeCSS()
+{
+    if (webView.CoreWebView2 != null)
+    {
+        var palette = webView.GetResolvedPalette();
+        var css = $@&quot;
+            :root {{
+                --krypton-primary: {palette.GetColorTable().Color1};
+                --krypton-secondary: {palette.GetColorTable().Color2};
+                --krypton-background: {palette.GetColorTable().Color3};
+            }}
+        &quot;;
+
+        await webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync($@&quot;
+            var style = document.createElement('style');
+            style.textContent = `{css}`;
+            document.head.appendChild(style);
+        &quot;);
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h2 id="javascript-integration-issues">JavaScript Integration Issues</h2>
+<h3 id="issue-javascript-execution-fails">Issue: JavaScript Execution Fails</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>ExecuteScriptAsync()</code> throws exceptions</li>
+<li>Scripts don't execute</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Wait for Document Ready:</strong></p>
+<pre><code class="lang-csharp">private async Task ExecuteScriptWhenReady(string script)
+{
+    if (webView.CoreWebView2 != null)
+    {
+        var readyScript = $@&quot;
+            if (document.readyState === 'complete') {{
+                {script}
+            }} else {{
+                document.addEventListener('DOMContentLoaded', function() {{
+                    {script}
+                }});
+            }}
+        &quot;;
+
+        await webView.CoreWebView2.ExecuteScriptAsync(readyScript);
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Handle Script Errors:</strong></p>
+<pre><code class="lang-csharp">private async Task ExecuteScriptSafely(string script)
+{
+    try
+    {
+        var result = await webView.CoreWebView2.ExecuteScriptAsync(script);
+        return result;
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($&quot;Script execution failed: {ex.Message}&quot;);
+        return null;
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h3 id="issue-web-message-communication-fails">Issue: Web Message Communication Fails</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Messages from JavaScript not received</li>
+<li><code>WebMessageReceived</code> event doesn't fire</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Enable Web Messages:</strong></p>
+<pre><code class="lang-csharp">private void EnableWebMessages()
+{
+    if (webView.CoreWebView2 != null)
+    {
+        webView.CoreWebView2.Settings.IsWebMessageEnabled = true;
+        webView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Setup Message Bridge:</strong></p>
+<pre><code class="lang-csharp">private async Task SetupMessageBridge()
+{
+    if (webView.CoreWebView2 != null)
+    {
+        await webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(@&quot;
+            window.chrome.webview.addEventListener('message', function(event) {
+                console.log('Message received:', event.data);
+            });
+        &quot;);
+    }
+}
+</code></pre>
+</li>
+</ol>
+<h2 id="context-menu-issues">Context Menu Issues</h2>
+<h3 id="issue-custom-context-menu-not-showing">Issue: Custom Context Menu Not Showing</h3>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Right-click shows default WebView2 menu</li>
+<li>Custom KryptonContextMenu not displayed</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p><strong>Disable Default Context Menu:</strong></p>
+<pre><code class="lang-csharp">private void SetupCustomContextMenu()
+{
+    if (webView.CoreWebView2 != null)
+    {
+        webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+    }
+
+    var contextMenu = new KryptonContextMenu();
+    contextMenu.Items.Add(new KryptonContextMenuItem(&quot;Custom Item&quot;));
+    webView.KryptonContextMenu = contextMenu;
+}
+</code></pre>
+</li>
+<li><p><strong>Check Message Handling:</strong></p>
+<pre><code class="lang-csharp">protected override void WndProc(ref Message m)
+{
+    if ((m.Msg == PI.WM_.CONTEXTMENU) &amp;&amp; KryptonContextMenu != null)
+    {
+        // Handle context menu
+        var mousePt = new Point(PI.LOWORD(m.LParam), PI.HIWORD(m.LParam));
+        if (ClientRectangle.Contains(mousePt))
+        {
+            KryptonContextMenu.Show(this, PointToScreen(mousePt));
+            return; // Consume the message
+        }
+    }
+
+    base.WndProc(ref m);
+}
+</code></pre>
+</li>
+</ol>
+<h2 id="frequently-asked-questions">Frequently Asked Questions</h2>
+<h3 id="q-can-i-use-kryptonwebview2-without-webview2-runtime">Q: Can I use KryptonWebView2 without WebView2 Runtime?</h3>
+<p><strong>A:</strong> No, WebView2 Runtime is required. The control will throw <code>WebView2RuntimeNotFoundException</code> if the runtime is not installed.</p>
+<h3 id="q-is-kryptonwebview2-compatible-with-net-framework">Q: Is KryptonWebView2 compatible with .NET Framework?</h3>
+<p><strong>A:</strong> Yes, it supports .NET Framework 4.7.2 and later, as well as .NET 8+.</p>
+<h3 id="q-how-do-i-handle-different-screen-dpi-settings">Q: How do I handle different screen DPI settings?</h3>
+<p><strong>A:</strong> WebView2 automatically handles DPI scaling. Ensure your application is DPI-aware:</p>
+<pre><code class="lang-csharp">[STAThread]
+static void Main()
+{
+    Application.SetHighDpiMode(HighDpiMode.SystemAware);
+    Application.EnableVisualStyles();
+    Application.SetCompatibleTextRenderingDefault(false);
+    Application.Run(new MainForm());
+}
+</code></pre>
+<h3 id="q-can-i-use-kryptonwebview2-in-a-multi-threaded-application">Q: Can I use KryptonWebView2 in a multi-threaded application?</h3>
+<p><strong>A:</strong> WebView2 controls must be created and accessed on the UI thread. Use <code>Invoke</code> or <code>BeginInvoke</code> for cross-thread operations:</p>
+<pre><code class="lang-csharp">private void NavigateFromBackgroundThread(string url)
+{
+    if (InvokeRequired)
+    {
+        Invoke(new Action&lt;string&gt;(NavigateFromBackgroundThread), url);
+        return;
+    }
+    
+    webView.CoreWebView2?.Navigate(url);
+}
+</code></pre>
+<h3 id="q-how-do-i-print-web-content">Q: How do I print web content?</h3>
+<p><strong>A:</strong> Use the WebView2 print functionality:</p>
+<pre><code class="lang-csharp">private void PrintWebContent()
+{
+    webView.CoreWebView2?.ExecuteScriptAsync(&quot;window.print()&quot;);
+}
+</code></pre>
+<h3 id="q-can-i-capture-screenshots-of-web-content">Q: Can I capture screenshots of web content?</h3>
+<p><strong>A:</strong> Yes, using the WebView2 screenshot API:</p>
+<pre><code class="lang-csharp">private async Task&lt;byte[]&gt; CaptureScreenshot()
+{
+    if (webView.CoreWebView2 != null)
+    {
+        var result = await webView.CoreWebView2.CallDevToolsProtocolMethodAsync(&quot;Page.captureScreenshot&quot;, &quot;{}&quot;);
+        // Parse result and return image data
+    }
+    return null;
+}
+</code></pre>
+<h3 id="q-how-do-i-handle-file-downloads">Q: How do I handle file downloads?</h3>
+<p><strong>A:</strong> Handle the <code>DownloadStarting</code> event:</p>
+<pre><code class="lang-csharp">private void SetupDownloadHandling()
+{
+    if (webView.CoreWebView2 != null)
+    {
+        webView.CoreWebView2.DownloadStarting += OnDownloadStarting;
+    }
+}
+
+private void OnDownloadStarting(object? sender, CoreWebView2DownloadStartingEventArgs e)
+{
+    // Customize download behavior
+    e.Handled = true;
+    
+    // Show save dialog
+    var saveDialog = new SaveFileDialog();
+    saveDialog.FileName = e.ResultFilePath;
+    
+    if (saveDialog.ShowDialog() == DialogResult.OK)
+    {
+        e.ResultFilePath = saveDialog.FileName;
+        e.Handled = false; // Allow default download
+    }
+}
+</code></pre>
+<h3 id="q-how-do-i-clear-browser-cache-and-cookies">Q: How do I clear browser cache and cookies?</h3>
+<p><strong>A:</strong> Use the WebView2 data management APIs:</p>
+<pre><code class="lang-csharp">private async Task ClearBrowserData()
+{
+    if (webView.CoreWebView2 != null)
+    {
+        // Clear cache
+        await webView.CoreWebView2.CallDevToolsProtocolMethodAsync(&quot;Network.clearBrowserCache&quot;, &quot;{}&quot;);
+        
+        // Clear cookies
+        await webView.CoreWebView2.CallDevToolsProtocolMethodAsync(&quot;Network.clearBrowserCookies&quot;, &quot;{}&quot;);
+    }
+}
+</code></pre>
+<p>This comprehensive troubleshooting guide should help developers resolve common issues with the KryptonWebView2 control.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

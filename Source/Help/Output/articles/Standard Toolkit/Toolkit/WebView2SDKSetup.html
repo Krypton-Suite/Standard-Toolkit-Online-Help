@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>WebView2 SDK Setup for KryptonWebView2 | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="WebView2 SDK Setup for KryptonWebView2 | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="webview2-sdk-setup-for-kryptonwebview2">WebView2 SDK Setup for KryptonWebView2</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The KryptonWebView2 control requires the Microsoft WebView2 SDK assemblies to be available for compilation. This document explains how to set up the WebView2 SDK without using NuGet dependencies.</p>
+<p><strong>Quick Start</strong>: Run <code>run.cmd</code> and select option 7 &quot;WebView2 SDK Tools&quot; → option 1 &quot;Setup WebView2 SDK&quot; for automated setup.</p>
+<p><strong>Latest Version</strong>: The setup automatically detects and uses the latest stable WebView2 SDK version from NuGet.</p>
+<h2 id="setup-options">Setup Options</h2>
+<h3 id="option-1-manual-download-recommended">Option 1: Manual Download (Recommended)</h3>
+<ol>
+<li><p><strong>Download WebView2 SDK</strong></p>
+<ul>
+<li>Visit: <a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/">https://developer.microsoft.com/en-us/microsoft-edge/webview2/</a></li>
+<li>Download the latest WebView2 SDK</li>
+<li>Extract the downloaded package</li>
+</ul>
+</li>
+<li><p><strong>Copy Required Assemblies</strong></p>
+<ul>
+<li>Create a <code>WebView2SDK</code> folder at the repository root (same level as <code>Source</code> folder)</li>
+<li>Copy the following files from the extracted SDK to <code>WebView2SDK</code>:
+<pre><code>WebView2SDK/
+├── Microsoft.Web.WebView2.Core.dll
+├── Microsoft.Web.WebView2.WinForms.dll
+└── WebView2Loader.dll
+</code></pre>
+</li>
+</ul>
+</li>
+<li><p><strong>Build the Solution</strong></p>
+<ul>
+<li>Rebuild the entire solution</li>
+<li>The KryptonWebView2 control should now compile successfully</li>
+</ul>
+</li>
+</ol>
+<h3 id="option-2-using-nuget-temporary">Option 2: Using NuGet (Temporary)</h3>
+<p>If you want to quickly get the assemblies without manual download:</p>
+<ol>
+<li><p><strong>Install NuGet Package</strong></p>
+<pre><code class="lang-cmd">dotnet add package Microsoft.Web.WebView2
+</code></pre>
+</li>
+<li><p><strong>Copy Assemblies</strong></p>
+<ul>
+<li>Find the NuGet packages folder (usually <code>%USERPROFILE%\.nuget\packages\</code>)</li>
+<li>Navigate to the latest version folder (e.g., <code>microsoft.web.webview2\1.0.3485.44\</code>)</li>
+<li>Search for the required DLLs recursively in the package folder:
+<ul>
+<li><code>Microsoft.Web.WebView2.Core.dll</code></li>
+<li><code>Microsoft.Web.WebView2.WinForms.dll</code></li>
+<li><code>WebView2Loader.dll</code></li>
+</ul>
+</li>
+<li>Copy the found DLLs to the <code>WebView2SDK</code> folder</li>
+<li>Remove the NuGet package reference if desired</li>
+</ul>
+</li>
+<li><p><strong>Clean Up</strong></p>
+<pre><code class="lang-cmd">dotnet remove package Microsoft.Web.WebView2
+</code></pre>
+</li>
+</ol>
+<h3 id="option-3-using-setup-script-recommended">Option 3: Using Setup Script (Recommended)</h3>
+<h4 id="method-a-through-build-system-menu">Method A: Through Build System Menu</h4>
+<ol>
+<li><strong>Run the Build System</strong>
+<pre><code class="lang-cmd">run.cmd
+</code></pre>
+</li>
+<li><strong>Select Option 7</strong>: &quot;WebView2 SDK Tools&quot;</li>
+<li><strong>Select Option 1</strong>: &quot;Setup WebView2 SDK&quot;</li>
+<li><strong>Follow the automated process</strong></li>
+</ol>
+<h4 id="method-b-direct-script-execution">Method B: Direct Script Execution</h4>
+<p>Run the provided setup script directly:</p>
+<pre><code class="lang-cmd">Setup-WebView2SDK.cmd
+</code></pre>
+<p>Both methods will:</p>
+<ul>
+<li>Check if WebView2 SDK is already installed</li>
+<li>Automatically detect the latest stable WebView2 SDK version</li>
+<li>Download and install WebView2 SDK via NuGet (if needed)</li>
+<li>Dynamically locate and copy required assemblies to the WebView2SDK directory (handles different package structures)</li>
+<li>Update project file with the latest version information</li>
+<li>Clean up temporary NuGet references</li>
+<li>Provide clear feedback on the setup status</li>
+<li>Handle package structure changes automatically</li>
+</ul>
+<h3 id="option-4-update-to-latest-version">Option 4: Update to Latest Version</h3>
+<p>If you already have WebView2 SDK installed and want to update to the latest version:</p>
+<h4 id="method-a-through-build-system-menu-1">Method A: Through Build System Menu</h4>
+<ol>
+<li><strong>Run the Build System</strong>
+<pre><code class="lang-cmd">run.cmd
+</code></pre>
+</li>
+<li><strong>Select Option 7</strong>: &quot;WebView2 SDK Tools&quot;</li>
+<li><strong>Select Option 2</strong>: &quot;Update WebView2 SDK&quot;</li>
+<li><strong>Follow the automated update process</strong></li>
+</ol>
+<h4 id="method-b-direct-script-execution-1">Method B: Direct Script Execution</h4>
+<p>Run the update script directly:</p>
+<pre><code class="lang-cmd">Scripts\Update-WebView2SDK.cmd
+</code></pre>
+<p>Both methods will:</p>
+<ul>
+<li>Detect the latest stable WebView2 SDK version</li>
+<li>Download the latest assemblies</li>
+<li>Dynamically locate and copy assemblies to the WebView2SDK directory (handles different package structures)</li>
+<li>Update project file references</li>
+<li>Preserve your existing setup</li>
+<li>Handle package structure changes automatically</li>
+</ul>
+<h2 id="file-structure-after-setup">File Structure After Setup</h2>
+<p>Your repository should look like this:</p>
+<pre><code>Standard-Toolkit/
+├── Source/
+│   └── Krypton Components/
+│       └── Krypton.Toolkit/
+│           └── Controls Toolkit/
+│               └── KryptonWebView2.cs
+├── Scripts/
+│   ├── Setup-WebView2SDK.cmd
+│   ├── Update-WebView2SDK.cmd
+│   ├── Get-LatestWebView2Version.ps1
+│   └── Update-WebView2ProjectVersion.ps1
+├── WebView2SDK/                    ← Created by setup script
+│   ├── Microsoft.Web.WebView2.Core.dll
+│   ├── Microsoft.Web.WebView2.WinForms.dll
+│   └── WebView2Loader.dll
+└── run.cmd                         ← Updated with WebView2 SDK Tools submenu
+</code></pre>
+<h2 id="verification">Verification</h2>
+<p>After setup, verify that the KryptonWebView2 control compiles:</p>
+<ol>
+<li><p><strong>Build the Solution</strong></p>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot;
+</code></pre>
+</li>
+<li><p><strong>Check for Errors</strong></p>
+<ul>
+<li>No compilation errors related to WebView2 types</li>
+<li>KryptonWebView2 appears in the toolbox</li>
+<li>Test form compiles successfully</li>
+</ul>
+</li>
+</ol>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="webview2-types-not-found-error">&quot;WebView2 types not found&quot; Error</h3>
+<ul>
+<li>Ensure the WebView2SDK folder exists at the repository root</li>
+<li>Verify all three DLL files are present in WebView2SDK</li>
+<li>Check that the project file references point to the correct paths</li>
+<li>Rebuild the solution completely</li>
+</ul>
+<h3 id="assembly-loading-errors">Assembly Loading Errors</h3>
+<ul>
+<li>Ensure the DLLs are the correct architecture (AnyCPU or x64)</li>
+<li>Check that the DLLs are not corrupted</li>
+<li>Verify the file permissions allow reading</li>
+</ul>
+<h3 id="designer-issues">Designer Issues</h3>
+<ul>
+<li>Reset the Visual Studio toolbox</li>
+<li>Close and reopen Visual Studio</li>
+<li>Ensure the control compiles without errors first</li>
+</ul>
+<h3 id="github-actions-build-failures">GitHub Actions Build Failures</h3>
+<p>If you encounter WebView2 SDK setup failures in GitHub Actions:</p>
+<ul>
+<li>The workflow now uses dynamic assembly discovery to handle different package structures</li>
+<li>Ensure the workflow has internet access to download the latest WebView2 SDK</li>
+<li>Check that the NuGet cache is properly restored before the WebView2 setup step</li>
+<li>The setup will automatically find assemblies regardless of their location within the package</li>
+</ul>
+<h2 id="runtime-requirements">Runtime Requirements</h2>
+<p>Remember that end users need the WebView2 Runtime installed:</p>
+<ul>
+<li><strong>Evergreen Distribution</strong>: Users install from Microsoft's website</li>
+<li><strong>Fixed Version</strong>: Bundle with your application</li>
+<li><strong>Download</strong>: <a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/">https://developer.microsoft.com/en-us/microsoft-edge/webview2/</a></li>
+</ul>
+<h2 id="support">Support</h2>
+<p>If you encounter issues:</p>
+<ol>
+<li>Check the WebView2 documentation: <a href="https://docs.microsoft.com/en-us/microsoft-edge/webview2/">https://docs.microsoft.com/en-us/microsoft-edge/webview2/</a></li>
+<li>Verify your setup matches the requirements</li>
+<li>Test with the provided KryptonWebView2Test form</li>
+<li>Report issues to the Krypton Toolkit repository</li>
+</ol>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>The WebView2SDK folder should be added to <code>.gitignore</code> if you don't want to commit the assemblies</li>
+<li>The assemblies are referenced with <code>Private=False</code> so they won't be copied to output</li>
+<li>This setup allows the control to compile without NuGet dependencies</li>
+<li>Runtime WebView2 functionality requires the WebView2 Runtime to be installed on target systems</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
