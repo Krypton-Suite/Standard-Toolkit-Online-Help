@@ -1,4 +1,4 @@
-# KryptonWebView2 Developer Guide
+# KryptonWebView2
 
 ## Overview
 
