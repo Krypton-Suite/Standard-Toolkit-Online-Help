@@ -145,26 +145,3 @@ This documentation covers KryptonWebView2 as part of the Krypton Toolkit Suite. 
 | 4.7.2+         | ✅      | 1.0.3485.44+     | ✅ Supported |
 | 4.8+           | ✅      | 1.0.3485.44+     | ✅ Recommended |
 | 8.0+           | ✅      | 1.0.3485.44+     | ✅ Latest |
-
-## Contributing
-
-Contributions to this documentation are welcome! Please:
-
-1. **Fork** the repository
-2. **Create** a feature branch
-3. **Make** your changes
-4. **Test** thoroughly
-5. **Submit** a pull request
-
-### Documentation Standards
-- Use clear, concise language
-- Include practical examples
-- Provide complete code samples
-- Follow the existing structure and style
-- Test all code examples
-
----
-
-**Happy coding with KryptonWebView2!** 🚀
-
-For the latest updates and announcements, follow the [Krypton Toolkit project](https://github.com/Krypton-Suite/Standard-Toolkit) on GitHub.

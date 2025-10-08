@@ -52,7 +52,7 @@ Please ensure that `alpha` is selected ***before*** clicking 'Create pull reques
 
 **Step 7**
 
-Once you have clicked 'Create pull request', GitHub Desktop will launch your default web browser. From there, please type in your notes, then assign either `@Smurf-IV` or `@Wagnerp` before clicking 'Create pull request'. From there, we will review your changes, and sometimes ask you to make changes if necessary. Once the changes are merged, please then delete your branch to avoid "stale branches".
+Once you have clicked 'Create pull request', GitHub Desktop will launch your default web browser. From there, please type in your notes, then assign either `@Smurf-IV`, `@Wagnerp`, `@giduac`, `@tobitege`, `@KamaniAR` or `@lesandrog` before clicking 'Create pull request'. From there, we will review your changes, and sometimes ask you to make changes if necessary. Once the changes are merged, please then delete your branch to avoid "stale branches".
 
 ![](Making%20a%20Pull%20Request/Step%207.png)
 
@@ -69,4 +69,6 @@ Once you have clicked 'Create pull request', GitHub Desktop will launch your def
    ![](Making%20a%20Pull%20Request/Build%20Log%20Example.png)
 
    Simply take a snippet of the log, then paste it into your pull request description.
+   
+**Note:** As of version 100, we have introduced workflows. Each time a pull request is updated, it will automatically compile the code.
  
