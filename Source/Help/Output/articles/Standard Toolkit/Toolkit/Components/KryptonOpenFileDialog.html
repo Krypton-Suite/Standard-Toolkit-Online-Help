@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonOpenFileDialog | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonOpenFileDialog | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonopenfiledialog">KryptonOpenFileDialog</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonOpenFileDialog</code> class provides a Krypton-themed wrapper around the standard Windows file open dialog. It inherits from <code>FileDialogWrapper</code> (which inherits from <code>ShellDialogWrapper</code>) and implements <code>IDisposable</code> to provide enhanced appearance, consistent theming, and modern .NET functionality while maintaining full compatibility with the standard <code>OpenFileDialog</code>.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── Krypton.Toolkit.ShellDialogWrapper (abstract)
+    └── Krypton.Toolkit.FileDialogWrapper (abstract)
+        └── Krypton.Toolkit.KryptonOpenFileDialog
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonOpenFileDialog()
+</code></pre>
+<p>The constructor initializes:</p>
+<ul>
+<li><strong>Internal Dialog</strong>: Creates <code>OpenFileDialog</code> instance for native functionality</li>
+<li><strong>ShellDialogWrapper</strong>: Sets up Krypton theming and window management</li>
+<li><strong>Dispose Support</strong>: Implements proper resource cleanup</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="multiselect-property">Multiselect Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool Multiselect { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls whether multiple files can be selected simultaneously</li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Default Value</strong>: <code>false</code></li>
+<li><strong>Affects</strong>: <code>FileNames</code> collection vs <code>FileName</code> string</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonOpenFileDialog
+{
+    Multiselect = true,
+    Title = &quot;Select Multiple Images&quot;
+};
+
+if (dialog.ShowDialog() == DialogResult.OK)
+{
+    foreach (string filename in dialog.FileNames)
+    {
+        ProcessImage(filename);
+    }
+}
+</code></pre>
+<h3 id="readonlychecked-property">ReadOnlyChecked Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool ReadOnlyChecked { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets or sets whether the read-only check box is initially checked</li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Default Value</strong>: <code>false</code></li>
+<li><strong>Note</strong>: Read-only checkbox is only shown when <code>ShowReadOnly</code> is enabled</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonOpenFileDialog
+{
+    ReadOnlyChecked = true,
+    Title = &quot;Open Configuration File&quot;
+};
+</code></pre>
+<h3 id="showreadonly-property">ShowReadOnly Property</h3>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public bool ShowReadOnly { get; set; }
+</code></pre>
+<p><strong>Important</strong>: This property throws <code>InvalidConstraintException</code> when accessed</p>
+<ul>
+<li><strong>Purpose</strong>: Intentionally disabled to maintain modern dialog experience</li>
+<li><strong>Reason</strong>: Windows 10+ doesn't support read-only checkbox in modern file dialogs</li>
+<li><strong>Alternative</strong>: Handle read-only checking in your application logic</li>
+</ul>
+<h3 id="safefilename-property">SafeFileName Property</h3>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public string SafeFileName { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets the filename (without path) of the selected file</li>
+<li><strong>Returns</strong>: Filename only, safe from malicious paths</li>
+<li><strong>Usage</strong>: Safe for display or logging purposes</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">if (dialog.ShowDialog() == DialogResult.OK)
+{
+    string safeName = dialog.SafeFileName;
+    // SafeName = &quot;document.txt&quot; (no path information)
+    Logger.Info($&quot;User selected file: {safeName}&quot;);
+}
+</code></pre>
+<h3 id="safefilenames-property">SafeFileNames Property</h3>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public string[] SafeFileNames { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets filenames (without paths) of all selected files</li>
+<li><strong>Returns</strong>: Array of safe filenames only</li>
+<li><strong>Usage</strong>: Safe for display when <code>Multiselect</code> is enabled</li>
+</ul>
+<h2 id="inherited-filedialogwrapper-properties">Inherited FileDialogWrapper Properties</h2>
+<p>All standard file dialog properties are inherited and work identically:</p>
+<h3 id="file-path-properties">File Path Properties</h3>
+<pre><code class="lang-csharp">// File name selection
+public override string FileName { get; set; }
+public override string[] FileNames { get; }
+
+// Initial directory
+public override string InitialDirectory { get; set; }
+
+// File extensions
+public override string DefaultExt { get; set; }
+public override string Filter { get; set; }
+public override int FilterIndex { get; set; }
+</code></pre>
+<h3 id="behavior-properties">Behavior Properties</h3>
+<pre><code class="lang-csharp">// File validation
+public override bool CheckFileExists { get; set; }
+public override bool CheckPathExists { get; set; }
+public override bool ValidateNames { get; set; }
+
+// Extension handling
+public override bool AddExtension { get; set; }
+public override bool SupportMultiDottedExtensions { get; set; }
+
+// Link handling
+public override bool DereferenceLinks { get; set; }
+
+// Directory behavior
+public override bool RestoreDirectory { get; set; }
+</code></pre>
+<h3 id="framework-specific-properties-net-80">Framework-Specific Properties (.NET 8.0+)</h3>
+<pre><code class="lang-csharp">#if NET8_0_OR_GREATER
+public override Guid? ClientGuid { get; set; }
+#endif
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Associates GUID with dialog state for persistence</li>
+<li><strong>Availability</strong>: .NET 8.0 and later</li>
+<li><strong>Use Cases</strong>: Different dialog instances can have separate persisted states</li>
+</ul>
+<h3 id="events-and-collections">Events and Collections</h3>
+<pre><code class="lang-csharp">// File validation event
+public override event CancelEventHandler? FileOk;
+
+// Custom places for navigation
+public override FileDialogCustomPlacesCollection CustomPlaces { get; }
+</code></pre>
+<h2 id="file-opening-method">File Opening Method</h2>
+<h3 id="openfile-method">OpenFile Method</h3>
+<pre><code class="lang-csharp">public Stream OpenFile()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Opens the selected file with read-only permissions</li>
+<li><strong>Returns</strong>: <code>Stream</code> for reading the file</li>
+<li><strong>Exception</strong>: Throws <code>ArgumentNullException</code> if <code>FileName</code> is null</li>
+<li><strong>Usage</strong>: Convenient method for immediate file access</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonOpenFileDialog
+{
+    Filter = &quot;Text files (*.txt)|*.txt|All files (*.*)|*.*&quot;,
+    FilterIndex = 1,
+    CheckFileExists = true
+};
+
+if (dialog.ShowDialog() == DialogResult.OK)
+{
+    using (Stream fileStream = dialog.OpenFile())
+    using (var reader = new StreamReader(fileStream))
+    {
+        string content = reader.ReadToEnd();
+        ProcessFileContent(content);
+    }
+}
+</code></pre>
+<h2 id="dialog-behavior-and-configuration">Dialog Behavior and Configuration</h2>
+<h3 id="standard-file-open-properties">Standard File Open Properties</h3>
+<pre><code class="lang-csharp">public void ConfigureDocumentOpen()
+{
+    var dialog = new KryptonOpenFileDialog
+    {
+        Title = &quot;Open Document&quot;,
+        InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+        Filter = &quot;Word Documents (*.docx)|*.docx|Word 97-2003 (*.doc)|*.doc|All Files (*.*)|*.*&quot;,
+        FilterIndex = 1,
+        CheckFileExists = true,
+        ValidateNames = true,
+        AddExtension = true,
+        RestoreDirectory = false
+    };
+
+    if (dialog.ShowDialog() == DialogResult.OK)
+    {
+        OpenDocument(dialog.FileName);
+    }
+}
+</code></pre>
+<h3 id="multi-file-selection">Multi-File Selection</h3>
+<pre><code class="lang-csharp">public void ImportMultipleImages()
+{
+    var dialog = new KryptonOpenFileDialog
+    {
+        Title = &quot;Import Images&quot;,
+        Multiselect = true,
+        Filter = &quot;Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All Files|*.*&quot;,
+        InitialDirectory = GetLastUsedImageFolder(),
+        CheckFileExists = true
+    };
+
+    if (dialog.ShowDialog() == DialogResult.OK)
+    {
+        List&lt;string&gt; imageFiles = dialog.FileNames.ToList();
+        ImportImageBatch(imageFiles);
+    }
+}
+</code></pre>
+<h3 id="safe-file-operations">Safe File Operations</h3>
+<pre><code class="lang-csharp">public class SafeFileOperations
+{
+    private static readonly string[] DangerousExtensions = { &quot;.exe&quot;, &quot;.bat&quot;, &quot;.cmd&quot;, &quot;.ps1&quot; };
+    
+    public string? SelectDocument()
+    {
+        var dialog = new KryptonOpenFileDialog
+        {
+            Title = &quot;Select Document&quot;,
+            Filter = &quot;Safe Documents (*.txt;*.docx;*.pdf)|*.txt;*.docx;*.pdf|All Files|*.*&quot;,
+            CheckFileExists = true,
+            ValidateNames = true
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            string filename = dialog.SafeFileName.ToLowerInvariant();
+            
+            if (DangerousExtensions.Any(ext =&gt; filename.EndsWith(ext)))
+            {
+                MessageBox.Show(&quot;This file type is not allowed.&quot;, &quot;Security Warning&quot;, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return null;
+            }
+            
+            return dialog.FileName;
+        }
+
+        return null;
+    }
+}
+</code></pre>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="file-type-validation">File Type Validation</h3>
+<pre><code class="lang-csharp">public class FileValidator
+{
+    public ValidationResult ValidateSelectedFile(KryptonOpenFileDialog dialog)
+    {
+        var result = new ValidationResult();
+
+        // Check if file was actually selected
+        if (string.IsNullOrEmpty(dialog.FileName))
+        {
+            result.AddError(&quot;No file selected&quot;);
+            return result;
+        }
+
+        // File existence check
+        if (dialog.CheckFileExists &amp;&amp; !File.Exists(dialog.FileName))
+        {
+            result.AddError(&quot;Selected file does not exist&quot;);
+            return result;
+        }
+
+        // Size validation
+        var fileInfo = new FileInfo(dialog.FileName);
+        if (fileInfo.Length &gt; MaxAllowedFileSize)
+        {
+            result.AddError($&quot;File too large: {fileInfo.Length:N0} bytes (max: {MaxAllowedFileSize:N0})&quot;);
+            return result;
+        }
+
+        // Extension validation
+        string allowedExtensions = dialog.Filter.Split('|')[dialog.FilterIndex * 2 - 2];
+        var pattern = new Regex(allowedExtensions.Replace(&quot;*&quot;, &quot;.*&quot;));
+        if (!pattern.IsMatch(dialog.FileName))
+        {
+            result.AddError(&quot;File extension not allowed&quot;);
+            return result;
+        }
+
+        result.IsValid = true;
+        return result;
+    }
+}
+</code></pre>
+<h3 id="dialog-state-persistence">Dialog State Persistence</h3>
+<pre><code class="lang-csharp">public class PersistentFileDialog : KryptonOpenFileDialog
+{
+    private static readonly string SettingsFile = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        &quot;MyApp&quot;, &quot;DialogSettings.json&quot;);
+
+    public PersistentFileDialog()
+    {
+        LoadSettings();
+    }
+
+    protected override void OnFileOk(CancelEventArgs e)
+    {
+        if (!e.Cancel)
+        {
+            SaveSettings();
+        }
+        base.OnFileOk(e);
+    }
+
+    private void LoadSettings()
+    {
+        try
+        {
+            if (File.Exists(SettingsFile))
+            {
+                var settings = JsonConvert.DeserializeObject&lt;DialogSettings&gt;(File.ReadAllText(SettingsFile));
+                InitialDirectory = settings.LastDirectory;
+                FilterIndex = settings.LastFilterIndex;
+                Filter = settings.LastFilter;
+            }
+        }
+        catch
+        {
+            // Use defaults
+            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        }
+    }
+
+    private void SaveSettings()
+    {
+        try
+        {
+            var settings = new DialogSettings
+            {
+                LastDirectory = Path.GetDirectoryName(FileName) ?? InitialDirectory,
+                LastFilterIndex = FilterIndex,
+                LastFilter = Filter
+            };
+
+            var directory = Path.GetDirectoryName(SettingsFile);
+            Directory.CreateDirectory(directory!);
+            File.WriteAllText(SettingsFile, JsonConvert.SerializeObject(settings, Formatting.Indented));
+        }
+        catch
+        {
+            // Ignore save errors
+        }
+    }
+}
+</code></pre>
+<h3 id="multi-selection-with-validation">Multi-Selection with Validation</h3>
+<pre><code class="lang-csharp">public class BatchFileProcessor
+{
+    public void ProcessBatch()
+    {
+        var dialog = new KryptonOpenFileDialog
+        {
+            Title = &quot;Select Files for Processing&quot;,
+            Multiselect = true,
+            Filter = &quot;Supported Files|*.txt;*.csv;*.json|All Files|*.*&quot;,
+            CheckFileExists = true
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            var validFiles = ValidateFiles(dialog.FileNames);
+            
+            if (validFiles.Count != dialog.FileNames.Length)
+            {
+                var invalidFiles = dialog.FileNames.Except(validFiles).ToArray();
+                ShowInvalidFilesWarning(invalidFiles);
+            }
+
+            if (validFiles.Any())
+            {
+                ProcessFilesAsync(validFiles);
+            }
+        }
+    }
+
+    private List&lt;string&gt; ValidateFiles(string[] files)
+    {
+        var validFiles = new List&lt;string&gt;();
+
+        foreach (string file in files)
+        {
+            try
+            {
+                var fileInfo = new FileInfo(file);
+                if (fileInfo.Exists &amp;&amp; fileInfo.Length &lt;= MaxFileSize &amp;&amp; IsFileFormatSupported(file))
+                {
+                    validFiles.Add(file);
+                }
+            }
+            catch
+            {
+                // Skip invalid files
+            }
+        }
+
+        return validFiles;
+    }
+}
+</code></pre>
+<h2 id="custom-places-integration">Custom Places Integration</h2>
+<pre><code class="lang-csharp">public class FileDialogWithCustomPlaces : KryptonOpenFileDialog
+{
+    public FileDialogWithCustomPlaces()
+    {
+        InitializeCustomPlaces();
+    }
+
+    private void InitializeCustomPlaces()
+    {
+        // Add application-specific folders
+        CustomPlaces.Add(&quot;My Documents&quot;, Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+        CustomPlaces.Add(&quot;Desktop&quot;, Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+        
+        // Add project folders
+        CustomPlaces.Add(&quot;Documents&quot;, @&quot;C:\MyApp\Documents&quot;);
+        CustomPlaces.Add(&quot;Templates&quot;, @&quot;C:\MyApp\Templates&quot;);
+        CustomPlaces.Add(&quot;Backups&quot;, @&quot;C:\MyApp\Backups&quot;);
+        
+        // Add network locations (if accessible)
+        try
+        {
+            CustomPlaces.Add(&quot;Network Drive&quot;, @&quot;\\Server\Shared&quot;);
+        }
+        catch
+        {
+            // Network location not accessible
+        }
+    }
+}
+</code></pre>
+<h2 id="event-handling">Event Handling</h2>
+<h3 id="fileok-event-usage">FileOk Event Usage</h3>
+<pre><code class="lang-csharp">public void ConfigureWithValidation()
+{
+    var dialog = new KryptonOpenFileDialog
+    {
+        Title = &quot;Open Project File&quot;,
+        Filter = &quot;Project Files (*.proj)|*.proj|All Files|*.*&quot;,
+        CheckFileExists = true
+    };
+
+    dialog.FileOk += (sender, e) =&gt;
+    {
+        // Pre-validation before dialog closes
+        if (!ValidateProjectFile(dialog.FileName))
+        {
+            e.Cancel = true;
+            MessageBox.Show(&quot;Invalid project file format.&quot;, &quot;Validation Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        else
+        {
+            LogFileSelection(dialog.SafeFileName);
+        }
+    };
+
+    if (dialog.ShowDialog() == DialogResult.OK)
+    {
+        LoadProject(dialog.FileName);
+    }
+}
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox Integration</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: All properties properly categorized and exposed</li>
+<li><strong>Custom Editors</strong>: Specialized editors for filter strings and custom places</li>
+<li><strong>Serialization</strong>: Design-time settings saved to designer files</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Behavior</strong>: Dialog behavior (<code>Multiselect</code>, <code>ReadOnlyChecked</code>, file validation properties)</li>
+<li><strong>Data</strong>: File selection properties (<code>FileName</code>, <code>FileNames</code>, <code>InitialDirectory</code>)</li>
+<li><strong>Appearance</strong>: Visual customization (inherited from <code>ShellDialogWrapper</code>)</li>
+</ul>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Memory Management</strong>: Proper disposal prevents memory leaks</li>
+<li><strong>File Enumeration</strong>: Large directories handled efficiently by Windows</li>
+<li><strong>Filter Performance</strong>: Complex filter patterns may slow file enumeration</li>
+<li><strong>Multi-Selection</strong>: Memory usage scales with number of selected files</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="showreadonly-access-errors">ShowReadOnly Access Errors</h3>
+<p><strong>Issue</strong>: <code>InvalidConstraintException</code> when accessing <code>ShowReadOnly</code><br>
+<strong>Solution</strong>: This is intended behavior; read-only functionality implemented in application layer</p>
+<h3 id="multi-selection-not-working">Multi-Selection Not Working</h3>
+<p><strong>Issue</strong>: Only single file selection despite <code>Multiselect = true</code><br>
+<strong>Solution</strong>: Ensure filters support multiple files or use &quot;All Files&quot; pattern</p>
+<h3 id="file-access-denied">File Access Denied</h3>
+<p><strong>Issue</strong>: File appears in dialog but cannot be opened<br>
+<strong>Solution</strong>: Implement proper exception handling around file operations:</p>
+<pre><code class="lang-csharp">try
+{
+    using (Stream stream = dialog.OpenFile())
+    {
+        // File operations
+    }
+}
+catch (UnauthorizedAccessException)
+{
+    MessageBox.Show(&quot;Access denied to selected file.&quot;, &quot;Error&quot;, 
+        MessageBoxButtons.OK, MessageBoxIcon.Error);
+}
+</code></pre>
+<h3 id="filter-syntax-confusion">Filter Syntax Confusion</h3>
+<p><strong>Issue</strong>: Filter not working as expected<br>
+<strong>Solution</strong>: Use proper filter syntax:</p>
+<pre><code class="lang-csharp">// Correct format
+Filter = &quot;Text Files (*.txt)|*.txt|Image Files (*.jpg;*.png)|*.jpg;*.png|All Files (*.*)|*.*&quot;;
+
+// Format description: &quot;Display Text|Pattern|Display Text|Pattern|...&quot;
+</code></pre>
+<h2 id="migration-from-standard-openfiledialog">Migration from Standard OpenFileDialog</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
+var dialog = new OpenFileDialog();
+
+// New code
+var dialog = new KryptonOpenFileDialog();
+</code></pre>
+<h3 id="enhanced-features">Enhanced Features</h3>
+<pre><code class="lang-csharp">// Standard OpenFileDialog (basic)
+var standardDialog = new OpenFileDialog();
+
+// KryptonOpenFileDialog (enhanced)
+var kryptonDialog = new KryptonOpenFileDialog
+{
+    Title = &quot;Enhanced File Selection&quot;,  // Custom title support
+    Multiselect = true,                 // Multi-selection
+    CheckFileExists = true,             // Validation
+    ValidateNames = true               // Name validation
+};
+
+// Additional framework-specific features (.NET 8.0+)
+#if NET8_0_OR_GREATER
+kryptonDialog.ClientGuid = Guid.NewGuid();  // State persistence
+#endif
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="project-file-manager">Project File Manager</h3>
+<pre><code class="lang-csharp">public class ProjectManager
+{
+    public Project? OpenProject()
+    {
+        var dialog = new KryptonOpenFileDialog
+        {
+            Title = &quot;Open Project&quot;,
+            InitialDirectory = GetProjectsDirectory(),
+            Filter = &quot;Project Files (*.proj)|*.proj|All Files|*.*&quot;,
+            CheckFileExists = true,
+            ValidateNames = true
+        };
+
+        dialog.FileOk += OnProjectFileValidating;
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            return LoadProjectFromFile(dialog.FileName);
+        }
+
+        return null;
+    }
+
+    private void OnProjectFileValidating(object? sender, CancelEventArgs e)
+    {
+        if (sender is KryptonOpenFileDialog dialog)
+        {
+            if (!IsValidProjectFile(dialog.FileName))
+            {
+                MessageBox.Show(&quot;Invalid project file format.&quot;, &quot;Error&quot;, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                e.Cancel = true;
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="image-import-workflow">Image Import Workflow</h3>
+<pre><code class="lang-csharp">public class ImageImporter
+{
+    public List&lt;string&gt; ImportImages(bool multipleSelection = true)
+    {
+        var dialog = new KryptonOpenFileDialog
+        {
+            Title = multipleSelection ? &quot;Import Images&quot; : &quot;Import Image&quot;,
+            Multiselect = multipleSelection,
+            Filter = &quot;Image Files (*.jpg;*.jpeg;*.png;*.bmp;*.gif)|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All Files|*.*&quot;,
+            InitialDirectory = GetLastUsedImageDirectory(),
+            CheckFileExists = true
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+       � {
+            var selectedFiles = multipleSelection 
+                ? dialog.FileNames.ToList() 
+                : new List&lt;string&gt; { dialog.FileName };
+
+            // Validate and filter images
+            var validImages = selectedFiles.Where(IsValidImageFile).ToList();
+            
+            if (validImages.Count != selectedFiles.Count)
+            {
+                ShowImageValidationWarning(selectedFiles.Count - validImages.Count);
+            }
+
+            return validImages;
+        }
+
+        return new List&lt;string&gt;();
+    }
+}
+</code></pre>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

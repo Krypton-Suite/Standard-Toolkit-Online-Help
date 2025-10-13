@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonForm System Menu - Migration Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonForm System Menu - Migration Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonform-system-menu---migration-guide">KryptonForm System Menu - Migration Guide</h1>
+
+<h2 id="overview">Overview</h2>
+<p>This guide helps developers understand the changes made to the KryptonForm system menu implementation and how to migrate existing code if necessary.</p>
+<h2 id="what-changed">What Changed</h2>
+<h3 id="before-previous-implementation">Before (Previous Implementation)</h3>
+<ul>
+<li>System menu interfered with Visual Studio designer</li>
+<li>Inconsistent drag and drop behavior</li>
+<li>Complex workarounds needed for designer support</li>
+<li>Performance overhead from repeated designer checks</li>
+</ul>
+<h3 id="after-current-implementation">After (Current Implementation)</h3>
+<ul>
+<li>Complete designer transparency</li>
+<li>Robust multi-method design mode detection</li>
+<li>Performance optimized with conditional service creation</li>
+<li>Simplified architecture with source-level disabling</li>
+</ul>
+<h2 id="breaking-changes">Breaking Changes</h2>
+<h3 id="-minimal-breaking-changes">⚠️ Minimal Breaking Changes</h3>
+<p>The implementation was designed to maintain backward compatibility. Most existing code will continue to work without modification.</p>
+<h3 id="potential-impact-areas">Potential Impact Areas</h3>
+<h4 id="1-direct-systemmenuservice-access">1. Direct SystemMenuService Access</h4>
+<p><strong>Before:</strong></p>
+<pre><code class="lang-csharp">// This would always return a service instance
+var service = form.SystemMenuService;
+service.UseSystemMenu = true; // Could cause issues in designer
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="lang-csharp">// Service may be null in design mode
+var service = form.SystemMenuService;
+if (service != null) // Add null check
+{
+    service.UseSystemMenu = true;
+}
+</code></pre>
+<h4 id="2-system-menu-property-access">2. System Menu Property Access</h4>
+<p><strong>Before:</strong></p>
+<pre><code class="lang-csharp">// Direct access without null checks
+form.KryptonSystemMenu.Show(point);
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="lang-csharp">// Add null checks for design mode compatibility
+form.KryptonSystemMenu?.Show(point);
+</code></pre>
+<h4 id="3-early-initialization">3. Early Initialization</h4>
+<p><strong>Before:</strong></p>
+<pre><code class="lang-csharp">public MyForm()
+{
+    InitializeComponent();
+    
+    // This might not work reliably in all scenarios
+    var systemMenu = KryptonSystemMenu;
+    systemMenu.AddCustomMenuItem(&quot;Test&quot;, OnTest);
+}
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="lang-csharp">public MyForm()
+{
+    InitializeComponent();
+}
+
+protected override void OnLoad(EventArgs e)
+{
+    base.OnLoad(e);
+    
+    // More reliable - service definitely available at runtime
+    var systemMenu = KryptonSystemMenu;
+    if (systemMenu != null)
+    {
+        systemMenu.AddCustomMenuItem(&quot;Test&quot;, OnTest);
+    }
+}
+</code></pre>
+<h2 id="migration-steps">Migration Steps</h2>
+<h3 id="step-1-add-null-checks">Step 1: Add Null Checks</h3>
+<p>Update any code that directly accesses system menu components:</p>
+<pre><code class="lang-csharp">// Before
+form.KryptonSystemMenu.Refresh();
+form.SystemMenuService.UseSystemMenu = true;
+
+// After
+form.KryptonSystemMenu?.Refresh();
+if (form.SystemMenuService != null)
+{
+    form.SystemMenuService.UseSystemMenu = true;
+}
+</code></pre>
+<h3 id="step-2-move-initialization-to-onload">Step 2: Move Initialization to OnLoad</h3>
+<p>If you have system menu customization in constructors, consider moving to <code>OnLoad</code>:</p>
+<pre><code class="lang-csharp">protected override void OnLoad(EventArgs e)
+{
+    base.OnLoad(e);
+    
+    // Initialize system menu customizations here
+    InitializeSystemMenu();
+}
+
+private void InitializeSystemMenu()
+{
+    var systemMenu = KryptonSystemMenu;
+    if (systemMenu != null)
+    {
+        // Add custom items
+        systemMenu.AddCustomMenuItem(&quot;Settings&quot;, OnSettings);
+        systemMenu.Refresh();
+    }
+}
+</code></pre>
+<h3 id="step-3-update-event-handlers">Step 3: Update Event Handlers</h3>
+<p>Ensure event handlers are defensive:</p>
+<pre><code class="lang-csharp">private void OnFormPropertyChanged()
+{
+    // Defensive programming
+    KryptonSystemMenu?.Refresh();
+}
+</code></pre>
+<h3 id="step-4-review-designer-code">Step 4: Review Designer Code</h3>
+<p>Check that designer-generated code doesn't conflict:</p>
+<pre><code class="lang-csharp">// In Designer.cs files, ensure no direct system menu access
+// The designer should only set SystemMenuValues properties
+this.SystemMenuValues.Enabled = true;
+this.SystemMenuValues.ShowOnRightClick = true;
+// Don't access KryptonSystemMenu or SystemMenuService in designer code
+</code></pre>
+<h2 id="new-features-available">New Features Available</h2>
+<h3 id="enhanced-designer-support">Enhanced Designer Support</h3>
+<pre><code class="lang-csharp">// These now work reliably in Visual Studio designer:
+// - Drag and drop controls from toolbox
+// - Form selection by clicking anywhere
+// - Property editing without interference
+// - No red rectangle blocking areas
+</code></pre>
+<h3 id="robust-design-mode-detection">Robust Design Mode Detection</h3>
+<pre><code class="lang-csharp">// Multiple detection methods ensure reliability:
+// 1. LicenseManager.UsageMode (primary)
+// 2. Site?.DesignMode (secondary)
+// 3. Container component checks (fallback)
+</code></pre>
+<h3 id="performance-improvements">Performance Improvements</h3>
+<pre><code class="lang-csharp">// System menu service not created in design mode
+// Reduced memory usage and faster initialization
+// No complex logic in frequently-called methods
+</code></pre>
+<h2 id="testing-your-migration">Testing Your Migration</h2>
+<h3 id="designer-tests">Designer Tests</h3>
+<ol>
+<li><strong>Open KryptonForm in Visual Studio designer</strong></li>
+<li><strong>Verify no red rectangle appears</strong></li>
+<li><strong>Test drag and drop from toolbox</strong></li>
+<li><strong>Confirm form selection works by clicking anywhere</strong></li>
+<li><strong>Check Properties window shows KryptonForm, not InternalPanel</strong></li>
+</ol>
+<h3 id="runtime-tests">Runtime Tests</h3>
+<ol>
+<li><strong>Right-click title bar</strong> - Should show themed menu</li>
+<li><strong>Alt+Space</strong> - Should show menu at top-left</li>
+<li><strong>Custom menu items</strong> - Should appear and function</li>
+<li><strong>Menu state</strong> - Items should be enabled/disabled correctly</li>
+<li><strong>Theme changes</strong> - Menu should adapt to theme changes</li>
+</ol>
+<h3 id="code-review-checklist">Code Review Checklist</h3>
+<ul>
+<li>[ ] All <code>KryptonSystemMenu</code> access includes null checks</li>
+<li>[ ] All <code>SystemMenuService</code> access includes null checks</li>
+<li>[ ] System menu initialization moved to <code>OnLoad</code> or later</li>
+<li>[ ] Event handlers are defensive against null services</li>
+<li>[ ] Designer code doesn't directly access system menu components</li>
+</ul>
+<h2 id="compatibility-matrix">Compatibility Matrix</h2>
+<h3 id="supported-scenarios">Supported Scenarios</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Before</th>
+<th>After</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Runtime Usage</td>
+<td>✅</td>
+<td>✅</td>
+<td>Full compatibility maintained</td>
+</tr>
+<tr>
+<td>Designer Drag/Drop</td>
+<td>❌</td>
+<td>✅</td>
+<td>Major improvement</td>
+</tr>
+<tr>
+<td>Custom Menu Items</td>
+<td>✅</td>
+<td>✅</td>
+<td>Full compatibility</td>
+</tr>
+<tr>
+<td>Theme Integration</td>
+<td>✅</td>
+<td>✅</td>
+<td>Enhanced theme detection</td>
+</tr>
+<tr>
+<td>Keyboard Shortcuts</td>
+<td>✅</td>
+<td>✅</td>
+<td>Full compatibility</td>
+</tr>
+<tr>
+<td>Form Properties</td>
+<td>✅</td>
+<td>✅</td>
+<td>Full compatibility</td>
+</tr>
+</tbody>
+</table>
+<h3 id="design-mode-behavior">Design Mode Behavior</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SystemMenuService</td>
+<td>Created (interfered)</td>
+<td>Not created (clean)</td>
+</tr>
+<tr>
+<td>KryptonSystemMenu</td>
+<td>Available (problematic)</td>
+<td>Null (transparent)</td>
+</tr>
+<tr>
+<td>SystemMenuValues</td>
+<td>Available</td>
+<td>Available (minimal)</td>
+</tr>
+<tr>
+<td>Event Handling</td>
+<td>Active (blocked designer)</td>
+<td>Inactive (transparent)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="code-examples">Code Examples</h2>
+<h3 id="before-migration">Before Migration</h3>
+<pre><code class="lang-csharp">public partial class MyKryptonForm : KryptonForm
+{
+    public MyKryptonForm()
+    {
+        InitializeComponent();
+        
+        // This could cause designer issues
+        KryptonSystemMenu.AddCustomMenuItem(&quot;Test&quot;, OnTest);
+        
+        // No null checks
+        SystemMenuService.UseSystemMenu = true;
+    }
+    
+    private void OnTest(object sender, EventArgs e)
+    {
+        // Direct access without null checks
+        KryptonSystemMenu.Refresh();
+    }
+}
+</code></pre>
+<h3 id="after-migration">After Migration</h3>
+<pre><code class="lang-csharp">public partial class MyKryptonForm : KryptonForm
+{
+    public MyKryptonForm()
+    {
+        InitializeComponent();
+    }
+    
+    protected override void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
+        
+        // Initialize system menu after form is fully loaded
+        InitializeSystemMenu();
+    }
+    
+    private void InitializeSystemMenu()
+    {
+        // Defensive programming with null checks
+        var systemMenu = KryptonSystemMenu;
+        if (systemMenu != null)
+        {
+            systemMenu.AddCustomMenuItem(&quot;Test&quot;, OnTest);
+            systemMenu.Refresh();
+        }
+        
+        // Safe service access
+        if (SystemMenuService != null)
+        {
+            SystemMenuService.UseSystemMenu = true;
+        }
+    }
+    
+    private void OnTest(object sender, EventArgs e)
+    {
+        // Null-safe access
+        KryptonSystemMenu?.Refresh();
+    }
+}
+</code></pre>
+<h2 id="rollback-instructions">Rollback Instructions</h2>
+<p>If you need to rollback changes (not recommended):</p>
+<h3 id="1-revert-designer-mode-detection">1. Revert Designer Mode Detection</h3>
+<p>Remove or comment out the design mode checks in:</p>
+<ul>
+<li><code>KryptonForm</code> constructor</li>
+<li><code>WndProc</code> methods</li>
+<li><code>ShowSystemMenu</code> methods</li>
+<li><code>WindowChromeHitTest</code> method</li>
+</ul>
+<h3 id="2-force-service-creation">2. Force Service Creation</h3>
+<pre><code class="lang-csharp">// Force creation regardless of design mode (not recommended)
+_systemMenuService = new KryptonSystemMenuService(this);
+</code></pre>
+<h3 id="3-remove-null-checks">3. Remove Null Checks</h3>
+<p>Remove the null-conditional operators added for safety.</p>
+<p><strong>⚠️ Warning:</strong> Rollback will restore the designer interference issues.</p>
+<h2 id="support-and-resources">Support and Resources</h2>
+<h3 id="getting-help">Getting Help</h3>
+<ul>
+<li>Check the <a href="KryptonForm-Troubleshooting.md">Troubleshooting Guide</a></li>
+<li>Review the <a href="KryptonSystemMenu-API-Reference.md">API Reference</a></li>
+<li>Consult the <a href="KryptonForm-SystemMenu-Overview.md">Overview Documentation</a></li>
+</ul>
+<h3 id="reporting-migration-issues">Reporting Migration Issues</h3>
+<p>When reporting migration problems, include:</p>
+<ol>
+<li><strong>Code Before/After</strong>: Show the code that worked before and fails after</li>
+<li><strong>Error Messages</strong>: Include full exception details</li>
+<li><strong>Usage Context</strong>: Designer vs runtime, initialization timing</li>
+<li><strong>Form Configuration</strong>: Relevant property values</li>
+<li><strong>Expected Behavior</strong>: What should happen vs what actually happens</li>
+</ol>
+<h3 id="community-support">Community Support</h3>
+<ul>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit">Krypton Toolkit GitHub</a></li>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues">Issues and Discussions</a></li>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/wiki">Wiki Documentation</a></li>
+</ul>
+<h2 id="future-considerations">Future Considerations</h2>
+<h3 id="planned-enhancements">Planned Enhancements</h3>
+<ul>
+<li>Additional theme support</li>
+<li>More customization options</li>
+<li>Enhanced accessibility features</li>
+<li>Performance optimizations</li>
+</ul>
+<h3 id="api-stability">API Stability</h3>
+<p>The current API is considered stable. Future changes will maintain backward compatibility where possible, with proper deprecation notices for any breaking changes.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

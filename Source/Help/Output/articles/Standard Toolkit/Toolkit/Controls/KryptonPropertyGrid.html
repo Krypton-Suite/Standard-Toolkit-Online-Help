@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonPropertyGrid | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonPropertyGrid | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonpropertygrid">KryptonPropertyGrid</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonPropertyGrid</code> class provides a Krypton-themed wrapper around the standard Windows <code>PropertyGrid</code> control. It inherits from <code>VisualControlBase</code> and implements <code>IContainedInputControl</code> to provide enhanced appearance, consistent theming, and improved visual integration while maintaining full compatibility with the standard <code>PropertyGrid</code> functionality.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── System.Windows.Forms.Control
+            └── Krypton.Toolkit.VisualControlBase
+                └── Krypton.Toolkit.KryptonPropertyGrid
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonPropertyGrid
+</code></pre>
+<p>The constructor initializes enhanced features:</p>
+<ul>
+<li><strong>Internal PropertyGrid</strong>: Creates and manages the contained <code>PropertyGrid</code> instance</li>
+<li><strong>Visual States</strong>: Sets up Common, Normal, Disabled, and Active palette states</li>
+<li><strong>Event Delegation</strong>: Proper event routing to the contained control</li>
+<li><strong>Context Menu</strong>: Integrated Krypton context menu with reset functionality</li>
+<li><strong>Palette Integration</strong>: Automatic theme detection and application</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="containedcontrol-property">ContainedControl Property</h3>
+<pre><code class="lang-csharp">[Browsable(false)]
+public Control ContainedControl =&gt; _propertyGrid;
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Provides access to the underlying <code>PropertyGrid</code> for advanced customization</li>
+<li><strong>Category</strong>: Runtime only (hidden from designer)</li>
+<li><strong>Access Level</strong>: Protected but accessible for integration scenarios</li>
+</ul>
+<h3 id="propertygrid-property">PropertyGrid Property</h3>
+<pre><code class="lang-csharp">[Browsable(false)]
+public PropertyGrid PropertyGrid =&gt; _propertyGrid;
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Direct access to the wrapped <code>PropertyGrid</code> instance</li>
+<li><strong>Usage</strong>: For scenarios requiring access to native <code>PropertyGrid</code> features</li>
+<li><strong>Integration</strong>: Allows custom <code>PropertyGrid</code>-specific configuration</li>
+</ul>
+<h3 id="visual-state-properties">Visual State Properties</h3>
+<pre><code class="lang-csharp">public PaletteInputControlTripleRedirect StateCommon { get; }
+public PaletteInputControlTripleStates StateDisabled { get; }
+public PaletteInputControlTripleStates StateNormal { get; }
+public PaletteInputControlTripleStates StateActive { get; }
+</code></pre>
+<ul>
+<li><strong>StateCommon</strong>: Base styling configuration for all states</li>
+<li><strong>StateNormal</strong>: Default appearance when enabled but not active</li>
+<li><strong>StateActive</strong>: Highlighted appearance when focused/active</li>
+<li><strong>StateDisabled</strong>: Appearance when control is disabled</li>
+</ul>
+<h3 id="alwaysactive-property">AlwaysActive Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool AlwaysActive { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Forces the control to always appear in active state</li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Use Case</strong>: When PropertyGrid should always look selected/focused</li>
+</ul>
+<h3 id="isactive-property">IsActive Property</h3>
+<pre><code class="lang-csharp">[Browsable(false)]
+public bool IsActive { get; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Read-only property indicating current active state</li>
+<li><strong>Logic</strong>: <code>DesignMode || AlwaysActive || ContainsFocus</code></li>
+</ul>
+<h2 id="standard-propertygrid-properties">Standard PropertyGrid Properties</h2>
+<h3 id="commandsvisibleifavailable-property">CommandsVisibleIfAvailable Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool CommandsVisibleIfAvailable { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Shows commands pane for objects that expose verbs</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Integration</strong>: Directly bound to contained <code>PropertyGrid</code></li>
+</ul>
+<h3 id="helpvisible-property">HelpVisible Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool HelpVisible { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls visibility of the help description pane</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Localizable</strong>: Yes</li>
+</ul>
+<h3 id="canshowvisualstyleglyphs-property">CanShowVisualStyleGlyphs Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool CanShowVisualStyleGlyphs { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Uses OS-specific visual style glyphs for expansion nodes</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Effect</strong>: Modern glyphs vs. legacy symbols</li>
+</ul>
+<h3 id="propertysort-property">PropertySort Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(PropertySort.CategorizedAlphabetical)]
+public PropertySort PropertySort { get; set; }
+</code></pre>
+<ul>
+<li><strong>Available Options</strong>:
+<ul>
+<li><code>Alphabetical</code>: Alphabetical sorting only</li>
+<li><code>Categorized</code>: Category grouping only</li>
+<li><code>CategorizedAlphabetical</code>: Categories with alphabetical order (default)</li>
+<li><code>NoSort</code>: Display properties in declaration order</li>
+</ul>
+</li>
+</ul>
+<h3 id="selectedobject-property">SelectedObject Property</h3>
+<pre><code class="lang-csharp">[TypeConverter(typeof(SelectedObjectConverter))]
+public object? SelectedObject { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Sets the primary object for property inspection</li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>TypeConverter</strong>: Specialized converter for IComponent objects</li>
+</ul>
+<h3 id="multi-object-selection">Multi-Object Selection</h3>
+<pre><code class="lang-csharp">[Browsable(false)]
+public object[] SelectedObjects { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Supports inspection of multiple objects simultaneously</li>
+<li><strong>Category</strong>: Runtime only</li>
+<li><strong>Use Case</strong>: Comparing properties across multiple instances</li>
+</ul>
+<h3 id="appearance-options">Appearance Options</h3>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool LargeButtons { get; set; }
+
+[DefaultValue(true)]
+public bool ToolbarVisible { get; set; }
+</code></pre>
+<ul>
+<li><strong>LargeButtons</strong>: Increases command button sizes for better accessibility</li>
+<li><strong>ToolbarVisible</strong>: Shows/hides the toolbar strip with commands</li>
+</ul>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="dark-mode-integration">Dark Mode Integration</h3>
+<p>The <code>PropertyGrid</code> automatically adapts to dark themes:</p>
+<pre><code class="lang-csharp">public void ConfigureDarkMode()
+{
+    var palette = KryptonManager.CurrentGlobalPalette;
+    var colorTable = palette.ColorTable;
+    
+    // Automatically adjusts colors for dark themes
+    propertyGrid.CategoryForeColor = palette.ToString().Contains(&quot;DarkMode&quot;)
+        ? colorTable.MenuStripText
+        : colorTable.ToolStripDropDownBackground;
+}
+</code></pre>
+<h3 id="custom-context-menu">Custom Context Menu</h3>
+<p>The control provides an enhanced context menu with reset functionality:</p>
+<pre><code class="lang-csharp">public partial class EnhancedPropertyGrid : KryptonPropertyGrid
+{
+    protected override void OnPropertyValueChanged(PropertyValueChangedEventArgs e)
+    {
+        base.OnPropertyValueChanged(e);
+        
+        // Log property changes for debugging
+        Console.WriteLine($&quot;Property '{e.ChangedItem.PropertyDescriptor.Name}' changed from '{e.OldValue}' to '{e.ChangedItem.Value}'&quot;);
+    }
+}
+</code></pre>
+<h3 id="theme-aware-property-editing">Theme-Aware Property Editing</h3>
+<pre><code class="lang-csharp">public class ThemeAwarePropertyEditor : Form
+{
+    private KryptonPropertyGrid propertyGrid;
+
+    public void EditComponent(IComponent component)
+    {
+        propertyGrid.SelectedObject = component;
+        
+        // Configure appearance based on component type
+        ConfigureForComponentType(component.GetType());
+    }
+
+    private void ConfigureForComponentType(Type componentType)
+    {
+        // Example: Different configuration for different component types
+        if (componentType.IsSubclassOf(typeof(Control)))
+        {
+            propertyGrid.ToolbarVisible = true;
+            propertyGrid.LargeButtons = true;
+        }
+        else
+        {
+            propertyGrid.ToolbarVisible = false;
+            propertyGrid.LargeButtons = false;
+        }
+
+        propertyGrid.PropertySort = PropertySort.CategorizedAlphabetical;
+        propertyGrid.HelpVisible = true;
+    }
+}
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="design-time-property-editing">Design-Time Property Editing</h3>
+<pre><code class="lang-csharp">public class ComponentDesigner : Form
+{
+    private KryptonPropertyGrid propertyGrid;
+
+    public void EditComponent(IComponent component)
+    {
+        propertyGrid.SelectedObject = component;
+        
+        // Enable design-time specific features
+        propertyGrid.CommandsVisibleIfAvailable = true;
+        propertyGrid.CanShowVisualStyleGlyphs = true;
+        
+        // Configure context for design-time
+        SetupDesignTimeContext();
+    }
+
+    private void SetupDesignTimeContext()
+    {
+        // Show design-time specific commands
+        propertyGrid.ToolbarVisible = true;
+        
+        // Enable help pane for designer guidance
+        propertyGrid.HelpVisible = true;
+    }
+}
+</code></pre>
+<h3 id="runtime-configuration-editor">Runtime Configuration Editor</h3>
+<pre><code class="lang-csharp">public class ConfigurationEditor : UserControl
+{
+    private KryptonPropertyGrid configGrid;
+
+    public void EditSettings(SettingsBase settings)
+    {
+        configGrid.SelectedObject = settings;
+        
+        // Configure for runtime settings editing
+        configGrid.ToolbarVisible = false; // Cleaner appearance
+        configGrid.HelpVisible = false; // Reduce UI clutter
+        
+        // Sort settings logically
+        configGrid.PropertySort = PropertySort.CategorizedAlphabetical;
+    }
+
+    public void EditMultipleSettings(SettingsBase[] settingsArray)
+    {
+        // Enable multi-object inspection for comparing settings
+        configGrid.SelectedObjects = settingsArray;
+        
+        // Configure multi-object display
+        configGrid.HelpVisible = true; // Show help for multi-object scenarios
+    }
+}
+</code></pre>
+<h3 id="dynamic-property-inspection">Dynamic Property Inspection</h3>
+<pre><code class="lang-csharp">public class DynamicPropertyInspector : UserControl
+{
+    private KryptonPropertyGrid inspector;
+    
+    public void InspectObject(object targetObject)
+    {
+        inspector.SelectedObject = targetObject;
+        
+        // Configure based on object characteristics
+        ConfigureInspection(targetObject);
+    }
+
+    private void ConfigureInspection(object target)
+    {
+        if (target is IComponent component)
+        {
+            // Enable component-specific features
+            inspector.CommandsVisibleIfAvailable = true;
+        }
+        else
+        {
+            // Standard object inspection
+            inspector.CommandsVisibleIfAvailable = false;
+        }
+
+        // Always show categorization for complex objects
+        inspector.PropertySort = PropertySort.CategorizedAlphabetical;
+        inspector.HelpVisible = true;
+    }
+}
+</code></pre>
+<h2 id="event-handling">Event Handling</h2>
+<h3 id="property-change-events">Property Change Events</h3>
+<pre><code class="lang-csharp">public partial class PropertyMonitor : UserControl
+{
+    private KryptonPropertyGrid monitoredGrid;
+
+    public PropertyMonitor()
+    {
+        InitializeComponent();
+        SetupEventHandling();
+    }
+
+    private void SetupEventHandling()
+    {
+        // Monitor property value changes
+        monitoredGrid.PropertyValueChanged += OnPropertyChanged;
+        
+        // Monitor tab changes
+        monitoredGrid.PropertyTabChanged += OnPropertyTabChanged;
+        
+        // Monitor sort changes
+        monitoredGrid.PropertySortChanged += OnPropertySortChanged;
+    }
+
+    private void OnPropertyChanged(object? sender, PropertyValueChangedEventArgs e)
+    {
+        // Track property modifications
+        LogPropertyChange(e.PropertyDescriptor.Name, e.OldValue, e.ChangedItem.Value);
+        
+        // Trigger validation if needed
+        ValidateProperty(e.PropertyDescriptor, e.ChangedItem.Value);
+    }
+
+    private void OnPropertyTabChanged(object? sender, PropertyTabChangedEventArgs e)
+    {
+        // Handle tab switching for context-aware help
+        UpdateHelpContext(e.Tab);
+    }
+
+    private void OnPropertySortChanged(object? sender, EventArgs e)
+    {
+        // Save user's sorting preference
+        SaveSortingPreference(monitoredGrid.PropertySort);
+    }
+}
+</code></pre>
+<h2 id="custom-property-tab-integration">Custom Property Tab Integration</h2>
+<pre><code class="lang-csharp">public class CustomPropertyTab : PropertyTab
+{
+    public override PropertyDescriptorCollection GetProperties(object component, Attribute[]? attributes)
+    {
+        var properties = TypeDescriptor.GetProperties(component);
+        
+        // Filter and customize properties for this tab
+        var filteredProps = new List&lt;PropertyDescriptor&gt;();
+        
+        foreach (PropertyDescriptor prop in properties)
+        {
+            if (ShouldShowInThisTab(prop))
+            {
+                filteredProps.Add(prop);
+            }
+        }
+        
+        return new PropertyDescriptorCollection(filteredProps.ToArray());
+    }
+
+    public override string TabName =&gt; &quot;Custom Tab&quot;;
+}
+
+// Usage
+var propertyGrid = new KryptonPropertyGrid();
+var customTab = new CustomPropertyTab();
+propertyGrid.PropertyTabs?.AddTabProperty(customTab, PropertyTabScope.Component);
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Efficient Rendering</strong>: Custom paint handling prevents flicker</li>
+<li><strong>Memory Management</strong>: Proper disposal of graphics resources</li>
+<li><strong>Theme Switching</strong>: Optimized palette switching without full recreation</li>
+<li><strong>Context Menu</strong>: Minimal overhead for enhanced context menu features</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="properties-not-showing">Properties Not Showing</h3>
+<p><strong>Issue</strong>: SelectedObject properties not visible<br>
+<strong>Solution</strong>: Ensure TypeConverter and Designer configuration:</p>
+<pre><code class="lang-csharp">[TypeConverter(typeof(ExpandableObjectConverter))]
+public class MyCustomObject
+{
+    [Category(&quot;Appearance&quot;)]
+    [Description(&quot;Visible property&quot;)]
+    public string MyVisibleProperty { get; set; }
+}
+</code></pre>
+<h3 id="theme-not-applied-correctly">Theme Not Applied Correctly</h3>
+<p><strong>Issue</strong>: Colors not matching theme<br>
+<strong>Solution</strong>: Force theme refresh:</p>
+<pre><code class="lang-csharp">propertyGridViewDrawPanel.Recreate();
+propertyGrid.Invalidate();
+UpdateStateAndPalettes();
+</code></pre>
+<h3 id="context-menu-reset-not-working">Context Menu Reset Not Working</h3>
+<p><strong>Issue</strong>: Reset context menu disabled unexpectedly<br>
+<strong>Solution</strong>: Ensure valid reset values:</p>
+<pre><code class="lang-csharp">[DefaultValue(&quot;Default Value&quot;)]
+public string MyProperty { get; set; } = &quot;Default Value&quot;;
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Designer</strong>: Custom <code>KryptonPropertyGridDesigner</code> provides enhanced design-time experience</li>
+<li><strong>Toolbox</strong>: Available with specialized bitmap representation</li>
+<li><strong>Property Window</strong>: Comprehensive visual state configuration</li>
+<li><strong>Containment</strong>: Properly integrates with Visual Studio's designer</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Appearance</strong>: Visual properties (<code>CommandsVisibleIfAvailable</code>, <code>HelpVisible</code>, <code>LargeButtons</code>)</li>
+<li><strong>Behavior</strong>: Functional properties (<code>PropertySort</code>, <code>SelectedObject</code>)</li>
+<li><strong>Visuals</strong>: Theme and styling properties (<code>StateCommon</code>, <code>StateNormal</code>, <code>AlwaysActive</code>)</li>
+</ul>
+<h2 id="migration-from-standard-propertygrid">Migration from Standard PropertyGrid</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+PropertyGrid propertyGrid = new PropertyGrid();
+
+// New code
+KryptonPropertyGrid propertyGrid = new KryptonPropertyGrid();
+</code></pre>
+<h3 id="enhanced-features">Enhanced Features</h3>
+<pre><code class="lang-csharp">// Standard PropertyGrid (basic)
+var standardPg = new PropertyGrid();
+
+// KryptonPropertyGrid (enhanced)
+var kryptonPg = new KryptonPropertyGrid
+{
+    ToolbarVisible = true,
+    HelpVisible = true,
+    PropertySort = PropertySort.CategorizedAlphabetical,
+    CommandsVisibleIfAvailable = true,
+    AlwaysActive = false, // Theme-aware activation
+    StateNormal = // Full theme control
+};
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="configuration-property-editor">Configuration Property Editor</h3>
+<pre><code class="lang-csharp">public partial class ConfigPropertyEditor : Form
+{
+    private KryptonPropertyGrid configGrid;
+    private Button applyButton;
+    private Button resetButton;
+
+    public ConfigPropertyEditor()
+    {
+        InitializeComponent();
+        SetupPropertyGrid();
+    }
+
+    private void SetupPropertyGrid()
+    {
+        configGrid.PropertyValueChanged += OnConfigChanged;
+        configGrid.ToolbarVisible = false; // Use custom buttons instead
+        configGrid.HelpVisible = true; // Show descriptions
+        configGrid.PropertySort = PropertySort.CategorizedAlphabetical;
+    }
+
+    public void EditConfiguration(AppConfig config)
+    {
+        configGrid.SelectedObject = config;
+        UpdateButtonStates();
+    }
+
+    private void OnConfigChanged(object? sender, PropertyValueChangedEventArgs e)
+    {
+        applyButton.Enabled = true;
+        resetButton.Enabled = true;
+        
+        // Track changes for undo functionality
+        TrackConfigurationChange(e.PropertyDescriptor.Name, e.OldValue, e.ChangedItem.Value);
+    }
+}
+</code></pre>
+<h3 id="component-inspector-form">Component Inspector Form</h3>
+<pre><code class="lang-csharp">public class ComponentInspector : Form
+{
+    private KryptonPropertyGrid inspector;
+    private ComboBox componentSelector;
+
+    public ComponentInspector()
+    {
+        InitializeComponent();
+    }
+
+    public void InspectComponents(IList&lt;IComponent&gt; components)
+    {
+        // Populate component selector
+        componentSelector.DataSource = components;
+        componentSelector.DisplayMember = &quot;GetType().Name&quot;;
+        
+        // Configure inspector for component inspection
+        inspector.CommandsVisibleIfAvailable = true;
+        inspector.CanShowVisualStyleGlyphs = true;
+        inspector.PropertySort = PropertySort.CategorizedAlphabetical;
+        
+        if (components.Count &gt; 0)
+        {
+            inspector.SelectedObject = components[0];
+        }
+    }
+
+    private void ComponentSelector_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (componentSelector.SelectedItem is IComponent selectedComponent)
+        {
+            inspector.SelectedObject = selectedComponent;
+            UpdateComponentContext(selectedComponent);
+        }
+    }
+
+    private void UpdateComponentContext(IComponent component)
+    {
+        // Update title and context based on selected component
+        Text = $&quot;Inspecting {component.GetType().Name}&quot;;
+        
+        // Configure visual state based on component type
+        if (component is Control control)
+        {
+            inspector.AlwaysActive = control.ContainsFocus;
+        }
+        else
+        {
+            inspector.AlwaysActive = false;
+        }
+    }
+}
+</code></pre>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

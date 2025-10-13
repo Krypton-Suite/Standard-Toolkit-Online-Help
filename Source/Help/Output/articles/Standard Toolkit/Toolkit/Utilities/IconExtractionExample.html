@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Icon Extraction from System DLLs | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Icon Extraction from System DLLs | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="icon-extraction-from-system-dlls">Icon Extraction from System DLLs</h1>
+
+<p>This document demonstrates how to extract icons from Windows system DLLs (<code>imageres.dll</code> and <code>shell32.dll</code>) using the Krypton Toolkit.</p>
+<h2 id="overview">Overview</h2>
+<p>The Krypton Toolkit provides easy-to-use methods for extracting icons from two important Windows system DLLs:</p>
+<ul>
+<li><strong>imageres.dll</strong>: Modern Windows icons (Vista and later)</li>
+<li><strong>shell32.dll</strong>: Classic Windows icons (available since early Windows versions)</li>
+</ul>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="extracting-icons-from-imageresdll">Extracting Icons from imageres.dll</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+
+// Extract a UAC shield icon
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres(
+    (int)ImageresIconID.Shield, 
+    IconSize.Medium
+);
+
+// Extract a lock icon
+var lockIcon = GraphicsExtensions.ExtractIconFromImageres(
+    (int)ImageresIconID.Lock, 
+    IconSize.Large
+);
+
+// Extract a user icon with small size
+var userIcon = GraphicsExtensions.ExtractIconFromImageres(
+    (int)ImageresIconID.User, 
+    IconSize.Small
+);
+
+// Use the icon with a button
+if (shieldIcon != null)
+{
+    myButton.Values.Image = shieldIcon.ToBitmap();
+}
+</code></pre>
+<h3 id="extracting-icons-from-shell32dll">Extracting Icons from shell32.dll</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+
+// Extract a folder icon
+var folderIcon = GraphicsExtensions.ExtractIconFromShell32(
+    (int)Shell32IconID.Folder, 
+    IconSize.Medium
+);
+
+// Extract a computer icon
+var computerIcon = GraphicsExtensions.ExtractIconFromShell32(
+    (int)Shell32IconID.Computer, 
+    IconSize.Large
+);
+
+// Extract a network icon
+var networkIcon = GraphicsExtensions.ExtractIconFromShell32(
+    (int)Shell32IconID.Network, 
+    IconSize.ExtraLarge
+);
+
+// Extract a recycle bin icon
+var recycleBinIcon = GraphicsExtensions.ExtractIconFromShell32(
+    (int)Shell32IconID.RecycleBinEmpty, 
+    IconSize.Small
+);
+
+// Use the icon with a picture box
+if (folderIcon != null)
+{
+    myPictureBox.Image = folderIcon.ToBitmap();
+}
+</code></pre>
+<h2 id="available-icon-sizes">Available Icon Sizes</h2>
+<p>The <code>IconSize</code> enum provides standard sizes:</p>
+<table>
+<thead>
+<tr>
+<th>Size</th>
+<th>Dimensions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IconSize.Tiny</code></td>
+<td>8x8</td>
+</tr>
+<tr>
+<td><code>IconSize.ExtraSmall</code></td>
+<td>16x16</td>
+</tr>
+<tr>
+<td><code>IconSize.Small</code></td>
+<td>20x20</td>
+</tr>
+<tr>
+<td><code>IconSize.MediumSmall</code></td>
+<td>24x24</td>
+</tr>
+<tr>
+<td><code>IconSize.Medium</code></td>
+<td>32x32</td>
+</tr>
+<tr>
+<td><code>IconSize.Large</code></td>
+<td>48x48</td>
+</tr>
+<tr>
+<td><code>IconSize.ExtraLarge</code></td>
+<td>64x64</td>
+</tr>
+<tr>
+<td><code>IconSize.Jumbo</code></td>
+<td>96x96</td>
+</tr>
+<tr>
+<td><code>IconSize.ExtraJumbo</code></td>
+<td>128x128</td>
+</tr>
+<tr>
+<td><code>IconSize.Huge</code></td>
+<td>256x256</td>
+</tr>
+</tbody>
+</table>
+<h2 id="common-imageresdll-icons">Common imageres.dll Icons</h2>
+<p>Some commonly used icons from imageres.dll:</p>
+<ul>
+<li><code>ImageresIconID.Shield</code> - UAC elevation shield</li>
+<li><code>ImageresIconID.Lock</code> - Security/locked state</li>
+<li><code>ImageresIconID.Unlock</code> - Unlocked state</li>
+<li><code>ImageresIconID.Key</code> - Authentication/access</li>
+<li><code>ImageresIconID.User</code> - User account</li>
+<li><code>ImageresIconID.Users</code> - Multiple users</li>
+<li><code>ImageresIconID.Computer</code> - Computer/workstation</li>
+<li><code>ImageresIconID.Network</code> - Network connection</li>
+<li><code>ImageresIconID.Folder</code> - Generic folder</li>
+<li><code>ImageresIconID.File</code> - Generic file</li>
+</ul>
+<h2 id="common-shell32dll-icons">Common shell32.dll Icons</h2>
+<p>The <code>Shell32IconID</code> enum now contains <strong>300+ icons</strong> organized into categories:</p>
+<h3 id="basic-icons">Basic Icons</h3>
+<ul>
+<li><code>Shell32IconID.Folder</code> - Folder (closed)</li>
+<li><code>Shell32IconID.FolderOpen</code> - Folder (open)</li>
+<li><code>Shell32IconID.Document</code> - Default document</li>
+<li><code>Shell32IconID.Application</code> - Executable/Application</li>
+</ul>
+<h3 id="storage-and-drives">Storage and Drives</h3>
+<ul>
+<li><code>Shell32IconID.HardDrive</code> - Hard disk drive</li>
+<li><code>Shell32IconID.CDRom</code> - CD/DVD drive</li>
+<li><code>Shell32IconID.RemovableDrive</code> - Removable drive</li>
+<li><code>Shell32IconID.NetworkDrive</code> - Network drive</li>
+<li><code>Shell32IconID.Floppy35</code> - 3.5&quot; floppy disk</li>
+</ul>
+<h3 id="network-and-computers">Network and Computers</h3>
+<ul>
+<li><code>Shell32IconID.Computer</code> - Computer/workstation</li>
+<li><code>Shell32IconID.Network</code> - Network</li>
+<li><code>Shell32IconID.Server</code> - Server</li>
+<li><code>Shell32IconID.NetworkNeighborhood</code> - Network neighborhood</li>
+</ul>
+<h3 id="system-utilities">System Utilities</h3>
+<ul>
+<li><code>Shell32IconID.Search</code> - Search/find</li>
+<li><code>Shell32IconID.RecycleBinEmpty</code> - Empty recycle bin</li>
+<li><code>Shell32IconID.RecycleBinFull</code> - Full recycle bin</li>
+<li><code>Shell32IconID.ControlPanel</code> - Control Panel</li>
+<li><code>Shell32IconID.Printer</code> - Printer</li>
+<li><code>Shell32IconID.Help</code> - Help/Question mark</li>
+<li><code>Shell32IconID.Run</code> - Run/Execute</li>
+</ul>
+<h3 id="actions">Actions</h3>
+<ul>
+<li><code>Shell32IconID.Cut</code> - Cut (scissors)</li>
+<li><code>Shell32IconID.Copy</code> - Copy</li>
+<li><code>Shell32IconID.Paste</code> - Paste</li>
+<li><code>Shell32IconID.Delete</code> - Delete</li>
+<li><code>Shell32IconID.Properties</code> - Properties</li>
+<li><code>Shell32IconID.Print</code> - Print</li>
+</ul>
+<h3 id="hardware--devices">Hardware &amp; Devices</h3>
+<ul>
+<li><code>Shell32IconID.Keyboard</code> - Keyboard</li>
+<li><code>Shell32IconID.Mouse</code> - Mouse</li>
+<li><code>Shell32IconID.Monitor</code> - Monitor</li>
+<li><code>Shell32IconID.Speakers</code> - Speakers</li>
+<li><code>Shell32IconID.Camera</code> - Camera</li>
+<li><code>Shell32IconID.Scanner</code> - Scanner</li>
+<li><code>Shell32IconID.Laptop</code> - Laptop</li>
+</ul>
+<h3 id="user-accounts">User Accounts</h3>
+<ul>
+<li><code>Shell32IconID.UserAccount</code> - User account</li>
+<li><code>Shell32IconID.Administrator</code> - Administrator</li>
+<li><code>Shell32IconID.Guest</code> - Guest</li>
+<li><code>Shell32IconID.UserGroup</code> - User group</li>
+</ul>
+<h3 id="special-folders">Special Folders</h3>
+<ul>
+<li><code>Shell32IconID.MyDocuments</code> - My Documents</li>
+<li><code>Shell32IconID.MyPictures</code> - My Pictures</li>
+<li><code>Shell32IconID.MyMusic</code> - My Music</li>
+<li><code>Shell32IconID.MyVideos</code> - My Videos</li>
+<li><code>Shell32IconID.Recent</code> - Recent documents</li>
+</ul>
+<h3 id="windows-features">Windows Features</h3>
+<ul>
+<li><code>Shell32IconID.WindowsUpdate</code> - Windows Update</li>
+<li><code>Shell32IconID.WindowsDefender</code> - Windows Defender</li>
+<li><code>Shell32IconID.WindowsFirewall</code> - Windows Firewall</li>
+<li><code>Shell32IconID.DeviceManager</code> - Device Manager</li>
+</ul>
+<p><strong>Total: 300+ icons across 15 categories</strong> - See the <code>Shell32IconID</code> enum for the complete list!</p>
+<h2 id="error-handling">Error Handling</h2>
+<p>Both extraction methods return <code>null</code> if the icon cannot be extracted. Always check for null before using:</p>
+<pre><code class="lang-csharp">var icon = GraphicsExtensions.ExtractIconFromShell32(
+    (int)Shell32IconID.Folder, 
+    IconSize.Medium
+);
+
+if (icon != null)
+{
+    // Use the icon
+    myButton.Values.Image = icon.ToBitmap();
+}
+else
+{
+    // Handle the case where extraction failed
+    // Use a fallback icon or show an error message
+}
+</code></pre>
+<h2 id="complete-example">Complete Example</h2>
+<p>See <code>IconExtractionTest.cs</code> in the TestForm project for a complete working example that demonstrates extracting and displaying icons from both DLLs.</p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Icon availability may vary across different Windows versions</li>
+<li>shell32.dll contains hundreds of icons (indices 0-300+)</li>
+<li>imageres.dll is available on Windows Vista and later</li>
+<li>shell32.dll icons work on all Windows versions</li>
+<li>For resource-constrained scenarios, consider caching extracted icons</li>
+<li>Remember to dispose of Icon objects when done to free resources</li>
+</ul>
+<h2 id="advanced-usage">Advanced Usage</h2>
+<h3 id="using-with-krypton-buttons">Using with Krypton Buttons</h3>
+<pre><code class="lang-csharp">// Add a shield icon to a Krypton button
+var shieldIcon = GraphicsExtensions.ExtractIconFromImageres(
+    (int)ImageresIconID.Shield, 
+    IconSize.Medium
+);
+
+if (shieldIcon != null)
+{
+    kryptonButton1.Values.Image = shieldIcon.ToBitmap();
+    kryptonButton1.Values.Text = &quot;Run as Administrator&quot;;
+}
+</code></pre>
+<h3 id="creating-image-lists">Creating Image Lists</h3>
+<pre><code class="lang-csharp">// Create an image list with shell32 icons
+var imageList = new ImageList();
+imageList.ImageSize = new Size(32, 32);
+
+var icons = new[]
+{
+    Shell32IconID.Folder,
+    Shell32IconID.Computer,
+    Shell32IconID.Network,
+    Shell32IconID.Printer
+};
+
+foreach (var iconId in icons)
+{
+    var icon = GraphicsExtensions.ExtractIconFromShell32(
+        (int)iconId, 
+        IconSize.Medium
+    );
+    
+    if (icon != null)
+    {
+        imageList.Images.Add(icon.ToBitmap());
+    }
+}
+
+// Use with TreeView, ListView, etc.
+treeView1.ImageList = imageList;
+</code></pre>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><code>ImageresIconID</code> enum - Full list of imageres.dll icon IDs</li>
+<li><code>Shell32IconID</code> enum - Full list of shell32.dll icon IDs</li>
+<li><code>GraphicsExtensions</code> class - Icon extraction methods</li>
+<li><code>IconSize</code> enum - Standard icon sizes</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Localization Implementation Examples | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Localization Implementation Examples | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="localization-implementation-examples">Localization Implementation Examples</h1>
+
+<h2 id="overview">Overview</h2>
+<p>This document provides complete, ready-to-use implementation examples for localizing Krypton Toolkit applications. Each example includes full source code that you can adapt to your specific needs.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#complete-application-example">Complete Application Example</a></li>
+<li><a href="#multi-form-application">Multi-Form Application</a></li>
+<li><a href="#settings-dialog-with-language-selector">Settings Dialog with Language Selector</a></li>
+<li><a href="#localized-message-box-wrapper">Localized Message Box Wrapper</a></li>
+<li><a href="#plugin-based-localization-system">Plugin-Based Localization System</a></li>
+<li><a href="#database-driven-localization">Database-Driven Localization</a></li>
+</ol>
+<hr>
+<h2 id="complete-application-example">Complete Application Example</h2>
+<h3 id="project-structure">Project Structure</h3>
+<pre><code>MyKryptonApp/
+├── Program.cs
+├── Localization/
+│   ├── ILocalizationProvider.cs
+│   ├── LocalizationManager.cs
+│   ├── Languages/
+│   │   ├── SpanishProvider.cs
+│   │   ├── FrenchProvider.cs
+│   │   ├── GermanProvider.cs
+│   │   └── JapaneseProvider.cs
+├── Forms/
+│   ├── MainForm.cs
+│   └── SettingsForm.cs
+└── Properties/
+    └── Settings.settings
+</code></pre>
+<h3 id="programcs">Program.cs</h3>
+<pre><code class="lang-csharp">using System;
+using System.Globalization;
+using System.Threading;
+using System.Windows.Forms;
+using Krypton.Toolkit;
+
+namespace MyKryptonApp
+{
+    static class Program
+    {
+        [STAThread]
+        static void Main()
+        {
+            // Configure application
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            
+            // Initialize localization
+            InitializeLocalization();
+            
+            // Run application
+            Application.Run(new MainForm());
+        }
+        
+        private static void InitializeLocalization()
+        {
+            try
+            {
+                // Load user's preferred language from settings
+                string languageCode = Properties.Settings.Default.Language;
+                
+                CultureInfo culture;
+                if (string.IsNullOrEmpty(languageCode))
+                {
+                    // Use system default on first run
+                    culture = CultureInfo.CurrentUICulture;
+                    
+                    // Save it for next time
+                    Properties.Settings.Default.Language = culture.Name;
+                    Properties.Settings.Default.Save();
+                }
+                else
+                {
+                    culture = new CultureInfo(languageCode);
+                }
+                
+                // Apply localization
+                LocalizationManager.Instance.SetLanguage(culture);
+                
+                // Set thread culture
+                Thread.CurrentThread.CurrentCulture = culture;
+                Thread.CurrentThread.CurrentUICulture = culture;
+                
+                Console.WriteLine($&quot;Application localized to: {culture.DisplayName}&quot;);
+            }
+            catch (Exception ex)
+            {
+                // Log error and fall back to English
+                Console.WriteLine($&quot;Localization initialization error: {ex.Message}&quot;);
+                KryptonManager.Strings.Reset();
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="ilocalizationprovidercs">ILocalizationProvider.cs</h3>
+<pre><code class="lang-csharp">using System.Globalization;
+
+namespace MyKryptonApp.Localization
+{
+    /// &lt;summary&gt;
+    /// Interface for localization providers
+    /// &lt;/summary&gt;
+    public interface ILocalizationProvider
+    {
+        /// &lt;summary&gt;
+        /// Gets the culture this provider supports
+        /// &lt;/summary&gt;
+        CultureInfo Culture { get; }
+        
+        /// &lt;summary&gt;
+        /// Gets the display name of the language
+        /// &lt;/summary&gt;
+        string DisplayName { get; }
+        
+        /// &lt;summary&gt;
+        /// Applies this localization to KryptonManager.Strings
+        /// &lt;/summary&gt;
+        void ApplyLocalization();
+    }
+}
+</code></pre>
+<h3 id="localizationmanagercs">LocalizationManager.cs</h3>
+<pre><code class="lang-csharp">using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using Krypton.Toolkit;
+using MyKryptonApp.Localization.Languages;
+
+namespace MyKryptonApp.Localization
+{
+    /// &lt;summary&gt;
+    /// Manages application localization
+    /// &lt;/summary&gt;
+    public sealed class LocalizationManager
+    {
+        #region Singleton
+        
+        private static readonly Lazy&lt;LocalizationManager&gt; _instance 
+            = new Lazy&lt;LocalizationManager&gt;(() =&gt; new LocalizationManager());
+        
+        public static LocalizationManager Instance =&gt; _instance.Value;
+        
+        #endregion
+        
+        #region Fields
+        
+        private readonly Dictionary&lt;string, ILocalizationProvider&gt; _providers;
+        private CultureInfo _currentCulture;
+        
+        #endregion
+        
+        #region Events
+        
+        public event EventHandler&lt;LanguageChangedEventArgs&gt; LanguageChanged;
+        
+        #endregion
+        
+        #region Constructor
+        
+        private LocalizationManager()
+        {
+            _providers = new Dictionary&lt;string, ILocalizationProvider&gt;();
+            _currentCulture = CultureInfo.InvariantCulture;
+            
+            // Register built-in language providers
+            RegisterProvider(new SpanishProvider());
+            RegisterProvider(new FrenchProvider());
+            RegisterProvider(new GermanProvider());
+            RegisterProvider(new JapaneseProvider());
+        }
+        
+        #endregion
+        
+        #region Public Properties
+        
+        public CultureInfo CurrentCulture =&gt; _currentCulture;
+        
+        public IEnumerable&lt;ILocalizationProvider&gt; SupportedLanguages =&gt; _providers.Values;
+        
+        #endregion
+        
+        #region Public Methods
+        
+        public void RegisterProvider(ILocalizationProvider provider)
+        {
+            if (provider == null)
+                throw new ArgumentNullException(nameof(provider));
+            
+            string key = provider.Culture.TwoLetterISOLanguageName.ToLower();
+            _providers[key] = provider;
+        }
+        
+        public bool SetLanguage(CultureInfo culture)
+        {
+            if (culture == null)
+                throw new ArgumentNullException(nameof(culture));
+            
+            string key = culture.TwoLetterISOLanguageName.ToLower();
+            
+            if (key == &quot;en&quot;)
+            {
+                // English - reset to defaults
+                KryptonManager.Strings.Reset();
+                UpdateCurrentCulture(culture);
+                return true;
+            }
+            
+            if (_providers.TryGetValue(key, out ILocalizationProvider provider))
+            {
+                try
+                {
+                    provider.ApplyLocalization();
+                    UpdateCurrentCulture(culture);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(
+                        $&quot;Error applying localization: {ex.Message}&quot;
+                    );
+                    return false;
+                }
+            }
+            
+            // Unsupported language - fall back to English
+            KryptonManager.Strings.Reset();
+            UpdateCurrentCulture(CultureInfo.InvariantCulture);
+            return false;
+        }
+        
+        public bool SetLanguage(string cultureName)
+        {
+            try
+            {
+                CultureInfo culture = new CultureInfo(cultureName);
+                return SetLanguage(culture);
+            }
+            catch (CultureNotFoundException)
+            {
+                return false;
+            }
+        }
+        
+        public ILocalizationProvider GetProvider(CultureInfo culture)
+        {
+            string key = culture.TwoLetterISOLanguageName.ToLower();
+            _providers.TryGetValue(key, out ILocalizationProvider provider);
+            return provider;
+        }
+        
+        #endregion
+        
+        #region Private Methods
+        
+        private void UpdateCurrentCulture(CultureInfo culture)
+        {
+            CultureInfo oldCulture = _currentCulture;
+            _currentCulture = culture;
+            
+            OnLanguageChanged(new LanguageChangedEventArgs(oldCulture, culture));
+        }
+        
+        private void OnLanguageChanged(LanguageChangedEventArgs e)
+        {
+            LanguageChanged?.Invoke(this, e);
+        }
+        
+        #endregion
+    }
+    
+    #region Event Args
+    
+    public class LanguageChangedEventArgs : EventArgs
+    {
+        public CultureInfo OldCulture { get; }
+        public CultureInfo NewCulture { get; }
+        
+        public LanguageChangedEventArgs(CultureInfo oldCulture, CultureInfo newCulture)
+        {
+            OldCulture = oldCulture;
+            NewCulture = newCulture;
+        }
+    }
+    
+    #endregion
+}
+</code></pre>
+<h3 id="spanishprovidercs">SpanishProvider.cs</h3>
+<pre><code class="lang-csharp">using System.Globalization;
+using Krypton.Toolkit;
+
+namespace MyKryptonApp.Localization.Languages
+{
+    public class SpanishProvider : ILocalizationProvider
+    {
+        public CultureInfo Culture =&gt; new CultureInfo(&quot;es&quot;);
+        
+        public string DisplayName =&gt; &quot;Español&quot;;
+        
+        public void ApplyLocalization()
+        {
+            ApplyGeneralStrings();
+            ApplyCustomStrings();
+            ApplyRibbonStrings();
+            ApplyAboutBoxStrings();
+            ApplyToastNotificationStrings();
+        }
+        
+        private void ApplyGeneralStrings()
+        {
+            var s = KryptonManager.Strings.GeneralStrings;
+            
+            s.OK = &quot;&amp;Aceptar&quot;;
+            s.Cancel = &quot;&amp;Cancelar&quot;;
+            s.Yes = &quot;&amp;Sí&quot;;
+            s.No = &quot;&amp;No&quot;;
+            s.Abort = &quot;Abo&amp;rtar&quot;;
+            s.Retry = &quot;Rei&amp;ntentar&quot;;
+            s.Ignore = &quot;&amp;Ignorar&quot;;
+            s.Close = &quot;C&amp;errar&quot;;
+            s.Help = &quot;A&amp;yuda&quot;;
+            s.Continue = &quot;Co&amp;ntinuar&quot;;
+            s.TryAgain = &quot;Volver a &amp;intentar&quot;;
+            s.Today = &quot;&amp;Hoy&quot;;
+        }
+        
+        private void ApplyCustomStrings()
+        {
+            var s = KryptonManager.Strings.CustomStrings;
+            
+            s.Apply = &quot;A&amp;plicar&quot;;
+            s.Back = &quot;&amp;Atrás&quot;;
+            s.Next = &quot;&amp;Siguiente&quot;;
+            s.Previous = &quot;A&amp;nterior&quot;;
+            s.Finish = &quot;&amp;Finalizar&quot;;
+            s.Exit = &quot;&amp;Salir&quot;;
+            s.Collapse = &quot;&amp;Contraer&quot;;
+            s.Expand = &quot;E&amp;xpander&quot;;
+            s.Cut = &quot;Cor&amp;tar&quot;;
+            s.Copy = &quot;&amp;Copiar&quot;;
+            s.Paste = &quot;&amp;Pegar&quot;;
+            s.SelectAll = &quot;Seleccionar &amp;todo&quot;;
+            s.ClearClipboard = &quot;&amp;Limpiar portapapeles&quot;;
+            s.YesToAll = &quot;Sí a &amp;todo&quot;;
+            s.NoToAll = &quot;No a t&amp;odo&quot;;
+            s.OkToAll = &quot;Aceptar &amp;todo&quot;;
+            s.Reset = &quot;&amp;Restablecer&quot;;
+            s.SystemInformation = &quot;&amp;Información del sistema&quot;;
+            s.CurrentTheme = &quot;Tema actual&quot;;
+            s.DoNotShowAgain = &quot;&amp;No volver a mostrar&quot;;
+        }
+        
+        private void ApplyRibbonStrings()
+        {
+            var s = KryptonManager.Strings.RibbonStrings;
+            
+            s.AppButtonText = &quot;Archivo&quot;;
+            s.AppButtonKeyTip = &quot;A&quot;;
+            s.CustomizeQuickAccessToolbar = &quot;Personalizar barra de herramientas&quot;;
+            s.Minimize = &quot;&amp;Minimizar la cinta&quot;;
+            s.MoreColors = &quot;&amp;Más colores...&quot;;
+            s.NoColor = &quot;&amp;Sin color&quot;;
+            s.RecentDocuments = &quot;Documentos recientes&quot;;
+            s.RecentColors = &quot;Colores recientes&quot;;
+            s.ShowAboveRibbon = &quot;&amp;Mostrar encima de la cinta&quot;;
+            s.ShowBelowRibbon = &quot;Mostrar &amp;debajo de la cinta&quot;;
+            s.ShowQATAboveRibbon = &quot;Mostrar barra de acceso rápido &amp;encima&quot;;
+            s.ShowQATBelowRibbon = &quot;Mostrar barra de acceso rápido &amp;debajo&quot;;
+            s.StandardColors = &quot;Colores estándar&quot;;
+            s.ThemeColors = &quot;Colores del tema&quot;;
+        }
+        
+        private void ApplyAboutBoxStrings()
+        {
+            var s = KryptonManager.Strings.AboutBoxStrings;
+            
+            s.About = &quot;Acerca de&quot;;
+            s.Title = &quot;Título&quot;;
+            s.Copyright = &quot;Copyright&quot;;
+            s.Description = &quot;Descripción&quot;;
+            s.Company = &quot;Compañía&quot;;
+            s.Product = &quot;Producto&quot;;
+            s.Trademark = &quot;Marca comercial&quot;;
+            s.Version = &quot;Versión&quot;;
+            s.BuildDate = &quot;Fecha de compilación&quot;;
+            s.ImageRuntimeVersion = &quot;Versión de runtime&quot;;
+            s.LoadedFromGlobalAssemblyCache = &quot;Cargado desde GAC&quot;;
+        }
+        
+        private void ApplyToastNotificationStrings()
+        {
+            var s = KryptonManager.Strings.ToastNotificationStrings;
+            
+            s.Dismiss = &quot;&amp;Cerrar&quot;;
+            s.DoNotShowAgain = &quot;&amp;No volver a mostrar&quot;;
+        }
+    }
+}
+</code></pre>
+<h3 id="mainformcs">MainForm.cs</h3>
+<pre><code class="lang-csharp">using System;
+using System.Globalization;
+using System.Windows.Forms;
+using Krypton.Toolkit;
+using MyKryptonApp.Localization;
+
+namespace MyKryptonApp.Forms
+{
+    public partial class MainForm : KryptonForm
+    {
+        public MainForm()
+        {
+            InitializeComponent();
+            
+            // Subscribe to language changes
+            LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+            
+            // Initialize UI
+            InitializeUI();
+        }
+        
+        private void InitializeUI()
+        {
+            // Set form text based on current language
+            UpdateUIText();
+        }
+        
+        private void UpdateUIText()
+        {
+            // Update form title
+            this.Text = GetLocalizedText(&quot;MainForm.Title&quot;, &quot;My Application&quot;);
+            
+            // Update menu items
+            fileToolStripMenuItem.Text = GetLocalizedText(&quot;Menu.File&quot;, &quot;File&quot;);
+            editToolStripMenuItem.Text = GetLocalizedText(&quot;Menu.Edit&quot;, &quot;Edit&quot;);
+            helpToolStripMenuItem.Text = GetLocalizedText(&quot;Menu.Help&quot;, &quot;Help&quot;);
+            
+            // Update buttons
+            saveButton.Text = KryptonManager.Strings.CustomStrings.Apply;
+            cancelButton.Text = KryptonManager.Strings.GeneralStrings.Cancel;
+        }
+        
+        private string GetLocalizedText(string key, string defaultValue)
+        {
+            // In a real application, you would load this from resources
+            return defaultValue;
+        }
+        
+        private void OnLanguageChanged(object sender, LanguageChangedEventArgs e)
+        {
+            // Update UI when language changes
+            UpdateUIText();
+            
+            // Show notification
+            KryptonMessageBox.Show(
+                this,
+                $&quot;Language changed to: {e.NewCulture.DisplayName}&quot;,
+                &quot;Language Changed&quot;,
+                KryptonMessageBoxButtons.OK,
+                KryptonMessageBoxIcon.Information
+            );
+        }
+        
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var settingsForm = new SettingsForm())
+            {
+                settingsForm.ShowDialog(this);
+            }
+        }
+        
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Use localized message box
+            var result = KryptonMessageBox.Show(
+                this,
+                &quot;Are you sure you want to exit?&quot;,
+                &quot;Confirm Exit&quot;,
+                KryptonMessageBoxButtons.YesNo,
+                KryptonMessageBoxIcon.Question
+            );
+            
+            if (result == DialogResult.Yes)
+            {
+                Application.Exit();
+            }
+        }
+        
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            // Unsubscribe from events
+            LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
+            
+            base.OnFormClosing(e);
+        }
+    }
+}
+</code></pre>
+<hr>
+<h2 id="settings-dialog-with-language-selector">Settings Dialog with Language Selector</h2>
+<h3 id="settingsformcs">SettingsForm.cs</h3>
+<pre><code class="lang-csharp">using System;
+using System.Globalization;
+using System.Linq;
+using System.Windows.Forms;
+using Krypton.Toolkit;
+using MyKryptonApp.Localization;
+
+namespace MyKryptonApp.Forms
+{
+    public partial class SettingsForm : KryptonForm
+    {
+        private bool _languageChanged = false;
+        
+        public SettingsForm()
+        {
+            InitializeComponent();
+            
+            InitializeLanguageComboBox();
+            LoadSettings();
+        }
+        
+        private void InitializeLanguageComboBox()
+        {
+            // Add English (default)
+            languageComboBox.Items.Add(new LanguageItem(
+                new CultureInfo(&quot;en&quot;), 
+                &quot;English&quot;
+            ));
+            
+            // Add supported languages
+            foreach (var provider in LocalizationManager.Instance.SupportedLanguages.OrderBy(p =&gt; p.DisplayName))
+            {
+                languageComboBox.Items.Add(new LanguageItem(
+                    provider.Culture,
+                    provider.DisplayName
+                ));
+            }
+            
+            // Select current language
+            CultureInfo current = LocalizationManager.Instance.CurrentCulture;
+            for (int i = 0; i &lt; languageComboBox.Items.Count; i++)
+            {
+                var item = (LanguageItem)languageComboBox.Items[i];
+                if (item.Culture.TwoLetterISOLanguageName == 
+                    current.TwoLetterISOLanguageName)
+                {
+                    languageComboBox.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+        
+        private void LoadSettings()
+        {
+            // Load other settings
+            // ...
+        }
+        
+        private void languageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (languageComboBox.SelectedItem is LanguageItem selectedItem)
+            {
+                CultureInfo current = LocalizationManager.Instance.CurrentCulture;
+                
+                if (!selectedItem.Culture.TwoLetterISOLanguageName.Equals(
+                    current.TwoLetterISOLanguageName, 
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    _languageChanged = true;
+                    
+                    // Show preview of change
+                    restartLabel.Visible = true;
+                    restartLabel.Text = &quot;Language will be changed when you click Apply&quot;;
+                }
+                else
+                {
+                    _languageChanged = false;
+                    restartLabel.Visible = false;
+                }
+            }
+        }
+        
+        private void applyButton_Click(object sender, EventArgs e)
+        {
+            if (_languageChanged &amp;&amp; languageComboBox.SelectedItem is LanguageItem selectedItem)
+            {
+                // Confirm language change
+                var result = KryptonMessageBox.Show(
+                    this,
+                    &quot;Changing the language will require restarting the application. Continue?&quot;,
+                    &quot;Confirm Language Change&quot;,
+                    KryptonMessageBoxButtons.YesNo,
+                    KryptonMessageBoxIcon.Question
+                );
+                
+                if (result == DialogResult.Yes)
+                {
+                    // Save language preference
+                    Properties.Settings.Default.Language = selectedItem.Culture.Name;
+                    Properties.Settings.Default.Save();
+                    
+                    // Apply immediately
+                    LocalizationManager.Instance.SetLanguage(selectedItem.Culture);
+                    
+                    // Show message
+                    KryptonMessageBox.Show(
+                        this,
+                        &quot;Language changed successfully.&quot;,
+                        &quot;Success&quot;,
+                        KryptonMessageBoxButtons.OK,
+                        KryptonMessageBoxIcon.Information
+                    );
+                    
+                    _languageChanged = false;
+                    restartLabel.Visible = false;
+                }
+            }
+            
+            // Save other settings
+            SaveSettings();
+        }
+        
+        private void okButton_Click(object sender, EventArgs e)
+        {
+            applyButton_Click(sender, e);
+            this.Close();
+        }
+        
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+            if (_languageChanged)
+            {
+                var result = KryptonMessageBox.Show(
+                    this,
+                    &quot;You have unsaved language changes. Are you sure you want to cancel?&quot;,
+                    &quot;Unsaved Changes&quot;,
+                    KryptonMessageBoxButtons.YesNo,
+                    KryptonMessageBoxIcon.Warning
+                );
+                
+                if (result == DialogResult.No)
+                    return;
+            }
+            
+            this.Close();
+        }
+        
+        private void SaveSettings()
+        {
+            // Save other settings
+            Properties.Settings.Default.Save();
+        }
+        
+        #region LanguageItem Helper Class
+        
+        private class LanguageItem
+        {
+            public CultureInfo Culture { get; }
+            public string DisplayName { get; }
+            
+            public LanguageItem(CultureInfo culture, string displayName)
+            {
+                Culture = culture;
+                DisplayName = displayName;
+            }
+            
+            public override string ToString() =&gt; DisplayName;
+        }
+        
+        #endregion
+    }
+}
+</code></pre>
+<h3 id="settingsformdesignercs-partial">SettingsForm.Designer.cs (partial)</h3>
+<pre><code class="lang-csharp">partial class SettingsForm
+{
+    private KryptonLabel languageLabel;
+    private KryptonComboBox languageComboBox;
+    private KryptonLabel restartLabel;
+    private KryptonButton applyButton;
+    private KryptonButton okButton;
+    private KryptonButton cancelButton;
+    
+    private void InitializeComponent()
+    {
+        this.languageLabel = new KryptonLabel();
+        this.languageComboBox = new KryptonComboBox();
+        this.restartLabel = new KryptonLabel();
+        this.applyButton = new KryptonButton();
+        this.okButton = new KryptonButton();
+        this.cancelButton = new KryptonButton();
+        
+        // languageLabel
+        this.languageLabel.Location = new System.Drawing.Point(12, 12);
+        this.languageLabel.Text = &quot;Language:&quot;;
+        
+        // languageComboBox
+        this.languageComboBox.Location = new System.Drawing.Point(120, 10);
+        this.languageComboBox.Width = 200;
+        this.languageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        this.languageComboBox.SelectedIndexChanged += 
+            new EventHandler(languageComboBox_SelectedIndexChanged);
+        
+        // restartLabel
+        this.restartLabel.Location = new System.Drawing.Point(120, 35);
+        this.restartLabel.ForeColor = System.Drawing.Color.Red;
+        this.restartLabel.Visible = false;
+        
+        // applyButton
+        this.applyButton.Location = new System.Drawing.Point(12, 100);
+        this.applyButton.Text = KryptonManager.Strings.CustomStrings.Apply;
+        this.applyButton.Click += new EventHandler(applyButton_Click);
+        
+        // okButton
+        this.okButton.Location = new System.Drawing.Point(100, 100);
+        this.okButton.Text = KryptonManager.Strings.GeneralStrings.OK;
+        this.okButton.Click += new EventHandler(okButton_Click);
+        
+        // cancelButton
+        this.cancelButton.Location = new System.Drawing.Point(188, 100);
+        this.cancelButton.Text = KryptonManager.Strings.GeneralStrings.Cancel;
+        this.cancelButton.Click += new EventHandler(cancelButton_Click);
+        
+        // SettingsForm
+        this.ClientSize = new System.Drawing.Size(350, 150);
+        this.Controls.Add(this.languageLabel);
+        this.Controls.Add(this.languageComboBox);
+        this.Controls.Add(this.restartLabel);
+        this.Controls.Add(this.applyButton);
+        this.Controls.Add(this.okButton);
+        this.Controls.Add(this.cancelButton);
+        this.FormBorderStyle = FormBorderStyle.FixedDialog;
+        this.MaximizeBox = false;
+        this.MinimizeBox = false;
+        this.StartPosition = FormStartPosition.CenterParent;
+        this.Text = &quot;Settings&quot;;
+    }
+}
+</code></pre>
+<hr>
+<h2 id="localized-message-box-wrapper">Localized Message Box Wrapper</h2>
+<h3 id="localizedmessageboxcs">LocalizedMessageBox.cs</h3>
+<pre><code class="lang-csharp">using System;
+using System.Windows.Forms;
+using Krypton.Toolkit;
+
+namespace MyKryptonApp.Localization
+{
+    /// &lt;summary&gt;
+    /// Wrapper for KryptonMessageBox with automatic localization
+    /// &lt;/summary&gt;
+    public static class LocalizedMessageBox
+    {
+        /// &lt;summary&gt;
+        /// Shows a localized confirmation dialog
+        /// &lt;/summary&gt;
+        public static DialogResult ShowConfirmation(
+            string message, 
+            string title = null,
+            IWin32Window owner = null)
+        {
+            title = title ?? GetLocalizedString(&quot;MessageBox.Confirmation&quot;, &quot;Confirmation&quot;);
+            
+            return KryptonMessageBox.Show(
+                owner,
+                message,
+                title,
+                KryptonMessageBoxButtons.YesNo,
+                KryptonMessageBoxIcon.Question
+            );
+        }
+        
+        /// &lt;summary&gt;
+        /// Shows a localized information dialog
+        /// &lt;/summary&gt;
+        public static void ShowInformation(
+            string message,
+            string title = null,
+            IWin32Window owner = null)
+        {
+            title = title ?? GetLocalizedString(&quot;MessageBox.Information&quot;, &quot;Information&quot;);
+            
+            KryptonMessageBox.Show(
+                owner,
+                message,
+                title,
+                KryptonMessageBoxButtons.OK,
+                KryptonMessageBoxIcon.Information
+            );
+        }
+        
+        /// &lt;summary&gt;
+        /// Shows a localized warning dialog
+        /// &lt;/summary&gt;
+        public static void ShowWarning(
+            string message,
+            string title = null,
+            IWin32Window owner = null)
+        {
+            title = title ?? GetLocalizedString(&quot;MessageBox.Warning&quot;, &quot;Warning&quot;);
+            
+            KryptonMessageBox.Show(
+                owner,
+                message,
+                title,
+                KryptonMessageBoxButtons.OK,
+                KryptonMessageBoxIcon.Warning
+            );
+        }
+        
+        /// &lt;summary&gt;
+        /// Shows a localized error dialog
+        /// &lt;/summary&gt;
+        public static void ShowError(
+            string message,
+            string title = null,
+            IWin32Window owner = null)
+        {
+            title = title ?? GetLocalizedString(&quot;MessageBox.Error&quot;, &quot;Error&quot;);
+            
+            KryptonMessageBox.Show(
+                owner,
+                message,
+                title,
+                KryptonMessageBoxButtons.OK,
+                KryptonMessageBoxIcon.Error
+            );
+        }
+        
+        /// &lt;summary&gt;
+        /// Shows a localized save confirmation dialog
+        /// &lt;/summary&gt;
+        public static DialogResult ShowSaveConfirmation(
+            string fileName,
+            IWin32Window owner = null)
+        {
+            string message = string.Format(
+                GetLocalizedString(&quot;MessageBox.SaveChanges&quot;, 
+                    &quot;Do you want to save changes to '{0}'?&quot;),
+                fileName
+            );
+            
+            string title = GetLocalizedString(&quot;MessageBox.SaveTitle&quot;, &quot;Save Changes&quot;);
+            
+            return KryptonMessageBox.Show(
+                owner,
+                message,
+                title,
+                KryptonMessageBoxButtons.YesNoCancel,
+                KryptonMessageBoxIcon.Question
+            );
+        }
+        
+        /// &lt;summary&gt;
+        /// Shows a localized delete confirmation dialog
+        /// &lt;/summary&gt;
+        public static DialogResult ShowDeleteConfirmation(
+            string itemName,
+            IWin32Window owner = null)
+        {
+            string message = string.Format(
+                GetLocalizedString(&quot;MessageBox.DeleteConfirm&quot;,
+                    &quot;Are you sure you want to delete '{0}'? This action cannot be undone.&quot;),
+                itemName
+            );
+            
+            string title = GetLocalizedString(&quot;MessageBox.DeleteTitle&quot;, &quot;Confirm Delete&quot;);
+            
+            return KryptonMessageBox.Show(
+                owner,
+                message,
+                title,
+                KryptonMessageBoxButtons.YesNo,
+                KryptonMessageBoxIcon.Warning
+            );
+        }
+        
+        /// &lt;summary&gt;
+        /// Shows a localized overwrite confirmation dialog
+        /// &lt;/summary&gt;
+        public static DialogResult ShowOverwriteConfirmation(
+            string fileName,
+            IWin32Window owner = null)
+        {
+            string message = string.Format(
+                GetLocalizedString(&quot;MessageBox.OverwriteConfirm&quot;,
+                    &quot;The file '{0}' already exists. Do you want to replace it?&quot;),
+                fileName
+            );
+            
+            string title = GetLocalizedString(&quot;MessageBox.OverwriteTitle&quot;, 
+                &quot;Confirm Overwrite&quot;);
+            
+            return KryptonMessageBox.Show(
+                owner,
+                message,
+                title,
+                KryptonMessageBoxButtons.YesNo,
+                KryptonMessageBoxIcon.Warning
+            );
+        }
+        
+        private static string GetLocalizedString(string key, string defaultValue)
+        {
+            // In a real application, load from resources
+            // For now, return default value
+            return defaultValue;
+        }
+    }
+}
+</code></pre>
+<h3 id="usage-example">Usage Example</h3>
+<pre><code class="lang-csharp">// Instead of:
+var result = KryptonMessageBox.Show(&quot;Are you sure?&quot;, &quot;Confirm&quot;, 
+    KryptonMessageBoxButtons.YesNo, KryptonMessageBoxIcon.Question);
+
+// Use:
+var result = LocalizedMessageBox.ShowConfirmation(&quot;Are you sure?&quot;, &quot;Confirm&quot;);
+
+// Other examples:
+LocalizedMessageBox.ShowInformation(&quot;Operation completed successfully&quot;);
+LocalizedMessageBox.ShowWarning(&quot;This action may take some time&quot;);
+LocalizedMessageBox.ShowError(&quot;An error occurred while processing&quot;);
+
+var saveResult = LocalizedMessageBox.ShowSaveConfirmation(&quot;document.txt&quot;);
+var deleteResult = LocalizedMessageBox.ShowDeleteConfirmation(&quot;Old File.txt&quot;);
+var overwriteResult = LocalizedMessageBox.ShowOverwriteConfirmation(&quot;file.txt&quot;);
+</code></pre>
+<hr>
+<h2 id="database-driven-localization">Database-Driven Localization</h2>
+<h3 id="database-schema">Database Schema</h3>
+<pre><code class="lang-sql">CREATE TABLE Languages (
+    LanguageID INT PRIMARY KEY IDENTITY(1,1),
+    CultureCode NVARCHAR(10) NOT NULL UNIQUE,
+    DisplayName NVARCHAR(100) NOT NULL,
+    IsActive BIT NOT NULL DEFAULT 1
+);
+
+CREATE TABLE StringCategories (
+    CategoryID INT PRIMARY KEY IDENTITY(1,1),
+    CategoryName NVARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE LocalizedStrings (
+    StringID INT PRIMARY KEY IDENTITY(1,1),
+    CategoryID INT NOT NULL,
+    StringKey NVARCHAR(100) NOT NULL,
+    LanguageID INT NOT NULL,
+    StringValue NVARCHAR(500) NOT NULL,
+    LastModified DATETIME NOT NULL DEFAULT GETDATE(),
+    FOREIGN KEY (CategoryID) REFERENCES StringCategories(CategoryID),
+    FOREIGN KEY (LanguageID) REFERENCES Languages(LanguageID),
+    UNIQUE (CategoryID, StringKey, LanguageID)
+);
+
+-- Sample data
+INSERT INTO Languages (CultureCode, DisplayName) VALUES 
+    ('en', 'English'),
+    ('es', 'Español'),
+    ('fr', 'Français'),
+    ('de', 'Deutsch'),
+    ('ja', '日本語');
+
+INSERT INTO StringCategories (CategoryName) VALUES 
+    ('General'),
+    ('Custom'),
+    ('Ribbon'),
+    ('AboutBox'),
+    ('ToastNotification');
+
+-- Sample strings
+INSERT INTO LocalizedStrings (CategoryID, StringKey, LanguageID, StringValue) VALUES
+    (1, 'OK', 1, 'O&amp;K'),
+    (1, 'OK', 2, '&amp;Aceptar'),
+    (1, 'Cancel', 1, 'Cance&amp;l'),
+    (1, 'Cancel', 2, '&amp;Cancelar');
+</code></pre>
+<h3 id="databaselocalizationprovidercs">DatabaseLocalizationProvider.cs</h3>
+<pre><code class="lang-csharp">using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Globalization;
+using Krypton.Toolkit;
+
+namespace MyKryptonApp.Localization.Database
+{
+    public class DatabaseLocalizationProvider : ILocalizationProvider
+    {
+        private readonly string _connectionString;
+        private readonly CultureInfo _culture;
+        private readonly string _displayName;
+        private Dictionary&lt;string, Dictionary&lt;string, string&gt;&gt; _cachedStrings;
+        
+        public DatabaseLocalizationProvider(
+            string connectionString, 
+            CultureInfo culture, 
+            string displayName)
+        {
+            _connectionString = connectionString;
+            _culture = culture;
+            _displayName = displayName;
+        }
+        
+        public CultureInfo Culture =&gt; _culture;
+        public string DisplayName =&gt; _displayName;
+        
+        public void ApplyLocalization()
+        {
+            LoadStringsFromDatabase();
+            ApplyToKryptonManager();
+        }
+        
+        private void LoadStringsFromDatabase()
+        {
+            _cachedStrings = new Dictionary&lt;string, Dictionary&lt;string, string&gt;&gt;(
+                StringComparer.OrdinalIgnoreCase
+            );
+            
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                
+                string query = @&quot;
+                    SELECT 
+                        c.CategoryName,
+                        s.StringKey,
+                        s.StringValue
+                    FROM LocalizedStrings s
+                    INNER JOIN StringCategories c ON s.CategoryID = c.CategoryID
+                    INNER JOIN Languages l ON s.LanguageID = l.LanguageID
+                    WHERE l.CultureCode = @CultureCode
+                    ORDER BY c.CategoryName, s.StringKey&quot;;
+                
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue(&quot;@CultureCode&quot;, 
+                        _culture.TwoLetterISOLanguageName);
+                    
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string category = reader.GetString(0);
+                            string key = reader.GetString(1);
+                            string value = reader.GetString(2);
+                            
+                            if (!_cachedStrings.ContainsKey(category))
+                            {
+                                _cachedStrings[category] = 
+                                    new Dictionary&lt;string, string&gt;(
+                                        StringComparer.OrdinalIgnoreCase
+                                    );
+                            }
+                            
+                            _cachedStrings[category][key] = value;
+                        }
+                    }
+                }
+            }
+        }
+        
+        private void ApplyToKryptonManager()
+        {
+            ApplyCategory(&quot;General&quot;, KryptonManager.Strings.GeneralStrings);
+            ApplyCategory(&quot;Custom&quot;, KryptonManager.Strings.CustomStrings);
+            ApplyCategory(&quot;Ribbon&quot;, KryptonManager.Strings.RibbonStrings);
+            ApplyCategory(&quot;AboutBox&quot;, KryptonManager.Strings.AboutBoxStrings);
+            ApplyCategory(&quot;ToastNotification&quot;, 
+                KryptonManager.Strings.ToastNotificationStrings);
+        }
+        
+        private void ApplyCategory(string categoryName, object target)
+        {
+            if (!_cachedStrings.TryGetValue(categoryName, out var strings))
+                return;
+            
+            var type = target.GetType();
+            foreach (var kvp in strings)
+            {
+                var property = type.GetProperty(kvp.Key);
+                if (property != null &amp;&amp; property.CanWrite &amp;&amp; 
+                    property.PropertyType == typeof(string))
+                {
+                    property.SetValue(target, kvp.Value);
+                }
+            }
+        }
+        
+        public string GetString(string category, string key, string defaultValue = null)
+        {
+            if (_cachedStrings == null)
+                LoadStringsFromDatabase();
+            
+            if (_cachedStrings.TryGetValue(category, out var categoryStrings) &amp;&amp;
+                categoryStrings.TryGetValue(key, out var value))
+            {
+                return value;
+            }
+            
+            return defaultValue ?? key;
+        }
+    }
+}
+</code></pre>
+<h3 id="databaselocalizationmanagercs">DatabaseLocalizationManager.cs</h3>
+<pre><code class="lang-csharp">using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.Linq;
+
+namespace MyKryptonApp.Localization.Database
+{
+    public class DatabaseLocalizationManager
+    {
+        private readonly string _connectionString;
+        private List&lt;DatabaseLocalizationProvider&gt; _providers;
+        
+        public DatabaseLocalizationManager(string connectionString)
+        {
+            _connectionString = connectionString;
+            LoadProviders();
+        }
+        
+        private void LoadProviders()
+        {
+            _providers = new List&lt;DatabaseLocalizationProvider&gt;();
+            
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                
+                string query = @&quot;
+                    SELECT CultureCode, DisplayName 
+                    FROM Languages 
+                    WHERE IsActive = 1
+                    ORDER BY DisplayName&quot;;
+                
+                using (var command = new SqlCommand(query, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string cultureCode = reader.GetString(0);
+                        string displayName = reader.GetString(1);
+                        
+                        try
+                        {
+                            var culture = new CultureInfo(cultureCode);
+                            var provider = new DatabaseLocalizationProvider(
+                                _connectionString,
+                                culture,
+                                displayName
+                            );
+                            
+                            _providers.Add(provider);
+                        }
+                        catch (CultureNotFoundException)
+                        {
+                            // Skip invalid cultures
+                        }
+                    }
+                }
+            }
+        }
+        
+        public IEnumerable&lt;ILocalizationProvider&gt; GetProviders()
+        {
+            return _providers;
+        }
+        
+        public void RegisterWithLocaliz ationManager()
+        {
+            foreach (var provider in _providers)
+            {
+                LocalizationManager.Instance.RegisterProvider(provider);
+            }
+        }
+    }
+}
+</code></pre>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="LocalizationGuide.html">Localization and String Management Guide</a></li>
+<li><a href="../Components/KryptonManagerStringsAPIReference.html">KryptonManager.Strings API Reference</a></li>
+<li><a href="LocalizationAdvancedTopics.html">Advanced Localization Topics</a></li>
+<li><a href="ExceptionHandlerAPIDocumentation.html">ExceptionHandler API Documentation</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

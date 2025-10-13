@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Localization and String Management Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Localization and String Management Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="localization-and-string-management-guide">Localization and String Management Guide</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#string-management-architecture">String Management Architecture</a></li>
+<li><a href="#kryptonlanguagemanager">KryptonLanguageManager</a></li>
+<li><a href="#string-collections">String Collections</a></li>
+<li><a href="#localization-implementation">Localization Implementation</a></li>
+<li><a href="#custom-string-management">Custom String Management</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#migration-from-kryptonmanagerstrings">Migration from KryptonManager.Strings</a></li>
+</ol>
+<h2 id="overview">Overview</h2>
+<p>The Krypton Toolkit Suite provides comprehensive localization and string management capabilities to support international applications. The system has evolved from the legacy <code>KryptonManager.Strings</code> approach to a more robust <code>KryptonLanguageManager</code> system that better supports translations and multi-language applications.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Centralized String Management</strong>: All UI strings are managed through dedicated string collection classes</li>
+<li><strong>Localization Support</strong>: Built-in support for multiple languages and cultures</li>
+<li><strong>Designer Integration</strong>: String properties are visible and editable in the Visual Studio designer</li>
+<li><strong>Type Safety</strong>: Strongly-typed string properties prevent runtime errors</li>
+<li><strong>Extensibility</strong>: Easy to add custom string collections for application-specific needs</li>
+</ul>
+<h2 id="string-management-architecture">String Management Architecture</h2>
+<h3 id="core-components">Core Components</h3>
+<pre><code>KryptonLanguageManager (New System)
+    ↓
+String Collection Classes
+    ↓
+Individual String Properties
+    ↓
+UI Controls
+</code></pre>
+<h3 id="legacy-vs-new-system">Legacy vs New System</h3>
+<p><strong>Legacy System (Deprecated):</strong></p>
+<pre><code class="lang-csharp">// OLD - Deprecated
+KryptonManager.Strings.GeneralStrings.OK
+</code></pre>
+<p><strong>New System (Recommended):</strong></p>
+<pre><code class="lang-csharp">// NEW - Current approach
+KryptonLanguageManager.Strings.GeneralStrings.OK
+</code></pre>
+<h2 id="kryptonlanguagemanager">KryptonLanguageManager</h2>
+<p>The <code>KryptonLanguageManager</code> is the central hub for all string management in the Krypton Toolkit Suite.</p>
+<h3 id="basic-usage">Basic Usage</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+
+// Access general strings
+string okText = KryptonLanguageManager.Strings.GeneralStrings.OK;
+string cancelText = KryptonLanguageManager.Strings.GeneralStrings.Cancel;
+
+// Access message box strings
+string errorTitle = KryptonLanguageManager.Strings.MessageBoxStrings.ErrorTitle;
+string warningTitle = KryptonLanguageManager.Strings.MessageBoxStrings.WarningTitle;
+</code></pre>
+<h3 id="initialization">Initialization</h3>
+<pre><code class="lang-csharp">// In your application startup (e.g., Program.cs)
+public static void Main()
+{
+    Application.EnableVisualStyles();
+    Application.SetCompatibleTextRenderingDefault(false);
+    
+    // Initialize KryptonManager first
+    KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
+    
+    // Language manager is automatically initialized
+    // No explicit initialization required
+    
+    Application.Run(new MainForm());
+}
+</code></pre>
+<h2 id="string-collections">String Collections</h2>
+<p>The Krypton Toolkit Suite organizes strings into logical collections based on functionality.</p>
+<h3 id="generaltoolkitstrings">GeneralToolkitStrings</h3>
+<p>Contains common UI strings used throughout the toolkit.</p>
+<pre><code class="lang-csharp">public class GeneralToolkitStrings
+{
+    // Button text
+    public string OK { get; set; } = &quot;O&amp;K&quot;;
+    public string Cancel { get; set; } = &quot;Cance&amp;l&quot;;
+    public string Yes { get; set; } = &quot;&amp;Yes&quot;;
+    public string No { get; set; } = &quot;N&amp;o&quot;;
+    public string Abort { get; set; } = &quot;A&amp;bort&quot;;
+    public string Retry { get; set; } = &quot;Ret&amp;ry&quot;;
+    public string Ignore { get; set; } = &quot;I&amp;gnore&quot;;
+    public string Close { get; set; } = &quot;Clo&amp;se&quot;;
+    
+    // Clipboard operations
+    public string Cut { get; set; } = &quot;Cu&amp;t&quot;;
+    public string Copy { get; set; } = &quot;&amp;Copy&quot;;
+    public string Paste { get; set; } = &quot;&amp;Paste&quot;;
+    public string SelectAll { get; set; } = &quot;Select &amp;All&quot;;
+    
+    // Other common strings
+    public string Today { get; set; } = &quot;&amp;Today&quot;;
+    public string Help { get; set; } = &quot;H&amp;elp&quot;;
+    public string Administrator { get; set; } = &quot;Administrator&quot;;
+}
+</code></pre>
+<h3 id="messageboxstrings">MessageBoxStrings</h3>
+<p>Contains strings specific to message box dialogs.</p>
+<pre><code class="lang-csharp">public class MessageBoxStrings
+{
+    public string ErrorTitle { get; set; } = &quot;Error&quot;;
+    public string WarningTitle { get; set; } = &quot;Warning&quot;;
+    public string InformationTitle { get; set; } = &quot;Information&quot;;
+    public string QuestionTitle { get; set; } = &quot;Question&quot;;
+    public string ConfirmationTitle { get; set; } = &quot;Confirmation&quot;;
+}
+</code></pre>
+<h3 id="exceptiondialogstrings">ExceptionDialogStrings</h3>
+<p>Contains strings for the exception dialog system.</p>
+<pre><code class="lang-csharp">public class ExceptionDialogStrings
+{
+    public string WindowTitle { get; set; } = &quot;Exception Details&quot;;
+    public string ExceptionDetailsHeader { get; set; } = &quot;Exception Details&quot;;
+    public string ExceptionOutlineHeader { get; set; } = &quot;Exception Outline&quot;;
+    public string Type { get; set; } = &quot;Type&quot;;
+    public string Message { get; set; } = &quot;Message&quot;;
+    public string StackTrace { get; set; } = &quot;Stack Trace&quot;;
+    public string InnerException { get; set; } = &quot;Inner Exception&quot;;
+    public string None { get; set; } = &quot;None&quot;;
+    public string SearchBoxCueText { get; set; } = &quot;Search exception details...&quot;;
+}
+</code></pre>
+<h3 id="customtoolkitstrings">CustomToolkitStrings</h3>
+<p>For application-specific strings.</p>
+<pre><code class="lang-csharp">public class CustomToolkitStrings
+{
+    // Add your custom strings here
+    public string CustomButtonText { get; set; } = &quot;Custom Button&quot;;
+    public string CustomMessage { get; set; } = &quot;Custom Message&quot;;
+}
+</code></pre>
+<h2 id="localization-implementation">Localization Implementation</h2>
+<h3 id="setting-up-localization">Setting Up Localization</h3>
+<ol>
+<li><p><strong>Create Resource Files</strong>: Create <code>.resx</code> files for each language you want to support.</p>
+</li>
+<li><p><strong>Configure Culture</strong>: Set the application culture in your startup code.</p>
+</li>
+</ol>
+<pre><code class="lang-csharp">// Set specific culture
+Thread.CurrentThread.CurrentCulture = new CultureInfo(&quot;fr-FR&quot;);
+Thread.CurrentThread.CurrentUICulture = new CultureInfo(&quot;fr-FR&quot;);
+
+// Or use system culture
+Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
+Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
+</code></pre>
+<ol start="3">
+<li><strong>Load Localized Strings</strong>: The system automatically loads strings based on the current culture.</li>
+</ol>
+<h3 id="example-localization-setup">Example Localization Setup</h3>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    public MainForm()
+    {
+        InitializeComponent();
+        LoadLocalizedStrings();
+    }
+    
+    private void LoadLocalizedStrings()
+    {
+        // Set form title
+        Text = KryptonLanguageManager.Strings.GeneralStrings.ApplicationTitle;
+        
+        // Set button text
+        okButton.Text = KryptonLanguageManager.Strings.GeneralStrings.OK;
+        cancelButton.Text = KryptonLanguageManager.Strings.GeneralStrings.Cancel;
+        
+        // Set menu text
+        fileMenu.Text = KryptonLanguageManager.Strings.GeneralStrings.File;
+        editMenu.Text = KryptonLanguageManager.Strings.GeneralStrings.Edit;
+    }
+}
+</code></pre>
+<h3 id="resource-file-structure">Resource File Structure</h3>
+<p><strong>Strings.resx (Default/English):</strong></p>
+<pre><code class="lang-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;root&gt;
+  &lt;data name=&quot;OK&quot; xml:space=&quot;preserve&quot;&gt;
+    &lt;value&gt;O&amp;amp;K&lt;/value&gt;
+  &lt;/data&gt;
+  &lt;data name=&quot;Cancel&quot; xml:space=&quot;preserve&quot;&gt;
+    &lt;value&gt;Cance&amp;amp;l&lt;/value&gt;
+  &lt;/data&gt;
+&lt;/root&gt;
+</code></pre>
+<p><strong>Strings.fr-FR.resx (French):</strong></p>
+<pre><code class="lang-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;root&gt;
+  &lt;data name=&quot;OK&quot; xml:space=&quot;preserve&quot;&gt;
+    &lt;value&gt;O&amp;amp;K&lt;/value&gt;
+  &lt;/data&gt;
+  &lt;data name=&quot;Cancel&quot; xml:space=&quot;preserve&quot;&gt;
+    &lt;value&gt;Annule&amp;amp;r&lt;/value&gt;
+  &lt;/data&gt;
+&lt;/root&gt;
+</code></pre>
+<h2 id="custom-string-management">Custom String Management</h2>
+<h3 id="creating-custom-string-collections">Creating Custom String Collections</h3>
+<ol>
+<li><strong>Define Your String Class</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">public class MyApplicationStrings : GlobalId
+{
+    private const string DEFAULT_SAVE = &quot;&amp;Save&quot;;
+    private const string DEFAULT_LOAD = &quot;&amp;Load&quot;;
+    private const string DEFAULT_EXIT = &quot;E&amp;xit&quot;;
+    
+    public string Save { get; set; } = DEFAULT_SAVE;
+    public string Load { get; set; } = DEFAULT_LOAD;
+    public string Exit { get; set; } = DEFAULT_EXIT;
+    
+    public bool IsDefault =&gt; Save.Equals(DEFAULT_SAVE) &amp;&amp; 
+                            Load.Equals(DEFAULT_LOAD) &amp;&amp; 
+                            Exit.Equals(DEFAULT_EXIT);
+    
+    public void Reset()
+    {
+        Save = DEFAULT_SAVE;
+        Load = DEFAULT_LOAD;
+        Exit = DEFAULT_EXIT;
+    }
+}
+</code></pre>
+<ol start="2">
+<li><strong>Register with Language Manager</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">public static class MyLanguageManager
+{
+    public static MyApplicationStrings ApplicationStrings { get; } = new MyApplicationStrings();
+    
+    public static void LoadCustomStrings()
+    {
+        // Load from resource files or configuration
+        ApplicationStrings.Save = Properties.Resources.SaveButtonText;
+        ApplicationStrings.Load = Properties.Resources.LoadButtonText;
+        ApplicationStrings.Exit = Properties.Resources.ExitButtonText;
+    }
+}
+</code></pre>
+<ol start="3">
+<li><strong>Use in Your Application</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">public partial class MyForm : KryptonForm
+{
+    public MyForm()
+    {
+        InitializeComponent();
+        LoadCustomStrings();
+    }
+    
+    private void LoadCustomStrings()
+    {
+        saveButton.Text = MyLanguageManager.ApplicationStrings.Save;
+        loadButton.Text = MyLanguageManager.ApplicationStrings.Load;
+        exitButton.Text = MyLanguageManager.ApplicationStrings.Exit;
+    }
+}
+</code></pre>
+<h3 id="dynamic-string-loading">Dynamic String Loading</h3>
+<pre><code class="lang-csharp">public class DynamicStringManager
+{
+    private static readonly Dictionary&lt;string, string&gt; _strings = new();
+    
+    public static void LoadStringsFromFile(string filePath)
+    {
+        var json = File.ReadAllText(filePath);
+        var stringData = JsonSerializer.Deserialize&lt;Dictionary&lt;string, string&gt;&gt;(json);
+        
+        if (stringData != null)
+        {
+            foreach (var kvp in stringData)
+            {
+                _strings[kvp.Key] = kvp.Value;
+            }
+        }
+    }
+    
+    public static string GetString(string key, string defaultValue = &quot;&quot;)
+    {
+        return _strings.TryGetValue(key, out var value) ? value : defaultValue;
+    }
+}
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-use-accelerator-keys">1. Use Accelerator Keys</h3>
+<p>Always include accelerator keys (underlined letters) for accessibility:</p>
+<pre><code class="lang-csharp">public string OK { get; set; } = &quot;O&amp;K&quot;;        // Alt+K
+public string Cancel { get; set; } = &quot;Cance&amp;l&quot;; // Alt+L
+public string Save { get; set; } = &quot;&amp;Save&quot;;     // Alt+S
+</code></pre>
+<h3 id="2-consistent-naming">2. Consistent Naming</h3>
+<p>Use consistent naming conventions for string properties:</p>
+<pre><code class="lang-csharp">// Good
+public string SaveButtonText { get; set; }
+public string LoadButtonText { get; set; }
+public string ExitButtonText { get; set; }
+
+// Avoid
+public string Save { get; set; }
+public string LoadFile { get; set; }
+public string Quit { get; set; }
+</code></pre>
+<h3 id="3-default-values">3. Default Values</h3>
+<p>Always provide meaningful default values:</p>
+<pre><code class="lang-csharp">public class MyStrings : GlobalId
+{
+    private const string DEFAULT_SAVE = &quot;&amp;Save&quot;;
+    private const string DEFAULT_CANCEL = &quot;Cance&amp;l&quot;;
+    
+    public string Save { get; set; } = DEFAULT_SAVE;
+    public string Cancel { get; set; } = DEFAULT_CANCEL;
+    
+    public bool IsDefault =&gt; Save.Equals(DEFAULT_SAVE) &amp;&amp; Cancel.Equals(DEFAULT_CANCEL);
+}
+</code></pre>
+<h3 id="4-resource-file-organization">4. Resource File Organization</h3>
+<p>Organize resource files by functionality:</p>
+<pre><code>Resources/
+├── Strings.resx (Default)
+├── Strings.fr-FR.resx (French)
+├── Strings.de-DE.resx (German)
+├── MessageBoxStrings.resx
+├── MessageBoxStrings.fr-FR.resx
+├── ExceptionStrings.resx
+└── ExceptionStrings.fr-FR.resx
+</code></pre>
+<h3 id="5-error-handling">5. Error Handling</h3>
+<p>Always handle missing strings gracefully:</p>
+<pre><code class="lang-csharp">public static string GetLocalizedString(string key, string defaultValue = &quot;&quot;)
+{
+    try
+    {
+        return KryptonLanguageManager.Strings.GeneralStrings.GetType()
+            .GetProperty(key)?.GetValue(KryptonLanguageManager.Strings.GeneralStrings) as string 
+            ?? defaultValue;
+    }
+    catch
+    {
+        return defaultValue;
+    }
+}
+</code></pre>
+<h2 id="migration-from-kryptonmanagerstrings">Migration from KryptonManager.Strings</h2>
+<h3 id="step-by-step-migration">Step-by-Step Migration</h3>
+<ol>
+<li><strong>Identify Usage</strong>: Find all instances of <code>KryptonManager.Strings</code> in your code.</li>
+</ol>
+<pre><code class="lang-csharp">// Find these patterns
+KryptonManager.Strings.GeneralStrings.OK
+KryptonManager.Strings.MessageBoxStrings.ErrorTitle
+</code></pre>
+<ol start="2">
+<li><strong>Replace with New System</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">// Replace with
+KryptonLanguageManager.Strings.GeneralStrings.OK
+KryptonLanguageManager.Strings.MessageBoxStrings.ErrorTitle
+</code></pre>
+<ol start="3">
+<li><p><strong>Update Designer Files</strong>: If you have designer-generated code using the old system, update it manually or regenerate.</p>
+</li>
+<li><p><strong>Test Thoroughly</strong>: Ensure all strings display correctly after migration.</p>
+</li>
+</ol>
+<h3 id="migration-script-example">Migration Script Example</h3>
+<pre><code class="lang-csharp">public static class StringMigrationHelper
+{
+    public static void MigrateStrings()
+    {
+        // This is a conceptual example - actual implementation would depend on your specific needs
+        var oldStrings = GetOldStringValues();
+        var newStrings = KryptonLanguageManager.Strings.GeneralStrings;
+        
+        // Map old values to new properties
+        if (oldStrings.ContainsKey(&quot;OK&quot;))
+            newStrings.OK = oldStrings[&quot;OK&quot;];
+            
+        if (oldStrings.ContainsKey(&quot;Cancel&quot;))
+            newStrings.Cancel = oldStrings[&quot;Cancel&quot;];
+    }
+    
+    private static Dictionary&lt;string, string&gt; GetOldStringValues()
+    {
+        // Implementation to get old string values
+        return new Dictionary&lt;string, string&gt;();
+    }
+}
+</code></pre>
+<h3 id="common-migration-issues">Common Migration Issues</h3>
+<ol>
+<li><p><strong>Missing Properties</strong>: Some properties might not exist in the new system.</p>
+<ul>
+<li><strong>Solution</strong>: Check the new string collection classes for available properties.</li>
+</ul>
+</li>
+<li><p><strong>Different Property Names</strong>: Property names might have changed.</p>
+<ul>
+<li><strong>Solution</strong>: Use Find &amp; Replace with careful review.</li>
+</ul>
+</li>
+<li><p><strong>Designer Serialization</strong>: Designer files might still reference old properties.</p>
+<ul>
+<li><strong>Solution</strong>: Update designer files manually or regenerate forms.</li>
+</ul>
+</li>
+</ol>
+<h2 id="advanced-topics">Advanced Topics</h2>
+<h3 id="custom-localization-providers">Custom Localization Providers</h3>
+<pre><code class="lang-csharp">public interface ILocalizationProvider
+{
+    string GetString(string key, string defaultValue = &quot;&quot;);
+    void LoadStrings(string cultureName);
+    bool IsStringAvailable(string key);
+}
+
+public class DatabaseLocalizationProvider : ILocalizationProvider
+{
+    private readonly Dictionary&lt;string, string&gt; _strings = new();
+    
+    public string GetString(string key, string defaultValue = &quot;&quot;)
+    {
+        return _strings.TryGetValue(key, out var value) ? value : defaultValue;
+    }
+    
+    public void LoadStrings(string cultureName)
+    {
+        // Load strings from database
+        var strings = Database.GetStrings(cultureName);
+        foreach (var str in strings)
+        {
+            _strings[str.Key] = str.Value;
+        }
+    }
+    
+    public bool IsStringAvailable(string key)
+    {
+        return _strings.ContainsKey(key);
+    }
+}
+</code></pre>
+<h3 id="runtime-language-switching">Runtime Language Switching</h3>
+<pre><code class="lang-csharp">public static class LanguageSwitcher
+{
+    public static event EventHandler? LanguageChanged;
+    
+    public static void SwitchLanguage(string cultureName)
+    {
+        var culture = new CultureInfo(cultureName);
+        Thread.CurrentThread.CurrentCulture = culture;
+        Thread.CurrentThread.CurrentUICulture = culture;
+        
+        // Reload strings
+        KryptonLanguageManager.ReloadStrings();
+        
+        // Notify subscribers
+        LanguageChanged?.Invoke(null, EventArgs.Empty);
+    }
+}
+
+// Usage
+public partial class MainForm : KryptonForm
+{
+    public MainForm()
+    {
+        InitializeComponent();
+        LanguageSwitcher.LanguageChanged += OnLanguageChanged;
+    }
+    
+    private void OnLanguageChanged(object? sender, EventArgs e)
+    {
+        // Reload all strings in the form
+        LoadLocalizedStrings();
+    }
+}
+</code></pre>
+<p>This comprehensive guide covers all aspects of localization and string management in the Krypton Toolkit Suite, providing developers with the knowledge needed to implement robust, internationalized applications.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

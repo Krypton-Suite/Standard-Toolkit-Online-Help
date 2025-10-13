@@ -25,6 +25,12 @@ Stable packages are normally released **once** or **twice** per year, and are in
 
 <img src="https://github.com/Krypton-Suite/Documentation/blob/main/Assets/NuGet%20Package%20Icons/Krypton%20LTS.png?raw=true" />
 
-The long term stable packages are designed for those developers who need to still support older framework versions, which are no longer officially supported. No new features are added to these packages and fixes are very few and far between. It is recommended to use these up to 18 months after official support has ended.
+The long term stable packages are designed for those developers who need to still support older framework versions, which are no longer officially supported. No new features are added to these packages and fixes are very few and far between. It is recommended to use these up to 18 months after official support has ended. LTS releases will have a maximum of 3 years of support from the date of initial release.
+
+## Support Release Cadence
+
+Please see [support release cadence](Support%20Release%20Cadence.md) for current information.
+
+## More Information
 
 For more information about supported frameworks, please check out this [article](Package%20Support%20Information.md).

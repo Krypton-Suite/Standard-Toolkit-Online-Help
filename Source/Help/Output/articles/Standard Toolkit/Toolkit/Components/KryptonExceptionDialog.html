@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonExceptionDialog API Reference | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonExceptionDialog API Reference | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonexceptiondialog-api-reference">KryptonExceptionDialog API Reference</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonExceptionDialog</code> provides a sophisticated, user-friendly visual interface for displaying exception details in Windows Forms applications using the Krypton Toolkit. It offers developers a modern alternative to traditional exception message boxes, with advanced features like hierarchical exception browsing, searchable stack traces, and formatted exception details.</p>
+<h2 id="key-features">Key Features</h2>
+<ul>
+<li><strong>Hierarchical Exception Tree</strong>: Navigate through exception chains, inner exceptions, stack traces, and exception data</li>
+<li><strong>Interactive Search</strong>: Real-time search functionality to quickly locate specific exceptions or stack frames</li>
+<li><strong>Rich Details Panel</strong>: Formatted display of exception type, message, stack trace, and inner exceptions</li>
+<li><strong>Clipboard Support</strong>: Copy exception details to clipboard for debugging or logging</li>
+<li><strong>Theme Integration</strong>: Automatically adopts the current Krypton theme</li>
+<li><strong>Localization Support</strong>: All UI strings are fully localizable via <code>KryptonManager.Strings.ExceptionDialogStrings</code></li>
+<li><strong>Responsive Layout</strong>: Automatically adjusts dimensions based on screen resolution</li>
+</ul>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<h3 id="component-hierarchy">Component Hierarchy</h3>
+<pre><code>KryptonExceptionDialog (Public API)
+    └── VisualExceptionDialogForm (Internal Form)
+        ├── InternalSearchableExceptionTreeView (Tree View with Search)
+        │   └── InternalExceptionTreeView (Exception Tree Renderer)
+        └── RichTextBox (Details Display)
+</code></pre>
+<h3 id="related-classes">Related Classes</h3>
+<ul>
+<li><strong>KryptonExceptionDialog</strong>: Static public API for displaying exception dialogs</li>
+<li><strong>KryptonExceptionHandler</strong>: High-level exception handling utilities with context capture</li>
+<li><strong>ExceptionHandler</strong>: Internal exception handling implementation (marked as internal)</li>
+<li><strong>VisualExceptionDialogForm</strong>: The actual dialog form implementation</li>
+<li><strong>InternalSearchableExceptionTreeView</strong>: Custom control providing searchable tree view</li>
+<li><strong>InternalExceptionTreeView</strong>: Custom tree view that parses and displays exception hierarchies</li>
+<li><strong>KryptonExceptionDialogStrings</strong>: Localization strings for all dialog text</li>
+</ul>
+<hr>
+<h2 id="public-api">Public API</h2>
+<h3 id="kryptonexceptiondialog-class">KryptonExceptionDialog Class</h3>
+<p><strong>Namespace</strong>: <code>Krypton.Toolkit</code></p>
+<h4 id="methods">Methods</h4>
+<h5 id="show-method">Show Method</h5>
+<pre><code class="lang-csharp">public static void Show(Exception exception, bool? showCopyButton, bool? showSearchBox)
+</code></pre>
+<p>Displays an exception dialog with the specified exception details.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exception</code></td>
+<td><code>Exception</code></td>
+<td>The exception to display. Cannot be null.</td>
+</tr>
+<tr>
+<td><code>showCopyButton</code></td>
+<td><code>bool?</code></td>
+<td>Controls the visibility of the &quot;Copy&quot; button. If <code>null</code>, defaults to <code>true</code>.</td>
+</tr>
+<tr>
+<td><code>showSearchBox</code></td>
+<td><code>bool?</code></td>
+<td>Controls the visibility of the search functionality. If <code>null</code>, defaults to <code>true</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Displays a modal dialog showing the exception hierarchy</li>
+<li>Automatically expands all tree nodes</li>
+<li>Adjusts form dimensions based on screen resolution (900×650 for 1080p, 1108×687 for higher resolutions)</li>
+<li>Dialog is always centered on screen</li>
+</ul>
+<hr>
+<h3 id="kryptonexceptionhandler-class">KryptonExceptionHandler Class</h3>
+<p><strong>Namespace</strong>: <code>Krypton.Toolkit</code></p>
+<p>This class provides higher-level exception handling utilities with automatic caller information capture.</p>
+<h4 id="methods-1">Methods</h4>
+<h5 id="captureexception-method">CaptureException Method</h5>
+<pre><code class="lang-csharp">public static void CaptureException(
+    Exception exception,
+    string title = &quot;Exception Caught&quot;,
+    [CallerFilePath] string callerFilePath = &quot;&quot;,
+    [CallerLineNumber] int lineNumber = 0,
+    [CallerMemberName] string callerMethod = &quot;&quot;,
+    bool showStackTrace = false,
+    bool? useExceptionDialog = true)
+</code></pre>
+<p>Captures and displays an exception with automatic caller context information.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exception</code></td>
+<td><code>Exception</code></td>
+<td><em>required</em></td>
+<td>The exception to handle</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td><code>string</code></td>
+<td><code>&quot;Exception Caught&quot;</code></td>
+<td>Dialog title text</td>
+</tr>
+<tr>
+<td><code>callerFilePath</code></td>
+<td><code>string</code></td>
+<td><em>auto-captured</em></td>
+<td>Automatically captured via <code>[CallerFilePath]</code></td>
+</tr>
+<tr>
+<td><code>lineNumber</code></td>
+<td><code>int</code></td>
+<td><em>auto-captured</em></td>
+<td>Automatically captured via <code>[CallerLineNumber]</code></td>
+</tr>
+<tr>
+<td><code>callerMethod</code></td>
+<td><code>string</code></td>
+<td><em>auto-captured</em></td>
+<td>Automatically captured via <code>[CallerMemberName]</code></td>
+</tr>
+<tr>
+<td><code>showStackTrace</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Whether to include stack trace in message box fallback</td>
+</tr>
+<tr>
+<td><code>useExceptionDialog</code></td>
+<td><code>bool?</code></td>
+<td><code>true</code></td>
+<td>If <code>true</code>, uses <code>KryptonExceptionDialog</code>; if <code>false</code>, uses <code>KryptonMessageBox</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>When <code>useExceptionDialog</code> is <code>true</code> (default), displays the rich exception dialog</li>
+<li>When <code>useExceptionDialog</code> is <code>false</code>, displays a traditional message box with caller information</li>
+<li>Automatically captures caller file path, line number, and method name for debugging</li>
+</ul>
+<h5 id="printstacktrace-method">PrintStackTrace Method</h5>
+<pre><code class="lang-csharp">public static void PrintStackTrace(Exception exception, string fileName)
+</code></pre>
+<p>Writes the complete exception information and stack trace to a file.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exception</code></td>
+<td><code>Exception</code></td>
+<td>The exception to log</td>
+</tr>
+<tr>
+<td><code>fileName</code></td>
+<td><code>string</code></td>
+<td>The file path where the exception will be written</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Creates the file if it doesn't exist</li>
+<li>Writes both <code>exception.ToString()</code> and <code>exception.StackTrace</code></li>
+<li>If file writing fails, captures that exception using <code>CaptureException</code></li>
+</ul>
+<h5 id="printexceptionstacktrace-method">PrintExceptionStackTrace Method</h5>
+<pre><code class="lang-csharp">public static void PrintExceptionStackTrace(Exception exception, string fileName)
+</code></pre>
+<p>Writes only the stack trace portion of an exception to a file.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>exception</code></td>
+<td><code>Exception</code></td>
+<td>The exception whose stack trace to log</td>
+</tr>
+<tr>
+<td><code>fileName</code></td>
+<td><code>string</code></td>
+<td>The file path where the stack trace will be written</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Similar to <code>PrintStackTrace</code> but writes only <code>exception.StackTrace</code></li>
+<li>Creates the file if it doesn't exist</li>
+<li>If file writing fails, captures that exception using <code>CaptureException</code></li>
+</ul>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-basic-exception-display">Example 1: Basic Exception Display</h3>
+<pre><code class="lang-csharp">try
+{
+    // Some operation that might throw
+    int result = 10 / int.Parse(&quot;0&quot;);
+}
+catch (Exception ex)
+{
+    // Display exception with full features
+    KryptonExceptionDialog.Show(ex, true, true);
+}
+</code></pre>
+<h3 id="example-2-simplified-display-no-search-or-copy">Example 2: Simplified Display (No Search or Copy)</h3>
+<pre><code class="lang-csharp">try
+{
+    // Some operation that might throw
+    ProcessData();
+}
+catch (Exception ex)
+{
+    // Display exception without search box or copy button
+    KryptonExceptionDialog.Show(ex, false, false);
+}
+</code></pre>
+<h3 id="example-3-using-kryptonexceptionhandler-with-context">Example 3: Using KryptonExceptionHandler with Context</h3>
+<pre><code class="lang-csharp">private void ProcessUserInput(string input)
+{
+    try
+    {
+        // Process input
+        var result = ComplexOperation(input);
+    }
+    catch (Exception ex)
+    {
+        // Automatically captures file, line number, and method name
+        KryptonExceptionHandler.CaptureException(
+            ex, 
+            title: &quot;Data Processing Error&quot;,
+            showStackTrace: true
+        );
+    }
+}
+</code></pre>
+<h3 id="example-4-logging-exception-to-file">Example 4: Logging Exception to File</h3>
+<pre><code class="lang-csharp">try
+{
+    // Critical operation
+    PerformCriticalTask();
+}
+catch (Exception ex)
+{
+    // Log to file for later analysis
+    string logPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        &quot;MyApp&quot;, &quot;Logs&quot;, $&quot;error_{DateTime.Now:yyyyMMdd_HHmmss}.log&quot;
+    );
+    
+    KryptonExceptionHandler.PrintStackTrace(ex, logPath);
+    
+    // Also show to user
+    KryptonExceptionDialog.Show(ex, true, true);
+}
+</code></pre>
+<h3 id="example-5-global-exception-handler">Example 5: Global Exception Handler</h3>
+<pre><code class="lang-csharp">static class Program
+{
+    [STAThread]
+    static void Main()
+    {
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        
+        // Set up global exception handlers
+        Application.ThreadException += (sender, e) =&gt;
+        {
+            KryptonExceptionHandler.CaptureException(
+                e.Exception,
+                title: &quot;Unhandled Thread Exception&quot;
+            );
+        };
+        
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) =&gt;
+        {
+            if (e.ExceptionObject is Exception ex)
+            {
+                KryptonExceptionHandler.CaptureException(
+                    ex,
+                    title: &quot;Unhandled Application Exception&quot;
+                );
+            }
+        };
+        
+        Application.Run(new MainForm());
+    }
+}
+</code></pre>
+<h3 id="example-6-using-messagebox-fallback">Example 6: Using MessageBox Fallback</h3>
+<pre><code class="lang-csharp">try
+{
+    // Some operation
+    ValidateConfiguration();
+}
+catch (Exception ex)
+{
+    // Use traditional message box instead of exception dialog
+    KryptonExceptionHandler.CaptureException(
+        ex,
+        title: &quot;Configuration Error&quot;,
+        showStackTrace: true,
+        useExceptionDialog: false  // Uses KryptonMessageBox instead
+    );
+}
+</code></pre>
+<hr>
+<h2 id="dialog-features">Dialog Features</h2>
+<h3 id="exception-tree-view">Exception Tree View</h3>
+<p>The left panel displays a hierarchical tree structure with the following elements:</p>
+<ol>
+<li><p><strong>Root Exception Node</strong>: Shows <code>ExceptionType: Message</code></p>
+<ul>
+<li>Displays the primary exception type and message</li>
+<li>Tagged with the actual <code>Exception</code> object for details retrieval</li>
+</ul>
+</li>
+<li><p><strong>Stack Trace Node</strong>: Expandable node showing each stack frame</p>
+<ul>
+<li>Each frame shows: <code>at Namespace.Class.Method in FilePath:line LineNumber</code></li>
+<li>Parsed from <code>StackTrace</code> object with file names and line numbers when available</li>
+<li>Useful for identifying the exact location where the exception occurred</li>
+</ul>
+</li>
+<li><p><strong>Inner Exception Node</strong>: Recursively displays inner exceptions</p>
+<ul>
+<li>Creates a nested tree for exception chains</li>
+<li>Each inner exception follows the same structure as the root</li>
+</ul>
+</li>
+<li><p><strong>Data Node</strong>: Shows custom data attached to the exception</p>
+<ul>
+<li>Only appears if <code>Exception.Data</code> dictionary has entries</li>
+<li>Displays key-value pairs: <code>Key: Value</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="search-functionality">Search Functionality</h3>
+<p>When the search box is visible (controlled by <code>showSearchBox</code> parameter):</p>
+<ul>
+<li><strong>Real-time Filtering</strong>: Tree updates as you type</li>
+<li><strong>Match Highlighting</strong>: Matching nodes are highlighted in <strong>bold</strong> with yellow background</li>
+<li><strong>Result Count</strong>: Shows count of matches (e.g., &quot;3 results found&quot;)</li>
+<li><strong>Tree Pruning</strong>: Non-matching nodes are hidden; parent nodes remain visible if children match</li>
+<li><strong>Clear Button</strong>: Quickly clear the search and restore full tree</li>
+<li><strong>Case-insensitive</strong>: Search is not case-sensitive</li>
+</ul>
+<h3 id="details-panel">Details Panel</h3>
+<p>The right panel displays formatted exception information:</p>
+<pre><code>Type: ArgumentOutOfRangeException
+Message: Index was out of range...
+
+Stack Trace:
+[Formatted stack trace]
+
+Inner Exception:
+[Inner exception message or &quot;None&quot;]
+</code></pre>
+<p>When clicking on &quot;Stack Trace&quot; or &quot;Inner Exception&quot; parent nodes, the details panel shows:</p>
+<pre><code>Please select another node to view more details.
+</code></pre>
+<h3 id="copy-button">Copy Button</h3>
+<p>When visible (controlled by <code>showCopyButton</code> parameter):</p>
+<ul>
+<li><strong>Enabled State</strong>: Only enabled when exception details text is present</li>
+<li><strong>Functionality</strong>: Copies the entire formatted exception details to clipboard</li>
+<li><strong>Use Cases</strong>:
+<ul>
+<li>Pasting into bug reports</li>
+<li>Sharing exception details with support teams</li>
+<li>Logging to external systems</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="localization">Localization</h2>
+<p>All user-facing strings are accessible via <code>KryptonManager.Strings.ExceptionDialogStrings</code> and can be customized or localized.</p>
+<h3 id="available-localization-properties">Available Localization Properties</h3>
+<pre><code class="lang-csharp">public class KryptonExceptionDialogStrings : GlobalId
+{
+    public string WindowTitle { get; set; }                    // Default: &quot;Exception Caught&quot;
+    public string ExceptionDetailsHeader { get; set; }         // Default: &quot;Exception Details&quot;
+    public string ExceptionOutlineHeader { get; set; }         // Default: &quot;Exception Outline&quot;
+    public string MoreDetails { get; set; }                    // Default: &quot;Please select another node...&quot;
+    public string Type { get; set; }                           // Default: &quot;Type&quot;
+    public string InnerException { get; set; }                 // Default: &quot;Inner Exception&quot;
+    public string Message { get; set; }                        // Default: &quot;Message&quot;
+    public string StackTrace { get; set; }                     // Default: &quot;Stack Trace&quot;
+    public string None { get; set; }                           // Default: &quot;None&quot;
+    public string Data { get; set; }                           // Default: &quot;Data&quot;
+    public string Line { get; set; }                           // Default: &quot;Line&quot;
+    public string SearchBoxCueText { get; set; }               // Default: &quot;Search...&quot;
+    public string NoResultsFound { get; set; }                 // Default: &quot;No results found&quot;
+    public string Result { get; set; }                         // Default: &quot;result&quot;
+    public string ResultsAppendage { get; set; }               // Default: &quot;s&quot;
+    public string ResultsFoundAppendage { get; set; }          // Default: &quot;found&quot;
+    public string NoMatchesFound { get; set; }                 // Default: &quot;No matches found.&quot;
+    public string TypeToSearch { get; set; }                   // Default: &quot;Type to search...&quot;
+}
+</code></pre>
+<h3 id="localization-example">Localization Example</h3>
+<pre><code class="lang-csharp">// Application startup - set Spanish localization
+KryptonManager.Strings.ExceptionDialogStrings.WindowTitle = &quot;Excepción Capturada&quot;;
+KryptonManager.Strings.ExceptionDialogStrings.ExceptionDetailsHeader = &quot;Detalles de la Excepción&quot;;
+KryptonManager.Strings.ExceptionDialogStrings.ExceptionOutlineHeader = &quot;Esquema de la Excepción&quot;;
+KryptonManager.Strings.ExceptionDialogStrings.Type = &quot;Tipo&quot;;
+KryptonManager.Strings.ExceptionDialogStrings.Message = &quot;Mensaje&quot;;
+KryptonManager.Strings.ExceptionDialogStrings.StackTrace = &quot;Rastreo de Pila&quot;;
+KryptonManager.Strings.ExceptionDialogStrings.InnerException = &quot;Excepción Interna&quot;;
+KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = &quot;Buscar...&quot;;
+// ... additional strings as needed
+
+// Now all exception dialogs will use Spanish text
+</code></pre>
+<hr>
+<h2 id="design-considerations">Design Considerations</h2>
+<h3 id="when-to-use-kryptonexceptiondialog">When to Use KryptonExceptionDialog</h3>
+<p><strong>✅ Recommended Use Cases:</strong></p>
+<ul>
+<li>Development and debugging scenarios</li>
+<li>Applications with detailed logging requirements</li>
+<li>Technical support tools where full exception details are valuable</li>
+<li>Admin interfaces or diagnostic tools</li>
+<li>Applications where users may need to report detailed error information</li>
+</ul>
+<p><strong>❌ Not Recommended For:</strong></p>
+<ul>
+<li>Production user-facing errors (use simpler, user-friendly messages)</li>
+<li>Expected validation errors (use specific validation messages)</li>
+<li>Recoverable errors that don't require detailed exception information</li>
+<li>Mobile or touch-first applications (too complex for small screens)</li>
+</ul>
+<h3 id="best-practices">Best Practices</h3>
+<ol>
+<li><p><strong>Production vs. Development</strong></p>
+<pre><code class="lang-csharp">#if DEBUG
+    KryptonExceptionDialog.Show(ex, true, true);
+#else
+    KryptonMessageBox.Show(
+        &quot;An unexpected error occurred. Please contact support.&quot;,
+        &quot;Error&quot;, 
+        KryptonMessageBoxButtons.OK, 
+        KryptonMessageBoxIcon.Error
+    );
+    // Log the full exception internally
+    LogException(ex);
+#endif
+</code></pre>
+</li>
+<li><p><strong>Always Log Exceptions</strong></p>
+<pre><code class="lang-csharp">catch (Exception ex)
+{
+    // Log first
+    Logger.Error(ex, &quot;Failed to process user request&quot;);
+
+    // Then display
+    KryptonExceptionDialog.Show(ex, true, true);
+}
+</code></pre>
+</li>
+<li><p><strong>Wrap in Try-Catch for Critical Operations</strong></p>
+<pre><code class="lang-csharp">try
+{
+    CriticalOperation();
+}
+catch (Exception ex)
+{
+    try
+    {
+        // Attempt to log
+        KryptonExceptionHandler.PrintStackTrace(ex, logPath);
+    }
+    catch
+    {
+        // If logging fails, at least show the dialog
+        KryptonExceptionDialog.Show(ex, true, true);
+    }
+}
+</code></pre>
+</li>
+<li><p><strong>Use Appropriate Titles and Context</strong></p>
+<pre><code class="lang-csharp">catch (Exception ex)
+{
+    KryptonExceptionHandler.CaptureException(
+        ex,
+        title: &quot;Database Connection Failed&quot;,  // Specific, meaningful title
+        showStackTrace: true
+    );
+}
+</code></pre>
+</li>
+<li><p><strong>Consider User Technical Level</strong></p>
+<pre><code class="lang-csharp">if (AppSettings.UserMode == UserMode.Advanced)
+{
+    KryptonExceptionDialog.Show(ex, true, true);
+}
+else
+{
+    KryptonMessageBox.Show(
+        &quot;Unable to save your changes. Please try again.&quot;,
+        &quot;Save Error&quot;,
+        KryptonMessageBoxButtons.OK,
+        KryptonMessageBoxIcon.Warning
+    );
+}
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2 id="technical-details">Technical Details</h2>
+<h3 id="dialog-dimensions">Dialog Dimensions</h3>
+<p>The dialog automatically adjusts its size based on screen resolution:</p>
+<ul>
+<li><strong>1080p (1920×1080)</strong>: 900×650 pixels</li>
+<li><strong>Higher resolutions</strong>: 1108×687 pixels</li>
+</ul>
+<p>This is handled automatically by <code>GeneralToolkitUtilities.GetCurrentScreenSize()</code> and <code>GeneralToolkitUtilities.AdjustFormDimensions()</code>.</p>
+<h3 id="form-properties">Form Properties</h3>
+<ul>
+<li><strong>StartPosition</strong>: <code>CenterScreen</code> - Always centered on the screen</li>
+<li><strong>FormBorderStyle</strong>: <code>Fixed3D</code> - Non-resizable with 3D border</li>
+<li><strong>MaximizeBox</strong>: <code>false</code> - Cannot be maximized</li>
+<li><strong>MinimizeBox</strong>: <code>false</code> - Cannot be minimized</li>
+<li><strong>ShowInTaskbar</strong>: <code>false</code> - Doesn't appear in the Windows taskbar</li>
+<li><strong>ShowIcon</strong>: <code>false</code> - No icon displayed in title bar</li>
+</ul>
+<h3 id="tree-view-font">Tree View Font</h3>
+<p>The exception tree view uses <strong>Consolas 8.25pt</strong> for optimal code/stack trace readability.</p>
+<h3 id="performance-considerations">Performance Considerations</h3>
+<ul>
+<li><strong>Tree Cloning</strong>: The search functionality clones tree nodes for filtering. For extremely deep exception chains (100+ levels), there may be a brief delay during search.</li>
+<li><strong>Automatic Expansion</strong>: All tree nodes are expanded by default, which may impact performance for exceptions with very large stack traces.</li>
+<li><strong>Thread Safety</strong>: The dialog is designed for UI thread use only. Do not call from background threads without <code>Invoke</code>.</li>
+</ul>
+<h3 id="thread-safety-example">Thread Safety Example</h3>
+<pre><code class="lang-csharp">// From background thread
+Task.Run(() =&gt;
+{
+    try
+    {
+        // Background work
+        ProcessLargeDataset();
+    }
+    catch (Exception ex)
+    {
+        // Marshal to UI thread
+        if (mainForm.InvokeRequired)
+        {
+            mainForm.Invoke(() =&gt; 
+                KryptonExceptionDialog.Show(ex, true, true)
+            );
+        }
+        else
+        {
+            KryptonExceptionDialog.Show(ex, true, true);
+        }
+    }
+});
+</code></pre>
+<hr>
+<h2 id="comparison-with-alternatives">Comparison with Alternatives</h2>
+<h3 id="kryptonexceptiondialog-vs-kryptonmessagebox">KryptonExceptionDialog vs. KryptonMessageBox</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>KryptonExceptionDialog</th>
+<th>KryptonMessageBox</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Purpose</td>
+<td>Detailed exception inspection</td>
+<td>General messaging</td>
+</tr>
+<tr>
+<td>Stack Trace</td>
+<td>Hierarchical, searchable tree</td>
+<td>Text only (if shown)</td>
+</tr>
+<tr>
+<td>Inner Exceptions</td>
+<td>Full nested tree</td>
+<td>Not displayed</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Clipboard</td>
+<td>Formatted exception copy</td>
+<td>Basic Ctrl+C support</td>
+</tr>
+<tr>
+<td>User-Friendliness</td>
+<td>Technical/developer-focused</td>
+<td>User-friendly</td>
+</tr>
+<tr>
+<td>Size</td>
+<td>Large (900×650+)</td>
+<td>Compact, auto-sized</td>
+</tr>
+<tr>
+<td>Best For</td>
+<td>Debugging, diagnostics</td>
+<td>User notifications</td>
+</tr>
+</tbody>
+</table>
+<h3 id="kryptonexceptiondialog-vs-standard-exceptiontostring">KryptonExceptionDialog vs. Standard Exception.ToString()</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>KryptonExceptionDialog</th>
+<th>Exception.ToString()</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Presentation</td>
+<td>Visual, interactive tree</td>
+<td>Plain text</td>
+</tr>
+<tr>
+<td>Navigation</td>
+<td>Click nodes to explore</td>
+<td>Manual text search</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>Real-time filtering</td>
+<td>Manual Ctrl+F in viewer</td>
+</tr>
+<tr>
+<td>Formatting</td>
+<td>Syntax-highlighted sections</td>
+<td>None</td>
+</tr>
+<tr>
+<td>User Experience</td>
+<td>Guided exploration</td>
+<td>Raw data dump</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="scenario-1-aggregate-exceptions">Scenario 1: Aggregate Exceptions</h3>
+<pre><code class="lang-csharp">try
+{
+    Parallel.ForEach(items, item =&gt; 
+    {
+        // Might throw multiple exceptions
+        ProcessItem(item);
+    });
+}
+catch (AggregateException agEx)
+{
+    // AggregateException contains multiple inner exceptions
+    // The tree view will show all of them hierarchically
+    KryptonExceptionDialog.Show(agEx, true, true);
+}
+</code></pre>
+<h3 id="scenario-2-custom-exception-data">Scenario 2: Custom Exception Data</h3>
+<pre><code class="lang-csharp">try
+{
+    var ex = new InvalidOperationException(&quot;Failed to process order&quot;);
+    ex.Data[&quot;OrderId&quot;] = 12345;
+    ex.Data[&quot;CustomerId&quot;] = 67890;
+    ex.Data[&quot;Timestamp&quot;] = DateTime.Now;
+    throw ex;
+}
+catch (Exception ex)
+{
+    // The &quot;Data&quot; node will show all custom key-value pairs
+    KryptonExceptionDialog.Show(ex, true, true);
+}
+</code></pre>
+<h3 id="scenario-3-exception-in-asyncawait">Scenario 3: Exception in Async/Await</h3>
+<pre><code class="lang-csharp">private async void btnProcess_Click(object sender, EventArgs e)
+{
+    try
+    {
+        await ProcessDataAsync();
+    }
+    catch (Exception ex)
+    {
+        // Stack trace will show async state machine details
+        KryptonExceptionDialog.Show(ex, true, true);
+    }
+}
+</code></pre>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-dialog-doesnt-appear">Issue: Dialog doesn't appear</h3>
+<p><strong>Possible Causes:</strong></p>
+<ul>
+<li>Called from a background thread without <code>Invoke</code></li>
+<li>Exception parameter is <code>null</code></li>
+<li>Application is in a non-interactive state</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<pre><code class="lang-csharp">if (exception == null)
+{
+    throw new ArgumentNullException(nameof(exception));
+}
+
+if (InvokeRequired)
+{
+    Invoke(() =&gt; KryptonExceptionDialog.Show(exception, true, true));
+}
+else
+{
+    KryptonExceptionDialog.Show(exception, true, true);
+}
+</code></pre>
+<h3 id="issue-search-not-working">Issue: Search not working</h3>
+<p><strong>Possible Causes:</strong></p>
+<ul>
+<li><code>showSearchBox</code> parameter set to <code>false</code></li>
+<li>Search control not initialized properly</li>
+</ul>
+<p><strong>Solution:</strong>
+Ensure <code>showSearchBox</code> is set to <code>true</code> or <code>null</code>:</p>
+<pre><code class="lang-csharp">KryptonExceptionDialog.Show(ex, true, true);  // ✅ Search enabled
+KryptonExceptionDialog.Show(ex, true, null);  // ✅ Search enabled (default)
+KryptonExceptionDialog.Show(ex, true, false); // ❌ Search disabled
+</code></pre>
+<h3 id="issue-copy-button-disabled">Issue: Copy button disabled</h3>
+<p><strong>Cause:</strong> No exception details are currently displayed in the details panel.</p>
+<p><strong>Solution:</strong> Click on an exception node in the tree (not on &quot;Stack Trace&quot; or &quot;Inner Exception&quot; parent nodes).</p>
+<h3 id="issue-text-appears-in-wrong-language">Issue: Text appears in wrong language</h3>
+<p><strong>Cause:</strong> Localization strings not set or set incorrectly.</p>
+<p><strong>Solution:</strong> Set localization strings at application startup:</p>
+<pre><code class="lang-csharp">// In Main() or Form_Load
+KryptonManager.Strings.ExceptionDialogStrings.Reset(); // Reset to defaults
+// Or set custom values
+KryptonManager.Strings.ExceptionDialogStrings.WindowTitle = &quot;Your Title&quot;;
+</code></pre>
+<hr>
+<h2 id="version-history">Version History</h2>
+<p>This component was introduced in <strong>Krypton Toolkit v100</strong> (2024-2025) as part of enhanced exception handling capabilities.</p>
+<h3 id="related-features-added-in-v100">Related Features Added in v100</h3>
+<ul>
+<li><code>KryptonExceptionDialog</code> (public API)</li>
+<li><code>KryptonExceptionHandler</code> (utility wrapper)</li>
+<li><code>InternalSearchableExceptionTreeView</code> (searchable tree control)</li>
+<li><code>InternalExceptionTreeView</code> (exception parsing and rendering)</li>
+<li><code>KryptonExceptionDialogStrings</code> (localization support)</li>
+</ul>
+<hr>
+<h2 id="see-also">See Also</h2>
+<h3 id="related-classes-1">Related Classes</h3>
+<ul>
+<li><code>System.Exception</code></li>
+<li><code>System.Diagnostics.StackTrace</code></li>
+<li><code>KryptonMessageBox</code></li>
+<li><code>KryptonForm</code></li>
+<li><code>KryptonTreeView</code></li>
+</ul>
+<h3 id="related-patterns">Related Patterns</h3>
+<ul>
+<li>Exception Handling Best Practices</li>
+<li>Logging Strategies</li>
+<li>User Error Communication</li>
+<li>Diagnostic Tool Design</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

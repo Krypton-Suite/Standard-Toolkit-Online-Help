@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonPrintDialog | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonPrintDialog | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonprintdialog">KryptonPrintDialog</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonPrintDialog</code> class provides a Krypton-themed wrapper around the standard Windows print dialog. It inherits from <code>CommonDialog</code> and implements comprehensive printer selection, page range configuration, and print settings management while maintaining full compatibility with the .NET printing framework and providing enhanced UI theming.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.ComponentModel.Component
+    └── System.Windows.Forms.CommonDialog
+        └── Krypton.Toolkit.KryptonPrintDialog
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonPrintDialog()
+</code></pre>
+<p>The constructor initializes enhanced features:</p>
+<ul>
+<li><strong>CommonDialogHandler</strong>: Creates handler with embedding support enabled</li>
+<li><strong>Default Icon</strong>: Sets <code>DialogImageResources.Printer_V10</code> for printer icon</li>
+<li><strong>Click Callback</strong>: Handles radio button interactions for print range selection</li>
+<li><strong>Print Dialog Structure</strong>: Prepares 32-bit and 64-bit PRINTDLG structures</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="title-property">Title Property</h3>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+public string Title { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Sets the caption text shown in the dialog's title bar</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: Empty string (uses system default)</li>
+</ul>
+<h3 id="icon-property">Icon Property</h3>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+public Icon Icon { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Sets a custom icon displayed in the dialog's title bar</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: <code>DialogImageResources.Printer_V10</code></li>
+</ul>
+<h3 id="showicon-property">ShowIcon Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool ShowIcon { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Controls whether the dialog displays an icon in the title bar</li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Default Value</strong>: <code>false</code></li>
+</ul>
+<h3 id="document-property">Document Property</h3>
+<pre><code class="lang-csharp">[DefaultValue(null)]
+public PrintDocument? Document { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Sets the PrintDocument used to obtain PrinterSettings</li>
+<li><strong>Category</strong>: Data</li>
+<li><strong>Default Value</strong>: <code>null</code></li>
+<li><strong>Side Effects</strong>: Automatically configures <code>PrinterSettings</code> when document is provided</li>
+</ul>
+<p><strong>Usage Example:</strong></p>
+<pre><code class="lang-csharp">var dialog = new KryptonPrintDialog
+{
+    Document = myPrintDocument,
+    Title = &quot;Print Document&quot;
+};
+</code></pre>
+<h3 id="printersettings-property">PrinterSettings Property</h3>
+<pre><code class="lang-csharp">[AllowNull]
+public PrinterSettings PrinterSettings { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Gets or sets the PrinterSettings the dialog will modify</li>
+<li><strong>Category</strong>: Data</li>
+<li><strong>Default Value</strong>: New <code>PrinterSettings()</code> instance</li>
+<li><strong>Designer Visibility</strong>: Hidden from designer</li>
+</ul>
+<h3 id="print-range-properties">Print Range Properties</h3>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool AllowCurrentPage { get; set; }
+
+[DefaultValue(false)]
+public bool AllowSomePages { get; set; }
+
+[DefaultValue(true)]
+public bool AllowPrintToFile { get; set; }
+
+[DefaultValue(false)]
+public bool AllowSelection { get; set; }
+</code></pre>
+<p><strong>Page Range Control Properties:</strong></p>
+<ul>
+<li><strong>AllowCurrentPage</strong>: Enables current page printing option</li>
+<li><strong>AllowSomePages</strong>: Enables page range specification (FROM...TO)</li>
+<li><strong>AllowPrintToFile</strong>: Shows print-to-file checkbox</li>
+<li><strong>AllowSelection</strong>: Enables selection-based printing</li>
+</ul>
+<h3 id="additional-behavior-properties">Additional Behavior Properties</h3>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool PrintToFile { get; set; }
+
+[DefaultValue(false)]
+public bool ShowHelp { get; set; }
+
+[DefaultValue(true)]
+public bool ShowNetwork { get; set; }
+</code></pre>
+<p><strong>Print Configuration Properties:</strong></p>
+<ul>
+<li><strong>PrintToFile</strong>: Whether print-to-file checkbox is checked</li>
+<li><strong>ShowHelp</strong>: Whether Help button is displayed</li>
+<li><strong>ShowNetwork</strong>: Whether Network button is displayed</li>
+</ul>
+<h2 id="print-dialog-configuration">Print Dialog Configuration</h2>
+<h3 id="basic-print-setup">Basic Print Setup</h3>
+<pre><code class="lang-csharp">public void ShowPrintDialog(PrintDocument document)
+{
+    var dialog = new KryptonPrintDialog
+    {
+        Title = &quot;Print Document&quot;,
+        Document = document,
+        AllowSomePages = true,
+        AllowPrintToFile = true,
+        ShowNetwork = true
+    };
+
+    if (dialog.ShowDialog() == DialogResult.OK)
+    {
+        // User clicked Print - PrintDocument.Print() will be called
+        // Dialog configuration is automatic via Document property
+    }
+}
+</code></pre>
+<h3 id="advanced-print-configuration">Advanced Print Configuration</h3>
+<pre><code class="lang-csharp">public void ConfigureAdvancedPrinting()
+{
+    var printerSettings = new PrinterSettings();
+    var pageSettings = new PageSettings();
+
+    var dialog = new KryptonPrintDialog
+    {
+        Title = &quot;Advanced Print Configuration&quot;,
+        PrinterSettings = printerSettings,
+        AllowCurrentPage = true,
+        AllowSomePages = true,
+        AllowSelection = true,
+        AllowPrintToFile = true,
+        ShowHelp = false,
+        ShowNetwork = true,
+        PrintToFile = false
+    };
+
+    if (dialog.ShowDialog() == DialogResult.OK)
+    {
+        // Configure page settings
+        var document = new PrintDocument
+        {
+            PrinterSettings = printerSettings,
+            DefaultPageSettings = pageSettings
+        };
+
+        // Apply configured settings
+        ApplyPrintSettings(document, printerSettings);
+        
+        // Start printing process
+        document.Print();
+    }
+}
+</code></pre>
+<h3 id="printer-specific-configuration">Printer-Specific Configuration</h3>
+<pre><code class="lang-csharp">public class PrinterManager
+{
+    public PrintDocument ConfigurePrinterDocument()
+    {
+        var document = new PrintDocument();
+        
+        var dialog = new KryptonPrintDialog
+        {
+            Document = document,
+            Title = &quot;Select Printer &amp; Settings&quot;,
+            AllowSomePages = true,
+            AllowPrintToFile = false  // Disable print-to-file
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            // PrinterSettings automatically configured
+            ValidatePrinterSettings(document.PrinterSettings);
+            return document;
+        }
+
+        return null;
+    }
+
+    private void ValidatePrinterSettings(PrinterSettings settings)
+    {
+        // Verify printer supports required features
+        if (!settings.IsValid)
+        {
+            MessageBox.Show(&quot;Selected printer is not available.&quot;, &quot;Printer Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+}
+</code></pre>
+<h2 id="advanced-print-configuration-1">Advanced Print Configuration</h2>
+<h3 id="custom-page-range-handling">Custom Page Range Handling</h3>
+<pre><code class="lang-csharp">public class PageRangeManager
+{
+    private PrintDocument document;
+    private List&lt;int&gt; pagesToPrint = new List&lt;int&gt;();
+
+    public void ConfigurePageRange()
+    {
+        var dialog = new KryptonPrintDialog
+        {
+            Title = &quot;Print with Custom Page Range&quot;,
+            Document = document,
+            AllowSomePages = true,
+            AllowCurrentPage = false,
+            AllowSelection = false  // Focus on page ranges only
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            ProcessPageRange(dialog.PrinterSettings);
+        }
+    }
+
+    private void ProcessPageRange(PrinterSettings settings)
+    {
+        switch (settings.PrintRange)
+        {
+            case PrintRange.AllPages:
+                pagesToPrint = GenerateAllPages();
+                break;
+            case PrintRange.SomePages:
+                pagesToPrint = GeneratePageRange(settings.FromPage, settings.ToPage);
+                break;
+            case PrintRange.CurrentPage:
+                pagesToPrint = GenerateCurrentPage();
+                break;
+            case PrintRange.Selection:
+                pagesToPrint = GenerateSelectionPages();
+                break;
+        }
+
+        // Apply custom page processing
+        ApplyCustomPageFilter();
+    }
+
+    private List&lt;int&gt; GeneratePageRange(int fromPage, int toPage)
+    {
+        var pages = new List&lt;int&gt;();
+        for (int i = fromPage; i &lt;= toPage; i++)
+        {
+            pages.Add(i);
+        }
+        return pages;
+    }
+}
+</code></pre>
+<h3 id="print-quality-and-duplex-management">Print Quality and Duplex Management</h3>
+<pre><code class="lang-csharp">public class PrintQualityManager
+{
+    public void ConfigurePrintQuality()
+    {
+        var printerSettings = new PrinterSettings();
+        
+        var dialog = new KryptonPrintDialog
+        {
+            Title = &quot;Quality Print Configuration&quot;,
+            PrinterSettings = printerSettings,
+            AllowPrintToFile = false
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            // Advanced printer settings configuration
+            ConfigureAdvancedSettings(printerSettings);
+        }
+    }
+
+    private void ConfigureAdvancedSettings(PrinterSettings settings)
+    {
+        // Configure duplex printing if supported
+        if (settings.CanDuplex)
+        {
+            settings.Duplex = Duplex.Horizontal;
+        }
+
+        // Configure print quality
+        ConfigurePrintQuality(settings);
+        
+        // Configure paper source
+        ConfigurePaperSource(settings);
+        
+        // Configure orientation
+        ConfigureOrientation(settings);
+    }
+
+    private void ConfigurePrintQuality(PrinterSettings settings)
+    {
+        // Available printer resolutions
+        var resolutions = settings.PrinterResolutions;
+        var highestResolution = resolutions.Cast&lt;PrinterResolution&gt;()
+            .OrderByDescending(r =&gt; r.X * r.Y)
+            .First();
+
+        // Apply highest quality if available
+        if (highestResolution.Kind == PrinterResolutionKind.High)
+        {
+            settings.DefaultPageSettings.PrinterResolution = highestResolution;
+        }
+    }
+}
+</code></pre>
+<h2 id="print-job-management">Print Job Management</h2>
+<h3 id="background-printing">Background Printing</h3>
+<pre><code class="lang-csharp">public class BackgroundPrintService
+{
+    private PrintDocument? currentDocument;
+    private BackgroundWorker? printWorker;
+
+    public void PrintDocumentAsync(PrintDocument document)
+    {
+        var dialog = new KryptonPrintDialog
+        {
+            Title = &quot;Background Print Job&quot;,
+            Document = document,
+            AllowPrintToFile = true
+        };
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            StartBackgroundPrint(document);
+        }
+    }
+
+    private void StartBackgroundPrint(PrintDocument document)
+    {
+        currentDocument = document;
+        printWorker = new BackgroundWorker
+        {
+            WorkerReportsProgress = true
+        };
+
+        printWorker.DoWork += OnPrintWork;
+        printWorker.ProgressChanged += OnPrintProgress;
+        printWorker.RunWorkerCompleted += OnPrintCompleted;
+
+        printWorker.RunWorkerAsync();
+    }
+
+    private void OnPrintWork(object? sender, DoWorkEventArgs e)
+    {
+        if (currentDocument != null)
+        {
+            currentDocument.Print();
+        }
+    }
+
+    private void OnPrintProgress(object? sender, ProgressChangedEventArgs e)
+    {
+        UpdatePrintProgress(e.ProgressPercentage);
+    }
+
+    private void OnPrintCompleted(object? sender, RunWorkerCompletedEventArgs e)
+    {
+        if (e.Error != null)
+        {
+            MessageBox.Show($&quot;Print failed: {e.Error.Message}&quot;, &quot;Print Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        else
+        {
+            MessageBox.Show(&quot;Print job completed successfully.&quot;, &quot;Print Complete&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        currentDocument = null;
+        printWorker?.Dispose();
+        printWorker = null;
+    }
+}
+</code></pre>
+<h3 id="print-queue-management">Print Queue Management</h3>
+<pre><code class="lang-csharp">public class PrintQueueManager
+{
+    public async Task&lt;bool&gt; QueuePrintJob(PrintDocument document)
+    {
+        var dialog = new KryptonPrintDialog
+        {
+            Title = &quot;Queue Print Job&quot;,
+            Document = document,
+            ShowHelp = true
+        };
+
+        var result = dialog.ShowDialog();
+        if (result == DialogResult.OK)
+        {
+            // Queue the print job
+            return await QueueDocument(document);
+        }
+
+        return false;
+    }
+
+    private async Task&lt;bool&gt; QueueDocument(PrintDocument document)
+    {
+        try
+        {
+            // Simulate asynchronous print queuing
+            await Task.Run(() =&gt;
+            {
+                // Add to print queue
+                PrintQueue.Add(document);
+                
+                // Process queue
+                ProcessPrintQueue();
+            });
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            LogPrintError(ex);
+            return false;
+        }
+    }
+
+    private void ProcessPrintQueue()
+    {
+        // Implementation for queued print processing
+        foreach (var document in PrintQueue.GetQueue())
+        {
+            ExecutePrintJob(document);
+        }
+    }
+}
+</code></pre>
+<h2 id="error-handling-and-validation">Error Handling and Validation</h2>
+<h3 id="printer-availability-checking">Printer Availability Checking</h3>
+<pre><code class="lang-csharp">public class PrinterValidator
+{
+    public bool ValidatePrintSetup(out string errorMessage)
+    {
+        errorMessage = string.Empty;
+
+        try
+        {
+            var printSettings = new PrinterSettings();
+            
+            if (!printSettings.IsValid)
+            {
+                errorMessage = &quot;No printers are installed on this system.&quot;;
+                return false;
+            }
+
+            if (!printSettings.IsPlotter)
+            {
+                // Check for common printer issues
+                if (!printSettings.SupportsColor &amp;&amp; RequiresColor())
+                {
+                    errorMessage = &quot;Selected printer does not support color printing.&quot;;
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $&quot;Printer validation error: {ex.Message}&quot;;
+            return false;
+        }
+    }
+
+    private bool RequiresColor()
+    {
+        // Determine if current document requires color printing
+        return DocumentHasColor();
+    }
+
+    public DialogResult ShowValidatedPrintDialog(PrintDocument document)
+    {
+        if (!ValidatePrintSetup(out string errorMessage))
+        {
+            MessageBox.Show(errorMessage, &quot;Print Setup Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return DialogResult.Cancel;
+        }
+
+        var dialog = new KryptonPrintDialog
+        {
+            Document = document,
+            Title = &quot;Validated Print Setup&quot;
+        };
+
+        return dialog.ShowDialog();
+    }
+}
+</code></pre>
+<h2 id="custom-print-document-integration">Custom Print Document Integration</h2>
+<h3 id="multi-page-document-handler">Multi-Page Document Handler</h3>
+<pre><code class="lang-csharp">public class MultiPagePrintDocument : PrintDocument
+{
+    private List&lt;string&gt; pages = new List&lt;string&gt;();
+    private int currentPageIndex = 0;
+
+    public MultiPagePrintDocument(List&lt;string&gt; contentPages)
+    {
+        pages = contentPages ?? new List&lt;string&gt;();
+        
+        // Configure base settings
+        PrintPage += OnPrintPage;
+        BeginPrint += OnBeginPrint;
+        EndPrint += OnEndPrint;
+    }
+
+    private void OnBeginPrint(object? sender, PrintEventArgs e)
+    {
+        currentPageIndex = 0;
+    }
+
+    private void OnPrintPage(object? sender, PrintPageEventArgs e)
+    {
+        if (currentPageIndex &lt; pages.Count)
+        {
+            // Print current page content
+            string pageContent = pages[currentPageIndex];
+            DrawPageContent(e.Graphics, pageContent, e.PageBounds);
+            
+            currentPageIndex++;
+            
+            // Check if more pages to print
+            e.HasMorePages = currentPageIndex &lt; pages.Count;
+        }
+    }
+
+    private void OnEndPrint(object? sender, PrintEventArgs e)
+    {
+        if (e.PrintAction == PrintAction.PrintToPrinter &amp;&amp; !e.Cancel)
+        {
+            OnPrintCompleted?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    public event EventHandler&lt;EventArgs&gt;? OnPrintCompleted;
+
+    private void DrawPageContent(Graphics g, string content, Rectangle bounds)
+    {
+        using var font = new Font(&quot;Arial&quot;, 12);
+        using var brush = new SolidBrush(Color.Black);
+        
+        g.DrawString(content, font, brush, bounds);
+    }
+}
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox Integration</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: All properties properly categorized and exposed</li>
+<li><strong>Default Events</strong>: Configured with appropriate default event handler</li>
+<li><strong>Serialization</strong>: Design-time settings saved to designer files</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Data</strong>: Core print configuration (<code>Document</code>, <code>PrinterSettings</code>)</li>
+<li><strong>Behavior</strong>: Print behavior properties (<code>AllowCurrentPage</code>, <code>AllowSomePages</code>, etc.)</li>
+<li><strong>Appearance</strong>: Visual customization (<code>Title</code>, <code>Icon</code>, <code>ShowIcon</code>)</li>
+</ul>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Resource Management</strong>: Proper cleanup of printer resources</li>
+<li><strong>Memory Usage</strong>: Minimized memory footprint during print operations</li>
+<li><strong>Thread Safety</strong>: Designed for safe background printing</li>
+<li><strong>Error Recovery</strong>: Graceful handling of printer communication failures</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="printer-not-found">Printer Not Found</h3>
+<p><strong>Issue</strong>: Printer settings show no available printers<br>
+<strong>Solution</strong>: Check printer installation and availability:</p>
+<pre><code class="lang-csharp">public bool CheckPrinterAvailability()
+{
+    var printers = PrinterSettings.InstalledPrinters;
+    if (printers.Count == 0)
+    {
+        MessageBox.Show(&quot;No printers installed. Please install a printer first.&quot;, 
+            &quot;No Printers&quot;, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        return false;
+    }
+    return true;
+}
+</code></pre>
+<h3 id="print-range-validation">Print Range Validation</h3>
+<p><strong>Issue</strong>: Invalid page ranges cause print failures<br>
+<strong>Solution</strong>: Implement range validation:</p>
+<pre><code class="lang-csharp">private bool ValidatePageRange(PrinterSettings settings)
+{
+    if (settings.PrintRange == PrintRange.SomePages)
+    {
+        var document = settings.PrintDocument;
+        int pageCount = GetDocumentPageCount(document);
+        
+        if (settings.FromPage &lt; 1 || settings.ToPage &lt; 1 || 
+            settings.FromPage &gt; pageCount || settings.ToPage &gt; pageCount ||
+            settings.FromPage &gt; settings.ToPage)
+        {
+            MessageBox.Show($&quot;Invalid page range. Document has {pageCount} pages.&quot;, 
+                &quot;Invalid Range&quot;, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return false;
+        }
+    }
+    return true;
+}
+</code></pre>
+<h3 id="print-job-cancellation">Print Job Cancellation</h3>
+<p><strong>Issue</strong>: Long print jobs cannot be cancelled<br>
+<strong>Solution</strong>: Implement progress monitoring and cancellation:</p>
+<pre><code class="lang-csharp">public class CancellablePrintDocument : PrintDocument
+{
+    private CancellationTokenSource? cancellationTokenSource;
+    private bool isPrinting = false;
+
+    public CancellationToken StartPrinting()
+    {
+        cancellationTokenSource = new CancellationTokenSource();
+        isPrinting = true;
+        return cancellationTokenSource.Token;
+    }
+
+    public void CancelPrinting()
+    {
+        cancellationTokenSource?.Cancel();
+        isPrinting = false;
+    }
+
+    protected override void OnPrintPage(PrintPageEventArgs e)
+    {
+        if (!isPrinting || cancellationTokenSource?.IsCancellationRequested == true)
+        {
+            e.Cancel = true;
+            return;
+        }
+
+        // Print page content
+        base.OnPrintPage(e);
+    }
+}
+</code></pre>
+<h2 id="migration-from-standard-printdialog">Migration from Standard PrintDialog</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+using PrintDialog = System.Windows.Forms.PrintDialog;
+var dialog = new PrintDialog();
+
+// New code
+var dialog = new KryptonPrintDialog();
+</code></pre>
+<h3 id="enhanced-features">Enhanced Features</h3>
+<pre><code class="lang-csharp">// Standard PrintDialog (basic)
+var standardDialog = new PrintDialog();
+
+// KryptonPrintDialog (enhanced)
+var kryptonDialog = new KryptonPrintDialog
+{
+    Title = &quot;Enhanced Print Configuration&quot;,
+    Icon = customPrintIcon,
+    ShowIcon = true,
+    AllowCurrentPage = true,
+    AllowSomePages = true,
+    AllowPrintToFile = true
+};
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="document-management-system">Document Management System</h3>
+<pre><code class="lang-csharp">public class DocumentPrintManager : Form
+{
+    private PrintDocument currentDocument;
+
+    public void PrintDocument(IDocument document)
+    {
+        // Convert document to PrintDocument
+        currentDocument = CreatePrintDocument(document);
+
+        var dialog = new KryptonPrintDialog
+        {
+            Title = $&quot;Print {document.Title}&quot;,
+            Document = currentDocument,
+            AllowSomePages = document.PageCount &gt; 1,
+            AllowSelection = document.HasSelection,
+            AllowPrintToFile = true,
+            Icon = document.FileIcon,
+            ShowIcon = true
+        };
+
+        dialog.PrinterSettings.PrintRange = PrintRange.AllPages;
+        
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            // Configure additional settings based on user selection
+            ConfigurePrintOptions(document, dialog.PrinterSettings);
+            
+            // Execute print job
+            PerformPrintJob();
+        }
+    }
+
+    private PrintDocument CreatePrintDocument(IDocument document)
+    {
+        var printDoc = new PrintDocument();
+        
+        // Configure printing events
+        printDoc.BeginPrint += (s, e) =&gt; OnBeginDocumentPrint(document);
+        printDoc.PrintPage += (s, e) =&gt; OnPrintDocumentPage(document, e);
+        printDoc.EndPrint += (s, e) =&gt; OnEndDocumentPrint(document);
+        
+        return printDoc;
+    }
+
+    private void ConfigurePrintOptions(IDocument document, PrinterSettings settings)
+    {
+        // Configure document-specific printing options
+        ConfigureColorPrinting(document, settings);
+        ConfigurePageMargins(document, settings);
+        ConfigureOrientation(document, settings);
+    }
+}
+</code></pre>
+<h3 id="report-printing-service">Report Printing Service</h3>
+<pre><code class="lang-csharp">public class ReportPrintService
+{
+    public void PrintReport(IReport report)
+    {
+        var printDocument = CreateReportPrintDocument(report);
+        
+        var dialog = new KryptonPrintDialog
+        {
+            Title = $&quot;Print Report: {report.Name}&quot;,
+            Document = printDocument,
+            AllowSomePages = report.PageCount &gt; 1,
+            ShowHelp = true,
+            AllowPrintToFile = report.AllowFileOutput
+        };
+
+        // Preset common options
+        dialog.PrinterSettings.DefaultPageSettings.Landscape = report.IsLandscape;
+        dialog.PrinterSettings.Copies = report.DefaultCopies;
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            // Apply report-specific configurations
+            ApplyReportSettings(printDocument, report, dialog.PrinterSettings);
+            
+            // Execute print
+            printDocument.Print();
+            
+            // Log print activity
+            LogPrintActivity(report, dialog.PrinterSettings);
+        }
+    }
+
+    private PrintDocument CreateReportPrintDocument(IReport report)
+    {
+        var document = new PrintDocument();
+        
+        // Configure report-specific printing
+        ConfigureReportPrinting(document, report);
+        
+        return document;
+    }
+
+    private void ApplyReportSettings(PrintDocument document, IReport report, PrinterSettings settings)
+    {
+        // Apply complex report configurations
+        ConfigureReportLayout(document, report);
+        ConfigureDataSources(document, report);
+        ConfigureOutputOptions(document, settings);
+    }
+}
+</code></pre>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
