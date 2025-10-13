@@ -91,7 +91,7 @@ The workflow runs on:
 
 - **Add status badge** to README:
   ```markdown
-  ![Documentation](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/actions/workflows/docfx-build.yml/badge.svg)
+  ![Documentation](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/actions/workflows/build.yml/badge.svg)
   ```
 
 - **Add link checker** to validate documentation links

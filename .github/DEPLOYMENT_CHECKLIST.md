@@ -80,7 +80,7 @@ git push origin <your-branch-name>
 Add this to your README.md to show build status:
 
 ```markdown
-![Documentation](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/actions/workflows/docfx-build.yml/badge.svg)
+![Documentation](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/actions/workflows/build.yml/badge.svg)
 ```
 
 **Status**: [ ] Complete (or Skipped)
