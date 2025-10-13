@@ -55,3 +55,19 @@ $(function () {
         work($(this), 0);
     });
 })
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("pre > code").forEach((codeBlock) => {
+    const button = document.createElement("button");
+    button.className = "copy-code-button";
+    button.textContent = "Copy";
+
+    codeBlock.parentNode.insertBefore(button, codeBlock);
+
+    button.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(codeBlock.textContent);
+      button.textContent = "Copied!";
+      setTimeout(() => (button.textContent = "Copy"), 1500);
+    });
+  });
+});
