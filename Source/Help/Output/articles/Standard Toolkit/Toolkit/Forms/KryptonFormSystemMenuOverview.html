@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonForm System Menu - Developer Documentation | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonForm System Menu - Developer Documentation | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonform-system-menu---developer-documentation">KryptonForm System Menu - Developer Documentation</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The KryptonForm includes a comprehensive themed system menu implementation that replaces the native Windows system menu with a fully customizable KryptonContextMenu. This documentation covers the architecture, implementation, and usage of this feature.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#architecture-overview">Architecture Overview</a></li>
+<li><a href="#key-components">Key Components</a></li>
+<li><a href="#designer-mode-integration">Designer Mode Integration</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#customization">Customization</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<h2 id="architecture-overview">Architecture Overview</h2>
+<p>The themed system menu consists of three main components:</p>
+<pre><code>KryptonForm
+├── KryptonSystemMenuService (Orchestrates system menu behavior)
+├── KryptonSystemMenu (Provides the actual themed menu)
+└── SystemMenuValues (Configuration and customization)
+</code></pre>
+<h3 id="key-design-principles">Key Design Principles</h3>
+<ol>
+<li><strong>Designer-First</strong>: Complete transparency in Visual Studio designer mode</li>
+<li><strong>Performance-Optimized</strong>: Minimal overhead during runtime operations</li>
+<li><strong>Fully Customizable</strong>: All aspects can be themed and configured</li>
+<li><strong>Backward Compatible</strong>: Maintains standard Windows system menu behavior</li>
+<li><strong>Robust</strong>: Multiple fallback mechanisms for reliable operation</li>
+</ol>
+<h2 id="key-components">Key Components</h2>
+<h3 id="1-kryptonsystemmenuservice">1. KryptonSystemMenuService</h3>
+<ul>
+<li><strong>Purpose</strong>: Orchestrates system menu behavior and event handling</li>
+<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/General/KryptonSystemMenuService.cs</code></li>
+<li><strong>Responsibilities</strong>:
+<ul>
+<li>Mouse event handling (left/right clicks)</li>
+<li>Keyboard shortcut processing</li>
+<li>Designer mode detection</li>
+<li>Service lifecycle management</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-kryptonsystemmenu">2. KryptonSystemMenu</h3>
+<ul>
+<li><strong>Purpose</strong>: Provides the actual themed context menu</li>
+<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonSystemMenu.cs</code></li>
+<li><strong>Responsibilities</strong>:
+<ul>
+<li>Menu item creation and management</li>
+<li>Theme-appropriate icon generation</li>
+<li>Menu positioning and display</li>
+<li>Custom menu item support</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-systemmenuvalues">3. SystemMenuValues</h3>
+<ul>
+<li><strong>Purpose</strong>: Configuration and customization options</li>
+<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/Values/SystemMenuValues.cs</code></li>
+<li><strong>Responsibilities</strong>:
+<ul>
+<li>Behavior configuration (when to show menu)</li>
+<li>Custom menu item management</li>
+<li>Property change notifications</li>
+</ul>
+</li>
+</ul>
+<h2 id="designer-mode-integration">Designer Mode Integration</h2>
+<h3 id="problem-solved">Problem Solved</h3>
+<p>The system menu was interfering with Visual Studio designer operations, preventing proper drag and drop of controls onto KryptonForm.</p>
+<h3 id="solution-implemented">Solution Implemented</h3>
+<p><strong>Complete system menu disabling in design mode</strong> through multiple detection methods:</p>
+<pre><code class="lang-csharp">private bool IsInDesignMode()
+{
+    return LicenseManager.UsageMode == LicenseUsageMode.Designtime ||
+           Site?.DesignMode == true ||
+           (Site?.Container?.Components?.OfType&lt;Control&gt;().Any(c =&gt; c.Site?.DesignMode == true) == true);
+}
+</code></pre>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Multi-layered detection</strong>: Uses three different methods for robust design-time detection</li>
+<li><strong>Performance optimized</strong>: System menu service not created in design mode</li>
+<li><strong>Zero interference</strong>: Designer operations work without any system menu blocking</li>
+<li><strong>Runtime preservation</strong>: Full functionality available at runtime</li>
+</ul>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<pre><code class="lang-csharp">// The system menu is automatically available on any KryptonForm
+var form = new KryptonForm();
+// System menu appears on:
+// - Right-click on title bar
+// - Left-click on form icon (if enabled)
+// - Alt+Space keyboard shortcut
+</code></pre>
+<h3 id="accessing-the-system-menu">Accessing the System Menu</h3>
+<pre><code class="lang-csharp">// Get access to the system menu for customization
+IKryptonSystemMenu systemMenu = form.KryptonSystemMenu;
+if (systemMenu != null)
+{
+    // Add custom menu items, modify behavior, etc.
+}
+</code></pre>
+<h3 id="configuration">Configuration</h3>
+<pre><code class="lang-csharp">// Configure system menu behavior
+form.SystemMenuValues.ShowOnRightClick = true;  // Default: true
+form.SystemMenuValues.ShowOnIconClick = true;   // Default: true
+form.SystemMenuValues.ShowOnAltSpace = true;    // Default: true
+form.SystemMenuValues.Enabled = true;           // Default: true
+</code></pre>
+<h2 id="customization">Customization</h2>
+<h3 id="adding-custom-menu-items">Adding Custom Menu Items</h3>
+<pre><code class="lang-csharp">// Access the system menu
+var systemMenu = form.KryptonSystemMenu;
+if (systemMenu != null)
+{
+    // Add a custom menu item
+    systemMenu.AddCustomMenuItem(&quot;Settings&quot;, OnSettingsClick, true);
+    
+    // Add a separator
+    systemMenu.AddSeparator(true);
+}
+
+private void OnSettingsClick(object sender, EventArgs e)
+{
+    // Handle custom menu item click
+    MessageBox.Show(&quot;Settings clicked!&quot;);
+}
+</code></pre>
+<h3 id="theme-integration">Theme Integration</h3>
+<p>The system menu automatically adapts to the current Krypton theme:</p>
+<ul>
+<li><strong>Icons</strong>: Theme-appropriate icons for all standard menu items</li>
+<li><strong>Colors</strong>: Menu colors match the current palette</li>
+<li><strong>Styling</strong>: Consistent with other Krypton components</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="1-system-menu-not-appearing">1. System Menu Not Appearing</h4>
+<p><strong>Symptoms</strong>: Right-click on title bar doesn't show menu
+<strong>Causes</strong>:</p>
+<ul>
+<li><code>SystemMenuValues.Enabled = false</code></li>
+<li><code>SystemMenuValues.ShowOnRightClick = false</code></li>
+<li><code>ControlBox = false</code></li>
+</ul>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">form.SystemMenuValues.Enabled = true;
+form.SystemMenuValues.ShowOnRightClick = true;
+form.ControlBox = true;
+</code></pre>
+<h4 id="2-designer-drag-and-drop-issues">2. Designer Drag and Drop Issues</h4>
+<p><strong>Symptoms</strong>: Cannot drag controls from toolbox to form
+<strong>Causes</strong>: System menu interference (should be fixed with this implementation)</p>
+<p><strong>Solution</strong>: The new implementation automatically disables system menu in design mode.</p>
+<h4 id="3-custom-menu-items-not-showing">3. Custom Menu Items Not Showing</h4>
+<p><strong>Symptoms</strong>: Added custom items don't appear
+<strong>Causes</strong>: Items added after menu is built</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">// Refresh the menu after adding custom items
+systemMenu.Refresh();
+</code></pre>
+<h3 id="debug-information">Debug Information</h3>
+<h4 id="checking-system-menu-state">Checking System Menu State</h4>
+<pre><code class="lang-csharp">// Check if system menu is available
+bool hasSystemMenu = form.KryptonSystemMenu != null;
+
+// Check configuration
+bool isEnabled = form.SystemMenuValues.Enabled;
+bool showOnRightClick = form.SystemMenuValues.ShowOnRightClick;
+
+// Get menu item count
+int itemCount = form.KryptonSystemMenu?.MenuItemCount ?? 0;
+</code></pre>
+<h4 id="design-mode-detection">Design Mode Detection</h4>
+<pre><code class="lang-csharp">// The form uses multiple methods to detect design mode:
+// 1. LicenseManager.UsageMode == LicenseUsageMode.Designtime
+// 2. Site?.DesignMode == true
+// 3. Container component checks
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="optimizations-implemented">Optimizations Implemented</h3>
+<ol>
+<li><strong>Conditional Creation</strong>: System menu service only created when needed (not in design mode)</li>
+<li><strong>Lazy Loading</strong>: Menu items created on-demand</li>
+<li><strong>Efficient Detection</strong>: Design mode detection cached and optimized</li>
+<li><strong>Minimal Overhead</strong>: No complex logic in frequently-called methods</li>
+</ol>
+<h3 id="best-practices">Best Practices</h3>
+<ol>
+<li><strong>Cache References</strong>: Store system menu reference if accessing frequently</li>
+<li><strong>Batch Operations</strong>: Group multiple customizations together</li>
+<li><strong>Event Handling</strong>: Use proper event handlers for custom menu items</li>
+<li><strong>Resource Management</strong>: System menu resources are automatically managed</li>
+</ol>
+<h2 id="related-files">Related Files</h2>
+<ul>
+<li><code>KryptonForm.cs</code> - Main form implementation</li>
+<li><code>KryptonSystemMenuService.cs</code> - Service orchestration</li>
+<li><code>KryptonSystemMenu.cs</code> - Menu implementation</li>
+<li><code>SystemMenuValues.cs</code> - Configuration values</li>
+<li><code>VisualForm.cs</code> - Base form with designer mode detection</li>
+</ul>
+<h2 id="version-history">Version History</h2>
+<h3 id="current-implementation">Current Implementation</h3>
+<ul>
+<li><strong>Designer Mode Support</strong>: Complete transparency in Visual Studio designer</li>
+<li><strong>Robust Detection</strong>: Multiple fallback methods for design-time detection</li>
+<li><strong>Performance Optimized</strong>: Minimal runtime overhead</li>
+<li><strong>Fully Customizable</strong>: Support for custom menu items and themes</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

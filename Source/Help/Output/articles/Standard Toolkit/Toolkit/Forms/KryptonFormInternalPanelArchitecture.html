@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonForm InternalPanel Architecture | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonForm InternalPanel Architecture | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonform-internalpanel-architecture">KryptonForm InternalPanel Architecture</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The InternalPanel is a fundamental architectural component of KryptonForm that serves as the actual client area container for all controls. This document explains its purpose, implementation, and relationship to the overall KryptonForm architecture.</p>
+<h2 id="purpose-and-design">Purpose and Design</h2>
+<h3 id="why-internalpanel-exists">Why InternalPanel Exists</h3>
+<p>The InternalPanel (<code>_internalKryptonPanel</code>) is essential for several reasons:</p>
+<ol>
+<li><strong>Themed Client Area</strong>: Provides Krypton-styled background and appearance</li>
+<li><strong>Control Container</strong>: Acts as the real container for all user controls</li>
+<li><strong>Layout Management</strong>: Handles proper sizing, docking, and layout</li>
+<li><strong>Event Forwarding</strong>: Ensures form events fire correctly</li>
+<li><strong>Designer Integration</strong>: Enables proper Visual Studio designer support</li>
+</ol>
+<h3 id="architectural-benefits">Architectural Benefits</h3>
+<pre><code>Standard WinForms Form                KryptonForm with InternalPanel
+┌─────────────────────────┐          ┌─────────────────────────┐
+│ Form (Client Area)      │          │ KryptonForm             │
+│ ├── Control 1           │    VS    │ ├── Title Bar (Chrome)  │
+│ ├── Control 2           │          │ └── InternalPanel       │
+│ └── Control 3           │          │     ├── Control 1       │
+└─────────────────────────┘          │     ├── Control 2       │
+                                     │     └── Control 3       │
+                                     └─────────────────────────┘
+</code></pre>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="declaration-and-creation">Declaration and Creation</h3>
+<pre><code class="lang-csharp">// Field declaration
+private readonly KryptonPanel _internalKryptonPanel;
+
+// Creation in constructor
+_internalKryptonPanel = new KryptonPanel
+{
+    Dock = DockStyle.Fill,
+    Location = new Point(0, 0),
+    Margin = new Padding(0),
+    Name = &quot;InternalKryptonPanel&quot;,
+    Padding = new Padding(0),
+    Size = new Size(100, 100),
+    TabStop = false,
+};
+</code></pre>
+<h3 id="key-properties">Key Properties</h3>
+<h4 id="name">Name</h4>
+<ul>
+<li><strong>Value</strong>: <code>&quot;InternalKryptonPanel&quot;</code></li>
+<li><strong>Purpose</strong>: Identification in designer and debugging</li>
+<li><strong>Visibility</strong>: Not directly visible to users</li>
+</ul>
+<h4 id="docking">Docking</h4>
+<ul>
+<li><strong>Value</strong>: <code>DockStyle.Fill</code></li>
+<li><strong>Purpose</strong>: Automatically fills the form's client area</li>
+<li><strong>Behavior</strong>: Resizes with form, maintains proper layout</li>
+</ul>
+<h4 id="tabstop">TabStop</h4>
+<ul>
+<li><strong>Value</strong>: <code>false</code></li>
+<li><strong>Purpose</strong>: Panel itself should not receive focus</li>
+<li><strong>Behavior</strong>: Focus goes to child controls, not the panel</li>
+</ul>
+<h3 id="event-forwarding">Event Forwarding</h3>
+<pre><code class="lang-csharp">// Forward control events to form
+_internalKryptonPanel.ControlRemoved += (s, e) =&gt; OnControlRemoved(e);
+_internalKryptonPanel.ControlAdded += (s, e) =&gt; OnControlAdded(e);
+</code></pre>
+<p><strong>Why This Is Needed:</strong></p>
+<ul>
+<li>Form needs to know when controls are added/removed</li>
+<li>Enables proper event handling for form-level operations</li>
+<li>Maintains compatibility with standard Form behavior</li>
+</ul>
+<h2 id="controls-collection-override">Controls Collection Override</h2>
+<h3 id="the-magic-behind-control-adding">The Magic Behind Control Adding</h3>
+<pre><code class="lang-csharp">public new Control.ControlCollection Controls
+{
+    get
+    {
+        if (_internalKryptonPanel.Controls.Count == 0)
+        {
+            _internalKryptonPanel.ClientSize = ClientSize;
+        }
+
+        // Route to base.Controls when MDI is enabled
+        return base.IsMdiContainer ? base.Controls : _internalKryptonPanel.Controls;
+    }
+}
+</code></pre>
+<h3 id="how-it-works">How It Works</h3>
+<ol>
+<li><strong>Normal Forms</strong>: Controls added to <code>_internalKryptonPanel.Controls</code></li>
+<li><strong>MDI Container Forms</strong>: Controls added to <code>base.Controls</code> (standard behavior)</li>
+<li><strong>Size Synchronization</strong>: InternalPanel sized to match form client area</li>
+<li><strong>Transparent Operation</strong>: Users add controls to &quot;form&quot; but they go to InternalPanel</li>
+</ol>
+<h3 id="example-flow">Example Flow</h3>
+<pre><code class="lang-csharp">// User code
+var button = new Button();
+form.Controls.Add(button);
+
+// What actually happens
+// 1. form.Controls getter returns _internalKryptonPanel.Controls
+// 2. button is added to _internalKryptonPanel
+// 3. ControlAdded event fires on _internalKryptonPanel
+// 4. Event is forwarded to form.OnControlAdded()
+// 5. Form processes the control addition
+</code></pre>
+<h2 id="background-and-styling-integration">Background and Styling Integration</h2>
+<h3 id="background-image-routing">Background Image Routing</h3>
+<pre><code class="lang-csharp">public override Image? BackgroundImage
+{
+    get =&gt; _internalKryptonPanel.StateCommon.Image;
+    set =&gt; _internalKryptonPanel.StateCommon.Image = value;
+}
+
+public PaletteImageStyle ImageStyle
+{
+    get =&gt; _internalKryptonPanel.StateCommon.ImageStyle;
+    set =&gt; _internalKryptonPanel.StateCommon.ImageStyle = value;
+}
+</code></pre>
+<h3 id="why-this-approach">Why This Approach</h3>
+<ol>
+<li><strong>Consistent Theming</strong>: InternalPanel provides themed background</li>
+<li><strong>Palette Integration</strong>: Automatically adapts to current palette</li>
+<li><strong>User Transparency</strong>: Users set form properties, InternalPanel handles implementation</li>
+<li><strong>Designer Support</strong>: Properties appear correctly in Properties window</li>
+</ol>
+<h2 id="layout-and-sizing-behavior">Layout and Sizing Behavior</h2>
+<h3 id="automatic-sizing">Automatic Sizing</h3>
+<pre><code class="lang-csharp">if (_internalKryptonPanel.Controls.Count == 0)
+{
+    _internalKryptonPanel.ClientSize = ClientSize;
+}
+</code></pre>
+<p><strong>Purpose:</strong></p>
+<ul>
+<li>Ensures InternalPanel always matches form's client area</li>
+<li>Handles form resizing automatically</li>
+<li>Maintains proper control layout</li>
+</ul>
+<h3 id="mdi-support">MDI Support</h3>
+<pre><code class="lang-csharp">// Route to base.Controls when MDI is enabled
+return base.IsMdiContainer ? base.Controls : _internalKryptonPanel.Controls;
+</code></pre>
+<p><strong>MDI Behavior:</strong></p>
+<ul>
+<li><strong>Normal Forms</strong>: Use InternalPanel for themed client area</li>
+<li><strong>MDI Container Forms</strong>: Use base controls collection for MDI child windows</li>
+<li><strong>Automatic Switching</strong>: Behavior changes when <code>IsMdiContainer</code> is set</li>
+</ul>
+<h2 id="designer-integration">Designer Integration</h2>
+<h3 id="previous-issues-now-resolved">Previous Issues (Now Resolved)</h3>
+<p><strong>Problem:</strong></p>
+<ul>
+<li>InternalPanel was selectable in designer</li>
+<li>Clicking form client area selected InternalPanel instead of form</li>
+<li>Interfered with drag and drop operations</li>
+</ul>
+<p><strong>Solution:</strong></p>
+<ul>
+<li>System menu disabled entirely in design mode</li>
+<li>No special InternalPanel logic needed</li>
+<li>Standard KryptonPanel behavior in designer</li>
+</ul>
+<h3 id="current-designer-behavior">Current Designer Behavior</h3>
+<pre><code class="lang-csharp">// InternalPanel is now transparent to designer
+// No custom designer logic required
+// Standard KryptonPanel with no special handling
+</code></pre>
+<h2 id="public-access">Public Access</h2>
+<h3 id="internalpanel-property">InternalPanel Property</h3>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public KryptonPanel InternalPanel =&gt; _internalKryptonPanel;
+</code></pre>
+<h3 id="usage-scenarios">Usage Scenarios</h3>
+<h4 id="advanced-customization">Advanced Customization</h4>
+<pre><code class="lang-csharp">// Direct access for advanced scenarios
+var internalPanel = form.InternalPanel;
+
+// Customize panel properties
+internalPanel.StateCommon.Back.Color1 = Color.LightBlue;
+internalPanel.StateCommon.Border.Rounding = 5;
+</code></pre>
+<h4 id="control-management">Control Management</h4>
+<pre><code class="lang-csharp">// Direct control manipulation (rarely needed)
+var controls = form.InternalPanel.Controls;
+foreach (Control control in controls)
+{
+    // Process each control
+}
+</code></pre>
+<h4 id="layout-customization">Layout Customization</h4>
+<pre><code class="lang-csharp">// Customize panel layout behavior
+form.InternalPanel.AutoScroll = true;
+form.InternalPanel.Padding = new Padding(10);
+</code></pre>
+<h2 id="performance-characteristics">Performance Characteristics</h2>
+<h3 id="memory-usage">Memory Usage</h3>
+<ul>
+<li><strong>Single Instance</strong>: One InternalPanel per KryptonForm</li>
+<li><strong>Lightweight</strong>: Standard KryptonPanel with minimal overhead</li>
+<li><strong>Efficient</strong>: No complex designer logic running</li>
+</ul>
+<h3 id="initialization-time">Initialization Time</h3>
+<ul>
+<li><strong>Fast Creation</strong>: Standard panel creation</li>
+<li><strong>No Overhead</strong>: No complex initialization logic</li>
+<li><strong>Designer Optimized</strong>: No interference with designer operations</li>
+</ul>
+<h3 id="runtime-performance">Runtime Performance</h3>
+<ul>
+<li><strong>Standard Behavior</strong>: Performs like any KryptonPanel</li>
+<li><strong>No Hot Path Logic</strong>: No special processing in frequently-called methods</li>
+<li><strong>Efficient Layout</strong>: Standard WinForms layout engine</li>
+</ul>
+<h2 id="integration-with-other-components">Integration with Other Components</h2>
+<h3 id="kryptonribbon-integration">KryptonRibbon Integration</h3>
+<pre><code class="lang-csharp">// Special handling for KryptonRibbon
+Control.ControlCollection checkForRibbon = _internalKryptonPanel.Controls;
+// Ribbon is handled specially during layout
+</code></pre>
+<h3 id="statusstrip-integration">StatusStrip Integration</h3>
+<pre><code class="lang-csharp">// StatusStrip merging with form chrome
+_drawDocker.StatusStrip = StatusStripMerging ? _statusStrip : null;
+</code></pre>
+<h3 id="sizing-grip-integration">Sizing Grip Integration</h3>
+<pre><code class="lang-csharp">// Sizing grip positioning relative to InternalPanel
+int x = RightToLeftLayout ? 0 : Math.Max(0, _internalKryptonPanel.ClientSize.Width - size);
+int y = Math.Max(0, _internalKryptonPanel.ClientSize.Height - size);
+</code></pre>
+<h2 id="debugging-and-diagnostics">Debugging and Diagnostics</h2>
+<h3 id="common-debug-scenarios">Common Debug Scenarios</h3>
+<h4 id="checking-internalpanel-state">Checking InternalPanel State</h4>
+<pre><code class="lang-csharp">public void DiagnoseInternalPanel(KryptonForm form)
+{
+    var panel = form.InternalPanel;
+    Console.WriteLine($&quot;Panel Name: {panel.Name}&quot;);
+    Console.WriteLine($&quot;Panel Size: {panel.Size}&quot;);
+    Console.WriteLine($&quot;Panel Dock: {panel.Dock}&quot;);
+    Console.WriteLine($&quot;Control Count: {panel.Controls.Count}&quot;);
+    Console.WriteLine($&quot;Panel Visible: {panel.Visible}&quot;);
+    Console.WriteLine($&quot;Panel Enabled: {panel.Enabled}&quot;);
+}
+</code></pre>
+<h4 id="verifying-control-routing">Verifying Control Routing</h4>
+<pre><code class="lang-csharp">public void VerifyControlRouting(KryptonForm form)
+{
+    // Check that form.Controls routes to InternalPanel (when not MDI)
+    bool isMdi = form.IsMdiContainer;
+    var formControls = form.Controls;
+    var panelControls = form.InternalPanel.Controls;
+    
+    Console.WriteLine($&quot;Is MDI: {isMdi}&quot;);
+    Console.WriteLine($&quot;Form Controls Count: {formControls.Count}&quot;);
+    Console.WriteLine($&quot;Panel Controls Count: {panelControls.Count}&quot;);
+    
+    if (!isMdi)
+    {
+        // These should be the same reference
+        Console.WriteLine($&quot;Same Reference: {ReferenceEquals(formControls, panelControls)}&quot;);
+    }
+}
+</code></pre>
+<h3 id="visual-debugging">Visual Debugging</h3>
+<h4 id="internalpanel-visibility">InternalPanel Visibility</h4>
+<pre><code class="lang-csharp">// Temporarily make InternalPanel visible for debugging
+form.InternalPanel.BackColor = Color.LightBlue; // Temporary
+form.InternalPanel.BorderStyle = BorderStyle.FixedSingle; // Temporary
+
+// Remember to remove after debugging!
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-use-form-properties-not-direct-panel-access">1. Use Form Properties, Not Direct Panel Access</h3>
+<pre><code class="lang-csharp">// Preferred
+form.BackgroundImage = myImage;
+form.Controls.Add(myControl);
+
+// Avoid (unless specifically needed)
+form.InternalPanel.StateCommon.Image = myImage;
+form.InternalPanel.Controls.Add(myControl);
+</code></pre>
+<h3 id="2-respect-the-abstraction">2. Respect the Abstraction</h3>
+<pre><code class="lang-csharp">// The InternalPanel is an implementation detail
+// Use the form's public API instead of accessing InternalPanel directly
+</code></pre>
+<h3 id="3-handle-mdi-correctly">3. Handle MDI Correctly</h3>
+<pre><code class="lang-csharp">// Check MDI status when working with controls
+if (form.IsMdiContainer)
+{
+    // Controls go to base.Controls
+    var controls = form.Controls; // Routes to base.Controls
+}
+else
+{
+    // Controls go to InternalPanel
+    var controls = form.Controls; // Routes to InternalPanel.Controls
+}
+</code></pre>
+<h3 id="4-designer-considerations">4. Designer Considerations</h3>
+<pre><code class="lang-csharp">// InternalPanel is hidden from designer
+// Don't try to access it in designer code
+// Use form properties instead
+</code></pre>
+<h2 id="advanced-scenarios">Advanced Scenarios</h2>
+<h3 id="custom-internalpanel-behavior">Custom InternalPanel Behavior</h3>
+<pre><code class="lang-csharp">// If you need to customize InternalPanel behavior
+protected override void OnLoad(EventArgs e)
+{
+    base.OnLoad(e);
+    
+    // Customize InternalPanel
+    InternalPanel.StateCommon.Back.Color1 = Color.White;
+    InternalPanel.StateCommon.Border.Rounding = 10;
+    InternalPanel.AutoScroll = true;
+}
+</code></pre>
+<h3 id="control-layout-customization">Control Layout Customization</h3>
+<pre><code class="lang-csharp">// Custom layout logic using InternalPanel
+private void CustomizeLayout()
+{
+    var panel = InternalPanel;
+    
+    // Set custom padding
+    panel.Padding = new Padding(20);
+    
+    // Enable auto-scroll for many controls
+    panel.AutoScroll = true;
+    panel.AutoScrollMinSize = new Size(800, 600);
+}
+</code></pre>
+<h3 id="integration-with-custom-renderers">Integration with Custom Renderers</h3>
+<pre><code class="lang-csharp">// InternalPanel automatically uses form's renderer
+// No special configuration needed
+// Theming is handled automatically
+</code></pre>
+<h2 id="relationship-to-system-menu">Relationship to System Menu</h2>
+<h3 id="independence">Independence</h3>
+<ul>
+<li><strong>InternalPanel</strong>: Provides client area functionality</li>
+<li><strong>System Menu</strong>: Provides title bar menu functionality</li>
+<li><strong>Separation</strong>: These are independent concerns</li>
+<li><strong>Designer Mode</strong>: Both respect design mode, but independently</li>
+</ul>
+<h3 id="interaction-points">Interaction Points</h3>
+<ol>
+<li><strong>Sizing Grip</strong>: Drawn relative to InternalPanel dimensions</li>
+<li><strong>Layout</strong>: InternalPanel fills space not used by title bar</li>
+<li><strong>Events</strong>: Both forward events to parent form</li>
+<li><strong>Theming</strong>: Both use same palette and renderer</li>
+</ol>
+<h2 id="troubleshooting-internalpanel-issues">Troubleshooting InternalPanel Issues</h2>
+<h3 id="common-problems">Common Problems</h3>
+<h4 id="controls-not-appearing">Controls Not Appearing</h4>
+<p><strong>Symptom</strong>: Added controls don't show on form
+<strong>Cause</strong>: Layout or sizing issues
+<strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">// Force layout update
+form.InternalPanel.PerformLayout();
+form.PerformLayout();
+
+// Check panel size
+Console.WriteLine($&quot;Panel Size: {form.InternalPanel.Size}&quot;);
+Console.WriteLine($&quot;Form Client Size: {form.ClientSize}&quot;);
+</code></pre>
+<h4 id="layout-problems">Layout Problems</h4>
+<p><strong>Symptom</strong>: Controls positioned incorrectly
+<strong>Cause</strong>: InternalPanel sizing issues
+<strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">// Ensure panel fills client area
+form.InternalPanel.Dock = DockStyle.Fill;
+
+// Check for conflicting properties
+form.InternalPanel.Anchor = AnchorStyles.None; // Reset if needed
+</code></pre>
+<h4 id="background-not-showing">Background Not Showing</h4>
+<p><strong>Symptom</strong>: Form background image/color not visible
+<strong>Cause</strong>: InternalPanel covering background
+<strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">// Set background on form (routes to InternalPanel)
+form.BackgroundImage = myImage; // Correct approach
+
+// Or set directly on InternalPanel
+form.InternalPanel.StateCommon.Image = myImage; // Direct approach
+</code></pre>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="KryptonForm-SystemMenu-Overview.md">KryptonForm System Menu Overview</a></li>
+<li><a href="KryptonForm-DesignerMode-Implementation.md">Designer Mode Implementation</a></li>
+<li><a href="KryptonSystemMenu-API-Reference.md">API Reference</a></li>
+<li><a href="KryptonForm-Troubleshooting.md">Troubleshooting Guide</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

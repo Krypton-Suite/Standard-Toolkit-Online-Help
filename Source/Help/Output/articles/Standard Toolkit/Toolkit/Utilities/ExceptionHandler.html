@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>ExceptionHandler Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="ExceptionHandler Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="exceptionhandler-guide">ExceptionHandler Guide</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#basic-usage">Basic Usage</a></li>
+<li><a href="#advanced-configuration">Advanced Configuration</a></li>
+<li><a href="#ui-integration">UI Integration</a></li>
+<li><a href="#file-logging">File Logging</a></li>
+<li><a href="#error-handling-patterns">Error Handling Patterns</a></li>
+<li><a href="#customization">Customization</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#testing-and-debugging">Testing and Debugging</a></li>
+<li><a href="#common-scenarios">Common Scenarios</a></li>
+<li><a href="#api-documentation">API Documentation</a></li>
+</ol>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<p>Before using the ExceptionHandler, ensure you have:</p>
+<ol>
+<li><strong>Krypton Toolkit Suite</strong> properly installed and referenced</li>
+<li><strong>KryptonManager</strong> initialized in your application</li>
+<li><strong>Proper permissions</strong> for file logging (if using file-based logging)</li>
+</ol>
+<h3 id="basic-setup">Basic Setup</h3>
+<p>Add the necessary using statement to your code:</p>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+</code></pre>
+<h3 id="initialization">Initialization</h3>
+<p>The ExceptionHandler doesn't require explicit initialization. It's a static class that works out of the box. However, ensure KryptonManager is initialized for proper localization:</p>
+<pre><code class="lang-csharp">// In your application startup (e.g., Program.cs or Main form constructor)
+KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
+</code></pre>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="simple-exception-handling">Simple Exception Handling</h3>
+<p>The most basic usage involves wrapping risky operations in try-catch blocks:</p>
+<pre><code class="lang-csharp">try
+{
+    // Your potentially risky code here
+    ProcessUserData();
+    SaveToDatabase();
+}
+catch (Exception ex)
+{
+    // Let the ExceptionHandler take care of displaying the error
+    KryptonExceptionHandler.CaptureException(ex);
+}
+</code></pre>
+<h3 id="with-custom-error-messages">With Custom Error Messages</h3>
+<p>Provide more context to users by customizing the error title:</p>
+<pre><code class="lang-csharp">try
+{
+    LoadConfigurationFile();
+}
+catch (FileNotFoundException ex)
+{
+    KryptonExceptionHandler.CaptureException(ex, &quot;Configuration File Not Found&quot;);
+}
+catch (UnauthorizedAccessException ex)
+{
+    KryptonExceptionHandler.CaptureException(ex, &quot;Access Denied to Configuration File&quot;);
+}
+catch (Exception ex)
+{
+    KryptonExceptionHandler.CaptureException(ex, &quot;Unexpected Configuration Error&quot;);
+}
+</code></pre>
+<h3 id="including-stack-traces">Including Stack Traces</h3>
+<p>For debugging purposes, include the full stack trace:</p>
+<pre><code class="lang-csharp">try
+{
+    PerformComplexCalculation();
+}
+catch (Exception ex)
+{
+    KryptonExceptionHandler.CaptureException(ex, &quot;Calculation Error&quot;, showStackTrace: true);
+}
+</code></pre>
+<h2 id="advanced-configuration">Advanced Configuration</h2>
+<h3 id="using-the-internal-exceptionhandler">Using the Internal ExceptionHandler</h3>
+<p>For maximum control, use the internal ExceptionHandler directly:</p>
+<pre><code class="lang-csharp">try
+{
+    // Your code
+}
+catch (Exception ex)
+{
+    ExceptionHandler.CaptureException(
+        ex,
+        title: &quot;Custom Error Title&quot;,
+        showStackTrace: true,
+        useExceptionDialog: true,
+        showExceptionDialogCopyButton: true,
+        showExceptionDialogSearchBox: true
+    );
+}
+</code></pre>
+<h3 id="parameter-breakdown">Parameter Breakdown</h3>
+<ul>
+<li><strong><code>title</code></strong>: Custom title for the error dialog</li>
+<li><strong><code>showStackTrace</code></strong>: Include full stack trace in the message</li>
+<li><strong><code>useExceptionDialog</code></strong>: Use advanced dialog (true) or simple message box (false)</li>
+<li><strong><code>showExceptionDialogCopyButton</code></strong>: Show copy button in advanced dialog</li>
+<li><strong><code>showExceptionDialogSearchBox</code></strong>: Show search functionality in advanced dialog</li>
+</ul>
+<h3 id="automatic-caller-information">Automatic Caller Information</h3>
+<p>The ExceptionHandler automatically captures caller information using C# compiler attributes:</p>
+<pre><code class="lang-csharp">public void ProcessData()
+{
+    try
+    {
+        // Some operation
+    }
+    catch (Exception ex)
+    {
+        // Automatically captures:
+        // - File path: &quot;C:\MyApp\DataProcessor.cs&quot;
+        // - Line number: 42
+        // - Method name: &quot;ProcessData&quot;
+        ExceptionHandler.CaptureException(ex);
+    }
+}
+</code></pre>
+<h2 id="ui-integration">UI Integration</h2>
+<h3 id="exception-dialog-features">Exception Dialog Features</h3>
+<p>The advanced exception dialog (<code>KryptonExceptionDialog</code>) provides:</p>
+<ol>
+<li><strong>Tree View Display</strong>: Hierarchical view of exceptions and inner exceptions</li>
+<li><strong>Search Functionality</strong>: Search through exception details</li>
+<li><strong>Copy to Clipboard</strong>: One-click copying of exception information</li>
+<li><strong>Formatted Display</strong>: Clean, readable presentation</li>
+<li><strong>Responsive Design</strong>: Adapts to different screen sizes</li>
+</ol>
+<h3 id="dialog-customization">Dialog Customization</h3>
+<pre><code class="lang-csharp">try
+{
+    // Your code
+}
+catch (Exception ex)
+{
+    // Show advanced dialog with all features
+    KryptonExceptionDialog.Show(ex, showCopyButton: true, showSearchBox: true);
+}
+</code></pre>
+<h3 id="simple-message-box-mode">Simple Message Box Mode</h3>
+<p>For simpler applications or when you prefer basic error display:</p>
+<pre><code class="lang-csharp">try
+{
+    // Your code
+}
+catch (Exception ex)
+{
+    // Use simple message box instead of advanced dialog
+    ExceptionHandler.CaptureException(ex, useExceptionDialog: false);
+}
+</code></pre>
+<h2 id="file-logging">File Logging</h2>
+<h3 id="basic-file-logging">Basic File Logging</h3>
+<p>Log exceptions to files for later analysis:</p>
+<pre><code class="lang-csharp">try
+{
+    ProcessBatchData();
+}
+catch (Exception ex)
+{
+    // Log to file
+    KryptonExceptionHandler.PrintStackTrace(ex, @&quot;C:\Logs\BatchProcessing.log&quot;);
+    
+    // Also show to user
+    KryptonExceptionHandler.CaptureException(ex, &quot;Batch Processing Error&quot;);
+}
+</code></pre>
+<h3 id="stack-trace-only-logging">Stack Trace Only Logging</h3>
+<p>For lightweight logging that only captures the call stack:</p>
+<pre><code class="lang-csharp">try
+{
+    ValidateUserInput();
+}
+catch (Exception ex)
+{
+    // Log only the stack trace
+    KryptonExceptionHandler.PrintExceptionStackTrace(ex, @&quot;C:\Logs\ValidationErrors.log&quot;);
+}
+</code></pre>
+<h3 id="log-file-management">Log File Management</h3>
+<p>Implement proper log file management:</p>
+<pre><code class="lang-csharp">public class LogManager
+{
+    private static readonly string LogDirectory = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        &quot;MyApplication&quot;,
+        &quot;Logs&quot;
+    );
+    
+    private static string GetLogFileName(string operation)
+    {
+        var timestamp = DateTime.Now.ToString(&quot;yyyy-MM-dd&quot;);
+        return Path.Combine(LogDirectory, $&quot;{operation}_{timestamp}.log&quot;);
+    }
+    
+    public static void LogException(Exception ex, string operation)
+    {
+        try
+        {
+            // Ensure log directory exists
+            Directory.CreateDirectory(LogDirectory);
+            
+            // Log the exception
+            var logFile = GetLogFileName(operation);
+            KryptonExceptionHandler.PrintStackTrace(ex, logFile);
+            
+            // Also show to user
+            KryptonExceptionHandler.CaptureException(ex, $&quot;{operation} Error&quot;);
+        }
+        catch (Exception logEx)
+        {
+            // Fallback if logging fails
+            KryptonExceptionHandler.CaptureException(logEx, &quot;Logging Error&quot;);
+        }
+    }
+}
+</code></pre>
+<h2 id="error-handling-patterns">Error Handling Patterns</h2>
+<h3 id="pattern-1-fail-safe-with-user-notification">Pattern 1: Fail-Safe with User Notification</h3>
+<pre><code class="lang-csharp">public bool TryProcessData(string data)
+{
+    try
+    {
+        ProcessData(data);
+        return true;
+    }
+    catch (Exception ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Data Processing Failed&quot;);
+        return false;
+    }
+}
+</code></pre>
+<h3 id="pattern-2-retry-with-exception-handling">Pattern 2: Retry with Exception Handling</h3>
+<pre><code class="lang-csharp">public void ProcessWithRetry(string data, int maxRetries = 3)
+{
+    for (int attempt = 1; attempt &lt;= maxRetries; attempt++)
+    {
+        try
+        {
+            ProcessData(data);
+            return; // Success
+        }
+        catch (Exception ex)
+        {
+            if (attempt == maxRetries)
+            {
+                // Final attempt failed
+                KryptonExceptionHandler.CaptureException(
+                    ex, 
+                    $&quot;Data Processing Failed After {maxRetries} Attempts&quot;,
+                    showStackTrace: true
+                );
+                throw; // Re-throw if needed
+            }
+            else
+            {
+                // Log retry attempt
+                KryptonExceptionHandler.PrintStackTrace(ex, 
+                    $@&quot;C:\Logs\RetryAttempt_{attempt}.log&quot;);
+                
+                // Wait before retry
+                Thread.Sleep(1000 * attempt);
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="pattern-3-specific-exception-handling">Pattern 3: Specific Exception Handling</h3>
+<pre><code class="lang-csharp">public void HandleSpecificExceptions()
+{
+    try
+    {
+        PerformOperation();
+    }
+    catch (ArgumentNullException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Invalid Parameter&quot;);
+    }
+    catch (FileNotFoundException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Required File Not Found&quot;);
+    }
+    catch (UnauthorizedAccessException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Access Denied&quot;);
+    }
+    catch (Exception ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Unexpected Error&quot;);
+    }
+}
+</code></pre>
+<h3 id="pattern-4-background-task-exception-handling">Pattern 4: Background Task Exception Handling</h3>
+<pre><code class="lang-csharp">public async Task ProcessDataAsync()
+{
+    try
+    {
+        await Task.Run(() =&gt; ProcessData());
+    }
+    catch (Exception ex)
+    {
+        // Log the exception
+        KryptonExceptionHandler.PrintStackTrace(ex, @&quot;C:\Logs\AsyncErrors.log&quot;);
+        
+        // Show user-friendly message
+        KryptonExceptionHandler.CaptureException(ex, &quot;Background Processing Error&quot;);
+    }
+}
+</code></pre>
+<h2 id="customization">Customization</h2>
+<h3 id="custom-exception-dialog-behavior">Custom Exception Dialog Behavior</h3>
+<pre><code class="lang-csharp">public static class CustomExceptionHandler
+{
+    public static void ShowCustomException(Exception ex, string context)
+    {
+        // Custom title based on context
+        string title = $&quot;Error in {context}&quot;;
+        
+        // Always show stack trace for debugging
+        bool showStackTrace = Debugger.IsAttached;
+        
+        // Use advanced dialog with all features
+        ExceptionHandler.CaptureException(
+            ex,
+            title: title,
+            showStackTrace: showStackTrace,
+            useExceptionDialog: true,
+            showExceptionDialogCopyButton: true,
+            showExceptionDialogSearchBox: true
+        );
+    }
+}
+</code></pre>
+<h3 id="environment-specific-configuration">Environment-Specific Configuration</h3>
+<pre><code class="lang-csharp">public static class EnvironmentAwareExceptionHandler
+{
+    public static void HandleException(Exception ex, string operation)
+    {
+        bool isDebugMode = Debugger.IsAttached;
+        bool isProduction = !isDebugMode;
+        
+        if (isProduction)
+        {
+            // Production: Log to file, show simple message
+            KryptonExceptionHandler.PrintStackTrace(ex, GetLogFilePath(operation));
+            KryptonExceptionHandler.CaptureException(ex, &quot;An error occurred&quot;, useExceptionDialog: false);
+        }
+        else
+        {
+            // Development: Show detailed dialog with stack trace
+            ExceptionHandler.CaptureException(
+                ex,
+                title: $&quot;Development Error in {operation}&quot;,
+                showStackTrace: true,
+                useExceptionDialog: true,
+                showExceptionDialogCopyButton: true,
+                showExceptionDialogSearchBox: true
+            );
+        }
+    }
+    
+    private static string GetLogFilePath(string operation)
+    {
+        var logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), &quot;MyApp&quot;, &quot;Logs&quot;);
+        Directory.CreateDirectory(logDir);
+        return Path.Combine(logDir, $&quot;{operation}_{DateTime.Now:yyyy-MM-dd}.log&quot;);
+    }
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="async-exception-handling">Async Exception Handling</h3>
+<p>For non-blocking exception handling:</p>
+<pre><code class="lang-csharp">public async Task ProcessDataAsync()
+{
+    try
+    {
+        await ProcessData();
+    }
+    catch (Exception ex)
+    {
+        // Log asynchronously to avoid blocking UI
+        _ = Task.Run(() =&gt; 
+        {
+            KryptonExceptionHandler.PrintStackTrace(ex, @&quot;C:\Logs\AsyncErrors.log&quot;);
+        });
+        
+        // Show exception dialog on UI thread
+        await Task.Run(() =&gt; 
+        {
+            KryptonExceptionHandler.CaptureException(ex, &quot;Async Processing Error&quot;);
+        });
+    }
+}
+</code></pre>
+<h3 id="exception-handling-in-loops">Exception Handling in Loops</h3>
+<pre><code class="lang-csharp">public void ProcessMultipleItems(List&lt;string&gt; items)
+{
+    var errors = new List&lt;Exception&gt;();
+    
+    foreach (var item in items)
+    {
+        try
+        {
+            ProcessItem(item);
+        }
+        catch (Exception ex)
+        {
+            errors.Add(ex);
+            
+            // Log individual error
+            KryptonExceptionHandler.PrintStackTrace(ex, 
+                $@&quot;C:\Logs\ItemError_{item.GetHashCode()}.log&quot;);
+        }
+    }
+    
+    // Show summary if there were errors
+    if (errors.Count &gt; 0)
+    {
+        var summaryEx = new AggregateException(&quot;Multiple items failed to process&quot;, errors);
+        KryptonExceptionHandler.CaptureException(summaryEx, 
+            $&quot;Processing Complete - {errors.Count} Errors&quot;);
+    }
+}
+</code></pre>
+<h2 id="testing-and-debugging">Testing and Debugging</h2>
+<h3 id="unit-testing-exception-handling">Unit Testing Exception Handling</h3>
+<pre><code class="lang-csharp">[Test]
+public void TestExceptionHandling()
+{
+    // Arrange
+    var testException = new InvalidOperationException(&quot;Test exception&quot;);
+    var logFile = Path.GetTempFileName();
+    
+    try
+    {
+        // Act
+        KryptonExceptionHandler.PrintStackTrace(testException, logFile);
+        
+        // Assert
+        Assert.IsTrue(File.Exists(logFile));
+        var logContent = File.ReadAllText(logFile);
+        Assert.IsTrue(logContent.Contains(&quot;Test exception&quot;));
+        Assert.IsTrue(logContent.Contains(&quot;InvalidOperationException&quot;));
+    }
+    finally
+    {
+        // Cleanup
+        if (File.Exists(logFile))
+            File.Delete(logFile);
+    }
+}
+</code></pre>
+<h3 id="debugging-exception-flow">Debugging Exception Flow</h3>
+<pre><code class="lang-csharp">public void DebugExceptionHandling()
+{
+    try
+    {
+        // Your code
+    }
+    catch (Exception ex)
+    {
+        // Add debug information
+        Debug.WriteLine($&quot;Exception caught: {ex.GetType().Name}&quot;);
+        Debug.WriteLine($&quot;Message: {ex.Message}&quot;);
+        Debug.WriteLine($&quot;Stack trace: {ex.StackTrace}&quot;);
+        
+        // Use ExceptionHandler
+        ExceptionHandler.CaptureException(ex, &quot;Debug Exception&quot;, showStackTrace: true);
+    }
+}
+</code></pre>
+<h3 id="conditional-exception-handling">Conditional Exception Handling</h3>
+<pre><code class="lang-csharp">public void ConditionalExceptionHandling()
+{
+    try
+    {
+        ProcessData();
+    }
+    catch (Exception ex)
+    {
+        // Only show dialog in debug mode
+        if (Debugger.IsAttached)
+        {
+            ExceptionHandler.CaptureException(ex, &quot;Debug Exception&quot;, showStackTrace: true);
+        }
+        else
+        {
+            // In production, just log
+            KryptonExceptionHandler.PrintStackTrace(ex, @&quot;C:\Logs\ProductionErrors.log&quot;);
+        }
+    }
+}
+</code></pre>
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="scenario-1-database-connection-errors">Scenario 1: Database Connection Errors</h3>
+<pre><code class="lang-csharp">public void ConnectToDatabase()
+{
+    try
+    {
+        using var connection = new SqlConnection(connectionString);
+        connection.Open();
+        // Database operations
+    }
+    catch (SqlException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Database Connection Failed&quot;);
+    }
+    catch (InvalidOperationException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Database Operation Invalid&quot;);
+    }
+    catch (Exception ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Unexpected Database Error&quot;);
+    }
+}
+</code></pre>
+<h3 id="scenario-2-file-operations">Scenario 2: File Operations</h3>
+<pre><code class="lang-csharp">public void ProcessFile(string filePath)
+{
+    try
+    {
+        if (!File.Exists(filePath))
+            throw new FileNotFoundException($&quot;File not found: {filePath}&quot;);
+            
+        var content = File.ReadAllText(filePath);
+        ProcessContent(content);
+    }
+    catch (FileNotFoundException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;File Not Found&quot;);
+    }
+    catch (UnauthorizedAccessException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Access Denied to File&quot;);
+    }
+    catch (IOException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;File I/O Error&quot;);
+    }
+    catch (Exception ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;File Processing Error&quot;);
+    }
+}
+</code></pre>
+<h3 id="scenario-3-network-operations">Scenario 3: Network Operations</h3>
+<pre><code class="lang-csharp">public async Task DownloadDataAsync(string url)
+{
+    try
+    {
+        using var client = new HttpClient();
+        var response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync();
+        ProcessDownloadedData(content);
+    }
+    catch (HttpRequestException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Network Request Failed&quot;);
+    }
+    catch (TaskCanceledException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Download Timeout&quot;);
+    }
+    catch (Exception ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Download Error&quot;);
+    }
+}
+</code></pre>
+<h3 id="scenario-4-user-input-validation">Scenario 4: User Input Validation</h3>
+<pre><code class="lang-csharp">public void ValidateUserInput(string input)
+{
+    try
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            throw new ArgumentException(&quot;Input cannot be empty&quot;);
+            
+        if (input.Length &gt; 100)
+            throw new ArgumentException(&quot;Input too long&quot;);
+            
+        ProcessInput(input);
+    }
+    catch (ArgumentException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Invalid Input&quot;);
+    }
+    catch (Exception ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Input Processing Error&quot;);
+    }
+}
+</code></pre>
+<h3 id="scenario-5-configuration-loading">Scenario 5: Configuration Loading</h3>
+<pre><code class="lang-csharp">public void LoadConfiguration()
+{
+    try
+    {
+        var configPath = Path.Combine(Application.StartupPath, &quot;config.json&quot;);
+        
+        if (!File.Exists(configPath))
+            throw new FileNotFoundException(&quot;Configuration file not found&quot;);
+            
+        var json = File.ReadAllText(configPath);
+        var config = JsonSerializer.Deserialize&lt;AppConfig&gt;(json);
+        
+        ApplyConfiguration(config);
+    }
+    catch (FileNotFoundException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Configuration File Missing&quot;);
+    }
+    catch (JsonException ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Invalid Configuration Format&quot;);
+    }
+    catch (Exception ex)
+    {
+        KryptonExceptionHandler.CaptureException(ex, &quot;Configuration Loading Error&quot;);
+    }
+}
+</code></pre>
+<h2 id="api-documentation">API Documentation</h2>
+<p>For API documentation, see <a href="ExceptionHandlerAPIDocumentation.html">here</a>.</p>
+<h2 id="best-practices-summary">Best Practices Summary</h2>
+<ol>
+<li><strong>Always provide meaningful error titles</strong> to help users understand what went wrong</li>
+<li><strong>Use specific exception types</strong> when possible for better error handling</li>
+<li><strong>Log exceptions to files</strong> for debugging and analysis</li>
+<li><strong>Show stack traces only in debug mode</strong> to avoid confusing end users</li>
+<li><strong>Use the advanced dialog</strong> for development and debugging</li>
+<li><strong>Use simple message boxes</strong> for production user-facing errors</li>
+<li><strong>Implement proper cleanup</strong> in finally blocks</li>
+<li><strong>Consider async patterns</strong> for non-blocking exception handling</li>
+<li><strong>Test your exception handling</strong> to ensure it works as expected</li>
+<li><strong>Document your error handling strategy</strong> for team consistency</li>
+</ol>
+<p>This guide provides comprehensive coverage of how to effectively use the ExceptionHandler feature in your Krypton Toolkit applications. Choose the patterns and approaches that best fit your application's needs and requirements.</p>
+<hr>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="../Components/KryptonExceptionHandler.md">KryptonExceptionHandler</a> - Practical tutorials and recipes ⭐ <strong>Start Here</strong></li>
+<li><a href="../Components/KryptonExceptionHandlerAPIReference.md">KryptonExceptionHandler API Reference</a> - Complete API documentation for the public exception handler</li>
+<li><a href="ExceptionHandlerAPIDocumentation.html">ExceptionHandler API Documentation</a> - Internal implementation and architecture details</li>
+<li><a href="LocalizationGuide.html">Localization Guide</a> - For localizing exception dialog strings</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonSaveFileDialog | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonSaveFileDialog | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonsavefiledialog">KryptonSaveFileDialog</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonSaveFileDialog</code> class provides a Krypton-themed wrapper around the standard Windows <code>SaveFileDialog</code>. It inherits from <code>FileSaveDialogWrapper</code> and implements <code>IDisposable</code> to provide enhanced appearance, consistent theming, and improved visual integration while maintaining full compatibility with the standard <code>SaveFileDialog</code> functionality.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── System.Windows.Forms.CommonDialog
+            └── System.Windows.Forms.FileDialog
+                └── System.Windows.Forms.SaveFileDialog
+                    └── Krypton.Toolkit.FileSaveDialogWrapper
+                        └── Krypton.Toolkit.KryptonSaveFileDialog
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonSaveFileDialog()
+</code></pre>
+<p>The constructor initializes enhanced features:</p>
+<ul>
+<li><strong>Internal <code>SaveFileDialog</code></strong>: Creates and manages the contained <code>SaveFileDialog</code> instance</li>
+<li><strong>Theme Integration</strong>: Automatic Krypton theming through FileSaveDialogWrapper</li>
+<li><strong>Full Compatibility</strong>: All standard <code>SaveFileDialog</code> properties and methods are proxied</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="savefiledialog-specific-properties">SaveFileDialog-Specific Properties</h3>
+<h4 id="createprompt-property">CreatePrompt Property</h4>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool CreatePrompt { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Prompts user for permission to create a file if the specified file doesn't exist</li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Default Value</strong>: false</li>
+<li><strong>Usage</strong>: When you want to confirm file creation before proceeding</li>
+</ul>
+<h4 id="overwriteprompt-property">OverwritePrompt Property</h4>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool OverwritePrompt { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Displays a warning if the user specifies a file name that already exists</li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Default Value</strong>: true</li>
+<li><strong>Usage</strong>: Prevents accidental overwriting of existing files</li>
+</ul>
+<h4 id="checkwriteaccess-property-net8_0_or_greater">CheckWriteAccess Property (NET8_0_OR_GREATER)</h4>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool CheckWriteAccess { get; set; }
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Verifies if the creation of the specified file will be successful</li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Default Value</strong>: true</li>
+<li><strong>Availability</strong>: .NET 8.0 and later</li>
+<li><strong>Usage</strong>: Validates write permissions before showing the dialog</li>
+</ul>
+<h3 id="standard-filedialog-properties">Standard FileDialog Properties</h3>
+<p>All standard FileDialog properties are fully supported:</p>
+<pre><code class="lang-csharp">// File and path properties
+public string FileName { get; set; }
+public string[] FileNames { get; }
+public string DefaultExt { get; set; }
+public string InitialDirectory { get; set; }
+
+// Filter and validation
+public string Filter { get; set; }
+public int FilterIndex { get; set; }
+public bool ValidateNames { get; set; }
+public bool CheckFileExists { get; set; }
+public bool CheckPathExists { get; set; }
+
+// Behavior options
+public bool AddExtension { get; set; }
+public bool DereferenceLinks { get; set; }
+public bool RestoreDirectory { get; set; }
+public bool SupportMultiDottedExtensions { get; set; }
+
+// Appearance
+public string Title { get; set; }
+
+// .NET 8.0+ features
+public Guid? ClientGuid { get; set; }
+public FileDialogCustomPlacesCollection CustomPlaces { get; }
+</code></pre>
+<h2 id="key-methods">Key Methods</h2>
+<h3 id="openfile-method">OpenFile Method</h3>
+<pre><code class="lang-csharp">public Stream OpenFile()
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Opens the file selected by the user with read-only permission</li>
+<li><strong>Returns</strong>: Stream for the selected file</li>
+<li><strong>Exception</strong>: ArgumentNullException if file name is null</li>
+<li><strong>Usage</strong>: Direct file access after successful dialog result</li>
+</ul>
+<h3 id="showactualdialog-method">ShowActualDialog Method</h3>
+<pre><code class="lang-csharp">protected override DialogResult ShowActualDialog(IWin32Window? owner)
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Internal method that displays the themed dialog</li>
+<li><strong>Returns</strong>: DialogResult indicating user's choice</li>
+<li><strong>Implementation</strong>: Delegates to the internal <code>SaveFileDialog</code> with Krypton theming</li>
+</ul>
+<h3 id="standard-methods">Standard Methods</h3>
+<pre><code class="lang-csharp">public override void Reset()           // Resets all properties to defaults
+public override string ToString()      // Returns string representation
+public void Dispose()                  // Cleans up resources
+</code></pre>
+<h2 id="events">Events</h2>
+<h3 id="fileok-event">FileOk Event</h3>
+<pre><code class="lang-csharp">public override event CancelEventHandler? FileOk
+</code></pre>
+<ul>
+<li><strong>Purpose</strong>: Occurs when the user clicks Save in the dialog</li>
+<li><strong>Type</strong>: CancelEventHandler</li>
+<li><strong>Usage</strong>: Validate file selection or cancel the operation</li>
+</ul>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="basic-file-save">Basic File Save</h3>
+<pre><code class="lang-csharp">public void SaveDocument()
+{
+    using var saveDialog = new KryptonSaveFileDialog
+    {
+        Title = &quot;Save Document&quot;,
+        Filter = &quot;Text Files (*.txt)|*.txt|All Files (*.*)|*.*&quot;,
+        FilterIndex = 1,
+        DefaultExt = &quot;txt&quot;,
+        OverwritePrompt = true,
+        CheckWriteAccess = true
+    };
+
+    if (saveDialog.ShowDialog() == DialogResult.OK)
+    {
+        // Save the file
+        File.WriteAllText(saveDialog.FileName, documentContent);
+    }
+}
+</code></pre>
+<h3 id="advanced-save-with-validation">Advanced Save with Validation</h3>
+<pre><code class="lang-csharp">public class DocumentSaver
+{
+    public bool SaveDocument(string content, string defaultName)
+    {
+        using var saveDialog = new KryptonSaveFileDialog
+        {
+            Title = &quot;Save Document&quot;,
+            FileName = defaultName,
+            Filter = &quot;Word Documents (*.docx)|*.docx|Rich Text (*.rtf)|*.rtf|Text Files (*.txt)|*.txt&quot;,
+            FilterIndex = 1,
+            DefaultExt = &quot;docx&quot;,
+            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            OverwritePrompt = true,
+            CreatePrompt = false,
+            CheckWriteAccess = true
+        };
+
+        // Add custom places for quick access
+        saveDialog.CustomPlaces.Add(Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+        saveDialog.CustomPlaces.Add(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+
+        // Handle validation
+        saveDialog.FileOk += OnFileOk;
+
+        try
+        {
+            if (saveDialog.ShowDialog() == DialogResult.OK)
+            {
+                return SaveToFile(saveDialog.FileName, content, saveDialog.FilterIndex);
+            }
+        }
+        finally
+        {
+            saveDialog.FileOk -= OnFileOk;
+        }
+
+        return false;
+    }
+
+    private void OnFileOk(object? sender, CancelEventArgs e)
+    {
+        if (sender is KryptonSaveFileDialog dialog)
+        {
+            // Validate file extension
+            string extension = Path.GetExtension(dialog.FileName).ToLower();
+            string expectedExt = GetExpectedExtension(dialog.FilterIndex);
+
+            if (extension != expectedExt)
+            {
+                MessageBox.Show($&quot;Please use the {expectedExt} extension.&quot;, &quot;Invalid Extension&quot;, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                e.Cancel = true;
+            }
+        }
+    }
+
+    private string GetExpectedExtension(int filterIndex)
+    {
+        return filterIndex switch
+        {
+            1 =&gt; &quot;.docx&quot;,
+            2 =&gt; &quot;.rtf&quot;,
+            3 =&gt; &quot;.txt&quot;,
+            _ =&gt; &quot;.txt&quot;
+        };
+    }
+
+    private bool SaveToFile(string fileName, string content, int filterIndex)
+    {
+        try
+        {
+            switch (filterIndex)
+            {
+                case 1: // Word document
+                    return SaveAsWordDocument(fileName, content);
+                case 2: // Rich text
+                    return SaveAsRichText(fileName, content);
+                case 3: // Plain text
+                    File.WriteAllText(fileName, content);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($&quot;Error saving file: {ex.Message}&quot;, &quot;Save Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return false;
+        }
+    }
+}
+</code></pre>
+<h3 id="multi-format-export">Multi-Format Export</h3>
+<pre><code class="lang-csharp">public class ExportManager
+{
+    public void ExportData(DataTable data)
+    {
+        using var saveDialog = new KryptonSaveFileDialog
+        {
+            Title = &quot;Export Data&quot;,
+            Filter = &quot;Excel Files (*.xlsx)|*.xlsx|CSV Files (*.csv)|*.csv|XML Files (*.xml)|*.xml&quot;,
+            FilterIndex = 1,
+            DefaultExt = &quot;xlsx&quot;,
+            InitialDirectory = GetLastExportDirectory(),
+            OverwritePrompt = true
+        };
+
+        if (saveDialog.ShowDialog() == DialogResult.OK)
+        {
+            ExportToFormat(data, saveDialog.FileName, saveDialog.FilterIndex);
+            SaveLastExportDirectory(Path.GetDirectoryName(saveDialog.FileName));
+        }
+    }
+
+    private void ExportToFormat(DataTable data, string fileName, int formatIndex)
+    {
+        switch (formatIndex)
+        {
+            case 1: // Excel
+                ExportToExcel(data, fileName);
+                break;
+            case 2: // CSV
+                ExportToCsv(data, fileName);
+                break;
+            case 3: // XML
+                ExportToXml(data, fileName);
+                break;
+        }
+    }
+}
+</code></pre>
+<h3 id="configuration-save-dialog">Configuration Save Dialog</h3>
+<pre><code class="lang-csharp">public class ConfigurationManager
+{
+    public void SaveConfiguration(AppSettings settings)
+    {
+        using var saveDialog = new KryptonSaveFileDialog
+        {
+            Title = &quot;Save Configuration&quot;,
+            Filter = &quot;Configuration Files (*.config)|*.config|JSON Files (*.json)|*.json|XML Files (*.xml)|*.xml&quot;,
+            FilterIndex = 1,
+            DefaultExt = &quot;config&quot;,
+            InitialDirectory = GetConfigDirectory(),
+            FileName = &quot;MyAppSettings&quot;,
+            OverwritePrompt = true,
+            CheckWriteAccess = true
+        };
+
+        // Add application-specific custom places
+        saveDialog.CustomPlaces.Add(GetConfigDirectory());
+        saveDialog.CustomPlaces.Add(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), &quot;MyApp&quot;));
+
+        if (saveDialog.ShowDialog() == DialogResult.OK)
+        {
+            SaveSettings(settings, saveDialog.FileName, saveDialog.FilterIndex);
+        }
+    }
+
+    private void SaveSettings(AppSettings settings, string fileName, int formatIndex)
+    {
+        switch (formatIndex)
+        {
+            case 1: // .config format
+                SaveAsConfig(settings, fileName);
+                break;
+            case 2: // JSON format
+                SaveAsJson(settings, fileName);
+                break;
+            case 3: // XML format
+                SaveAsXml(settings, fileName);
+                break;
+        }
+    }
+}
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="mvvm-pattern-integration">MVVM Pattern Integration</h3>
+<pre><code class="lang-csharp">public class SaveFileDialogService : ISaveFileDialogService
+{
+    public SaveFileResult ShowSaveDialog(SaveFileDialogOptions options)
+    {
+        using var dialog = new KryptonSaveFileDialog
+        {
+            Title = options.Title,
+            Filter = options.Filter,
+            FilterIndex = options.FilterIndex,
+            DefaultExt = options.DefaultExtension,
+            InitialDirectory = options.InitialDirectory,
+            FileName = options.DefaultFileName,
+            OverwritePrompt = options.OverwritePrompt,
+            CreatePrompt = options.CreatePrompt
+        };
+
+        var result = new SaveFileResult();
+
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            result.Success = true;
+            result.FileName = dialog.FileName;
+            result.FilterIndex = dialog.FilterIndex;
+        }
+
+        return result;
+    }
+}
+
+public class SaveFileDialogOptions
+{
+    public string Title { get; set; } = &quot;Save File&quot;;
+    public string Filter { get; set; } = &quot;All Files (*.*)|*.*&quot;;
+    public int FilterIndex { get; set; } = 1;
+    public string DefaultExtension { get; set; } = string.Empty;
+    public string InitialDirectory { get; set; } = string.Empty;
+    public string DefaultFileName { get; set; } = string.Empty;
+    public bool OverwritePrompt { get; set; } = true;
+    public bool CreatePrompt { get; set; } = false;
+}
+
+public class SaveFileResult
+{
+    public bool Success { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public int FilterIndex { get; set; }
+}
+</code></pre>
+<h3 id="async-file-operations">Async File Operations</h3>
+<pre><code class="lang-csharp">public class AsyncFileSaver
+{
+    public async Task&lt;bool&gt; SaveFileAsync(string content, string defaultName)
+    {
+        var saveDialog = new KryptonSaveFileDialog
+        {
+            Title = &quot;Save File&quot;,
+            FileName = defaultName,
+            Filter = &quot;Text Files (*.txt)|*.txt|All Files (*.*)|*.*&quot;,
+            FilterIndex = 1,
+            DefaultExt = &quot;txt&quot;,
+            OverwritePrompt = true
+        };
+
+        if (saveDialog.ShowDialog() == DialogResult.OK)
+        {
+            try
+            {
+                await File.WriteAllTextAsync(saveDialog.FileName, content);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($&quot;Error saving file: {ex.Message}&quot;, &quot;Save Error&quot;, 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
+        return false;
+    }
+}
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox Integration</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: All standard <code>SaveFileDialog</code> properties available</li>
+<li><strong>Theme Integration</strong>: Automatic Krypton theming applied</li>
+<li><strong>Serialization</strong>: Design-time settings saved to designer files</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Behavior</strong>: Core dialog functionality (<code>CreatePrompt</code>, <code>OverwritePrompt</code>, <code>CheckWriteAccess</code>)</li>
+<li><strong>Data</strong>: File and path properties (<code>FileName</code>, <code>Filter</code>, <code>InitialDirectory</code>)</li>
+<li><strong>Appearance</strong>: Visual properties (<code>Title</code>)</li>
+</ul>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Theme Integration</strong>: Lightweight wrapper with minimal overhead</li>
+<li><strong>Memory Management</strong>: Proper disposal of internal dialog resources</li>
+<li><strong>Thread Safety</strong>: Standard Windows Forms thread safety applies</li>
+<li><strong>Resource Cleanup</strong>: Automatic cleanup through IDisposable implementation</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="file-access-denied">File Access Denied</h3>
+<p><strong>Issue</strong>: Save operation fails with access denied<br>
+<strong>Solution</strong>: Use CheckWriteAccess property and handle exceptions:</p>
+<pre><code class="lang-csharp">saveDialog.CheckWriteAccess = true;
+saveDialog.FileOk += (sender, e) =&gt;
+{
+    try
+    {
+        // Test write access
+        File.WriteAllText(saveDialog.FileName, &quot;test&quot;);
+        File.Delete(saveDialog.FileName);
+    }
+    catch (UnauthorizedAccessException)
+    {
+        MessageBox.Show(&quot;Access denied to the selected location.&quot;, &quot;Access Denied&quot;, 
+            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        e.Cancel = true;
+    }
+};
+</code></pre>
+<h3 id="filter-not-working">Filter Not Working</h3>
+<p><strong>Issue</strong>: File filter not applied correctly<br>
+<strong>Solution</strong>: Ensure proper filter format:</p>
+<pre><code class="lang-csharp">// Correct format: &quot;Description|Pattern|Description|Pattern&quot;
+saveDialog.Filter = &quot;Text Files (*.txt)|*.txt|All Files (*.*)|*.*&quot;;
+saveDialog.FilterIndex = 1; // Select first filter
+</code></pre>
+<h3 id="path-not-found">Path Not Found</h3>
+<p><strong>Issue</strong>: InitialDirectory doesn't exist<br>
+<strong>Solution</strong>: Validate directory before setting:</p>
+<pre><code class="lang-csharp">string initialDir = GetInitialDirectory();
+if (Directory.Exists(initialDir))
+{
+    saveDialog.InitialDirectory = initialDir;
+}
+else
+{
+    saveDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+}
+</code></pre>
+<h2 id="migration-from-standard-savefiledialog">Migration from Standard SaveFileDialog</h2>
+<h3 id="direct-replacement">Direct Replacement</h3>
+<pre><code class="lang-csharp">// Old code
+SaveFileDialog saveDialog = new SaveFileDialog();
+
+// New code
+KryptonSaveFileDialog saveDialog = new KryptonSaveFileDialog();
+</code></pre>
+<h3 id="enhanced-features">Enhanced Features</h3>
+<pre><code class="lang-csharp">// Standard SaveFileDialog (basic)
+var standardSfd = new SaveFileDialog();
+
+// KryptonSaveFileDialog (enhanced)
+var kryptonSfd = new KryptonSaveFileDialog
+{
+    Title = &quot;Save Document&quot;,
+    Filter = &quot;Text Files (*.txt)|*.txt&quot;,
+    OverwritePrompt = true,
+    CreatePrompt = false,
+    CheckWriteAccess = true, // .NET 8.0+ feature
+    CustomPlaces = // Enhanced custom places support
+};
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="document-editor-save">Document Editor Save</h3>
+<pre><code class="lang-csharp">public partial class DocumentEditor : Form
+{
+    private string currentDocument = string.Empty;
+    private bool isModified = false;
+
+    private void SaveDocument()
+    {
+        if (string.IsNullOrEmpty(currentDocument))
+        {
+            SaveAsDocument();
+        }
+        else
+        {
+            SaveToCurrentFile();
+        }
+    }
+
+    private void SaveAsDocument()
+    {
+        using var saveDialog = new KryptonSaveFileDialog
+        {
+            Title = &quot;Save Document As&quot;,
+            Filter = &quot;Rich Text Format (*.rtf)|*.rtf|Text Files (*.txt)|*.txt|Word Documents (*.docx)|*.docx&quot;,
+            FilterIndex = 1,
+            DefaultExt = &quot;rtf&quot;,
+            InitialDirectory = GetLastSaveDirectory(),
+            OverwritePrompt = true,
+            CheckWriteAccess = true
+        };
+
+        // Add recent folders as custom places
+        foreach (string recentFolder in GetRecentFolders())
+        {
+            if (Directory.Exists(recentFolder))
+            {
+                saveDialog.CustomPlaces.Add(recentFolder);
+            }
+        }
+
+        if (saveDialog.ShowDialog() == DialogResult.OK)
+        {
+            SaveToFile(saveDialog.FileName, saveDialog.FilterIndex);
+            currentDocument = saveDialog.FileName;
+            isModified = false;
+            UpdateTitle();
+            AddToRecentFiles(saveDialog.FileName);
+        }
+    }
+
+    private void SaveToFile(string fileName, int formatIndex)
+    {
+        try
+        {
+            switch (formatIndex)
+            {
+                case 1: // RTF
+                    richTextBox.SaveFile(fileName, RichTextBoxStreamType.RichText);
+                    break;
+                case 2: // TXT
+                    File.WriteAllText(fileName, richTextBox.Text);
+                    break;
+                case 3: // DOCX
+                    SaveAsWordDocument(fileName);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($&quot;Error saving file: {ex.Message}&quot;, &quot;Save Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+}
+</code></pre>
+<h3 id="image-export-dialog">Image Export Dialog</h3>
+<pre><code class="lang-csharp">public class ImageExporter
+{
+    public void ExportImage(Image image)
+    {
+        using var saveDialog = new KryptonSaveFileDialog
+        {
+            Title = &quot;Export Image&quot;,
+            Filter = &quot;PNG Files (*.png)|*.png|JPEG Files (*.jpg)|*.jpg|Bitmap Files (*.bmp)|*.bmp|TIFF Files (*.tiff)|*.tiff&quot;,
+            FilterIndex = 1,
+            DefaultExt = &quot;png&quot;,
+            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
+            OverwritePrompt = true,
+            FileName = &quot;ExportedImage&quot;
+        };
+
+        if (saveDialog.ShowDialog() == DialogResult.OK)
+        {
+            ExportImageToFormat(image, saveDialog.FileName, saveDialog.FilterIndex);
+        }
+    }
+
+    private void ExportImageToFormat(Image image, string fileName, int formatIndex)
+    {
+        try
+        {
+            switch (formatIndex)
+            {
+                case 1: // PNG
+                    image.Save(fileName, ImageFormat.Png);
+                    break;
+                case 2: // JPEG
+                    image.Save(fileName, ImageFormat.Jpeg);
+                    break;
+                case 3: // BMP
+                    image.Save(fileName, ImageFormat.Bmp);
+                    break;
+                case 4: // TIFF
+                    image.Save(fileName, ImageFormat.Tiff);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($&quot;Error exporting image: {ex.Message}&quot;, &quot;Export Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+}
+</code></pre>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Administrator Suffix Feature for KryptonForm | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Administrator Suffix Feature for KryptonForm | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="administrator-suffix-feature-for-kryptonform">Administrator Suffix Feature for KryptonForm</h1>
+
+<h2 id="overview">Overview</h2>
+<p>This feature adds the ability to display &quot;(Administrator)&quot; in the title bar of <code>KryptonForm</code> instances when the application is running with elevated privileges, similar to native Windows applications.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>Automatic Detection</strong>: Automatically detects if the application is running with administrator privileges</li>
+<li><strong>Global Configuration</strong>: Centralized control through <code>KryptonManager</code> affects all <code>KryptonForm</code> instances</li>
+<li><strong>Localization Ready</strong>: Uses <code>KryptonManager.Strings.GeneralStrings.Administrator</code> for the suffix text</li>
+<li><strong>Designer Support</strong>: Full Visual Studio designer support with proper serialization</li>
+<li><strong>Runtime Updates</strong>: Changes to the setting immediately update all open forms</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<p>The feature is enabled by default. When your application runs with elevated privileges, all <code>KryptonForm</code> instances will automatically display &quot;(Administrator)&quot; in their title bars.</p>
+<h3 id="programmatic-control">Programmatic Control</h3>
+<pre><code class="lang-csharp">// Enable the administrator suffix feature
+KryptonManager.UseAdministratorSuffix = true;
+
+// Disable the administrator suffix feature
+KryptonManager.UseAdministratorSuffix = false;
+
+// Check current setting
+bool isEnabled = KryptonManager.UseAdministratorSuffix;
+</code></pre>
+<h3 id="designer-configuration">Designer Configuration</h3>
+<p>In the Visual Studio designer, you can configure the setting through the <code>KryptonManager</code> component:</p>
+<ol>
+<li>Add a <code>KryptonManager</code> component to your form</li>
+<li>Set the <code>ShowAdministratorSuffix</code> property to <code>true</code> or <code>false</code></li>
+</ol>
+<h2 id="properties">Properties</h2>
+<h3 id="kryptonmanageruseshowadministratorsuffix-static">KryptonManager.UseShowAdministratorSuffix (Static)</h3>
+<ul>
+<li><strong>Type</strong>: <code>bool</code></li>
+<li><strong>Default</strong>: <code>true</code></li>
+<li><strong>Description</strong>: Global setting that controls whether all <code>KryptonForm</code> instances should display the administrator suffix</li>
+<li><strong>Usage</strong>: <code>KryptonManager.UseAdministratorSuffix = true;</code></li>
+</ul>
+<h3 id="kryptonmanagershowadministratorsuffix-instance">KryptonManager.ShowAdministratorSuffix (Instance)</h3>
+<ul>
+<li><strong>Type</strong>: <code>bool</code></li>
+<li><strong>Default</strong>: <code>true</code></li>
+<li><strong>Description</strong>: Designer-friendly instance property that mirrors the static <code>UseAdministratorSuffix</code> setting</li>
+<li><strong>Usage</strong>: Set in Visual Studio designer or via <code>kryptonManager.ShowAdministratorSuffix = true;</code></li>
+</ul>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="administrator-detection">Administrator Detection</h3>
+<p>The feature uses <code>WindowsPrincipal</code> and <code>WindowsIdentity.GetCurrent()</code> to check if the current process is running with <code>WindowsBuiltInRole.Administrator</code>.</p>
+<h3 id="title-bar-integration">Title Bar Integration</h3>
+<p>The administrator suffix is appended to the form's title text through the <code>GetShortText()</code> method, which is part of the <code>IContentValues</code> interface used by Krypton's title bar rendering.</p>
+<h3 id="global-configuration">Global Configuration</h3>
+<p>The setting is stored as a static field in <code>KryptonManager</code>, ensuring consistent behavior across all <code>KryptonForm</code> instances in the application.</p>
+<pre><code class="lang-csharp">// Set globally for all forms
+KryptonManager.UseAdministratorSuffix = true;
+</code></pre>
+<h3 id="manual-testing-steps">Manual Testing Steps</h3>
+<ol>
+<li>Run the application normally - no &quot;(Administrator)&quot; suffix should appear</li>
+<li>Run the application as Administrator - &quot;(Administrator)&quot; suffix should appear in the title bar</li>
+<li>Toggle the <code>ShowAdministratorSuffix</code> setting - the title bar should update immediately</li>
+</ol>
+<h2 id="compatibility">Compatibility</h2>
+<ul>
+<li><strong>Target Frameworks</strong>: All supported .NET frameworks (<code>net472</code>, <code>net48</code>, <code>net481</code>, <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code>)</li>
+<li><strong>Windows Versions</strong>: Windows 7 and later</li>
+<li><strong>Krypton Toolkit</strong>: Compatible with all Krypton Toolkit components</li>
+</ul>
+<h2 id="localization">Localization</h2>
+<p>The administrator suffix text is retrieved from <code>KryptonManager.Strings.GeneralStrings.Administrator</code>, making it fully localizable. The default English text is &quot;(Administrator)&quot;.</p>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li>Administrator detection is performed once per form instance</li>
+<li>Title bar updates are triggered only when the setting changes</li>
+<li>No performance impact during normal operation</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

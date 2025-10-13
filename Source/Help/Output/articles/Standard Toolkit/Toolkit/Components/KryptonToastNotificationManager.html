@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonToastNotificationManager | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonToastNotificationManager | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptontoastnotificationmanager">KryptonToastNotificationManager</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonToastNotificationManager</code> class provides a component-based manager for toast notifications in Krypton applications. It inherits from <code>Component</code> and serves as a design-time component that can be added to forms or used programmatically to manage toast notification functionality with enhanced control and configuration options.</p>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── Krypton.Toolkit.KryptonToastNotificationManager
+</code></pre>
+<h2 id="constructor-and-initialization">Constructor and Initialization</h2>
+<pre><code class="lang-csharp">public KryptonToastNotificationManager()
+</code></pre>
+<p>The constructor initializes the component:</p>
+<ul>
+<li><strong>Component Base</strong>: Inherits from <code>Component</code> for design-time support</li>
+<li><strong>Toolbox Integration</strong>: Available in Visual Studio toolbox with custom bitmap</li>
+<li><strong>Design-Time Support</strong>: Full design-time integration and configuration</li>
+</ul>
+<h2 id="key-properties">Key Properties</h2>
+<h3 id="toolbox-integration">Toolbox Integration</h3>
+<p>The class is decorated with toolbox attributes:</p>
+<pre><code class="lang-csharp">[ToolboxItem(true)]
+[ToolboxBitmap(typeof(KryptonToastNotificationManager), @&quot;ToolboxBitmaps.KryptonInputBox.bmp&quot;)]
+</code></pre>
+<ul>
+<li><strong>ToolboxItem(true)</strong>: Makes the component available in the Visual Studio toolbox</li>
+<li><strong>ToolboxBitmap</strong>: Uses a custom bitmap for toolbox representation</li>
+<li><strong>Design-Time</strong>: Full design-time support for configuration</li>
+</ul>
+<h2 id="advanced-usage-patterns">Advanced Usage Patterns</h2>
+<h3 id="design-time-component-usage">Design-Time Component Usage</h3>
+<pre><code class="lang-csharp">public partial class MainForm : Form
+{
+    private KryptonToastNotificationManager toastNotificationManager;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        SetupToastNotificationManager();
+    }
+
+    private void SetupToastNotificationManager()
+    {
+        // The component can be added from the toolbox or created programmatically
+        toastNotificationManager = new KryptonToastNotificationManager();
+        
+        // Add to form's components collection for proper disposal
+        Components.Add(toastNotificationManager);
+    }
+}
+</code></pre>
+<h3 id="programmatic-toast-notification-management">Programmatic Toast Notification Management</h3>
+<pre><code class="lang-csharp">public class ApplicationNotificationService
+{
+    private KryptonToastNotificationManager notificationManager;
+    private Dictionary&lt;string, bool&gt; notificationPreferences;
+
+    public ApplicationNotificationService()
+    {
+        notificationManager = new KryptonToastNotificationManager();
+        notificationPreferences = LoadNotificationPreferences();
+    }
+
+    public void ShowUpdateNotification()
+    {
+        if (!ShouldShowNotification(&quot;UpdateNotification&quot;))
+            return;
+
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = &quot;Application Update&quot;,
+            Message = &quot;A new version is available. Would you like to update now?&quot;,
+            Icon = MessageBoxIcon.Information,
+            ShowDoNotShowAgain = true
+        };
+
+        bool doNotShowAgain = KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+        
+        if (doNotShowAgain)
+        {
+            notificationPreferences[&quot;UpdateNotification&quot;] = false;
+            SaveNotificationPreferences();
+        }
+    }
+
+    public void ShowProgressNotification(string operation, int progress, int maximum)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = &quot;Operation Progress&quot;,
+            Message = $&quot;{operation} in progress...&quot;,
+            Icon = MessageBoxIcon.Information,
+            ProgressValue = progress,
+            ProgressMaximum = maximum
+        };
+
+        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+    }
+
+    public void ShowErrorNotification(string errorMessage)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = &quot;Error&quot;,
+            Message = errorMessage,
+            Icon = MessageBoxIcon.Error
+        };
+
+        KryptonToastNotification.ShowBasicNotification(notificationData);
+    }
+
+    private bool ShouldShowNotification(string notificationKey)
+    {
+        return !notificationPreferences.ContainsKey(notificationKey) || notificationPreferences[notificationKey];
+    }
+
+    private Dictionary&lt;string, bool&gt; LoadNotificationPreferences()
+    {
+        // Implementation to load notification preferences
+        return new Dictionary&lt;string, bool&gt;();
+    }
+
+    private void SaveNotificationPreferences()
+    {
+        // Implementation to save notification preferences
+    }
+}
+</code></pre>
+<h3 id="centralized-notification-management">Centralized Notification Management</h3>
+<pre><code class="lang-csharp">public class CentralizedNotificationManager
+{
+    private KryptonToastNotificationManager notificationManager;
+    private readonly object lockObject = new object();
+
+    public CentralizedNotificationManager()
+    {
+        notificationManager = new KryptonToastNotificationManager();
+    }
+
+    public void ShowNotification(NotificationType type, string title, string message, 
+        MessageBoxIcon icon = MessageBoxIcon.Information, bool showDoNotShowAgain = false)
+    {
+        lock (lockObject)
+        {
+            var notificationData = new KryptonBasicToastNotificationData
+            {
+                Title = title,
+                Message = message,
+                Icon = icon,
+                ShowDoNotShowAgain = showDoNotShowAgain
+            };
+
+            switch (type)
+            {
+                case NotificationType.Basic:
+                    KryptonToastNotification.ShowBasicNotification(notificationData);
+                    break;
+                case NotificationType.WithBooleanReturn:
+                    bool result = KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+                    OnNotificationResult(result);
+                    break;
+                case NotificationType.WithCheckStateReturn:
+                    CheckState checkState = KryptonToastNotification.ShowBasicNotificationWithCheckStateReturnValue(notificationData);
+                    OnNotificationCheckStateResult(checkState);
+                    break;
+            }
+        }
+    }
+
+    public void ShowProgressNotification(string title, string message, int progress, int maximum)
+    {
+        lock (lockObject)
+        {
+            var notificationData = new KryptonBasicToastNotificationData
+            {
+                Title = title,
+                Message = message,
+                Icon = MessageBoxIcon.Information,
+                ProgressValue = progress,
+                ProgressMaximum = maximum
+            };
+
+            KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        }
+    }
+
+    public void ShowUserInputNotification(string title, string message, string[] options, int defaultIndex = 0)
+    {
+        lock (lockObject)
+        {
+            var inputData = new KryptonUserInputToastNotificationData
+            {
+                Title = title,
+                Message = message,
+                ComboBoxItems = options,
+                SelectedIndex = defaultIndex
+            };
+
+            object result = KryptonToastNotification.ShowNotification(inputData);
+            OnUserInputResult(result);
+        }
+    }
+
+    private void OnNotificationResult(bool result)
+    {
+        // Handle boolean notification result
+        Console.WriteLine($&quot;Notification result: {result}&quot;);
+    }
+
+    private void OnNotificationCheckStateResult(CheckState checkState)
+    {
+        // Handle CheckState notification result
+        Console.WriteLine($&quot;Notification check state: {checkState}&quot;);
+    }
+
+    private void OnUserInputResult(object result)
+    {
+        // Handle user input result
+        Console.WriteLine($&quot;User input result: {result}&quot;);
+    }
+}
+
+public enum NotificationType
+{
+    Basic,
+    WithBooleanReturn,
+    WithCheckStateReturn
+}
+</code></pre>
+<h3 id="application-wide-notification-system">Application-Wide Notification System</h3>
+<pre><code class="lang-csharp">public class ApplicationNotificationSystem
+{
+    private static KryptonToastNotificationManager? _instance;
+    private static readonly object _lock = new object();
+
+    public static KryptonToastNotificationManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new KryptonToastNotificationManager();
+                    }
+                }
+            }
+            return _instance;
+        }
+    }
+
+    public static void ShowInfo(string title, string message)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            Icon = MessageBoxIcon.Information
+        };
+
+        KryptonToastNotification.ShowBasicNotification(notificationData);
+    }
+
+    public static void ShowWarning(string title, string message)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            Icon = MessageBoxIcon.Warning
+        };
+
+        KryptonToastNotification.ShowBasicNotification(notificationData);
+    }
+
+    public static void ShowError(string title, string message)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            Icon = MessageBoxIcon.Error
+        };
+
+        KryptonToastNotification.ShowBasicNotification(notificationData);
+    }
+
+    public static bool ShowQuestion(string title, string message, bool showDoNotShowAgain = false)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            Icon = MessageBoxIcon.Question,
+            ShowDoNotShowAgain = showDoNotShowAgain
+        };
+
+        return KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+    }
+
+    public static void ShowProgress(string title, string message, int progress, int maximum)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            Icon = MessageBoxIcon.Information,
+            ProgressValue = progress,
+            ProgressMaximum = maximum
+        };
+
+        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+    }
+}
+</code></pre>
+<h2 id="integration-patterns">Integration Patterns</h2>
+<h3 id="form-integration">Form Integration</h3>
+<pre><code class="lang-csharp">public partial class MainForm : Form
+{
+    private KryptonToastNotificationManager toastManager;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        SetupToastManager();
+    }
+
+    private void SetupToastManager()
+    {
+        toastManager = new KryptonToastNotificationManager();
+        Components.Add(toastManager);
+    }
+
+    private void OnUpdateAvailable()
+    {
+        ApplicationNotificationSystem.ShowQuestion(
+            &quot;Update Available&quot;, 
+            &quot;A new version is available. Would you like to update now?&quot;,
+            showDoNotShowAgain: true);
+    }
+
+    private void OnOperationProgress(int progress, int maximum)
+    {
+        ApplicationNotificationSystem.ShowProgress(
+            &quot;Operation Progress&quot;,
+            &quot;Processing your request...&quot;,
+            progress,
+            maximum);
+    }
+
+    private void OnOperationComplete()
+    {
+        ApplicationNotificationSystem.ShowInfo(
+            &quot;Operation Complete&quot;,
+            &quot;Your operation has been completed successfully.&quot;);
+    }
+
+    private void OnOperationError(string errorMessage)
+    {
+        ApplicationNotificationSystem.ShowError(
+            &quot;Operation Failed&quot;,
+            errorMessage);
+    }
+}
+</code></pre>
+<h3 id="service-integration">Service Integration</h3>
+<pre><code class="lang-csharp">public class NotificationService
+{
+    private KryptonToastNotificationManager notificationManager;
+    private readonly ILogger logger;
+
+    public NotificationService(ILogger logger)
+    {
+        this.logger = logger;
+        notificationManager = new KryptonToastNotificationManager();
+    }
+
+    public async Task ShowAsyncOperationProgress(string operationName, Func&lt;Task&gt; operation)
+    {
+        var progress = 0;
+        var maximum = 100;
+
+        // Show initial progress
+        ShowProgress(operationName, &quot;Starting operation...&quot;, progress, maximum);
+
+        try
+        {
+            // Simulate progress updates
+            var progressTimer = new Timer(100);
+            progressTimer.Elapsed += (s, e) =&gt;
+            {
+                progress += 10;
+                if (progress &lt;= maximum)
+                {
+                    ShowProgress(operationName, $&quot;Operation in progress... {progress}%&quot;, progress, maximum);
+                }
+                else
+                {
+                    progressTimer.Stop();
+                    progressTimer.Dispose();
+                }
+            };
+            progressTimer.Start();
+
+            // Execute the actual operation
+            await operation();
+
+            // Show completion
+            ShowInfo(operationName, &quot;Operation completed successfully!&quot;);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, &quot;Operation failed: {OperationName}&quot;, operationName);
+            ShowError(operationName, $&quot;Operation failed: {ex.Message}&quot;);
+        }
+    }
+
+    private void ShowProgress(string title, string message, int progress, int maximum)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            Icon = MessageBoxIcon.Information,
+            ProgressValue = progress,
+            ProgressMaximum = maximum
+        };
+
+        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+    }
+
+    private void ShowInfo(string title, string message)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            Icon = MessageBoxIcon.Information
+        };
+
+        KryptonToastNotification.ShowBasicNotification(notificationData);
+    }
+
+    private void ShowError(string title, string message)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            Icon = MessageBoxIcon.Error
+        };
+
+        KryptonToastNotification.ShowBasicNotification(notificationData);
+    }
+}
+</code></pre>
+<h3 id="mvvm-integration">MVVM Integration</h3>
+<pre><code class="lang-csharp">public class NotificationViewModel : INotifyPropertyChanged
+{
+    private KryptonToastNotificationManager notificationManager;
+    private string _statusMessage;
+    private int _progressValue;
+    private int _progressMaximum;
+
+    public NotificationViewModel()
+    {
+        notificationManager = new KryptonToastNotificationManager();
+        StatusMessage = &quot;Ready&quot;;
+        ProgressValue = 0;
+        ProgressMaximum = 100;
+    }
+
+    public string StatusMessage
+    {
+        get =&gt; _statusMessage;
+        set
+        {
+            _statusMessage = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int ProgressValue
+    {
+        get =&gt; _progressValue;
+        set
+        {
+            _progressValue = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int ProgressMaximum
+    {
+        get =&gt; _progressMaximum;
+        set
+        {
+            _progressMaximum = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ICommand ShowNotificationCommand =&gt; new RelayCommand(ShowNotification);
+    public ICommand ShowProgressCommand =&gt; new RelayCommand(ShowProgress);
+    public ICommand ShowUserInputCommand =&gt; new RelayCommand(ShowUserInput);
+
+    private void ShowNotification()
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = &quot;Notification&quot;,
+            Message = StatusMessage,
+            Icon = MessageBoxIcon.Information
+        };
+
+        KryptonToastNotification.ShowBasicNotification(notificationData);
+    }
+
+    private void ShowProgress()
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = &quot;Progress&quot;,
+            Message = &quot;Operation in progress...&quot;,
+            Icon = MessageBoxIcon.Information,
+            ProgressValue = ProgressValue,
+            ProgressMaximum = ProgressMaximum
+        };
+
+        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+    }
+
+    private void ShowUserInput()
+    {
+        var inputData = new KryptonUserInputToastNotificationData
+        {
+            Title = &quot;User Input&quot;,
+            Message = &quot;Please select an option:&quot;,
+            ComboBoxItems = new[] { &quot;Option 1&quot;, &quot;Option 2&quot;, &quot;Option 3&quot; },
+            SelectedIndex = 0
+        };
+
+        object result = KryptonToastNotification.ShowNotification(inputData);
+        if (result != null)
+        {
+            StatusMessage = $&quot;Selected: {result}&quot;;
+        }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+}
+
+public class RelayCommand : ICommand
+{
+    private readonly Action _execute;
+    private readonly Func&lt;bool&gt;? _canExecute;
+
+    public RelayCommand(Action execute, Func&lt;bool&gt;? canExecute = null)
+    {
+        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecute = canExecute;
+    }
+
+    public event EventHandler? CanExecuteChanged
+    {
+        add { CommandManager.RequerySuggested += value; }
+        remove { CommandManager.RequerySuggested -= value; }
+    }
+
+    public bool CanExecute(object? parameter)
+    {
+        return _canExecute?.Invoke() ?? true;
+    }
+
+    public void Execute(object? parameter)
+    {
+        _execute();
+    }
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Component Lifecycle</strong>: Proper component management and disposal</li>
+<li><strong>Memory Management</strong>: Efficient memory usage for notification management</li>
+<li><strong>Thread Safety</strong>: Safe usage in multi-threaded environments</li>
+<li><strong>Resource Cleanup</strong>: Automatic cleanup through Component base class</li>
+</ul>
+<h2 id="common-issues-and-solutions">Common Issues and Solutions</h2>
+<h3 id="component-not-available-in-toolbox">Component Not Available in Toolbox</h3>
+<p><strong>Issue</strong>: KryptonToastNotificationManager not showing in Visual Studio toolbox<br>
+<strong>Solution</strong>: Ensure proper assembly reference and toolbox refresh:</p>
+<pre><code class="lang-csharp">// The component should be available automatically
+// If not, try:
+// 1. Rebuild the solution
+// 2. Reset Visual Studio toolbox
+// 3. Check assembly references
+</code></pre>
+<h3 id="notifications-not-showing">Notifications Not Showing</h3>
+<p><strong>Issue</strong>: Toast notifications not appearing<br>
+<strong>Solution</strong>: Ensure proper notification data configuration:</p>
+<pre><code class="lang-csharp">var notificationData = new KryptonBasicToastNotificationData
+{
+    Title = &quot;Title&quot;,
+    Message = &quot;Message&quot;,
+    Icon = MessageBoxIcon.Information
+    // Ensure all required properties are set
+};
+
+KryptonToastNotification.ShowBasicNotification(notificationData);
+</code></pre>
+<h3 id="component-disposal-issues">Component Disposal Issues</h3>
+<p><strong>Issue</strong>: Component not being disposed properly<br>
+<strong>Solution</strong>: Add to form's Components collection:</p>
+<pre><code class="lang-csharp">public partial class MainForm : Form
+{
+    private KryptonToastNotificationManager toastManager;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        toastManager = new KryptonToastNotificationManager();
+        Components.Add(toastManager); // Ensures proper disposal
+    }
+}
+</code></pre>
+<h2 id="design-time-integration">Design-Time Integration</h2>
+<h3 id="visual-studio-designer">Visual Studio Designer</h3>
+<ul>
+<li><strong>Toolbox</strong>: Available with custom bitmap representation</li>
+<li><strong>Property Window</strong>: Component properties available for configuration</li>
+<li><strong>Designer Support</strong>: Full design-time support for component management</li>
+</ul>
+<h3 id="property-categories">Property Categories</h3>
+<ul>
+<li><strong>Design</strong>: Standard component design properties</li>
+<li><strong>Behavior</strong>: Component behavior and configuration</li>
+<li><strong>Appearance</strong>: Visual appearance properties</li>
+</ul>
+<h2 id="migration-and-compatibility">Migration and Compatibility</h2>
+<h3 id="from-static-notification-methods">From Static Notification Methods</h3>
+<pre><code class="lang-csharp">// Old way (direct static calls)
+// KryptonToastNotification.ShowBasicNotification(notificationData);
+
+// New way (with component management)
+var notificationManager = new KryptonToastNotificationManager();
+// Use through ApplicationNotificationSystem or similar wrapper
+ApplicationNotificationSystem.ShowInfo(&quot;Title&quot;, &quot;Message&quot;);
+</code></pre>
+<h3 id="from-custom-notification-systems">From Custom Notification Systems</h3>
+<pre><code class="lang-csharp">// Old way (custom notification system)
+// CustomNotificationSystem.Show(&quot;Message&quot;, &quot;Title&quot;);
+
+// New way
+var notificationManager = new KryptonToastNotificationManager();
+var notificationData = new KryptonBasicToastNotificationData
+{
+    Title = &quot;Title&quot;,
+    Message = &quot;Message&quot;,
+    Icon = MessageBoxIcon.Information
+};
+KryptonToastNotification.ShowBasicNotification(notificationData);
+</code></pre>
+<h2 id="real-world-integration-examples">Real-World Integration Examples</h2>
+<h3 id="enterprise-application-notification-system">Enterprise Application Notification System</h3>
+<pre><code class="lang-csharp">public class EnterpriseNotificationSystem
+{
+    private static KryptonToastNotificationManager? _instance;
+    private static readonly object _lock = new object();
+    private readonly Dictionary&lt;string, NotificationSettings&gt; _notificationSettings;
+
+    public EnterpriseNotificationSystem()
+    {
+        _notificationSettings = LoadNotificationSettings();
+    }
+
+    public static KryptonToastNotificationManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new KryptonToastNotificationManager();
+                    }
+                }
+            }
+            return _instance;
+        }
+    }
+
+    public void ShowSystemNotification(NotificationLevel level, string title, string message, 
+        string category = &quot;General&quot;, bool showDoNotShowAgain = false)
+    {
+        var settings = GetNotificationSettings(category);
+        if (!settings.Enabled)
+            return;
+
+        var icon = GetIconForLevel(level);
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            Icon = icon,
+            ShowDoNotShowAgain = showDoNotShowAgain
+        };
+
+        switch (level)
+        {
+            case NotificationLevel.Info:
+                KryptonToastNotification.ShowBasicNotification(notificationData);
+                break;
+            case NotificationLevel.Warning:
+                KryptonToastNotification.ShowBasicNotification(notificationData);
+                break;
+            case NotificationLevel.Error:
+                KryptonToastNotification.ShowBasicNotification(notificationData);
+                break;
+            case NotificationLevel.Question:
+                bool result = KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+                OnQuestionResult(result, category);
+                break;
+        }
+
+        LogNotification(level, title, message, category);
+    }
+
+    public void ShowOperationProgress(string operationId, string title, string message, 
+        int progress, int maximum)
+    {
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            Icon = MessageBoxIcon.Information,
+            ProgressValue = progress,
+            ProgressMaximum = maximum
+        };
+
+        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        
+        LogProgress(operationId, progress, maximum);
+    }
+
+    public void ShowUserDecision(string title, string message, string[] options, 
+        string category = &quot;UserDecision&quot;)
+    {
+        var inputData = new KryptonUserInputToastNotificationData
+        {
+            Title = title,
+            Message = message,
+            ComboBoxItems = options,
+            SelectedIndex = 0
+        };
+
+        object result = KryptonToastNotification.ShowNotification(inputData);
+        OnUserDecisionResult(result, category);
+    }
+
+    private MessageBoxIcon GetIconForLevel(NotificationLevel level)
+    {
+        return level switch
+        {
+            NotificationLevel.Info =&gt; MessageBoxIcon.Information,
+            NotificationLevel.Warning =&gt; MessageBoxIcon.Warning,
+            NotificationLevel.Error =&gt; MessageBoxIcon.Error,
+            NotificationLevel.Question =&gt; MessageBoxIcon.Question,
+            _ =&gt; MessageBoxIcon.Information
+        };
+    }
+
+    private NotificationSettings GetNotificationSettings(string category)
+    {
+        if (_notificationSettings.TryGetValue(category, out var settings))
+        {
+            return settings;
+        }
+        return new NotificationSettings { Enabled = true };
+    }
+
+    private void OnQuestionResult(bool result, string category)
+    {
+        // Handle question result
+        Console.WriteLine($&quot;Question result for {category}: {result}&quot;);
+    }
+
+    private void OnUserDecisionResult(object result, string category)
+    {
+        // Handle user decision result
+        Console.WriteLine($&quot;User decision for {category}: {result}&quot;);
+    }
+
+    private void LogNotification(NotificationLevel level, string title, string message, string category)
+    {
+        // Implementation to log notification
+        Console.WriteLine($&quot;Notification: {level} - {title} - {message} - {category}&quot;);
+    }
+
+    private void LogProgress(string operationId, int progress, int maximum)
+    {
+        // Implementation to log progress
+        Console.WriteLine($&quot;Progress: {operationId} - {progress}/{maximum}&quot;);
+    }
+
+    private Dictionary&lt;string, NotificationSettings&gt; LoadNotificationSettings()
+    {
+        // Implementation to load notification settings
+        return new Dictionary&lt;string, NotificationSettings&gt;();
+    }
+}
+
+public enum NotificationLevel
+{
+    Info,
+    Warning,
+    Error,
+    Question
+}
+
+public class NotificationSettings
+{
+    public bool Enabled { get; set; } = true;
+    public bool ShowDoNotShowAgain { get; set; } = false;
+    public int Timeout { get; set; } = 5000;
+}
+</code></pre>
+<h3 id="multi-tenant-notification-system">Multi-Tenant Notification System</h3>
+<pre><code class="lang-csharp">public class MultiTenantNotificationSystem
+{
+    private readonly Dictionary&lt;string, KryptonToastNotificationManager&gt; _tenantManagers;
+    private readonly object _lock = new object();
+
+    public MultiTenantNotificationSystem()
+    {
+        _tenantManagers = new Dictionary&lt;string, KryptonToastNotificationManager&gt;();
+    }
+
+    public void ShowTenantNotification(string tenantId, string title, string message, 
+        MessageBoxIcon icon = MessageBoxIcon.Information)
+    {
+        var manager = GetTenantManager(tenantId);
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = $&quot;[{tenantId}] {title}&quot;,
+            Message = message,
+            Icon = icon
+        };
+
+        KryptonToastNotification.ShowBasicNotification(notificationData);
+    }
+
+    public void ShowTenantProgress(string tenantId, string title, string message, 
+        int progress, int maximum)
+    {
+        var manager = GetTenantManager(tenantId);
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = $&quot;[{tenantId}] {title}&quot;,
+            Message = message,
+            Icon = MessageBoxIcon.Information,
+            ProgressValue = progress,
+            ProgressMaximum = maximum
+        };
+
+        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+    }
+
+    public bool ShowTenantQuestion(string tenantId, string title, string message, 
+        bool showDoNotShowAgain = false)
+    {
+        var manager = GetTenantManager(tenantId);
+        var notificationData = new KryptonBasicToastNotificationData
+        {
+            Title = $&quot;[{tenantId}] {title}&quot;,
+            Message = message,
+            Icon = MessageBoxIcon.Question,
+            ShowDoNotShowAgain = showDoNotShowAgain
+        };
+
+        return KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+    }
+
+    private KryptonToastNotificationManager GetTenantManager(string tenantId)
+    {
+        lock (_lock)
+        {
+            if (!_tenantManagers.TryGetValue(tenantId, out var manager))
+            {
+                manager = new KryptonToastNotificationManager();
+                _tenantManagers[tenantId] = manager;
+            }
+            return manager;
+        }
+    }
+
+    public void RemoveTenant(string tenantId)
+    {
+        lock (_lock)
+        {
+            if (_tenantManagers.TryGetValue(tenantId, out var manager))
+            {
+                manager.Dispose();
+                _tenantManagers.Remove(tenantId);
+            }
+        }
+    }
+}
+</code></pre>
+<h2 id="license-and-attribution">License and Attribution</h2>
+<p>This class is part of the Krypton Toolkit Suite under the BSD 3-Clause License. It provides a component-based approach to toast notification management with design-time support, enabling consistent notification handling across Krypton applications with proper component lifecycle management.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

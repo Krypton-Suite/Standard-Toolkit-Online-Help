@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonWebView2 Examples and Use Cases | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonWebView2 Examples and Use Cases | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonwebview2-examples-and-use-cases">KryptonWebView2 Examples and Use Cases</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#basic-web-browser">Basic Web Browser</a></li>
+<li><a href="#custom-context-menu">Custom Context Menu</a></li>
+<li><a href="#theme-integration">Theme Integration</a></li>
+<li><a href="#javascript-integration">JavaScript Integration</a></li>
+<li><a href="#navigation-control">Navigation Control</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-optimization">Performance Optimization</a></li>
+</ol>
+<h2 id="basic-web-browser">Basic Web Browser</h2>
+<h3 id="simple-web-browser-form">Simple Web Browser Form</h3>
+<pre><code class="lang-csharp">public partial class WebBrowserForm : KryptonForm
+{
+    private KryptonWebView2 webView;
+    private KryptonButton btnNavigate;
+    private KryptonTextBox txtUrl;
+    private KryptonButton btnBack, btnForward, btnRefresh;
+
+    public WebBrowserForm()
+    {
+        InitializeComponent();
+        InitializeWebView();
+    }
+
+    private void InitializeWebView()
+    {
+        webView = new KryptonWebView2();
+        webView.Dock = DockStyle.Fill;
+        webView.Location = new Point(0, 50);
+        webView.Size = new Size(800, 550);
+        
+        this.Controls.Add(webView);
+        
+        // Initialize WebView2 engine
+        _ = InitializeWebView2Async();
+    }
+
+    private async Task InitializeWebView2Async()
+    {
+        try
+        {
+            await webView.EnsureCoreWebView2Async();
+            ConfigureWebView2Settings();
+            SetupEventHandlers();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($&quot;Failed to initialize WebView2: {ex.Message}&quot;);
+        }
+    }
+
+    private void ConfigureWebView2Settings()
+    {
+        if (webView.CoreWebView2 != null)
+        {
+            webView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+            webView.CoreWebView2.Settings.AreDevToolsEnabled = false;
+            webView.CoreWebView2.Settings.IsStatusBarEnabled = false;
+        }
+    }
+
+    private void SetupEventHandlers()
+    {
+        if (webView.CoreWebView2 != null)
+        {
+            webView.CoreWebView2.NavigationStarting += OnNavigationStarting;
+            webView.CoreWebView2.NavigationCompleted += OnNavigationCompleted;
+            webView.CoreWebView2.DocumentTitleChanged += OnDocumentTitleChanged;
+        }
+    }
+
+    private void OnNavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
+    {
+        // Update URL textbox
+        txtUrl.Text = e.Uri;
+        
+        // Show loading indicator
+        btnRefresh.Text = &quot;Loading...&quot;;
+        btnRefresh.Enabled = false;
+    }
+
+    private void OnNavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+    {
+        // Hide loading indicator
+        btnRefresh.Text = &quot;Refresh&quot;;
+        btnRefresh.Enabled = true;
+        
+        // Update navigation buttons
+        btnBack.Enabled = webView.CanGoBack;
+        btnForward.Enabled = webView.CanGoForward;
+        
+        if (e.IsSuccess)
+        {
+            txtUrl.Text = webView.Source?.ToString() ?? &quot;&quot;;
+        }
+        else
+        {
+            MessageBox.Show($&quot;Navigation failed: {e.WebErrorStatus}&quot;);
+        }
+    }
+
+    private void OnDocumentTitleChanged(object? sender, object e)
+    {
+        this.Text = $&quot;Web Browser - {webView.DocumentTitle}&quot;;
+    }
+
+    private void btnNavigate_Click(object sender, EventArgs e)
+    {
+        if (!string.IsNullOrEmpty(txtUrl.Text))
+        {
+            string url = txtUrl.Text;
+            if (!url.StartsWith(&quot;http://&quot;) &amp;&amp; !url.StartsWith(&quot;https://&quot;))
+            {
+                url = &quot;https://&quot; + url;
+            }
+            webView.CoreWebView2?.Navigate(url);
+        }
+    }
+
+    private void btnBack_Click(object sender, EventArgs e)
+    {
+        webView.GoBack();
+    }
+
+    private void btnForward_Click(object sender, EventArgs e)
+    {
+        webView.GoForward();
+    }
+
+    private void btnRefresh_Click(object sender, EventArgs e)
+    {
+        webView.Reload();
+    }
+}
+</code></pre>
+<h2 id="custom-context-menu">Custom Context Menu</h2>
+<h3 id="advanced-context-menu-with-submenus">Advanced Context Menu with Submenus</h3>
+<pre><code class="lang-csharp">public class WebView2ContextMenuBuilder
+{
+    private readonly KryptonWebView2 webView;
+
+    public WebView2ContextMenuBuilder(KryptonWebView2 webView)
+    {
+        this.webView = webView;
+    }
+
+    public void BuildContextMenu()
+    {
+        var contextMenu = new KryptonContextMenu();
+
+        // Edit submenu
+        var editMenu = new KryptonContextMenuHeading(&quot;Edit&quot;);
+        editMenu.Items.Add(new KryptonContextMenuItem(&quot;Cut&quot;, Properties.Resources.CutIcon, CutAction));
+        editMenu.Items.Add(new KryptonContextMenuItem(&quot;Copy&quot;, Properties.Resources.CopyIcon, CopyAction));
+        editMenu.Items.Add(new KryptonContextMenuItem(&quot;Paste&quot;, Properties.Resources.PasteIcon, PasteAction));
+        editMenu.Items.Add(new KryptonContextMenuSeparator());
+        editMenu.Items.Add(new KryptonContextMenuItem(&quot;Select All&quot;, null, SelectAllAction));
+
+        // Navigation submenu
+        var navMenu = new KryptonContextMenuHeading(&quot;Navigation&quot;);
+        navMenu.Items.Add(new KryptonContextMenuItem(&quot;Back&quot;, Properties.Resources.BackIcon, BackAction));
+        navMenu.Items.Add(new KryptonContextMenuItem(&quot;Forward&quot;, Properties.Resources.ForwardIcon, ForwardAction));
+        navMenu.Items.Add(new KryptonContextMenuItem(&quot;Refresh&quot;, Properties.Resources.RefreshIcon, RefreshAction));
+        navMenu.Items.Add(new KryptonContextMenuSeparator());
+        navMenu.Items.Add(new KryptonContextMenuItem(&quot;Stop&quot;, Properties.Resources.StopIcon, StopAction));
+
+        // Page submenu
+        var pageMenu = new KryptonContextMenuHeading(&quot;Page&quot;);
+        pageMenu.Items.Add(new KryptonContextMenuItem(&quot;View Source&quot;, null, ViewSourceAction));
+        pageMenu.Items.Add(new KryptonContextMenuItem(&quot;Print&quot;, Properties.Resources.PrintIcon, PrintAction));
+        pageMenu.Items.Add(new KryptonContextMenuItem(&quot;Save As...&quot;, Properties.Resources.SaveIcon, SaveAsAction));
+
+        contextMenu.Items.Add(editMenu);
+        contextMenu.Items.Add(navMenu);
+        contextMenu.Items.Add(pageMenu);
+
+        webView.KryptonContextMenu = contextMenu;
+    }
+
+    private void CutAction(object sender, EventArgs e)
+    {
+        webView.CoreWebView2?.ExecuteScriptAsync(&quot;document.execCommand('cut')&quot;);
+    }
+
+    private void CopyAction(object sender, EventArgs e)
+    {
+        webView.CoreWebView2?.ExecuteScriptAsync(&quot;document.execCommand('copy')&quot;);
+    }
+
+    private void PasteAction(object sender, EventArgs e)
+    {
+        webView.CoreWebView2?.ExecuteScriptAsync(&quot;document.execCommand('paste')&quot;);
+    }
+
+    private void SelectAllAction(object sender, EventArgs e)
+    {
+        webView.CoreWebView2?.ExecuteScriptAsync(&quot;document.execCommand('selectAll')&quot;);
+    }
+
+    private void BackAction(object sender, EventArgs e)
+    {
+        if (webView.CanGoBack)
+        {
+            webView.GoBack();
+        }
+    }
+
+    private void ForwardAction(object sender, EventArgs e)
+    {
+        if (webView.CanGoForward)
+        {
+            webView.GoForward();
+        }
+    }
+
+    private void RefreshAction(object sender, EventArgs e)
+    {
+        webView.Reload();
+    }
+
+    private void StopAction(object sender, EventArgs e)
+    {
+        webView.Stop();
+    }
+
+    private async void ViewSourceAction(object sender, EventArgs e)
+    {
+        if (webView.CoreWebView2 != null)
+        {
+            var html = await webView.CoreWebView2.ExecuteScriptAsync(&quot;document.documentElement.outerHTML&quot;);
+            var sourceForm = new SourceViewerForm(html);
+            sourceForm.Show();
+        }
+    }
+
+    private void PrintAction(object sender, EventArgs e)
+    {
+        webView.CoreWebView2?.ExecuteScriptAsync(&quot;window.print()&quot;);
+    }
+
+    private void SaveAsAction(object sender, EventArgs e)
+    {
+        var saveDialog = new SaveFileDialog();
+        saveDialog.Filter = &quot;HTML Files (*.html)|*.html|All Files (*.*)|*.*&quot;;
+        
+        if (saveDialog.ShowDialog() == DialogResult.OK)
+        {
+            // Implementation for saving page content
+            SavePageContent(saveDialog.FileName);
+        }
+    }
+
+    private async void SavePageContent(string fileName)
+    {
+        if (webView.CoreWebView2 != null)
+        {
+            var html = await webView.CoreWebView2.ExecuteScriptAsync(&quot;document.documentElement.outerHTML&quot;);
+            File.WriteAllText(fileName, html);
+        }
+    }
+}
+</code></pre>
+<h2 id="theme-integration">Theme Integration</h2>
+<h3 id="dynamic-theme-application">Dynamic Theme Application</h3>
+<pre><code class="lang-csharp">public class ThemeAwareWebView2 : KryptonWebView2
+{
+    private Timer themeUpdateTimer;
+
+    public ThemeAwareWebView2()
+    {
+        themeUpdateTimer = new Timer();
+        themeUpdateTimer.Interval = 100; // Update every 100ms
+        themeUpdateTimer.Tick += OnThemeUpdateTimer;
+        themeUpdateTimer.Start();
+    }
+
+    private async void OnThemeUpdateTimer(object? sender, EventArgs e)
+    {
+        if (CoreWebView2 != null)
+        {
+            await ApplyCurrentTheme();
+        }
+    }
+
+    private async Task ApplyCurrentTheme()
+    {
+        var palette = GetResolvedPalette();
+        var colorTable = palette.GetColorTable();
+        
+        var themeScript = $@&quot;
+            (function() {{
+                const root = document.documentElement;
+                root.style.setProperty('--krypton-primary', '{colorTable.Color1}');
+                root.style.setProperty('--krypton-secondary', '{colorTable.Color2}');
+                root.style.setProperty('--krypton-background', '{colorTable.Color3}');
+                root.style.setProperty('--krypton-text', '{colorTable.Color4}');
+                root.style.setProperty('--krypton-accent', '{colorTable.Color5}');
+                
+                // Apply theme class
+                document.body.classList.add('krypton-themed');
+                
+                // Dispatch theme change event
+                window.dispatchEvent(new CustomEvent('kryptonThemeChanged', {{
+                    detail: {{
+                        primary: '{colorTable.Color1}',
+                        secondary: '{colorTable.Color2}',
+                        background: '{colorTable.Color3}',
+                        text: '{colorTable.Color4}',
+                        accent: '{colorTable.Color5}'
+                    }}
+                }}));
+            }})();
+        &quot;;
+        
+        await CoreWebView2.ExecuteScriptAsync(themeScript);
+    }
+
+    protected override void OnGlobalPaletteChanged(object? sender, EventArgs e)
+    {
+        base.OnGlobalPaletteChanged(sender, e);
+        _ = ApplyCurrentTheme();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            themeUpdateTimer?.Stop();
+            themeUpdateTimer?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+}
+</code></pre>
+<h2 id="javascript-integration">JavaScript Integration</h2>
+<h3 id="bidirectional-communication">Bidirectional Communication</h3>
+<pre><code class="lang-csharp">public class JavaScriptBridge
+{
+    private readonly KryptonWebView2 webView;
+
+    public JavaScriptBridge(KryptonWebView2 webView)
+    {
+        this.webView = webView;
+        SetupJavaScriptBridge();
+    }
+
+    private async void SetupJavaScriptBridge()
+    {
+        if (webView.CoreWebView2 != null)
+        {
+            // Add script to execute on document creation
+            await webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(@&quot;
+                window.kryptonBridge = {
+                    sendMessage: function(message) {
+                        window.chrome.webview.postMessage(message);
+                    },
+                    getTheme: function() {
+                        return window.chrome.webview.hostObjects.kryptonTheme;
+                    }
+                };
+            &quot;);
+
+            // Handle messages from JavaScript
+            webView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
+
+            // Expose host objects to JavaScript
+            webView.CoreWebView2.AddHostObjectToScript(&quot;kryptonTheme&quot;, new ThemeHostObject(webView));
+        }
+    }
+
+    private void OnWebMessageReceived(object? sender, CoreWebView2WebMessageReceivedEventArgs e)
+    {
+        try
+        {
+            var message = e.TryGetWebMessageAsString();
+            var messageData = JsonSerializer.Deserialize&lt;WebMessage&gt;(message);
+            
+            switch (messageData.Type)
+            {
+                case &quot;navigate&quot;:
+                    NavigateToUrl(messageData.Data);
+                    break;
+                case &quot;showDialog&quot;:
+                    ShowDialog(messageData.Data);
+                    break;
+                case &quot;updateStatus&quot;:
+                    UpdateStatusBar(messageData.Data);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($&quot;Error processing web message: {ex.Message}&quot;);
+        }
+    }
+
+    public async Task SendMessageToWeb(string type, object data)
+    {
+        if (webView.CoreWebView2 != null)
+        {
+            var message = new WebMessage { Type = type, Data = data };
+            var json = JsonSerializer.Serialize(message);
+            await webView.CoreWebView2.ExecuteScriptAsync($&quot;window.dispatchEvent(new CustomEvent('kryptonMessage', {{ detail: {json} }}));&quot;);
+        }
+    }
+
+    private void NavigateToUrl(string url)
+    {
+        webView.CoreWebView2?.Navigate(url);
+    }
+
+    private void ShowDialog(string message)
+    {
+        MessageBox.Show(message);
+    }
+
+    private void UpdateStatusBar(string status)
+    {
+        // Update application status bar
+    }
+}
+
+public class WebMessage
+{
+    public string Type { get; set; } = &quot;&quot;;
+    public object Data { get; set; } = new();
+}
+
+public class ThemeHostObject
+{
+    private readonly KryptonWebView2 webView;
+
+    public ThemeHostObject(KryptonWebView2 webView)
+    {
+        this.webView = webView;
+    }
+
+    public string GetPrimaryColor()
+    {
+        var palette = webView.GetResolvedPalette();
+        return palette.GetColorTable().Color1;
+    }
+
+    public string GetBackgroundColor()
+    {
+        var palette = webView.GetResolvedPalette();
+        return palette.GetColorTable().Color3;
+    }
+}
+</code></pre>
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="comprehensive-error-handling">Comprehensive Error Handling</h3>
+<pre><code class="lang-csharp">public class RobustWebView2 : KryptonWebView2
+{
+    private int retryCount = 0;
+    private const int maxRetries = 3;
+
+    public async Task&lt;bool&gt; InitializeWithRetry()
+    {
+        while (retryCount &lt; maxRetries)
+        {
+            try
+            {
+                await EnsureCoreWebView2Async();
+                SetupErrorHandling();
+                return true;
+            }
+            catch (WebView2RuntimeNotFoundException)
+            {
+                ShowWebView2RuntimeError();
+                return false;
+            }
+            catch (Exception ex)
+            {
+                retryCount++;
+                if (retryCount &gt;= maxRetries)
+                {
+                    ShowInitializationError(ex);
+                    return false;
+                }
+                
+                await Task.Delay(1000 * retryCount); // Exponential backoff
+            }
+        }
+        return false;
+    }
+
+    private void SetupErrorHandling()
+    {
+        if (CoreWebView2 != null)
+        {
+            CoreWebView2.NavigationCompleted += OnNavigationCompleted;
+            CoreWebView2.ProcessFailed += OnProcessFailed;
+        }
+    }
+
+    private void OnNavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
+    {
+        if (!e.IsSuccess)
+        {
+            HandleNavigationError(e.WebErrorStatus);
+        }
+    }
+
+    private void OnProcessFailed(object? sender, CoreWebView2ProcessFailedEventArgs e)
+    {
+        switch (e.ProcessFailedKind)
+        {
+            case CoreWebView2ProcessFailedKind.BrowserProcessExited:
+                HandleBrowserProcessExited();
+                break;
+            case CoreWebView2ProcessFailedKind.RenderProcessExited:
+                HandleRenderProcessExited();
+                break;
+            case CoreWebView2ProcessFailedKind.RenderProcessUnresponsive:
+                HandleRenderProcessUnresponsive();
+                break;
+        }
+    }
+
+    private void HandleNavigationError(CoreWebView2WebErrorStatus errorStatus)
+    {
+        string errorMessage = errorStatus switch
+        {
+            CoreWebView2WebErrorStatus.Unknown =&gt; &quot;An unknown error occurred&quot;,
+            CoreWebView2WebErrorStatus.CertificateCommonNameIssued =&gt; &quot;Certificate common name mismatch&quot;,
+            CoreWebView2WebErrorStatus.CertificateDateInvalid =&gt; &quot;Certificate date invalid&quot;,
+            CoreWebView2WebErrorStatus.CertificateAuthorityInvalid =&gt; &quot;Certificate authority invalid&quot;,
+            CoreWebView2WebErrorStatus.CertificateContainsErrors =&gt; &quot;Certificate contains errors&quot;,
+            CoreWebView2WebErrorStatus.CertificateNoRevocationMechanism =&gt; &quot;Certificate has no revocation mechanism&quot;,
+            CoreWebView2WebErrorStatus.CertificateUnableToCheckRevocation =&gt; &quot;Unable to check certificate revocation&quot;,
+            CoreWebView2WebErrorStatus.CertificateRevoked =&gt; &quot;Certificate revoked&quot;,
+            CoreWebView2WebErrorStatus.CertificateInvalid =&gt; &quot;Certificate invalid&quot;,
+            CoreWebView2WebErrorStatus.ServerCertificateError =&gt; &quot;Server certificate error&quot;,
+            CoreWebView2WebErrorStatus.HostNameMismatch =&gt; &quot;Host name mismatch&quot;,
+            CoreWebView2WebErrorStatus.ConnectionAborted =&gt; &quot;Connection aborted&quot;,
+            CoreWebView2WebErrorStatus.ConnectionReset =&gt; &quot;Connection reset&quot;,
+            CoreWebView2WebErrorStatus.ConnectionRefused =&gt; &quot;Connection refused&quot;,
+            CoreWebView2WebErrorStatus.ConnectionTimedOut =&gt; &quot;Connection timed out&quot;,
+            CoreWebView2WebErrorStatus.TooManyRedirects =&gt; &quot;Too many redirects&quot;,
+            CoreWebView2WebErrorStatus.UnexpectedRedirect =&gt; &quot;Unexpected redirect&quot;,
+            CoreWebView2WebErrorStatus.UnexpectedClientError =&gt; &quot;Unexpected client error&quot;,
+            CoreWebView2WebErrorStatus.UnexpectedServerError =&gt; &quot;Unexpected server error&quot;,
+            CoreWebView2WebErrorStatus.InvalidServerResponse =&gt; &quot;Invalid server response&quot;,
+            CoreWebView2WebErrorStatus.ContentLengthMismatch =&gt; &quot;Content length mismatch&quot;,
+            CoreWebView2WebErrorStatus.RequestRangeNotSatisfiable =&gt; &quot;Request range not satisfiable&quot;,
+            CoreWebView2WebErrorStatus.MalformedUrl =&gt; &quot;Malformed URL&quot;,
+            CoreWebView2WebErrorStatus.OperationCanceled =&gt; &quot;Operation canceled&quot;,
+            CoreWebView2WebErrorStatus.RequestAborted =&gt; &quot;Request aborted&quot;,
+            CoreWebView2WebErrorStatus.RequestTimeout =&gt; &quot;Request timeout&quot;,
+            CoreWebView2WebErrorStatus.RequestTimeout =&gt; &quot;Request timeout&quot;,
+            CoreWebView2WebErrorStatus.RequestTimeout =&gt; &quot;Request timeout&quot;,
+            _ =&gt; &quot;An unknown navigation error occurred&quot;
+        };
+
+        ShowErrorDialog(&quot;Navigation Error&quot;, errorMessage);
+    }
+
+    private void HandleBrowserProcessExited()
+    {
+        ShowErrorDialog(&quot;Browser Process Exited&quot;, &quot;The WebView2 browser process has exited unexpectedly. The page will be reloaded.&quot;);
+        _ = Task.Run(async () =&gt; await InitializeWithRetry());
+    }
+
+    private void HandleRenderProcessExited()
+    {
+        ShowErrorDialog(&quot;Render Process Exited&quot;, &quot;The WebView2 render process has exited. The page will be reloaded.&quot;);
+        Reload();
+    }
+
+    private void HandleRenderProcessUnresponsive()
+    {
+        ShowErrorDialog(&quot;Render Process Unresponsive&quot;, &quot;The WebView2 render process is unresponsive. The page will be reloaded.&quot;);
+        Reload();
+    }
+
+    private void ShowWebView2RuntimeError()
+    {
+        var result = MessageBox.Show(
+            &quot;WebView2 Runtime is not installed. Would you like to download it?&quot;,
+            &quot;WebView2 Runtime Required&quot;,
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning);
+
+        if (result == DialogResult.Yes)
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = &quot;https://developer.microsoft.com/en-us/microsoft-edge/webview2/&quot;,
+                UseShellExecute = true
+            });
+        }
+    }
+
+    private void ShowInitializationError(Exception ex)
+    {
+        MessageBox.Show(
+            $&quot;Failed to initialize WebView2 after {maxRetries} attempts:\n{ex.Message}&quot;,
+            &quot;Initialization Error&quot;,
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Error);
+    }
+
+    private void ShowErrorDialog(string title, string message)
+    {
+        MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+    }
+}
+</code></pre>
+<h2 id="performance-optimization">Performance Optimization</h2>
+<h3 id="optimized-webview2-configuration">Optimized WebView2 Configuration</h3>
+<pre><code class="lang-csharp">public class OptimizedWebView2 : KryptonWebView2
+{
+    public async Task InitializeOptimized()
+    {
+        await EnsureCoreWebView2Async();
+        
+        if (CoreWebView2 != null)
+        {
+            ConfigurePerformanceSettings();
+            ConfigureSecuritySettings();
+            SetupPerformanceMonitoring();
+        }
+    }
+
+    private void ConfigurePerformanceSettings()
+    {
+        var settings = CoreWebView2.Settings;
+        
+        // Disable unnecessary features for better performance
+        settings.AreDefaultContextMenusEnabled = false;
+        settings.AreDevToolsEnabled = false;
+        settings.IsStatusBarEnabled = false;
+        settings.AreHostObjectsAllowed = false;
+        settings.IsGeneralAutofillEnabled = false;
+        settings.IsPasswordAutosaveEnabled = false;
+        settings.IsSwipeNavigationEnabled = false;
+        settings.IsPinchZoomEnabled = false;
+        
+        // Enable hardware acceleration
+        settings.IsReputationCheckingRequired = false;
+        settings.IsWebMessageEnabled = true;
+        
+        // Configure for better performance
+        CoreWebView2.CallDevToolsProtocolMethodAsync(&quot;Performance.enable&quot;, &quot;{}&quot;);
+        CoreWebView2.CallDevToolsProtocolMethodAsync(&quot;Runtime.enable&quot;, &quot;{}&quot;);
+    }
+
+    private void ConfigureSecuritySettings()
+    {
+        var settings = CoreWebView2.Settings;
+        
+        // Security settings
+        settings.IsScriptEnabled = true;
+        settings.IsWebMessageEnabled = true;
+        settings.AreDefaultScriptDialogsEnabled = false;
+        settings.IsSwipeNavigationEnabled = false;
+    }
+
+    private void SetupPerformanceMonitoring()
+    {
+        CoreWebView2.ProcessFailed += OnProcessFailed;
+        
+        // Monitor memory usage
+        var timer = new Timer();
+        timer.Interval = 5000; // Check every 5 seconds
+        timer.Tick += OnPerformanceTimer;
+        timer.Start();
+    }
+
+    private async void OnPerformanceTimer(object? sender, EventArgs e)
+    {
+        try
+        {
+            // Get memory usage
+            var memoryInfo = await CoreWebView2.CallDevToolsProtocolMethodAsync(&quot;Runtime.getHeapUsage&quot;, &quot;{}&quot;);
+            
+            // Get performance metrics
+            var metrics = await CoreWebView2.CallDevToolsProtocolMethodAsync(&quot;Performance.getMetrics&quot;, &quot;{}&quot;);
+            
+            // Log performance data
+            Debug.WriteLine($&quot;Memory Usage: {memoryInfo}&quot;);
+            Debug.WriteLine($&quot;Performance Metrics: {metrics}&quot;);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($&quot;Performance monitoring error: {ex.Message}&quot;);
+        }
+    }
+
+    private void OnProcessFailed(object? sender, CoreWebView2ProcessFailedEventArgs e)
+    {
+        Debug.WriteLine($&quot;Process failed: {e.ProcessFailedKind}&quot;);
+        
+        // Restart if necessary
+        if (e.ProcessFailedKind == CoreWebView2ProcessFailedKind.BrowserProcessExited)
+        {
+            _ = Task.Run(async () =&gt; await InitializeOptimized());
+        }
+    }
+}
+</code></pre>
+<p>This comprehensive examples document provides practical, real-world usage scenarios for the KryptonWebView2 control, covering everything from basic usage to advanced performance optimization and error handling.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

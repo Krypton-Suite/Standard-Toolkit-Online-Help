@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonSystemMenu Usage Examples | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonSystemMenu Usage Examples | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonsystemmenu-usage-examples">KryptonSystemMenu Usage Examples</h1>
+
+<p>This file contains comprehensive examples demonstrating various ways to use the KryptonSystemMenu class in different scenarios.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#example-1-basic-kryptonsystemmenu-integration">Example 1: Basic Integration</a></li>
+<li><a href="#example-2-advanced-system-menu-with-custom-positioning">Example 2: Advanced Positioning</a></li>
+<li><a href="#example-3-theme-integration-and-management">Example 3: Theme Management</a></li>
+<li><a href="#example-4-custom-menu-behavior-and-state-management">Example 4: Custom Behavior</a></li>
+<li><a href="#example-5-integration-with-form-events-and-state-changes">Example 5: Event Integration</a></li>
+<li><a href="#example-6-error-handling-and-robustness">Example 6: Error Handling</a></li>
+<li><a href="#example-7-performance-optimization-and-best-practices">Example 7: Performance Optimization</a></li>
+<li><a href="#example-8-custom-menu-positioning-and-screen-bounds-handling">Example 8: Screen Positioning</a></li>
+<li><a href="#example-9-integration-with-application-settings-and-configuration">Example 9: Settings Integration</a></li>
+<li><a href="#additional-notes">Additional Notes</a></li>
+</ul>
+<h2 id="example-1-basic-kryptonsystemmenu-integration">Example 1: Basic KryptonSystemMenu Integration</h2>
+<p>The most straightforward way to integrate KryptonSystemMenu into your form.</p>
+<pre><code class="lang-cs">using System;
+using System.Drawing;
+using System.Windows.Forms;
+using Krypton.Toolkit;
+
+public partial class BasicExampleForm : KryptonForm
+{
+    private KryptonSystemMenu? _systemMenu;
+
+    public BasicExampleForm()
+    {
+        InitializeComponent();
+        InitializeSystemMenu();
+    }
+
+    private void InitializeSystemMenu()
+    {
+        // Create the system menu instance
+        _systemMenu = new KryptonSystemMenu(this);
+
+        // Configure basic settings
+        _systemMenu.Enabled = true;
+        _systemMenu.ShowOnAltSpace = true;
+    }
+
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        // Handle system menu keyboard shortcuts
+        if (_systemMenu?.HandleKeyboardShortcut(keyData) == true)
+        {
+            return true;
+        }
+
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _systemMenu?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+}
+</code></pre>
+<h2 id="example-2-advanced-system-menu-with-custom-positioning">Example 2: Advanced System Menu with Custom Positioning</h2>
+<p>Demonstrates how to show the system menu at custom positions based on different user interactions.</p>
+<pre><code class="lang-cs">public partial class AdvancedExampleForm : KryptonForm
+{
+    private KryptonSystemMenu? _systemMenu;
+
+    public AdvancedExampleForm()
+    {
+        InitializeComponent();
+        InitializeSystemMenu();
+        SetupEventHandlers();
+    }
+
+    private void InitializeSystemMenu()
+    {
+        _systemMenu = new KryptonSystemMenu(this);
+    }
+
+    private void SetupEventHandlers()
+    {
+        // Show menu on different mouse events
+        MouseClick += OnMouseClick;
+        MouseDown += OnMouseDown;
+        KeyDown += OnKeyDown;
+    }
+
+    private void OnMouseClick(object? sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Right &amp;&amp; _systemMenu != null)
+        {
+            // Show menu at cursor position
+            _systemMenu.Show(Cursor.Position);
+        }
+    }
+
+    private void OnMouseDown(object? sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Left &amp;&amp; e.Clicks == 2 &amp;&amp; _systemMenu != null)
+        {
+            // Show menu at form center on double-click
+            var center = new Point(
+                Location.X + Width / 2,
+                Location.Y + Height / 2
+            );
+            _systemMenu.Show(center);
+        }
+    }
+
+    private void OnKeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.F10 &amp;&amp; _systemMenu != null)
+        {
+            // Show menu on F10 key
+            _systemMenu.ShowAtFormTopLeft();
+        }
+    }
+}
+</code></pre>
+<h2 id="example-3-theme-integration-and-management">Example 3: Theme Integration and Management</h2>
+<p>Shows how to integrate KryptonSystemMenu with Krypton theme management for consistent styling.</p>
+<pre><code class="lang-cs">public partial class ThemeExampleForm : KryptonForm
+{
+    private KryptonSystemMenu? _systemMenu;
+    private KryptonManager _kryptonManager;
+
+    public ThemeExampleForm()
+    {
+        InitializeComponent();
+        InitializeSystemMenu();
+        InitializeThemeManager();
+    }
+
+    private void InitializeSystemMenu()
+    {
+        _systemMenu = new KryptonSystemMenu(this);
+    }
+
+    private void InitializeThemeManager()
+    {
+        _kryptonManager = new KryptonManager();
+        _kryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;
+    }
+
+    private void ChangeTheme(PaletteMode mode)
+    {
+        // Change the global palette
+        _kryptonManager.GlobalPaletteMode = mode;
+
+        // Refresh system menu icons to match new theme
+        _systemMenu?.RefreshThemeIcons();
+
+        // Get current theme information
+        var currentTheme = _systemMenu?.GetCurrentTheme();
+        Console.WriteLine($&quot;Current theme: {currentTheme}&quot;);
+    }
+
+    private void SetSpecificTheme()
+    {
+        if (_systemMenu != null)
+        {
+            // Set specific theme type
+            _systemMenu.SetThemeType(ThemeType.Office2010Blue);
+
+            // Or set specific theme name
+            _systemMenu.SetIconTheme(&quot;Sparkle&quot;);
+        }
+    }
+
+    private void OnThemeChanged(object? sender, EventArgs e)
+    {
+        // Handle theme change events
+        _systemMenu?.RefreshThemeIcons();
+    }
+}
+</code></pre>
+<h2 id="example-4-custom-menu-behavior-and-state-management">Example 4: Custom Menu Behavior and State Management</h2>
+<p>Demonstrates how to customize when and how the system menu is shown based on application state.</p>
+<pre><code class="lang-cs">public partial class CustomBehaviorForm : KryptonForm
+{
+    private KryptonSystemMenu? _systemMenu;
+    private bool _allowSystemMenu = true;
+
+    public CustomBehaviorForm()
+    {
+        InitializeComponent();
+        InitializeSystemMenu();
+    }
+
+    private void InitializeSystemMenu()
+    {
+        _systemMenu = new KryptonSystemMenu(this);
+    }
+
+    private void UpdateSystemMenuBehavior()
+    {
+        if (_systemMenu != null)
+        {
+            // Enable/disable based on custom logic
+            _systemMenu.Enabled = _allowSystemMenu &amp;&amp; !IsMinimized;
+
+            // Control trigger behaviors
+            _systemMenu.ShowOnLeftClick = AllowLeftClickMenu;
+            _systemMenu.ShowOnRightClick = AllowRightClickMenu;
+            _systemMenu.ShowOnAltSpace = AllowAltSpaceMenu;
+
+            // Refresh to apply changes
+            _systemMenu.Refresh();
+        }
+    }
+
+    private bool AllowLeftClickMenu =&gt; true;
+    private bool AllowRightClickMenu =&gt; true;
+    private bool AllowAltSpaceMenu =&gt; true;
+    private bool IsMinimized =&gt; WindowState == FormWindowState.Minimized;
+
+    protected override void OnWindowStateChanged(EventArgs e)
+    {
+        base.OnWindowStateChanged(e);
+        UpdateSystemMenuBehavior();
+    }
+
+    private void ToggleSystemMenu()
+    {
+        _allowSystemMenu = !_allowSystemMenu;
+        UpdateSystemMenuBehavior();
+    }
+}
+</code></pre>
+<h2 id="example-5-integration-with-form-events-and-state-changes">Example 5: Integration with Form Events and State Changes</h2>
+<p>Shows how to integrate system menu updates with various form events and system events for responsive behavior.</p>
+<pre><code class="lang-cs">public partial class EventIntegrationForm : KryptonForm
+{
+    private KryptonSystemMenu? _systemMenu;
+
+    public EventIntegrationForm()
+    {
+        InitializeComponent();
+        InitializeSystemMenu();
+        SetupEventHandlers();
+    }
+
+    private void InitializeSystemMenu()
+    {
+        _systemMenu = new KryptonSystemMenu(this);
+    }
+
+    private void SetupEventHandlers()
+    {
+        // Form events
+        Load += OnFormLoad;
+        WindowStateChanged += OnWindowStateChanged;
+        Resize += OnFormResize;
+        Move += OnFormMove;
+
+        // System events
+        SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+    }
+
+    private void OnFormLoad(object? sender, EventArgs e)
+    {
+        // Initial setup
+        _systemMenu?.Refresh();
+        LogMenuState(&quot;Form Loaded&quot;);
+    }
+
+    private void OnWindowStateChanged(object? sender, EventArgs e)
+    {
+        // Update menu when window state changes
+        _systemMenu?.Refresh();
+        LogMenuState(&quot;Window State Changed&quot;);
+    }
+
+    private void OnFormResize(object? sender, EventArgs e)
+    {
+        // Update menu when form is resized
+        _systemMenu?.Refresh();
+    }
+
+    private void OnFormMove(object? sender, EventArgs e)
+    {
+        // Handle form move if needed
+    }
+
+    private void OnUserPreferenceChanged(object? sender, UserPreferenceChangedEventArgs e)
+    {
+        // Handle system theme changes
+        if (e.Category == UserPreferenceCategory.General)
+        {
+            _systemMenu?.RefreshThemeIcons();
+        }
+    }
+
+    private void LogMenuState(string eventName)
+    {
+        if (_systemMenu != null)
+        {
+            Console.WriteLine($&quot;{eventName}: Menu enabled={_systemMenu.Enabled}, &quot; +
+                            $&quot;Items={_systemMenu.MenuItemCount}, &quot; +
+                            $&quot;Theme={_systemMenu.CurrentIconTheme}&quot;);
+        }
+    }
+}
+</code></pre>
+<h2 id="example-6-error-handling-and-robustness">Example 6: Error Handling and Robustness</h2>
+<p>Demonstrates proper error handling and robust practices for production applications.</p>
+<pre><code class="lang-cs">public partial class RobustExampleForm : KryptonForm
+{
+    private KryptonSystemMenu? _systemMenu;
+    private bool _isDisposed = false;
+
+    public RobustExampleForm()
+    {
+        InitializeComponent();
+        InitializeSystemMenu();
+    }
+
+    private void InitializeSystemMenu()
+    {
+        try
+        {
+            _systemMenu = new KryptonSystemMenu(this);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($&quot;Failed to initialize system menu: {ex.Message}&quot;, 
+                          &quot;Error&quot;, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private void SafeShowMenu()
+    {
+        try
+        {
+            if (_systemMenu?.Enabled == true &amp;&amp; _systemMenu.HasMenuItems &amp;&amp; !_isDisposed)
+            {
+                _systemMenu.ShowAtFormTopLeft();
+            }
+        }
+        catch (ObjectDisposedException)
+        {
+            // System menu was disposed
+            _systemMenu = null;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($&quot;Error showing system menu: {ex.Message}&quot;, 
+                          &quot;Error&quot;, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    private void SafeRefreshMenu()
+    {
+        try
+        {
+            _systemMenu?.Refresh();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($&quot;Error refreshing menu: {ex.Message}&quot;);
+        }
+    }
+
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        try
+        {
+            return _systemMenu?.HandleKeyboardShortcut(keyData) == true || 
+                   base.ProcessCmdKey(ref msg, keyData);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($&quot;Error handling keyboard shortcut: {ex.Message}&quot;);
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (!_isDisposed)
+        {
+            if (disposing)
+            {
+                try
+                {
+                    _systemMenu?.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($&quot;Error disposing system menu: {ex.Message}&quot;);
+                }
+                finally
+                {
+                    _systemMenu = null;
+                    _isDisposed = true;
+                }
+            }
+            base.Dispose(disposing);
+        }
+    }
+}
+</code></pre>
+<h2 id="example-7-performance-optimization-and-best-practices">Example 7: Performance Optimization and Best Practices</h2>
+<p>Demonstrates performance optimization techniques and best practices for handling frequent events.</p>
+<pre><code class="lang-cs">public partial class OptimizedExampleForm : KryptonForm
+    {
+        private KryptonSystemMenu? _systemMenu;
+        private bool _needsRefresh = false;
+        private DateTime _lastRefreshTime = DateTime.MinValue;
+        private readonly TimeSpan _refreshThrottle = TimeSpan.FromMilliseconds(100);
+
+        public OptimizedExampleForm()
+        {
+            InitializeComponent();
+            InitializeSystemMenu();
+            SetupOptimizedEventHandlers();
+        }
+
+        private void InitializeSystemMenu()
+        {
+            _systemMenu = new KryptonSystemMenu(this);
+        }
+
+        private void SetupOptimizedEventHandlers()
+        {
+            // Use throttled refresh for frequent events
+            Resize += OnFormResizeThrottled;
+            Move += OnFormMoveThrottled;
+            WindowStateChanged += OnWindowStateChangedOptimized;
+        }
+
+        private void OnFormResizeThrottled(object? sender, EventArgs e)
+        {
+            RequestRefresh();
+        }
+
+        private void OnFormMoveThrottled(object? sender, EventArgs e)
+        {
+            // Menu position doesn't need refresh on move
+        }
+
+        private void OnWindowStateChangedOptimized(object? sender, EventArgs e)
+        {
+            // Window state changes always need immediate refresh
+            _systemMenu?.Refresh();
+        }
+
+        private void RequestRefresh()
+        {
+            _needsRefresh = true;
+            
+            // Use a timer to throttle refresh calls
+            if (DateTime.Now - _lastRefreshTime &gt; _refreshThrottle)
+            {
+                PerformRefresh();
+            }
+        }
+
+        private void PerformRefresh()
+        {
+            if (_needsRefresh)
+            {
+                _systemMenu?.Refresh();
+                _needsRefresh = false;
+                _lastRefreshTime = DateTime.Now;
+            }
+        }
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            // Perform any pending refresh before painting
+            PerformRefresh();
+            base.OnPaint(e);
+        }
+    }
+
+</code></pre>
+<h2 id="example-8-custom-menu-positioning-and-screen-bounds-handling">Example 8: Custom Menu Positioning and Screen Bounds Handling</h2>
+<p>Advanced positioning techniques with screen bounds awareness.</p>
+<pre><code class="lang-cs">public partial class PositioningExampleForm : KryptonForm
+    {
+        private KryptonSystemMenu? _systemMenu;
+
+        public PositioningExampleForm()
+        {
+            InitializeComponent();
+            InitializeSystemMenu();
+            SetupPositioningHandlers();
+        }
+
+        private void InitializeSystemMenu()
+        {
+            _systemMenu = new KryptonSystemMenu(this);
+        }
+
+        private void SetupPositioningHandlers()
+        {
+            MouseClick += OnMouseClickForPositioning;
+        }
+
+        private void OnMouseClickForPositioning(object? sender, MouseEventArgs e)
+        {
+            if (_systemMenu == null) return;
+
+            Point menuPosition;
+
+            switch (e.Button)
+            {
+                case MouseButtons.Left:
+                    // Show at click position
+                    menuPosition = PointToScreen(e.Location);
+                    break;
+
+                case MouseButtons.Right:
+                    // Show at cursor position
+                    menuPosition = Cursor.Position;
+                    break;
+
+                case MouseButtons.Middle:
+                    // Show at form center
+                    menuPosition = new Point(
+                        Location.X + Width / 2,
+                        Location.Y + Height / 2
+                    );
+                    break;
+
+                default:
+                    return;
+            }
+
+            ShowMenuAtPosition(menuPosition);
+        }
+
+        private void ShowMenuAtPosition(Point position)
+        {
+            try
+            {
+                // The Show method automatically adjusts position to stay within screen bounds
+                _systemMenu.Show(position);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($&quot;Error showing menu: {ex.Message}&quot;, 
+                              &quot;Error&quot;, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void ShowMenuAtScreenPosition(Screen screen)
+        {
+            if (_systemMenu == null) return;
+
+            // Show menu at the center of a specific screen
+            var screenCenter = new Point(
+                screen.Bounds.X + screen.Bounds.Width / 2,
+                screen.Bounds.Y + screen.Bounds.Height / 2
+            );
+
+            _systemMenu.Show(screenCenter);
+        }
+
+        private void ShowMenuAtFormCorner()
+        {
+            if (_systemMenu == null) return;
+
+            // Show at different corners based on form position
+            var formScreen = Screen.FromControl(this);
+            var formBounds = formScreen.Bounds;
+            var formCenter = new Point(
+                formBounds.X + formBounds.Width / 2,
+                formBounds.Y + formBounds.Height / 2
+            );
+
+            Point cornerPosition;
+
+            if (Location.X &lt; formCenter.X)
+            {
+                // Form is on left side, show menu at top-left
+                cornerPosition = new Point(Location.X, Location.Y);
+            }
+            else
+            {
+                // Form is on right side, show menu at top-right
+                cornerPosition = new Point(Location.X + Width, Location.Y);
+            }
+
+            _systemMenu.Show(cornerPosition);
+        }
+    }
+
+</code></pre>
+<h2 id="example-9-integration-with-application-settings-and-configuration">Example 9: Integration with Application Settings and Configuration</h2>
+<p>Shows how to persist settings and apply them on application startup.</p>
+<pre><code class="lang-cs">public partial class ConfigurationExampleForm : KryptonForm
+    {
+        private KryptonSystemMenu? _systemMenu;
+        private SystemMenuSettings _settings;
+
+        public ConfigurationExampleForm()
+        {
+            InitializeComponent();
+            LoadSettings();
+            InitializeSystemMenu();
+            ApplySettings();
+        }
+
+        private void LoadSettings()
+        {
+            // Load settings from configuration
+            _settings = new SystemMenuSettings
+            {
+                Enabled = Properties.Settings.Default.SystemMenuEnabled,
+                ShowOnLeftClick = Properties.Settings.Default.SystemMenuShowOnLeftClick,
+                ShowOnRightClick = Properties.Settings.Default.SystemMenuShowOnRightClick,
+                ShowOnAltSpace = Properties.Settings.Default.SystemMenuShowOnAltSpace,
+                Theme = Properties.Settings.Default.SystemMenuTheme
+            };
+        }
+
+        private void InitializeSystemMenu()
+        {
+            _systemMenu = new KryptonSystemMenu(this);
+        }
+
+        private void ApplySettings()
+        {
+            if (_systemMenu != null)
+            {
+                _systemMenu.Enabled = _settings.Enabled;
+                _systemMenu.ShowOnLeftClick = _settings.ShowOnLeftClick;
+                _systemMenu.ShowOnRightClick = _settings.ShowOnRightClick;
+                _systemMenu.ShowOnAltSpace = _settings.ShowOnAltSpace;
+
+                if (!string.IsNullOrEmpty(_settings.Theme))
+                {
+                    _systemMenu.SetIconTheme(_settings.Theme);
+                }
+            }
+        }
+
+        private void SaveSettings()
+        {
+            if (_systemMenu != null)
+            {
+                Properties.Settings.Default.SystemMenuEnabled = _systemMenu.Enabled;
+                Properties.Settings.Default.SystemMenuShowOnLeftClick = _systemMenu.ShowOnLeftClick;
+                Properties.Settings.Default.SystemMenuShowOnRightClick = _systemMenu.ShowOnRightClick;
+                Properties.Settings.Default.SystemMenuShowOnAltSpace = _systemMenu.ShowOnAltSpace;
+                Properties.Settings.Default.SystemMenuTheme = _systemMenu.CurrentIconTheme;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            SaveSettings();
+            base.OnFormClosing(e);
+        }
+
+        private void UpdateSettings(SystemMenuSettings newSettings)
+        {
+            _settings = newSettings;
+            ApplySettings();
+        }
+    }
+
+}
+</code></pre>
+<h3 id="systemmenusettings-class">SystemMenuSettings Class</h3>
+<pre><code class="lang-cs">/// &lt;summary&gt;
+/// Configuration class for system menu settings
+/// &lt;/summary&gt;
+public class SystemMenuSettings
+{
+    public bool Enabled { get; set; } = true;
+    public bool ShowOnLeftClick { get; set; } = true;
+    public bool ShowOnRightClick { get; set; } = true;
+    public bool ShowOnAltSpace { get; set; } = true;
+    public string Theme { get; set; } = &quot;Office2013&quot;;
+}
+</code></pre>
+<h1 id="additional-notes">Additional Notes:</h1>
+<ol>
+<li>Always dispose of KryptonSystemMenu instances properly</li>
+<li>Handle exceptions when showing menus</li>
+<li>Check menu state before operations</li>
+<li>Use throttling for frequent refresh operations</li>
+<li>Integrate with application settings for persistence</li>
+<li>Consider screen bounds when positioning menus</li>
+<li>Handle theme changes appropriately</li>
+<li>Use the using statement for automatic disposal</li>
+</ol>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

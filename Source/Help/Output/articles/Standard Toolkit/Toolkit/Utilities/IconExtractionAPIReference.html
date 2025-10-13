@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Icon Extraction API - Developer Documentation | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Icon Extraction API - Developer Documentation | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="icon-extraction-api---developer-documentation">Icon Extraction API - Developer Documentation</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#public-api-reference">Public API Reference</a></li>
+<li><a href="#enumerations">Enumerations</a></li>
+<li><a href="#usage-patterns">Usage Patterns</a></li>
+<li><a href="#implementation-details">Implementation Details</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#extension-guidelines">Extension Guidelines</a></li>
+<li><a href="#platform-support">Platform Support</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The Icon Extraction API provides a comprehensive, type-safe interface for extracting icons from Windows system DLLs. This feature set includes:</p>
+<ul>
+<li><strong>1500+ icons</strong> across 7 system DLLs</li>
+<li><strong>Type-safe enums</strong> with IntelliSense support</li>
+<li><strong>Flexible sizing</strong> with 10 standard sizes (8x8 to 256x256)</li>
+<li><strong>Error handling</strong> with null returns for missing icons</li>
+<li><strong>Memory management</strong> with automatic cleanup</li>
+<li><strong>Cross-version support</strong> for Windows 7 through Windows 11</li>
+</ul>
+<h3 id="key-benefits">Key Benefits</h3>
+<ul>
+<li><strong>No embedded resources required</strong> - Extract icons on-demand from Windows</li>
+<li><strong>Consistent UI</strong> - Icons match the user's Windows version</li>
+<li><strong>Type safety</strong> - Strongly typed enums prevent invalid icon IDs</li>
+<li><strong>Performance</strong> - Direct P/Invoke with minimal overhead</li>
+<li><strong>Documentation</strong> - Full XML documentation for all APIs</li>
+</ul>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<h3 id="component-overview">Component Overview</h3>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│                  Public API Layer                        │
+│  GraphicsExtensions.ExtractIconFrom{Source}()            │
+└────────────────────┬────────────────────────────────────┘
+                     │
+┌────────────────────▼────────────────────────────────────┐
+│              Internal Type-Safe Layer                    │
+│  GraphicsExtensions.ExtractIconFrom{Source}Internal()    │
+└────────────────────┬────────────────────────────────────┘
+                     │
+┌────────────────────▼────────────────────────────────────┐
+│                Core Extraction Layer                     │
+│  GraphicsExtensions.ExtractIcon()                        │
+└────────────────────┬────────────────────────────────────┘
+                     │
+┌────────────────────▼────────────────────────────────────┐
+│              P/Invoke Native Layer                       │
+│  ImageNativeMethods.ExtractIconEx()                      │
+│  ImageNativeMethods.DestroyIcon()                        │
+└──────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="file-structure">File Structure</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Location</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GraphicsExtensions.cs</code></td>
+<td><code>Krypton.Toolkit/Utilities/</code></td>
+<td>Public API and extraction logic</td>
+</tr>
+<tr>
+<td><code>ImageNativeMethods.cs</code></td>
+<td><code>Krypton.Toolkit/Utilities/</code></td>
+<td>P/Invoke declarations</td>
+</tr>
+<tr>
+<td><code>Definitions.cs</code></td>
+<td><code>Krypton.Toolkit/General/</code></td>
+<td>Icon ID enumerations</td>
+</tr>
+<tr>
+<td><code>PlatformInvoke.cs</code></td>
+<td><code>Krypton.Toolkit/General/</code></td>
+<td>Library path constants</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="public-api-reference">Public API Reference</h2>
+<h3 id="core-extraction-methods">Core Extraction Methods</h3>
+<h4 id="extracticon">ExtractIcon</h4>
+<pre><code class="lang-csharp">public static Icon? ExtractIcon(
+    string filePath, 
+    int imageIndex, 
+    bool largeIcon = true)
+</code></pre>
+<p><strong>Description:</strong><br>
+Generic icon extraction method that can extract from any DLL file.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>filePath</code> (string): Full or relative path to the DLL file (e.g., &quot;shell32.dll&quot; or &quot;C:\Windows\System32\custom.dll&quot;)</li>
+<li><code>imageIndex</code> (int): Zero-based index of the icon to extract</li>
+<li><code>largeIcon</code> (bool, optional): If <code>true</code>, extracts large icons (&gt;32x32); if <code>false</code>, extracts small icons (≤32x32). Default: <code>true</code></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Icon?</code>: The extracted icon, or <code>null</code> if extraction fails</li>
+</ul>
+<p><strong>Exceptions:</strong></p>
+<ul>
+<li><code>ArgumentNullException</code>: Thrown if <code>filePath</code> is null or empty</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Extract icon #42 from shell32.dll as large icon
+var icon = GraphicsExtensions.ExtractIcon(&quot;shell32.dll&quot;, 42, largeIcon: true);
+
+// Extract from custom DLL
+var customIcon = GraphicsExtensions.ExtractIcon(
+    @&quot;C:\MyApp\resources.dll&quot;, 
+    10, 
+    largeIcon: false
+);
+</code></pre>
+<hr>
+<h3 id="specialized-extraction-methods">Specialized Extraction Methods</h3>
+<h4 id="extracticonfromimageres">ExtractIconFromImageres</h4>
+<pre><code class="lang-csharp">public static Icon? ExtractIconFromImageres(
+    int iconId, 
+    IconSize iconSize = IconSize.Medium)
+</code></pre>
+<p><strong>Description:</strong><br>
+Extracts icons from Windows' imageres.dll (modern system icons, Vista+).</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>iconId</code> (int): Icon identifier from <code>ImageresIconID</code> enum or any valid index</li>
+<li><code>iconSize</code> (IconSize, optional): Desired icon size. Default: <code>IconSize.Medium</code> (32x32)</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Icon?</code>: The extracted icon, or <code>null</code> if extraction fails or icon doesn't exist</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Extract UAC shield icon at 48x48
+var shield = GraphicsExtensions.ExtractIconFromImageres(
+    (int)ImageresIconID.Shield, 
+    IconSize.Large
+);
+
+// Extract lock icon at default size (32x32)
+var lock = GraphicsExtensions.ExtractIconFromImageres(
+    (int)ImageresIconID.Lock
+);
+
+// Access undocumented icon by index
+var customIcon = GraphicsExtensions.ExtractIconFromImageres(150, IconSize.Small);
+</code></pre>
+<p><strong>Related Enum:</strong> <code>ImageresIconID</code> (300+ values)</p>
+<hr>
+<h4 id="extracticonfromshell32">ExtractIconFromShell32</h4>
+<pre><code class="lang-csharp">public static Icon? ExtractIconFromShell32(
+    int iconId, 
+    IconSize iconSize = IconSize.Medium)
+</code></pre>
+<p><strong>Description:</strong><br>
+Extracts icons from Windows' shell32.dll (classic shell icons, available on all Windows versions).</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>iconId</code> (int): Icon identifier from <code>Shell32IconID</code> enum or any valid index</li>
+<li><code>iconSize</code> (IconSize, optional): Desired icon size. Default: <code>IconSize.Medium</code> (32x32)</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Icon?</code>: The extracted icon, or <code>null</code> if extraction fails</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Extract folder icon
+var folder = GraphicsExtensions.ExtractIconFromShell32(
+    (int)Shell32IconID.Folder, 
+    IconSize.ExtraLarge  // 64x64
+);
+
+// Extract recycle bin
+var recycleBin = GraphicsExtensions.ExtractIconFromShell32(
+    (int)Shell32IconID.RecycleBinEmpty, 
+    IconSize.Medium
+);
+
+// Access high-index icon (like #16805)
+var highIndexIcon = GraphicsExtensions.ExtractIconFromShell32(16805, IconSize.Large);
+</code></pre>
+<p><strong>Related Enum:</strong> <code>Shell32IconID</code> (300+ values)</p>
+<hr>
+<h4 id="extracticonfromieframe">ExtractIconFromIeFrame</h4>
+<pre><code class="lang-csharp">public static Icon? ExtractIconFromIeFrame(
+    int iconId, 
+    IconSize iconSize = IconSize.Medium)
+</code></pre>
+<p><strong>Description:</strong><br>
+Extracts icons from Internet Explorer's ieframe.dll (web and browser icons).</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>iconId</code> (int): Icon identifier from <code>IeFrameIconID</code> enum or any valid index</li>
+<li><code>iconSize</code> (IconSize, optional): Desired icon size. Default: <code>IconSize.Medium</code> (32x32)</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Icon?</code>: The extracted icon, or <code>null</code> if extraction fails</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Extract Internet Explorer icon
+var ie = GraphicsExtensions.ExtractIconFromIeFrame(
+    (int)IeFrameIconID.InternetExplorer, 
+    IconSize.Large
+);
+
+// Extract download icon
+var download = GraphicsExtensions.ExtractIconFromIeFrame(
+    (int)IeFrameIconID.Download, 
+    IconSize.Small
+);
+</code></pre>
+<p><strong>Related Enum:</strong> <code>IeFrameIconID</code> (25+ values)</p>
+<hr>
+<h4 id="extracticonfrommoreicons">ExtractIconFromMoreIcons</h4>
+<pre><code class="lang-csharp">public static Icon? ExtractIconFromMoreIcons(
+    int iconId, 
+    IconSize iconSize = IconSize.Medium)
+</code></pre>
+<p><strong>Description:</strong><br>
+Extracts icons from moricons.dll (miscellaneous system icons including DOS/legacy icons).</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>iconId</code> (int): Icon identifier from <code>MoreIconsIconID</code> enum or any valid index</li>
+<li><code>iconSize</code> (IconSize, optional): Desired icon size. Default: <code>IconSize.Medium</code> (32x32)</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Icon?</code>: The extracted icon, or <code>null</code> if extraction fails</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Extract MS-DOS icon
+var dos = GraphicsExtensions.ExtractIconFromMoreIcons(
+    (int)MoreIconsIconID.MsDosIcon, 
+    IconSize.Medium
+);
+
+// Extract archive file icon
+var archive = GraphicsExtensions.ExtractIconFromMoreIcons(
+    (int)MoreIconsIconID.ArchiveFile, 
+    IconSize.Small
+);
+</code></pre>
+<p><strong>Related Enum:</strong> <code>MoreIconsIconID</code> (20+ values)</p>
+<hr>
+<h4 id="extracticonfromcompstui">ExtractIconFromCompStui</h4>
+<pre><code class="lang-csharp">public static Icon? ExtractIconFromCompStui(
+    int iconId, 
+    IconSize iconSize = IconSize.Medium)
+</code></pre>
+<p><strong>Description:</strong><br>
+Extracts icons from compstui.dll (printer, device, and composite UI icons).</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>iconId</code> (int): Icon identifier from <code>CompStuiIconID</code> enum or any valid index</li>
+<li><code>iconSize</code> (IconSize, optional): Desired icon size. Default: <code>IconSize.Medium</code> (32x32)</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Icon?</code>: The extracted icon, or <code>null</code> if extraction fails</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Extract printer icon
+var printer = GraphicsExtensions.ExtractIconFromCompStui(
+    (int)CompStuiIconID.Printer, 
+    IconSize.Large
+);
+
+// Extract color settings icon
+var color = GraphicsExtensions.ExtractIconFromCompStui(
+    (int)CompStuiIconID.Color, 
+    IconSize.Medium
+);
+</code></pre>
+<p><strong>Related Enum:</strong> <code>CompStuiIconID</code> (18+ values)</p>
+<hr>
+<h4 id="extracticonfromsetupapi">ExtractIconFromSetupApi</h4>
+<pre><code class="lang-csharp">public static Icon? ExtractIconFromSetupApi(
+    int iconId, 
+    IconSize iconSize = IconSize.Medium)
+</code></pre>
+<p><strong>Description:</strong><br>
+Extracts icons from setupapi.dll (hardware, device, and installation icons).</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>iconId</code> (int): Icon identifier from <code>SetupApiIconID</code> enum or any valid index</li>
+<li><code>iconSize</code> (IconSize, optional): Desired icon size. Default: <code>IconSize.Medium</code> (32x32)</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Icon?</code>: The extracted icon, or <code>null</code> if extraction fails</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Extract generic hardware device icon
+var device = GraphicsExtensions.ExtractIconFromSetupApi(
+    (int)SetupApiIconID.HardwareDevice, 
+    IconSize.Medium
+);
+
+// Extract USB device icon
+var usb = GraphicsExtensions.ExtractIconFromSetupApi(
+    (int)SetupApiIconID.UsbDevice, 
+    IconSize.Large
+);
+</code></pre>
+<p><strong>Related Enum:</strong> <code>SetupApiIconID</code> (16+ values)</p>
+<hr>
+<h4 id="extracticonfromnetshell">ExtractIconFromNetShell</h4>
+<pre><code class="lang-csharp">public static Icon? ExtractIconFromNetShell(
+    int iconId, 
+    IconSize iconSize = IconSize.Medium)
+</code></pre>
+<p><strong>Description:</strong><br>
+Extracts icons from netshell.dll (network connection and network-related icons).</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>iconId</code> (int): Icon identifier from <code>NetShellIconID</code> enum or any valid index</li>
+<li><code>iconSize</code> (IconSize, optional): Desired icon size. Default: <code>IconSize.Medium</code> (32x32)</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Icon?</code>: The extracted icon, or <code>null</code> if extraction fails</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Extract wireless network icon
+var wifi = GraphicsExtensions.ExtractIconFromNetShell(
+    (int)NetShellIconID.WirelessNetwork, 
+    IconSize.ExtraLarge
+);
+
+// Extract VPN connection icon
+var vpn = GraphicsExtensions.ExtractIconFromNetShell(
+    (int)NetShellIconID.VpnConnection, 
+    IconSize.Medium
+);
+</code></pre>
+<p><strong>Related Enum:</strong> <code>NetShellIconID</code> (13+ values)</p>
+<hr>
+<h2 id="enumerations">Enumerations</h2>
+<h3 id="iconsize">IconSize</h3>
+<pre><code class="lang-csharp">public enum IconSize : int
+{
+    Tiny = 8,           // 8x8 pixels
+    ExtraSmall = 16,    // 16x16 pixels
+    Small = 20,         // 20x20 pixels
+    MediumSmall = 24,   // 24x24 pixels
+    Medium = 32,        // 32x32 pixels (default)
+    Large = 48,         // 48x48 pixels
+    ExtraLarge = 64,    // 64x64 pixels
+    Jumbo = 96,         // 96x96 pixels
+    ExtraJumbo = 128,   // 128x128 pixels
+    Huge = 256          // 256x256 pixels
+}
+</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">var icon16 = GraphicsExtensions.ExtractIconFromShell32(3, IconSize.ExtraSmall);
+var icon32 = GraphicsExtensions.ExtractIconFromShell32(3, IconSize.Medium);
+var icon256 = GraphicsExtensions.ExtractIconFromShell32(3, IconSize.Huge);
+</code></pre>
+<hr>
+<h3 id="icon-id-enumerations">Icon ID Enumerations</h3>
+<h4 id="imageresiconid">ImageresIconID</h4>
+<pre><code class="lang-csharp">public enum ImageresIconID : int
+{
+    // System Icons (Security, Users, Files, Folders)
+    Shield = 78,
+    ShieldAlt = 79,
+    Lock = 48,
+    Unlock = 49,
+    Key = 50,
+    User = 51,
+    Users = 52,
+    // ... 300+ total values
+}
+</code></pre>
+<p><strong>Categories:</strong></p>
+<ul>
+<li>System Icons (Security, Users, Files, Folders)</li>
+<li>Application Icons (Software, Tools, Productivity)</li>
+<li>Media Icons (Audio, Video, Photography, Storage)</li>
+<li>Device Icons (Hardware, Computing, Peripherals)</li>
+<li>Network Icons (Internet, Connectivity, Protocols)</li>
+<li>Action Icons (Commands, Operations)</li>
+<li>Status Icons (Indicators, States)</li>
+<li>Navigation Icons (Directions, Controls)</li>
+</ul>
+<p><strong>Total Values:</strong> 300+</p>
+<hr>
+<h4 id="shell32iconid">Shell32IconID</h4>
+<pre><code class="lang-csharp">public enum Shell32IconID : int
+{
+    // Basic File and Folder Icons (0-4)
+    UnknownFile = 0,
+    Document = 1,
+    Application = 2,
+    Folder = 3,
+    FolderOpen = 4,
+    
+    // Drive and Storage Icons (5-12)
+    Floppy525 = 5,
+    Floppy35 = 6,
+    RemovableDrive = 7,
+    HardDrive = 8,
+    // ... 300+ total values
+}
+</code></pre>
+<p><strong>Categories:</strong></p>
+<ul>
+<li>Basic File and Folder Icons (0-4)</li>
+<li>Drive and Storage Icons (5-12)</li>
+<li>Network and Computer Icons (13-21)</li>
+<li>System Utility Icons (22-30)</li>
+<li>Recycle Bin and Desktop (31-44)</li>
+<li>System Icons (45-60)</li>
+<li>Hardware and Devices (61-99)</li>
+<li>Media and Entertainment (100-119)</li>
+<li>Internet and Communication (120-149)</li>
+<li>System Folders (150-179)</li>
+<li>Actions and Operations (160-189)</li>
+<li>File Types (180-219)</li>
+<li>User Accounts (220-234)</li>
+<li>Windows Features (240-269)</li>
+<li>Accessibility (270-289)</li>
+<li>Additional System Icons (290-305)</li>
+</ul>
+<p><strong>Total Values:</strong> 300+</p>
+<hr>
+<h4 id="other-icon-id-enumerations">Other Icon ID Enumerations</h4>
+<table>
+<thead>
+<tr>
+<th>Enum</th>
+<th>Purpose</th>
+<th>Values</th>
+<th>Availability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IeFrameIconID</code></td>
+<td>Internet Explorer/browser icons</td>
+<td>25+</td>
+<td>Windows 7+</td>
+</tr>
+<tr>
+<td><code>MoreIconsIconID</code></td>
+<td>Miscellaneous/legacy icons</td>
+<td>20+</td>
+<td>Windows 7+</td>
+</tr>
+<tr>
+<td><code>CompStuiIconID</code></td>
+<td>Printer/device UI icons</td>
+<td>18+</td>
+<td>Windows 7+</td>
+</tr>
+<tr>
+<td><code>SetupApiIconID</code></td>
+<td>Hardware/setup icons</td>
+<td>16+</td>
+<td>Windows 7+</td>
+</tr>
+<tr>
+<td><code>NetShellIconID</code></td>
+<td>Network connection icons</td>
+<td>13+</td>
+<td>Windows 7+</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="usage-patterns">Usage Patterns</h2>
+<h3 id="basic-extraction-pattern">Basic Extraction Pattern</h3>
+<pre><code class="lang-csharp">public void LoadIcon()
+{
+    // Extract icon
+    var icon = GraphicsExtensions.ExtractIconFromShell32(
+        (int)Shell32IconID.Folder, 
+        IconSize.Medium
+    );
+    
+    // Check for null
+    if (icon != null)
+    {
+        // Use the icon
+        myButton.Values.Image = icon.ToBitmap();
+    }
+    else
+    {
+        // Handle missing icon
+        myButton.Values.Image = Properties.Resources.FallbackIcon;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="icon-caching-pattern">Icon Caching Pattern</h3>
+<pre><code class="lang-csharp">public class IconCache : IDisposable
+{
+    private readonly Dictionary&lt;string, Icon&gt; _cache = new();
+    
+    public Icon? GetIcon(string key, Func&lt;Icon?&gt; extractor)
+    {
+        if (_cache.TryGetValue(key, out var cached))
+        {
+            return cached;
+        }
+        
+        var icon = extractor();
+        if (icon != null)
+        {
+            _cache[key] = icon;
+        }
+        
+        return icon;
+    }
+    
+    public void Dispose()
+    {
+        foreach (var icon in _cache.Values)
+        {
+            icon?.Dispose();
+        }
+        _cache.Clear();
+    }
+}
+
+// Usage
+using var cache = new IconCache();
+
+var folder = cache.GetIcon(&quot;folder&quot;, () =&gt; 
+    GraphicsExtensions.ExtractIconFromShell32((int)Shell32IconID.Folder, IconSize.Medium)
+);
+</code></pre>
+<hr>
+<h3 id="lazy-loading-pattern">Lazy Loading Pattern</h3>
+<pre><code class="lang-csharp">public class MyForm : KryptonForm
+{
+    private Lazy&lt;Icon?&gt; _folderIcon;
+    
+    public MyForm()
+    {
+        InitializeComponent();
+        
+        _folderIcon = new Lazy&lt;Icon?&gt;(() =&gt; 
+            GraphicsExtensions.ExtractIconFromShell32(
+                (int)Shell32IconID.Folder, 
+                IconSize.Medium
+            )
+        );
+    }
+    
+    private void OnButtonClick(object sender, EventArgs e)
+    {
+        if (_folderIcon.Value != null)
+        {
+            myButton.Values.Image = _folderIcon.Value.ToBitmap();
+        }
+    }
+    
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing &amp;&amp; _folderIcon.IsValueCreated)
+        {
+            _folderIcon.Value?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="batch-extraction-pattern">Batch Extraction Pattern</h3>
+<pre><code class="lang-csharp">public Dictionary&lt;string, Icon?&gt; LoadIconSet()
+{
+    var icons = new Dictionary&lt;string, Icon?&gt;();
+    
+    var iconDefinitions = new[]
+    {
+        (&quot;folder&quot;, Shell32IconID.Folder),
+        (&quot;computer&quot;, Shell32IconID.Computer),
+        (&quot;network&quot;, Shell32IconID.Network),
+        (&quot;printer&quot;, Shell32IconID.Printer)
+    };
+    
+    foreach (var (name, iconId) in iconDefinitions)
+    {
+        icons[name] = GraphicsExtensions.ExtractIconFromShell32(
+            (int)iconId, 
+            IconSize.Medium
+        );
+    }
+    
+    return icons;
+}
+</code></pre>
+<hr>
+<h3 id="image-list-population-pattern">Image List Population Pattern</h3>
+<pre><code class="lang-csharp">public ImageList CreateSystemIconList()
+{
+    var imageList = new ImageList
+    {
+        ImageSize = new Size(32, 32),
+        ColorDepth = ColorDepth.Depth32Bit
+    };
+    
+    var iconIds = new[]
+    {
+        Shell32IconID.Folder,
+        Shell32IconID.Computer,
+        Shell32IconID.Network,
+        Shell32IconID.HardDrive
+    };
+    
+    foreach (var iconId in iconIds)
+    {
+        var icon = GraphicsExtensions.ExtractIconFromShell32(
+            (int)iconId, 
+            IconSize.Medium
+        );
+        
+        if (icon != null)
+        {
+            imageList.Images.Add(icon.ToBitmap());
+        }
+    }
+    
+    return imageList;
+}
+</code></pre>
+<hr>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="memory-management">Memory Management</h3>
+<p>The extraction API handles memory management automatically:</p>
+<ol>
+<li><strong>Icon Handle Allocation</strong>: Windows API allocates icon handles via <code>ExtractIconEx</code></li>
+<li><strong>Icon Cloning</strong>: Icons are cloned to create managed copies</li>
+<li><strong>Handle Cleanup</strong>: Original handles are destroyed in <code>finally</code> block</li>
+<li><strong>Managed Icon</strong>: Returned icon is a managed .NET <code>Icon</code> object</li>
+</ol>
+<p><strong>Code Flow:</strong></p>
+<pre><code class="lang-csharp">var hIconEx = new IntPtr[] { IntPtr.Zero };
+try
+{
+    // Extract icon (allocates handle)
+    ImageNativeMethods.ExtractIconEx(filePath, -imageIndex, hIconEx, null, 1);
+    
+    // Clone to managed icon
+    Icon? extractedIcon = Icon.FromHandle(hIconEx[0]).Clone() as Icon;
+    return extractedIcon;
+}
+finally
+{
+    // Always destroy handle
+    if (hIconEx[0] != IntPtr.Zero)
+    {
+        ImageNativeMethods.DestroyIcon(hIconEx[0]);
+    }
+}
+</code></pre>
+<p><strong>Developer Responsibility:</strong></p>
+<ul>
+<li>The API handles Windows handle cleanup automatically</li>
+<li>Developers should dispose returned <code>Icon</code> objects when done</li>
+<li>Use <code>using</code> statements or <code>Dispose()</code> calls for proper cleanup</li>
+</ul>
+<hr>
+<h3 id="icon-index-handling">Icon Index Handling</h3>
+<p>The Windows <code>ExtractIconEx</code> API uses <strong>negative indices</strong> for extraction:</p>
+<pre><code class="lang-csharp">// User specifies positive index
+int userIndex = 42;
+
+// API uses negative index for extraction
+int apiIndex = -userIndex;  // -42
+
+// Call Windows API
+ExtractIconEx(&quot;shell32.dll&quot;, -42, hIconEx, null, 1);
+</code></pre>
+<p>This convention tells Windows to extract the icon rather than just query its availability.</p>
+<hr>
+<h3 id="size-selection-logic">Size Selection Logic</h3>
+<p>The API automatically determines large vs. small icon extraction:</p>
+<pre><code class="lang-csharp">var size = GetSizeFromIconSize(iconSize);  // Convert enum to pixel size
+var isLargeIcon = size.Width &gt; 32;         // Threshold at 32 pixels
+
+if (isLargeIcon)
+{
+    // Extract from large icon set (typically 32x32 to 256x256)
+    ExtractIconEx(filePath, -index, hIconEx, null, 1);
+}
+else
+{
+    // Extract from small icon set (typically 16x16)
+    ExtractIconEx(filePath, -index, null, hIconEx, 1);
+}
+</code></pre>
+<p>Windows DLLs typically contain two icon sets:</p>
+<ul>
+<li><strong>Small icons</strong>: 16x16 (sometimes 20x20 or 24x24)</li>
+<li><strong>Large icons</strong>: 32x32, 48x48, 64x64, 256x256</li>
+</ul>
+<hr>
+<h3 id="type-safety-mechanism">Type Safety Mechanism</h3>
+<p>The API provides two-layer type safety:</p>
+<ol>
+<li><p><strong>Public Layer</strong> (accepts <code>int</code>):</p>
+<pre><code class="lang-csharp">public static Icon? ExtractIconFromShell32(int iconId, IconSize iconSize)
+</code></pre>
+<ul>
+<li>Allows accessing any index, including undocumented ones</li>
+<li>Flexible for dynamic scenarios</li>
+</ul>
+</li>
+<li><p><strong>Internal Layer</strong> (accepts enum):</p>
+<pre><code class="lang-csharp">internal static Icon? ExtractIconFromShell32Internal(Shell32IconID iconId, IconSize iconSize)
+</code></pre>
+<ul>
+<li>Provides type safety when using enums</li>
+<li>Enables IntelliSense and compile-time checking</li>
+</ul>
+</li>
+</ol>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Type-safe with enum
+var icon1 = GraphicsExtensions.ExtractIconFromShell32(
+    (int)Shell32IconID.Folder,  // Compile-time checked
+    IconSize.Medium
+);
+
+// Flexible with int
+var icon2 = GraphicsExtensions.ExtractIconFromShell32(
+    16805,  // Access any index
+    IconSize.Medium
+);
+</code></pre>
+<hr>
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="return-value-pattern">Return Value Pattern</h3>
+<p>All extraction methods use <strong>nullable return types</strong> (<code>Icon?</code>) to indicate success or failure:</p>
+<pre><code class="lang-csharp">var icon = GraphicsExtensions.ExtractIconFromShell32(42, IconSize.Medium);
+
+if (icon != null)
+{
+    // Success: icon was extracted
+}
+else
+{
+    // Failure: icon not found or extraction error
+}
+</code></pre>
+<hr>
+<h3 id="exception-handling">Exception Handling</h3>
+<p>The API <strong>catches and logs exceptions</strong> internally, returning <code>null</code> instead of throwing:</p>
+<pre><code class="lang-csharp">try
+{
+    // Attempt extraction
+    ExtractIconEx(filePath, -imageIndex, hIconEx, null, 1);
+    // ...
+}
+catch (Exception ex)
+{
+    // Log exception
+    KryptonExceptionHandler.CaptureException(ex, showStackTrace: DEFAULT_USE_STACK_TRACE);
+    
+    // Return null instead of throwing
+    return null;
+}
+</code></pre>
+<p><strong>Exception:</strong> Only <code>ArgumentNullException</code> is thrown if <code>filePath</code> is null/empty in the base <code>ExtractIcon</code> method.</p>
+<hr>
+<h3 id="failure-scenarios">Failure Scenarios</h3>
+<p>Icons may fail to extract for several reasons:</p>
+<ol>
+<li><strong>Icon doesn't exist</strong>: The specified index has no icon</li>
+<li><strong>DLL not found</strong>: The system DLL is missing (rare, except on older Windows)</li>
+<li><strong>Invalid index</strong>: Index is out of range for the DLL</li>
+<li><strong>Insufficient permissions</strong>: Rare, but possible in restricted environments</li>
+<li><strong>Corrupted DLL</strong>: System file corruption (very rare)</li>
+</ol>
+<p><strong>Best Practice:</strong></p>
+<pre><code class="lang-csharp">public void LoadIconSafe()
+{
+    var icon = GraphicsExtensions.ExtractIconFromShell32(
+        (int)Shell32IconID.Folder, 
+        IconSize.Medium
+    );
+    
+    if (icon != null)
+    {
+        try
+        {
+            myButton.Values.Image = icon.ToBitmap();
+        }
+        catch (Exception ex)
+        {
+            // Handle conversion errors
+            Log.Error($&quot;Failed to convert icon: {ex.Message}&quot;);
+            myButton.Values.Image = GetFallbackIcon();
+        }
+    }
+    else
+    {
+        // Use fallback for missing icon
+        myButton.Values.Image = GetFallbackIcon();
+    }
+}
+</code></pre>
+<hr>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="extraction-performance">Extraction Performance</h3>
+<p>Icon extraction is relatively fast but involves P/Invoke overhead:</p>
+<ul>
+<li><strong>Single extraction</strong>: ~0.5-2ms per icon (depends on system)</li>
+<li><strong>Cached extraction</strong>: ~0.001ms (dictionary lookup)</li>
+<li><strong>File I/O</strong>: First access may load DLL into memory</li>
+</ul>
+<p><strong>Benchmarks</strong> (typical modern PC):</p>
+<pre><code>ExtractIcon (cold):     ~2.0ms
+ExtractIcon (warm):     ~0.5ms
+ExtractIcon (cached):   ~0.001ms
+Icon.ToBitmap():        ~0.1ms
+</code></pre>
+<hr>
+<h3 id="optimization-strategies">Optimization Strategies</h3>
+<h4 id="1-cache-extracted-icons">1. <strong>Cache Extracted Icons</strong></h4>
+<pre><code class="lang-csharp">// Inefficient: Extract every time
+for (int i = 0; i &lt; 100; i++)
+{
+    var icon = GraphicsExtensions.ExtractIconFromShell32(3, IconSize.Medium);
+    // Use icon...
+    icon?.Dispose();
+}
+
+// Efficient: Extract once, cache
+var folderIcon = GraphicsExtensions.ExtractIconFromShell32(3, IconSize.Medium);
+for (int i = 0; i &lt; 100; i++)
+{
+    // Reuse cached icon...
+}
+folderIcon?.Dispose();
+</code></pre>
+<h4 id="2-lazy-load-icons">2. <strong>Lazy Load Icons</strong></h4>
+<pre><code class="lang-csharp">// Load icons only when needed
+private Lazy&lt;Icon?&gt; _icon = new Lazy&lt;Icon?&gt;(() =&gt; 
+    GraphicsExtensions.ExtractIconFromShell32(3, IconSize.Medium)
+);
+
+public void ShowIcon()
+{
+    if (_icon.Value != null)
+    {
+        pictureBox.Image = _icon.Value.ToBitmap();
+    }
+}
+</code></pre>
+<h4 id="3-extract-appropriate-sizes">3. <strong>Extract Appropriate Sizes</strong></h4>
+<pre><code class="lang-csharp">// Inefficient: Extract huge icon for small display
+var icon = GraphicsExtensions.ExtractIconFromShell32(3, IconSize.Huge);  // 256x256
+pictureBox.Size = new Size(16, 16);  // Display at 16x16 (wasteful)
+
+// Efficient: Extract matching size
+var icon = GraphicsExtensions.ExtractIconFromShell32(3, IconSize.ExtraSmall);  // 16x16
+pictureBox.Size = new Size(16, 16);
+</code></pre>
+<h4 id="4-batch-extractions">4. <strong>Batch Extractions</strong></h4>
+<pre><code class="lang-csharp">// Load all needed icons at startup
+public void InitializeIcons()
+{
+    _icons = new Dictionary&lt;string, Icon?&gt;
+    {
+        [&quot;folder&quot;] = GraphicsExtensions.ExtractIconFromShell32((int)Shell32IconID.Folder, IconSize.Medium),
+        [&quot;computer&quot;] = GraphicsExtensions.ExtractIconFromShell32((int)Shell32IconID.Computer, IconSize.Medium),
+        [&quot;network&quot;] = GraphicsExtensions.ExtractIconFromShell32((int)Shell32IconID.Network, IconSize.Medium),
+    };
+}
+</code></pre>
+<hr>
+<h3 id="memory-considerations">Memory Considerations</h3>
+<p>Each extracted icon consumes memory:</p>
+<ul>
+<li><strong>16x16 icon</strong>: ~1-2 KB</li>
+<li><strong>32x32 icon</strong>: ~4-8 KB</li>
+<li><strong>48x48 icon</strong>: ~9-18 KB</li>
+<li><strong>256x256 icon</strong>: ~256 KB (uncompressed)</li>
+</ul>
+<p><strong>Guidelines:</strong></p>
+<ul>
+<li>Cache only icons you use frequently</li>
+<li>Dispose icons when no longer needed</li>
+<li>Consider weak references for large icon caches</li>
+<li>Monitor memory usage with 100+ cached icons</li>
+</ul>
+<hr>
+<h2 id="extension-guidelines">Extension Guidelines</h2>
+<h3 id="adding-new-dll-sources">Adding New DLL Sources</h3>
+<p>To add support for additional system DLLs:</p>
+<ol>
+<li><strong>Add Library Constant</strong> (<code>PlatformInvoke.cs</code>):</li>
+</ol>
+<pre><code class="lang-csharp">/// &lt;summary&gt;My Custom DLL - contains custom icons&lt;/summary&gt;
+public const string MyCustomDll = &quot;mycustom.dll&quot;;
+</code></pre>
+<ol start="2">
+<li><strong>Create Icon ID Enum</strong> (<code>Definitions.cs</code>):</li>
+</ol>
+<pre><code class="lang-csharp">/// &lt;summary&gt;Icon resource IDs found in mycustom.dll&lt;/summary&gt;
+public enum MyCustomDllIconID : int
+{
+    /// &lt;summary&gt;First icon&lt;/summary&gt;
+    FirstIcon = 0,
+    /// &lt;summary&gt;Second icon&lt;/summary&gt;
+    SecondIcon = 1,
+    // ... more icons
+}
+</code></pre>
+<ol start="3">
+<li><strong>Add Extraction Methods</strong> (<code>GraphicsExtensions.cs</code>):</li>
+</ol>
+<pre><code class="lang-csharp">/// &lt;summary&gt;Extracts an icon from mycustom.dll&lt;/summary&gt;
+public static Icon? ExtractIconFromMyCustomDll(int iconId, IconSize iconSize = IconSize.Medium) 
+    =&gt; ExtractIconFromMyCustomDllInternal((MyCustomDllIconID)iconId, iconSize);
+
+internal static Icon? ExtractIconFromMyCustomDllInternal(MyCustomDllIconID iconId, IconSize iconSize = IconSize.Medium)
+{
+    var size = GetSizeFromIconSize(iconSize);
+    var isLargeIcon = size.Width &gt; 32;
+    return ExtractIcon(Libraries.MyCustomDll, (int)iconId, isLargeIcon);
+}
+</code></pre>
+<ol start="4">
+<li><p><strong>Add XML Documentation</strong>: Document all enum values and methods</p>
+</li>
+<li><p><strong>Add Tests</strong>: Create test form examples</p>
+</li>
+</ol>
+<hr>
+<h3 id="custom-icon-extraction-wrapper">Custom Icon Extraction Wrapper</h3>
+<p>Create custom wrappers for specialized needs:</p>
+<pre><code class="lang-csharp">public static class CustomIconExtensions
+{
+    /// &lt;summary&gt;Extracts UAC shield icon with fallback&lt;/summary&gt;
+    public static Image GetUACShieldOrFallback(IconSize size = IconSize.Medium)
+    {
+        // Try imageres.dll
+        var icon = GraphicsExtensions.ExtractIconFromImageres(
+            (int)ImageresIconID.Shield, 
+            size
+        );
+        
+        if (icon != null)
+        {
+            return icon.ToBitmap();
+        }
+        
+        // Try shell32.dll fallback
+        icon = GraphicsExtensions.ExtractIconFromShell32(
+            (int)Shell32IconID.Security, 
+            size
+        );
+        
+        if (icon != null)
+        {
+            return icon.ToBitmap();
+        }
+        
+        // Use embedded resource as last resort
+        return Properties.Resources.UACShieldFallback;
+    }
+}
+</code></pre>
+<hr>
+<h2 id="platform-support">Platform Support</h2>
+<h3 id="windows-version-compatibility">Windows Version Compatibility</h3>
+<table>
+<thead>
+<tr>
+<th>DLL</th>
+<th>Windows 7, 8 and 8.1</th>
+<th>Windows 10+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>shell32.dll</code></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>moricons.dll</code></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>ieframe.dll</code></td>
+<td>✅</td>
+<td>⚠️ (deprecated)</td>
+</tr>
+<tr>
+<td><code>imageres.dll</code></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>compstui.dll</code></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>setupapi.dll</code></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>netshell.dll</code></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>✅ = Fully supported</li>
+<li>⚠️ = Available but may be deprecated</li>
+<li>❌ = Not available</li>
+</ul>
+<hr>
+<h3 id="net-framework-support">.NET Framework Support</h3>
+<p>The API supports all Krypton Toolkit target frameworks:</p>
+<ul>
+<li>✅ .NET Framework 4.7.2</li>
+<li>✅ .NET Framework 4.8</li>
+<li>✅ .NET Framework 4.8.1</li>
+<li>✅ .NET 8.0-windows</li>
+<li>✅ .NET 9.0-windows</li>
+<li>✅ .NET 10.0-windows</li>
+</ul>
+<p><strong>Requirements:</strong></p>
+<ul>
+<li>Windows operating system (P/Invoke to Windows APIs)</li>
+<li><code>System.Drawing.Common</code> (for <code>Icon</code> and <code>Bitmap</code> classes)</li>
+</ul>
+<hr>
+<h3 id="icon-appearance-variations">Icon Appearance Variations</h3>
+<p>Icon appearance may vary across Windows versions:</p>
+<table>
+<thead>
+<tr>
+<th>Windows Version</th>
+<th>Icon Style</th>
+<th>Example DLL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows 7</td>
+<td>Glossy, Aero</td>
+<td>imageres.dll</td>
+</tr>
+<tr>
+<td>Windows 8/8.1</td>
+<td>Flat, Modern</td>
+<td>imageres.dll</td>
+</tr>
+<tr>
+<td>Windows 10</td>
+<td>Fluent, simplified</td>
+<td>imageres.dll</td>
+</tr>
+<tr>
+<td>Windows 11</td>
+<td>Rounded, colorful</td>
+<td>imageres.dll</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Best Practice:</strong> Test icon appearance on your target Windows versions.</p>
+<hr>
+<h2 id="api-summary">API Summary</h2>
+<h3 id="quick-reference-table">Quick Reference Table</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>DLL</th>
+<th>Icon Count</th>
+<th>Min Windows</th>
+<th>Common Use Cases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ExtractIconFromImageres()</code></td>
+<td>imageres.dll</td>
+<td>300+</td>
+<td>Vista</td>
+<td>Modern UI, security icons, system icons</td>
+</tr>
+<tr>
+<td><code>ExtractIconFromShell32()</code></td>
+<td>shell32.dll</td>
+<td>300+</td>
+<td>95</td>
+<td>Files, folders, drives, classic Windows icons</td>
+</tr>
+<tr>
+<td><code>ExtractIconFromIeFrame()</code></td>
+<td>ieframe.dll</td>
+<td>200+</td>
+<td>XP</td>
+<td>Web, browser, internet icons</td>
+</tr>
+<tr>
+<td><code>ExtractIconFromMoreIcons()</code></td>
+<td>moricons.dll</td>
+<td>100+</td>
+<td>95</td>
+<td>Legacy, DOS, miscellaneous icons</td>
+</tr>
+<tr>
+<td><code>ExtractIconFromCompStui()</code></td>
+<td>compstui.dll</td>
+<td>100+</td>
+<td>2000</td>
+<td>Printers, devices, UI components</td>
+</tr>
+<tr>
+<td><code>ExtractIconFromSetupApi()</code></td>
+<td>setupapi.dll</td>
+<td>60+</td>
+<td>2000</td>
+<td>Hardware, drivers, installation</td>
+</tr>
+<tr>
+<td><code>ExtractIconFromNetShell()</code></td>
+<td>netshell.dll</td>
+<td>40+</td>
+<td>XP</td>
+<td>Networks, connections, VPN</td>
+</tr>
+<tr>
+<td><code>ExtractIcon()</code></td>
+<td>Any DLL</td>
+<td>Varies</td>
+<td>95</td>
+<td>Custom DLLs, direct access</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="SystemIcons.html">System Icons</a> - Feature overview</li>
+<li><a href="SystemIconsComprehensiveGuide.html">System Icons Comprehensive Guide</a> - User guide</li>
+<li><a href="IconExtractionExample.html">Icon Extraction Example</a> - Quick examples</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
