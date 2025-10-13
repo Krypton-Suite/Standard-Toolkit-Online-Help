@@ -4,9 +4,21 @@
 - The help content is a combination of code trawling and MarkDown files.
 ---
 
-## Applications:
-- The Help files are built via `DocFX`, Download the latest from https://github.com/dotnet/docfx/releases
-- Unzip to your favourite location
+## Automated Build (GitHub Actions):
+- The documentation is automatically built using GitHub Actions whenever changes are pushed to the main/master branch
+- The workflow file is located at `.github/workflows/docfx-build.yml`
+- The built documentation is automatically deployed to GitHub Pages
+- To enable this:
+  1. Go to your repository Settings → Pages
+  2. Under "Source", select "GitHub Actions"
+  3. The documentation will be available at `https://<username>.github.io/<repository-name>/`
+---
+
+## Manual Build (Local Development):
+
+### Applications:
+- The Help files are built via `DocFX`, which can be installed as a .NET tool
+- Install DocFX globally: `dotnet tool install -g docfx`
 - Get a good Markdown editor (Either inside visual studio, or standalone - e.g. `MarkDownPad 2`)
 ---
 
@@ -16,18 +28,22 @@
 ---
 
 
-## Buid:
-- Open a command line at the Help directory
-- Copy in the location of the DocFX.exe
-- Copy the following onto the end of the command line to "build" and then "serve" html help generated
+## Build:
+### Option 1: Build and Serve (Recommended for Development)
+- Open a command line at the `Source/Help/DocFX` directory
+- Run the following command to build and serve the documentation:
 ```cmd
-docfx\docfx.json --serve
+docfx docfx.json --serve
 ```
-- e.g 
-```cmd 
-<##PATH-TO-HELP##>\Help>Z:\DocFX\docfx.exe docfx\docfx.json --serve
+- Now you can view the generated website on http://localhost:8080
+
+### Option 2: Build Only
+- Navigate to the `Source/Help/DocFX` directory
+- Run:
+```cmd
+docfx docfx.json
 ```
-- Now you can view the generated website on http://localhost:8080.
+- The output will be generated in `Source/Help/Output`
 ### Tip 
 - run `cls` after each `serve`, so that you can see *fresh* information each time
 ----
