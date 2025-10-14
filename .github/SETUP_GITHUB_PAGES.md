@@ -47,6 +47,8 @@ Once the workflow completes successfully:
 - Your documentation will be available at: `https://<username>.github.io/<repository-name>/`
 - For example: `https://krypton-suite.github.io/Standard-Toolkit-Online-Help/`
 
+**Important**: The documentation is served from the root of the GitHub Pages site, NOT from `/Source/Help/Output/`. The workflow automatically deploys the contents of `Source/Help/Output` to the root of your GitHub Pages site.
+
 ## Workflow Details
 
 ### Build Job
@@ -64,7 +66,7 @@ Once the workflow completes successfully:
 
 ### Change Target Branches
 
-Edit `.github/workflows/docfx-build.yml` to modify which branches trigger the workflow:
+Edit `.github/workflows/build.yml` to modify which branches trigger the workflow:
 
 ```yaml
 on:

@@ -55,3 +55,45 @@ $(function () {
         work($(this), 0);
     });
 })
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("pre > code").forEach((codeBlock) => {
+    const button = document.createElement("button");
+    button.className = "copy-code-button";
+    button.textContent = "Copy";
+    button.setAttribute("title", "Copy code to clipboard");
+
+    codeBlock.parentNode.insertBefore(button, codeBlock);
+
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(codeBlock.textContent);
+        button.textContent = "Copied!";
+        button.classList.add("copied");
+        setTimeout(() => {
+          button.textContent = "Copy";
+          button.classList.remove("copied");
+        }, 1500);
+      } catch (err) {
+        // Fallback for older browsers
+        const textArea = document.createElement("textarea");
+        textArea.value = codeBlock.textContent;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          button.textContent = "Copied!";
+          button.classList.add("copied");
+          setTimeout(() => {
+            button.textContent = "Copy";
+            button.classList.remove("copied");
+          }, 1500);
+        } catch (fallbackErr) {
+          button.textContent = "Failed";
+          setTimeout(() => (button.textContent = "Copy"), 1500);
+        }
+        document.body.removeChild(textArea);
+      }
+    });
+  });
+});
