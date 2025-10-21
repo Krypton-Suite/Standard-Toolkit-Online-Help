@@ -431,4 +431,3 @@ The `KryptonSystemMenu` class is not thread-safe. All operations must be perform
 - [KryptonSystemMenu Developer Guide](./KryptonSystemMenuDeveloperGuide.md)
 - [KryptonForm Class Reference](./KryptonFormAPIReference.md)
 - [KryptonContextMenu Class Reference](./KryptonContextMenuAPIReference.md)
-- [IKryptonSystemMenu Interface Reference](./IKryptonSystemMenuAPIReference.md)

@@ -4,26 +4,26 @@ Learn more about the capabilities of the *KryptonNavigator* using the following
 sections.  
   
 **Overview**  
-* [Overview](Navigator%20Overview.md)
-* [KryptonPage](Navigator%20KryptonPage.md)
-* [Modes](Navigator%20Modes.md)
-* [Page Dragging](Navigator Page%20Dragging.md)
+* [Overview](NavigatorOverview.md)
+* [KryptonPage](NavigatorKryptonPage.md)
+* [Modes](NavigatorModes.md)
+* [Page Dragging](NavigatorPageDragging.md)
 
 **Visual Properties**  
-* [Popup Pages Properties](Navigator PopupPages.md)
-* [ToolTips Properties](Navigator ToolTips.md)
-* [Other Properties](Navigator Other%20Properties.md)
+* [Popup Pages Properties](NavigatorPopupPages.md)
+* [ToolTips Properties](NavigatorToolTips.md)
+* [Other Properties](NavigatorOtherProperties.md)
 
 **Mode Operation**  
-* [Bar Modes](Navigator Bar%20Modes.md)
-* [Button Modes](Navigator%20Button%20Modes.md)
-* [Group Modes](Navigator%20Group%20Modes.md)
-* [Header Modes](Navigator%20Header%20Modes.md)
-* [Outlook Modes](Navigator Outlook%20Modes.md)
-* [Panel Modes](Navigator%20Panel%20Modes.md)
-* [Stack Modes](Navigator Stack%20Modes.md)
+* [Bar Modes](NavigatorBarModes.md)
+* [Button Modes](NavigatorButtonModes.md)
+* [Group Modes](NavigatorGroupModes.md)
+* [Header Modes](NavigatorHeaderModes.md)
+* [Outlook Modes](NavigatorOutlookModes.md)
+* [Panel Modes](NavigatorPanelModes.md)
+* [Stack Modes](NavigatorStackModes.md)
 
 **Events**  
-* [Selection Events](Navigator Selection%20Events.md)
-* [Action Events](Navigator Action%20Events.md)
-* [Other Events](Navigator Other%20Events.md)
+* [Selection Events](NavigatorSelectionEvents.md)
+* [Action Events](NavigatorActionEvents.md)
+* [Other Events](NavigatorOtherEvents.md)

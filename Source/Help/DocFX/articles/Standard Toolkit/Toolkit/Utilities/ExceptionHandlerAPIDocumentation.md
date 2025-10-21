@@ -365,8 +365,8 @@ Potential areas for future development:
 
 ## Related Documentation
 
-- [KryptonExceptionHandler](../Components/KryptonExceptionHandler.md) - Practical tutorials and recipes ⭐ **Start Here**
-- [KryptonExceptionHandler API Reference](../Components/KryptonExceptionHandlerAPIReference.md) - Complete API documentation
+- [KryptonExceptionDialog](../Components/KryptonExceptionDialog.md) - Practical tutorials and recipes ⭐ **Start Here**
+- [KryptonExceptionDialog Quick Start](../Components/KryptonExceptionDialogQuickStart.md) - Complete API documentation
 - [Exception Handling Guide](ExceptionHandler.md) - Comprehensive exception handling guide  
 - [Localization and String Management](LocalizationGuide.md) - For localizing exception messages
 - [GlobalStaticValues Reference](GlobalStaticValuesReference.md) - Global configuration values

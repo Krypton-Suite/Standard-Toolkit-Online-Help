@@ -1,6 +1,6 @@
 # Krypton TreeGrid View - FAQ
 
-If you are experiencing issues with the Krypton TreeGrid View, a solution might be found in the following article. If you can't find what you are looking for, please raise a [new support ticket](../Reporting%20a%20Issue.md).
+If you are experiencing issues with the Krypton TreeGrid View, a solution might be found in the following article. If you can't find what you are looking for, please raise a [new support ticket](../ReportingaIssue.md).
 
 ### KryptonTreeGridview it shows expand button on every column
 
