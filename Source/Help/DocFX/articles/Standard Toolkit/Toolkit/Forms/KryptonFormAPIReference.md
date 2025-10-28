@@ -1123,14 +1123,3 @@ public partial class LockedForm : KryptonForm
 4. Enable `AllowButtonSpecToolTips` if you're adding custom button specifications with tooltips.
 5. Configure `SystemMenuValues` to control system menu behavior and customize menu items.
 6. Test your forms in both active and inactive states to ensure proper appearance.
-
----
-
-## See Also
-
-- [PaletteForm Class](PaletteForm-API-Reference.md)
-- [PaletteFormRedirect Class](PaletteFormRedirect-API-Reference.md)
-- [ButtonSpec Classes](ButtonSpec-API-Reference.md)
-- [SystemMenuValues Class](SystemMenuValues-API-Reference.md)
-- [HeaderStyle Enumeration](HeaderStyle-API-Reference.md)
-- [KryptonFormTitleStyle Enumeration](KryptonFormTitleStyle-API-Reference.md)

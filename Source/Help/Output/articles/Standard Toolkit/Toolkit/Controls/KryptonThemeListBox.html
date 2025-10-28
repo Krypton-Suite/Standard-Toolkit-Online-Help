@@ -69,6 +69,622 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonthemelistbox">KryptonThemeListBox</h1>
 
+<h2 id="overview">Overview</h2>
+<p><code>KryptonThemeListBox</code> is a specialized <code>KryptonListBox</code> that automatically populates with available Krypton themes and handles theme switching. It provides a simple, drop-in solution for adding theme selection to your application with minimal code.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> Krypton.Toolkit<br>
+<strong>Inheritance:</strong> <code>Object</code> → ... → <code>ListBox</code> → <code>KryptonListBox</code> → <code>KryptonThemeListBox</code><br>
+<strong>Implements:</strong> <code>IKryptonThemeSelectorBase</code></p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="automatic-theme-management">Automatic Theme Management</h3>
+<ul>
+<li>Auto-populates with all available Krypton themes</li>
+<li>Handles theme switching automatically</li>
+<li>Synchronizes with global palette changes</li>
+<li>No manual theme list management required</li>
+</ul>
+<h3 id="seamless-integration">Seamless Integration</h3>
+<ul>
+<li>Responds to external theme changes</li>
+<li>Updates selection when theme changes programmatically</li>
+<li>Coordinates with ThemeChangeCoordinator</li>
+<li>Prevents circular update loops</li>
+</ul>
+<h3 id="built-in-themes">Built-in Themes</h3>
+<ul>
+<li>Professional System themes</li>
+<li>Office 2003, 2007, 2010, 2013 themes</li>
+<li>Office 365 variants</li>
+<li>Sparkle themes</li>
+<li>Custom theme support</li>
+</ul>
+<hr>
+<h2 id="constructor">Constructor</h2>
+<h3 id="kryptonthemelistbox-1">KryptonThemeListBox()</h3>
+<p>Initializes a new instance with all available themes.</p>
+<pre><code class="lang-csharp">public KryptonThemeListBox()
+</code></pre>
+<p><strong>Initialization:</strong></p>
+<ul>
+<li>Populates Items with all available themes</li>
+<li>Sets initial selection based on current global palette</li>
+<li>Attaches to global palette change events</li>
+</ul>
+<hr>
+<h2 id="properties">Properties</h2>
+<h3 id="defaultpalette">DefaultPalette</h3>
+<p>Gets or sets the default palette mode.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;The default palette mode.&quot;)]
+[DefaultValue(PaletteMode.Global)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+public PaletteMode DefaultPalette { get; set; }
+</code></pre>
+<p><strong>Default:</strong> <code>PaletteMode.Global</code></p>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Sets the initial theme when control is first created</li>
+<li>Automatically selects corresponding item in list</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonThemeListBox1.DefaultPalette = PaletteMode.Office2010Blue;
+</code></pre>
+<hr>
+<h3 id="kryptoncustompalette">KryptonCustomPalette</h3>
+<p>Gets or sets the custom assigned palette.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;The custom assigned palette mode.&quot;)]
+[DefaultValue(null)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+[Obsolete(&quot;Deprecated and will be removed in V110. Set a global custom palette through 'ThemeManager.ApplyTheme(...)'.&quot;)]
+public KryptonCustomPaletteBase? KryptonCustomPalette { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Deprecated - use ThemeManager.ApplyTheme() instead</li>
+<li>Will be removed in version 110</li>
+<li>Provided for backward compatibility only</li>
+</ul>
+<hr>
+<h3 id="hidden-properties">Hidden Properties</h3>
+<p>The following base properties are hidden as they're managed automatically:</p>
+<h4 id="items">Items</h4>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public new ListBox.ObjectCollection Items { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Automatically populated with theme names</li>
+<li>Should not be modified manually</li>
+<li>Read-only at design time</li>
+</ul>
+<hr>
+<h4 id="selectedindex">SelectedIndex</h4>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public new int SelectedIndex { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Managed automatically by theme selection</li>
+<li>Reflects current active theme</li>
+</ul>
+<hr>
+<h4 id="text">Text</h4>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public override string Text { get; set; }
+</code></pre>
+<hr>
+<h4 id="formatstring">FormatString</h4>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public new string FormatString { get; set; }
+</code></pre>
+<hr>
+<h2 id="methods">Methods</h2>
+<h3 id="resetdefaultpalette">ResetDefaultPalette()</h3>
+<p>Resets the DefaultPalette property to its default value.</p>
+<pre><code class="lang-csharp">public void ResetDefaultPalette()
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonThemeListBox1.ResetDefaultPalette(); // Sets to PaletteMode.Global
+</code></pre>
+<hr>
+<h3 id="shouldserializedefaultpalette">ShouldSerializeDefaultPalette()</h3>
+<p>Determines whether the DefaultPalette property should be serialized.</p>
+<pre><code class="lang-csharp">private bool ShouldSerializeDefaultPalette()
+</code></pre>
+<hr>
+<h2 id="events">Events</h2>
+<h3 id="selectedindexchanged">SelectedIndexChanged</h3>
+<p>Occurs when the selected theme changes.</p>
+<pre><code class="lang-csharp">protected override void OnSelectedIndexChanged(EventArgs e)
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Automatically applies the selected theme</li>
+<li>Updates global palette</li>
+<li>Prevents circular updates from external theme changes</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonThemeListBox1.SelectedIndexChanged += (s, e) =&gt;
+{
+    string themeName = kryptonThemeListBox1.SelectedItem?.ToString() ?? &quot;Unknown&quot;;
+    statusLabel.Text = $&quot;Theme changed to: {themeName}&quot;;
+};
+</code></pre>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-theme-selector">Basic Theme Selector</h3>
+<pre><code class="lang-csharp">// Simply add the control - it's ready to use!
+var themeSelector = new KryptonThemeListBox
+{
+    Dock = DockStyle.Left,
+    Width = 200
+};
+
+this.Controls.Add(themeSelector);
+
+// Theme changes automatically when user selects an item
+</code></pre>
+<hr>
+<h3 id="with-default-theme">With Default Theme</h3>
+<pre><code class="lang-csharp">var themeSelector = new KryptonThemeListBox
+{
+    DefaultPalette = PaletteMode.Office2010Blue,
+    Location = new Point(10, 10),
+    Size = new Size(180, 300)
+};
+
+// Control will start with Office 2010 Blue selected
+this.Controls.Add(themeSelector);
+</code></pre>
+<hr>
+<h3 id="theme-selector-panel">Theme Selector Panel</h3>
+<pre><code class="lang-csharp">var panel = new KryptonPanel
+{
+    Dock = DockStyle.Left,
+    Width = 200
+};
+
+var label = new KryptonLabel
+{
+    Text = &quot;Select Theme:&quot;,
+    Location = new Point(10, 10),
+    AutoSize = true
+};
+
+var themeSelector = new KryptonThemeListBox
+{
+    Location = new Point(10, 35),
+    Size = new Size(180, 400)
+};
+
+panel.Controls.Add(label);
+panel.Controls.Add(themeSelector);
+this.Controls.Add(panel);
+</code></pre>
+<hr>
+<h3 id="remember-users-theme-choice">Remember User's Theme Choice</h3>
+<pre><code class="lang-csharp">public partial class MainForm : Form
+{
+    private void MainForm_Load(object sender, EventArgs e)
+    {
+        // Load saved theme preference
+        string savedTheme = Properties.Settings.Default.SelectedTheme;
+        
+        if (!string.IsNullOrEmpty(savedTheme))
+        {
+            for (int i = 0; i &lt; kryptonThemeListBox1.Items.Count; i++)
+            {
+                if (kryptonThemeListBox1.Items[i].ToString() == savedTheme)
+                {
+                    kryptonThemeListBox1.SelectedIndex = i;
+                    break;
+                }
+            }
+        }
+    }
+    
+    private void kryptonThemeListBox1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        // Save theme preference
+        string selectedTheme = kryptonThemeListBox1.SelectedItem?.ToString() ?? string.Empty;
+        Properties.Settings.Default.SelectedTheme = selectedTheme;
+        Properties.Settings.Default.Save();
+    }
+}
+</code></pre>
+<hr>
+<h3 id="settings-dialog-integration">Settings Dialog Integration</h3>
+<pre><code class="lang-csharp">public class SettingsDialog : KryptonForm
+{
+    private KryptonThemeListBox themeSelector;
+    private KryptonButton okButton;
+    private KryptonButton cancelButton;
+    
+    public SettingsDialog()
+    {
+        InitializeComponent();
+        
+        themeSelector = new KryptonThemeListBox
+        {
+            Location = new Point(20, 50),
+            Size = new Size(200, 300)
+        };
+        
+        var label = new KryptonLabel
+        {
+            Text = &quot;Application Theme:&quot;,
+            Location = new Point(20, 20),
+            AutoSize = true
+        };
+        
+        okButton = new KryptonButton
+        {
+            Text = &quot;OK&quot;,
+            Location = new Point(20, 370),
+            DialogResult = DialogResult.OK
+        };
+        
+        cancelButton = new KryptonButton
+        {
+            Text = &quot;Cancel&quot;,
+            Location = new Point(120, 370),
+            DialogResult = DialogResult.Cancel
+        };
+        
+        Controls.AddRange(new Control[] { label, themeSelector, okButton, cancelButton });
+        
+        AcceptButton = okButton;
+        CancelButton = cancelButton;
+    }
+}
+
+// Usage:
+using (var dialog = new SettingsDialog())
+{
+    if (dialog.ShowDialog() == DialogResult.OK)
+    {
+        // Theme already applied by themeSelector
+    }
+}
+</code></pre>
+<hr>
+<h3 id="live-preview">Live Preview</h3>
+<pre><code class="lang-csharp">private PaletteMode _originalTheme;
+
+private void ShowThemePreview()
+{
+    var previewForm = new KryptonForm
+    {
+        Text = &quot;Theme Preview&quot;,
+        Size = new Size(800, 600)
+    };
+    
+    var themeSelector = new KryptonThemeListBox
+    {
+        Dock = DockStyle.Left,
+        Width = 200
+    };
+    
+    var previewPanel = new KryptonPanel
+    {
+        Dock = DockStyle.Fill
+    };
+    
+    // Add sample controls to preview panel
+    previewPanel.Controls.Add(new KryptonButton { Text = &quot;Sample Button&quot;, Location = new Point(20, 20) });
+    previewPanel.Controls.Add(new KryptonTextBox { Location = new Point(20, 60), Width = 200 });
+    previewPanel.Controls.Add(new KryptonCheckBox { Text = &quot;Sample Checkbox&quot;, Location = new Point(20, 100) });
+    
+    previewForm.Controls.Add(previewPanel);
+    previewForm.Controls.Add(themeSelector);
+    
+    // Store original theme
+    _originalTheme = KryptonManager.CurrentGlobalPaletteMode;
+    
+    previewForm.FormClosing += (s, e) =&gt;
+    {
+        // Restore if cancelled
+        if (previewForm.DialogResult != DialogResult.OK)
+        {
+            KryptonManager.CurrentGlobalPaletteMode = _originalTheme;
+        }
+    };
+    
+    previewForm.ShowDialog();
+}
+</code></pre>
+<hr>
+<h3 id="multi-form-theme-synchronization">Multi-Form Theme Synchronization</h3>
+<pre><code class="lang-csharp">// Theme selector in one form automatically updates all open forms
+public class ThemeManagerForm : KryptonForm
+{
+    public ThemeManagerForm()
+    {
+        var themeSelector = new KryptonThemeListBox
+        {
+            Dock = DockStyle.Fill
+        };
+        
+        themeSelector.SelectedIndexChanged += (s, e) =&gt;
+        {
+            // All forms using the global palette will update automatically
+            string theme = themeSelector.SelectedItem?.ToString() ?? &quot;None&quot;;
+            
+            // Optionally notify other forms
+            foreach (Form form in Application.OpenForms)
+            {
+                if (form is IThemeAware themeAware)
+                {
+                    themeAware.OnThemeChanged(theme);
+                }
+            }
+        };
+        
+        Controls.Add(themeSelector);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="filtered-theme-list">Filtered Theme List</h3>
+<pre><code class="lang-csharp">// While Items is hidden, you can still access it programmatically
+public class CustomThemeSelector : KryptonThemeListBox
+{
+    public CustomThemeSelector()
+    {
+        // Remove themes you don't want to show
+        // Note: This requires accessing the internal Items collection
+    }
+    
+    protected override void OnHandleCreated(EventArgs e)
+    {
+        base.OnHandleCreated(e);
+        
+        // Filter out old themes
+        var itemsToRemove = new List&lt;object&gt;();
+        foreach (var item in Items)
+        {
+            string itemText = item.ToString() ?? string.Empty;
+            if (itemText.Contains(&quot;2003&quot;) || itemText.Contains(&quot;2007&quot;))
+            {
+                itemsToRemove.Add(item);
+            }
+        }
+        
+        foreach (var item in itemsToRemove)
+        {
+            Items.Remove(item);
+        }
+    }
+}
+</code></pre>
+<hr>
+<h2 id="design-considerations">Design Considerations</h2>
+<h3 id="automatic-updates">Automatic Updates</h3>
+<p>The control automatically handles:</p>
+<ol>
+<li><strong>Initial Population:</strong> Themes are loaded on construction</li>
+<li><strong>External Changes:</strong> Selection updates when theme changes from code</li>
+<li><strong>User Selection:</strong> Theme applies when user selects an item</li>
+<li><strong>Circular Prevention:</strong> Prevents update loops using internal flags</li>
+</ol>
+<hr>
+<h3 id="update-flow">Update Flow</h3>
+<pre><code>User Selection → SelectedIndexChanged → Apply Theme → Global Palette Changed
+                                                      ↓
+                                                   Update Selection (suppressed)
+</code></pre>
+<p>External Change → Global Palette Changed → Update Selection → (no theme apply)</p>
+<hr>
+<h3 id="performance-considerations">Performance Considerations</h3>
+<ol>
+<li><strong>Theme Changes:</strong> Applied immediately - may cause brief UI updates across all forms</li>
+<li><strong>Synchronization:</strong> Uses BeginInvoke for thread-safe updates during theme coordination</li>
+<li><strong>Handle Creation:</strong> Defers event attachment until handle is created</li>
+</ol>
+<hr>
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="settings-panel">Settings Panel</h3>
+<pre><code class="lang-csharp">public class SettingsPanel : UserControl
+{
+    private KryptonThemeListBox themeSelector;
+    
+    public SettingsPanel()
+    {
+        var groupBox = new KryptonGroupBox
+        {
+            Dock = DockStyle.Fill,
+            Text = &quot;Appearance&quot;
+        };
+        
+        themeSelector = new KryptonThemeListBox
+        {
+            Dock = DockStyle.Fill
+        };
+        
+        groupBox.Panel.Controls.Add(themeSelector);
+        Controls.Add(groupBox);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="toolbar-theme-switcher">Toolbar Theme Switcher</h3>
+<pre><code class="lang-csharp">// Create a compact dropdown version
+public class ThemeToolbarButton : ToolStripDropDownButton
+{
+    private KryptonThemeListBox themeList;
+    private ToolStripControlHost host;
+    
+    public ThemeToolbarButton()
+    {
+        Text = &quot;Theme&quot;;
+        
+        themeList = new KryptonThemeListBox
+        {
+            BorderStyle = BorderStyle.None,
+            IntegralHeight = true
+        };
+        
+        host = new ToolStripControlHost(themeList)
+        {
+            AutoSize = false,
+            Size = new Size(180, 300)
+        };
+        
+        DropDownItems.Add(host);
+        
+        themeList.SelectedIndexChanged += (s, e) =&gt;
+        {
+            Text = $&quot;Theme: {themeList.SelectedItem}&quot;;
+            HideDropDown();
+        };
+    }
+}
+</code></pre>
+<hr>
+<h3 id="startup-theme-selection">Startup Theme Selection</h3>
+<pre><code class="lang-csharp">public class SplashScreen : Form
+{
+    private KryptonThemeListBox themeSelector;
+    
+    public SplashScreen()
+    {
+        // Show theme selector on first run
+        if (IsFirstRun())
+        {
+            ShowThemeSelection();
+        }
+    }
+    
+    private void ShowThemeSelection()
+    {
+        var label = new Label
+        {
+            Text = &quot;Choose your preferred theme:&quot;,
+            Dock = DockStyle.Top,
+            Height = 30,
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+        
+        themeSelector = new KryptonThemeListBox
+        {
+            Dock = DockStyle.Fill,
+            DefaultPalette = PaletteMode.Office365Blue
+        };
+        
+        var button = new Button
+        {
+            Text = &quot;Continue&quot;,
+            Dock = DockStyle.Bottom,
+            Height = 40
+        };
+        
+        button.Click += (s, e) =&gt;
+        {
+            SaveSelectedTheme();
+            Close();
+        };
+        
+        Controls.Add(themeSelector);
+        Controls.Add(label);
+        Controls.Add(button);
+    }
+}
+</code></pre>
+<hr>
+<h2 id="compatibility">Compatibility</h2>
+<ul>
+<li><strong>Target Frameworks:</strong> <code>net472</code>, <code>net48</code>, <code>net481</code>, <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+<li><strong>Windows Forms:</strong> Required</li>
+<li><strong>Dependencies:</strong>
+<ul>
+<li>Krypton.Toolkit core components</li>
+<li>CommonHelperThemeSelectors utility class</li>
+<li>ThemeChangeCoordinator</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="comparison-with-alternatives">Comparison with Alternatives</h2>
+<h3 id="vs-manual-listbox-population">vs Manual ListBox Population</h3>
+<p><strong>KryptonThemeListBox:</strong></p>
+<ul>
+<li>✅ Auto-populates themes</li>
+<li>✅ Handles theme switching</li>
+<li>✅ Synchronizes with external changes</li>
+<li>✅ No code required</li>
+</ul>
+<p><strong>Manual ListBox:</strong></p>
+<ul>
+<li>❌ Must populate manually</li>
+<li>❌ Must write switch/apply logic</li>
+<li>❌ Must handle external sync</li>
+<li>❌ Requires maintenance</li>
+</ul>
+<hr>
+<h3 id="vs-kryptonthemecombobox">vs KryptonThemeComboBox</h3>
+<p><strong>ListBox:</strong></p>
+<ul>
+<li>✅ Shows all themes at once</li>
+<li>✅ Better for settings dialogs</li>
+<li>✅ Easier theme browsing</li>
+<li>❌ Takes more space</li>
+</ul>
+<p><strong>ComboBox:</strong></p>
+<ul>
+<li>✅ Compact dropdown</li>
+<li>✅ Better for toolbars</li>
+<li>✅ Saves space</li>
+<li>❌ Requires clicking to see options</li>
+</ul>
+<hr>
+<h2 id="known-limitations">Known Limitations</h2>
+<ol>
+<li><strong>Items Collection:</strong> Hidden at design time - can't customize theme list via designer</li>
+<li><strong>Custom Themes:</strong> KryptonCustomPalette property is deprecated</li>
+<li><strong>Theme Names:</strong> Uses internal theme name strings - no localization support</li>
+<li><strong>Order:</strong> Themes appear in fixed order - can't reorder without subclassing</li>
+</ol>
+<hr>
+<h2 id="migration-notes">Migration Notes</h2>
+<h3 id="from-v100-to-v110">From v100 to v110+</h3>
+<p>The <code>KryptonCustomPalette</code> property is deprecated:</p>
+<p><strong>Old Code:</strong></p>
+<pre><code class="lang-csharp">var customPalette = new KryptonPalette();
+kryptonThemeListBox1.KryptonCustomPalette = customPalette;
+</code></pre>
+<p><strong>New Code:</strong></p>
+<pre><code class="lang-csharp">ThemeManager.ApplyTheme(&quot;MyCustomTheme&quot;, customPalette);
+// KryptonThemeListBox will automatically include the new theme
+</code></pre>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="KryptonThemeComboBox.html">KryptonThemeComboBox</a> - Dropdown variant</li>
+<li><a href="../Core/ThemeManager.md">ThemeManager</a> - Theme management system</li>
+<li><a href="../Enumerations/PaletteMode.md">PaletteMode Enumeration</a> - Available palette modes</li>
+<li><a href="../Interfaces/IKryptonThemeSelectorBase.md">IKryptonThemeSelectorBase</a> - Theme selector interface</li>
+</ul>
+<hr>
+<h2 id="remarks">Remarks</h2>
+<h3 id="when-to-use">When to Use</h3>
+<p><strong>Use KryptonThemeListBox when:</strong></p>
+<ul>
+<li>Creating settings/preferences dialogs</li>
+<li>Building theme selection screens</li>
+<li>Allowing users to preview themes</li>
+<li>You have vertical space available</li>
+</ul>
+<p><strong>Use alternatives when:</strong></p>
+<ul>
+<li>Space is limited (use KryptonThemeComboBox)</li>
+<li>Theme selection is rarely changed (use menu)</li>
+<li>You need custom theme filtering (subclass or use manual ListBox)</li>
+</ul>
 
 </article>
           </div>

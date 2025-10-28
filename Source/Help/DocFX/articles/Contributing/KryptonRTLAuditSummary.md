@@ -7,6 +7,7 @@ This audit provides a comprehensive assessment of Right-to-Left (RTL) support ac
 ## Audit Scope
 
 The audit examined **85+ controls** across **5 major components**:
+
 - **Krypton.Toolkit**: 50+ controls
 - **Krypton.Ribbon**: 8 controls  
 - **Krypton.Navigator**: 1 control
@@ -37,6 +38,7 @@ These controls have RTL event handling but need visual testing:
 These controls have basic RTL support but lack proper event handling:
 
 #### Toolkit Controls (50+)
+
 - **Text Controls**: KryptonTextBox, KryptonMaskedTextBox, KryptonRichTextBox
 - **List Controls**: KryptonComboBox, KryptonListBox, KryptonCheckedListBox
 - **Numeric Controls**: KryptonNumericUpDown, KryptonDomainUpDown
@@ -48,16 +50,20 @@ These controls have basic RTL support but lack proper event handling:
 - **Other Controls**: KryptonSeparator, KryptonBorderEdge, KryptonMonthCalendar, etc.
 
 #### Ribbon Controls (8)
+
 - KryptonRibbon, KryptonRibbonTab, KryptonRibbonGroup, KryptonRibbonContext
 - KryptonRibbonQATButton, KryptonRibbonRecentDoc, KryptonGallery, KryptonGalleryRange
 
 #### Navigator Controls (1)
+
 - KryptonNavigator
 
 #### Workspace Controls (4)
+
 - KryptonWorkspace, KryptonWorkspaceCell, KryptonWorkspaceSequence
 
 #### Docking Controls (12)
+
 - KryptonDockspace, KryptonSpace, KryptonFloatingWindow, KryptonAutoHiddenPanel
 - KryptonAutoHiddenGroup, KryptonAutoHiddenSlidePanel, KryptonAutoHiddenProxyPage
 - KryptonDockableWorkspace, KryptonDockableNavigator, KryptonDockspaceSeparator
@@ -66,17 +72,20 @@ These controls have basic RTL support but lack proper event handling:
 ## Key Findings
 
 ### 1. RTL Infrastructure
+
 - **CommonHelper.GetRightToLeftLayout()** - Central RTL detection method ✅
 - **ViewLayoutDocker** - RTL layout support with IgnoreRightToLeftLayout property ✅
 - **ViewDrawDocker** - RTL painting support ✅
 - **ViewLayoutViewport** - RTL viewport calculations ✅
 
 ### 2. Event Handling Patterns
+
 - **OnRightToLeftChanged** - Only 8 controls implement this properly
 - **RightToLeftLayout property** - Many controls expose this but don't handle changes
 - **Layout updates** - Most controls lack automatic layout refresh on RTL changes
 
 ### 3. Testing Status
+
 - **5 controls** have been tested and verified working
 - **5 controls** have event handling but need visual testing
 - **75+ controls** need both implementation and testing
@@ -84,6 +93,7 @@ These controls have basic RTL support but lack proper event handling:
 ## Recommendations
 
 ### Phase 1: Critical Controls (High Priority)
+
 1. **KryptonTextBox** - Most commonly used input control
 2. **KryptonComboBox** - Dropdown selection control
 3. **KryptonListBox** - List selection control
@@ -91,12 +101,14 @@ These controls have basic RTL support but lack proper event handling:
 5. **KryptonRibbon** - Main ribbon interface
 
 ### Phase 2: Layout Controls (Medium Priority)
+
 1. **KryptonGroup/GroupBox** - Container controls
 2. **KryptonHeaderGroup** - Header container
 3. **KryptonNavigator** - Navigation control
 4. **KryptonWorkspace** - Workspace layout
 
 ### Phase 3: Specialized Controls (Lower Priority)
+
 1. **DataGrid controls** - Complex data display
 2. **Docking controls** - Advanced layout system
 3. **Progress/Scroll controls** - Visual feedback controls
@@ -104,6 +116,7 @@ These controls have basic RTL support but lack proper event handling:
 ## Implementation Strategy
 
 ### For Each Control:
+
 1. **Add OnRightToLeftChanged event handler**
 2. **Propagate RTL settings to child controls**
 3. **Trigger layout updates when RTL changes**
@@ -111,6 +124,7 @@ These controls have basic RTL support but lack proper event handling:
 5. **Create test forms for visual verification**
 
 ### Example Implementation Pattern:
+
 ```csharp
 protected override void OnRightToLeftChanged(EventArgs e)
 {
@@ -131,6 +145,7 @@ protected override void OnRightToLeftChanged(EventArgs e)
 ## Testing Strategy
 
 ### Test Form Requirements:
+
 1. **RTL Toggle Button** - Switch between LTR/RTL modes
 2. **Visual Indicators** - Show current RTL state
 3. **Multiple Controls** - Test various control combinations
@@ -138,6 +153,7 @@ protected override void OnRightToLeftChanged(EventArgs e)
 5. **Interaction Testing** - Test mouse/keyboard interactions
 
 ### Test Scenarios:
+
 1. **Basic RTL** - Controls mirror correctly
 2. **Text Input** - Text alignment and cursor positioning
 3. **Layout Flow** - Child control ordering

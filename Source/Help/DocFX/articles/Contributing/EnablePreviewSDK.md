@@ -16,6 +16,6 @@ The purpose of this article is to describe how to enable preview SDKs inside of 
 
 **Step 7:** Configure your project to use a preview version of .NET and then build
 
-***NOTE:*** By following this guide, you accept that we are _not_ responsible for **any** data loss or damage. It is _your_ responsibility to create backups of your data.
+***NOTE:*** By following this guide, you accept that we are *not* responsible for **any** data loss or damage. It is *your* responsibility to create backups of your data.
 
-![](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/EnablePreviewSDK.gif?raw=true)
+![Enable Preview SDKs](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/EnablePreviewSDK.gif?raw=true)

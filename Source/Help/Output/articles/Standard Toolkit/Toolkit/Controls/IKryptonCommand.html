@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>IKryptonCommand Interface | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="IKryptonCommand Interface | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="ikryptoncommand-interface">IKryptonCommand Interface</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>IKryptonCommand</code> defines a contract for implementing command objects that can be shared across multiple Krypton controls. It provides a centralized way to manage button state, text, images, and execution logic that can be reused throughout an application.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> Krypton.Toolkit</p>
+<pre><code class="lang-csharp">public interface IKryptonCommand
+</code></pre>
+<h2 id="key-concepts">Key Concepts</h2>
+<h3 id="command-pattern">Command Pattern</h3>
+<p>The interface implements the Command pattern, separating:</p>
+<ul>
+<li><strong>What</strong> the command does (Execute event)</li>
+<li><strong>How</strong> it appears (Text, Image properties)</li>
+<li><strong>When</strong> it's available (Enabled property)</li>
+</ul>
+<h3 id="benefits">Benefits</h3>
+<ul>
+<li><strong>Centralized Logic</strong>: One command, many controls</li>
+<li><strong>Consistent State</strong>: All controls update together</li>
+<li><strong>Easy Maintenance</strong>: Change once, affects all</li>
+<li><strong>Undo/Redo Support</strong>: Can track command execution</li>
+</ul>
+<hr>
+<h2 id="events">Events</h2>
+<h3 id="execute">Execute</h3>
+<p>Occurs when the command needs executing.</p>
+<pre><code class="lang-csharp">event EventHandler? Execute
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Raised by <code>PerformExecute()</code> method</li>
+<li>Implement actual command logic in this event handler</li>
+<li>Called when any bound control is activated</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var saveCommand = new KryptonCommand();
+saveCommand.Execute += (s, e) =&gt;
+{
+    SaveDocument();
+    UpdateUI();
+};
+</code></pre>
+<hr>
+<h3 id="propertychanged">PropertyChanged</h3>
+<p>Occurs when a property has changed value.</p>
+<pre><code class="lang-csharp">event PropertyChangedEventHandler? PropertyChanged
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Part of <code>INotifyPropertyChanged</code> pattern</li>
+<li>Automatically raised when properties change</li>
+<li>Allows controls to update when command changes</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var command = new KryptonCommand();
+command.PropertyChanged += (s, e) =&gt;
+{
+    if (e.PropertyName == &quot;Enabled&quot;)
+    {
+        Console.WriteLine($&quot;Command enabled state changed: {command.Enabled}&quot;);
+    }
+};
+</code></pre>
+<hr>
+<h2 id="properties">Properties</h2>
+<h3 id="state-properties">State Properties</h3>
+<h4 id="enabled">Enabled</h4>
+<p>Gets or sets the enabled state of the command.</p>
+<pre><code class="lang-csharp">bool Enabled { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>When <code>false</code>, all bound controls are disabled</li>
+<li>When <code>true</code>, all bound controls are enabled</li>
+<li>Synchronizes across all controls using this command</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">saveCommand.Enabled = document.IsModified;
+// All buttons bound to saveCommand update automatically
+</code></pre>
+<hr>
+<h4 id="checked">Checked</h4>
+<p>Gets or sets the checked state of the command.</p>
+<pre><code class="lang-csharp">bool Checked { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Used for toggle-style buttons</li>
+<li>Affects visual appearance of bound controls</li>
+<li>Useful for state-based commands (e.g., Bold, Italic)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">boldCommand.Checked = editor.SelectionIsBold;
+</code></pre>
+<hr>
+<h4 id="checkstate">CheckState</h4>
+<p>Gets or sets the check state of the command.</p>
+<pre><code class="lang-csharp">CheckState CheckState { get; set; }
+</code></pre>
+<p><strong>Values:</strong></p>
+<ul>
+<li><code>CheckState.Unchecked</code> - Not checked</li>
+<li><code>CheckState.Checked</code> - Fully checked</li>
+<li><code>CheckState.Indeterminate</code> - Indeterminate state</li>
+</ul>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Provides three-state support</li>
+<li>Useful for commands affecting multiple items</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">if (selectedItems.All(i =&gt; i.IsEnabled))
+    enableCommand.CheckState = CheckState.Checked;
+else if (selectedItems.Any(i =&gt; i.IsEnabled))
+    enableCommand.CheckState = CheckState.Indeterminate;
+else
+    enableCommand.CheckState = CheckState.Unchecked;
+</code></pre>
+<hr>
+<h3 id="text-properties">Text Properties</h3>
+<h4 id="text">Text</h4>
+<p>Gets or sets the command text.</p>
+<pre><code class="lang-csharp">string Text { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Primary text displayed on controls</li>
+<li>Supports mnemonics (e.g., &quot;&amp;Save&quot;)</li>
+<li>Updates all bound controls automatically</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">saveCommand.Text = &quot;&amp;Save&quot;;
+// All buttons show &quot;Save&quot; with underlined 'S'
+</code></pre>
+<hr>
+<h4 id="extratext">ExtraText</h4>
+<p>Gets or sets the command extra text.</p>
+<pre><code class="lang-csharp">string ExtraText { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Secondary text (e.g., tooltip, description)</li>
+<li>Usage varies by control type</li>
+<li>May appear as tooltip or sub-text</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">saveCommand.ExtraText = &quot;Save the current document&quot;;
+</code></pre>
+<hr>
+<h4 id="textline1">TextLine1</h4>
+<p>Gets or sets the command text line 1 for use in KryptonRibbon.</p>
+<pre><code class="lang-csharp">string TextLine1 { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Specific to ribbon controls</li>
+<li>First line of button text in ribbon</li>
+<li>Ignored by non-ribbon controls</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">saveCommand.TextLine1 = &quot;Save&quot;;
+</code></pre>
+<hr>
+<h4 id="textline2">TextLine2</h4>
+<p>Gets or sets the command text line 2 for use in KryptonRibbon.</p>
+<pre><code class="lang-csharp">string TextLine2 { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Specific to ribbon controls</li>
+<li>Second line of button text in ribbon</li>
+<li>Ignored by non-ribbon controls</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">saveCommand.TextLine2 = &quot;Document&quot;;
+// Ribbon button shows:
+// Save
+// Document
+</code></pre>
+<hr>
+<h3 id="image-properties">Image Properties</h3>
+<h4 id="imagesmall">ImageSmall</h4>
+<p>Gets or sets the command small image.</p>
+<pre><code class="lang-csharp">Image? ImageSmall { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Typically 16x16 pixels</li>
+<li>Used in menus, toolbars, small buttons</li>
+<li>Should be DPI-aware for high-DPI displays</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">saveCommand.ImageSmall = Properties.Resources.Save16;
+</code></pre>
+<hr>
+<h4 id="imagelarge">ImageLarge</h4>
+<p>Gets or sets the command large image.</p>
+<pre><code class="lang-csharp">Image? ImageLarge { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Typically 32x32 or 48x48 pixels</li>
+<li>Used in ribbons, large buttons</li>
+<li>Should be DPI-aware for high-DPI displays</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">saveCommand.ImageLarge = Properties.Resources.Save32;
+</code></pre>
+<hr>
+<h4 id="imagetransparentcolor">ImageTransparentColor</h4>
+<p>Gets or sets the command image transparent color.</p>
+<pre><code class="lang-csharp">Color ImageTransparentColor { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Color to treat as transparent in images</li>
+<li>Typically magenta (Color.Magenta) for legacy images</li>
+<li>Modern PNG images with alpha channel don't need this</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">saveCommand.ImageTransparentColor = Color.Magenta;
+</code></pre>
+<hr>
+<h3 id="command-type">Command Type</h3>
+<h4 id="commandtype">CommandType</h4>
+<p>Gets or sets the type of the command.</p>
+<pre><code class="lang-csharp">KryptonCommandType CommandType { get; set; }
+</code></pre>
+<p><strong>Values:</strong></p>
+<ul>
+<li><code>KryptonCommandType.General</code> - Standard command</li>
+<li>Additional types defined by <code>KryptonCommandType</code> enum</li>
+</ul>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Allows categorization of commands</li>
+<li>May affect behavior in some contexts</li>
+</ul>
+<hr>
+<h2 id="methods">Methods</h2>
+<h3 id="performexecute">PerformExecute()</h3>
+<p>Generates an Execute event for the command.</p>
+<pre><code class="lang-csharp">void PerformExecute()
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Programmatically executes the command</li>
+<li>Raises the <code>Execute</code> event</li>
+<li>Useful for keyboard shortcuts, external triggers</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Execute from code
+saveCommand.PerformExecute();
+
+// Or from keyboard shortcut
+if (e.KeyCode == Keys.S &amp;&amp; e.Control)
+{
+    saveCommand.PerformExecute();
+}
+</code></pre>
+<hr>
+<h2 id="implementation">Implementation</h2>
+<h3 id="kryptoncommand-class">KryptonCommand Class</h3>
+<p>The primary implementation of <code>IKryptonCommand</code>:</p>
+<pre><code class="lang-csharp">public class KryptonCommand : Component, IKryptonCommand, INotifyPropertyChanged
+{
+    // Implements all interface members
+    // Provides designer support
+    // Handles property change notifications
+}
+</code></pre>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">var command = new KryptonCommand
+{
+    Text = &quot;Save&quot;,
+    ImageSmall = saveIcon,
+    Enabled = false
+};
+
+command.Execute += (s, e) =&gt; SaveDocument();
+</code></pre>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-command">Basic Command</h3>
+<pre><code class="lang-csharp">// Create command
+var saveCommand = new KryptonCommand
+{
+    Text = &quot;&amp;Save&quot;,
+    ImageSmall = Properties.Resources.SaveIcon,
+    Enabled = false // Initially disabled
+};
+
+// Define behavior
+saveCommand.Execute += (s, e) =&gt;
+{
+    SaveDocument();
+    MessageBox.Show(&quot;Document saved!&quot;);
+};
+
+// Bind to controls
+kryptonButton1.KryptonCommand = saveCommand;
+toolStripMenuItem1.KryptonCommand = saveCommand;
+ribbonButton1.KryptonCommand = saveCommand;
+
+// Update state
+saveCommand.Enabled = document.IsModified;
+// All three controls update automatically!
+</code></pre>
+<hr>
+<h3 id="toggle-command">Toggle Command</h3>
+<pre><code class="lang-csharp">var boldCommand = new KryptonCommand
+{
+    Text = &quot;Bold&quot;,
+    ImageSmall = Properties.Resources.BoldIcon,
+    Checked = false
+};
+
+boldCommand.Execute += (s, e) =&gt;
+{
+    // Toggle the state
+    boldCommand.Checked = !boldCommand.Checked;
+    
+    // Apply formatting
+    editor.SelectionFont = new Font(
+        editor.SelectionFont,
+        boldCommand.Checked ? FontStyle.Bold : FontStyle.Regular);
+};
+
+// Bind to buttons
+toolbarBoldButton.KryptonCommand = boldCommand;
+menuBoldItem.KryptonCommand = boldCommand;
+
+// Update when selection changes
+editor.SelectionChanged += (s, e) =&gt;
+{
+    boldCommand.Checked = editor.SelectionFont.Bold;
+};
+</code></pre>
+<hr>
+<h3 id="ribbon-command">Ribbon Command</h3>
+<pre><code class="lang-csharp">var pasteCommand = new KryptonCommand
+{
+    TextLine1 = &quot;Paste&quot;,
+    TextLine2 = &quot;Clipboard&quot;,
+    ImageSmall = Properties.Resources.Paste16,
+    ImageLarge = Properties.Resources.Paste32,
+    ExtraText = &quot;Insert content from clipboard&quot;
+};
+
+pasteCommand.Execute += (s, e) =&gt;
+{
+    if (Clipboard.ContainsText())
+    {
+        editor.SelectedText = Clipboard.GetText();
+    }
+};
+
+// Update enabled state based on clipboard
+var clipboardTimer = new Timer { Interval = 100 };
+clipboardTimer.Tick += (s, e) =&gt;
+{
+    pasteCommand.Enabled = Clipboard.ContainsText();
+};
+clipboardTimer.Start();
+
+// Bind to ribbon
+ribbonPasteButton.KryptonCommand = pasteCommand;
+</code></pre>
+<hr>
+<h3 id="command-with-undo-support">Command with Undo Support</h3>
+<pre><code class="lang-csharp">public class UndoableCommand : KryptonCommand
+{
+    private Stack&lt;Action&gt; undoStack = new Stack&lt;Action&gt;();
+    
+    public UndoableCommand(string text, Action&lt;Action&gt; executeWithUndo)
+    {
+        Text = text;
+        Execute += (s, e) =&gt;
+        {
+            Action undo = null;
+            executeWithUndo(u =&gt; undo = u);
+            
+            if (undo != null)
+            {
+                undoStack.Push(undo);
+            }
+        };
+    }
+    
+    public void Undo()
+    {
+        if (undoStack.Count &gt; 0)
+        {
+            var undoAction = undoStack.Pop();
+            undoAction();
+        }
+    }
+}
+
+// Usage:
+var deleteCommand = new UndoableCommand(&quot;Delete&quot;, provideUndo =&gt;
+{
+    var backup = GetSelectedItems();
+    DeleteSelectedItems();
+    
+    // Provide undo action
+    provideUndo(() =&gt; RestoreItems(backup));
+});
+</code></pre>
+<hr>
+<h3 id="dynamic-command-state">Dynamic Command State</h3>
+<pre><code class="lang-csharp">public class DocumentCommands
+{
+    private Document document;
+    
+    public KryptonCommand SaveCommand { get; }
+    public KryptonCommand SaveAsCommand { get; }
+    public KryptonCommand CloseCommand { get; }
+    
+    public DocumentCommands(Document doc)
+    {
+        document = doc;
+        
+        SaveCommand = new KryptonCommand
+        {
+            Text = &quot;&amp;Save&quot;,
+            ImageSmall = Resources.SaveIcon
+        };
+        SaveCommand.Execute += (s, e) =&gt; document.Save();
+        
+        SaveAsCommand = new KryptonCommand
+        {
+            Text = &quot;Save &amp;As...&quot;,
+            ImageSmall = Resources.SaveAsIcon
+        };
+        SaveAsCommand.Execute += (s, e) =&gt; document.SaveAs();
+        
+        CloseCommand = new KryptonCommand
+        {
+            Text = &quot;&amp;Close&quot;,
+            ImageSmall = Resources.CloseIcon
+        };
+        CloseCommand.Execute += (s, e) =&gt; document.Close();
+        
+        // Update state
+        document.ModifiedChanged += UpdateCommandStates;
+        UpdateCommandStates();
+    }
+    
+    private void UpdateCommandStates(object sender = null, EventArgs e = null)
+    {
+        SaveCommand.Enabled = document.IsModified;
+        SaveAsCommand.Enabled = document.IsOpen;
+        CloseCommand.Enabled = document.IsOpen;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="command-manager">Command Manager</h3>
+<pre><code class="lang-csharp">public class CommandManager
+{
+    private Dictionary&lt;string, KryptonCommand&gt; commands = new();
+    
+    public KryptonCommand Register(string id, string text, EventHandler execute)
+    {
+        var command = new KryptonCommand { Text = text };
+        command.Execute += execute;
+        commands[id] = command;
+        return command;
+    }
+    
+    public KryptonCommand Get(string id) =&gt; commands[id];
+    
+    public void EnableAll() =&gt; commands.Values.ToList().ForEach(c =&gt; c.Enabled = true);
+    
+    public void DisableAll() =&gt; commands.Values.ToList().ForEach(c =&gt; c.Enabled = false);
+    
+    public void EnableGroup(params string[] ids)
+    {
+        foreach (var id in ids)
+        {
+            if (commands.ContainsKey(id))
+            {
+                commands[id].Enabled = true;
+            }
+        }
+    }
+}
+
+// Usage:
+var manager = new CommandManager();
+
+manager.Register(&quot;save&quot;, &quot;Save&quot;, (s, e) =&gt; Save());
+manager.Register(&quot;open&quot;, &quot;Open&quot;, (s, e) =&gt; Open());
+manager.Register(&quot;close&quot;, &quot;Close&quot;, (s, e) =&gt; Close());
+
+// Bind to controls
+saveButton.KryptonCommand = manager.Get(&quot;save&quot;);
+openButton.KryptonCommand = manager.Get(&quot;open&quot;);
+
+// Bulk operations
+manager.DisableAll(); // Disable everything
+manager.EnableGroup(&quot;open&quot;); // Only enable open
+</code></pre>
+<hr>
+<h3 id="keyboard-shortcuts-with-commands">Keyboard Shortcuts with Commands</h3>
+<pre><code class="lang-csharp">public class MainForm : KryptonForm
+{
+    private Dictionary&lt;Keys, KryptonCommand&gt; keyboardCommands = new();
+    
+    public MainForm()
+    {
+        // Create commands
+        var saveCommand = new KryptonCommand { Text = &quot;Save&quot; };
+        saveCommand.Execute += (s, e) =&gt; Save();
+        
+        var openCommand = new KryptonCommand { Text = &quot;Open&quot; };
+        openCommand.Execute += (s, e) =&gt; Open();
+        
+        // Map shortcuts
+        keyboardCommands[Keys.Control | Keys.S] = saveCommand;
+        keyboardCommands[Keys.Control | Keys.O] = openCommand;
+        
+        // Bind to controls
+        saveButton.KryptonCommand = saveCommand;
+        openButton.KryptonCommand = openCommand;
+    }
+    
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (keyboardCommands.ContainsKey(keyData))
+        {
+            var command = keyboardCommands[keyData];
+            if (command.Enabled)
+            {
+                command.PerformExecute();
+                return true;
+            }
+        }
+        
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="command-logging">Command Logging</h3>
+<pre><code class="lang-csharp">public class LoggingCommand : KryptonCommand
+{
+    private ILogger logger;
+    
+    public LoggingCommand(ILogger log)
+    {
+        logger = log;
+        
+        Execute += (s, e) =&gt;
+        {
+            logger.LogInformation($&quot;Command '{Text}' executed&quot;);
+        };
+        
+        PropertyChanged += (s, e) =&gt;
+        {
+            logger.LogDebug($&quot;Command '{Text}' property '{e.PropertyName}' changed&quot;);
+        };
+    }
+}
+</code></pre>
+<hr>
+<h3 id="conditional-command-execution">Conditional Command Execution</h3>
+<pre><code class="lang-csharp">public class ConfirmableCommand : KryptonCommand
+{
+    public string ConfirmMessage { get; set; }
+    
+    public ConfirmableCommand(string confirmMessage = null)
+    {
+        ConfirmMessage = confirmMessage;
+        Execute += OnExecute;
+    }
+    
+    private void OnExecute(object sender, EventArgs e)
+    {
+        if (!string.IsNullOrEmpty(ConfirmMessage))
+        {
+            var result = MessageBox.Show(
+                ConfirmMessage,
+                &quot;Confirm Action&quot;,
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+            
+            if (result != DialogResult.Yes)
+            {
+                return; // User cancelled
+            }
+        }
+        
+        // Proceed with actual execution
+        ExecuteCore();
+    }
+    
+    protected virtual void ExecuteCore()
+    {
+        // Override in derived classes
+    }
+}
+
+// Usage:
+var deleteCommand = new ConfirmableCommand(&quot;Are you sure you want to delete?&quot;)
+{
+    Text = &quot;Delete&quot;
+};
+</code></pre>
+<hr>
+<h2 id="design-patterns">Design Patterns</h2>
+<h3 id="command-factory">Command Factory</h3>
+<pre><code class="lang-csharp">public static class CommandFactory
+{
+    public static KryptonCommand CreateFileCommand(string action, EventHandler handler)
+    {
+        var command = new KryptonCommand
+        {
+            Text = action,
+            ImageSmall = GetIconForAction(action)
+        };
+        command.Execute += handler;
+        return command;
+    }
+    
+    private static Image GetIconForAction(string action)
+    {
+        return action switch
+        {
+            &quot;New&quot; =&gt; Properties.Resources.NewIcon,
+            &quot;Open&quot; =&gt; Properties.Resources.OpenIcon,
+            &quot;Save&quot; =&gt; Properties.Resources.SaveIcon,
+            _ =&gt; null
+        };
+    }
+}
+</code></pre>
+<hr>
+<h3 id="composite-command">Composite Command</h3>
+<pre><code class="lang-csharp">public class CompositeCommand : KryptonCommand
+{
+    private List&lt;KryptonCommand&gt; childCommands = new();
+    
+    public void AddCommand(KryptonCommand command)
+    {
+        childCommands.Add(command);
+        UpdateState();
+    }
+    
+    private void UpdateState()
+    {
+        // Enabled if all children are enabled
+        Enabled = childCommands.All(c =&gt; c.Enabled);
+    }
+    
+    protected override void OnExecute()
+    {
+        // Execute all child commands
+        foreach (var command in childCommands)
+        {
+            if (command.Enabled)
+            {
+                command.PerformExecute();
+            }
+        }
+    }
+}
+</code></pre>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="command-naming">Command Naming</h3>
+<ul>
+<li>Use clear, action-oriented names: &quot;Save&quot;, &quot;Open&quot;, &quot;Delete&quot;</li>
+<li>Include mnemonics: &quot;&amp;Save&quot;, &quot;&amp;Open&quot;</li>
+<li>Be consistent across application</li>
+</ul>
+<h3 id="state-management">State Management</h3>
+<ul>
+<li>Update <code>Enabled</code> based on application state</li>
+<li>Use <code>Checked</code> for toggle states</li>
+<li>Use <code>CheckState.Indeterminate</code> for mixed selections</li>
+</ul>
+<h3 id="image-guidelines">Image Guidelines</h3>
+<ul>
+<li>Provide both small (16x16) and large (32x32) images</li>
+<li>Use consistent icon style across commands</li>
+<li>Consider high-DPI displays</li>
+</ul>
+<h3 id="event-handling">Event Handling</h3>
+<ul>
+<li>Keep Execute handlers lightweight</li>
+<li>Use async/await for long-running operations</li>
+<li>Provide user feedback (progress, completion)</li>
+</ul>
+<h3 id="testing">Testing</h3>
+<ul>
+<li>Commands centralize logic - easier to test</li>
+<li>Mock commands for UI testing</li>
+<li>Test enabled state logic separately</li>
+</ul>
+<hr>
+<h2 id="compatibility">Compatibility</h2>
+<ul>
+<li><strong>Target Frameworks:</strong> <code>net472</code>, <code>net48</code>, <code>net481</code>, <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+<li><strong>Windows Forms:</strong> Required</li>
+<li><strong>Dependencies:</strong> System.ComponentModel (INotifyPropertyChanged)</li>
+</ul>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="KryptonCommand.md">KryptonCommand</a> - Concrete implementation</li>
+<li><a href="KryptonButton.html">KryptonButton</a> - Control using commands</li>
+<li><a href="KryptonRibbon.md">KryptonRibbon</a> - Ribbon command support</li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged">INotifyPropertyChanged</a> - Property change notification</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

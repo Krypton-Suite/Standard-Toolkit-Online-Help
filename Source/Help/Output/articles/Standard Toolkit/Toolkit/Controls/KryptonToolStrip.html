@@ -69,6 +69,586 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptontoolstrip">KryptonToolStrip</h1>
 
+<h2 id="overview">Overview</h2>
+<p><code>KryptonToolStrip</code> is a thin wrapper around the standard Windows Forms <code>ToolStrip</code> that automatically applies Krypton theme rendering. It provides a themeable toolbar with all standard ToolStrip functionality while integrating seamlessly with the Krypton design system.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> Krypton.Toolkit<br>
+<strong>Inheritance:</strong> <code>Object</code> → <code>MarshalByRefObject</code> → <code>Component</code> → <code>Control</code> → <code>ScrollableControl</code> → <code>ToolStrip</code> → <code>KryptonToolStrip</code></p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="automatic-theming">Automatic Theming</h3>
+<ul>
+<li>Applies Krypton renderer automatically</li>
+<li>Updates with global palette changes</li>
+<li>No configuration required</li>
+</ul>
+<h3 id="full-toolstrip-functionality">Full ToolStrip Functionality</h3>
+<ul>
+<li>All standard ToolStrip items supported</li>
+<li>Docking and overflow support</li>
+<li>Customizable layout</li>
+<li>Image scaling</li>
+</ul>
+<h3 id="minimal-code">Minimal Code</h3>
+<ul>
+<li>Single line change from ToolStrip</li>
+<li>Drop-in replacement</li>
+<li>Inherits all ToolStrip behavior</li>
+</ul>
+<hr>
+<h2 id="constructor">Constructor</h2>
+<h3 id="kryptontoolstrip-1">KryptonToolStrip()</h3>
+<p>Initializes a new instance with Krypton rendering enabled.</p>
+<pre><code class="lang-csharp">public KryptonToolStrip()
+</code></pre>
+<p><strong>Initialization:</strong></p>
+<ul>
+<li>Sets <code>RenderMode</code> to <code>ToolStripRenderMode.ManagerRenderMode</code></li>
+<li>Automatically uses the Krypton renderer from ToolStripManager</li>
+</ul>
+<hr>
+<h2 id="properties">Properties</h2>
+<h3 id="inherited-properties">Inherited Properties</h3>
+<p>All standard <code>ToolStrip</code> properties are available:</p>
+<h4 id="items">Items</h4>
+<p>Gets the collection of items in the ToolStrip.</p>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public ToolStripItemCollection Items { get; }
+</code></pre>
+<hr>
+<h4 id="dock">Dock</h4>
+<p>Gets or sets which edge of the parent container the ToolStrip is docked to.</p>
+<pre><code class="lang-csharp">[DefaultValue(DockStyle.Top)]
+public override DockStyle Dock { get; set; }
+</code></pre>
+<hr>
+<h4 id="gripstyle">GripStyle</h4>
+<p>Gets or sets whether the ToolStrip displays a grip for moving.</p>
+<pre><code class="lang-csharp">[DefaultValue(ToolStripGripStyle.Visible)]
+public ToolStripGripStyle GripStyle { get; set; }
+</code></pre>
+<hr>
+<h4 id="imagescalingsize">ImageScalingSize</h4>
+<p>Gets or sets the size of the images used on the ToolStrip.</p>
+<pre><code class="lang-csharp">[DefaultValue(typeof(Size), &quot;16, 16&quot;)]
+public Size ImageScalingSize { get; set; }
+</code></pre>
+<hr>
+<h4 id="layoutstyle">LayoutStyle</h4>
+<p>Gets or sets how items are laid out.</p>
+<pre><code class="lang-csharp">[DefaultValue(ToolStripLayoutStyle.HorizontalStackWithOverflow)]
+public ToolStripLayoutStyle LayoutStyle { get; set; }
+</code></pre>
+<hr>
+<h4 id="showitemtooltips">ShowItemToolTips</h4>
+<p>Gets or sets whether tooltips are shown for items.</p>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool ShowItemToolTips { get; set; }
+</code></pre>
+<hr>
+<h4 id="renderer">Renderer</h4>
+<p>Gets or sets the renderer (automatically set to Krypton renderer).</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+public ToolStripRenderer Renderer { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Automatically managed by <code>RenderMode = ManagerRenderMode</code></li>
+<li>Should not normally need to set manually</li>
+</ul>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-toolbar">Basic Toolbar</h3>
+<pre><code class="lang-csharp">var toolStrip = new KryptonToolStrip
+{
+    Dock = DockStyle.Top
+};
+
+// Add standard items
+toolStrip.Items.Add(new ToolStripButton(&quot;New&quot;, Properties.Resources.NewIcon));
+toolStrip.Items.Add(new ToolStripButton(&quot;Open&quot;, Properties.Resources.OpenIcon));
+toolStrip.Items.Add(new ToolStripButton(&quot;Save&quot;, Properties.Resources.SaveIcon));
+toolStrip.Items.Add(new ToolStripSeparator());
+toolStrip.Items.Add(new ToolStripButton(&quot;Cut&quot;, Properties.Resources.CutIcon));
+toolStrip.Items.Add(new ToolStripButton(&quot;Copy&quot;, Properties.Resources.CopyIcon));
+toolStrip.Items.Add(new ToolStripButton(&quot;Paste&quot;, Properties.Resources.PasteIcon));
+
+this.Controls.Add(toolStrip);
+</code></pre>
+<hr>
+<h3 id="file-operations-toolbar">File Operations Toolbar</h3>
+<pre><code class="lang-csharp">var fileToolbar = new KryptonToolStrip();
+
+var newButton = new ToolStripButton
+{
+    Text = &quot;New&quot;,
+    Image = Properties.Resources.NewDocument,
+    DisplayStyle = ToolStripItemDisplayStyle.Image,
+    ToolTipText = &quot;Create a new document (Ctrl+N)&quot;
+};
+newButton.Click += NewDocument_Click;
+
+var openButton = new ToolStripButton
+{
+    Text = &quot;Open&quot;,
+    Image = Properties.Resources.OpenFolder,
+    DisplayStyle = ToolStripItemDisplayStyle.Image,
+    ToolTipText = &quot;Open an existing document (Ctrl+O)&quot;
+};
+openButton.Click += OpenDocument_Click;
+
+var saveButton = new ToolStripButton
+{
+    Text = &quot;Save&quot;,
+    Image = Properties.Resources.SaveIcon,
+    DisplayStyle = ToolStripItemDisplayStyle.Image,
+    ToolTipText = &quot;Save the current document (Ctrl+S)&quot;
+};
+saveButton.Click += SaveDocument_Click;
+
+fileToolbar.Items.AddRange(new ToolStripItem[] 
+{
+    newButton,
+    openButton,
+    saveButton
+});
+</code></pre>
+<hr>
+<h3 id="toolbar-with-dropdown">Toolbar with Dropdown</h3>
+<pre><code class="lang-csharp">var toolbar = new KryptonToolStrip();
+
+// Create dropdown button
+var fileDropDown = new ToolStripDropDownButton
+{
+    Text = &quot;File&quot;,
+    Image = Properties.Resources.FileIcon
+};
+
+// Add menu items to dropdown
+fileDropDown.DropDownItems.Add(&quot;New&quot;, null, (s, e) =&gt; NewFile());
+fileDropDown.DropDownItems.Add(&quot;Open&quot;, null, (s, e) =&gt; OpenFile());
+fileDropDown.DropDownItems.Add(&quot;Save&quot;, null, (s, e) =&gt; SaveFile());
+fileDropDown.DropDownItems.Add(new ToolStripSeparator());
+fileDropDown.DropDownItems.Add(&quot;Exit&quot;, null, (s, e) =&gt; Application.Exit());
+
+toolbar.Items.Add(fileDropDown);
+</code></pre>
+<hr>
+<h3 id="toolbar-with-combobox">Toolbar with ComboBox</h3>
+<pre><code class="lang-csharp">var toolbar = new KryptonToolStrip();
+
+toolbar.Items.Add(new ToolStripLabel(&quot;Font:&quot;));
+
+var fontCombo = new ToolStripComboBox
+{
+    Width = 150,
+    DropDownStyle = ComboBoxStyle.DropDownList
+};
+fontCombo.Items.AddRange(new object[] 
+{
+    &quot;Arial&quot;,
+    &quot;Calibri&quot;,
+    &quot;Times New Roman&quot;,
+    &quot;Verdana&quot;
+});
+fontCombo.SelectedIndex = 0;
+fontCombo.SelectedIndexChanged += (s, e) =&gt; 
+{
+    ApplyFont(fontCombo.SelectedItem.ToString());
+};
+
+toolbar.Items.Add(fontCombo);
+
+toolbar.Items.Add(new ToolStripSeparator());
+
+var sizeCombo = new ToolStripComboBox
+{
+    Width = 60
+};
+sizeCombo.Items.AddRange(new object[] { &quot;8&quot;, &quot;10&quot;, &quot;12&quot;, &quot;14&quot;, &quot;16&quot;, &quot;18&quot;, &quot;20&quot; });
+sizeCombo.SelectedIndex = 2;
+
+toolbar.Items.Add(new ToolStripLabel(&quot;Size:&quot;));
+toolbar.Items.Add(sizeCombo);
+</code></pre>
+<hr>
+<h3 id="formatting-toolbar">Formatting Toolbar</h3>
+<pre><code class="lang-csharp">var formatToolbar = new KryptonToolStrip();
+
+// Text formatting
+var boldButton = new ToolStripButton
+{
+    Text = &quot;B&quot;,
+    Font = new Font(&quot;Arial&quot;, 10, FontStyle.Bold),
+    ToolTipText = &quot;Bold (Ctrl+B)&quot;,
+    CheckOnClick = true
+};
+boldButton.CheckedChanged += (s, e) =&gt; ApplyBold(boldButton.Checked);
+
+var italicButton = new ToolStripButton
+{
+    Text = &quot;I&quot;,
+    Font = new Font(&quot;Arial&quot;, 10, FontStyle.Italic),
+    ToolTipText = &quot;Italic (Ctrl+I)&quot;,
+    CheckOnClick = true
+};
+italicButton.CheckedChanged += (s, e) =&gt; ApplyItalic(italicButton.Checked);
+
+var underlineButton = new ToolStripButton
+{
+    Text = &quot;U&quot;,
+    Font = new Font(&quot;Arial&quot;, 10, FontStyle.Underline),
+    ToolTipText = &quot;Underline (Ctrl+U)&quot;,
+    CheckOnClick = true
+};
+underlineButton.CheckedChanged += (s, e) =&gt; ApplyUnderline(underlineButton.Checked);
+
+formatToolbar.Items.AddRange(new ToolStripItem[]
+{
+    boldButton,
+    italicButton,
+    underlineButton
+});
+</code></pre>
+<hr>
+<h3 id="multiple-toolbars">Multiple Toolbars</h3>
+<pre><code class="lang-csharp">public class MainForm : KryptonForm
+{
+    public MainForm()
+    {
+        // Standard toolbar
+        var standardToolbar = new KryptonToolStrip
+        {
+            Dock = DockStyle.Top,
+            Name = &quot;standardToolbar&quot;
+        };
+        standardToolbar.Items.Add(new ToolStripButton(&quot;New&quot;));
+        standardToolbar.Items.Add(new ToolStripButton(&quot;Open&quot;));
+        standardToolbar.Items.Add(new ToolStripButton(&quot;Save&quot;));
+        
+        // Formatting toolbar
+        var formatToolbar = new KryptonToolStrip
+        {
+            Dock = DockStyle.Top,
+            Name = &quot;formatToolbar&quot;
+        };
+        formatToolbar.Items.Add(new ToolStripButton(&quot;Bold&quot;));
+        formatToolbar.Items.Add(new ToolStripButton(&quot;Italic&quot;));
+        formatToolbar.Items.Add(new ToolStripButton(&quot;Underline&quot;));
+        
+        // Add in reverse order (top to bottom)
+        Controls.Add(formatToolbar);
+        Controls.Add(standardToolbar);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="dynamic-toolbar">Dynamic Toolbar</h3>
+<pre><code class="lang-csharp">private void BuildDynamicToolbar()
+{
+    var toolbar = new KryptonToolStrip();
+    
+    // Dynamically create buttons based on available commands
+    foreach (var command in GetAvailableCommands())
+    {
+        var button = new ToolStripButton
+        {
+            Text = command.Name,
+            Image = command.Icon,
+            ToolTipText = command.Description,
+            Tag = command
+        };
+        
+        button.Click += (s, e) =&gt;
+        {
+            if (s is ToolStripButton btn &amp;&amp; btn.Tag is Command cmd)
+            {
+                cmd.Execute();
+            }
+        };
+        
+        toolbar.Items.Add(button);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="context-sensitive-toolbar">Context-Sensitive Toolbar</h3>
+<pre><code class="lang-csharp">private KryptonToolStrip toolbar;
+
+private void UpdateToolbarState()
+{
+    // Enable/disable buttons based on context
+    var hasSelection = textBox.SelectionLength &gt; 0;
+    var canUndo = textBox.CanUndo;
+    
+    cutButton.Enabled = hasSelection;
+    copyButton.Enabled = hasSelection;
+    pasteButton.Enabled = Clipboard.ContainsText();
+    undoButton.Enabled = canUndo;
+}
+
+private void textBox_SelectionChanged(object sender, EventArgs e)
+{
+    UpdateToolbarState();
+}
+</code></pre>
+<hr>
+<h3 id="toolstrip-with-progress">ToolStrip with Progress</h3>
+<pre><code class="lang-csharp">var toolbar = new KryptonToolStrip();
+
+var progressBar = new ToolStripProgressBar
+{
+    Width = 200,
+    Style = ProgressBarStyle.Marquee,
+    Visible = false
+};
+
+var statusLabel = new ToolStripLabel
+{
+    Text = &quot;Ready&quot;,
+    Spring = true,
+    TextAlign = ContentAlignment.MiddleLeft
+};
+
+toolbar.Items.Add(new ToolStripButton(&quot;Process&quot;));
+toolbar.Items.Add(progressBar);
+toolbar.Items.Add(statusLabel);
+
+private void StartProcess()
+{
+    progressBar.Visible = true;
+    statusLabel.Text = &quot;Processing...&quot;;
+    
+    // Do work
+    
+    progressBar.Visible = false;
+    statusLabel.Text = &quot;Complete&quot;;
+}
+</code></pre>
+<hr>
+<h3 id="custom-toolstrip-item">Custom ToolStrip Item</h3>
+<pre><code class="lang-csharp">public class ColorPickerToolStripItem : ToolStripControlHost
+{
+    public ColorPickerToolStripItem() 
+        : base(new KryptonColorButton())
+    {
+    }
+    
+    public KryptonColorButton ColorButton =&gt; Control as KryptonColorButton;
+}
+
+// Usage:
+var toolbar = new KryptonToolStrip();
+var colorPicker = new ColorPickerToolStripItem();
+colorPicker.ColorButton.SelectedColorChanged += (s, e) =&gt;
+{
+    ApplyColor(colorPicker.ColorButton.SelectedColor);
+};
+toolbar.Items.Add(colorPicker);
+</code></pre>
+<hr>
+<h3 id="toolbar-overflow-handling">Toolbar Overflow Handling</h3>
+<pre><code class="lang-csharp">var toolbar = new KryptonToolStrip
+{
+    LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow,
+    CanOverflow = true
+};
+
+// Set overflow behavior for individual items
+var alwaysVisibleButton = new ToolStripButton(&quot;Important&quot;)
+{
+    Overflow = ToolStripItemOverflow.Never // Always visible
+};
+
+var overflowButton = new ToolStripButton(&quot;Optional&quot;)
+{
+    Overflow = ToolStripItemOverflow.AsNeeded // Can overflow
+};
+
+toolbar.Items.Add(alwaysVisibleButton);
+toolbar.Items.Add(overflowButton);
+</code></pre>
+<hr>
+<h2 id="design-considerations">Design Considerations</h2>
+<h3 id="rendering">Rendering</h3>
+<p>The control automatically uses the Krypton renderer through:</p>
+<pre><code class="lang-csharp">RenderMode = ToolStripRenderMode.ManagerRenderMode
+</code></pre>
+<p>This tells the ToolStrip to use the renderer set in <code>ToolStripManager</code>, which Krypton configures globally.</p>
+<hr>
+<h3 id="theme-updates">Theme Updates</h3>
+<p>Theme changes are handled automatically:</p>
+<ol>
+<li>Global palette changes</li>
+<li>ToolStripManager updates renderer</li>
+<li>ToolStrip repaints with new theme</li>
+</ol>
+<p><strong>No code required</strong> - happens automatically!</p>
+<hr>
+<h3 id="performance">Performance</h3>
+<ul>
+<li>Lightweight wrapper (minimal overhead)</li>
+<li>Native ToolStrip rendering performance</li>
+<li>Efficient item management</li>
+</ul>
+<hr>
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="application-menu-bar-alternative">Application Menu Bar Alternative</h3>
+<pre><code class="lang-csharp">// Use as a modern alternative to MenuStrip
+var menuToolbar = new KryptonToolStrip
+{
+    Dock = DockStyle.Top,
+    GripStyle = ToolStripGripStyle.Hidden
+};
+
+var fileMenu = new ToolStripDropDownButton(&quot;File&quot;);
+var editMenu = new ToolStripDropDownButton(&quot;Edit&quot;);
+var viewMenu = new ToolStripDropDownButton(&quot;View&quot;);
+
+menuToolbar.Items.AddRange(new ToolStripItem[] { fileMenu, editMenu, viewMenu });
+</code></pre>
+<hr>
+<h3 id="status-toolbar">Status Toolbar</h3>
+<pre><code class="lang-csharp">// Bottom-docked toolbar for status info
+var statusToolbar = new KryptonToolStrip
+{
+    Dock = DockStyle.Bottom,
+    GripStyle = ToolStripGripStyle.Hidden,
+    LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow
+};
+
+var lineLabel = new ToolStripLabel(&quot;Line: 1&quot;);
+var columnLabel = new ToolStripLabel(&quot;Column: 1&quot;);
+var zoomLabel = new ToolStripLabel(&quot;100%&quot;);
+
+statusToolbar.Items.AddRange(new ToolStripItem[] 
+{
+    lineLabel,
+    new ToolStripSeparator(),
+    columnLabel,
+    new ToolStripSeparator(),
+    zoomLabel
+});
+</code></pre>
+<hr>
+<h3 id="ribbon-alternative-simple">Ribbon Alternative (Simple)</h3>
+<pre><code class="lang-csharp">// Create a simple ribbon-like interface
+var quickAccessToolbar = new KryptonToolStrip
+{
+    Dock = DockStyle.Top,
+    GripStyle = ToolStripGripStyle.Hidden
+};
+quickAccessToolbar.Items.Add(new ToolStripButton(&quot;Save&quot;));
+quickAccessToolbar.Items.Add(new ToolStripButton(&quot;Undo&quot;));
+quickAccessToolbar.Items.Add(new ToolStripButton(&quot;Redo&quot;));
+
+var mainToolbar = new KryptonToolStrip
+{
+    Dock = DockStyle.Top,
+    ImageScalingSize = new Size(32, 32)
+};
+// Add larger buttons for main commands
+
+Controls.Add(mainToolbar);
+Controls.Add(quickAccessToolbar);
+</code></pre>
+<hr>
+<h2 id="compatibility">Compatibility</h2>
+<ul>
+<li><strong>Target Frameworks:</strong> <code>net472</code>, <code>net48</code>, <code>net481</code>, <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+<li><strong>Windows Forms:</strong> Required</li>
+<li><strong>Dependencies:</strong>
+<ul>
+<li>Krypton.Toolkit core</li>
+<li>ToolStripManager configuration</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="migration-from-standard-toolstrip">Migration from Standard ToolStrip</h2>
+<h3 id="simple-migration">Simple Migration</h3>
+<p><strong>Before:</strong></p>
+<pre><code class="lang-csharp">var toolStrip = new ToolStrip();
+</code></pre>
+<p><strong>After:</strong></p>
+<pre><code class="lang-csharp">var toolStrip = new KryptonToolStrip();
+</code></pre>
+<p>That's it! Everything else remains the same.</p>
+<hr>
+<h3 id="designer-migration">Designer Migration</h3>
+<ol>
+<li>Open form in Designer</li>
+<li>Select ToolStrip control</li>
+<li>Open Properties window</li>
+<li>Change type from <code>ToolStrip</code> to <code>KryptonToolStrip</code></li>
+<li>Designer regenerates InitializeComponent code</li>
+</ol>
+<hr>
+<h2 id="comparison-with-alternatives">Comparison with Alternatives</h2>
+<h3 id="vs-toolstrip">vs ToolStrip</h3>
+<p><strong>KryptonToolStrip:</strong></p>
+<ul>
+<li>✅ Automatic Krypton theming</li>
+<li>✅ Matches application appearance</li>
+<li>✅ No additional code</li>
+<li>✅ Drop-in replacement</li>
+</ul>
+<p><strong>Standard ToolStrip:</strong></p>
+<ul>
+<li>❌ Plain Windows theme</li>
+<li>❌ Doesn't match Krypton controls</li>
+<li>❌ Requires manual renderer setup</li>
+</ul>
+<hr>
+<h3 id="vs-kryptonribbon">vs KryptonRibbon</h3>
+<p><strong>KryptonToolStrip:</strong></p>
+<ul>
+<li>✅ Simple and lightweight</li>
+<li>✅ Compact vertical space</li>
+<li>✅ Traditional toolbar UX</li>
+<li>❌ Limited organization</li>
+</ul>
+<p><strong>KryptonRibbon:</strong></p>
+<ul>
+<li>✅ Rich organization (tabs, groups)</li>
+<li>✅ Contextual tabs</li>
+<li>✅ Large button support</li>
+<li>❌ Takes significant vertical space</li>
+<li>❌ More complex to configure</li>
+</ul>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="KryptonRibbon.md">KryptonRibbon</a> - Full ribbon control</li>
+<li><a href="KryptonContextMenu.md">KryptonContextMenu</a> - Context menus</li>
+<li><a href="../Rendering/ToolStripRenderer.md">ToolStripRenderer</a> - Krypton renderer</li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.toolstripmanager">ToolStripManager</a> - Microsoft documentation</li>
+</ul>
+<hr>
+<h2 id="remarks">Remarks</h2>
+<h3 id="when-to-use">When to Use</h3>
+<p><strong>Use KryptonToolStrip when:</strong></p>
+<ul>
+<li>You need a simple toolbar</li>
+<li>Migrating from standard ToolStrip</li>
+<li>Want automatic Krypton theming</li>
+<li>Space is at a premium</li>
+</ul>
+<p><strong>Use KryptonRibbon when:</strong></p>
+<ul>
+<li>You have many commands to organize</li>
+<li>Need contextual command groups</li>
+<li>Building Office-style interface</li>
+<li>Vertical space is available</li>
+</ul>
+<hr>
+<h3 id="best-practices">Best Practices</h3>
+<ol>
+<li><strong>Icon Size:</strong> Use consistent icon sizes (16x16 or 32x32)</li>
+<li><strong>Tooltips:</strong> Always provide helpful tooltips</li>
+<li><strong>Grouping:</strong> Use separators to group related commands</li>
+<li><strong>Overflow:</strong> Mark less important items as can-overflow</li>
+<li><strong>Context:</strong> Enable/disable buttons based on application state</li>
+</ol>
 
 </article>
           </div>

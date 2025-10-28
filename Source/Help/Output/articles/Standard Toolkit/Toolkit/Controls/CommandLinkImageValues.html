@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>CommandLinkImageValues | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="CommandLinkImageValues | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="commandlinkimagevalues">CommandLinkImageValues</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>CommandLinkImageValues</code> provides specialized image storage for <code>KryptonCommandLinkButton</code> controls, with built-in support for displaying the Windows UAC (User Account Control) shield icon. It implements the <code>IContentValues</code> interface to integrate with the Krypton rendering system.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> Krypton.Toolkit<br>
+<strong>Inheritance:</strong> <code>Object</code> → <code>Storage</code> → <code>CommandLinkImageValues</code><br>
+<strong>Implements:</strong> <code>IContentValues</code></p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="uac-shield-support">UAC Shield Support</h3>
+<ul>
+<li>Automatic UAC shield icon display</li>
+<li>Configurable icon sizes (16px to 256px)</li>
+<li>System icon extraction and scaling</li>
+<li>DPI-aware rendering</li>
+</ul>
+<h3 id="image-management">Image Management</h3>
+<ul>
+<li>Custom image support</li>
+<li>Transparency key configuration</li>
+<li>Automatic paint invalidation</li>
+<li>State-based image retrieval</li>
+</ul>
+<h3 id="integration">Integration</h3>
+<ul>
+<li>Designed for <code>KryptonCommandLinkButton</code></li>
+<li>Implements <code>IContentValues</code> interface</li>
+<li>Seamless Krypton rendering integration</li>
+</ul>
+<hr>
+<h2 id="constructor">Constructor</h2>
+<h3 id="commandlinkimagevaluesneedpainthandler">CommandLinkImageValues(NeedPaintHandler)</h3>
+<p>Initializes a new instance of the CommandLinkImageValues class.</p>
+<pre><code class="lang-csharp">public CommandLinkImageValues(NeedPaintHandler needPaint)
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>needPaint</code> - Delegate for notifying paint requests</li>
+</ul>
+<p><strong>Default Values:</strong></p>
+<ul>
+<li><code>DisplayUACShield</code> = <code>false</code></li>
+<li><code>UACShieldIconSize</code> = <code>IconSize.Small</code> (32x32)</li>
+<li><code>ImageTransparentColor</code> = <code>GlobalStaticValues.EMPTY_COLOR</code></li>
+<li><code>Image</code> = <code>null</code></li>
+</ul>
+<hr>
+<h2 id="properties">Properties</h2>
+<h3 id="displayuacshield">DisplayUACShield</h3>
+<p>Gets or sets whether to display the UAC shield icon.</p>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+[Description(&quot;Display the UAC Shield image.&quot;)]
+public bool DisplayUACShield { get; set; }
+</code></pre>
+<p><strong>Default:</strong> <code>false</code></p>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>When <code>true</code>, automatically loads and displays the Windows UAC shield icon</li>
+<li>When <code>false</code>, the image is set to <code>null</code> (unless a custom image is set)</li>
+<li>The shield icon is extracted from the Windows system icons</li>
+<li>Icon size is determined by <code>UACShieldIconSize</code> property</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">commandLinkButton.UACShieldIcon.DisplayUACShield = true;
+// Automatically shows Windows UAC shield icon
+</code></pre>
+<hr>
+<h3 id="uacshieldiconsize">UACShieldIconSize</h3>
+<p>Gets or sets the UAC shield icon size.</p>
+<pre><code class="lang-csharp">[DefaultValue(IconSize.Small)]
+[Description(&quot;UAC Shield icon size&quot;)]
+public IconSize UACShieldIconSize { get; set; }
+</code></pre>
+<p><strong>Default:</strong> <code>IconSize.Small</code> (32x32 pixels)</p>
+<p><strong>Available Sizes:</strong></p>
+<ul>
+<li><code>IconSize.ExtraSmall</code> - 16x16 pixels</li>
+<li><code>IconSize.Small</code> - 32x32 pixels</li>
+<li><code>IconSize.Medium</code> - 64x64 pixels</li>
+<li><code>IconSize.Large</code> - 128x128 pixels</li>
+<li><code>IconSize.ExtraLarge</code> - 256x256 pixels</li>
+</ul>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Only applies when <code>DisplayUACShield = true</code></li>
+<li>Icon is automatically scaled to specified size</li>
+<li>Larger sizes provide better quality on high-DPI displays</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">commandLinkButton.UACShieldIcon.DisplayUACShield = true;
+commandLinkButton.UACShieldIcon.UACShieldIconSize = IconSize.Medium; // 64x64
+</code></pre>
+<hr>
+<h3 id="image">Image</h3>
+<p>Gets the command link image.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;The image.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public Image? Image { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Read-only property</li>
+<li>Automatically set when <code>DisplayUACShield = true</code></li>
+<li>Contains the UAC shield icon or custom image</li>
+<li><code>null</code> when no image is displayed</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Check if image is set
+if (commandLinkButton.UACShieldIcon.Image != null)
+{
+    pictureBox.Image = commandLinkButton.UACShieldIcon.Image;
+}
+</code></pre>
+<hr>
+<h3 id="imagetransparentcolor">ImageTransparentColor</h3>
+<p>Gets or sets the image transparent color.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Image transparent color.&quot;)]
+[RefreshProperties(RefreshProperties.All)]
+[KryptonDefaultColor]
+public Color ImageTransparentColor { get; set; }
+</code></pre>
+<p><strong>Default:</strong> <code>GlobalStaticValues.EMPTY_COLOR</code> (no transparency)</p>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Color to treat as transparent in the image</li>
+<li>Typically <code>Color.Magenta</code> for legacy images</li>
+<li>Modern PNG images with alpha channel don't need this</li>
+<li>UAC shield icon already has proper transparency</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// For legacy bitmap images
+commandLinkButton.UACShieldIcon.ImageTransparentColor = Color.Magenta;
+</code></pre>
+<hr>
+<h3 id="isdefault">IsDefault</h3>
+<p>Gets whether all values are in their default state.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public override bool IsDefault { get; }
+</code></pre>
+<p><strong>Returns:</strong> <code>true</code> if all properties have default values; otherwise <code>false</code>.</p>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Used by the designer for serialization decisions</li>
+<li>Checks all properties including display state, image, transparency, and size</li>
+</ul>
+<hr>
+<h2 id="methods">Methods</h2>
+<h3 id="getimagepalettestate">GetImage(PaletteState)</h3>
+<p>Gets the image for the specified palette state.</p>
+<pre><code class="lang-csharp">public Image? GetImage(PaletteState state)
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code> - Palette state (Normal, Tracking, Pressed, etc.)</li>
+</ul>
+<p><strong>Returns:</strong> The current image, or <code>null</code> if no image is set.</p>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Implements <code>IContentValues.GetImage()</code></li>
+<li>State parameter is currently ignored (same image for all states)</li>
+<li>Could be extended to provide state-specific images</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">IContentValues contentValues = commandLinkButton.UACShieldIcon;
+Image icon = contentValues.GetImage(PaletteState.Normal);
+</code></pre>
+<hr>
+<h3 id="getimagetransparentcolorpalettestate">GetImageTransparentColor(PaletteState)</h3>
+<p>Gets the image transparent color for the specified palette state.</p>
+<pre><code class="lang-csharp">public Color GetImageTransparentColor(PaletteState state)
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code> - Palette state</li>
+</ul>
+<p><strong>Returns:</strong> The transparent color, or <code>EMPTY_COLOR</code> if none is set.</p>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Implements <code>IContentValues.GetImageTransparentColor()</code></li>
+<li>State parameter is currently ignored</li>
+</ul>
+<hr>
+<h3 id="getshorttext">GetShortText()</h3>
+<p>Gets the short text content.</p>
+<pre><code class="lang-csharp">public string GetShortText()
+</code></pre>
+<p><strong>Returns:</strong> Empty string (images don't have text).</p>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Implements <code>IContentValues.GetShortText()</code></li>
+<li>Always returns empty string for image values</li>
+</ul>
+<hr>
+<h3 id="getlongtext">GetLongText()</h3>
+<p>Gets the long text content.</p>
+<pre><code class="lang-csharp">public string GetLongText()
+</code></pre>
+<p><strong>Returns:</strong> Empty string (images don't have text).</p>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Implements <code>IContentValues.GetLongText()</code></li>
+<li>Always returns empty string for image values</li>
+</ul>
+<hr>
+<h3 id="reset-methods">Reset Methods</h3>
+<h4 id="resetdisplayuacshield">ResetDisplayUACShield()</h4>
+<p>Resets the DisplayUACShield property to its default value.</p>
+<pre><code class="lang-csharp">private void ResetDisplayUACShield()
+</code></pre>
+<hr>
+<h4 id="resetimagetransparentcolor">ResetImageTransparentColor()</h4>
+<p>Resets the ImageTransparentColor property to its default value.</p>
+<pre><code class="lang-csharp">private void ResetImageTransparentColor()
+</code></pre>
+<hr>
+<h4 id="resetuacshieldiconsize">ResetUACShieldIconSize()</h4>
+<p>Resets the UACShieldIconSize property to its default value.</p>
+<pre><code class="lang-csharp">private void ResetUACShieldIconSize()
+</code></pre>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="display-uac-shield-default-size">Display UAC Shield (Default Size)</h3>
+<pre><code class="lang-csharp">var commandLink = new KryptonCommandLinkButton();
+commandLink.CommandLinkTextValues.Heading = &quot;Install System-Wide&quot;;
+commandLink.CommandLinkTextValues.Description = &quot;Requires administrator privileges&quot;;
+
+// Show UAC shield
+commandLink.UACShieldIcon.DisplayUACShield = true;
+</code></pre>
+<hr>
+<h3 id="uac-shield-with-custom-size">UAC Shield with Custom Size</h3>
+<pre><code class="lang-csharp">var commandLink = new KryptonCommandLinkButton();
+commandLink.CommandLinkTextValues.Heading = &quot;Modify System Settings&quot;;
+commandLink.CommandLinkTextValues.Description = &quot;This action requires elevation&quot;;
+
+// Show larger shield icon
+commandLink.UACShieldIcon.DisplayUACShield = true;
+commandLink.UACShieldIcon.UACShieldIconSize = IconSize.Large; // 128x128
+</code></pre>
+<hr>
+<h3 id="administrative-actions-list">Administrative Actions List</h3>
+<pre><code class="lang-csharp">public class AdminActionsPanel : KryptonPanel
+{
+    public AdminActionsPanel()
+    {
+        CreateAdminButton(
+            &quot;Install Service&quot;,
+            &quot;Install and start the background service&quot;,
+            20);
+        
+        CreateAdminButton(
+            &quot;Modify Registry&quot;,
+            &quot;Change system-wide registry settings&quot;,
+            100);
+        
+        CreateAdminButton(
+            &quot;Update Drivers&quot;,
+            &quot;Install updated device drivers&quot;,
+            180);
+    }
+    
+    private void CreateAdminButton(string heading, string description, int y)
+    {
+        var button = new KryptonCommandLinkButton
+        {
+            Location = new Point(20, y),
+            Size = new Size(400, 70)
+        };
+        
+        button.CommandLinkTextValues.Heading = heading;
+        button.CommandLinkTextValues.Description = description;
+        
+        // All admin actions show UAC shield
+        button.UACShieldIcon.DisplayUACShield = true;
+        
+        Controls.Add(button);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="conditional-uac-shield">Conditional UAC Shield</h3>
+<pre><code class="lang-csharp">private void UpdateButtonElevation(KryptonCommandLinkButton button, bool requiresElevation)
+{
+    button.UACShieldIcon.DisplayUACShield = requiresElevation;
+    
+    if (requiresElevation)
+    {
+        button.CommandLinkTextValues.Description += &quot; (Requires administrator)&quot;;
+    }
+}
+
+// Usage:
+bool needsAdmin = !IsUserAdministrator();
+UpdateButtonElevation(installButton, needsAdmin);
+</code></pre>
+<hr>
+<h3 id="elevation-check-with-shield">Elevation Check with Shield</h3>
+<pre><code class="lang-csharp">public class ElevatedCommandLink : KryptonCommandLinkButton
+{
+    public ElevatedCommandLink()
+    {
+        // Check if running as administrator
+        bool isElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent())
+            .IsInRole(WindowsBuiltInRole.Administrator);
+        
+        if (!isElevated)
+        {
+            // Show shield if not elevated
+            UACShieldIcon.DisplayUACShield = true;
+            
+            // Modify click behavior to request elevation
+            Click += RequestElevation;
+        }
+    }
+    
+    private void RequestElevation(object sender, EventArgs e)
+    {
+        if (UACShieldIcon.DisplayUACShield)
+        {
+            // Restart process with elevation request
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = Application.ExecutablePath,
+                Verb = &quot;runas&quot;, // Request elevation
+                UseShellExecute = true
+            };
+            
+            try
+            {
+                Process.Start(startInfo);
+                Application.Exit();
+            }
+            catch (Win32Exception)
+            {
+                // User cancelled UAC prompt
+                MessageBox.Show(&quot;Administrator privileges required.&quot;);
+            }
+        }
+    }
+}
+</code></pre>
+<hr>
+<h3 id="different-sizes-for-different-actions">Different Sizes for Different Actions</h3>
+<pre><code class="lang-csharp">public enum ElevationLevel
+{
+    None,
+    Standard,
+    High,
+    Critical
+}
+
+private void SetElevationIcon(
+    KryptonCommandLinkButton button,
+    ElevationLevel level)
+{
+    switch (level)
+    {
+        case ElevationLevel.None:
+            button.UACShieldIcon.DisplayUACShield = false;
+            break;
+            
+        case ElevationLevel.Standard:
+            button.UACShieldIcon.DisplayUACShield = true;
+            button.UACShieldIcon.UACShieldIconSize = IconSize.Small;
+            break;
+            
+        case ElevationLevel.High:
+            button.UACShieldIcon.DisplayUACShield = true;
+            button.UACShieldIcon.UACShieldIconSize = IconSize.Medium;
+            break;
+            
+        case ElevationLevel.Critical:
+            button.UACShieldIcon.DisplayUACShield = true;
+            button.UACShieldIcon.UACShieldIconSize = IconSize.Large;
+            // Also change colors for critical
+            button.StateNormal.Back.Color1 = Color.DarkRed;
+            break;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="installation-wizard-with-uac">Installation Wizard with UAC</h3>
+<pre><code class="lang-csharp">public class InstallationWizard : KryptonForm
+{
+    private KryptonCommandLinkButton standardInstall;
+    private KryptonCommandLinkButton customInstall;
+    
+    public InstallationWizard()
+    {
+        standardInstall = new KryptonCommandLinkButton();
+        standardInstall.CommandLinkTextValues.Heading = &quot;Standard Installation&quot;;
+        standardInstall.CommandLinkTextValues.Description = 
+            &quot;Install for current user only (no elevation required)&quot;;
+        standardInstall.UACShieldIcon.DisplayUACShield = false;
+        
+        customInstall = new KryptonCommandLinkButton();
+        customInstall.CommandLinkTextValues.Heading = &quot;System-Wide Installation&quot;;
+        customInstall.CommandLinkTextValues.Description = 
+            &quot;Install for all users (requires administrator privileges)&quot;;
+        customInstall.UACShieldIcon.DisplayUACShield = true;
+        customInstall.UACShieldIcon.UACShieldIconSize = IconSize.Small;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="custom-icon-fallback">Custom Icon Fallback</h3>
+<pre><code class="lang-csharp">public class SmartCommandLink : KryptonCommandLinkButton
+{
+    public void SetAdminAction(bool requiresAdmin, Image customIcon = null)
+    {
+        if (requiresAdmin)
+        {
+            // Try to show UAC shield
+            UACShieldIcon.DisplayUACShield = true;
+            
+            if (UACShieldIcon.Image == null &amp;&amp; customIcon != null)
+            {
+                // Fallback to custom icon if UAC shield unavailable
+                // (In practice, UAC shield should always be available on Windows)
+                UACShieldIcon.DisplayUACShield = false;
+                // Would need to set custom image through internal field
+            }
+        }
+        else
+        {
+            UACShieldIcon.DisplayUACShield = false;
+        }
+    }
+}
+</code></pre>
+<hr>
+<h3 id="dpi-aware-shield-icons">DPI-Aware Shield Icons</h3>
+<pre><code class="lang-csharp">public class DpiAwareCommandLink : KryptonCommandLinkButton
+{
+    protected override void OnDpiChangedAfterParent(EventArgs e)
+    {
+        base.OnDpiChangedAfterParent(e);
+        
+        if (UACShieldIcon.DisplayUACShield)
+        {
+            // Adjust icon size based on DPI
+            float scaleFactor = DeviceDpi / 96f;
+            
+            var newSize = scaleFactor switch
+            {
+                &lt;= 1.0f =&gt; IconSize.ExtraSmall,  // 96 DPI - 16px
+                &lt;= 1.5f =&gt; IconSize.Small,       // 144 DPI - 32px
+                &lt;= 2.0f =&gt; IconSize.Medium,      // 192 DPI - 64px
+                &lt;= 2.5f =&gt; IconSize.Large,       // 240 DPI - 128px
+                _ =&gt; IconSize.ExtraLarge         // 288+ DPI - 256px
+            };
+            
+            UACShieldIcon.UACShieldIconSize = newSize;
+        }
+    }
+}
+</code></pre>
+<hr>
+<h3 id="settings-dialog-with-mixed-permissions">Settings Dialog with Mixed Permissions</h3>
+<pre><code class="lang-csharp">public class SettingsDialog : KryptonForm
+{
+    public SettingsDialog()
+    {
+        // User-level settings (no shield)
+        var userSettingsButton = CreateSettingButton(
+            &quot;User Preferences&quot;,
+            &quot;Change your personal settings&quot;,
+            false);
+        
+        // System-level settings (with shield)
+        var systemSettingsButton = CreateSettingButton(
+            &quot;System Settings&quot;,
+            &quot;Change settings for all users&quot;,
+            true);
+        
+        // Network settings (with shield)
+        var networkButton = CreateSettingButton(
+            &quot;Network Configuration&quot;,
+            &quot;Configure network adapters and protocols&quot;,
+            true);
+    }
+    
+    private KryptonCommandLinkButton CreateSettingButton(
+        string heading,
+        string description,
+        bool requiresElevation)
+    {
+        var button = new KryptonCommandLinkButton();
+        button.CommandLinkTextValues.Heading = heading;
+        button.CommandLinkTextValues.Description = description;
+        button.UACShieldIcon.DisplayUACShield = requiresElevation;
+        
+        if (requiresElevation)
+        {
+            button.Click += (s, e) =&gt; ShowElevatedSettings(heading);
+        }
+        else
+        {
+            button.Click += (s, e) =&gt; ShowUserSettings(heading);
+        }
+        
+        return button;
+    }
+    
+    private void ShowElevatedSettings(string category)
+    {
+        // Check if already elevated
+        if (!IsElevated())
+        {
+            MessageBox.Show(
+                &quot;This operation requires administrator privileges.\r\n&quot; +
+                &quot;The application will restart with elevated permissions.&quot;,
+                &quot;Elevation Required&quot;,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Shield);
+            
+            RestartElevated();
+        }
+        else
+        {
+            // Show settings
+        }
+    }
+}
+</code></pre>
+<hr>
+<h2 id="design-considerations">Design Considerations</h2>
+<h3 id="uac-shield-usage-guidelines">UAC Shield Usage Guidelines</h3>
+<p><strong>Use UAC Shield When:</strong></p>
+<ul>
+<li>Installing system-wide software or services</li>
+<li>Modifying system settings or registry</li>
+<li>Accessing protected system directories</li>
+<li>Changing settings for all users</li>
+<li>Installing drivers or kernel components</li>
+</ul>
+<p><strong>Don't Use UAC Shield When:</strong></p>
+<ul>
+<li>Action only affects current user</li>
+<li>No privileged operations required</li>
+<li>Action is informational/read-only</li>
+<li>User already running as administrator</li>
+</ul>
+<hr>
+<h3 id="icon-size-selection">Icon Size Selection</h3>
+<p><strong>Size Guidelines:</strong></p>
+<ul>
+<li><strong>ExtraSmall (16px):</strong> Very compact, inline actions</li>
+<li><strong>Small (32px):</strong> Standard size, most command links (default)</li>
+<li><strong>Medium (64px):</strong> Prominent actions, large buttons</li>
+<li><strong>Large (128px):</strong> Critical admin actions, warnings</li>
+<li><strong>ExtraLarge (256px):</strong> Touch interfaces, accessibility</li>
+</ul>
+<p><strong>Recommendations:</strong></p>
+<pre><code class="lang-csharp">// Standard command link button
+iconSize = IconSize.Small;      // 32x32 - balanced
+
+// Large command link (80px+ tall)
+iconSize = IconSize.Medium;     // 64x64 - proportional
+
+// Critical system action
+iconSize = IconSize.Large;      // 128x128 - prominent
+
+// Touch-optimized UI
+iconSize = IconSize.ExtraLarge; // 256x256 - finger-friendly
+</code></pre>
+<hr>
+<h3 id="performance-considerations">Performance Considerations</h3>
+<p><strong>Icon Caching:</strong></p>
+<ul>
+<li>Shield icon is loaded and scaled on-demand</li>
+<li>Consider caching if creating many buttons</li>
+<li>Image is automatically disposed when control disposes</li>
+</ul>
+<p><strong>Scaling:</strong></p>
+<ul>
+<li>System uses high-quality scaling (bicubic interpolation)</li>
+<li>Larger source (SystemIcons.Shield) scales down better than up</li>
+<li>For best quality, use closest matching size</li>
+</ul>
+<hr>
+<h3 id="platform-compatibility">Platform Compatibility</h3>
+<p><strong>Windows Version Support:</strong></p>
+<ul>
+<li>UAC introduced in Windows Vista</li>
+<li>Shield icon available on Vista and later</li>
+<li>Graceful degradation on older systems (no icon)</li>
+<li>Modern Windows versions (7+) fully supported</li>
+</ul>
+<hr>
+<h3 id="transparency-and-rendering">Transparency and Rendering</h3>
+<p><strong>UAC Shield:</strong></p>
+<ul>
+<li>Has built-in alpha channel transparency</li>
+<li><code>ImageTransparentColor</code> not needed</li>
+<li>Renders correctly on any background</li>
+</ul>
+<p><strong>Custom Images:</strong></p>
+<ul>
+<li>Use PNG with alpha channel for transparency</li>
+<li>Or set <code>ImageTransparentColor</code> for legacy bitmaps</li>
+<li>Ensure proper contrast with button background</li>
+</ul>
+<hr>
+<h2 id="related-classes">Related Classes</h2>
+<h3 id="icontentvalues-interface">IContentValues Interface</h3>
+<p>Implemented by <code>CommandLinkImageValues</code> to provide image content:</p>
+<pre><code class="lang-csharp">Image? GetImage(PaletteState state);
+Color GetImageTransparentColor(PaletteState state);
+string GetShortText();
+string GetLongText();
+</code></pre>
+<hr>
+<h2 id="compatibility">Compatibility</h2>
+<ul>
+<li><strong>Target Frameworks:</strong> <code>net472</code>, <code>net48</code>, <code>net481</code>, <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+<li><strong>Windows Forms:</strong> Required</li>
+<li><strong>Windows Version:</strong> Vista+ (for UAC shield icon)</li>
+<li><strong>Dependencies:</strong>
+<ul>
+<li>System.Drawing (for Image, SystemIcons)</li>
+<li>Krypton.Toolkit core components</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="../Toolkit/KryptonCommandLinkButton.md">KryptonCommandLinkButton</a> - Parent control</li>
+<li><a href="../Toolkit/CommandLinkTextValues.md">CommandLinkTextValues</a> - Text values for command links</li>
+<li><a href="../Interfaces/IContentValues.md">IContentValues</a> - Content values interface</li>
+<li><a href="../Enumerations/IconSize.md">IconSize</a> - Icon size enumeration</li>
+<li><a href="Storage.md">Storage</a> - Base storage class</li>
+</ul>
+<hr>
+<h2 id="remarks">Remarks</h2>
+<h3 id="uac-and-user-experience">UAC and User Experience</h3>
+<p>The UAC shield icon is a Windows standard that users recognize immediately. When used correctly:</p>
+<ul>
+<li>✅ Sets proper expectations for privilege requirements</li>
+<li>✅ Reduces surprise UAC prompts</li>
+<li>✅ Improves perceived application reliability</li>
+<li>✅ Follows Windows UX guidelines</li>
+</ul>
+<p><strong>Best Practice:</strong>
+Always show the shield icon <em>before</em> the user clicks, not after. This allows them to make an informed decision about whether to proceed with an action that requires elevation.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

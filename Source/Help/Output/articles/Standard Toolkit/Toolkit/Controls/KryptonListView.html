@@ -69,9 +69,994 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonlistview">KryptonListView</h1>
 
-<p>Use the <em>KryptonListView</em> when you need to present the user a list of items to select from. The <em>KryptonListView</em> component offers similar functionality to the standard WinForms <em>ListView</em> although it is recommended to use the <a href="KryptonCheckedListBox.html">KryptonCheckedListBox</a> or <a href="KryptonListBox.html">KryptonListBox</a> if you want to present items as a list and a <a href="KryptonDataGridView.html">KryptonDataGridView</a> if you need a <em>Details</em> view. The <em>KryptonListView</em> supports the <em>LargeIcons</em>, <em>SmallIcons</em> and <em>Tiles</em> (with and without checkboxes) views.</p>
-<p><strong>Appearance</strong></p>
-<p><img src="../Images/KryptonListView.png" alt=""></p>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonListView</code> is a Windows Forms control that extends the standard <code>ListView</code> with comprehensive Krypton palette styling and theming capabilities. It provides a fully themed list view with support for all standard ListView modes (List, Details, Tiles, SmallIcon, LargeIcon) while integrating seamlessly with the Krypton design system.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> Krypton.Toolkit<br>
+<strong>Inheritance:</strong> <code>Object</code> → <code>MarshalByRefObject</code> → <code>Component</code> → <code>Control</code> → <code>VisualControlBase</code> → <code>KryptonListView</code></p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="palette-integration">Palette Integration</h3>
+<ul>
+<li>Full Krypton palette support with automatic theme switching</li>
+<li>Support for built-in and custom palettes</li>
+<li>State-based styling (Normal, Disabled, Active, Tracking, CheckedNormal, CheckedTracking)</li>
+<li>Item-level palette application</li>
+</ul>
+<h3 id="visual-capabilities">Visual Capabilities</h3>
+<ul>
+<li>All standard ListView view modes (List, Details, Tiles, Icons)</li>
+<li>Checkboxes and multi-selection support</li>
+<li>Column headers with sorting</li>
+<li>Groups and virtual mode support</li>
+<li>Custom background and border styles</li>
+<li>Item state-based coloring (selected, checked, focused, disabled)</li>
+</ul>
+<h3 id="behavior-features">Behavior Features</h3>
+<ul>
+<li>Full mouse tracking and hover states</li>
+<li>KryptonContextMenu integration</li>
+<li>Item selection and activation events</li>
+<li>Label editing support</li>
+<li>Search and hit testing</li>
+<li>Drag-and-drop column reordering</li>
+</ul>
+<h3 id="performance">Performance</h3>
+<ul>
+<li>Double-buffered rendering to reduce flicker</li>
+<li>Optimized palette change handling</li>
+<li>Efficient item state updates</li>
+<li>Virtual mode support for large datasets</li>
+</ul>
+<hr>
+<h2 id="constructor">Constructor</h2>
+<h3 id="kryptonlistview-1">KryptonListView()</h3>
+<p>Initializes a new instance of the <code>KryptonListView</code> class.</p>
+<pre><code class="lang-csharp">public KryptonListView()
+</code></pre>
+<p><strong>Default Settings:</strong></p>
+<ul>
+<li><code>Padding</code> = <code>1, 1, 1, 1</code></li>
+<li><code>BackStyle</code> = <code>PaletteBackStyle.InputControlStandalone</code></li>
+<li><code>BorderStyle</code> = <code>PaletteBorderStyle.InputControlStandalone</code></li>
+<li><code>AlwaysActive</code> = <code>false</code></li>
+<li><code>View</code> = <code>View.LargeIcon</code></li>
+</ul>
+<hr>
+<h2 id="properties">Properties</h2>
+<h3 id="core-listview-properties">Core ListView Properties</h3>
+<h4 id="view">View</h4>
+<p>Gets or sets how items are displayed in the control.</p>
+<pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
+[DefaultValue(View.LargeIcon)]
+[Description(&quot;How items are displayed in the control.&quot;)]
+public View View { get; set; }
+</code></pre>
+<p><strong>Available Views:</strong></p>
+<ul>
+<li><code>LargeIcon</code> - Large icon view (default)</li>
+<li><code>SmallIcon</code> - Small icon view</li>
+<li><code>List</code> - Simple list view</li>
+<li><code>Details</code> - Details view with columns</li>
+<li><code>Tile</code> - Tile view (Windows Vista+)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.View = View.Details;
+</code></pre>
+<hr>
+<h4 id="items">Items</h4>
+<p>Gets the collection containing all items in the control.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+[Localizable(true)]
+public ListView.ListViewItemCollection Items { get; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.Items.Add(new ListViewItem(&quot;Item 1&quot;));
+kryptonListView1.Items.Add(new ListViewItem(new[] { &quot;Name&quot;, &quot;Value&quot; }));
+</code></pre>
+<hr>
+<h4 id="columns">Columns</h4>
+<p>Gets the collection of all column headers in Details view.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+[Localizable(true)]
+public ListView.ColumnHeaderCollection Columns { get; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.View = View.Details;
+kryptonListView1.Columns.Add(&quot;Name&quot;, 200);
+kryptonListView1.Columns.Add(&quot;Type&quot;, 100);
+kryptonListView1.Columns.Add(&quot;Size&quot;, 80);
+</code></pre>
+<hr>
+<h4 id="checkboxes">CheckBoxes</h4>
+<p>Gets or sets whether a checkbox appears next to each item.</p>
+<pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
+[DefaultValue(false)]
+[Description(&quot;Whether a checkbox appears next to each item.&quot;)]
+public bool CheckBoxes { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.CheckBoxes = true;
+kryptonListView1.Items.Add(&quot;Option 1&quot;).Checked = true;
+kryptonListView1.Items.Add(&quot;Option 2&quot;);
+</code></pre>
+<hr>
+<h4 id="multiselect">MultiSelect</h4>
+<p>Gets or sets whether multiple items can be selected.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(true)]
+[Description(&quot;Whether multiple items can be selected.&quot;)]
+public bool MultiSelect { get; set; }
+</code></pre>
+<hr>
+<h4 id="fullrowselect">FullRowSelect</h4>
+<p>Gets or sets whether clicking an item selects all its subitems.</p>
+<pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
+[DefaultValue(false)]
+[Description(&quot;Whether clicking an item selects all its subitems.&quot;)]
+public bool FullRowSelect { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.View = View.Details;
+kryptonListView1.FullRowSelect = true; // Entire row highlights
+</code></pre>
+<hr>
+<h4 id="gridlines">GridLines</h4>
+<p>Gets or sets whether grid lines appear between rows and columns.</p>
+<pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
+[DefaultValue(false)]
+[Description(&quot;Whether grid lines are drawn around items and subitems.&quot;)]
+public bool GridLines { get; set; }
+</code></pre>
+<hr>
+<h4 id="groups">Groups</h4>
+<p>Gets the collection of ListViewGroup objects assigned to the control.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+[Localizable(true)]
+public ListViewGroupCollection Groups { get; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var group1 = new ListViewGroup(&quot;Group 1&quot;);
+var group2 = new ListViewGroup(&quot;Group 2&quot;);
+kryptonListView1.Groups.Add(group1);
+kryptonListView1.Groups.Add(group2);
+
+kryptonListView1.Items.Add(new ListViewItem(&quot;Item 1&quot;, group1));
+kryptonListView1.Items.Add(new ListViewItem(&quot;Item 2&quot;, group2));
+</code></pre>
+<hr>
+<h4 id="showgroups">ShowGroups</h4>
+<p>Gets or sets whether items are displayed in groups.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(true)]
+[Description(&quot;Whether items are displayed in groups.&quot;)]
+public bool ShowGroups { get; set; }
+</code></pre>
+<hr>
+<h3 id="selection-properties">Selection Properties</h3>
+<h4 id="selecteditems">SelectedItems</h4>
+<p>Gets the items that are selected in the control.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public ListView.SelectedListViewItemCollection SelectedItems { get; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">foreach (ListViewItem item in kryptonListView1.SelectedItems)
+{
+    Console.WriteLine($&quot;Selected: {item.Text}&quot;);
+}
+</code></pre>
+<hr>
+<h4 id="selectedindices">SelectedIndices</h4>
+<p>Gets the indexes of the selected items.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public ListView.SelectedIndexCollection SelectedIndices { get; }
+</code></pre>
+<hr>
+<h4 id="checkeditems">CheckedItems</h4>
+<p>Gets the currently checked items.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public ListView.CheckedListViewItemCollection CheckedItems { get; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">foreach (ListViewItem item in kryptonListView1.CheckedItems)
+{
+    Console.WriteLine($&quot;Checked: {item.Text}&quot;);
+}
+</code></pre>
+<hr>
+<h4 id="checkedindices">CheckedIndices</h4>
+<p>Gets the indexes of the currently checked items.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public ListView.CheckedIndexCollection CheckedIndices { get; }
+</code></pre>
+<hr>
+<h4 id="focuseditem">FocusedItem</h4>
+<p>Gets or sets the item that currently has focus.</p>
+<pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
+[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public ListViewItem? FocusedItem { get; set; }
+</code></pre>
+<hr>
+<h3 id="image-list-properties">Image List Properties</h3>
+<h4 id="largeimagelist">LargeImageList</h4>
+<p>Gets or sets the ImageList to use when displaying items as large icons.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(null)]
+[Description(&quot;Icons to use when View is set to LargeIcon.&quot;)]
+public ImageList? LargeImageList { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var largeImages = new ImageList { ImageSize = new Size(48, 48) };
+largeImages.Images.Add(&quot;folder&quot;, Properties.Resources.FolderIcon);
+largeImages.Images.Add(&quot;file&quot;, Properties.Resources.FileIcon);
+
+kryptonListView1.LargeImageList = largeImages;
+kryptonListView1.Items.Add(&quot;Documents&quot;, &quot;folder&quot;);
+kryptonListView1.Items.Add(&quot;Report.pdf&quot;, &quot;file&quot;);
+</code></pre>
+<hr>
+<h4 id="smallimagelist">SmallImageList</h4>
+<p>Gets or sets the ImageList to use when displaying items as small icons.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(null)]
+[Description(&quot;Icons to use when View is set to SmallIcon or List.&quot;)]
+public ImageList? SmallImageList { get; set; }
+</code></pre>
+<hr>
+<h4 id="stateimagelist">StateImageList</h4>
+<p>Gets or sets the ImageList for application-defined states.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(null)]
+[Description(&quot;State images for custom item states.&quot;)]
+public ImageList? StateImageList { get; set; }
+</code></pre>
+<hr>
+<h3 id="palette-state-properties">Palette State Properties</h3>
+<h4 id="statecommon">StateCommon</h4>
+<p>Gets access to common appearance settings that other states can override.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining common appearance.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTreeStateRedirect StateCommon { get; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.StateCommon.Back.Color1 = Color.White;
+kryptonListView1.StateCommon.Border.Rounding = 5;
+</code></pre>
+<hr>
+<h4 id="statenormal">StateNormal</h4>
+<p>Gets access to normal state appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining normal appearance.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTreeState StateNormal { get; }
+</code></pre>
+<hr>
+<h4 id="statedisabled">StateDisabled</h4>
+<p>Gets access to disabled state appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining disabled appearance.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTreeState StateDisabled { get; }
+</code></pre>
+<hr>
+<h4 id="stateactive">StateActive</h4>
+<p>Gets access to active state appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining active appearance.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteDouble StateActive { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Applied when the control has focus or <code>AlwaysActive = true</code></li>
+</ul>
+<hr>
+<h4 id="statetracking">StateTracking</h4>
+<p>Gets access to hot tracking item appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining hot tracking item appearance.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTreeNodeTriple StateTracking { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Applied to selected/hovered items</li>
+</ul>
+<hr>
+<h4 id="statecheckednormal">StateCheckedNormal</h4>
+<p>Gets access to normal checked item appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining normal checked item appearance.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTreeNodeTriple StateCheckedNormal { get; }
+</code></pre>
+<hr>
+<h4 id="statecheckedtracking">StateCheckedTracking</h4>
+<p>Gets access to hot tracking checked item appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining hot tracking checked item appearance.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTreeNodeTriple StateCheckedTracking { get; }
+</code></pre>
+<hr>
+<h4 id="overridefocus">OverrideFocus</h4>
+<p>Gets access to item appearance when it has focus.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining item appearance when it has focus.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTreeNodeTripleRedirect OverrideFocus { get; }
+</code></pre>
+<hr>
+<h3 id="style-properties">Style Properties</h3>
+<h4 id="backstyle">BackStyle</h4>
+<p>Gets or sets the background style.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Style used to draw the background.&quot;)]
+public PaletteBackStyle BackStyle { get; set; }
+</code></pre>
+<p><strong>Default:</strong> <code>PaletteBackStyle.InputControlStandalone</code></p>
+<hr>
+<h4 id="borderstyle">BorderStyle</h4>
+<p>Gets or sets the border style.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Style used to draw the border.&quot;)]
+public PaletteBorderStyle BorderStyle { get; set; }
+</code></pre>
+<p><strong>Default:</strong> <code>PaletteBorderStyle.InputControlStandalone</code></p>
+<hr>
+<h4 id="alwaysactive">AlwaysActive</h4>
+<p>Gets or sets whether the control is always active or only when it has focus.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Determines if the control is always active or only when focused.&quot;)]
+[DefaultValue(false)]
+public bool AlwaysActive { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.AlwaysActive = true; // Always show active state colors
+</code></pre>
+<hr>
+<h3 id="behavior-properties">Behavior Properties</h3>
+<h4 id="activation">Activation</h4>
+<p>Gets or sets the type of action required to activate an item.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(ItemActivation.Standard)]
+[Description(&quot;Type of action required to activate an item.&quot;)]
+public ItemActivation Activation { get; set; }
+</code></pre>
+<p><strong>Values:</strong></p>
+<ul>
+<li><code>Standard</code> - Single click</li>
+<li><code>OneClick</code> - Single click (Vista+ style)</li>
+<li><code>TwoClick</code> - Double click</li>
+</ul>
+<hr>
+<h4 id="labeledit">LabelEdit</h4>
+<p>Gets or sets whether the user can edit item labels.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(false)]
+[Description(&quot;Whether the user can edit item labels.&quot;)]
+public bool LabelEdit { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.LabelEdit = true;
+kryptonListView1.AfterLabelEdit += (s, e) =&gt;
+{
+    if (string.IsNullOrEmpty(e.Label))
+    {
+        e.CancelEdit = true; // Reject empty labels
+    }
+};
+</code></pre>
+<hr>
+<h4 id="hottracking">HotTracking</h4>
+<p>Gets or sets whether item text appears as a hyperlink when hovered.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(false)]
+[Description(&quot;Whether item text appears as hyperlink when hovered.&quot;)]
+public bool HotTracking { get; set; }
+</code></pre>
+<hr>
+<h4 id="hoverselection">HoverSelection</h4>
+<p>Gets or sets whether items are automatically selected on hover.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(false)]
+[Description(&quot;Whether items are automatically selected on hover.&quot;)]
+public bool HoverSelection { get; set; }
+</code></pre>
+<hr>
+<h4 id="allowcolumnreorder">AllowColumnReorder</h4>
+<p>Gets or sets whether columns can be reordered by dragging headers.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(false)]
+[Description(&quot;Whether columns can be reordered by dragging.&quot;)]
+public bool AllowColumnReorder { get; set; }
+</code></pre>
+<hr>
+<h4 id="sorting">Sorting</h4>
+<p>Gets or sets the sort order for items.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(SortOrder.None)]
+[Description(&quot;Sort order for items in the control.&quot;)]
+public SortOrder Sorting { get; set; }
+</code></pre>
+<p><strong>Values:</strong></p>
+<ul>
+<li><code>None</code> - No sorting</li>
+<li><code>Ascending</code> - Sort ascending</li>
+<li><code>Descending</code> - Sort descending</li>
+</ul>
+<hr>
+<h4 id="listviewitemsorter">ListViewItemSorter</h4>
+<p>Gets or sets the custom sorting comparer.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public IComparer? ListViewItemSorter { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">public class ListViewItemComparer : IComparer
+{
+    private int _column;
+    public ListViewItemComparer(int column) =&gt; _column = column;
+    
+    public int Compare(object? x, object? y)
+    {
+        return String.Compare(
+            ((ListViewItem)x).SubItems[_column].Text,
+            ((ListViewItem)y).SubItems[_column].Text);
+    }
+}
+
+kryptonListView1.ListViewItemSorter = new ListViewItemComparer(0);
+</code></pre>
+<hr>
+<h3 id="contained-control">Contained Control</h3>
+<h4 id="listview">ListView</h4>
+<p>Gets access to the contained ListView instance.</p>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+[Browsable(false)]
+public ListView ListView { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Provides access to underlying ListView for advanced scenarios</li>
+<li>Use sparingly - prefer using KryptonListView properties</li>
+</ul>
+<hr>
+<h2 id="methods">Methods</h2>
+<h3 id="item-management">Item Management</h3>
+<h4 id="clear">Clear()</h4>
+<p>Removes all items and columns from the control.</p>
+<pre><code class="lang-csharp">public void Clear()
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.Clear();
+</code></pre>
+<hr>
+<h4 id="beginupdate--endupdate">BeginUpdate() / EndUpdate()</h4>
+<p>Suspends/resumes drawing during bulk operations.</p>
+<pre><code class="lang-csharp">public void BeginUpdate()
+public void EndUpdate()
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.BeginUpdate();
+try
+{
+    for (int i = 0; i &lt; 1000; i++)
+    {
+        kryptonListView1.Items.Add($&quot;Item {i}&quot;);
+    }
+}
+finally
+{
+    kryptonListView1.EndUpdate();
+}
+</code></pre>
+<hr>
+<h4 id="ensurevisibleint">EnsureVisible(int)</h4>
+<p>Scrolls to ensure the specified item is visible.</p>
+<pre><code class="lang-csharp">public void EnsureVisible(int index)
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.EnsureVisible(kryptonListView1.Items.Count - 1);
+</code></pre>
+<hr>
+<h3 id="search-and-hit-testing">Search and Hit Testing</h3>
+<h4 id="finditemwithtextstring">FindItemWithText(string)</h4>
+<p>Finds the first item that begins with the specified text.</p>
+<pre><code class="lang-csharp">public ListViewItem? FindItemWithText(string text)
+public ListViewItem? FindItemWithText(string text, bool includeSubItemsInSearch, int startIndex)
+public ListViewItem? FindItemWithText(string text, bool includeSubItemsInSearch, int startIndex, bool isPrefixSearch)
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var item = kryptonListView1.FindItemWithText(&quot;Report&quot;);
+if (item != null)
+{
+    item.Selected = true;
+    item.EnsureVisible();
+}
+</code></pre>
+<hr>
+<h4 id="hittestint-int">HitTest(int, int)</h4>
+<p>Provides item information at the specified coordinates.</p>
+<pre><code class="lang-csharp">public ListViewHitTestInfo HitTest(int x, int y)
+public ListViewHitTestInfo HitTest(Point point)
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var hitTest = kryptonListView1.HitTest(e.X, e.Y);
+if (hitTest.Item != null)
+{
+    Console.WriteLine($&quot;Clicked on: {hitTest.Item.Text}&quot;);
+}
+</code></pre>
+<hr>
+<h4 id="getitematint-int">GetItemAt(int, int)</h4>
+<p>Retrieves the item at the specified location.</p>
+<pre><code class="lang-csharp">public ListViewItem? GetItemAt(int x, int y)
+</code></pre>
+<hr>
+<h4 id="getitemrectint">GetItemRect(int)</h4>
+<p>Retrieves the bounding rectangle for a specific item.</p>
+<pre><code class="lang-csharp">public Rectangle GetItemRect(int index)
+public Rectangle GetItemRect(int index, ItemBoundsPortion portion)
+</code></pre>
+<hr>
+<h3 id="layout-and-arrangement">Layout and Arrangement</h3>
+<h4 id="arrangeicons">ArrangeIcons()</h4>
+<p>Arranges items when displayed as icons.</p>
+<pre><code class="lang-csharp">public void ArrangeIcons()
+public void ArrangeIcons(ListViewAlignment value)
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.View = View.LargeIcon;
+kryptonListView1.ArrangeIcons(ListViewAlignment.SnapToGrid);
+</code></pre>
+<hr>
+<h4 id="autoresizecolumns">AutoResizeColumns()</h4>
+<p>Resizes column widths automatically.</p>
+<pre><code class="lang-csharp">public void AutoResizeColumns(ColumnHeaderAutoResizeStyle headerAutoResize)
+public void AutoResizeColumn(int columnIndex, ColumnHeaderAutoResizeStyle headerAutoResize)
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+</code></pre>
+<hr>
+<h4 id="sort">Sort()</h4>
+<p>Sorts the items using the current sort order or comparer.</p>
+<pre><code class="lang-csharp">public void Sort()
+</code></pre>
+<hr>
+<h4 id="redrawitemsint-int-bool">RedrawItems(int, int, bool)</h4>
+<p>Forces a range of items to be redrawn.</p>
+<pre><code class="lang-csharp">public void RedrawItems(int startIndex, int endIndex, bool invalidateOnly)
+</code></pre>
+<hr>
+<h3 id="state-management">State Management</h3>
+<h4 id="setfixedstatebool">SetFixedState(bool)</h4>
+<p>Sets the fixed state of the control.</p>
+<pre><code class="lang-csharp">public void SetFixedState(bool active)
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Overrides automatic active state detection</li>
+<li>Useful for maintaining visual state during operations</li>
+</ul>
+<hr>
+<h4 id="isactive">IsActive</h4>
+<p>Gets whether the input control is currently active.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+public bool IsActive { get; }
+</code></pre>
+<p><strong>Calculated based on:</strong></p>
+<ul>
+<li>Design mode</li>
+<li><code>AlwaysActive</code> property</li>
+<li>Control has focus</li>
+<li>Mouse is over control</li>
+</ul>
+<hr>
+<h2 id="events">Events</h2>
+<h3 id="selection-events">Selection Events</h3>
+<h4 id="selectedindexchanged">SelectedIndexChanged</h4>
+<p>Occurs when the selection state of an item changes.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+public event EventHandler? SelectedIndexChanged
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.SelectedIndexChanged += (s, e) =&gt;
+{
+    statusLabel.Text = $&quot;{kryptonListView1.SelectedItems.Count} items selected&quot;;
+};
+</code></pre>
+<hr>
+<h4 id="itemselectionchanged">ItemSelectionChanged</h4>
+<p>Occurs when the selection state of an individual item changes.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+public event ListViewItemSelectionChangedEventHandler? ItemSelectionChanged
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.ItemSelectionChanged += (s, e) =&gt;
+{
+    if (e.IsSelected)
+    {
+        Console.WriteLine($&quot;Selected: {e.Item.Text}&quot;);
+    }
+};
+</code></pre>
+<hr>
+<h3 id="item-events">Item Events</h3>
+<h4 id="itemactivate">ItemActivate</h4>
+<p>Occurs when an item is activated.</p>
+<pre><code class="lang-csharp">[Category(&quot;Action&quot;)]
+public event EventHandler? ItemActivate
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.ItemActivate += (s, e) =&gt;
+{
+    if (kryptonListView1.SelectedItems.Count &gt; 0)
+    {
+        OpenFile(kryptonListView1.SelectedItems[0].Text);
+    }
+};
+</code></pre>
+<hr>
+<h4 id="itemcheck">ItemCheck</h4>
+<p>Occurs when the check state of an item is about to change.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+public event ItemCheckEventHandler? ItemCheck
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.ItemCheck += (s, e) =&gt;
+{
+    // Prevent unchecking if it's the last checked item
+    if (e.NewValue == CheckState.Unchecked &amp;&amp; kryptonListView1.CheckedItems.Count == 1)
+    {
+        e.NewValue = CheckState.Checked;
+    }
+};
+</code></pre>
+<hr>
+<h4 id="itemchecked">ItemChecked</h4>
+<p>Occurs when the check state of an item changes.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+public event ItemCheckedEventHandler? ItemChecked
+</code></pre>
+<hr>
+<h3 id="label-editing-events">Label Editing Events</h3>
+<h4 id="beforelabeledit">BeforeLabelEdit</h4>
+<p>Occurs when the user starts editing an item label.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+public event LabelEditEventHandler? BeforeLabelEdit
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.BeforeLabelEdit += (s, e) =&gt;
+{
+    // Only allow editing of certain items
+    if (kryptonListView1.Items[e.Item].Tag is string tag &amp;&amp; tag == &quot;readonly&quot;)
+    {
+        e.CancelEdit = true;
+    }
+};
+</code></pre>
+<hr>
+<h4 id="afterlabeledit">AfterLabelEdit</h4>
+<p>Occurs when a label is edited by the user.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+public event LabelEditEventHandler? AfterLabelEdit
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.AfterLabelEdit += (s, e) =&gt;
+{
+    if (string.IsNullOrWhiteSpace(e.Label))
+    {
+        e.CancelEdit = true;
+        MessageBox.Show(&quot;Label cannot be empty.&quot;);
+    }
+};
+</code></pre>
+<hr>
+<h3 id="column-events">Column Events</h3>
+<h4 id="columnclick">ColumnClick</h4>
+<p>Occurs when a column header is clicked.</p>
+<pre><code class="lang-csharp">[Category(&quot;Action&quot;)]
+public event ColumnClickEventHandler? ColumnClick
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonListView1.ColumnClick += (s, e) =&gt;
+{
+    kryptonListView1.ListViewItemSorter = new ListViewItemComparer(e.Column);
+    kryptonListView1.Sort();
+};
+</code></pre>
+<hr>
+<h3 id="virtual-mode-events">Virtual Mode Events</h3>
+<h4 id="searchforvirtualitem">SearchForVirtualItem</h4>
+<p>Occurs when the ListView is in virtual mode and a search is taking place.</p>
+<pre><code class="lang-csharp">[Category(&quot;Action&quot;)]
+public event SearchForVirtualItemEventHandler? SearchForVirtualItem
+</code></pre>
+<hr>
+<h4 id="virtualitemsselectionrangechanged">VirtualItemsSelectionRangeChanged</h4>
+<p>Occurs in virtual mode when the selection state of a range changes.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+public event ListViewVirtualItemsSelectionRangeChangedEventHandler? VirtualItemsSelectionRangeChanged
+</code></pre>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-file-explorer-style">Basic File Explorer Style</h3>
+<pre><code class="lang-csharp">var listView = new KryptonListView
+{
+    View = View.Details,
+    FullRowSelect = true,
+    GridLines = true,
+    Dock = DockStyle.Fill
+};
+
+listView.Columns.Add(&quot;Name&quot;, 200);
+listView.Columns.Add(&quot;Type&quot;, 100);
+listView.Columns.Add(&quot;Size&quot;, 80);
+
+// Add items
+var item1 = new ListViewItem(new[] { &quot;Document.docx&quot;, &quot;Word Document&quot;, &quot;45 KB&quot; });
+var item2 = new ListViewItem(new[] { &quot;Image.png&quot;, &quot;PNG Image&quot;, &quot;230 KB&quot; });
+listView.Items.Add(item1);
+listView.Items.Add(item2);
+
+this.Controls.Add(listView);
+</code></pre>
+<hr>
+<h3 id="checklist-with-custom-styling">Checklist with Custom Styling</h3>
+<pre><code class="lang-csharp">var checkList = new KryptonListView
+{
+    View = View.List,
+    CheckBoxes = true,
+    MultiSelect = false
+};
+
+// Custom styling
+checkList.StateTracking.Node.Back.Color1 = Color.LightBlue;
+checkList.StateCheckedNormal.Node.Back.Color1 = Color.LightGreen;
+
+checkList.Items.Add(&quot;Task 1&quot;);
+checkList.Items.Add(&quot;Task 2&quot;);
+checkList.Items.Add(&quot;Task 3&quot;);
+
+checkList.ItemChecked += (s, e) =&gt;
+{
+    int completed = checkList.CheckedItems.Count;
+    int total = checkList.Items.Count;
+    progressLabel.Text = $&quot;{completed}/{total} completed&quot;;
+};
+</code></pre>
+<hr>
+<h3 id="grouped-items">Grouped Items</h3>
+<pre><code class="lang-csharp">var listView = new KryptonListView
+{
+    View = View.Tile,
+    ShowGroups = true
+};
+
+var recentGroup = new ListViewGroup(&quot;Recent Files&quot;);
+var favoritesGroup = new ListViewGroup(&quot;Favorites&quot;);
+
+listView.Groups.Add(recentGroup);
+listView.Groups.Add(favoritesGroup);
+
+listView.Items.Add(new ListViewItem(&quot;Report.pdf&quot;, recentGroup));
+listView.Items.Add(new ListViewItem(&quot;Presentation.pptx&quot;, recentGroup));
+listView.Items.Add(new ListViewItem(&quot;Budget.xlsx&quot;, favoritesGroup));
+</code></pre>
+<hr>
+<h3 id="sortable-details-view">Sortable Details View</h3>
+<pre><code class="lang-csharp">private int _sortColumn = 0;
+private SortOrder _sortOrder = SortOrder.Ascending;
+
+private void SetupSortableListView()
+{
+    kryptonListView1.View = View.Details;
+    kryptonListView1.Columns.Add(&quot;Name&quot;, 150);
+    kryptonListView1.Columns.Add(&quot;Date&quot;, 100);
+    kryptonListView1.Columns.Add(&quot;Size&quot;, 80);
+    
+    kryptonListView1.ColumnClick += OnColumnClick;
+}
+
+private void OnColumnClick(object? sender, ColumnClickEventArgs e)
+{
+    if (e.Column == _sortColumn)
+    {
+        _sortOrder = _sortOrder == SortOrder.Ascending 
+            ? SortOrder.Descending 
+            : SortOrder.Ascending;
+    }
+    else
+    {
+        _sortColumn = e.Column;
+        _sortOrder = SortOrder.Ascending;
+    }
+    
+    kryptonListView1.ListViewItemSorter = new ListViewItemComparer(_sortColumn, _sortOrder);
+    kryptonListView1.Sort();
+}
+</code></pre>
+<hr>
+<h3 id="dynamic-item-colors">Dynamic Item Colors</h3>
+<pre><code class="lang-csharp">private void UpdateItemColors()
+{
+    kryptonListView1.BeginUpdate();
+    
+    foreach (ListViewItem item in kryptonListView1.Items)
+    {
+        if (item.Tag is FileInfo fileInfo)
+        {
+            if (fileInfo.Extension == &quot;.exe&quot;)
+            {
+                item.ForeColor = Color.Red;
+                item.Font = new Font(item.Font, FontStyle.Bold);
+            }
+            else if (fileInfo.Extension == &quot;.txt&quot;)
+            {
+                item.ForeColor = Color.Blue;
+            }
+        }
+    }
+    
+    kryptonListView1.EndUpdate();
+}
+</code></pre>
+<hr>
+<h3 id="context-menu-integration">Context Menu Integration</h3>
+<pre><code class="lang-csharp">var contextMenu = new KryptonContextMenu();
+var menuItems = contextMenu.Items.Add(new KryptonContextMenuItems());
+
+menuItems.Items.Add(new KryptonContextMenuItem(&quot;Open&quot;, null, OnOpen));
+menuItems.Items.Add(new KryptonContextMenuItem(&quot;Rename&quot;, null, OnRename));
+menuItems.Items.Add(new KryptonContextMenuSeparator());
+menuItems.Items.Add(new KryptonContextMenuItem(&quot;Delete&quot;, null, OnDelete));
+
+kryptonListView1.KryptonContextMenu = contextMenu;
+
+private void OnOpen(object? sender, EventArgs e)
+{
+    if (kryptonListView1.SelectedItems.Count &gt; 0)
+    {
+        var item = kryptonListView1.SelectedItems[0];
+        // Open logic
+    }
+}
+</code></pre>
+<hr>
+<h2 id="design-considerations">Design Considerations</h2>
+<h3 id="state-hierarchy">State Hierarchy</h3>
+<p>The control resolves item appearance using the following priority:</p>
+<ol>
+<li><strong>Item state</strong> (Selected, Checked, Focused, Disabled)</li>
+<li><strong>Override states</strong> (OverrideFocus when focused)</li>
+<li><strong>State-specific properties</strong> (StateTracking, StateCheckedNormal, etc.)</li>
+<li><strong>StateCommon property</strong></li>
+<li><strong>Palette defaults</strong></li>
+</ol>
+<hr>
+<h3 id="performance-tips">Performance Tips</h3>
+<ol>
+<li><strong>Bulk Operations:</strong> Use <code>BeginUpdate()</code>/<code>EndUpdate()</code></li>
+</ol>
+<pre><code class="lang-csharp">kryptonListView1.BeginUpdate();
+// Add/modify many items
+kryptonListView1.EndUpdate();
+</code></pre>
+<ol start="2">
+<li><strong>Virtual Mode:</strong> For large datasets (1000+ items)</li>
+</ol>
+<pre><code class="lang-csharp">// Note: Virtual mode commented out in source - implementation needed
+</code></pre>
+<ol start="3">
+<li><strong>Image Lists:</strong> Reuse ImageList instances</li>
+</ol>
+<pre><code class="lang-csharp">// Share ImageList across multiple controls
+var sharedImages = new ImageList();
+kryptonListView1.SmallImageList = sharedImages;
+kryptonListView2.SmallImageList = sharedImages;
+</code></pre>
+<hr>
+<h3 id="designer-support">Designer Support</h3>
+<p>The control is fully designer-compatible:</p>
+<ul>
+<li>Appears in the Toolbox under &quot;Krypton Toolkit&quot;</li>
+<li>Property grid shows categorized properties</li>
+<li>Collection editors for Items, Columns, Groups</li>
+<li>Serializes only non-default values</li>
+</ul>
+<hr>
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="file-manager-view">File Manager View</h3>
+<pre><code class="lang-csharp">private void SetupFileManager()
+{
+    kryptonListView1.View = View.Details;
+    kryptonListView1.FullRowSelect = true;
+    kryptonListView1.GridLines = true;
+    kryptonListView1.AllowColumnReorder = true;
+    
+    kryptonListView1.Columns.Add(&quot;Name&quot;, 200);
+    kryptonListView1.Columns.Add(&quot;Modified&quot;, 120);
+    kryptonListView1.Columns.Add(&quot;Type&quot;, 100);
+    kryptonListView1.Columns.Add(&quot;Size&quot;, 80);
+    
+    kryptonListView1.SmallImageList = fileIcons;
+    
+    LoadFiles(@&quot;C:\Users\Documents&quot;);
+}
+</code></pre>
+<hr>
+<h3 id="task-list-with-progress">Task List with Progress</h3>
+<pre><code class="lang-csharp">private void CreateTaskList()
+{
+    var taskList = new KryptonListView
+    {
+        View = View.Details,
+        CheckBoxes = true,
+        FullRowSelect = true
+    };
+    
+    taskList.Columns.Add(&quot;Task&quot;, 250);
+    taskList.Columns.Add(&quot;Status&quot;, 100);
+    taskList.Columns.Add(&quot;Priority&quot;, 80);
+    
+    taskList.ItemChecked += (s, e) =&gt;
+    {
+        e.Item.SubItems[1].Text = e.Item.Checked ? &quot;Complete&quot; : &quot;Pending&quot;;
+        e.Item.ForeColor = e.Item.Checked ? Color.Gray : Color.Black;
+    };
+}
+</code></pre>
+<hr>
+<h3 id="image-gallery">Image Gallery</h3>
+<pre><code class="lang-csharp">private void SetupImageGallery()
+{
+    kryptonListView1.View = View.LargeIcon;
+    kryptonListView1.LargeImageList = new ImageList 
+    { 
+        ImageSize = new Size(128, 128) 
+    };
+    
+    foreach (var imagePath in Directory.GetFiles(@&quot;C:\Pictures&quot;, &quot;*.jpg&quot;))
+    {
+        var thumbnail = Image.FromFile(imagePath);
+        kryptonListView1.LargeImageList.Images.Add(Path.GetFileName(imagePath), thumbnail);
+        kryptonListView1.Items.Add(Path.GetFileName(imagePath), Path.GetFileName(imagePath));
+    }
+}
+</code></pre>
+<hr>
+<h2 id="compatibility">Compatibility</h2>
+<ul>
+<li><strong>Target Frameworks:</strong> <code>net472</code>, <code>net48</code>, <code>net481</code>, <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+<li><strong>Windows Forms:</strong> Required</li>
+<li><strong>Dependencies:</strong> Krypton.Toolkit core components</li>
+</ul>
+<hr>
+<h2 id="known-limitations">Known Limitations</h2>
+<ul>
+<li>Virtual mode properties are commented out (VirtualMode, VirtualListSize)</li>
+<li>Requires manual handle creation for some theme features</li>
+<li>Item-level theming updates occur on palette changes</li>
+</ul>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="KryptonTreeView.html">KryptonTreeView</a> - Tree view variant</li>
+<li><a href="KryptonDataGridView.html">KryptonDataGridView</a> - Data grid variant</li>
+<li><a href="../Palette/PaletteTreeState.md">PaletteTreeState</a> - Palette system</li>
+<li><a href="../Enumerations/PaletteBackStyle.md">PaletteBackStyle Enumeration</a> - Background styles</li>
+</ul>
 
 </article>
           </div>

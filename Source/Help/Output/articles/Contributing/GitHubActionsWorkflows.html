@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Toolkit - GitHub Actions Workflows Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Toolkit - GitHub Actions Workflows Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-toolkit---github-actions-workflows-guide">Krypton Toolkit - GitHub Actions Workflows Guide</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#workflow-architecture">Workflow Architecture</a></li>
+<li><a href="#buildyml---continuous-integration">build.yml - Continuous Integration</a></li>
+<li><a href="#releaseyml---manual-releases">release.yml - Manual Releases</a></li>
+<li><a href="#nightlyyml---automated-nightly-builds">nightly.yml - Automated Nightly Builds</a></li>
+<li><a href="#configuration-guide">Configuration Guide</a></li>
+<li><a href="#discord-notifications">Discord Notifications</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#advanced-topics">Advanced Topics</a></li>
+</ul>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple release channels. The system consists of three specialized workflows that handle continuous integration, manual releases, and automated nightly builds.</p>
+<h3 id="key-features">Key Features</h3>
+<p>✅ <strong>Automated NuGet Publishing</strong> - Push packages to nuget.org automatically<br>
+✅ <strong>Branch-Specific Configurations</strong> - Different builds for different release types<br>
+✅ <strong>Discord Notifications</strong> - Rich embeds announcing new releases<br>
+✅ <strong>Fault-Tolerant Design</strong> - Graceful degradation when secrets missing<br>
+✅ <strong>Smart Notifications</strong> - Only notify when packages actually published<br>
+✅ <strong>Idempotent Operations</strong> - Safe to re-run workflows</p>
+<hr>
+<h2 id="workflow-architecture">Workflow Architecture</h2>
+<pre><code>┌───────────────────────────────────────────────────────────────┐
+│                   GITHUB ACTIONS WORKFLOWS                     │
+├───────────────────────────────────────────────────────────────┤
+│                                                                │
+│  ┌─────────────┐  ┌──────────────┐  ┌──────────────┐         │
+│  │ build.yml   │  │ release.yml  │  │ nightly.yml  │         │
+│  ├─────────────┤  ├──────────────┤  ├──────────────┤         │
+│  │ CI CHECK    │  │   MANUAL     │  │  AUTOMATED   │         │
+│  │             │  │  RELEASES    │  │   NIGHTLY    │         │
+│  │ • All PRs   │  │              │  │              │         │
+│  │ • All Push  │  │ • master     │  │ • Schedule   │         │
+│  │             │  │ • V85-LTS    │  │   (00:00 UTC)│         │
+│  │ Fast build  │  │ • canary     │  │ • Manual     │         │
+│  │ Validation  │  │ • alpha      │  │              │         │
+│  │             │  │              │  │ alpha branch │         │
+│  └─────────────┘  └──────────────┘  └──────────────┘         │
+│        ↓                 ↓                  ↓                  │
+│    Verify            Publish           Auto-Publish           │
+│                                                                │
+└───────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="workflow-separation-philosophy">Workflow Separation Philosophy</h3>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Purpose</th>
+<th>When to Run</th>
+<th>Outputs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>build.yml</strong></td>
+<td>Validation</td>
+<td>Every PR, every push</td>
+<td>Build logs only</td>
+</tr>
+<tr>
+<td><strong>release.yml</strong></td>
+<td>Distribution</td>
+<td>Manual pushes to release branches</td>
+<td>Packages, archives, releases</td>
+</tr>
+<tr>
+<td><strong>nightly.yml</strong></td>
+<td>Automation</td>
+<td>Daily at midnight</td>
+<td>Packages (if version changed)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="buildyml---continuous-integration">build.yml - Continuous Integration</h2>
+<p><strong>File</strong>: <code>.github/workflows/build.yml</code></p>
+<h3 id="purpose">Purpose</h3>
+<p>Fast validation that code compiles correctly across all target frameworks. Provides quick feedback for pull requests and commits.</p>
+<h3 id="triggers">Triggers</h3>
+<pre><code class="lang-yaml">on:
+  pull_request:
+    branches: ['**']  # All PRs
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - master
+      - alpha
+      - canary
+      - gold
+      - V95
+      - V85-LTS
+    paths-ignore: ['.git*', '.vscode']
+</code></pre>
+<p><strong>Runs On</strong>: Every PR and every push to listed branches</p>
+<h3 id="what-it-does">What It Does</h3>
+<pre><code class="lang-yaml">jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      1. Checkout code
+      2. Setup .NET SDKs (6, 7, 8, 9, 10)
+      3. Setup MSBuild and NuGet
+      4. Restore NuGet packages
+      5. Build solution
+</code></pre>
+<p><strong>Does NOT</strong>:</p>
+<ul>
+<li>❌ Create NuGet packages</li>
+<li>❌ Publish to nuget.org</li>
+<li>❌ Create releases</li>
+<li>❌ Send notifications</li>
+</ul>
+<h3 id="sdk-installation">SDK Installation</h3>
+<p>Installs all SDKs to support every branch's target frameworks:</p>
+<pre><code class="lang-yaml">- .NET 6 (LTS)  → For V85-LTS (net6.0-windows)
+- .NET 7        → For V85-LTS (net7.0-windows)
+- .NET 8 (LTS)  → For all branches (net8.0-windows)
+- .NET 9 (GA)   → For master/canary/alpha (net9.0-windows)
+- .NET 10       → For master/canary/alpha (net10.0-windows)
+</code></pre>
+<p><strong>Why all SDKs?</strong>: Single build job must handle PRs from any branch</p>
+<h3 id="execution-time">Execution Time</h3>
+<p>⚡ <strong>~3-5 minutes</strong> (optimized for speed)</p>
+<h3 id="when-to-check">When to Check</h3>
+<ul>
+<li>✅ Before merging PRs (must be green)</li>
+<li>✅ After pushing to any branch (quick validation)</li>
+<li>✅ When adding new target frameworks</li>
+</ul>
+<hr>
+<h2 id="releaseyml---manual-releases">release.yml - Manual Releases</h2>
+<p><strong>File</strong>: <code>.github/workflows/release.yml</code></p>
+<h3 id="purpose-1">Purpose</h3>
+<p>Creates and publishes releases when code is pushed to specific branches. Each branch gets its own specialized job with appropriate configuration.</p>
+<h3 id="triggers-1">Triggers</h3>
+<pre><code class="lang-yaml">on:
+  push:
+    branches:
+      - master
+      - alpha
+      - canary
+      - V85-LTS
+</code></pre>
+<p><strong>Only Runs On</strong>: Manual pushes to release branches</p>
+<h3 id="jobs-overview">Jobs Overview</h3>
+<p>Four independent jobs, one per branch:</p>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Branch</th>
+<th>Purpose</th>
+<th>Artifacts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>release-master</code></td>
+<td>master</td>
+<td>Stable production</td>
+<td>Packages + Archives + GitHub Release</td>
+</tr>
+<tr>
+<td><code>release-v85-lts</code></td>
+<td>V85-LTS</td>
+<td>Long-term support</td>
+<td>LTS Packages</td>
+</tr>
+<tr>
+<td><code>release-canary</code></td>
+<td>canary</td>
+<td>Pre-release testing</td>
+<td>Canary Packages</td>
+</tr>
+<tr>
+<td><code>release-alpha</code></td>
+<td>alpha</td>
+<td>Manual alpha</td>
+<td>Alpha Packages</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="job-release-master">Job: <code>release-master</code></h3>
+<p><strong>Stable production releases</strong></p>
+<h4 id="configuration">Configuration</h4>
+<ul>
+<li><strong>Build Script</strong>: <code>Scripts/build.proj</code></li>
+<li><strong>Configuration</strong>: <code>Release</code></li>
+<li><strong>Target Frameworks</strong>: net472, net48, net481, net8.0, net9.0, net10.0</li>
+<li><strong>Output</strong>: <code>Bin/Packages/Release/</code></li>
+</ul>
+<h4 id="steps">Steps</h4>
+<ol>
+<li><p><strong>Setup Environment</strong></p>
+<pre><code class="lang-yaml">- Setup .NET 9, 10
+- Force .NET 10 SDK via global.json
+- Setup MSBuild, NuGet
+- Cache NuGet packages
+</code></pre>
+</li>
+<li><p><strong>Build and Package</strong></p>
+<pre><code class="lang-yaml">- Restore solution
+- Build (Scripts/build.proj)
+- Pack (creates lite + full packages)
+</code></pre>
+</li>
+<li><p><strong>Publish to NuGet</strong> ⭐</p>
+<pre><code class="lang-yaml">- Check NUGET_API_KEY present
+- Find all .nupkg files
+- Push each with --skip-duplicate
+- Track if any packages published (new vs skipped)
+- Set packages_published output
+</code></pre>
+</li>
+<li><p><strong>Create Archives</strong></p>
+<pre><code class="lang-yaml">- CreateAllReleaseArchives
+- Generates ZIP and TAR.GZ
+- Output: Bin/Release/Zips/
+</code></pre>
+</li>
+<li><p><strong>Version Detection</strong> ⭐</p>
+<pre><code class="lang-yaml">- Read from Bin/Release/net48/Krypton.Toolkit.dll
+- Fallback to csproj XML parsing
+- Fallback to hardcoded version
+- Set version and tag outputs
+</code></pre>
+</li>
+<li><p><strong>Diagnostics</strong></p>
+<pre><code class="lang-yaml">- List all package files
+- List all archive files
+- Verify GITHUB_TOKEN present
+- Verify NUGET_API_KEY present
+</code></pre>
+</li>
+<li><p><strong>Create/Update GitHub Release</strong> ⭐</p>
+<pre><code class="lang-yaml">- Check if release v{version} exists
+- If exists: gh release edit
+- If new: gh release create --latest
+</code></pre>
+</li>
+<li><p><strong>Upload Assets</strong></p>
+<pre><code class="lang-yaml">- Upload ZIP to release (with error handling)
+- Upload TAR.GZ to release (with error handling)
+</code></pre>
+</li>
+<li><p><strong>Discord Notification</strong> (conditional) ⭐</p>
+<pre><code class="lang-yaml">- Only if packages_published == True
+- Check DISCORD_WEBHOOK_MASTER present
+- Send rich embed with version, packages, links
+</code></pre>
+</li>
+</ol>
+<h4 id="unique-features">Unique Features</h4>
+<ul>
+<li>✅ Only job that creates GitHub releases</li>
+<li>✅ Creates both lite (5 TFMs) and full (6 TFMs) packages</li>
+<li>✅ Includes downloadable archives (ZIP, TAR.GZ)</li>
+<li>✅ Diagnostics step for troubleshooting</li>
+<li>✅ Idempotent release creation</li>
+</ul>
+<h4 id="execution-time-1">Execution Time</h4>
+<p>🕐 <strong>~12-15 minutes</strong></p>
+<hr>
+<h3 id="job-release-v85-lts">Job: <code>release-v85-lts</code></h3>
+<p><strong>Long-Term Support releases</strong></p>
+<h4 id="configuration-1">Configuration</h4>
+<ul>
+<li><strong>Build Script</strong>: <code>Scripts/longtermstable.proj</code></li>
+<li><strong>Configuration</strong>: <code>Release</code></li>
+<li><strong>Target Frameworks</strong>: net462, net47, net471, net472, net48, net481, net6.0, net7.0, net8.0</li>
+<li><strong>Output</strong>: <code>Bin/Packages/Release/</code></li>
+<li><strong>Package Names</strong>: <code>Krypton.*.LTS</code> (separate IDs)</li>
+</ul>
+<h4 id="sdks-required">SDKs Required</h4>
+<pre><code class="lang-yaml">- .NET 6 (LTS)  → net6.0-windows
+- .NET 7        → net7.0-windows
+- .NET 8 (LTS)  → net8.0-windows + .NET Framework targets
+</code></pre>
+<p><strong>No .NET 9 or 10</strong> - LTS focuses on stability</p>
+<h4 id="steps-1">Steps</h4>
+<ol>
+<li>Setup .NET 6, 7, 8</li>
+<li>Restore → Build → Pack</li>
+<li>Push LTS packages to NuGet (fault-tolerant)</li>
+<li>Get Version from assembly</li>
+<li>Discord notification (if packages published)</li>
+</ol>
+<h4 id="unique-features-1">Unique Features</h4>
+<ul>
+<li>✅ Broadest framework support (9 target frameworks)</li>
+<li>✅ Separate package identities (*.LTS suffix)</li>
+<li>✅ Legacy framework support (net462 - 2015 vintage)</li>
+<li>✅ Stable SDK versions only (no previews)</li>
+</ul>
+<h4 id="execution-time-2">Execution Time</h4>
+<p>🕐 <strong>~15-18 minutes</strong> (more target frameworks)</p>
+<hr>
+<h3 id="job-release-canary">Job: <code>release-canary</code></h3>
+<p><strong>Pre-release feature testing</strong></p>
+<h4 id="configuration-2">Configuration</h4>
+<ul>
+<li><strong>Build Script</strong>: <code>Scripts/canary.proj</code></li>
+<li><strong>Configuration</strong>: <code>Canary</code></li>
+<li><strong>Target Frameworks</strong>: net472, net48, net481, net8.0, net9.0, net10.0</li>
+<li><strong>Output</strong>: <code>Bin/Packages/Canary/</code></li>
+</ul>
+<h4 id="steps-2">Steps</h4>
+<ol>
+<li>Setup .NET 9, 10</li>
+<li>Restore → Build → Pack</li>
+<li>Push canary packages to NuGet</li>
+<li>Get Version</li>
+<li>Discord notification (if packages published)</li>
+</ol>
+<h4 id="unique-features-2">Unique Features</h4>
+<ul>
+<li>✅ Pre-release versioning</li>
+<li>✅ Yellow Discord embeds (warning color)</li>
+<li>✅ For early adopters and beta testers</li>
+</ul>
+<h4 id="execution-time-3">Execution Time</h4>
+<p>🕐 <strong>~10-12 minutes</strong></p>
+<hr>
+<h3 id="job-release-alpha">Job: <code>release-alpha</code></h3>
+<p><strong>Manual alpha/nightly releases</strong></p>
+<h4 id="configuration-3">Configuration</h4>
+<ul>
+<li><strong>Build Script</strong>: <code>Scripts/nightly.proj</code></li>
+<li><strong>Configuration</strong>: <code>Nightly</code></li>
+<li><strong>Target Frameworks</strong>: net472, net48, net481, net8.0, net9.0, net10.0</li>
+<li><strong>Output</strong>: <code>Bin/Packages/Nightly/</code></li>
+</ul>
+<h4 id="steps-3">Steps</h4>
+<ol>
+<li>Setup .NET 9, 10</li>
+<li>Restore → Build → Pack</li>
+<li>Push nightly packages to NuGet</li>
+<li>Get Version</li>
+<li>Discord notification (if packages published)</li>
+</ol>
+<h4 id="unique-features-3">Unique Features</h4>
+<ul>
+<li>✅ Manual trigger only (scheduled runs use <code>nightly.yml</code>)</li>
+<li>✅ Purple Discord embeds</li>
+<li>✅ For developers and bleeding-edge testing</li>
+</ul>
+<h4 id="execution-time-4">Execution Time</h4>
+<p>🕐 <strong>~10-12 minutes</strong></p>
+<hr>
+<h2 id="nightlyyml---automated-nightly-builds">nightly.yml - Automated Nightly Builds</h2>
+<p><strong>File</strong>: <code>.github/workflows/nightly.yml</code></p>
+<h3 id="purpose-2">Purpose</h3>
+<p>Automatically build and publish nightly packages from the alpha branch every day at midnight UTC.</p>
+<h3 id="triggers-2">Triggers</h3>
+<pre><code class="lang-yaml">on:
+  schedule:
+    - cron: '0 0 * * *'  # Midnight UTC daily
+  workflow_dispatch:      # Manual trigger for testing
+</code></pre>
+<p><strong>Scheduled</strong>: Runs every night at 00:00 UTC<br>
+<strong>Manual</strong>: Can be triggered from GitHub Actions UI</p>
+<h3 id="important-branch-behavior">Important: Branch Behavior</h3>
+<pre><code class="lang-yaml">steps:
+  - name: Checkout
+    uses: actions/checkout@v5
+    with:
+      ref: alpha  # ALWAYS builds alpha branch
+</code></pre>
+<p><strong>Key Point</strong>:</p>
+<ul>
+<li>Workflow file lives on <code>master</code> (default branch)</li>
+<li>Always checks out and builds <code>alpha</code> branch</li>
+<li>This is how scheduled workflows work in GitHub Actions</li>
+</ul>
+<h3 id="steps-4">Steps</h3>
+<ol>
+<li><strong>Checkout</strong> alpha branch (explicitly)</li>
+<li><strong>Setup</strong> .NET 9 + 10 SDKs</li>
+<li><strong>Restore</strong> NuGet packages</li>
+<li><strong>Build</strong> using <code>Scripts/nightly.proj</code></li>
+<li><strong>Pack</strong> NuGet packages</li>
+<li><strong>Push</strong> to nuget.org (with smart detection)</li>
+<li><strong>Get Version</strong> from compiled assembly</li>
+<li><strong>Notify Discord</strong> (only if new packages published)</li>
+</ol>
+<h3 id="smart-notification-logic">Smart Notification Logic</h3>
+<pre><code class="lang-powershell"># During push, track if packages are new or skipped
+foreach ($package in $packages) {
+  $output = dotnet nuget push &quot;$package&quot; --skip-duplicate 2&gt;&amp;1
+  
+  # Detect if actually pushed or skipped
+  if ($output -notmatch &quot;already exists&quot; -and $output -notmatch &quot;was not pushed&quot;) {
+    $publishedAny = $true  # New package!
+  }
+}
+
+# Output for conditional step
+echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
+</code></pre>
+<p><strong>Discord step</strong>:</p>
+<pre><code class="lang-yaml">- name: Announce Nightly Release on Discord
+  if: steps.push_nuget.outputs.packages_published == 'True'  # Only if new
+</code></pre>
+<h3 id="behavior-scenarios">Behavior Scenarios</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Build</th>
+<th>Package</th>
+<th>Push</th>
+<th>Discord</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Code changed, version bumped</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅ New</td>
+<td>✅ Sent</td>
+</tr>
+<tr>
+<td><strong>No code change, same version</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>⏭️ Skipped</td>
+<td>❌ Not sent</td>
+</tr>
+<tr>
+<td><strong>No API key configured</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>⏭️ Skipped</td>
+<td>❌ Not sent</td>
+</tr>
+<tr>
+<td><strong>Partial changes (some packages new)</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>⚠️ Mixed</td>
+<td>✅ Sent</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Benefit</strong>: No Discord spam from nightly builds when version hasn't changed!</p>
+<h3 id="execution-time-5">Execution Time</h3>
+<p>🕐 <strong>~10-12 minutes</strong></p>
+<h3 id="testing-nightly-workflow">Testing Nightly Workflow</h3>
+<p><strong>Manual Trigger</strong>:</p>
+<ol>
+<li>GitHub → Actions → &quot;Nightly Release&quot;</li>
+<li>Click &quot;Run workflow&quot;</li>
+<li>Select branch: <code>master</code> (it will build alpha)</li>
+<li>Click &quot;Run workflow&quot;</li>
+</ol>
+<p><strong>Check Results</strong>:</p>
+<ul>
+<li>View logs for build success</li>
+<li>Check nuget.org for new packages</li>
+<li>Check Discord for notification (if packages published)</li>
+</ul>
+<hr>
+<h2 id="configuration-guide">Configuration Guide</h2>
+<h3 id="required-github-secrets">Required GitHub Secrets</h3>
+<h4 id="1-nuget_api_key-required">1. NUGET_API_KEY (Required)</h4>
+<p><strong>Purpose</strong>: Authenticate with nuget.org to publish packages</p>
+<p><strong>Setup Steps</strong>:</p>
+<ol>
+<li><p><strong>Get API Key from nuget.org</strong>:</p>
+<ul>
+<li>Login to <a href="https://www.nuget.org">nuget.org</a></li>
+<li>Click username → API Keys</li>
+<li>Click &quot;Create&quot;</li>
+<li>Configure:
+<ul>
+<li><strong>Key Name</strong>: &quot;GitHub Actions - Krypton Toolkit&quot;</li>
+<li><strong>Select Scopes</strong>: ✅ Push, ✅ Push new packages and package versions</li>
+<li><strong>Select Packages</strong>: All packages (or glob pattern <code>Krypton.*</code>)</li>
+<li><strong>Expiration</strong>: 365 days</li>
+</ul>
+</li>
+<li>Click &quot;Create&quot;</li>
+<li><strong>Copy the key</strong> (shown only once!)</li>
+</ul>
+</li>
+<li><p><strong>Add to GitHub</strong>:</p>
+<ul>
+<li>Repository → Settings</li>
+<li>Secrets and variables → Actions</li>
+<li>New repository secret</li>
+<li><strong>Name</strong>: <code>NUGET_API_KEY</code> (exact spelling)</li>
+<li><strong>Secret</strong>: Paste the API key</li>
+<li>Click &quot;Add secret&quot;</li>
+</ul>
+</li>
+</ol>
+<p><strong>Used By</strong>: All release workflows</p>
+<p><strong>What Happens Without It</strong>:</p>
+<ul>
+<li>Workflows succeed but skip NuGet push</li>
+<li>Warning logged: &quot;NUGET_API_KEY not set - skipping NuGet push&quot;</li>
+<li>No packages published</li>
+<li>No Discord notifications sent</li>
+</ul>
+<hr>
+<h4 id="2-discord-webhooks-optional">2. Discord Webhooks (Optional)</h4>
+<p><strong>Purpose</strong>: Send rich notifications to Discord when releases are published</p>
+<p><strong>Four Separate Webhooks</strong> (one per release type):</p>
+<table>
+<thead>
+<tr>
+<th>Secret Name</th>
+<th>Branch</th>
+<th>Channel Suggestion</th>
+<th>Color</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DISCORD_WEBHOOK_MASTER</code></td>
+<td>master</td>
+<td><code>#releases</code> or <code>#announcements</code></td>
+<td>Blue</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_LTS</code></td>
+<td>V85-LTS</td>
+<td><code>#lts-releases</code> or <code>#releases</code></td>
+<td>Orange</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_CANARY</code></td>
+<td>canary</td>
+<td><code>#canary-builds</code> or <code>#pre-releases</code></td>
+<td>Yellow</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_NIGHTLY</code></td>
+<td>alpha</td>
+<td><code>#nightly-builds</code> or <code>#dev-releases</code></td>
+<td>Purple</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Setup Steps</strong> (repeat for each webhook):</p>
+<ol>
+<li><p><strong>Create Webhook in Discord</strong>:</p>
+<ul>
+<li>Open Discord server</li>
+<li>Server Settings → Integrations → Webhooks</li>
+<li>Click &quot;New Webhook&quot;</li>
+<li>Configure:
+<ul>
+<li><strong>Name</strong>: &quot;Krypton [Type] Releases&quot; (e.g., &quot;Krypton Stable Releases&quot;)</li>
+<li><strong>Channel</strong>: Select target channel (#releases, #nightly-builds, etc.)</li>
+<li><strong>Avatar</strong>: (optional) Upload Krypton logo</li>
+</ul>
+</li>
+<li>Click &quot;Copy Webhook URL&quot;</li>
+</ul>
+</li>
+<li><p><strong>Add to GitHub</strong>:</p>
+<ul>
+<li>Repository → Settings → Secrets and variables → Actions</li>
+<li>New repository secret</li>
+<li><strong>Name</strong>: Use exact name from table above</li>
+<li><strong>Secret</strong>: Paste webhook URL (complete URL, no modifications)</li>
+<li>Click &quot;Add secret&quot;</li>
+</ul>
+</li>
+</ol>
+<p><strong>Webhook URL Format</strong>:</p>
+<pre><code>https://discord.com/api/webhooks/{id}/{token}
+</code></pre>
+<p>or</p>
+<pre><code>https://discordapp.com/api/webhooks/{id}/{token}
+</code></pre>
+<p><strong>DO NOT</strong> add <code>/discord</code> or any suffix - use the URL exactly as provided!</p>
+<p><strong>What Happens Without Webhooks</strong>:</p>
+<ul>
+<li>Workflows succeed normally</li>
+<li>Warning logged: &quot;[Webhook name] not set - skipping Discord notification&quot;</li>
+<li>No notifications sent</li>
+<li>Packages still published to NuGet</li>
+</ul>
+<hr>
+<h2 id="discord-notifications">Discord Notifications</h2>
+<h3 id="notification-content">Notification Content</h3>
+<p>All Discord notifications use rich embeds with this structure:</p>
+<pre><code>┌────────────────────────────────────────────────────┐
+│ 🎉 Krypton Toolkit Stable Release                  │
+│ A new stable release is now available!             │
+├────────────────────────────────────────────────────┤
+│ 📌 Version                                         │
+│ 100.25.1.1                                         │
+│                                                    │
+│ 📦 NuGet Packages                                  │
+│ - Krypton.Toolkit                                  │
+│ - Krypton.Ribbon                                   │
+│ - Krypton.Navigator                                │
+│ - Krypton.Workspace                                │
+│ - Krypton.Docking                                  │
+│                                                    │
+│ 🎯 Target Frameworks                               │
+│ • .NET Framework 4.7.2                             │
+│ • .NET Framework 4.8                               │
+│ • .NET Framework 4.8.1                             │
+│ • .NET 8.0                                         │
+│ • .NET 9.0                                         │
+│ • .NET 10.0                                        │
+│                                                    │
+│ 🔗 NuGet Packages                                  │
+│ • Toolkit  • Ribbon  • Navigator                   │
+│ • Workspace  • Docking                             │
+│ (each is a clickable link)                         │
+│                                                    │
+│ 📥 GitHub Release                                  │
+│ Download Archives                                  │
+│                                                    │
+│ Released • Today at 12:24 PM                       │
+└────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="release-type-styling">Release Type Styling</h3>
+<p>Each release type has distinct visual styling:</p>
+<h4 id="master-stable">Master (Stable)</h4>
+<ul>
+<li><strong>Title</strong>: 🎉 Krypton Toolkit Stable Release</li>
+<li><strong>Description</strong>: A new stable release is now available!</li>
+<li><strong>Color</strong>: Blue (#3498DB)</li>
+<li><strong>Extra Field</strong>: 📥 GitHub Release (download archives)</li>
+</ul>
+<h4 id="v85-lts-long-term-support">V85-LTS (Long-Term Support)</h4>
+<ul>
+<li><strong>Title</strong>: 🛡️ Krypton Toolkit LTS Release</li>
+<li><strong>Description</strong>: A new Long-Term Support release is now available!</li>
+<li><strong>Color</strong>: Orange (#E67E22)</li>
+<li><strong>Packages</strong>: Krypton.*.LTS</li>
+<li><strong>Frameworks</strong>: 9 targets (most comprehensive)</li>
+</ul>
+<h4 id="canary-pre-release">Canary (Pre-Release)</h4>
+<ul>
+<li><strong>Title</strong>: 🐤 Krypton Toolkit Canary Release</li>
+<li><strong>Description</strong>: A new canary pre-release is now available for early testing!</li>
+<li><strong>Color</strong>: Yellow (#FFFF00)</li>
+</ul>
+<h4 id="nightly-alpha">Nightly (Alpha)</h4>
+<ul>
+<li><strong>Title</strong>: 🚀 Krypton Toolkit Nightly Release</li>
+<li><strong>Description</strong>: A new nightly build is now available for bleeding-edge testing!</li>
+<li><strong>Color</strong>: Purple (#9B59B6)</li>
+</ul>
+<h3 id="conditional-sending">Conditional Sending</h3>
+<p>Notifications are sent <strong>only when</strong>:</p>
+<pre><code class="lang-yaml">if: steps.push_nuget.outputs.packages_published == 'True'
+</code></pre>
+<p><strong>Sent</strong>:</p>
+<ul>
+<li>✅ At least one package was newly published to NuGet</li>
+<li>✅ Webhook is configured</li>
+</ul>
+<p><strong>NOT Sent</strong>:</p>
+<ul>
+<li>❌ All packages already exist (version unchanged)</li>
+<li>❌ NuGet push was skipped (no API key)</li>
+<li>❌ Webhook not configured</li>
+<li>❌ Push failed for all packages</li>
+</ul>
+<p><strong>Benefit</strong>: Prevents notification spam from:</p>
+<ul>
+<li>Scheduled nightly builds with no code changes</li>
+<li>Re-running workflows</li>
+<li>Testing without secrets</li>
+</ul>
+<h3 id="testing-discord-notifications">Testing Discord Notifications</h3>
+<p><strong>Method 1: Manual Webhook Test</strong></p>
+<pre><code class="lang-powershell"># PowerShell test script
+$webhook = &quot;YOUR_WEBHOOK_URL_HERE&quot;
+
+$payload = @{
+  embeds = @(@{
+    title = &quot;🧪 Test Notification&quot;
+    description = &quot;Testing Krypton Toolkit webhook&quot;
+    color = 3447003
+    fields = @(
+      @{
+        name = &quot;Status&quot;
+        value = &quot;If you see this, webhook is working!&quot;
+        inline = $false
+      }
+    )
+    timestamp = (Get-Date).ToUniversalTime().ToString(&quot;yyyy-MM-ddTHH:mm:ss.fffZ&quot;)
+  })
+} | ConvertTo-Json -Depth 10
+
+Invoke-RestMethod -Uri $webhook -Method Post -Body $payload -ContentType &quot;application/json&quot;
+</code></pre>
+<p><strong>Method 2: Trigger Nightly Workflow</strong></p>
+<ol>
+<li>Ensure alpha branch has different version than what's on nuget.org</li>
+<li>GitHub → Actions → Nightly Release → Run workflow</li>
+<li>Wait for completion</li>
+<li>Check Discord channel</li>
+</ol>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-workflow-exits-with-code-1">Issue: Workflow Exits with Code 1</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Build succeeds</li>
+<li>No compilation errors</li>
+<li>Workflow shows red X</li>
+</ul>
+<p><strong>Common Causes &amp; Solutions</strong>:</p>
+<h4 id="1-version-detection-failed">1. Version Detection Failed</h4>
+<p><strong>Log shows</strong>: Empty version or parsing error</p>
+<p><strong>Solution</strong>: Now uses assembly-based detection (most reliable):</p>
+<pre><code class="lang-powershell"># Reads actual compiled DLL
+$dllPath = Get-ChildItem &quot;Bin/Release/net48/Krypton.Toolkit.dll&quot;
+$assemblyVersion = [System.Reflection.AssemblyName]::GetAssemblyName($dllPath.FullName).Version
+</code></pre>
+<p><strong>Fallbacks</strong>: csproj XML → hardcoded version</p>
+<h4 id="2-github-release-already-exists">2. GitHub Release Already Exists</h4>
+<p><strong>Error</strong>: <code>release already exists</code></p>
+<p><strong>Solution</strong>: Idempotent create-or-update logic:</p>
+<pre><code class="lang-powershell">gh release view $tag 2&gt;&amp;1 | Out-Null
+if ($LASTEXITCODE -eq 0) {
+  gh release edit $tag ...  # Update existing
+} else {
+  gh release create $tag ... # Create new
+}
+</code></pre>
+<h4 id="3-missing-api-key">3. Missing API Key</h4>
+<p><strong>Error</strong>: <code>401 Unauthorized</code> from nuget.org</p>
+<p><strong>Solution</strong>: Check before pushing:</p>
+<pre><code class="lang-powershell">if (-not $env:NUGET_API_KEY) {
+  Write-Warning &quot;NUGET_API_KEY not set - skipping&quot;
+  exit 0  # Success exit, not failure
+}
+</code></pre>
+<h4 id="4-missing-webhook">4. Missing Webhook</h4>
+<p><strong>Error</strong>: HTTP error from Discord</p>
+<p><strong>Solution</strong>: Check before posting:</p>
+<pre><code class="lang-powershell">if (-not $env:DISCORD_WEBHOOK_NIGHTLY) {
+  Write-Warning &quot;Webhook not set - skipping&quot;
+  exit 0
+}
+</code></pre>
+<hr>
+<h3 id="issue-discord-shows-empty-version">Issue: Discord Shows Empty Version</h3>
+<p><strong>Symptoms</strong>:</p>
+<pre><code>📌 Version
+``
+</code></pre>
+<p><strong>Cause</strong>: <code>Get Version</code> step missing or failed</p>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li>Ensure <code>Get Version</code> step has <code>id: get_version</code></li>
+<li>Check assembly was built (DLL exists)</li>
+<li>Verify path matches configuration:
+<ul>
+<li>Master: <code>Bin/Release/net48/</code></li>
+<li>Canary: <code>Bin/Canary/net48/</code></li>
+<li>Nightly: <code>Bin/Nightly/net48/</code></li>
+</ul>
+</li>
+</ol>
+<p><strong>Check logs for</strong>:</p>
+<pre><code>Got version from assembly: 100.25.1.1
+Final determined version: 100.25.1.1
+</code></pre>
+<hr>
+<h3 id="issue-no-discord-notification">Issue: No Discord Notification</h3>
+<p><strong>Checklist</strong>:</p>
+<ol>
+<li><p><strong>Was notification sent?</strong></p>
+<ul>
+<li>Check workflow logs for &quot;Announce ... on Discord&quot; step</li>
+<li>Look for &quot;skipped&quot; indicator in GitHub UI</li>
+</ul>
+</li>
+<li><p><strong>Check condition</strong>:</p>
+<pre><code>if: steps.push_nuget.outputs.packages_published == 'True'
+</code></pre>
+<ul>
+<li>Log shows: <code>packages_published=false</code> → Notification skipped (expected)</li>
+<li>Log shows: <code>packages_published=True</code> → Should have sent</li>
+</ul>
+</li>
+<li><p><strong>Check webhook</strong>:</p>
+<ul>
+<li>Log shows: &quot;Webhook not set&quot; → Add secret to GitHub</li>
+<li>No warning → Webhook present</li>
+</ul>
+</li>
+<li><p><strong>Verify in Discord</strong>:</p>
+<ul>
+<li>Check correct channel</li>
+<li>Webhook still exists in Server Settings?</li>
+<li>Bot has permission to post?</li>
+</ul>
+</li>
+<li><p><strong>Test webhook manually</strong> (see Testing section above)</p>
+</li>
+</ol>
+<hr>
+<h3 id="issue-scheduled-workflow-doesnt-run">Issue: Scheduled Workflow Doesn't Run</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Manual trigger works</li>
+<li>Midnight UTC passes with no run</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<h4 id="1-workflow-not-on-default-branch">1. Workflow Not on Default Branch</h4>
+<p><strong>GitHub Rule</strong>: Scheduled workflows only run from the default branch</p>
+<p><strong>Solution</strong>:</p>
+<ul>
+<li>Ensure <code>nightly.yml</code> is merged to <code>master</code> (default branch)</li>
+<li>Check Settings → General → Default branch</li>
+</ul>
+<p><strong>Verification</strong>:</p>
+<pre><code class="lang-cmd">git checkout master
+git pull origin master
+ls .github/workflows/nightly.yml  # Should exist
+</code></pre>
+<h4 id="2-workflows-disabled">2. Workflows Disabled</h4>
+<p><strong>Check</strong>: Settings → Actions → General
+<strong>Enable</strong>: &quot;Allow all actions and reusable workflows&quot;</p>
+<h4 id="3-incorrect-cron-syntax">3. Incorrect Cron Syntax</h4>
+<p><strong>Test cron</strong>: Use <a href="https://crontab.guru/">crontab.guru</a></p>
+<p><strong>Examples</strong>:</p>
+<pre><code class="lang-yaml">'0 0 * * *'      # Midnight UTC daily ✅
+'0 0 * * 1-5'    # Weekdays only ✅
+'0 */6 * * *'    # Every 6 hours ✅
+'0 0 * * 0'      # Sundays only ✅
+</code></pre>
+<h4 id="4-no-recent-activity">4. No Recent Activity</h4>
+<p><strong>GitHub Behavior</strong>: Workflows may be disabled if repository has no activity for 60 days</p>
+<p><strong>Solution</strong>: Make any commit to re-enable</p>
+<hr>
+<h3 id="issue-packages-skipped-already-exist">Issue: Packages Skipped (Already Exist)</h3>
+<p><strong>Log shows</strong>:</p>
+<pre><code>Package Krypton.Toolkit.100.25.1.1.nupkg already exists - skipped
+</code></pre>
+<p><strong>This is EXPECTED if</strong>:</p>
+<ul>
+<li>✅ Version wasn't bumped</li>
+<li>✅ Re-running workflow</li>
+<li>✅ Same version already on nuget.org</li>
+</ul>
+<p><strong>To publish new packages</strong>:</p>
+<ol>
+<li>Bump version in <code>Directory.Build.props</code></li>
+<li>Commit and push</li>
+<li>Workflow will publish new version</li>
+</ol>
+<p><strong>Note</strong>: <code>--skip-duplicate</code> flag prevents errors, workflow continues successfully</p>
+<hr>
+<h2 id="advanced-topics">Advanced Topics</h2>
+<h3 id="customizing-nightly-schedule">Customizing Nightly Schedule</h3>
+<p><strong>Current</strong>: <code>'0 0 * * *'</code> (midnight UTC daily)</p>
+<p><strong>Change to different time</strong>:</p>
+<pre><code class="lang-yaml">on:
+  schedule:
+    - cron: '0 2 * * *'  # 2 AM UTC
+</code></pre>
+<p><strong>Weekdays only</strong>:</p>
+<pre><code class="lang-yaml">- cron: '0 0 * * 1-5'  # Mon-Fri at midnight
+</code></pre>
+<p><strong>Twice daily</strong>:</p>
+<pre><code class="lang-yaml">- cron: '0 0,12 * * *'  # Midnight and noon
+</code></pre>
+<p><strong>Weekly</strong>:</p>
+<pre><code class="lang-yaml">- cron: '0 0 * * 0'  # Sundays at midnight
+</code></pre>
+<p><strong>Test syntax</strong>: <a href="https://crontab.guru/">https://crontab.guru/</a></p>
+<hr>
+<h3 id="manual-workflow-trigger">Manual Workflow Trigger</h3>
+<p>All workflows support manual triggering for testing.</p>
+<p><strong>Add to any workflow</strong>:</p>
+<pre><code class="lang-yaml">on:
+  push:
+    branches: [master]
+  workflow_dispatch:  # Enables manual trigger
+</code></pre>
+<p><strong>Usage</strong>:</p>
+<ol>
+<li>GitHub → Actions</li>
+<li>Select workflow</li>
+<li>&quot;Run workflow&quot; button</li>
+<li>Select branch</li>
+<li>Click &quot;Run workflow&quot;</li>
+</ol>
+<p><strong>Current Status</strong>:</p>
+<ul>
+<li>✅ <code>nightly.yml</code> - Has <code>workflow_dispatch</code></li>
+<li>❌ <code>release.yml</code> - Could be added for testing</li>
+<li>❌ <code>build.yml</code> - Could be added for testing</li>
+</ul>
+<hr>
+<h3 id="workflow-artifacts">Workflow Artifacts</h3>
+<p>To save build outputs for download:</p>
+<pre><code class="lang-yaml">- name: Upload Packages
+  uses: actions/upload-artifact@v4
+  with:
+    name: nuget-packages
+    path: Bin/Packages/Release/*.nupkg
+    retention-days: 7
+</code></pre>
+<p><strong>Benefit</strong>: Download packages without pushing to NuGet</p>
+<p><strong>Access</strong>: Actions → Workflow run → Artifacts section</p>
+<hr>
+<h3 id="concurrent-workflow-runs">Concurrent Workflow Runs</h3>
+<p><strong>Current Behavior</strong>: Multiple workflows can run simultaneously</p>
+<p><strong>To limit concurrency</strong> (prevent simultaneous releases):</p>
+<pre><code class="lang-yaml">concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false  # Queue instead of cancel
+</code></pre>
+<p><strong>Use case</strong>: Prevent two releases from running at same time</p>
+<hr>
+<h3 id="environment-protection">Environment Protection</h3>
+<p>For additional safety on production releases:</p>
+<p><strong>Setup</strong>:</p>
+<ol>
+<li>Settings → Environments → New environment</li>
+<li>Name: <code>production</code></li>
+<li>Configure:
+<ul>
+<li>✅ Required reviewers (select team members)</li>
+<li>✅ Wait timer (e.g., 5 minutes)</li>
+</ul>
+</li>
+</ol>
+<p><strong>Use in workflow</strong>:</p>
+<pre><code class="lang-yaml">jobs:
+  release-master:
+    runs-on: windows-2022
+    environment: production  # Requires approval
+</code></pre>
+<p><strong>Benefit</strong>: Manual approval required before publishing to nuget.org</p>
+<hr>
+<h3 id="debugging-workflows">Debugging Workflows</h3>
+<h4 id="enable-debug-logging">Enable Debug Logging</h4>
+<p><strong>Repository Settings</strong>:</p>
+<ul>
+<li>Settings → Secrets → New secret</li>
+<li><strong>Name</strong>: <code>ACTIONS_STEP_DEBUG</code></li>
+<li><strong>Value</strong>: <code>true</code></li>
+</ul>
+<p><strong>Next run shows</strong>:</p>
+<ul>
+<li>Detailed step-by-step execution</li>
+<li>Variable values</li>
+<li>Command outputs</li>
+</ul>
+<h4 id="enable-runner-diagnostic-logging">Enable Runner Diagnostic Logging</h4>
+<p><strong>Secret</strong>:</p>
+<ul>
+<li><strong>Name</strong>: <code>ACTIONS_RUNNER_DEBUG</code></li>
+<li><strong>Value</strong>: <code>true</code></li>
+</ul>
+<p><strong>Shows</strong>: Internal GitHub Actions runner details</p>
+<h4 id="add-custom-diagnostics">Add Custom Diagnostics</h4>
+<pre><code class="lang-yaml">- name: Debug Info
+  run: |
+    Write-Host &quot;Current directory: $(Get-Location)&quot;
+    Write-Host &quot;Environment variables:&quot;
+    Get-ChildItem env: | Format-Table -AutoSize
+    Write-Host &quot;Files in current directory:&quot;
+    Get-ChildItem -Recurse
+</code></pre>
+<hr>
+<h3 id="workflow-monitoring">Workflow Monitoring</h3>
+<h4 id="successfailure-notifications">Success/Failure Notifications</h4>
+<p><strong>GitHub Marketplace Actions</strong>:</p>
+<ul>
+<li><a href="https://github.com/8398a7/action-slack">action-slack</a> - Slack notifications</li>
+<li><a href="https://github.com/ravsamhq/notify-slack-action">notify-workflow-status</a> - Multi-platform</li>
+<li><a href="https://github.com/sarisia/actions-status-discord">action-status-discord</a> - Discord status</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-yaml">- name: Workflow Status
+  if: always()
+  uses: sarisia/actions-status-discord@v1
+  with:
+    webhook: ${{ secrets.DISCORD_WEBHOOK_STATUS }}
+    status: ${{ job.status }}
+</code></pre>
+<h4 id="workflow-run-analytics">Workflow Run Analytics</h4>
+<p><strong>View in GitHub</strong>:</p>
+<ul>
+<li>Insights → Actions</li>
+<li>See:
+<ul>
+<li>Success/failure rates</li>
+<li>Execution times</li>
+<li>Billable minutes</li>
+<li>Workflow trends</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h3 id="security-best-practices">Security Best Practices</h3>
+<h4 id="secret-rotation">Secret Rotation</h4>
+<p><strong>NuGet API Key</strong> (annually):</p>
+<ol>
+<li>Create new API key on nuget.org</li>
+<li>Update GitHub secret</li>
+<li>Delete old API key on nuget.org</li>
+<li>Test with manual workflow trigger</li>
+</ol>
+<p><strong>Discord Webhooks</strong> (as needed):</p>
+<ul>
+<li>Regenerate in Discord if compromised</li>
+<li>Update GitHub secret</li>
+<li>Old URL stops working immediately</li>
+</ul>
+<h4 id="least-privilege">Least Privilege</h4>
+<p><strong>NuGet API Key Scoping</strong>:</p>
+<ul>
+<li>✅ Push scope only (not delete/unlist)</li>
+<li>✅ Specific to Krypton.* packages</li>
+<li>✅ Limited expiration (365 days max)</li>
+</ul>
+<p><strong>GitHub Token</strong>:</p>
+<ul>
+<li>✅ Auto-generated per workflow run</li>
+<li>✅ Scoped to repository only</li>
+<li>✅ Expires after job completes</li>
+</ul>
+<h4 id="branch-protection">Branch Protection</h4>
+<p><strong>Recommended for</strong>: master, V85-LTS, canary, alpha</p>
+<p><strong>Settings</strong> → Branches → Add rule:</p>
+<ul>
+<li>✅ Require pull request reviews before merging</li>
+<li>✅ Require status checks to pass (build.yml)</li>
+<li>✅ Require branches to be up to date before merging</li>
+<li>✅ Include administrators</li>
+<li>✅ Require linear history</li>
+</ul>
+<p><strong>Benefit</strong>: Prevents accidental direct pushes that trigger releases</p>
+<hr>
+<h2 id="workflow-maintenance">Workflow Maintenance</h2>
+<h3 id="updating-net-sdk-versions">Updating .NET SDK Versions</h3>
+<p>When new .NET version releases (e.g., .NET 11):</p>
+<ol>
+<li><p><strong>Update workflow SDK steps</strong>:</p>
+<pre><code class="lang-yaml">- name: Setup .NET 11 (preview)
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: 11.0.x
+    dotnet-quality: preview
+</code></pre>
+</li>
+<li><p><strong>Update global.json generation</strong>:</p>
+<pre><code class="lang-powershell">$sdkVersion = (dotnet --list-sdks | Select-String &quot;11.0&quot;).ToString().Split(&quot; &quot;)[0]
+</code></pre>
+</li>
+<li><p><strong>Update target frameworks</strong> in <code>.csproj</code> files (see Build System docs)</p>
+</li>
+<li><p><strong>Update Discord notifications</strong>:</p>
+<pre><code class="lang-powershell">value = &quot;• .NET Framework 4.7.2`n...`n• .NET 11.0&quot;
+</code></pre>
+</li>
+<li><p><strong>Test on feature branch</strong> before merging</p>
+</li>
+</ol>
+<h3 id="workflow-performance-optimization">Workflow Performance Optimization</h3>
+<h4 id="cache-optimization">Cache Optimization</h4>
+<p><strong>Current</strong>: Caches <code>~/.nuget/packages</code></p>
+<p><strong>Advanced</strong>: Also cache MSBuild output</p>
+<pre><code class="lang-yaml">- name: Cache Build
+  uses: actions/cache@v4
+  with:
+    path: |
+      **/bin
+      **/obj
+    key: build-${{ hashFiles('**/*.cs') }}
+</code></pre>
+<p><strong>Trade-off</strong>: Faster builds vs. cache storage usage</p>
+<h4 id="conditional-steps">Conditional Steps</h4>
+<p>Skip expensive steps when not needed:</p>
+<pre><code class="lang-yaml">- name: Create Archives
+  if: github.ref == 'refs/heads/master'  # Only on master
+  run: ...
+</code></pre>
+<h4 id="matrix-strategy">Matrix Strategy</h4>
+<p>Build multiple configurations in parallel:</p>
+<pre><code class="lang-yaml">strategy:
+  matrix:
+    configuration: [Release, Debug]
+    framework: [net48, net10.0-windows]
+</code></pre>
+<p><strong>Note</strong>: Current workflows don't use matrix (sequential is clearer for releases)</p>
+<hr>
+<h2 id="workflow-testing-checklist">Workflow Testing Checklist</h2>
+<p>Before merging workflow changes:</p>
+<h3 id="pre-merge">Pre-Merge</h3>
+<ul>
+<li>[ ] Workflow syntax valid (GitHub validates on commit)</li>
+<li>[ ] Tested on feature branch with <code>workflow_dispatch</code></li>
+<li>[ ] All secrets referenced are documented</li>
+<li>[ ] Error handling present for external calls</li>
+<li>[ ] Logging sufficient for debugging</li>
+<li>[ ] No secrets in logs or echo statements</li>
+</ul>
+<h3 id="post-merge">Post-Merge</h3>
+<ul>
+<li>[ ] Build workflow passes on next PR</li>
+<li>[ ] Release workflow tested on each branch</li>
+<li>[ ] NuGet packages published successfully</li>
+<li>[ ] Discord notifications received</li>
+<li>[ ] GitHub releases created (master)</li>
+<li>[ ] Archives uploadable</li>
+</ul>
+<h3 id="nightly-specific">Nightly-Specific</h3>
+<ul>
+<li>[ ] Manual trigger works</li>
+<li>[ ] Checks out alpha branch correctly</li>
+<li>[ ] Handles unchanged version (no spam)</li>
+<li>[ ] Midnight UTC schedule working (check next day)</li>
+</ul>
+<hr>
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="workflow-triggers-summary">Workflow Triggers Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Automatic Triggers</th>
+<th>Manual Trigger</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>build.yml</td>
+<td>PR, Push to any release branch</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>release.yml</td>
+<td>Push to master/V85-LTS/canary/alpha</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>nightly.yml</td>
+<td>Daily at 00:00 UTC</td>
+<td>✅ workflow_dispatch</td>
+</tr>
+</tbody>
+</table>
+<h3 id="secret-names-reference">Secret Names Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Type</th>
+<th>Required</th>
+<th>Used By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NUGET_API_KEY</code></td>
+<td>NuGet API Key</td>
+<td>Yes (for publishing)</td>
+<td>All release workflows</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_MASTER</code></td>
+<td>Discord URL</td>
+<td>No</td>
+<td>release.yml (master)</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_LTS</code></td>
+<td>Discord URL</td>
+<td>No</td>
+<td>release.yml (V85-LTS)</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_CANARY</code></td>
+<td>Discord URL</td>
+<td>No</td>
+<td>release.yml (canary)</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_NIGHTLY</code></td>
+<td>Discord URL</td>
+<td>No</td>
+<td>release.yml (alpha), nightly.yml</td>
+</tr>
+</tbody>
+</table>
+<h3 id="workflow-file-locations">Workflow File Locations</h3>
+<pre><code>.github/
+└── workflows/
+    ├── build.yml      (194 lines)
+    ├── release.yml    (866 lines)
+    └── nightly.yml    (208 lines)
+</code></pre>
+<h3 id="common-commands">Common Commands</h3>
+<p><strong>View workflow runs</strong>:</p>
+<pre><code>GitHub → Actions tab
+</code></pre>
+<p><strong>Manually trigger nightly</strong>:</p>
+<pre><code>Actions → Nightly Release → Run workflow
+</code></pre>
+<p><strong>Check workflow status from CLI</strong>:</p>
+<pre><code class="lang-cmd">gh run list --workflow=release.yml
+gh run view [run-id]
+gh run watch [run-id]
+</code></pre>
+<hr>
+<h2 id="document-information">Document Information</h2>
+<p><strong>Document</strong>: GitHub Actions Workflows Guide
+<strong>Companion Document</strong>: <a href="BuildSystem.html">Build System Guide</a></p>
+<h3 id="related-documentation">Related Documentation</h3>
+<ul>
+<li><a href="BuildSystem.html">Build System Guide</a> - MSBuild scripts and project configuration</li>
+</ul>
+<hr>
+<h2 id="next-steps">Next Steps</h2>
+<p>✅ <strong>Read Next</strong>: <a href="BuildSystem.html">Build System Guide</a> for MSBuild scripts and project structure<br>
+✅ <strong>Setup</strong>: Configure GitHub Secrets (NUGET_API_KEY and Discord webhooks)<br>
+✅ <strong>Test</strong>: Manually trigger nightly workflow to verify configuration<br>
+✅ <strong>Monitor</strong>: Watch first automated nightly build at midnight UTC</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

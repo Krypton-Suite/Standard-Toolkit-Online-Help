@@ -24,7 +24,7 @@ Applicable Events:
 Each time a new *KryptonWorkspaceCell* is added to the workspace controls
 collection this event is fired so that you can customize the settings of that
 cell. As the cell is a class derived from the *KryptonNavigator* you might want
-to consult the [Navigator](../Krypton_Navigator.md) documentation to see the full range of
+to consult the [Navigator](../KryptonNavigator.md) documentation to see the full range of
 available modes and appearance options. As well as changing the appearance you
 are recommend to use this event for attaching to any cell events. You should use
 the *WorkspaceCellRemoved* event to unhook from those events you attach to here.

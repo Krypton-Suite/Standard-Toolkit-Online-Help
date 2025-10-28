@@ -5,7 +5,7 @@ This document will take you through the steps of creating a new pull request. **
 1) Requirements
     a) A copy of [GitHub Desktop](https://desktop.github.com/)
     b) A copy of either [Standard-Toolkit](https://github.com/Krypton-Suite/Standard-Toolkit) or [Extended-Toolkit](https://github.com/Krypton-Suite/Extended-Toolkit)
-    
+
  ## Steps
  
  **Step 1**

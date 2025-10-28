@@ -69,7 +69,639 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptontoggleswitch">KryptonToggleSwitch</h1>
 
-<p>The <code>KryptonToggleSwitch</code> is similar to the <a href="KryptonCheckBox.html">KryptonCheckBox</a> or <a href="KryptonCheckButton.html">KryptonCheckButton</a>. It allows the user to toggle between a <code>Off</code> or <code>On</code> state. This control can be used in version 100 onwards.</p>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonToggleSwitch</code> is a modern toggle switch control with smooth animations, gradient effects, and full Krypton palette integration. It provides an iOS/Android-style toggle switch that fits seamlessly into the Krypton design system with extensive customization options.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> Krypton.Toolkit<br>
+<strong>Inheritance:</strong> <code>Object</code> → <code>MarshalByRefObject</code> → <code>Component</code> → <code>Control</code> → <code>KryptonToggleSwitch</code><br>
+<strong>Implements:</strong> <code>IContentValues</code></p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="modern-toggle-interface">Modern Toggle Interface</h3>
+<ul>
+<li>Smooth animated transitions</li>
+<li>Draggable knob support</li>
+<li>iOS/Android-style appearance</li>
+<li>Keyboard navigation support</li>
+</ul>
+<h3 id="visual-effects">Visual Effects</h3>
+<ul>
+<li>Gradient knob rendering</li>
+<li>Emboss shadow effects</li>
+<li>Customizable corner rounding</li>
+<li>On/Off text labels</li>
+</ul>
+<h3 id="palette-integration">Palette Integration</h3>
+<ul>
+<li>Full Krypton theme support</li>
+<li>State-based styling (Normal, Tracking, Pressed, Disabled)</li>
+<li>Theme color extraction</li>
+<li>Custom color overrides</li>
+</ul>
+<h3 id="animation">Animation</h3>
+<ul>
+<li>Smooth knob sliding animation</li>
+<li>Gradient color transitions</li>
+<li>Configurable animation speed</li>
+<li>High-quality rendering (anti-aliasing)</li>
+</ul>
+<hr>
+<h2 id="constructor">Constructor</h2>
+<h3 id="kryptontoggleswitch-1">KryptonToggleSwitch()</h3>
+<p>Initializes a new instance of the KryptonToggleSwitch class.</p>
+<pre><code class="lang-csharp">public KryptonToggleSwitch()
+</code></pre>
+<p><strong>Default Settings:</strong></p>
+<ul>
+<li><code>Checked</code> = <code>false</code></li>
+<li><code>Size</code> = <code>90 x 28</code> (adjusts based on padding)</li>
+<li>Double buffered rendering enabled</li>
+<li>Transparent background</li>
+<li>Tab stop enabled</li>
+<li>Default animation interval: 15ms</li>
+</ul>
+<hr>
+<h2 id="properties">Properties</h2>
+<h3 id="core-properties">Core Properties</h3>
+<h4 id="checked">Checked</h4>
+<p>Gets or sets whether the toggle switch is in the ON position.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[Description(&quot;Indicates whether the toggle switch is checked.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public bool Checked { get; set; }
+</code></pre>
+<p><strong>Default:</strong> <code>false</code></p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.Checked = true; // Turn ON
+kryptonToggleSwitch1.Checked = false; // Turn OFF
+
+// Toggle
+kryptonToggleSwitch1.Checked = !kryptonToggleSwitch1.Checked;
+</code></pre>
+<hr>
+<h3 id="appearance-states">Appearance States</h3>
+<h4 id="statecommon">StateCommon</h4>
+<p>Gets access to common appearance settings that other states can override.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Defines the common appearance settings.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTripleRedirect StateCommon { get; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.StateCommon.Back.Color1 = Color.LightGray;
+kryptonToggleSwitch1.StateCommon.Border.Width = 2;
+kryptonToggleSwitch1.StateCommon.Border.Rounding = 15;
+</code></pre>
+<hr>
+<h4 id="statenormal">StateNormal</h4>
+<p>Gets access to normal state appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Defines the normal appearance settings.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTriple StateNormal { get; }
+</code></pre>
+<hr>
+<h4 id="statetracking">StateTracking</h4>
+<p>Gets access to tracking (hover) state appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Defines the tracking appearance settings.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTriple StateTracking { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Applied when mouse hovers over the control</li>
+</ul>
+<hr>
+<h4 id="statepressed">StatePressed</h4>
+<p>Gets access to pressed state appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Defines the pressed appearance settings.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTriple StatePressed { get; }
+</code></pre>
+<hr>
+<h4 id="statedisabled">StateDisabled</h4>
+<p>Gets access to disabled state appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Defines the disabled appearance settings.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteTriple StateDisabled { get; }
+</code></pre>
+<hr>
+<h3 id="toggle-switch-customization">Toggle Switch Customization</h3>
+<h4 id="toggleswitchvalues">ToggleSwitchValues</h4>
+<p>Gets or sets the toggle switch visual customization options.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Visual customization options for the toggle switch.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public ToggleSwitchValues ToggleSwitchValues { get; set; }
+</code></pre>
+<p><strong>Properties Available in ToggleSwitchValues:</strong></p>
+<h5 id="oncolor--offcolor">OnColor / OffColor</h5>
+<p>Sets the color for ON and OFF states when not using theme colors.</p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.ToggleSwitchValues.OnColor = Color.Green;
+kryptonToggleSwitch1.ToggleSwitchValues.OffColor = Color.Red;
+</code></pre>
+<h5 id="usethemecolors">UseThemeColors</h5>
+<p>Determines whether to use colors from the current theme.</p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.ToggleSwitchValues.UseThemeColors = true;
+</code></pre>
+<h5 id="enableknobgradient">EnableKnobGradient</h5>
+<p>Enables gradient rendering on the knob.</p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.ToggleSwitchValues.EnableKnobGradient = true;
+</code></pre>
+<h5 id="gradientdirection">GradientDirection</h5>
+<p>Sets the gradient direction when gradient is enabled.</p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.ToggleSwitchValues.GradientDirection = LinearGradientMode.Vertical;
+</code></pre>
+<h5 id="showtext">ShowText</h5>
+<p>Determines whether to show ON/OFF text labels.</p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.ToggleSwitchValues.ShowText = true;
+</code></pre>
+<h5 id="onlyshowcoloronknob">OnlyShowColorOnKnob</h5>
+<p>When true, only the knob shows color; background remains theme-colored.</p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.ToggleSwitchValues.OnlyShowColorOnKnob = true;
+</code></pre>
+<h5 id="enableembosseffect">EnableEmbossEffect</h5>
+<p>Enables a shadow/emboss effect for depth.</p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.ToggleSwitchValues.EnableEmbossEffect = true;
+</code></pre>
+<h5 id="cornerradius">CornerRadius</h5>
+<p>Sets the corner rounding radius.</p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.ToggleSwitchValues.CornerRadius = 20;
+</code></pre>
+<hr>
+<h3 id="hidden-properties">Hidden Properties</h3>
+<p>The following base Control properties are hidden as they're not applicable:</p>
+<ul>
+<li><code>BackColor</code> - Use palette settings instead</li>
+<li><code>ForeColor</code> - Use palette settings instead</li>
+<li><code>Font</code> - Use palette settings instead</li>
+<li><code>Text</code> - ON/OFF text is shown internally</li>
+<li><code>BackgroundImage</code> - Not supported</li>
+<li><code>RightToLeft</code> - Hidden but functional</li>
+</ul>
+<hr>
+<h2 id="methods">Methods</h2>
+<h3 id="resettoggleswitchvalues">ResetToggleSwitchValues()</h3>
+<p>Resets the ToggleSwitchValues property to default values.</p>
+<pre><code class="lang-csharp">public void ResetToggleSwitchValues()
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.ResetToggleSwitchValues(); // Reset all customizations
+</code></pre>
+<hr>
+<h2 id="events">Events</h2>
+<h3 id="checkedchanged">CheckedChanged</h3>
+<p>Occurs when the value of the Checked property changes.</p>
+<pre><code class="lang-csharp">[Description(&quot;Occurs when the value of the Checked property changes.&quot;)]
+public event EventHandler CheckedChanged
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonToggleSwitch1.CheckedChanged += (s, e) =&gt;
+{
+    if (kryptonToggleSwitch1.Checked)
+    {
+        StartService();
+    }
+    else
+    {
+        StopService();
+    }
+};
+</code></pre>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-toggle-switch">Basic Toggle Switch</h3>
+<pre><code class="lang-csharp">var toggle = new KryptonToggleSwitch
+{
+    Location = new Point(20, 20),
+    Size = new Size(90, 30)
+};
+
+toggle.CheckedChanged += (s, e) =&gt;
+{
+    label1.Text = toggle.Checked ? &quot;ON&quot; : &quot;OFF&quot;;
+};
+
+this.Controls.Add(toggle);
+</code></pre>
+<hr>
+<h3 id="custom-colors">Custom Colors</h3>
+<pre><code class="lang-csharp">var toggle = new KryptonToggleSwitch
+{
+    Location = new Point(20, 20)
+};
+
+// Use custom colors instead of theme colors
+toggle.ToggleSwitchValues.UseThemeColors = false;
+toggle.ToggleSwitchValues.OnColor = Color.LimeGreen;
+toggle.ToggleSwitchValues.OffColor = Color.Crimson;
+toggle.ToggleSwitchValues.EnableKnobGradient = false;
+toggle.ToggleSwitchValues.ShowText = true;
+</code></pre>
+<hr>
+<h3 id="gradient-knob">Gradient Knob</h3>
+<pre><code class="lang-csharp">var toggle = new KryptonToggleSwitch();
+
+// Enable gradient effect
+toggle.ToggleSwitchValues.EnableKnobGradient = true;
+toggle.ToggleSwitchValues.GradientDirection = LinearGradientMode.Vertical;
+toggle.ToggleSwitchValues.UseThemeColors = true; // Use theme colors for gradient
+</code></pre>
+<hr>
+<h3 id="embossed-toggle">Embossed Toggle</h3>
+<pre><code class="lang-csharp">var toggle = new KryptonToggleSwitch
+{
+    Size = new Size(100, 35)
+};
+
+// Add depth with emboss effect
+toggle.ToggleSwitchValues.EnableEmbossEffect = true;
+toggle.ToggleSwitchValues.CornerRadius = 17;
+
+// Custom background
+toggle.StateNormal.Back.Color1 = Color.WhiteSmoke;
+toggle.StateNormal.Border.Color1 = Color.Gray;
+toggle.StateNormal.Border.Width = 1;
+</code></pre>
+<hr>
+<h3 id="settings-toggle-bank">Settings Toggle Bank</h3>
+<pre><code class="lang-csharp">public class SettingsPanel : KryptonPanel
+{
+    public SettingsPanel()
+    {
+        CreateToggle(&quot;Enable Notifications&quot;, 20, (sender, e) =&gt; 
+        {
+            if (sender is KryptonToggleSwitch toggle)
+                EnableNotifications(toggle.Checked);
+        });
+        
+        CreateToggle(&quot;Auto-Save&quot;, 60, (sender, e) =&gt; 
+        {
+            if (sender is KryptonToggleSwitch toggle)
+                EnableAutoSave(toggle.Checked);
+        });
+        
+        CreateToggle(&quot;Dark Mode&quot;, 100, (sender, e) =&gt; 
+        {
+            if (sender is KryptonToggleSwitch toggle)
+                ApplyDarkMode(toggle.Checked);
+        });
+    }
+    
+    private void CreateToggle(string labelText, int y, EventHandler handler)
+    {
+        var label = new KryptonLabel
+        {
+            Text = labelText,
+            Location = new Point(20, y + 5),
+            AutoSize = true
+        };
+        
+        var toggle = new KryptonToggleSwitch
+        {
+            Location = new Point(200, y)
+        };
+        
+        toggle.CheckedChanged += handler;
+        
+        Controls.Add(label);
+        Controls.Add(toggle);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="binding-to-properties">Binding to Properties</h3>
+<pre><code class="lang-csharp">public class Settings
+{
+    public bool NotificationsEnabled { get; set; }
+}
+
+// Bind toggle to property
+var settings = new Settings();
+var toggle = new KryptonToggleSwitch();
+
+// Set initial state
+toggle.Checked = settings.NotificationsEnabled;
+
+// Update property when toggled
+toggle.CheckedChanged += (s, e) =&gt;
+{
+    settings.NotificationsEnabled = toggle.Checked;
+    SaveSettings(settings);
+};
+</code></pre>
+<hr>
+<h3 id="masterdetail-toggles">Master/Detail Toggles</h3>
+<pre><code class="lang-csharp">var masterToggle = new KryptonToggleSwitch
+{
+    Location = new Point(20, 20)
+};
+
+var detailToggle1 = new KryptonToggleSwitch
+{
+    Location = new Point(40, 60),
+    Enabled = false
+};
+
+var detailToggle2 = new KryptonToggleSwitch
+{
+    Location = new Point(40, 100),
+    Enabled = false
+};
+
+// Master controls details
+masterToggle.CheckedChanged += (s, e) =&gt;
+{
+    bool enabled = masterToggle.Checked;
+    detailToggle1.Enabled = enabled;
+    detailToggle2.Enabled = enabled;
+    
+    if (!enabled)
+    {
+        detailToggle1.Checked = false;
+        detailToggle2.Checked = false;
+    }
+};
+</code></pre>
+<hr>
+<h3 id="confirmation-dialog">Confirmation Dialog</h3>
+<pre><code class="lang-csharp">private void ShowToggleConfirmation(KryptonToggleSwitch toggle)
+{
+    toggle.CheckedChanged += (s, e) =&gt;
+    {
+        if (toggle.Checked)
+        {
+            var result = MessageBox.Show(
+                &quot;Are you sure you want to enable this feature?&quot;,
+                &quot;Confirm&quot;,
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+            
+            if (result == DialogResult.No)
+            {
+                // Revert without triggering event again
+                toggle.CheckedChanged -= null; // Temporarily unhook
+                toggle.Checked = false;
+                // Re-hook event
+            }
+        }
+    };
+}
+</code></pre>
+<hr>
+<h3 id="themed-toggle">Themed Toggle</h3>
+<pre><code class="lang-csharp">// Toggle that automatically matches the current theme
+var themedToggle = new KryptonToggleSwitch();
+
+// Use theme colors for everything
+themedToggle.ToggleSwitchValues.UseThemeColors = true;
+themedToggle.ToggleSwitchValues.EnableKnobGradient = true;
+themedToggle.ToggleSwitchValues.ShowText = true;
+
+// Background matches control backgrounds
+themedToggle.StateNormal.Back.Color1 = Color.Transparent;
+</code></pre>
+<hr>
+<h3 id="animated-state-indicator">Animated State Indicator</h3>
+<pre><code class="lang-csharp">public class StatusIndicator : UserControl
+{
+    private KryptonToggleSwitch toggle;
+    private KryptonLabel statusLabel;
+    private Timer blinkTimer;
+    
+    public StatusIndicator()
+    {
+        toggle = new KryptonToggleSwitch
+        {
+            Location = new Point(10, 10),
+            Enabled = false // Read-only indicator
+        };
+        
+        statusLabel = new KryptonLabel
+        {
+            Location = new Point(110, 15),
+            AutoSize = true
+        };
+        
+        blinkTimer = new Timer { Interval = 500 };
+        blinkTimer.Tick += (s, e) =&gt;
+        {
+            statusLabel.Visible = !statusLabel.Visible;
+        };
+        
+        Controls.Add(toggle);
+        Controls.Add(statusLabel);
+    }
+    
+    public void SetStatus(bool active, string message)
+    {
+        toggle.Checked = active;
+        statusLabel.Text = message;
+        
+        if (active)
+        {
+            statusLabel.StateCommon.ShortText.Color1 = Color.Green;
+            blinkTimer.Stop();
+            statusLabel.Visible = true;
+        }
+        else
+        {
+            statusLabel.StateCommon.ShortText.Color1 = Color.Red;
+            blinkTimer.Start();
+        }
+    }
+}
+</code></pre>
+<hr>
+<h3 id="keyboard-navigation">Keyboard Navigation</h3>
+<pre><code class="lang-csharp">// Toggle responds to keyboard input
+var toggle = new KryptonToggleSwitch
+{
+    TabStop = true,
+    TabIndex = 0
+};
+
+// Supported keys:
+// - Space, Enter: Toggle
+// - Left/Right: Toggle
+// - Home: Set to OFF
+// - End: Set to ON
+// - Tab: Navigate to next control
+// - +/-: Toggle
+// - PageUp/PageDown: Toggle
+</code></pre>
+<hr>
+<h2 id="design-considerations">Design Considerations</h2>
+<h3 id="animation-system">Animation System</h3>
+<p>The control uses a timer-based animation system:</p>
+<ol>
+<li><strong>Smooth Transitions:</strong> Lerp interpolation for smooth motion</li>
+<li><strong>Frame Rate:</strong> 15ms interval (~66 FPS)</li>
+<li><strong>Gradient Animation:</strong> Color interpolation during state changes</li>
+<li><strong>Performance:</strong> Optimized invalidation regions</li>
+</ol>
+<hr>
+<h3 id="rendering-pipeline">Rendering Pipeline</h3>
+<pre><code>OnPaint
+  ├─ Set graphics quality (AntiAlias, HighQuality)
+  ├─ Determine current state (Normal/Tracking/Pressed/Disabled)
+  ├─ Draw emboss effect (if enabled)
+  ├─ Draw background with rounded corners
+  ├─ Draw border
+  ├─ Draw knob (solid or gradient)
+  └─ Draw ON/OFF text (if enabled)
+</code></pre>
+<hr>
+<h3 id="state-resolution">State Resolution</h3>
+<p>The control determines its visual state in this order:</p>
+<ol>
+<li><strong>Disabled</strong> - Control is disabled</li>
+<li><strong>Pressed</strong> - Mouse button down (currently not used for toggle)</li>
+<li><strong>Tracking</strong> - Mouse hovering over control</li>
+<li><strong>Normal</strong> - Default state</li>
+</ol>
+<hr>
+<h3 id="performance-tips">Performance Tips</h3>
+<ol>
+<li><strong>Reduce Repaints:</strong> Animation only invalidates knob region</li>
+<li><strong>Graphics Quality:</strong> High-quality rendering uses more CPU</li>
+<li><strong>Emboss Effect:</strong> Adds slight overhead when enabled</li>
+<li><strong>Gradient Rendering:</strong> More expensive than solid colors</li>
+</ol>
+<hr>
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="enabledisable-features">Enable/Disable Features</h3>
+<pre><code class="lang-csharp">private void SetupFeatureToggles()
+{
+    var autoSaveToggle = new KryptonToggleSwitch();
+    autoSaveToggle.CheckedChanged += (s, e) =&gt;
+    {
+        autoSaveTimer.Enabled = autoSaveToggle.Checked;
+    };
+    
+    var spellCheckToggle = new KryptonToggleSwitch();
+    spellCheckToggle.CheckedChanged += (s, e) =&gt;
+    {
+        textEditor.SpellCheck = spellCheckToggle.Checked;
+    };
+}
+</code></pre>
+<hr>
+<h3 id="wizard-navigation">Wizard Navigation</h3>
+<pre><code class="lang-csharp">public class WizardPage
+{
+    private KryptonToggleSwitch agreeToggle;
+    private KryptonButton nextButton;
+    
+    public WizardPage()
+    {
+        agreeToggle = new KryptonToggleSwitch();
+        nextButton = new KryptonButton { Enabled = false };
+        
+        agreeToggle.CheckedChanged += (s, e) =&gt;
+        {
+            nextButton.Enabled = agreeToggle.Checked;
+        };
+    }
+}
+</code></pre>
+<hr>
+<h3 id="dashboard-controls">Dashboard Controls</h3>
+<pre><code class="lang-csharp">public class DashboardPanel : KryptonPanel
+{
+    public DashboardPanel()
+    {
+        // System controls
+        AddToggle(&quot;System Power&quot;, 0, SystemPowerToggled);
+        AddToggle(&quot;WiFi&quot;, 50, WiFiToggled);
+        AddToggle(&quot;Bluetooth&quot;, 100, BluetoothToggled);
+        AddToggle(&quot;Airplane Mode&quot;, 150, AirplaneModeToggled);
+    }
+    
+    private void AddToggle(string text, int y, EventHandler handler)
+    {
+        var panel = new KryptonPanel
+        {
+            Location = new Point(0, y),
+            Size = new Size(Width, 40)
+        };
+        
+        var label = new KryptonLabel
+        {
+            Text = text,
+            Location = new Point(10, 10),
+            AutoSize = true
+        };
+        
+        var toggle = new KryptonToggleSwitch
+        {
+            Location = new Point(Width - 110, 5)
+        };
+        
+        toggle.CheckedChanged += handler;
+        
+        panel.Controls.Add(label);
+        panel.Controls.Add(toggle);
+        Controls.Add(panel);
+    }
+}
+</code></pre>
+<hr>
+<h2 id="compatibility">Compatibility</h2>
+<ul>
+<li><strong>Target Frameworks:</strong> <code>net472</code>, <code>net48</code>, <code>net481</code>, <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+<li><strong>Windows Forms:</strong> Required</li>
+<li><strong>Dependencies:</strong> Krypton.Toolkit core components</li>
+<li><strong>Rendering:</strong> Requires GDI+ (System.Drawing)</li>
+</ul>
+<hr>
+<h2 id="known-limitations">Known Limitations</h2>
+<ol>
+<li><strong>Drag Support:</strong> Knob drag code present but toggle-on-click overrides it</li>
+<li><strong>IContentValues:</strong> Interface implemented but methods throw NotImplementedException</li>
+<li><strong>Text Customization:</strong> ON/OFF text uses KryptonManager strings (not customizable per control)</li>
+<li><strong>Size Constraints:</strong> Minimum size enforced (50x20) but may clip content if too small</li>
+</ol>
+<hr>
+<h2 id="comparison-with-alternatives">Comparison with Alternatives</h2>
+<h3 id="vs-checkbox">vs CheckBox</h3>
+<p><strong>KryptonToggleSwitch:</strong></p>
+<ul>
+<li>✅ Modern appearance</li>
+<li>✅ Animated transitions</li>
+<li>✅ Clear ON/OFF indication</li>
+<li>❌ Takes more space</li>
+</ul>
+<p><strong>KryptonCheckBox:</strong></p>
+<ul>
+<li>✅ Traditional and familiar</li>
+<li>✅ Compact</li>
+<li>✅ Three-state support</li>
+<li>❌ Less visually distinctive</li>
+</ul>
+<hr>
+<h3 id="vs-radiobutton">vs RadioButton</h3>
+<p>Use <strong>ToggleSwitch</strong> for:</p>
+<ul>
+<li>Single ON/OFF options</li>
+<li>Feature enable/disable</li>
+<li>Binary choices with clear states</li>
+</ul>
+<p>Use <strong>RadioButton</strong> for:</p>
+<ul>
+<li>Multiple mutually exclusive options</li>
+<li>Selection from a set of choices</li>
+</ul>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="KryptonCheckBox.html">KryptonCheckBox</a> - Traditional checkbox control</li>
+<li><a href="KryptonRadioButton.html">KryptonRadioButton</a> - Radio button control</li>
+<li><a href="../Palette/PaletteTriple.md">PaletteTriple</a> - Triple palette settings</li>
+<li><a href="../Values/ToggleSwitchValues.md">ToggleSwitchValues</a> - Customization values class</li>
+</ul>
 
 </article>
           </div>

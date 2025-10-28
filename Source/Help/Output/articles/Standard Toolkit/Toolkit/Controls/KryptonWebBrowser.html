@@ -69,7 +69,794 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonwebbrowser">KryptonWebBrowser</h1>
 
-<p><img src="KryptonWebBrowser.png" alt=""></p>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonWebBrowser</code> is a themed wrapper around the standard Windows Forms <code>WebBrowser</code> control, providing Krypton palette integration and context menu support. It's primarily designed for use as a rich text editor or for displaying HTML content within themed applications.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> Krypton.Toolkit<br>
+<strong>Inheritance:</strong> <code>Object</code> → <code>MarshalByRefObject</code> → <code>Component</code> → <code>Control</code> → <code>WebBrowser</code> → <code>KryptonWebBrowser</code></p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="palette-integration">Palette Integration</h3>
+<ul>
+<li>Integrates with Krypton palette system</li>
+<li>Automatic renderer creation</li>
+<li>Theme-aware context menus</li>
+</ul>
+<h3 id="context-menu-support">Context Menu Support</h3>
+<ul>
+<li>Native <code>KryptonContextMenu</code> support</li>
+<li>Theme-aware <code>ContextMenuStrip</code> rendering</li>
+<li>Right-click and keyboard activation</li>
+</ul>
+<h3 id="rich-text-editing">Rich Text Editing</h3>
+<ul>
+<li>Can be used as a WYSIWYG HTML editor</li>
+<li>Full WebBrowser functionality</li>
+<li>Document manipulation</li>
+</ul>
+<h3 id="double-buffering">Double Buffering</h3>
+<ul>
+<li>Optimized rendering</li>
+<li>Reduced flicker</li>
+<li>Smooth resizing</li>
+</ul>
+<hr>
+<h2 id="constructor">Constructor</h2>
+<h3 id="kryptonwebbrowser-1">KryptonWebBrowser()</h3>
+<p>Initializes a new instance with Krypton palette integration.</p>
+<pre><code class="lang-csharp">public KryptonWebBrowser()
+</code></pre>
+<p><strong>Initialization:</strong></p>
+<ul>
+<li>Enables double buffering</li>
+<li>Sets up palette integration</li>
+<li>Connects to current global palette</li>
+</ul>
+<hr>
+<h2 id="properties">Properties</h2>
+<h3 id="kryptoncontextmenu">KryptonContextMenu</h3>
+<p>Gets or sets the KryptonContextMenu to show when right-clicked.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[Description(&quot;The shortcut menu to show when the user right-clicks the page.&quot;)]
+[DefaultValue(null)]
+public KryptonContextMenu? KryptonContextMenu { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var contextMenu = new KryptonContextMenu();
+var menuItems = contextMenu.Items.Add(new KryptonContextMenuItems());
+menuItems.Items.Add(new KryptonContextMenuItem(&quot;Copy&quot;, null, OnCopy));
+menuItems.Items.Add(new KryptonContextMenuItem(&quot;Paste&quot;, null, OnPaste));
+
+kryptonWebBrowser1.KryptonContextMenu = contextMenu;
+</code></pre>
+<hr>
+<h3 id="contextmenustrip">ContextMenuStrip</h3>
+<p>Gets or sets the Windows Forms ContextMenuStrip (themed automatically).</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[Description(&quot;The Winforms shortcut menu to show when the user right-clicks the page.&quot;)]
+[DefaultValue(null)]
+public override ContextMenuStrip? ContextMenuStrip { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Automatically applies Krypton renderer when shown</li>
+<li>Consider using <code>KryptonContextMenu</code> for better integration</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var contextMenu = new ContextMenuStrip();
+contextMenu.Items.Add(&quot;Copy&quot;, null, OnCopy);
+contextMenu.Items.Add(&quot;Paste&quot;, null, OnPaste);
+
+kryptonWebBrowser1.ContextMenuStrip = contextMenu;
+// Renderer is applied automatically
+</code></pre>
+<hr>
+<h3 id="inherited-webbrowser-properties">Inherited WebBrowser Properties</h3>
+<p>All standard <code>WebBrowser</code> properties are available:</p>
+<h4 id="documenttext">DocumentText</h4>
+<p>Gets or sets the HTML content displayed in the control.</p>
+<pre><code class="lang-csharp">public string DocumentText { get; set; }
+</code></pre>
+<hr>
+<h4 id="url">Url</h4>
+<p>Gets or sets the URL of the current document.</p>
+<pre><code class="lang-csharp">public Uri Url { get; set; }
+</code></pre>
+<hr>
+<h4 id="document">Document</h4>
+<p>Gets the HtmlDocument representing the page currently displayed.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+public HtmlDocument Document { get; }
+</code></pre>
+<hr>
+<h4 id="allownavigation">AllowNavigation</h4>
+<p>Gets or sets whether navigation to other pages is allowed.</p>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool AllowNavigation { get; set; }
+</code></pre>
+<hr>
+<h4 id="allowwebbrowserdrop">AllowWebBrowserDrop</h4>
+<p>Gets or sets whether drag-and-drop operations are allowed.</p>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool AllowWebBrowserDrop { get; set; }
+</code></pre>
+<hr>
+<h4 id="iswebbrowsercontextmenuenabled">IsWebBrowserContextMenuEnabled</h4>
+<p>Gets or sets whether the default browser context menu is enabled.</p>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool IsWebBrowserContextMenuEnabled { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Set to <code>false</code> when using <code>KryptonContextMenu</code> or <code>ContextMenuStrip</code></li>
+</ul>
+<hr>
+<h4 id="webbrowsershortcutsenabled">WebBrowserShortcutsEnabled</h4>
+<p>Gets or sets whether shortcuts are enabled.</p>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool WebBrowserShortcutsEnabled { get; set; }
+</code></pre>
+<hr>
+<h4 id="scripterrorssuppressed">ScriptErrorsSuppressed</h4>
+<p>Gets or sets whether script error dialogs are suppressed.</p>
+<pre><code class="lang-csharp">[DefaultValue(false)]
+public bool ScriptErrorsSuppressed { get; set; }
+</code></pre>
+<hr>
+<h4 id="scrollbarsenabled">ScrollBarsEnabled</h4>
+<p>Gets or sets whether scroll bars are displayed.</p>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool ScrollBarsEnabled { get; set; }
+</code></pre>
+<hr>
+<h2 id="methods">Methods</h2>
+<h3 id="navigation-methods">Navigation Methods</h3>
+<h4 id="navigatestring">Navigate(string)</h4>
+<p>Navigates to the specified URL.</p>
+<pre><code class="lang-csharp">public void Navigate(string urlString)
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonWebBrowser1.Navigate(&quot;https://www.example.com&quot;);
+</code></pre>
+<hr>
+<h4 id="navigateuri">Navigate(Uri)</h4>
+<p>Navigates to the specified URI.</p>
+<pre><code class="lang-csharp">public void Navigate(Uri url)
+</code></pre>
+<hr>
+<h4 id="goback">GoBack()</h4>
+<p>Navigates to the previous page in the history.</p>
+<pre><code class="lang-csharp">public bool GoBack()
+</code></pre>
+<hr>
+<h4 id="goforward">GoForward()</h4>
+<p>Navigates to the next page in the history.</p>
+<pre><code class="lang-csharp">public bool GoForward()
+</code></pre>
+<hr>
+<h4 id="gohome">GoHome()</h4>
+<p>Navigates to the user's home page.</p>
+<pre><code class="lang-csharp">public void GoHome()
+</code></pre>
+<hr>
+<h4 id="refresh">Refresh()</h4>
+<p>Reloads the current page.</p>
+<pre><code class="lang-csharp">public override void Refresh()
+</code></pre>
+<hr>
+<h4 id="stop">Stop()</h4>
+<p>Cancels any pending navigation.</p>
+<pre><code class="lang-csharp">public void Stop()
+</code></pre>
+<hr>
+<h3 id="document-methods">Document Methods</h3>
+<h4 id="showprintdialog">ShowPrintDialog()</h4>
+<p>Opens the print dialog.</p>
+<pre><code class="lang-csharp">public void ShowPrintDialog()
+</code></pre>
+<hr>
+<h4 id="showprintpreviewdialog">ShowPrintPreviewDialog()</h4>
+<p>Opens the print preview dialog.</p>
+<pre><code class="lang-csharp">public void ShowPrintPreviewDialog()
+</code></pre>
+<hr>
+<h4 id="showpropertiesdialog">ShowPropertiesDialog()</h4>
+<p>Opens the page properties dialog.</p>
+<pre><code class="lang-csharp">public void ShowPropertiesDialog()
+</code></pre>
+<hr>
+<h4 id="showsaveasdialog">ShowSaveAsDialog()</h4>
+<p>Opens the save file dialog.</p>
+<pre><code class="lang-csharp">public void ShowSaveAsDialog()
+</code></pre>
+<hr>
+<h3 id="palette-methods">Palette Methods</h3>
+<h4 id="getresolvedpalette">GetResolvedPalette()</h4>
+<p>Gets the resolved palette being used for rendering.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public PaletteBase GetResolvedPalette()
+</code></pre>
+<hr>
+<h4 id="createtoolstriprenderer">CreateToolStripRenderer()</h4>
+<p>Creates a ToolStripRenderer appropriate for the current palette.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Advanced)]
+public ToolStripRenderer? CreateToolStripRenderer()
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Used internally to theme ContextMenuStrip</li>
+<li>Can be used to theme other ToolStrips</li>
+</ul>
+<hr>
+<h2 id="events">Events</h2>
+<h3 id="navigation-events">Navigation Events</h3>
+<h4 id="navigating">Navigating</h4>
+<p>Occurs before navigation to a new page.</p>
+<pre><code class="lang-csharp">public event WebBrowserNavigatingEventHandler Navigating
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonWebBrowser1.Navigating += (s, e) =&gt;
+{
+    if (!IsUrlAllowed(e.Url))
+    {
+        e.Cancel = true;
+        MessageBox.Show(&quot;Navigation blocked.&quot;);
+    }
+};
+</code></pre>
+<hr>
+<h4 id="navigated">Navigated</h4>
+<p>Occurs after navigation to a new page.</p>
+<pre><code class="lang-csharp">public event WebBrowserNavigatedEventHandler Navigated
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonWebBrowser1.Navigated += (s, e) =&gt;
+{
+    urlTextBox.Text = e.Url.ToString();
+};
+</code></pre>
+<hr>
+<h4 id="documentcompleted">DocumentCompleted</h4>
+<p>Occurs when the document finishes loading.</p>
+<pre><code class="lang-csharp">public event WebBrowserDocumentCompletedEventHandler DocumentCompleted
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonWebBrowser1.DocumentCompleted += (s, e) =&gt;
+{
+    statusLabel.Text = &quot;Page loaded&quot;;
+    ExecuteScript(&quot;console.log('Page ready')&quot;);
+};
+</code></pre>
+<hr>
+<h4 id="progresschanged">ProgressChanged</h4>
+<p>Occurs when the download progress changes.</p>
+<pre><code class="lang-csharp">public event WebBrowserProgressChangedEventHandler ProgressChanged
+</code></pre>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-html-viewer">Basic HTML Viewer</h3>
+<pre><code class="lang-csharp">var browser = new KryptonWebBrowser
+{
+    Dock = DockStyle.Fill,
+    AllowNavigation = true,
+    ScriptErrorsSuppressed = true
+};
+
+browser.Navigate(&quot;https://www.example.com&quot;);
+
+this.Controls.Add(browser);
+</code></pre>
+<hr>
+<h3 id="rich-text-editor">Rich Text Editor</h3>
+<pre><code class="lang-csharp">var editor = new KryptonWebBrowser
+{
+    Dock = DockStyle.Fill,
+    AllowNavigation = false,
+    IsWebBrowserContextMenuEnabled = false,
+    ScriptErrorsSuppressed = true
+};
+
+// Set up as HTML editor
+editor.DocumentText = @&quot;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;style&gt;
+        body { font-family: Arial; padding: 10px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body contenteditable='true'&gt;
+    Type your content here...
+&lt;/body&gt;
+&lt;/html&gt;&quot;;
+
+editor.DocumentCompleted += (s, e) =&gt;
+{
+    // Enable design mode for editing
+    editor.Document.DomDocument.GetType()
+        .GetProperty(&quot;designMode&quot;)
+        .SetValue(editor.Document.DomDocument, &quot;On&quot;, null);
+};
+
+this.Controls.Add(editor);
+</code></pre>
+<hr>
+<h3 id="html-email-preview">HTML Email Preview</h3>
+<pre><code class="lang-csharp">public class EmailPreview : KryptonPanel
+{
+    private KryptonWebBrowser browser;
+    
+    public EmailPreview()
+    {
+        browser = new KryptonWebBrowser
+        {
+            Dock = DockStyle.Fill,
+            AllowNavigation = false,
+            IsWebBrowserContextMenuEnabled = false,
+            ScrollBarsEnabled = true
+        };
+        
+        Controls.Add(browser);
+    }
+    
+    public void ShowEmail(string htmlBody)
+    {
+        string html = $@&quot;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;style&gt;
+        body {{ 
+            font-family: 'Segoe UI', Arial; 
+            font-size: 11pt;
+            padding: 15px;
+        }}
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    {htmlBody}
+&lt;/body&gt;
+&lt;/html&gt;&quot;;
+        
+        browser.DocumentText = html;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="mini-browser-with-controls">Mini Browser with Controls</h3>
+<pre><code class="lang-csharp">public class MiniBrowser : KryptonPanel
+{
+    private KryptonTextBox urlTextBox;
+    private KryptonButton goButton;
+    private KryptonButton backButton;
+    private KryptonButton forwardButton;
+    private KryptonWebBrowser browser;
+    
+    public MiniBrowser()
+    {
+        SetupToolbar();
+        SetupBrowser();
+    }
+    
+    private void SetupToolbar()
+    {
+        var toolbar = new KryptonPanel
+        {
+            Dock = DockStyle.Top,
+            Height = 35
+        };
+        
+        backButton = new KryptonButton
+        {
+            Text = &quot;◄&quot;,
+            Location = new Point(5, 5),
+            Width = 30,
+            Enabled = false
+        };
+        backButton.Click += (s, e) =&gt; browser.GoBack();
+        
+        forwardButton = new KryptonButton
+        {
+            Text = &quot;►&quot;,
+            Location = new Point(40, 5),
+            Width = 30,
+            Enabled = false
+        };
+        forwardButton.Click += (s, e) =&gt; browser.GoForward();
+        
+        urlTextBox = new KryptonTextBox
+        {
+            Location = new Point(75, 5),
+            Width = Width - 160,
+            Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top
+        };
+        urlTextBox.KeyDown += (s, e) =&gt;
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                NavigateToUrl();
+            }
+        };
+        
+        goButton = new KryptonButton
+        {
+            Text = &quot;Go&quot;,
+            Location = new Point(Width - 80, 5),
+            Width = 70,
+            Anchor = AnchorStyles.Right | AnchorStyles.Top
+        };
+        goButton.Click += (s, e) =&gt; NavigateToUrl();
+        
+        toolbar.Controls.AddRange(new Control[] 
+        { 
+            backButton, forwardButton, urlTextBox, goButton 
+        });
+        
+        Controls.Add(toolbar);
+    }
+    
+    private void SetupBrowser()
+    {
+        browser = new KryptonWebBrowser
+        {
+            Dock = DockStyle.Fill,
+            ScriptErrorsSuppressed = true
+        };
+        
+        browser.Navigated += (s, e) =&gt;
+        {
+            urlTextBox.Text = e.Url.ToString();
+            backButton.Enabled = browser.CanGoBack;
+            forwardButton.Enabled = browser.CanGoForward;
+        };
+        
+        Controls.Add(browser);
+    }
+    
+    private void NavigateToUrl()
+    {
+        string url = urlTextBox.Text;
+        if (!url.StartsWith(&quot;http://&quot;) &amp;&amp; !url.StartsWith(&quot;https://&quot;))
+        {
+            url = &quot;https://&quot; + url;
+        }
+        browser.Navigate(url);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="document-viewer-with-context-menu">Document Viewer with Context Menu</h3>
+<pre><code class="lang-csharp">var viewer = new KryptonWebBrowser
+{
+    Dock = DockStyle.Fill,
+    IsWebBrowserContextMenuEnabled = false
+};
+
+var contextMenu = new KryptonContextMenu();
+var menuItems = contextMenu.Items.Add(new KryptonContextMenuItems());
+
+menuItems.Items.Add(new KryptonContextMenuItem(&quot;Copy&quot;, null, (s, e) =&gt;
+{
+    viewer.Document?.ExecCommand(&quot;Copy&quot;, false, null);
+}));
+
+menuItems.Items.Add(new KryptonContextMenuItem(&quot;Select All&quot;, null, (s, e) =&gt;
+{
+    viewer.Document?.ExecCommand(&quot;SelectAll&quot;, false, null);
+}));
+
+menuItems.Items.Add(new KryptonContextMenuSeparator());
+
+menuItems.Items.Add(new KryptonContextMenuItem(&quot;Print&quot;, null, (s, e) =&gt;
+{
+    viewer.ShowPrintDialog();
+}));
+
+viewer.KryptonContextMenu = contextMenu;
+</code></pre>
+<hr>
+<h3 id="markdown-preview">Markdown Preview</h3>
+<pre><code class="lang-csharp">public class MarkdownPreview : KryptonPanel
+{
+    private KryptonWebBrowser browser;
+    
+    public MarkdownPreview()
+    {
+        browser = new KryptonWebBrowser
+        {
+            Dock = DockStyle.Fill,
+            AllowNavigation = false
+        };
+        
+        Controls.Add(browser);
+    }
+    
+    public void ShowMarkdown(string markdown)
+    {
+        // Use a markdown library like Markdig
+        var html = Markdig.Markdown.ToHtml(markdown);
+        
+        string styledHtml = $@&quot;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;style&gt;
+        body {{
+            font-family: 'Segoe UI', Arial;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }}
+        code {{
+            background: #f4f4f4;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }}
+        pre {{
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }}
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    {html}
+&lt;/body&gt;
+&lt;/html&gt;&quot;;
+        
+        browser.DocumentText = styledHtml;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="script-execution">Script Execution</h3>
+<pre><code class="lang-csharp">private void ExecuteJavaScript()
+{
+    kryptonWebBrowser1.DocumentCompleted += (s, e) =&gt;
+    {
+        // Execute JavaScript after document loads
+        var document = kryptonWebBrowser1.Document;
+        
+        // Change background color
+        document.InvokeScript(&quot;eval&quot;, new object[] 
+        { 
+            &quot;document.body.style.backgroundColor = '#f0f0f0';&quot; 
+        });
+        
+        // Get element content
+        var result = document.InvokeScript(&quot;eval&quot;, new object[] 
+        { 
+            &quot;document.getElementById('myElement').innerHTML;&quot; 
+        });
+    };
+}
+</code></pre>
+<hr>
+<h3 id="pdf-viewer-alternative">PDF Viewer (Alternative)</h3>
+<pre><code class="lang-csharp">// Display PDF using embedded PDF reader
+var pdfViewer = new KryptonWebBrowser
+{
+    Dock = DockStyle.Fill,
+    AllowNavigation = false
+};
+
+// Navigate to PDF file
+pdfViewer.Navigate(@&quot;C:\Documents\Report.pdf&quot;);
+
+// Or embed in HTML
+string pdfPath = @&quot;C:\Documents\Report.pdf&quot;;
+pdfViewer.DocumentText = $@&quot;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;body style='margin:0'&gt;
+    &lt;embed src='file:///{pdfPath}' 
+           type='application/pdf' 
+           width='100%' 
+           height='100%' /&gt;
+&lt;/body&gt;
+&lt;/html&gt;&quot;;
+</code></pre>
+<hr>
+<h3 id="restricted-browser">Restricted Browser</h3>
+<pre><code class="lang-csharp">private HashSet&lt;string&gt; allowedDomains = new HashSet&lt;string&gt;
+{
+    &quot;example.com&quot;,
+    &quot;docs.microsoft.com&quot;
+};
+
+private void SetupRestrictedBrowser()
+{
+    kryptonWebBrowser1.Navigating += (s, e) =&gt;
+    {
+        var domain = e.Url.Host;
+        if (!allowedDomains.Any(d =&gt; domain.EndsWith(d)))
+        {
+            e.Cancel = true;
+            MessageBox.Show($&quot;Navigation to {domain} is not allowed.&quot;,
+                          &quot;Restricted&quot;,
+                          MessageBoxButtons.OK,
+                          MessageBoxIcon.Warning);
+        }
+    };
+}
+</code></pre>
+<hr>
+<h2 id="design-considerations">Design Considerations</h2>
+<h3 id="context-menu-handling">Context Menu Handling</h3>
+<p>The control intercepts <code>WM_CONTEXTMENU</code> and <code>WM_PARENTNOTIFY</code> messages to show themed context menus:</p>
+<ol>
+<li>Right-click detected</li>
+<li>Check if <code>KryptonContextMenu</code> is set</li>
+<li>If set, show at click location</li>
+<li>Otherwise, fall back to standard behavior</li>
+</ol>
+<hr>
+<h3 id="palette-integration-1">Palette Integration</h3>
+<ul>
+<li>Connects to current global palette on construction</li>
+<li>Creates themed renderers for ContextMenuStrip</li>
+<li>Responds to palette change events</li>
+<li>Minimal overhead when not using context menus</li>
+</ul>
+<hr>
+<h3 id="webbrowser-limitations">WebBrowser Limitations</h3>
+<p>Inherits standard <code>WebBrowser</code> control limitations:</p>
+<ul>
+<li>Uses Internet Explorer rendering engine</li>
+<li>Limited HTML5/CSS3 support on older Windows versions</li>
+<li>Security restrictions on local file access</li>
+<li>Consider alternatives (WebView2) for modern web content</li>
+</ul>
+<hr>
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="help-viewer">Help Viewer</h3>
+<pre><code class="lang-csharp">public class HelpViewer : KryptonForm
+{
+    private KryptonWebBrowser browser;
+    private string helpBasePath;
+    
+    public HelpViewer(string helpPath)
+    {
+        helpBasePath = helpPath;
+        
+        browser = new KryptonWebBrowser
+        {
+            Dock = DockStyle.Fill,
+            AllowNavigation = true
+        };
+        
+        // Restrict navigation to help files only
+        browser.Navigating += (s, e) =&gt;
+        {
+            if (!e.Url.LocalPath.StartsWith(helpBasePath))
+            {
+                e.Cancel = true;
+            }
+        };
+        
+        Controls.Add(browser);
+        ShowHelp(&quot;index.html&quot;);
+    }
+    
+    public void ShowHelp(string page)
+    {
+        browser.Navigate(Path.Combine(helpBasePath, page));
+    }
+}
+</code></pre>
+<hr>
+<h3 id="license-agreement-viewer">License Agreement Viewer</h3>
+<pre><code class="lang-csharp">public class LicenseDialog : KryptonForm
+{
+    private KryptonWebBrowser browser;
+    private KryptonCheckBox acceptCheckBox;
+    private KryptonButton acceptButton;
+    
+    public LicenseDialog()
+    {
+        browser = new KryptonWebBrowser
+        {
+            Dock = DockStyle.Fill,
+            AllowNavigation = false,
+            IsWebBrowserContextMenuEnabled = false,
+            ScrollBarsEnabled = true
+        };
+        
+        var bottomPanel = new KryptonPanel
+        {
+            Dock = DockStyle.Bottom,
+            Height = 50
+        };
+        
+        acceptCheckBox = new KryptonCheckBox
+        {
+            Text = &quot;I accept the terms and conditions&quot;,
+            Location = new Point(10, 10)
+        };
+        acceptCheckBox.CheckedChanged += (s, e) =&gt;
+        {
+            acceptButton.Enabled = acceptCheckBox.Checked;
+        };
+        
+        acceptButton = new KryptonButton
+        {
+            Text = &quot;Accept&quot;,
+            Location = new Point(Width - 110, 10),
+            Enabled = false,
+            DialogResult = DialogResult.OK
+        };
+        
+        bottomPanel.Controls.Add(acceptCheckBox);
+        bottomPanel.Controls.Add(acceptButton);
+        
+        Controls.Add(browser);
+        Controls.Add(bottomPanel);
+        
+        LoadLicense();
+    }
+    
+    private void LoadLicense()
+    {
+        browser.DocumentText = File.ReadAllText(&quot;License.html&quot;);
+    }
+}
+</code></pre>
+<hr>
+<h2 id="compatibility">Compatibility</h2>
+<ul>
+<li><strong>Target Frameworks:</strong> <code>net472</code>, <code>net48</code>, <code>net481</code>, <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+<li><strong>Windows Forms:</strong> Required</li>
+<li><strong>Dependencies:</strong>
+<ul>
+<li>Krypton.Toolkit core</li>
+<li>Internet Explorer (WebBrowser uses IE rendering engine)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="known-limitations">Known Limitations</h2>
+<ol>
+<li><strong>Rendering Engine:</strong> Uses Internet Explorer - limited modern web support</li>
+<li><strong>Context Menu:</strong> Right-click interception may not work in all scenarios</li>
+<li><strong>Keyboard Menu:</strong> <code>WM_CONTEXTMENU</code> from keyboard sometimes not fired</li>
+<li><strong>Workaround:</strong> Uses <code>WM_PARENTNOTIFY</code> to intercept right mouse button</li>
+</ol>
+<hr>
+<h2 id="migration-to-webview2">Migration to WebView2</h2>
+<p>For modern web content, consider migrating to WebView2:</p>
+<pre><code class="lang-csharp">// Old: KryptonWebBrowser (IE engine)
+var oldBrowser = new KryptonWebBrowser();
+
+// New: WebView2 (Chromium engine)
+// Note: Requires Microsoft.Web.WebView2 NuGet package
+var newBrowser = new Microsoft.Web.WebView2.WinForms.WebView2();
+await newBrowser.EnsureCoreWebView2Async();
+</code></pre>
+<p><strong>WebView2 Advantages:</strong></p>
+<ul>
+<li>Modern Chromium rendering</li>
+<li>Better HTML5/CSS3/JavaScript support</li>
+<li>Regular updates</li>
+<li>Better performance</li>
+</ul>
+<p><strong>KryptonWebBrowser Advantages:</strong></p>
+<ul>
+<li>No additional dependencies</li>
+<li>Simpler for basic HTML</li>
+<li>Works on all Windows versions</li>
+<li>Krypton theming integration</li>
+</ul>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="KryptonContextMenu.md">KryptonContextMenu</a> - Context menu control</li>
+<li><a href="KryptonRichTextBox.html">KryptonRichTextBox</a> - Alternative for rich text</li>
+<li><a href="https://docs.microsoft.com/en-us/microsoft-edge/webview2/">WebView2</a> - Modern browser control</li>
+<li><a href="KryptonWebView2.html">KryptonWebView2</a></li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.htmldocument">HtmlDocument</a> - Document manipulation</li>
+</ul>
 
 </article>
           </div>

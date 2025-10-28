@@ -35,7 +35,6 @@ Close _all_ windows and restart your computer.
 
 _**Note:** It is necessary to do this, so that changes can take effect._
 
-
 ## Option 2 - PowerShell
 
 Open a new _elevated_ PowerShell prompt, then run the command as shown below.

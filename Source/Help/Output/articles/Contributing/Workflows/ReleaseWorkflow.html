@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Release Workflow Documentation | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Release Workflow Documentation | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="release-workflow-documentation">Release Workflow Documentation</h1>
+
+<p><strong>Workflow File</strong>: <code>.github/workflows/release.yml</code><br>
+<strong>Version</strong>: 1.0</p>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#release-channels">Release Channels</a></li>
+<li><a href="#jobs">Jobs</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The Release workflow handles production releases across four different release channels, each targeting different audiences and stability requirements. This workflow automates building, packaging, publishing to NuGet.org, creating GitHub releases, and announcing on Discord.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li>✅ Four independent release channels (Master, LTS, Canary, Alpha)</li>
+<li>✅ Automatic NuGet package publishing</li>
+<li>✅ GitHub release creation with artifacts</li>
+<li>✅ Discord webhook notifications</li>
+<li>✅ Multi-framework support</li>
+<li>✅ Intelligent duplicate detection</li>
+<li>✅ Comprehensive version detection</li>
+</ul>
+<h3 id="workflow-architecture">Workflow Architecture</h3>
+<pre><code>┌──────────────────┐
+│  Push to Branch  │
+└────────┬─────────┘
+         │
+    ┌────┴────┬────────┬─────────┐
+    │         │        │         │
+┌───▼───┐ ┌──▼──┐ ┌───▼───┐ ┌───▼────┐
+│Master │ │ LTS │ │Canary │ │ Alpha  │
+└───┬───┘ └──┬──┘ └───┬───┘ └───┬────┘
+    │        │        │         │
+    ▼        ▼        ▼         ▼
+Build    Build    Build     Build
+Pack     Pack     Pack      Pack
+    │        │        │         │
+    ▼        ▼        ▼         ▼
+Publish  Publish  Publish   Publish
+to NuGet to NuGet to NuGet  to NuGet
+    │        │        │         │
+    ▼        ▼        ▼         ▼
+Create   (No      (No       (No
+GitHub   GitHub   GitHub    GitHub
+Release  Release) Release)  Release)
+    │        │        │         │
+    ▼        ▼        ▼         ▼
+Discord  Discord  Discord   Discord
+Notify   Notify   Notify    Notify
+</code></pre>
+<hr>
+<h2 id="release-channels">Release Channels</h2>
+<h3 id="quick-comparison">Quick Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Branch</th>
+<th>Config</th>
+<th>Frameworks</th>
+<th>NuGet Suffix</th>
+<th>Tag</th>
+<th>Discord Color</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Stable</strong></td>
+<td>master</td>
+<td>Release</td>
+<td>4.7.2-4.8.1, 8-10</td>
+<td>-</td>
+<td><code>v{ver}</code></td>
+<td>Blue</td>
+</tr>
+<tr>
+<td><strong>LTS</strong></td>
+<td>V85-LTS</td>
+<td>Release</td>
+<td>4.6.2-4.8.1, 6-8</td>
+<td><code>.LTS</code></td>
+<td><code>v{ver}-lts</code></td>
+<td>Orange</td>
+</tr>
+<tr>
+<td><strong>Canary</strong></td>
+<td>canary</td>
+<td>Canary</td>
+<td>4.7.2-4.8.1, 8-10</td>
+<td>-</td>
+<td><code>v{ver}-canary</code></td>
+<td>Yellow</td>
+</tr>
+<tr>
+<td><strong>Alpha</strong></td>
+<td>alpha</td>
+<td>Nightly</td>
+<td>4.7.2-4.8.1, 8-10</td>
+<td>-</td>
+<td><code>v{ver}-nightly</code></td>
+<td>Purple</td>
+</tr>
+</tbody>
+</table>
+<h3 id="channel-details">Channel Details</h3>
+<h4 id="master-stable">Master (Stable)</h4>
+<p><strong>Purpose</strong>: Production-ready stable releases</p>
+<p><strong>When to Use</strong>:</p>
+<ul>
+<li>Final tested features</li>
+<li>Bug fixes for production</li>
+<li>Major releases</li>
+<li>Official version numbers</li>
+</ul>
+<p><strong>Target Audience</strong>: Production users, stable applications</p>
+<p><strong>Release Frequency</strong>: As needed (typically monthly to quarterly)</p>
+<p><strong>Build Configuration</strong>: Release (fully optimized)</p>
+<h4 id="v85-lts-long-term-support">V85-LTS (Long-Term Support)</h4>
+<p><strong>Purpose</strong>: Extended framework support for legacy applications</p>
+<p><strong>When to Use</strong>:</p>
+<ul>
+<li>Organizations requiring .NET 6/7 support</li>
+<li>Applications on older .NET Framework versions (4.6.2-4.7.1)</li>
+<li>Long-term stability required</li>
+<li>Minimal breaking changes</li>
+</ul>
+<p><strong>Target Audience</strong>: Enterprise users, legacy application maintainers</p>
+<p><strong>Release Frequency</strong>: Less frequent, stability-focused updates</p>
+<p><strong>Build Configuration</strong>: Release (optimized for LTS frameworks)</p>
+<p><strong>Unique Features</strong>:</p>
+<ul>
+<li>Separate NuGet packages with <code>.LTS</code> suffix</li>
+<li>No .NET 9/10/11 targets (focuses on LTS versions)</li>
+<li>Extended .NET Framework support (4.6.2, 4.7, 4.7.1)</li>
+</ul>
+<h4 id="canary-pre-release">Canary (Pre-Release)</h4>
+<p><strong>Purpose</strong>: Early testing builds before stable release</p>
+<p><strong>When to Use</strong>:</p>
+<ul>
+<li>Feature previews</li>
+<li>Beta testing</li>
+<li>Release candidates</li>
+<li>Pre-production validation</li>
+</ul>
+<p><strong>Target Audience</strong>: Early adopters, testers, QA teams</p>
+<p><strong>Release Frequency</strong>: Weekly to monthly</p>
+<p><strong>Build Configuration</strong>: Canary (optimized but marked as pre-release)</p>
+<h4 id="alpha-nightly-style">Alpha (Nightly-style)</h4>
+<p><strong>Purpose</strong>: Bleeding-edge development builds (push-triggered)</p>
+<p><strong>When to Use</strong>:</p>
+<ul>
+<li>Latest development features</li>
+<li>Continuous integration testing</li>
+<li>Rapid iteration</li>
+<li>Developer testing</li>
+</ul>
+<p><strong>Target Audience</strong>: Developers, contributors, advanced users</p>
+<p><strong>Release Frequency</strong>: On every push to alpha branch</p>
+<p><strong>Build Configuration</strong>: Nightly (less optimized, more debugging info)</p>
+<hr>
+<h2 id="jobs">Jobs</h2>
+<h3 id="job-1-release-master">Job 1: release-master</h3>
+<p><strong>Runner</strong>: <code>windows-2025</code></p>
+<p><strong>Condition</strong>: <code>github.ref == 'refs/heads/master' &amp;&amp; github.event_name == 'push'</code></p>
+<h4 id="workflow-steps">Workflow Steps</h4>
+<h5 id="1-checkout">1. Checkout</h5>
+<pre><code class="lang-yaml">- name: Checkout
+  uses: actions/checkout@v5
+</code></pre>
+<p>Clones the repository at the commit that triggered the workflow.</p>
+<h5 id="2-4-setup-net-9-10-11">2-4. Setup .NET 9, 10, 11</h5>
+<pre><code class="lang-yaml">- name: Setup .NET 9
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: 9.0.x
+
+- name: Setup .NET 10
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: 10.0.x
+  continue-on-error: true
+
+- name: Setup .NET 11
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: 11.0.x
+  continue-on-error: true
+</code></pre>
+<p><strong>Purpose</strong>: Install multiple .NET SDK versions for multi-targeting</p>
+<p><strong>Key Details</strong>:</p>
+<ul>
+<li>.NET 9 is required (fails if unavailable)</li>
+<li>.NET 10 and 11 are optional (continue-on-error)</li>
+<li>Enables building for .NET 8-11 Windows targets</li>
+</ul>
+<h5 id="5-force-net-10-sdk-via-globaljson">5. Force .NET 10 SDK via global.json</h5>
+<pre><code class="lang-yaml">- name: Force .NET 10 SDK via global.json
+  run: |
+    $sdkVersion = (dotnet --list-sdks | Select-String &quot;10.0&quot;).ToString().Split(&quot; &quot;)[0]
+    Write-Output &quot;Using SDK $sdkVersion&quot;
+    @&quot;
+    {
+      &quot;sdk&quot;: {
+        &quot;version&quot;: &quot;$sdkVersion&quot;,
+        &quot;rollForward&quot;: &quot;latestFeature&quot;
+      }
+    }
+    &quot;@ | Out-File -Encoding utf8 global.json
+</code></pre>
+<p><strong>Purpose</strong>: Dynamically select the latest .NET 10 SDK for consistent builds</p>
+<p><strong>Fallback</strong>: Falls back to .NET 8 if .NET 10 unavailable</p>
+<h5 id="6-8-setup-msbuild-nuget-cache">6-8. Setup MSBuild, NuGet, Cache</h5>
+<p>Standard build tooling setup (see Build Workflow documentation)</p>
+<h5 id="9-restore">9. Restore</h5>
+<pre><code class="lang-yaml">- name: Restore
+  run: dotnet restore &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot;
+</code></pre>
+<p>Downloads and restores NuGet package dependencies.</p>
+<h5 id="10-build-release">10. Build Release</h5>
+<pre><code class="lang-yaml">- name: Build Release
+  run: msbuild &quot;Scripts/build.proj&quot; /t:Build /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
+</code></pre>
+<p><strong>Purpose</strong>: Compile all projects in Release configuration</p>
+<p><strong>Build Script</strong>: <code>Scripts/build.proj</code></p>
+<ul>
+<li>Production build settings</li>
+<li>Code signing (if configured)</li>
+<li>Optimization enabled</li>
+</ul>
+<p><strong>Output</strong>: <code>Bin/Release/{framework}/</code></p>
+<h5 id="11-pack-release">11. Pack Release</h5>
+<pre><code class="lang-yaml">- name: Pack Release
+  run: msbuild &quot;Scripts/build.proj&quot; /t:Pack /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
+</code></pre>
+<p><strong>Purpose</strong>: Create NuGet packages</p>
+<p><strong>Output</strong>: <code>Bin/Packages/Release/*.nupkg</code></p>
+<p><strong>Packages Created</strong>:</p>
+<ul>
+<li>Krypton.Toolkit.{version}.nupkg</li>
+<li>Krypton.Ribbon.{version}.nupkg</li>
+<li>Krypton.Navigator.{version}.nupkg</li>
+<li>Krypton.Workspace.{version}.nupkg</li>
+<li>Krypton.Docking.{version}.nupkg</li>
+</ul>
+<h5 id="12-push-nuget-packages-to-nugetorg">12. Push NuGet Packages to nuget.org</h5>
+<pre><code class="lang-yaml">- name: Push NuGet Packages to nuget.org
+  id: push_nuget
+  shell: pwsh
+  run: |
+    $ErrorActionPreference = 'Stop'
+    if (-not $env:NUGET_API_KEY) {
+      Write-Warning &quot;NUGET_API_KEY not set - skipping NuGet push&quot;
+      echo &quot;packages_published=false&quot; &gt;&gt; $env:GITHUB_OUTPUT
+      exit 0
+    }
+    
+    $packages = Get-ChildItem &quot;Bin/Packages/Release/*.nupkg&quot; -ErrorAction SilentlyContinue
+    $publishedAny = $false
+    
+    if ($packages) {
+      foreach ($package in $packages) {
+        Write-Output &quot;Pushing package: $($package.Name)&quot;
+        try {
+          $output = dotnet nuget push &quot;$($package.FullName)&quot; --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate 2&gt;&amp;1 | Out-String
+          Write-Output $output
+          # Check if package was actually pushed (not skipped)
+          if ($output -notmatch &quot;already exists&quot; -and $output -notmatch &quot;was not pushed&quot;) {
+            $publishedAny = $true
+            Write-Host &quot;Package $($package.Name) was published&quot;
+          } else {
+            Write-Host &quot;Package $($package.Name) already exists - skipped&quot;
+          }
+        } catch {
+          Write-Warning &quot;Failed to push $($package.Name): $_&quot;
+        }
+      }
+    } else {
+      Write-Output &quot;No NuGet packages found to push&quot;
+    }
+    
+    echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
+  env:
+    NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+</code></pre>
+<p><strong>Purpose</strong>: Publish NuGet packages to nuget.org</p>
+<p><strong>Key Features</strong>:</p>
+<ul>
+<li><strong>Duplicate Detection</strong>: Uses <code>--skip-duplicate</code> flag</li>
+<li><strong>Error Handling</strong>: Continues on individual package failures</li>
+<li><strong>Output Variable</strong>: Sets <code>packages_published=true/false</code></li>
+<li><strong>Graceful Degradation</strong>: Warns if API key missing (doesn't fail)</li>
+</ul>
+<p><strong>Logic Flow</strong>:</p>
+<ol>
+<li>Check for <code>NUGET_API_KEY</code> secret</li>
+<li>Find all .nupkg files in <code>Bin/Packages/Release/</code></li>
+<li>For each package:
+<ul>
+<li>Push with <code>--skip-duplicate</code> flag</li>
+<li>Check output for &quot;already exists&quot; message</li>
+<li>Track if any new packages were published</li>
+</ul>
+</li>
+<li>Set output variable for Discord notification condition</li>
+</ol>
+<p><strong>Output Variable</strong>: <code>packages_published</code> (true/false)</p>
+<ul>
+<li><code>true</code>: At least one new package was published</li>
+<li><code>false</code>: All packages were duplicates or push was skipped</li>
+</ul>
+<h5 id="13-create-release-archives">13. Create Release Archives</h5>
+<pre><code class="lang-yaml">- name: Create Release Archives
+  run: msbuild &quot;Scripts/build.proj&quot; /t:CreateAllReleaseArchives /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
+</code></pre>
+<p><strong>Purpose</strong>: Package binaries into distributable archives</p>
+<p><strong>Output</strong>: <code>Bin/Release/Zips/</code></p>
+<ul>
+<li><code>Krypton-Release_{version}.zip</code></li>
+<li><code>Krypton-Release_{version}.tar.gz</code></li>
+</ul>
+<p><strong>Archive Contents</strong>:</p>
+<ul>
+<li>All compiled DLLs for all target frameworks</li>
+<li>XML documentation files</li>
+<li>License and legal notices</li>
+<li>README and changelog</li>
+</ul>
+<h5 id="14-get-version">14. Get Version</h5>
+<pre><code class="lang-yaml">- name: Get Version
+  id: get_version
+  shell: pwsh
+  run: |
+    $ErrorActionPreference = 'Stop'
+    $version = $null
+    
+    # Try to get version from the built assembly (most reliable)
+    try {
+      $dllPath = Get-ChildItem &quot;Bin/Release/net48/Krypton.Toolkit.dll&quot; -ErrorAction Stop
+      $assemblyVersion = [System.Reflection.AssemblyName]::GetAssemblyName($dllPath.FullName).Version
+      $version = $assemblyVersion.ToString()
+      Write-Host &quot;Got version from assembly: $version&quot;
+    } catch {
+      Write-Host &quot;Could not read version from assembly: $_&quot;
+    }
+    
+    # Fallback: Try to read from csproj XML
+    if (-not $version) {
+      try {
+        $proj = 'Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj'
+        [xml]$projXml = Get-Content $proj
+        $versionNode = $projXml.SelectSingleNode(&quot;//Version&quot;)
+        if ($versionNode) {
+          $version = $versionNode.InnerText.Trim()
+          Write-Host &quot;Got version from csproj: $version&quot;
+        }
+      } catch {
+        Write-Host &quot;Could not read version from csproj: $_&quot;
+      }
+    }
+    
+    # Last resort fallback
+    if (-not $version) {
+      Write-Warning &quot;Version not found, using fallback.&quot;
+      $version = &quot;100.25.1.1&quot;
+    }
+    
+    Write-Host &quot;Final determined version: $version&quot;
+    echo &quot;version=$version&quot; &gt;&gt; $env:GITHUB_OUTPUT
+    echo &quot;tag=v$version&quot; &gt;&gt; $env:GITHUB_OUTPUT
+</code></pre>
+<p><strong>Purpose</strong>: Extract version number for tagging and release notes</p>
+<p><strong>Three-Tier Strategy</strong>:</p>
+<ol>
+<li><strong>Primary</strong>: Read from built assembly (most reliable)</li>
+<li><strong>Fallback</strong>: Parse csproj XML for <code>&lt;Version&gt;</code> tag</li>
+<li><strong>Last Resort</strong>: Hardcoded fallback version</li>
+</ol>
+<p><strong>Output Variables</strong>:</p>
+<ul>
+<li><code>version</code>: e.g., <code>100.25.1.1</code></li>
+<li><code>tag</code>: e.g., <code>v100.25.1.1</code></li>
+</ul>
+<h5 id="15-diagnostics---list-artefacts">15. Diagnostics - List Artefacts</h5>
+<pre><code class="lang-yaml">- name: Diagnostics - List Artifacts
+  shell: pwsh
+  run: |
+    Write-Host &quot;=== Files in Bin/Packages/Release ===&quot;
+    Get-ChildItem -Path Bin/Packages/Release -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
+    Write-Host &quot;`n=== Files in Bin/Release/Zips ===&quot;
+    Get-ChildItem -Path Bin/Release/Zips -Recurse -ErrorAction SilentlyContinue | ForEach-Object { Write-Host $_.FullName }
+    Write-Host &quot;`n=== Secrets Check ===&quot;
+    Write-Host &quot;GITHUB_TOKEN present: $(if ($env:GITHUB_TOKEN) { 'yes' } else { 'no' })&quot;
+    Write-Host &quot;NUGET_API_KEY present: $(if ($env:NUGET_API_KEY) { 'yes' } else { 'no' })&quot;
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+</code></pre>
+<p><strong>Purpose</strong>: Diagnostic information for troubleshooting</p>
+<p><strong>Information Displayed</strong>:</p>
+<ul>
+<li>List of NuGet packages created</li>
+<li>List of release archives created</li>
+<li>Verification that required secrets are present</li>
+</ul>
+<h5 id="16-create-or-update-release">16. Create or Update Release</h5>
+<pre><code class="lang-yaml">- name: Create or Update Release
+  shell: pwsh
+  run: |
+    $ErrorActionPreference = 'Stop'
+    $version = &quot;${{ steps.get_version.outputs.version }}&quot;
+    $tag = &quot;v$version&quot;
+    $releaseTitle = &quot;Release $version&quot;
+    $releaseBody = @&quot;
+    ## Krypton Toolkit Suite Release $version
+    
+    This release includes:
+    - All Krypton Toolkit components
+    - NuGet packages for multiple target frameworks
+    - Release archives (ZIP and TAR.GZ formats)
+    
+    ### Downloads
+    - **ZIP Archive**: `Krypton-Release_*.zip`
+    - **TAR.GZ Archive**: `Krypton-Release_*.tar.gz`
+    
+    ### Target Frameworks
+    - .NET Framework 4.7.2
+    - .NET Framework 4.8
+    - .NET Framework 4.8.1
+    - .NET 8.0 Windows
+    - .NET 9.0 Windows
+    - .NET 10.0 Windows
+    &quot;@
+    
+    Write-Host &quot;Preparing to create or update release $tag&quot;
+    
+    # Check if release exists
+    $releaseExists = $false
+    gh release view $tag 2&gt;&amp;1 | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+      $releaseExists = $true
+    }
+    
+    if ($releaseExists) {
+      Write-Host &quot;Release $tag exists - updating&quot;
+      gh release edit $tag --title $releaseTitle --notes &quot;$releaseBody&quot;
+    } else {
+      Write-Host &quot;Creating release $tag&quot;
+      gh release create $tag --title $releaseTitle --notes &quot;$releaseBody&quot; --latest
+    }
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+</code></pre>
+<p><strong>Purpose</strong>: Create GitHub release or update existing one</p>
+<p><strong>Logic</strong>:</p>
+<ol>
+<li>Check if release with tag already exists</li>
+<li>If exists: Update title and notes</li>
+<li>If not exists: Create new release with <code>--latest</code> flag</li>
+</ol>
+<p><strong>Release Notes</strong>: Markdown-formatted with:</p>
+<ul>
+<li>Release overview</li>
+<li>List of included components</li>
+<li>Download links</li>
+<li>Supported frameworks</li>
+</ul>
+<h5 id="17-upload-release-assets">17. Upload Release Assets</h5>
+<pre><code class="lang-yaml">- name: Upload Release Assets
+  shell: pwsh
+  run: |
+    $ErrorActionPreference = 'Stop'
+    $tag = &quot;${{ steps.get_version.outputs.tag }}&quot;
+    $zipFile = Get-ChildItem &quot;Bin/Release/Zips/Krypton-Release_*.zip&quot; -ErrorAction SilentlyContinue | Select-Object -First 1
+    $tarFile = Get-ChildItem &quot;Bin/Release/Zips/Krypton-Release_*.tar.gz&quot; -ErrorAction SilentlyContinue | Select-Object -First 1
+    
+    if ($zipFile) {
+      Write-Host &quot;Uploading $($zipFile.Name)&quot;
+      try {
+        gh release upload $tag &quot;$($zipFile.FullName)&quot; --clobber
+      } catch {
+        Write-Warning &quot;Failed to upload ZIP: $_&quot;
+      }
+    } else {
+      Write-Warning &quot;ZIP release archive not found; skipping upload.&quot;
+    }
+    
+    if ($tarFile) {
+      Write-Host &quot;Uploading $($tarFile.Name)&quot;
+      try {
+        gh release upload $tag &quot;$($tarFile.FullName)&quot; --clobber
+      } catch {
+        Write-Warning &quot;Failed to upload TAR.GZ: $_&quot;
+      }
+    } else {
+      Write-Warning &quot;TAR.GZ release archive not found; skipping upload.&quot;
+    }
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+</code></pre>
+<p><strong>Purpose</strong>: Attach distribution archives to GitHub release</p>
+<p><strong>Features</strong>:</p>
+<ul>
+<li><strong>Existence Check</strong>: Verifies files exist before upload</li>
+<li><strong>Error Handling</strong>: Continues if upload fails (logs warning)</li>
+<li><strong>Clobber Flag</strong>: Replaces existing assets with same name</li>
+</ul>
+<h5 id="18-announce-release-on-discord">18. Announce Release on Discord</h5>
+<pre><code class="lang-yaml">- name: Announce Release on Discord
+  if: steps.push_nuget.outputs.packages_published == 'True'
+  shell: pwsh
+  run: |
+    if (-not $env:DISCORD_WEBHOOK_MASTER) {
+      Write-Warning &quot;DISCORD_WEBHOOK_MASTER not set - skipping Discord notification&quot;
+      exit 0
+    }
+    
+    $payload = @{
+      embeds = @(
+        @{
+          title = &quot;🎉 Krypton Toolkit Stable Release&quot;
+          description = &quot;A new stable release is now available!&quot;
+          color = 3447003
+          fields = @(
+            @{
+              name = &quot;📌 Version&quot;
+              value = &quot;``${{ steps.get_version.outputs.version }}``&quot;
+              inline = $true
+            }
+            @{
+              name = &quot;📦 NuGet Packages&quot;
+              value = &quot;- Krypton.Toolkit`n- Krypton.Ribbon`n- Krypton.Navigator`n- Krypton.Workspace`n- Krypton.Docking&quot;
+              inline = $false
+            }
+            @{
+              name = &quot;🎯 Target Frameworks&quot;
+              value = &quot;• .NET Framework 4.7.2`n• .NET Framework 4.8`n• .NET Framework 4.8.1`n• .NET 8.0`n• .NET 9.0`n• .NET 10.0&quot;
+              inline = $false
+            }
+            @{
+              name = &quot;🔗 NuGet Packages&quot;
+              value = &quot;• [Toolkit](https://www.nuget.org/packages/Krypton.Toolkit)`n• [Ribbon](https://www.nuget.org/packages/Krypton.Ribbon)`n• [Navigator](https://www.nuget.org/packages/Krypton.Navigator)`n• [Workspace](https://www.nuget.org/packages/Krypton.Workspace)`n• [Docking](https://www.nuget.org/packages/Krypton.Docking)&quot;
+              inline = $false
+            }
+            @{
+              name = &quot;📥 GitHub Release&quot;
+              value = &quot;[Download Archives](https://github.com/${{ github.repository }}/releases/tag/${{ steps.get_version.outputs.tag }})&quot;
+              inline = $false
+            }
+          )
+          footer = @{
+            text = &quot;Released&quot;
+          }
+          timestamp = (Get-Date).ToUniversalTime().ToString(&quot;yyyy-MM-ddTHH:mm:ss.fffZ&quot;)
+        }
+      )
+    } | ConvertTo-Json -Depth 10
+    
+    Invoke-RestMethod -Uri &quot;${{ secrets.DISCORD_WEBHOOK_MASTER }}&quot; -Method Post -Body $payload -ContentType &quot;application/json&quot;
+  env:
+    DISCORD_WEBHOOK_MASTER: ${{ secrets.DISCORD_WEBHOOK_MASTER }}
+</code></pre>
+<p><strong>Purpose</strong>: Send release announcement to Discord channel</p>
+<p><strong>Condition</strong>: Only runs if <code>packages_published == 'True'</code></p>
+<p><strong>Webhook Structure</strong>:</p>
+<ul>
+<li><strong>Embed Title</strong>: Channel-specific emoji and title</li>
+<li><strong>Description</strong>: Brief release description</li>
+<li><strong>Color</strong>: Blue (3447003) for stable releases</li>
+<li><strong>Fields</strong>:
+<ul>
+<li>Version number</li>
+<li>List of packages</li>
+<li>Target frameworks</li>
+<li>NuGet package links</li>
+<li>GitHub release link</li>
+</ul>
+</li>
+<li><strong>Timestamp</strong>: ISO 8601 UTC timestamp</li>
+</ul>
+<p><strong>Graceful Handling</strong>: Exits successfully if webhook not configured</p>
+<hr>
+<h3 id="job-2-release-v85-lts">Job 2: release-v85-lts</h3>
+<p><strong>Runner</strong>: <code>windows-2025</code></p>
+<p><strong>Condition</strong>: <code>github.ref == 'refs/heads/V85-LTS' &amp;&amp; github.event_name == 'push'</code></p>
+<h4 id="key-differences-from-master">Key Differences from Master</h4>
+<h5 id="net-sdk-setup">.NET SDK Setup</h5>
+<pre><code class="lang-yaml"># .NET 6 (LTS) - needed for net6.0-windows target
+- name: Setup .NET 6
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: 6.0.x
+
+# .NET 7 - needed for net7.0-windows target
+- name: Setup .NET 7
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: 7.0.x
+
+# .NET 8 (LTS) - needed for net8.0-windows target
+- name: Setup .NET 8
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: 8.0.x
+</code></pre>
+<p><strong>Why Different</strong>: LTS focuses on long-term support versions (6, 7, 8) instead of bleeding-edge (9, 10, 11)</p>
+<h5 id="build-script">Build Script</h5>
+<pre><code class="lang-yaml">- name: Build LTS Release
+  run: msbuild &quot;Scripts/longtermstable.proj&quot; /t:Build /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
+
+- name: Pack LTS Release
+  run: msbuild &quot;Scripts/longtermstable.proj&quot; /t:Pack /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
+</code></pre>
+<p><strong>Script</strong>: <code>Scripts/longtermstable.proj</code> (instead of <code>build.proj</code>)</p>
+<h5 id="target-frameworks">Target Frameworks</h5>
+<ul>
+<li>.NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8, 4.8.1</li>
+<li>.NET 6.0-windows, 7.0-windows, 8.0-windows</li>
+</ul>
+<p><strong>Extended Framework Support</strong>: Includes older .NET Framework versions</p>
+<h5 id="package-names">Package Names</h5>
+<ul>
+<li>Krypton.Toolkit.LTS.{version}.nupkg</li>
+<li>Krypton.Ribbon.LTS.{version}.nupkg</li>
+<li>etc.</li>
+</ul>
+<p><strong>Suffix</strong>: <code>.LTS</code> added to all package names</p>
+<h5 id="version-fallback">Version Fallback</h5>
+<pre><code class="lang-yaml">$version = &quot;85.25.1.1&quot;  # LTS-specific fallback
+</code></pre>
+<h5 id="release-tag">Release Tag</h5>
+<pre><code class="lang-yaml">echo &quot;tag=v$version-lts&quot; &gt;&gt; $env:GITHUB_OUTPUT
+</code></pre>
+<p><strong>Format</strong>: <code>v{version}-lts</code> (e.g., <code>v85.25.1.1-lts</code>)</p>
+<h5 id="discord-notification">Discord Notification</h5>
+<ul>
+<li><strong>Color</strong>: Orange (15105570)</li>
+<li><strong>Title</strong>: &quot;🛡️ Krypton Toolkit LTS Release&quot;</li>
+<li><strong>Webhook</strong>: <code>DISCORD_WEBHOOK_LTS</code></li>
+</ul>
+<h5 id="no-github-release">No GitHub Release</h5>
+<p>The LTS job does NOT create GitHub releases (only NuGet packages and Discord notification).</p>
+<hr>
+<h3 id="job-3-release-canary">Job 3: release-canary</h3>
+<p><strong>Runner</strong>: <code>windows-2025</code></p>
+<p><strong>Condition</strong>: <code>github.ref == 'refs/heads/canary' &amp;&amp; github.event_name == 'push'</code></p>
+<h4 id="key-differences-from-master-1">Key Differences from Master</h4>
+<h5 id="net-sdk-setup-1">.NET SDK Setup</h5>
+<p>Same as master (9, 10 preview)</p>
+<h5 id="build-script-1">Build Script</h5>
+<pre><code class="lang-yaml">- name: Build Canary
+  run: msbuild &quot;Scripts/canary.proj&quot; /t:Build /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;
+
+- name: Pack Canary
+  run: msbuild &quot;Scripts/canary.proj&quot; /t:Pack /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;
+</code></pre>
+<p><strong>Script</strong>: <code>Scripts/canary.proj</code>
+<strong>Configuration</strong>: <code>Canary</code> (instead of Release)</p>
+<h5 id="output-paths">Output Paths</h5>
+<ul>
+<li>Build: <code>Bin/Canary/</code></li>
+<li>Packages: <code>Bin/Packages/Canary/</code></li>
+</ul>
+<h5 id="version-detection">Version Detection</h5>
+<pre><code class="lang-yaml">$dllPath = Get-ChildItem &quot;Bin/Canary/net48/Krypton.Toolkit.dll&quot;
+</code></pre>
+<h5 id="release-tag-1">Release Tag</h5>
+<pre><code class="lang-yaml">echo &quot;tag=v$version-canary&quot; &gt;&gt; $env:GITHUB_OUTPUT
+</code></pre>
+<p><strong>Format</strong>: <code>v{version}-canary</code></p>
+<h5 id="discord-notification-1">Discord Notification</h5>
+<ul>
+<li><strong>Color</strong>: Yellow (16776960)</li>
+<li><strong>Title</strong>: &quot;🐤 Krypton Toolkit Canary Release&quot;</li>
+<li><strong>Webhook</strong>: <code>DISCORD_WEBHOOK_CANARY</code></li>
+</ul>
+<h5 id="no-github-release-1">No GitHub Release</h5>
+<p>The Canary job does NOT create GitHub releases.</p>
+<hr>
+<h3 id="job-4-release-alpha">Job 4: release-alpha</h3>
+<p><strong>Runner</strong>: <code>windows-2025</code></p>
+<p><strong>Condition</strong>: <code>github.ref == 'refs/heads/alpha' &amp;&amp; github.event_name == 'push'</code></p>
+<h4 id="key-differences-from-master-2">Key Differences from Master</h4>
+<h5 id="net-sdk-setup-2">.NET SDK Setup</h5>
+<p>Same as master (9, 10 preview)</p>
+<h5 id="build-script-2">Build Script</h5>
+<pre><code class="lang-yaml">- name: Build Alpha
+  run: msbuild &quot;Scripts/nightly.proj&quot; /t:Build /p:Configuration=Nightly /p:Platform=&quot;Any CPU&quot;
+
+- name: Pack Alpha
+  run: msbuild &quot;Scripts/nightly.proj&quot; /t:Pack /p:Configuration=Nightly /p:Platform=&quot;Any CPU&quot;
+</code></pre>
+<p><strong>Script</strong>: <code>Scripts/nightly.proj</code>
+<strong>Configuration</strong>: <code>Nightly</code> (debug symbols, less optimization)</p>
+<h5 id="output-paths-1">Output Paths</h5>
+<ul>
+<li>Build: <code>Bin/Nightly/</code></li>
+<li>Packages: <code>Bin/Packages/Nightly/</code></li>
+</ul>
+<h5 id="version-detection-1">Version Detection</h5>
+<pre><code class="lang-yaml">$dllPath = Get-ChildItem &quot;Bin/Nightly/net48/Krypton.Toolkit.dll&quot;
+</code></pre>
+<h5 id="release-tag-2">Release Tag</h5>
+<pre><code class="lang-yaml">echo &quot;tag=v$version-nightly&quot; &gt;&gt; $env:GITHUB_OUTPUT
+</code></pre>
+<p><strong>Format</strong>: <code>v{version}-nightly</code></p>
+<h5 id="discord-notification-2">Discord Notification</h5>
+<ul>
+<li><strong>Color</strong>: Purple (10181046)</li>
+<li><strong>Title</strong>: &quot;🚀 Krypton Toolkit Nightly Release&quot;</li>
+<li><strong>Webhook</strong>: <code>DISCORD_WEBHOOK_NIGHTLY</code></li>
+</ul>
+<h5 id="no-github-release-2">No GitHub Release</h5>
+<p>The Alpha job does NOT create GitHub releases.</p>
+<hr>
+<h2 id="configuration">Configuration</h2>
+<h3 id="required-secrets">Required Secrets</h3>
+<h4 id="nuget_api_key">NUGET_API_KEY</h4>
+<ul>
+<li><strong>Type</strong>: Secret</li>
+<li><strong>Required By</strong>: All release jobs</li>
+<li><strong>Purpose</strong>: Authenticate with NuGet.org for package publishing</li>
+<li><strong>How to Obtain</strong>:
+<ol>
+<li>Log in to <a href="https://nuget.org">https://nuget.org</a></li>
+<li>Go to Account Settings → API Keys</li>
+<li>Create new API key with &quot;Push&quot; permission</li>
+<li>Set appropriate expiration</li>
+<li>Copy key and add to GitHub repository secrets</li>
+</ol>
+</li>
+</ul>
+<p><strong>Security</strong>:</p>
+<ul>
+<li>Rotate every 90 days</li>
+<li>Use separate keys for different repositories</li>
+<li>Never commit to version control</li>
+</ul>
+<h4 id="github_token">GITHUB_TOKEN</h4>
+<ul>
+<li><strong>Type</strong>: Automatic secret</li>
+<li><strong>Required By</strong>: Master release job (for GitHub release creation)</li>
+<li><strong>Purpose</strong>: Authenticate GitHub CLI</li>
+<li><strong>Configuration</strong>: No manual setup required</li>
+</ul>
+<p><strong>Required Permissions</strong>:</p>
+<ul>
+<li><code>contents: write</code></li>
+<li><code>actions: read</code></li>
+</ul>
+<h4 id="discord_webhook_master">DISCORD_WEBHOOK_MASTER</h4>
+<ul>
+<li><strong>Type</strong>: Secret (optional)</li>
+<li><strong>Required By</strong>: Master release job</li>
+<li><strong>Purpose</strong>: Post stable release announcements</li>
+<li><strong>How to Obtain</strong>:
+<ol>
+<li>Open Discord server settings</li>
+<li>Go to Integrations → Webhooks</li>
+<li>Create new webhook for releases channel</li>
+<li>Copy webhook URL</li>
+<li>Add to GitHub repository secrets</li>
+</ol>
+</li>
+</ul>
+<p><strong>Format</strong>: <code>https://discord.com/api/webhooks/{id}/{token}</code></p>
+<h4 id="discord_webhook_lts">DISCORD_WEBHOOK_LTS</h4>
+<ul>
+<li><strong>Type</strong>: Secret (optional)</li>
+<li><strong>Required By</strong>: LTS release job</li>
+<li><strong>Purpose</strong>: Post LTS release announcements</li>
+<li><strong>Configuration</strong>: Same as DISCORD_WEBHOOK_MASTER</li>
+</ul>
+<h4 id="discord_webhook_canary">DISCORD_WEBHOOK_CANARY</h4>
+<ul>
+<li><strong>Type</strong>: Secret (optional)</li>
+<li><strong>Required By</strong>: Canary release job</li>
+<li><strong>Purpose</strong>: Post canary release announcements</li>
+<li><strong>Configuration</strong>: Same as DISCORD_WEBHOOK_MASTER</li>
+</ul>
+<h4 id="discord_webhook_nightly">DISCORD_WEBHOOK_NIGHTLY</h4>
+<ul>
+<li><strong>Type</strong>: Secret (optional)</li>
+<li><strong>Required By</strong>: Alpha release job</li>
+<li><strong>Purpose</strong>: Post nightly release announcements</li>
+<li><strong>Configuration</strong>: Same as DISCORD_WEBHOOK_MASTER</li>
+</ul>
+<h3 id="build-scripts">Build Scripts</h3>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Job</th>
+<th>Configuration</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Scripts/build.proj</code></td>
+<td>Master</td>
+<td>Release</td>
+<td>Stable production builds</td>
+</tr>
+<tr>
+<td><code>Scripts/longtermstable.proj</code></td>
+<td>LTS</td>
+<td>Release</td>
+<td>LTS builds with extended framework support</td>
+</tr>
+<tr>
+<td><code>Scripts/canary.proj</code></td>
+<td>Canary</td>
+<td>Canary</td>
+<td>Pre-release builds</td>
+</tr>
+<tr>
+<td><code>Scripts/nightly.proj</code></td>
+<td>Alpha</td>
+<td>Nightly</td>
+<td>Development builds</td>
+</tr>
+</tbody>
+</table>
+<h3 id="repository-settings">Repository Settings</h3>
+<h4 id="actions-permissions">Actions Permissions</h4>
+<p>(Settings → Actions → General)</p>
+<ul>
+<li>✅ Workflow permissions: &quot;Read and write permissions&quot;</li>
+<li>✅ Allow GitHub Actions to create/approve pull requests (for master only)</li>
+</ul>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-stable-release-master">Example 1: Stable Release (Master)</h3>
+<pre><code class="lang-bash"># 1. Prepare release branch
+git checkout master
+git pull origin master
+
+# 2. Update version in project files
+# Edit: Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj
+# Update &lt;Version&gt;100.26.0.0&lt;/Version&gt;
+
+# 3. Commit version change
+git add .
+git commit -m &quot;Bump version to 100.26.0.0&quot;
+
+# 4. Push to master
+git push origin master
+
+# → Workflow triggers automatically
+# → Builds, packs, publishes NuGet
+# → Creates GitHub release v100.26.0.0
+# → Uploads ZIP and TAR.GZ
+# → Posts to Discord
+</code></pre>
+<p><strong>Result</strong>:</p>
+<ul>
+<li>NuGet packages published to nuget.org</li>
+<li>GitHub release created with archives</li>
+<li>Discord notification sent (if webhook configured)</li>
+</ul>
+<h3 id="example-2-lts-release">Example 2: LTS Release</h3>
+<pre><code class="lang-bash"># 1. Cherry-pick bug fix to LTS branch
+git checkout V85-LTS
+git cherry-pick &lt;commit-hash&gt;
+
+# 2. Update LTS version
+# Edit: &lt;Version&gt;85.26.0.0&lt;/Version&gt;
+
+# 3. Push to V85-LTS
+git push origin V85-LTS
+
+# → Workflow triggers
+# → Builds with .NET 6/7/8 only
+# → Publishes *.LTS packages to NuGet
+# → Posts to Discord with LTS designation
+# → No GitHub release created
+</code></pre>
+<p><strong>Result</strong>:</p>
+<ul>
+<li>Krypton.Toolkit.LTS packages published</li>
+<li>Discord notification with LTS branding</li>
+<li>No GitHub release</li>
+</ul>
+<h3 id="example-3-canary-pre-release">Example 3: Canary Pre-Release</h3>
+<pre><code class="lang-bash"># 1. Merge feature to canary for testing
+git checkout canary
+git merge feature/experimental-ui
+
+# 2. Update canary version
+# Edit: &lt;Version&gt;100.27.0.0-canary.1&lt;/Version&gt;
+
+# 3. Push to canary
+git push origin canary
+
+# → Workflow triggers
+# → Builds in Canary configuration
+# → Publishes to NuGet with canary version
+# → Posts to Discord with yellow canary branding
+</code></pre>
+<p><strong>Result</strong>:</p>
+<ul>
+<li>Canary packages available for early testing</li>
+<li>Discord notification with pre-release warning</li>
+<li>No GitHub release</li>
+</ul>
+<h3 id="example-4-alpha-development-build">Example 4: Alpha Development Build</h3>
+<pre><code class="lang-bash"># 1. Push feature to alpha
+git checkout alpha
+git push origin alpha
+
+# → Workflow triggers on every push
+# → Builds in Nightly configuration
+# → Publishes to NuGet
+# → Posts to Discord with nightly branding
+
+# Note: Consider using scheduled nightly.yml instead
+# for automatic daily builds with change detection
+</code></pre>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-1-nuget-push-fails-with-403-forbidden">Issue 1: NuGet Push Fails with 403 Forbidden</h3>
+<p><strong>Symptoms</strong>:</p>
+<pre><code>error: Response status code does not indicate success: 403 (Forbidden)
+</code></pre>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Invalid or expired <code>NUGET_API_KEY</code></li>
+<li>API key lacks push permission</li>
+<li>Package name/prefix not owned by account</li>
+</ul>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li>Verify API key on nuget.org:
+<ul>
+<li>Go to Account Settings → API Keys</li>
+<li>Check expiration date</li>
+<li>Verify &quot;Push&quot; permission is enabled</li>
+</ul>
+</li>
+<li>Regenerate API key if needed</li>
+<li>Update <code>NUGET_API_KEY</code> secret in GitHub</li>
+</ol>
+<h3 id="issue-2-all-packages-skipped-duplicates">Issue 2: All Packages Skipped (Duplicates)</h3>
+<p><strong>Symptoms</strong>:</p>
+<pre><code>Package Krypton.Toolkit.100.25.1.1.nupkg already exists - skipped
+packages_published=false
+</code></pre>
+<p><strong>Expected Behavior</strong>: This is normal when version hasn't changed</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li><strong>Update Version</strong>: Increment version in project files before releasing</li>
+<li><strong>Verify Intent</strong>: Ensure you intended to create a new release</li>
+<li><strong>Check NuGet</strong>: Visit nuget.org to confirm existing version</li>
+</ul>
+<p><strong>Note</strong>: Discord notification won't be sent when all packages are duplicates.</p>
+<h3 id="issue-3-discord-notification-not-sent">Issue 3: Discord Notification Not Sent</h3>
+<p><strong>Symptoms</strong>: Build succeeds but no Discord message</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li><strong>Webhook not configured</strong>: <code>DISCORD_WEBHOOK_*</code> secret not set</li>
+<li><strong>No packages published</strong>: <code>packages_published=false</code> (all duplicates)</li>
+<li><strong>Invalid webhook URL</strong>: Webhook expired or deleted</li>
+<li><strong>Payload too large</strong>: Unlikely but possible</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-yaml"># Add debug step before Discord notification
+- name: Debug Discord
+  run: |
+    Write-Host &quot;Packages published: ${{ steps.push_nuget.outputs.packages_published }}&quot;
+    Write-Host &quot;Webhook configured: $(if ($env:DISCORD_WEBHOOK_MASTER) { 'yes' } else { 'no' })&quot;
+  env:
+    DISCORD_WEBHOOK_MASTER: ${{ secrets.DISCORD_WEBHOOK_MASTER }}
+</code></pre>
+<p><strong>Test Webhook</strong>:</p>
+<pre><code class="lang-bash">curl -X POST &quot;WEBHOOK_URL&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;content&quot;: &quot;Test message&quot;}'
+</code></pre>
+<h3 id="issue-4-github-release-creation-fails">Issue 4: GitHub Release Creation Fails</h3>
+<p><strong>Symptoms</strong>:</p>
+<pre><code>error: HTTP 404: Not Found
+</code></pre>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Insufficient <code>GITHUB_TOKEN</code> permissions</li>
+<li>Release with same tag already exists</li>
+<li>Network issues</li>
+</ul>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li><strong>Check Permissions</strong>:
+<ul>
+<li>Settings → Actions → General</li>
+<li>Workflow permissions: &quot;Read and write permissions&quot;</li>
+</ul>
+</li>
+<li><strong>Check Existing Release</strong>:
+<pre><code class="lang-bash">gh release view v100.25.1.1
+</code></pre>
+</li>
+<li><strong>Delete Existing Release</strong> (if needed):
+<pre><code class="lang-bash">gh release delete v100.25.1.1
+</code></pre>
+</li>
+</ol>
+<h3 id="issue-5-version-detection-returns-fallback">Issue 5: Version Detection Returns Fallback</h3>
+<p><strong>Symptoms</strong>:</p>
+<pre><code>Version not found, using fallback.
+version=100.25.1.1
+</code></pre>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>DLL not built successfully</li>
+<li>Incorrect DLL path</li>
+<li>Assembly version not set in project</li>
+</ul>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li><strong>Verify Build Success</strong>:
+<pre><code class="lang-yaml">- name: Verify DLL Exists
+  run: |
+    Test-Path &quot;Bin/Release/net48/Krypton.Toolkit.dll&quot;
+</code></pre>
+</li>
+<li><strong>Check Project File</strong>:
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+  &lt;Version&gt;100.26.0.0&lt;/Version&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+</li>
+<li><strong>Add Diagnostics</strong>:
+<pre><code class="lang-yaml">- name: Debug Version Detection
+  run: |
+    Write-Host &quot;Assembly path: Bin/Release/net48/Krypton.Toolkit.dll&quot;
+    $dll = Get-ChildItem &quot;Bin/Release/net48/Krypton.Toolkit.dll&quot;
+    Write-Host &quot;File exists: $($dll -ne $null)&quot;
+    if ($dll) {
+      $asm = [System.Reflection.AssemblyName]::GetAssemblyName($dll.FullName)
+      Write-Host &quot;Assembly version: $($asm.Version)&quot;
+    }
+</code></pre>
+</li>
+</ol>
+<h3 id="issue-6-wrong-release-channel-triggered">Issue 6: Wrong Release Channel Triggered</h3>
+<p><strong>Symptoms</strong>: Alpha workflow runs when expecting master, etc.</p>
+<p><strong>Cause</strong>: Pushed to wrong branch</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-bash"># Verify current branch
+git branch
+
+# Check which branch you're pushing to
+git push --dry-run origin alpha
+</code></pre>
+<p><strong>Prevention</strong>:</p>
+<ul>
+<li>Use branch protection rules</li>
+<li>Require pull requests for important branches</li>
+<li>Set up CI status checks</li>
+</ul>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-version-management">1. Version Management</h3>
+<p><strong>Do</strong>:</p>
+<ul>
+<li>✅ Increment version before releasing</li>
+<li>✅ Use semantic versioning (MAJOR.MINOR.PATCH.BUILD)</li>
+<li>✅ Update changelog with release</li>
+<li>✅ Tag commits with version number</li>
+</ul>
+<p><strong>Don't</strong>:</p>
+<ul>
+<li>❌ Reuse version numbers</li>
+<li>❌ Publish without updating version</li>
+<li>❌ Use non-standard version formats</li>
+</ul>
+<h3 id="2-release-testing">2. Release Testing</h3>
+<p><strong>Do</strong>:</p>
+<ul>
+<li>✅ Test in canary before promoting to master</li>
+<li>✅ Verify packages install correctly</li>
+<li>✅ Test on all target frameworks</li>
+<li>✅ Review GitHub release before announcing</li>
+</ul>
+<p><strong>Don't</strong>:</p>
+<ul>
+<li>❌ Push untested code to master</li>
+<li>❌ Skip integration testing</li>
+<li>❌ Ignore build warnings</li>
+</ul>
+<h3 id="3-nuget-package-management">3. NuGet Package Management</h3>
+<p><strong>Do</strong>:</p>
+<ul>
+<li>✅ Use <code>--skip-duplicate</code> for idempotency</li>
+<li>✅ Verify package contents before publishing</li>
+<li>✅ Monitor nuget.org for successful upload</li>
+<li>✅ Test package installation in sample project</li>
+</ul>
+<p><strong>Don't</strong>:</p>
+<ul>
+<li>❌ Delete published packages (use unlisting instead)</li>
+<li>❌ Publish debug builds to production</li>
+<li>❌ Include unnecessary files in packages</li>
+</ul>
+<h3 id="4-discord-notifications">4. Discord Notifications</h3>
+<p><strong>Do</strong>:</p>
+<ul>
+<li>✅ Test webhook before configuring</li>
+<li>✅ Use separate webhooks per channel</li>
+<li>✅ Monitor Discord for successful posts</li>
+<li>✅ Keep notification messages concise</li>
+</ul>
+<p><strong>Don't</strong>:</p>
+<ul>
+<li>❌ Share webhook URLs publicly</li>
+<li>❌ Spam channels with test messages</li>
+<li>❌ Include sensitive information in notifications</li>
+</ul>
+<h3 id="5-security">5. Security</h3>
+<p><strong>Do</strong>:</p>
+<ul>
+<li>✅ Rotate NuGet API keys regularly</li>
+<li>✅ Use separate keys for different repositories</li>
+<li>✅ Monitor for unauthorized package updates</li>
+<li>✅ Enable 2FA on NuGet account</li>
+</ul>
+<p><strong>Don't</strong>:</p>
+<ul>
+<li>❌ Commit secrets to version control</li>
+<li>❌ Share API keys with others</li>
+<li>❌ Use overly permissive API key scopes</li>
+</ul>
+<hr>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="Build-Workflow.md">Build Workflow</a> - CI/CD for pull requests and builds</li>
+<li><a href="Nightly-Workflow.md">Nightly Workflow</a> - Scheduled nightly builds</li>
+<li><a href="../GitHub-Workflows.md">GitHub Workflows Overview</a> - Complete documentation</li>
+</ul>
+<hr>
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="release-channels-1">Release Channels</h3>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Branch</th>
+<th>Package Suffix</th>
+<th>Tag Format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stable</td>
+<td>master</td>
+<td>-</td>
+<td><code>v{version}</code></td>
+</tr>
+<tr>
+<td>LTS</td>
+<td>V85-LTS</td>
+<td><code>.LTS</code></td>
+<td><code>v{version}-lts</code></td>
+</tr>
+<tr>
+<td>Canary</td>
+<td>canary</td>
+<td>-</td>
+<td><code>v{version}-canary</code></td>
+</tr>
+<tr>
+<td>Alpha</td>
+<td>alpha</td>
+<td>-</td>
+<td><code>v{version}-nightly</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="required-secrets-1">Required Secrets</h3>
+<table>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Master</th>
+<th>LTS</th>
+<th>Canary</th>
+<th>Alpha</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NUGET_API_KEY</code></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><code>GITHUB_TOKEN</code></td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_*</code></td>
+<td>Optional</td>
+<td>Optional</td>
+<td>Optional</td>
+<td>Optional</td>
+</tr>
+</tbody>
+</table>
+<h3 id="target-frameworks-by-channel">Target Frameworks by Channel</h3>
+<table>
+<thead>
+<tr>
+<th>Framework</th>
+<th>Master</th>
+<th>LTS</th>
+<th>Canary</th>
+<th>Alpha</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.NET 4.6.2</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>.NET 4.7.x</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>.NET 4.7.2</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>.NET 4.8.x</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>.NET 6</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>.NET 7</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>.NET 8</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>.NET 9</td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>.NET 10</td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
