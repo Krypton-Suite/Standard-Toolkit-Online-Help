@@ -96,4 +96,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  // Dynamically update copyright year in footer
+  const currentYear = new Date().getFullYear();
+  const footer = document.querySelector('.footer');
+  if (footer) {
+    footer.innerHTML = footer.innerHTML.replace(/2017 - \d{4}/g, `2017 - ${currentYear}`);
+  }
 });

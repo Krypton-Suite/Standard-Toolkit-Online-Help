@@ -155,6 +155,122 @@ on:
 - Runs on GitHub-hosted infrastructure
 - Requires workflow file on default branch or the branch being monitored
 
+### Why Scheduled Workflows Only Run on the Default Branch
+
+GitHub Actions has a fundamental limitation: **scheduled workflows (using `schedule`) can only run from the default branch of the repository**. This is a core design decision by GitHub and cannot be overridden through workflow configuration.
+
+#### Technical Constraint
+
+**GitHub Actions Behavior**:
+- When a scheduled trigger fires, GitHub Actions looks for the workflow file (`.github/workflows/nightly.yml`) **only** on the default branch
+- If the workflow file exists on other branches but not on the default branch, the scheduled trigger will not execute
+- This applies to all repositories, regardless of organization or repository settings
+
+**Why This Design Exists**:
+
+1. **Deterministic Execution**
+   - Scheduled workflows need a predictable source of truth
+   - The default branch is the authoritative, stable branch in most repositories
+   - Prevents confusion about which branch's workflow file to use
+
+2. **Security and Consistency**
+   - Prevents unauthorized changes to scheduled workflows from feature branches
+   - Ensures scheduled workflows always run from reviewed, merged code
+   - Maintains consistency in automation behavior
+
+3. **Resource Management**
+   - GitHub Actions must know which workflow to run without ambiguity
+   - Multiple branches could have conflicting workflow definitions
+   - Default branch provides single, canonical workflow source
+
+4. **GitHub Infrastructure**
+   - Simplifies workflow scheduling at scale
+   - Reduces computational complexity in workflow resolution
+   - Aligns with GitHub's security and access control model
+
+#### Implications for Nightly Workflow
+
+**Required Setup**:
+- The `.github/workflows/nightly.yml` file **must exist on the default branch** for scheduled triggers to work
+- Even though the workflow checks out the `alpha` branch, the workflow definition itself comes from the default branch
+- This means workflow changes must be merged to the default branch before taking effect
+
+**Workflow Execution Flow**:
+```
+1. Scheduled trigger fires at 00:00 UTC
+   ↓
+2. GitHub Actions reads workflow file from DEFAULT branch
+   ↓
+3. Workflow starts execution on runner
+   ↓
+4. Checkout step explicitly switches to 'alpha' branch (ref: alpha)
+   ↓
+5. Subsequent steps operate on 'alpha' branch code
+```
+
+**Manual Triggers vs. Scheduled Triggers**:
+- **Scheduled triggers**: Always run workflow from default branch's workflow file, regardless of which branch code it operates on
+- **Manual triggers (`workflow_dispatch`)**: Can run from any branch - you select the branch when triggering
+- This is why manual triggers are useful for testing workflow changes before merging to default branch
+
+#### Best Practices
+
+**For Nightly Workflow**:
+
+1. **Workflow File Location**
+   - ✅ Keep `.github/workflows/nightly.yml` on default branch
+   - ✅ Merge workflow changes through pull requests
+   - ✅ Test changes with manual triggers before merging
+
+2. **Branching Strategy**
+   - ✅ Default branch contains stable workflow definition
+   - ✅ Workflow checks out `alpha` branch for actual builds
+   - ✅ Code changes happen on `alpha`, workflow changes on `default`
+
+3. **Testing Workflow Changes**
+   ```bash
+   # 1. Make changes on feature branch
+   git checkout -b feature/nightly-workflow-update
+   # Edit .github/workflows/nightly.yml
+   
+   # 2. Test with manual trigger (from feature branch)
+   # GitHub UI → Actions → Run workflow → Select feature branch
+   
+   # 3. After verification, merge to default branch
+   git checkout default
+   git merge feature/nightly-workflow-update
+   
+   # 4. Scheduled trigger will now use updated workflow
+   ```
+
+#### Troubleshooting
+
+**Issue**: Scheduled workflow not running
+
+**Checklist**:
+- [ ] Verify workflow file exists on default branch: `.github/workflows/nightly.yml`
+- [ ] Confirm default branch is set correctly in repository settings
+- [ ] Check workflow file syntax is valid YAML
+- [ ] Ensure GitHub Actions is enabled for the repository
+- [ ] Review Actions tab for error messages
+
+**Common Mistake**: Placing workflow file only on `alpha` branch
+- **Result**: Scheduled trigger never fires
+- **Solution**: Copy workflow file to default branch or merge `alpha` into default
+
+**Workaround**: While you can't change which branch GitHub reads the workflow from for scheduled triggers, you can:
+- Use manual triggers from any branch for testing
+- Implement workflow composition (call reusable workflows)
+- Use workflow file templating strategies
+
+#### Summary
+
+The requirement for scheduled workflows to run from the default branch is a fundamental GitHub Actions limitation designed for security, consistency, and simplicity. For the nightly workflow, this means:
+- The workflow **definition** must be on the default branch
+- The workflow **executes** on code from the `alpha` branch (via `ref: alpha` in checkout)
+- Manual triggers provide flexibility to test workflow changes from any branch
+- Always merge workflow file changes to the default branch for scheduled triggers to pick them up
+
 ### Manual Trigger (workflow_dispatch)
 
 **Purpose**: Allows manual execution for testing or on-demand builds
@@ -289,7 +405,7 @@ if ([int]$commitCount -gt 0) {
 
 ### Job: nightly
 
-**Runner**: `windows-2025`
+**Runner**: `windows-latest`
 
 **No Branch Restrictions**: Runs on the branch containing the workflow file (typically alpha)
 
@@ -1142,7 +1258,7 @@ Example:
 |--------|---------|
 | **File** | `.github/workflows/nightly.yml` |
 | **Trigger** | Scheduled (00:00 UTC daily) + Manual |
-| **Runner** | windows-2025 |
+| **Runner** | windows-latest |
 | **Duration** | ~2 min (skipped) or ~12-15 min (full build) |
 | **Branch** | alpha |
 

@@ -174,7 +174,7 @@ git push origin master
 
 ### Job 1: Build
 
-**Runner**: `windows-2025`
+**Runner**: `windows-latest`
 
 **Condition**:
 ```yaml
@@ -378,7 +378,7 @@ if (-not $sdkVersion) {
 
 ### Job 2: Release
 
-**Runner**: `windows-2025`
+**Runner**: `windows-latest`
 
 **Condition**:
 ```yaml
@@ -1051,7 +1051,7 @@ warning: Failed to upload ZIP: ...
 |--------|---------|
 | **File** | `.github/workflows/build.yml` |
 | **Triggers** | Pull requests (all branches), Push (master, alpha, canary, gold, V85-LTS) |
-| **Runner** | windows-2025 |
+| **Runner** | windows-latest |
 | **Jobs** | 2 (build, release) |
 | **Duration** | ~5-10 minutes (build), ~8-12 minutes (release) |
 | **Dependencies** | Build scripts, .NET SDKs 9-11, MSBuild, NuGet |

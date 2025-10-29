@@ -211,6 +211,132 @@ Changes?         No Changes?
 <li>Runs on GitHub-hosted infrastructure</li>
 <li>Requires workflow file on default branch or the branch being monitored</li>
 </ul>
+<h3 id="why-scheduled-workflows-only-run-on-the-default-branch">Why Scheduled Workflows Only Run on the Default Branch</h3>
+<p>GitHub Actions has a fundamental limitation: <strong>scheduled workflows (using <code>schedule</code>) can only run from the default branch of the repository</strong>. This is a core design decision by GitHub and cannot be overridden through workflow configuration.</p>
+<h4 id="technical-constraint">Technical Constraint</h4>
+<p><strong>GitHub Actions Behavior</strong>:</p>
+<ul>
+<li>When a scheduled trigger fires, GitHub Actions looks for the workflow file (<code>.github/workflows/nightly.yml</code>) <strong>only</strong> on the default branch</li>
+<li>If the workflow file exists on other branches but not on the default branch, the scheduled trigger will not execute</li>
+<li>This applies to all repositories, regardless of organization or repository settings</li>
+</ul>
+<p><strong>Why This Design Exists</strong>:</p>
+<ol>
+<li><p><strong>Deterministic Execution</strong></p>
+<ul>
+<li>Scheduled workflows need a predictable source of truth</li>
+<li>The default branch is the authoritative, stable branch in most repositories</li>
+<li>Prevents confusion about which branch's workflow file to use</li>
+</ul>
+</li>
+<li><p><strong>Security and Consistency</strong></p>
+<ul>
+<li>Prevents unauthorized changes to scheduled workflows from feature branches</li>
+<li>Ensures scheduled workflows always run from reviewed, merged code</li>
+<li>Maintains consistency in automation behavior</li>
+</ul>
+</li>
+<li><p><strong>Resource Management</strong></p>
+<ul>
+<li>GitHub Actions must know which workflow to run without ambiguity</li>
+<li>Multiple branches could have conflicting workflow definitions</li>
+<li>Default branch provides single, canonical workflow source</li>
+</ul>
+</li>
+<li><p><strong>GitHub Infrastructure</strong></p>
+<ul>
+<li>Simplifies workflow scheduling at scale</li>
+<li>Reduces computational complexity in workflow resolution</li>
+<li>Aligns with GitHub's security and access control model</li>
+</ul>
+</li>
+</ol>
+<h4 id="implications-for-nightly-workflow">Implications for Nightly Workflow</h4>
+<p><strong>Required Setup</strong>:</p>
+<ul>
+<li>The <code>.github/workflows/nightly.yml</code> file <strong>must exist on the default branch</strong> for scheduled triggers to work</li>
+<li>Even though the workflow checks out the <code>alpha</code> branch, the workflow definition itself comes from the default branch</li>
+<li>This means workflow changes must be merged to the default branch before taking effect</li>
+</ul>
+<p><strong>Workflow Execution Flow</strong>:</p>
+<pre><code>1. Scheduled trigger fires at 00:00 UTC
+   ↓
+2. GitHub Actions reads workflow file from DEFAULT branch
+   ↓
+3. Workflow starts execution on runner
+   ↓
+4. Checkout step explicitly switches to 'alpha' branch (ref: alpha)
+   ↓
+5. Subsequent steps operate on 'alpha' branch code
+</code></pre>
+<p><strong>Manual Triggers vs. Scheduled Triggers</strong>:</p>
+<ul>
+<li><strong>Scheduled triggers</strong>: Always run workflow from default branch's workflow file, regardless of which branch code it operates on</li>
+<li><strong>Manual triggers (<code>workflow_dispatch</code>)</strong>: Can run from any branch - you select the branch when triggering</li>
+<li>This is why manual triggers are useful for testing workflow changes before merging to default branch</li>
+</ul>
+<h4 id="best-practices">Best Practices</h4>
+<p><strong>For Nightly Workflow</strong>:</p>
+<ol>
+<li><p><strong>Workflow File Location</strong></p>
+<ul>
+<li>✅ Keep <code>.github/workflows/nightly.yml</code> on default branch</li>
+<li>✅ Merge workflow changes through pull requests</li>
+<li>✅ Test changes with manual triggers before merging</li>
+</ul>
+</li>
+<li><p><strong>Branching Strategy</strong></p>
+<ul>
+<li>✅ Default branch contains stable workflow definition</li>
+<li>✅ Workflow checks out <code>alpha</code> branch for actual builds</li>
+<li>✅ Code changes happen on <code>alpha</code>, workflow changes on <code>default</code></li>
+</ul>
+</li>
+<li><p><strong>Testing Workflow Changes</strong></p>
+<pre><code class="lang-bash"># 1. Make changes on feature branch
+git checkout -b feature/nightly-workflow-update
+# Edit .github/workflows/nightly.yml
+
+# 2. Test with manual trigger (from feature branch)
+# GitHub UI → Actions → Run workflow → Select feature branch
+
+# 3. After verification, merge to default branch
+git checkout default
+git merge feature/nightly-workflow-update
+
+# 4. Scheduled trigger will now use updated workflow
+</code></pre>
+</li>
+</ol>
+<h4 id="troubleshooting">Troubleshooting</h4>
+<p><strong>Issue</strong>: Scheduled workflow not running</p>
+<p><strong>Checklist</strong>:</p>
+<ul>
+<li>[ ] Verify workflow file exists on default branch: <code>.github/workflows/nightly.yml</code></li>
+<li>[ ] Confirm default branch is set correctly in repository settings</li>
+<li>[ ] Check workflow file syntax is valid YAML</li>
+<li>[ ] Ensure GitHub Actions is enabled for the repository</li>
+<li>[ ] Review Actions tab for error messages</li>
+</ul>
+<p><strong>Common Mistake</strong>: Placing workflow file only on <code>alpha</code> branch</p>
+<ul>
+<li><strong>Result</strong>: Scheduled trigger never fires</li>
+<li><strong>Solution</strong>: Copy workflow file to default branch or merge <code>alpha</code> into default</li>
+</ul>
+<p><strong>Workaround</strong>: While you can't change which branch GitHub reads the workflow from for scheduled triggers, you can:</p>
+<ul>
+<li>Use manual triggers from any branch for testing</li>
+<li>Implement workflow composition (call reusable workflows)</li>
+<li>Use workflow file templating strategies</li>
+</ul>
+<h4 id="summary">Summary</h4>
+<p>The requirement for scheduled workflows to run from the default branch is a fundamental GitHub Actions limitation designed for security, consistency, and simplicity. For the nightly workflow, this means:</p>
+<ul>
+<li>The workflow <strong>definition</strong> must be on the default branch</li>
+<li>The workflow <strong>executes</strong> on code from the <code>alpha</code> branch (via <code>ref: alpha</code> in checkout)</li>
+<li>Manual triggers provide flexibility to test workflow changes from any branch</li>
+<li>Always merge workflow file changes to the default branch for scheduled triggers to pick them up</li>
+</ul>
 <h3 id="manual-trigger-workflow_dispatch">Manual Trigger (workflow_dispatch)</h3>
 <p><strong>Purpose</strong>: Allows manual execution for testing or on-demand builds</p>
 <p><strong>How to Trigger</strong>:</p>
@@ -324,7 +450,7 @@ if ([int]$commitCount -gt 0) {
 <hr>
 <h2 id="workflow-steps">Workflow Steps</h2>
 <h3 id="job-nightly">Job: nightly</h3>
-<p><strong>Runner</strong>: <code>windows-2025</code></p>
+<p><strong>Runner</strong>: <code>windows-latest</code></p>
 <p><strong>No Branch Restrictions</strong>: Runs on the branch containing the workflow file (typically alpha)</p>
 <h3 id="step-by-step-breakdown">Step-by-Step Breakdown</h3>
 <h4 id="1-checkout-with-full-history">1. Checkout with Full History</h4>
@@ -816,7 +942,7 @@ Weekly Stats:
 - CI time saved: ~33 minutes
 </code></pre>
 <hr>
-<h2 id="troubleshooting">Troubleshooting</h2>
+<h2 id="troubleshooting-1">Troubleshooting</h2>
 <h3 id="issue-1-change-detection-always-shows-no-changes">Issue 1: Change Detection Always Shows &quot;No Changes&quot;</h3>
 <p><strong>Symptoms</strong>:</p>
 <pre><code>Commits in last 24 hours: 0
@@ -1020,7 +1146,7 @@ packages_published=false
 <li><strong>Verify ownership</strong>: Confirm you own the package prefix</li>
 </ol>
 <hr>
-<h2 id="best-practices">Best Practices</h2>
+<h2 id="best-practices-1">Best Practices</h2>
 <h3 id="1-version-management">1. Version Management</h3>
 <p><strong>Do</strong>:</p>
 <ul>
@@ -1154,7 +1280,7 @@ Example:
 </tr>
 <tr>
 <td><strong>Runner</strong></td>
-<td>windows-2025</td>
+<td>windows-latest</td>
 </tr>
 <tr>
 <td><strong>Duration</strong></td>

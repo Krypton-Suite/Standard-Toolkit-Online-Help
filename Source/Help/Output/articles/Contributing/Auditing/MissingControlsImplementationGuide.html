@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Missing Controls - Implementation Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Missing Controls - Implementation Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="missing-controls---implementation-guide">Missing Controls - Implementation Guide</h1>
+
+<p>This guide provides implementation recommendations for the critical missing WinForms controls in the Krypton Toolkit.</p>
+<hr>
+<h2 id="1-kryptonerrorprovider-critical---priority-1">1. KryptonErrorProvider (CRITICAL - Priority 1)</h2>
+<h3 id="standard-control-reference">Standard Control Reference</h3>
+<ul>
+<li><strong>System.Windows.Forms.ErrorProvider</strong></li>
+<li><strong>Purpose:</strong> Provides visual validation feedback for controls on forms</li>
+<li><strong>Behavior:</strong> Shows error icons next to controls with validation errors</li>
+</ul>
+<h3 id="implementation-requirements">Implementation Requirements</h3>
+<h4 id="core-features-needed">Core Features Needed</h4>
+<ol>
+<li><strong>Component Tray Control</strong> - Non-visual component like standard ErrorProvider</li>
+<li><strong>Error Icon Display</strong> - Show icon next to controls with errors</li>
+<li><strong>Tooltip on Hover</strong> - Display error message when hovering over icon</li>
+<li><strong>Blinking Support</strong> - Optional blinking icon to draw attention</li>
+<li><strong>Per-Control Errors</strong> - Set/clear errors for individual controls</li>
+<li><strong>Icon Alignment</strong> - Left, Right, Top, Bottom, Middle positions</li>
+<li><strong>Custom Icons</strong> - Support custom error icons (themed)</li>
+</ol>
+<h4 id="public-api-design">Public API Design</h4>
+<pre><code class="lang-csharp">namespace Krypton.Toolkit;
+
+[ProvideProperty(&quot;IconAlignment&quot;, typeof(Control))]
+[ProvideProperty(&quot;IconPadding&quot;, typeof(Control))]
+[ToolboxBitmap(typeof(KryptonErrorProvider), &quot;ToolboxBitmaps.KryptonErrorProvider.bmp&quot;)]
+public class KryptonErrorProvider : Component, IExtenderProvider, ISupportInitialize
+{
+    #region Properties
+    
+    /// &lt;summary&gt;Gets or sets the rate at which the error icon flashes.&lt;/summary&gt;
+    public int BlinkRate { get; set; } = 250;
+    
+    /// &lt;summary&gt;Gets or sets the blink style.&lt;/summary&gt;
+    public ErrorBlinkStyle BlinkStyle { get; set; } = ErrorBlinkStyle.BlinkIfDifferentError;
+    
+    /// &lt;summary&gt;Gets or sets the source of data to bind errors to.&lt;/summary&gt;
+    public object DataSource { get; set; }
+    
+    /// &lt;summary&gt;Gets or sets the data member to bind to.&lt;/summary&gt;
+    public string DataMember { get; set; }
+    
+    /// &lt;summary&gt;Gets or sets the icon displayed next to controls with errors.&lt;/summary&gt;
+    public Icon Icon { get; set; }
+    
+    /// &lt;summary&gt;Gets or sets the default icon alignment relative to the control.&lt;/summary&gt;
+    public ErrorIconAlignment IconAlignment { get; set; } = ErrorIconAlignment.MiddleRight;
+    
+    /// &lt;summary&gt;Gets or sets the icon padding.&lt;/summary&gt;
+    public int IconPadding { get; set; } = 0;
+    
+    /// &lt;summary&gt;Gets or sets the palette for themed error icons.&lt;/summary&gt;
+    public PaletteMode PaletteMode { get; set; } = PaletteMode.Global;
+    
+    /// &lt;summary&gt;Gets or sets custom palette.&lt;/summary&gt;
+    public PaletteBase Palette { get; set; }
+    
+    #endregion
+    
+    #region Methods
+    
+    /// &lt;summary&gt;Sets the error description string for the specified control.&lt;/summary&gt;
+    public void SetError(Control control, string value);
+    
+    /// &lt;summary&gt;Gets the error description string for the specified control.&lt;/summary&gt;
+    public string GetError(Control control);
+    
+    /// &lt;summary&gt;Sets the icon alignment for the specified control.&lt;/summary&gt;
+    public void SetIconAlignment(Control control, ErrorIconAlignment value);
+    
+    /// &lt;summary&gt;Gets the icon alignment for the specified control.&lt;/summary&gt;
+    public ErrorIconAlignment GetIconAlignment(Control control);
+    
+    /// &lt;summary&gt;Sets the icon padding for the specified control.&lt;/summary&gt;
+    public void SetIconPadding(Control control, int value);
+    
+    /// &lt;summary&gt;Gets the icon padding for the specified control.&lt;/summary&gt;
+    public int GetIconPadding(Control control);
+    
+    /// &lt;summary&gt;Clears all errors.&lt;/summary&gt;
+    public void Clear();
+    
+    /// &lt;summary&gt;Binds to a data source.&lt;/summary&gt;
+    public void BindToDataAndErrors(object newDataSource, string newDataMember);
+    
+    /// &lt;summary&gt;Updates binding when data changes.&lt;/summary&gt;
+    public void UpdateBinding();
+    
+    #endregion
+    
+    #region Events
+    
+    /// &lt;summary&gt;Occurs when the right mouse button is clicked on the error icon.&lt;/summary&gt;
+    public event EventHandler RightToLeftChanged;
+    
+    #endregion
+}
+</code></pre>
+<h4 id="implementation-details">Implementation Details</h4>
+<p><strong>File Structure:</strong></p>
+<pre><code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/
+  - KryptonErrorProvider.cs          (Main component)
+  - KryptonErrorProvider.Designer.cs (Designer support)
+
+Source/Krypton Components/Krypton.Toolkit/Controls Visuals/
+  - VisualErrorIcon.cs               (Error icon display)
+
+Source/Krypton Components/Krypton.Toolkit/Designers/Designers/
+  - KryptonErrorProviderDesigner.cs  (Designer)
+
+Source/Krypton Components/Krypton.Toolkit/ToolboxBitmaps/
+  - KryptonErrorProvider.bmp         (Toolbox icon)
+</code></pre>
+<p><strong>Key Implementation Points:</strong></p>
+<ol>
+<li>Use extender provider pattern (IExtenderProvider)</li>
+<li>Track control errors in Dictionary&lt;Control, ErrorInfo&gt;</li>
+<li>Create transparent overlay windows for error icons (like standard ErrorProvider)</li>
+<li>Use <code>VisualPopupToolTip</code> for error message display on hover</li>
+<li>Theme icons based on current palette (error red, warning yellow, info blue)</li>
+<li>Support data binding via IBindableComponent</li>
+<li>Handle control parent changes, moves, resizes</li>
+<li>Dispose overlay windows properly</li>
+</ol>
+<p><strong>Themed Icons:</strong></p>
+<ul>
+<li>Use palette error colors</li>
+<li>Create icon variations: Error (red), Warning (yellow), Information (blue)</li>
+<li>Respect PaletteMode and custom palettes</li>
+<li>Support RTL layouts</li>
+</ul>
+<hr>
+<h2 id="2-kryptontooltip-critical---priority-2">2. KryptonToolTip (CRITICAL - Priority 2)</h2>
+<h3 id="standard-control-reference-1">Standard Control Reference</h3>
+<ul>
+<li><strong>System.Windows.Forms.ToolTip</strong></li>
+<li><strong>Purpose:</strong> Display help text when user hovers over controls</li>
+<li><strong>Behavior:</strong> Popup window with styled text</li>
+</ul>
+<h3 id="implementation-requirements-1">Implementation Requirements</h3>
+<h4 id="core-features-needed-1">Core Features Needed</h4>
+<ol>
+<li><strong>Component Tray Control</strong> - Non-visual component</li>
+<li><strong>Automatic Popup</strong> - Show on hover</li>
+<li><strong>Per-Control Tooltips</strong> - Set tooltip text for any control</li>
+<li><strong>Rich Content</strong> - Support for title, text, icon</li>
+<li><strong>Positioning</strong> - Smart positioning to stay on screen</li>
+<li><strong>Delays</strong> - Initial, AutoPop, ReshowDelay</li>
+<li><strong>Manual Control</strong> - Show(), Hide() methods</li>
+<li><strong>Theming</strong> - Match current Krypton palette</li>
+</ol>
+<h4 id="public-api-design-1">Public API Design</h4>
+<pre><code class="lang-csharp">namespace Krypton.Toolkit;
+
+[ProvideProperty(&quot;ToolTipTitle&quot;, typeof(Control))]
+[ProvideProperty(&quot;ToolTipText&quot;, typeof(Control))]
+[ProvideProperty(&quot;ToolTipIcon&quot;, typeof(Control))]
+[ProvideProperty(&quot;ToolTipShadow&quot;, typeof(Control))]
+[ToolboxBitmap(typeof(KryptonToolTip), &quot;ToolboxBitmaps.KryptonToolTip.bmp&quot;)]
+public class KryptonToolTip : Component, IExtenderProvider
+{
+    #region Properties
+    
+    /// &lt;summary&gt;Gets or sets whether tooltip is active.&lt;/summary&gt;
+    public bool Active { get; set; } = true;
+    
+    /// &lt;summary&gt;Gets or sets initial delay before showing tooltip.&lt;/summary&gt;
+    public int InitialDelay { get; set; } = 500;
+    
+    /// &lt;summary&gt;Gets or sets how long tooltip remains visible.&lt;/summary&gt;
+    public int AutoPopDelay { get; set; } = 5000;
+    
+    /// &lt;summary&gt;Gets or sets delay before showing subsequent tooltips.&lt;/summary&gt;
+    public int ReshowDelay { get; set; } = 100;
+    
+    /// &lt;summary&gt;Gets or sets whether to automatically set delays based on InitialDelay.&lt;/summary&gt;
+    public bool AutomaticDelay { get; set; } = true;
+    
+    /// &lt;summary&gt;Gets or sets the default tooltip icon.&lt;/summary&gt;
+    public ToolTipIcon ToolTipIcon { get; set; } = ToolTipIcon.None;
+    
+    /// &lt;summary&gt;Gets or sets the default tooltip title.&lt;/summary&gt;
+    public string ToolTipTitle { get; set; } = string.Empty;
+    
+    /// &lt;summary&gt;Gets or sets whether to show always (even when parent inactive).&lt;/summary&gt;
+    public bool ShowAlways { get; set; } = false;
+    
+    /// &lt;summary&gt;Gets or sets whether to use fade effect.&lt;/summary&gt;
+    public bool UseFading { get; set; } = true;
+    
+    /// &lt;summary&gt;Gets or sets whether tooltip is balloon style.&lt;/summary&gt;
+    public bool IsBalloon { get; set; } = false;
+    
+    /// &lt;summary&gt;Gets or sets the palette mode.&lt;/summary&gt;
+    public PaletteMode PaletteMode { get; set; } = PaletteMode.Global;
+    
+    /// &lt;summary&gt;Gets or sets custom palette.&lt;/summary&gt;
+    public PaletteBase Palette { get; set; }
+    
+    /// &lt;summary&gt;Gets or sets the tooltip style.&lt;/summary&gt;
+    public LabelStyle ToolTipStyle { get; set; } = LabelStyle.ToolTip;
+    
+    /// &lt;summary&gt;Gets or sets whether to show shadow.&lt;/summary&gt;
+    public bool ToolTipShadow { get; set; } = true;
+    
+    #endregion
+    
+    #region Methods
+    
+    /// &lt;summary&gt;Sets the tooltip text for a control.&lt;/summary&gt;
+    public void SetToolTip(Control control, string caption);
+    
+    /// &lt;summary&gt;Gets the tooltip text for a control.&lt;/summary&gt;
+    public string GetToolTip(Control control);
+    
+    /// &lt;summary&gt;Sets the tooltip title for a control.&lt;/summary&gt;
+    public void SetToolTipTitle(Control control, string title);
+    
+    /// &lt;summary&gt;Gets the tooltip title for a control.&lt;/summary&gt;
+    public string GetToolTipTitle(Control control);
+    
+    /// &lt;summary&gt;Sets the tooltip icon for a control.&lt;/summary&gt;
+    public void SetToolTipIcon(Control control, ToolTipIcon icon);
+    
+    /// &lt;summary&gt;Gets the tooltip icon for a control.&lt;/summary&gt;
+    public ToolTipIcon GetToolTipIcon(Control control);
+    
+    /// &lt;summary&gt;Sets whether shadow is shown for a control.&lt;/summary&gt;
+    public void SetToolTipShadow(Control control, bool shadow);
+    
+    /// &lt;summary&gt;Gets whether shadow is shown for a control.&lt;/summary&gt;
+    public bool GetToolTipShadow(Control control);
+    
+    /// &lt;summary&gt;Manually shows a tooltip.&lt;/summary&gt;
+    public void Show(string text, IWin32Window window);
+    
+    /// &lt;summary&gt;Manually shows a tooltip at specific position.&lt;/summary&gt;
+    public void Show(string text, IWin32Window window, Point point);
+    
+    /// &lt;summary&gt;Manually shows a tooltip at specific position for duration.&lt;/summary&gt;
+    public void Show(string text, IWin32Window window, Point point, int duration);
+    
+    /// &lt;summary&gt;Manually shows a tooltip with title.&lt;/summary&gt;
+    public void Show(string text, string title, ToolTipIcon icon, IWin32Window window, Point point, int duration);
+    
+    /// &lt;summary&gt;Hides the tooltip.&lt;/summary&gt;
+    public void Hide(IWin32Window window);
+    
+    /// &lt;summary&gt;Removes all tooltips.&lt;/summary&gt;
+    public void RemoveAll();
+    
+    #endregion
+    
+    #region Events
+    
+    /// &lt;summary&gt;Occurs before the tooltip is shown.&lt;/summary&gt;
+    public event EventHandler&lt;ToolTipEventArgs&gt; Popup;
+    
+    /// &lt;summary&gt;Occurs when tooltip is drawn (for owner draw).&lt;/summary&gt;
+    public event EventHandler&lt;DrawToolTipEventArgs&gt; Draw;
+    
+    #endregion
+}
+</code></pre>
+<h4 id="implementation-details-1">Implementation Details</h4>
+<p><strong>File Structure:</strong></p>
+<pre><code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/
+  - KryptonToolTip.cs                (Main component)
+
+Source/Krypton Components/Krypton.Toolkit/Controls Visuals/
+  - VisualToolTip.cs                 (Enhanced VisualPopupToolTip)
+
+Source/Krypton Components/Krypton.Toolkit/Designers/Designers/
+  - KryptonToolTipDesigner.cs        (Designer)
+
+Source/Krypton Components/Krypton.Toolkit/EventArgs/
+  - DrawToolTipEventArgs.cs          (Custom draw event args)
+</code></pre>
+<p><strong>Key Implementation Points:</strong></p>
+<ol>
+<li>Leverage existing <code>VisualPopupToolTip</code> class</li>
+<li>Use <code>ToolTipManager</code> internally for timing</li>
+<li>Track control tooltip info in Dictionary&lt;Control, ToolTipInfo&gt;</li>
+<li>Hook control mouse events (MouseEnter, MouseMove, MouseLeave)</li>
+<li>Position tooltip using smart positioning logic from existing popups</li>
+<li>Theme using current palette (ToolTip style)</li>
+<li>Support fading in/out with timers</li>
+<li>Handle control parent/visibility changes</li>
+</ol>
+<p><strong>Integration with Existing Code:</strong></p>
+<ul>
+<li>Many Krypton controls already have <code>ToolTipValues</code> property</li>
+<li>KryptonToolTip should work alongside existing tooltip infrastructure</li>
+<li>Consider adding <code>[ExtenderProvidedProperty]</code> support to Krypton controls</li>
+</ul>
+<hr>
+<h2 id="3-kryptonflowlayoutpanel-high---priority-3">3. KryptonFlowLayoutPanel (HIGH - Priority 3)</h2>
+<h3 id="standard-control-reference-2">Standard Control Reference</h3>
+<ul>
+<li><strong>System.Windows.Forms.FlowLayoutPanel</strong></li>
+<li><strong>Purpose:</strong> Dynamically arrange child controls in flow direction</li>
+<li><strong>Behavior:</strong> Auto-wrap controls based on available space</li>
+</ul>
+<h3 id="implementation-requirements-2">Implementation Requirements</h3>
+<h4 id="core-features-needed-2">Core Features Needed</h4>
+<ol>
+<li><strong>Panel Container</strong> - Derives from Panel or custom container</li>
+<li><strong>Flow Direction</strong> - LeftToRight, RightToLeft, TopDown, BottomUp</li>
+<li><strong>Auto-Wrapping</strong> - Wrap to next row/column when space runs out</li>
+<li><strong>WrapContents</strong> - Enable/disable wrapping</li>
+<li><strong>FlowBreak</strong> - Force break after specific controls</li>
+<li><strong>Padding/Margin</strong> - Respect control margins and panel padding</li>
+<li><strong>Theming</strong> - Themed background and borders</li>
+</ol>
+<h4 id="public-api-design-2">Public API Design</h4>
+<pre><code class="lang-csharp">namespace Krypton.Toolkit;
+
+[ToolboxBitmap(typeof(KryptonFlowLayoutPanel), &quot;ToolboxBitmaps.KryptonFlowLayoutPanel.bmp&quot;)]
+[Designer(typeof(KryptonFlowLayoutPanelDesigner))]
+[Docking(DockingBehavior.Ask)]
+[ProvideProperty(&quot;FlowBreak&quot;, typeof(Control))]
+public class KryptonFlowLayoutPanel : KryptonPanel, IExtenderProvider
+{
+    #region Properties
+    
+    /// &lt;summary&gt;Gets or sets the flow direction.&lt;/summary&gt;
+    public FlowDirection FlowDirection { get; set; } = FlowDirection.LeftToRight;
+    
+    /// &lt;summary&gt;Gets or sets whether contents wrap.&lt;/summary&gt;
+    public bool WrapContents { get; set; } = true;
+    
+    /// &lt;summary&gt;Gets or sets whether auto-scroll is enabled.&lt;/summary&gt;
+    public override bool AutoScroll { get; set; } = false;
+    
+    /// &lt;summary&gt;Gets or sets the auto-scroll margin.&lt;/summary&gt;
+    public new Size AutoScrollMargin { get; set; }
+    
+    /// &lt;summary&gt;Gets or sets the auto-scroll minimum size.&lt;/summary&gt;
+    public new Size AutoScrollMinSize { get; set; }
+    
+    #endregion
+    
+    #region Methods
+    
+    /// &lt;summary&gt;Sets whether a control should cause a flow break.&lt;/summary&gt;
+    public void SetFlowBreak(Control control, bool value);
+    
+    /// &lt;summary&gt;Gets whether a control causes a flow break.&lt;/summary&gt;
+    public bool GetFlowBreak(Control control);
+    
+    #endregion
+}
+</code></pre>
+<h4 id="implementation-details-2">Implementation Details</h4>
+<p><strong>File Structure:</strong></p>
+<pre><code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/
+  - KryptonFlowLayoutPanel.cs        (Main control)
+
+Source/Krypton Components/Krypton.Toolkit/View Layout/
+  - ViewLayoutFlow.cs                (Flow layout engine)
+
+Source/Krypton Components/Krypton.Toolkit/Designers/Designers/
+  - KryptonFlowLayoutPanelDesigner.cs (Designer)
+</code></pre>
+<p><strong>Key Implementation Points:</strong></p>
+<ol>
+<li>Inherit from <code>KryptonPanel</code> for theming support</li>
+<li>Override <code>OnLayout()</code> to implement flow algorithm</li>
+<li>Use <code>IExtenderProvider</code> for <code>FlowBreak</code> property</li>
+<li>Track flow break controls in HashSet<control></control></li>
+<li>Implement flow layout algorithm:
+<ul>
+<li>Calculate available space</li>
+<li>Position controls left-to-right (or flow direction)</li>
+<li>Wrap when control doesn't fit</li>
+<li>Handle flow breaks</li>
+<li>Respect margins and padding</li>
+</ul>
+</li>
+<li>Support RTL layouts</li>
+<li>Handle control size changes and visibility</li>
+<li>Designer support for setting FlowBreak in properties window</li>
+</ol>
+<p><strong>Flow Algorithm Pseudo-code:</strong></p>
+<pre><code class="lang-csharp">protected override void OnLayout(LayoutEventArgs e)
+{
+    int x = Padding.Left;
+    int y = Padding.Top;
+    int rowHeight = 0;
+    int availableWidth = ClientSize.Width - Padding.Horizontal;
+    
+    foreach (Control control in Controls)
+    {
+        if (!control.Visible) continue;
+        
+        int controlWidth = control.Width + control.Margin.Horizontal;
+        int controlHeight = control.Height + control.Margin.Vertical;
+        
+        // Check if wrap needed
+        if (WrapContents &amp;&amp; x + controlWidth &gt; availableWidth &amp;&amp; x &gt; Padding.Left)
+        {
+            x = Padding.Left;
+            y += rowHeight;
+            rowHeight = 0;
+        }
+        
+        // Position control
+        control.Location = new Point(
+            x + control.Margin.Left,
+            y + control.Margin.Top
+        );
+        
+        // Update position
+        x += controlWidth;
+        rowHeight = Math.Max(rowHeight, controlHeight);
+        
+        // Check for flow break
+        if (GetFlowBreak(control))
+        {
+            x = Padding.Left;
+            y += rowHeight;
+            rowHeight = 0;
+        }
+    }
+    
+    base.OnLayout(e);
+}
+</code></pre>
+<hr>
+<h2 id="4-kryptonhelpprovider-medium---priority-4">4. KryptonHelpProvider (MEDIUM - Priority 4)</h2>
+<h3 id="standard-control-reference-3">Standard Control Reference</h3>
+<ul>
+<li><strong>System.Windows.Forms.HelpProvider</strong></li>
+<li><strong>Purpose:</strong> Context-sensitive help (F1 key, help button)</li>
+<li><strong>Behavior:</strong> Shows help when F1 pressed or help button clicked</li>
+</ul>
+<h3 id="implementation-requirements-3">Implementation Requirements</h3>
+<h4 id="core-features-needed-3">Core Features Needed</h4>
+<ol>
+<li><strong>Component Tray Control</strong> - Non-visual component</li>
+<li><strong>F1 Key Support</strong> - Show help when F1 pressed</li>
+<li><strong>Help String</strong> - Simple string per control</li>
+<li><strong>Help Keyword</strong> - Keyword for help file lookup</li>
+<li><strong>Help Navigator</strong> - How to navigate help (Topic, Find, Index, etc.)</li>
+<li><strong>Help Button</strong> - Show help button on forms</li>
+<li><strong>HTML Help Support</strong> - Open CHM files</li>
+<li><strong>Online Help Support</strong> - Open URLs</li>
+</ol>
+<h4 id="public-api-design-brief">Public API Design (Brief)</h4>
+<pre><code class="lang-csharp">[ProvideProperty(&quot;HelpKeyword&quot;, typeof(Control))]
+[ProvideProperty(&quot;HelpNavigator&quot;, typeof(Control))]
+[ProvideProperty(&quot;HelpString&quot;, typeof(Control))]
+[ProvideProperty(&quot;ShowHelp&quot;, typeof(Control))]
+public class KryptonHelpProvider : Component, IExtenderProvider
+{
+    public string HelpNamespace { get; set; }
+    
+    public void SetHelpKeyword(Control ctl, string keyword);
+    public string GetHelpKeyword(Control ctl);
+    
+    public void SetHelpNavigator(Control ctl, HelpNavigator navigator);
+    public HelpNavigator GetHelpNavigator(Control ctl);
+    
+    public void SetHelpString(Control ctl, string helpString);
+    public string GetHelpString(Control ctl);
+    
+    public void SetShowHelp(Control ctl, bool value);
+    public bool GetShowHelp(Control ctl);
+}
+</code></pre>
+<hr>
+<h2 id="5-kryptonnotifyicon-medium---priority-5">5. KryptonNotifyIcon (MEDIUM - Priority 5)</h2>
+<h3 id="standard-control-reference-4">Standard Control Reference</h3>
+<ul>
+<li><strong>System.Windows.Forms.NotifyIcon</strong></li>
+<li><strong>Purpose:</strong> System tray icon</li>
+<li><strong>Behavior:</strong> Icon in system tray with context menu and notifications</li>
+</ul>
+<h3 id="implementation-requirements-4">Implementation Requirements</h3>
+<h4 id="core-features-needed-4">Core Features Needed</h4>
+<ol>
+<li><strong>Component Tray Control</strong> - Non-visual component</li>
+<li><strong>System Tray Icon</strong> - Show icon in notification area</li>
+<li><strong>Tooltip</strong> - Hover text</li>
+<li><strong>Context Menu</strong> - Right-click menu (use <code>KryptonContextMenu</code>)</li>
+<li><strong>Balloon Tips</strong> - Show balloon notifications (legacy)</li>
+<li><strong>Click Events</strong> - Single click, double click</li>
+<li><strong>Icon Animation</strong> - Change icon for animation effects</li>
+</ol>
+<h4 id="public-api-design-brief-1">Public API Design (Brief)</h4>
+<pre><code class="lang-csharp">public class KryptonNotifyIcon : Component
+{
+    public Icon Icon { get; set; }
+    public string Text { get; set; }
+    public bool Visible { get; set; }
+    public KryptonContextMenu ContextMenu { get; set; }
+    public ToolTipIcon BalloonTipIcon { get; set; }
+    public string BalloonTipText { get; set; }
+    public string BalloonTipTitle { get; set; }
+    
+    public void ShowBalloonTip(int timeout);
+    public void ShowBalloonTip(int timeout, string tipTitle, string tipText, ToolTipIcon tipIcon);
+    
+    public event MouseEventHandler MouseClick;
+    public event MouseEventHandler MouseDoubleClick;
+    public event EventHandler BalloonTipClicked;
+    // ... more events
+}
+</code></pre>
+<p><strong>Implementation Note:</strong></p>
+<ul>
+<li>Use P/Invoke to Shell_NotifyIcon API</li>
+<li>Integrate with <code>KryptonContextMenu</code> for themed menus</li>
+<li>Consider using Windows 10 toast notifications instead of balloon tips</li>
+<li>Could integrate with <code>KryptonToastNotification</code> for modern notifications</li>
+</ul>
+<hr>
+<h2 id="6-kryptontabcontrol-low---priority-6">6. KryptonTabControl (LOW - Priority 6)</h2>
+<h3 id="note">Note</h3>
+<p>This is a <strong>wrapper/simplified mode</strong> for KryptonNavigator, not a new control.</p>
+<h3 id="implementation-approach">Implementation Approach</h3>
+<p><strong>Option A: Wrapper Class</strong></p>
+<pre><code class="lang-csharp">/// &lt;summary&gt;
+/// Simplified tab control wrapping KryptonNavigator
+/// &lt;/summary&gt;
+public class KryptonTabControl : KryptonNavigator
+{
+    public KryptonTabControl()
+    {
+        // Set to simple tab mode
+        NavigatorMode = NavigatorMode.BarTabGroup;
+        
+        // Hide complex features
+        // Simplify API surface
+    }
+    
+    // Expose simplified API similar to TabControl
+    [Browsable(false)]
+    public new NavigatorMode NavigatorMode
+    {
+        get =&gt; base.NavigatorMode;
+        set =&gt; base.NavigatorMode = NavigatorMode.BarTabGroup; // Force tab mode
+    }
+    
+    public TabAlignment Alignment { get; set; }
+    
+    // Map TabPages to KryptonPages
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public TabPageCollection TabPages =&gt; /* wrapper around Pages */;
+}
+</code></pre>
+<p><strong>Option B: Documentation</strong>
+Instead of new control, provide documentation showing how to use Navigator as simple TabControl:</p>
+<ul>
+<li>Set <code>NavigatorMode = NavigatorMode.BarTabGroup</code></li>
+<li>Hide unnecessary properties</li>
+<li>Provide migration guide</li>
+</ul>
+<hr>
+<h2 id="implementation-priority-summary">Implementation Priority Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Priority</th>
+<th>Complexity</th>
+<th>Impact</th>
+<th>Estimated Effort</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KryptonErrorProvider</td>
+<td>⚠️ CRITICAL</td>
+<td>Medium</td>
+<td>Very High</td>
+<td>2-3 weeks</td>
+</tr>
+<tr>
+<td>KryptonToolTip</td>
+<td>⚠️ CRITICAL</td>
+<td>Medium</td>
+<td>High</td>
+<td>2-3 weeks</td>
+</tr>
+<tr>
+<td>KryptonFlowLayoutPanel</td>
+<td>HIGH</td>
+<td>Medium</td>
+<td>Medium-High</td>
+<td>1-2 weeks</td>
+</tr>
+<tr>
+<td>KryptonHelpProvider</td>
+<td>MEDIUM</td>
+<td>Low</td>
+<td>Medium</td>
+<td>1 week</td>
+</tr>
+<tr>
+<td>KryptonNotifyIcon</td>
+<td>MEDIUM</td>
+<td>Low-Medium</td>
+<td>Medium</td>
+<td>1 week</td>
+</tr>
+<tr>
+<td><del>KryptonTabControl</del></td>
+<td>✅ DONE</td>
+<td>N/A</td>
+<td>N/A</td>
+<td>Already replaced by Navigator</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total Estimated Effort:</strong> 7-10 weeks for all critical and high priority controls</p>
+<hr>
+<h2 id="testing-strategy">Testing Strategy</h2>
+<p>For each control:</p>
+<ol>
+<li><strong>Unit Tests</strong> - Basic functionality</li>
+<li><strong>Designer Tests</strong> - Toolbox, property grid, serialization</li>
+<li><strong>Theme Tests</strong> - All built-in themes</li>
+<li><strong>DPI Tests</strong> - Various DPI settings</li>
+<li><strong>Accessibility Tests</strong> - Screen readers, keyboard navigation</li>
+<li><strong>RTL Tests</strong> - Right-to-left layouts</li>
+<li><strong>Data Binding Tests</strong> - (ErrorProvider)</li>
+<li><strong>Integration Tests</strong> - Works with other Krypton controls</li>
+</ol>
+<hr>
+<h2 id="resources-needed">Resources Needed</h2>
+<ol>
+<li><strong>Developer Time</strong> - 7-12 weeks total</li>
+<li><strong>Designer Time</strong> - Toolbox icons, designer support</li>
+<li><strong>Tester Time</strong> - Comprehensive testing</li>
+<li><strong>Documentation Time</strong> - API docs, migration guides, samples</li>
+</ol>
+<hr>
+<h2 id="success-criteria">Success Criteria</h2>
+<ul>
+<li>[ ] All controls match standard WinForms API where applicable</li>
+<li>[ ] All controls support current Krypton theming system</li>
+<li>[ ] All controls have designer support</li>
+<li>[ ] All controls have comprehensive XML documentation</li>
+<li>[ ] All controls have sample usage in TestForm</li>
+<li>[ ] All controls support accessibility features</li>
+<li>[ ] All controls support high DPI</li>
+<li>[ ] All controls support RTL layouts</li>
+<li>[ ] Migration guide published</li>
+<li>[ ] NuGet packages updated</li>
+</ul>
+<hr>
+<p><strong>Next Steps:</strong></p>
+<ol>
+<li>Review and approve implementation designs</li>
+<li>Create GitHub issues for each control</li>
+<li>Assign developers</li>
+<li>Set milestones</li>
+<li>Begin implementation with KryptonErrorProvider (highest priority)</li>
+</ol>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

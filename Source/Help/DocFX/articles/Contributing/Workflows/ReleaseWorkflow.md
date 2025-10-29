@@ -146,7 +146,7 @@ Notify   Notify   Notify    Notify
 
 ### Job 1: release-master
 
-**Runner**: `windows-2025`
+**Runner**: `windows-latest`
 
 **Condition**: `github.ref == 'refs/heads/master' && github.event_name == 'push'`
 
@@ -593,7 +593,7 @@ Downloads and restores NuGet package dependencies.
 
 ### Job 2: release-v85-lts
 
-**Runner**: `windows-2025`
+**Runner**: `windows-latest`
 
 **Condition**: `github.ref == 'refs/heads/V85-LTS' && github.event_name == 'push'`
 
@@ -670,7 +670,7 @@ The LTS job does NOT create GitHub releases (only NuGet packages and Discord not
 
 ### Job 3: release-canary
 
-**Runner**: `windows-2025`
+**Runner**: `windows-latest`
 
 **Condition**: `github.ref == 'refs/heads/canary' && github.event_name == 'push'`
 
@@ -719,7 +719,7 @@ The Canary job does NOT create GitHub releases.
 
 ### Job 4: release-alpha
 
-**Runner**: `windows-2025`
+**Runner**: `windows-latest`
 
 **Condition**: `github.ref == 'refs/heads/alpha' && github.event_name == 'push'`
 
