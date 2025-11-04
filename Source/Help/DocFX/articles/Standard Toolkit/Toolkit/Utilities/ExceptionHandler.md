@@ -757,7 +757,7 @@ This guide provides comprehensive coverage of how to effectively use the Excepti
 
 ## Related Documentation
 
-- [KryptonExceptionHandler](../Components/KryptonExceptionHandler.md) - Practical tutorials and recipes ⭐ **Start Here**
-- [KryptonExceptionHandler API Reference](../Components/KryptonExceptionHandlerAPIReference.md) - Complete API documentation for the public exception handler
+- [KryptonExceptionDialog](../Components/KryptonExceptionDialog.md) - Practical tutorials and recipes ⭐ **Start Here**
+- [KryptonExceptionDialog Quick Start](../Components/KryptonExceptionDialogQuickStart.md) - Complete API documentation for the public exception handler
 - [ExceptionHandler API Documentation](ExceptionHandlerAPIDocumentation.md) - Internal implementation and architecture details
 - [Localization Guide](LocalizationGuide.md) - For localizing exception dialog strings

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonTaskDialog Quick Reference Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonTaskDialog Quick Reference Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptontaskdialog-quick-reference-guide">KryptonTaskDialog Quick Reference Guide</h1>
+
+<h2 id="quick-start">Quick Start</h2>
+<pre><code class="lang-csharp">using (KryptonTaskDialog taskDialog = new KryptonTaskDialog())
+{
+    taskDialog.Dialog.Form.Text = &quot;My Dialog&quot;;
+    taskDialog.Heading.Text = &quot;Main Message&quot;;
+    taskDialog.Content.Text = &quot;Details here&quot;;
+    taskDialog.FooterBar.CommonButtons.Buttons = KryptonTaskDialogCommonButtonTypes.OK;
+    
+    DialogResult result = taskDialog.ShowDialog();
+}
+</code></pre>
+<h2 id="core-concepts">Core Concepts</h2>
+<h3 id="constructor">Constructor</h3>
+<pre><code class="lang-csharp">new KryptonTaskDialog()      // Default width: 600px
+new KryptonTaskDialog(800)   // Custom width: 800px
+</code></pre>
+<h3 id="display-methods">Display Methods</h3>
+<pre><code class="lang-csharp">DialogResult ShowDialog(IWin32Window? owner = null);  // Modal
+void Show(IWin32Window? owner = null);                // Modeless
+void CloseDialog();                                   // Close modeless dialog
+void HideAllElements();                               // Hide all elements
+</code></pre>
+<h2 id="dialog-properties">Dialog Properties</h2>
+<h3 id="form-properties-taskdialogdialogform">Form Properties (taskDialog.Dialog.Form)</h3>
+<pre><code class="lang-csharp">Text                    // Title bar text
+Icon                    // Form icon
+StartPosition           // FormStartPosition
+Location                // Point (when StartPosition is Manual)
+TopMost                 // bool
+CloseBox                // bool
+MinimizeBox             // bool
+MaximizeBox             // bool
+ControlBox              // bool
+ShowInTaskBar           // bool (only works with Show(), not ShowDialog())
+IgnoreAltF4             // bool (disable Alt+F4)
+FormTitleAlign          // PaletteRelativeAlign
+RoundedCorners          // bool
+</code></pre>
+<h3 id="global-properties-taskdialogdialogglobals">Global Properties (taskDialog.Dialog.Globals)</h3>
+<pre><code class="lang-csharp">BackColor1              // Color (applies to all elements)
+BackColor2              // Color (applies to all elements)
+ForeColor               // Color (applies to all elements)
+RoundedCorners          // bool (applies to all elements)
+</code></pre>
+<h3 id="dialog-result">Dialog Result</h3>
+<pre><code class="lang-csharp">taskDialog.Dialog.DialogResult  // Get after closing
+taskDialog.Dialog.Visible       // Is dialog visible?
+</code></pre>
+<h2 id="elements-quick-reference">Elements Quick Reference</h2>
+<h3 id="common-element-properties">Common Element Properties</h3>
+<p>Every element has these base properties:</p>
+<pre><code class="lang-csharp">Visible         // bool
+BackColor1      // Color
+BackColor2      // Color (for gradient)
+ShowSeparator   // bool (show line at top)
+Height          // int (read-only)
+</code></pre>
+<h3 id="1-heading">1. Heading</h3>
+<pre><code class="lang-csharp">taskDialog.Heading.Text = &quot;Title&quot;;
+taskDialog.Heading.IconType = KryptonTaskDialogIconType.ShieldInformation;
+taskDialog.Heading.TextAlignmentHorizontal = PaletteRelativeAlign.Center;
+taskDialog.Heading.ForeColor = Color.Blue;
+taskDialog.Heading.Visible = true;
+</code></pre>
+<p><strong>Icon Types</strong>: None, ShieldError, ShieldWarning, ShieldInformation, ShieldSuccess, ShieldHelp, ShieldKrypton, ShieldUac, CheckGreen, Document, Gear, PowerOff, ArrowGrayDown, ArrowGrayUp</p>
+<h3 id="2-content">2. Content</h3>
+<pre><code class="lang-csharp">taskDialog.Content.Text = &quot;Main content\nwith line breaks&quot;;
+taskDialog.Content.ForeColor = Color.Black;
+taskDialog.Content.ContentImage.Image = myImage;
+taskDialog.Content.ContentImage.Size = new Size(48, 48);
+taskDialog.Content.ContentImage.Visible = true;
+taskDialog.Content.ContentImage.PositionedLeft = true; // true=left, false=right
+taskDialog.Content.Visible = true;
+</code></pre>
+<h3 id="3-expander">3. Expander</h3>
+<p>Same as Content. Controlled by FooterBar expander button:</p>
+<pre><code class="lang-csharp">taskDialog.Expander.Text = &quot;Detailed info...&quot;;
+taskDialog.Expander.Visible = false; // Initially hidden
+
+taskDialog.FooterBar.Footer.EnableExpanderControls = true;
+taskDialog.FooterBar.Footer.ExpanderExpandedText = &quot;Show Details&quot;;
+taskDialog.FooterBar.Footer.ExpanderCollapsedText = &quot;Hide Details&quot;;
+</code></pre>
+<h3 id="4-footerbar">4. FooterBar</h3>
+<pre><code class="lang-csharp">// Common Buttons
+taskDialog.FooterBar.CommonButtons.Buttons = 
+    KryptonTaskDialogCommonButtonTypes.Yes | 
+    KryptonTaskDialogCommonButtonTypes.No;
+taskDialog.FooterBar.CommonButtons.AcceptButton = KryptonTaskDialogCommonButtonTypes.Yes;
+taskDialog.FooterBar.CommonButtons.CancelButton = KryptonTaskDialogCommonButtonTypes.No;
+
+// Footer Note
+taskDialog.FooterBar.Footer.FootNoteText = &quot;Note text&quot;;
+taskDialog.FooterBar.Footer.IconType = KryptonTaskDialogIconType.ShieldWarning;
+
+// Styling
+taskDialog.FooterBar.ForeColor = Color.Black;
+taskDialog.FooterBar.RoundedCorners = true;
+taskDialog.FooterBar.Visible = true;
+</code></pre>
+<p><strong>Button Types</strong> (Flags): None, OK, Cancel, Yes, No, Retry, Abort, Ignore</p>
+<h3 id="5-commandlinkbuttons">5. CommandLinkButtons</h3>
+<pre><code class="lang-csharp">taskDialog.CommandLinkButtons.Visible = true;
+
+var button = new KryptonCommandLinkButton();
+button.Text = &quot;Option 1&quot;;
+button.Description = &quot;Description&quot;;
+button.DialogResult = DialogResult.Yes;
+taskDialog.CommandLinkButtons.Buttons.Add(button);
+
+taskDialog.CommandLinkButtons.RoundedCorners = true;
+taskDialog.CommandLinkButtons.FlowDirection = FlowDirection.TopDown;
+</code></pre>
+<h3 id="6-checkbox">6. CheckBox</h3>
+<pre><code class="lang-csharp">taskDialog.CheckBox.Text = &quot;Don't show again&quot;;
+taskDialog.CheckBox.Checked = false;
+taskDialog.CheckBox.ForeColor = Color.Black;
+taskDialog.CheckBox.Visible = true;
+
+// After dialog closes
+bool wasChecked = taskDialog.CheckBox.Checked;
+</code></pre>
+<h3 id="7-combobox">7. ComboBox</h3>
+<pre><code class="lang-csharp">taskDialog.ComboBox.Description = &quot;Select option:&quot;;
+taskDialog.ComboBox.ShowDescription = true;
+taskDialog.ComboBox.Items.Add(&quot;Option 1&quot;);
+taskDialog.ComboBox.Items.Add(&quot;Option 2&quot;);
+taskDialog.ComboBox.ComboxWidth = 250;
+taskDialog.ComboBox.DropDownStyle = InternalComboBoxStyle.DropDownList;
+taskDialog.ComboBox.RoundedCorners = true;
+taskDialog.ComboBox.Visible = true;
+
+// Event
+taskDialog.ComboBox.SelectedItemChanged += (item) =&gt; { };
+
+// After dialog closes
+object? selected = taskDialog.ComboBox.SelectedItem;
+int index = taskDialog.ComboBox.SelectedIndex;
+</code></pre>
+<h3 id="8-hyperlink">8. HyperLink</h3>
+<pre><code class="lang-csharp">taskDialog.HyperLink.Description = &quot;Visit our website:&quot;;
+taskDialog.HyperLink.ShowDescription = true;
+taskDialog.HyperLink.Url = &quot;https://example.com&quot;;
+taskDialog.HyperLink.ForeColor = Color.Black;
+taskDialog.HyperLink.Visible = true;
+
+// Event
+taskDialog.HyperLink.LinkClicked += () =&gt; 
+{
+    Process.Start(new ProcessStartInfo
+    {
+        FileName = taskDialog.HyperLink.Url,
+        UseShellExecute = true
+    });
+};
+</code></pre>
+<h3 id="9-progressbar">9. ProgressBar</h3>
+<pre><code class="lang-csharp">taskDialog.ProgresBar.Description = &quot;Processing...&quot;;
+taskDialog.ProgresBar.ShowDescription = true;
+taskDialog.ProgresBar.ProgressBar.Minimum = 0;
+taskDialog.ProgresBar.ProgressBar.Maximum = 100;
+taskDialog.ProgresBar.ProgressBar.Value = 50;
+taskDialog.ProgresBar.RoundedCorners = true;
+taskDialog.ProgresBar.Visible = true;
+
+// Update during operation
+taskDialog.ProgresBar.ProgressBar.Value = 75;
+</code></pre>
+<h3 id="10-richtextbox">10. RichTextBox</h3>
+<pre><code class="lang-csharp">taskDialog.RichTextBox.Text = &quot;Editable text&quot;;
+taskDialog.RichTextBox.ElementHeight = 200;
+taskDialog.RichTextBox.ScrollBars = RichTextBoxScrollBars.Vertical;
+taskDialog.RichTextBox.ReadOnly = false;
+taskDialog.RichTextBox.Enabled = true;
+taskDialog.RichTextBox.EnableContextMenu = true;
+taskDialog.RichTextBox.RoundedCorners = true;
+taskDialog.RichTextBox.Visible = true;
+</code></pre>
+<h3 id="11-freewheeler1-flowlayoutpanel">11. FreeWheeler1 (FlowLayoutPanel)</h3>
+<pre><code class="lang-csharp">taskDialog.FreeWheeler1.ElementHeight = 150;
+taskDialog.FreeWheeler1.Visible = true;
+
+var label = new Label { Text = &quot;Custom:&quot; };
+var textBox = new TextBox();
+taskDialog.FreeWheeler1.FlowLayoutPanel.Controls.Add(label);
+taskDialog.FreeWheeler1.FlowLayoutPanel.Controls.Add(textBox);
+</code></pre>
+<h3 id="12-freewheeler2-tablelayoutpanel">12. FreeWheeler2 (TableLayoutPanel)</h3>
+<p>Same as FreeWheeler1 but uses TableLayoutPanel instead.</p>
+<h2 id="common-patterns">Common Patterns</h2>
+<h3 id="simple-confirmation">Simple Confirmation</h3>
+<pre><code class="lang-csharp">using (var dlg = new KryptonTaskDialog())
+{
+    dlg.Dialog.Form.Text = &quot;Confirm&quot;;
+    dlg.Heading.Visible = true;
+    dlg.Heading.Text = &quot;Are you sure?&quot;;
+    dlg.Heading.IconType = KryptonTaskDialogIconType.ShieldWarning;
+    dlg.Content.Visible = true;
+    dlg.Content.Text = &quot;This action cannot be undone.&quot;;
+    dlg.FooterBar.CommonButtons.Buttons = 
+        KryptonTaskDialogCommonButtonTypes.Yes | 
+        KryptonTaskDialogCommonButtonTypes.No;
+    
+    return dlg.ShowDialog() == DialogResult.Yes;
+}
+</code></pre>
+<h3 id="progress-dialog">Progress Dialog</h3>
+<pre><code class="lang-csharp">var dlg = new KryptonTaskDialog();
+dlg.Dialog.Form.Text = &quot;Processing&quot;;
+dlg.Dialog.Form.CloseBox = false;
+dlg.Dialog.Form.IgnoreAltF4 = true;
+dlg.Heading.Visible = true;
+dlg.Heading.Text = &quot;Please Wait&quot;;
+dlg.Content.Visible = true;
+dlg.ProgresBar.Visible = true;
+dlg.ProgresBar.ProgressBar.Maximum = 100;
+dlg.FooterBar.CommonButtons.Buttons = KryptonTaskDialogCommonButtonTypes.Cancel;
+
+dlg.Show(this);
+
+// Update from background thread
+this.Invoke(() =&gt; 
+{
+    dlg.ProgresBar.ProgressBar.Value = 50;
+    dlg.Content.Text = &quot;50% complete&quot;;
+});
+
+// Close when done
+dlg.CloseDialog();
+dlg.Dispose();
+</code></pre>
+<h3 id="input-dialog">Input Dialog</h3>
+<pre><code class="lang-csharp">using (var dlg = new KryptonTaskDialog())
+{
+    dlg.Dialog.Form.Text = &quot;Input Required&quot;;
+    dlg.Content.Visible = true;
+    dlg.Content.Text = &quot;Please enter your name:&quot;;
+    
+    dlg.FreeWheeler1.Visible = true;
+    dlg.FreeWheeler1.ElementHeight = 50;
+    var txt = new KryptonTextBox { Width = 300 };
+    dlg.FreeWheeler1.FlowLayoutPanel.Controls.Add(txt);
+    
+    dlg.FooterBar.CommonButtons.Buttons = 
+        KryptonTaskDialogCommonButtonTypes.OK | 
+        KryptonTaskDialogCommonButtonTypes.Cancel;
+    
+    if (dlg.ShowDialog() == DialogResult.OK)
+    {
+        string input = txt.Text;
+        // Use input
+    }
+}
+</code></pre>
+<h3 id="dialog-reuse">Dialog Reuse</h3>
+<pre><code class="lang-csharp">using (var dlg = new KryptonTaskDialog())
+{
+    dlg.Dialog.Form.Text = &quot;Status&quot;;
+    dlg.Heading.Visible = true;
+    dlg.Content.Visible = true;
+    dlg.FooterBar.CommonButtons.Buttons = KryptonTaskDialogCommonButtonTypes.OK;
+    
+    for (int i = 1; i &lt;= 5; i++)
+    {
+        dlg.Heading.Text = $&quot;Step {i}&quot;;
+        dlg.Content.Text = $&quot;Processing step {i} of 5&quot;;
+        dlg.ShowDialog();
+    }
+}
+</code></pre>
+<h2 id="theming">Theming</h2>
+<pre><code class="lang-csharp">// Dialog automatically uses current theme
+KryptonManager.CurrentGlobalPalette = KryptonPalette.PaletteOffice2010Blue;
+
+// Override theme colors
+taskDialog.Heading.BackColor1 = Color.Navy;
+taskDialog.Heading.BackColor2 = Color.LightBlue;
+taskDialog.Heading.ForeColor = Color.White;
+
+// Global color override
+taskDialog.Dialog.Globals.BackColor1 = Color.WhiteSmoke;
+taskDialog.Dialog.Globals.ForeColor = Color.Black;
+taskDialog.Dialog.Globals.RoundedCorners = true;
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li><strong>Always dispose</strong>: Use <code>using</code> statements or explicit disposal</li>
+<li><strong>Modal for decisions</strong>: Use <code>ShowDialog()</code> for confirmations</li>
+<li><strong>Modeless for progress</strong>: Use <code>Show()</code> for long operations</li>
+<li><strong>Set default buttons</strong>: Configure AcceptButton and CancelButton</li>
+<li><strong>Hide unused elements</strong>: Only show what you need</li>
+<li><strong>Reuse instances</strong>: More efficient than creating new dialogs</li>
+<li><strong>Thread safety</strong>: Use <code>Invoke()</code> for cross-thread updates</li>
+</ol>
+<h2 id="common-mistakes">Common Mistakes</h2>
+<h3 id="-dont">❌ Don't</h3>
+<pre><code class="lang-csharp">// Don't show without making elements visible
+var dlg = new KryptonTaskDialog();
+dlg.ShowDialog(); // Nothing visible!
+
+// Don't forget to dispose
+var dlg = new KryptonTaskDialog();
+dlg.ShowDialog();
+// Memory leak!
+
+// Don't update modeless dialog from background thread directly
+Task.Run(() =&gt; dlg.Content.Text = &quot;Update&quot;); // Exception!
+</code></pre>
+<h3 id="-do">✅ Do</h3>
+<pre><code class="lang-csharp">// Make elements visible
+using (var dlg = new KryptonTaskDialog())
+{
+    dlg.Heading.Visible = true;
+    dlg.Content.Visible = true;
+    dlg.ShowDialog();
+} // Automatically disposed
+
+// Use Invoke for cross-thread updates
+Task.Run(() =&gt; 
+{
+    this.Invoke(() =&gt; dlg.Content.Text = &quot;Update&quot;);
+});
+</code></pre>
+<h2 id="cheat-sheet">Cheat Sheet</h2>
+<h3 id="element-visibility-toggle">Element Visibility Toggle</h3>
+<pre><code class="lang-csharp">dlg.HideAllElements();
+dlg.Heading.Visible = true;
+dlg.Content.Visible = true;
+dlg.FooterBar.Visible = true;
+</code></pre>
+<h3 id="gradient-background">Gradient Background</h3>
+<pre><code class="lang-csharp">element.BackColor1 = Color.LightBlue; // Top
+element.BackColor2 = Color.White;     // Bottom
+// Gradient automatically applied when both set
+</code></pre>
+<h3 id="positioning">Positioning</h3>
+<pre><code class="lang-csharp">// Center on screen (default)
+dlg.Dialog.Form.StartPosition = FormStartPosition.CenterScreen;
+
+// Center on parent
+dlg.Dialog.Form.StartPosition = FormStartPosition.CenterParent;
+dlg.ShowDialog(this);
+
+// Manual position
+dlg.Dialog.Form.StartPosition = FormStartPosition.Manual;
+dlg.Dialog.Form.Location = new Point(100, 100);
+</code></pre>
+<h3 id="prevent-close">Prevent Close</h3>
+<pre><code class="lang-csharp">dlg.Dialog.Form.CloseBox = false;
+dlg.Dialog.Form.IgnoreAltF4 = true;
+</code></pre>
+<hr>
+<p><strong>For detailed documentation, see</strong>:
+<a href="KryptonTaskDialogDeveloperOverView.html">KryptonTaskDialogDeveloperOverView</a></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

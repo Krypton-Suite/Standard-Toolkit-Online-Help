@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Toolkit - Build System Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Toolkit - Build System Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-toolkit---build-system-guide">Krypton Toolkit - Build System Guide</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#build-scripts">Build Scripts</a></li>
+<li><a href="#project-structure">Project Structure</a></li>
+<li><a href="#multi-targeting">Multi-Targeting</a></li>
+<li><a href="#package-configuration">Package Configuration</a></li>
+<li><a href="#local-development">Local Development</a></li>
+<li><a href="#build-customization">Build Customization</a></li>
+<li><a href="#reference">Reference</a></li>
+</ul>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The Krypton Toolkit build system uses MSBuild project files (<code>.proj</code>) to orchestrate building, packaging, and distributing the toolkit across multiple target frameworks and release channels.</p>
+<h3 id="build-system-components">Build System Components</h3>
+<pre><code>Scripts/
+├── build.proj              # Master/stable releases
+├── longtermstable.proj     # V85-LTS releases  
+├── canary.proj             # Canary pre-releases
+├── nightly.proj            # Nightly/alpha builds
+└── Batch Files/            # Convenience batch scripts
+    ├── build-stable.cmd
+    ├── build-canary.cmd
+    └── build-nightly.cmd
+</code></pre>
+<h3 id="key-concepts">Key Concepts</h3>
+<ul>
+<li><strong>Multi-targeting</strong>: Single build produces DLLs for multiple .NET versions</li>
+<li><strong>Configuration-based</strong>: Different builds for Debug, Release, Nightly, Canary, LTS</li>
+<li><strong>Modular</strong>: Separate projects for Toolkit, Ribbon, Navigator, Workspace, Docking</li>
+<li><strong>Automated</strong>: MSBuild orchestrates entire build → pack → publish pipeline</li>
+</ul>
+<hr>
+<h2 id="build-scripts">Build Scripts</h2>
+<h3 id="buildproj---stable-releases">build.proj - Stable Releases</h3>
+<p><strong>Used By</strong>: Master branch<br>
+<strong>Configuration</strong>: <code>Release</code><br>
+<strong>Output</strong>: <code>Bin/Release/</code>, <code>Bin/Packages/Release/</code></p>
+<h4 id="target-frameworks">Target Frameworks</h4>
+<p><strong>Default</strong> (lite packages):</p>
+<ul>
+<li>net48, net481, net8.0-windows, net9.0-windows, net10.0-windows</li>
+</ul>
+<p><strong>With <code>TFMs=all</code></strong> (full packages):</p>
+<ul>
+<li>net472, net48, net481, net8.0-windows, net9.0-windows, net10.0-windows</li>
+</ul>
+<h4 id="key-targets">Key Targets</h4>
+<p><strong>Clean</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Clean /p:Configuration=Release
+</code></pre>
+<p>Removes all build outputs from <code>Bin/Release/</code></p>
+<p><strong>Restore</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Restore /p:Configuration=Release /p:TFMs=all
+</code></pre>
+<p>Restores NuGet packages for all Krypton.* projects</p>
+<p><strong>Build</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /p:Configuration=Release /p:TFMs=all
+</code></pre>
+<p>Compiles all projects with specified target frameworks</p>
+<p><strong>Pack</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Pack /p:Configuration=Release
+</code></pre>
+<p>Special behavior - creates TWO sets of packages:</p>
+<ol>
+<li><strong>PackLite</strong>: Uses <code>TFMs=lite</code> (default frameworks)</li>
+<li><strong>PackAll</strong>: Uses <code>TFMs=all</code> (includes net472)</li>
+</ol>
+<p><strong>CleanPackages</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:CleanPackages
+</code></pre>
+<p>Removes existing <code>.nupkg</code> files from <code>Bin/Packages/Release/</code></p>
+<p><strong>CreateAllReleaseArchives</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:CreateAllReleaseArchives /p:Configuration=Release
+</code></pre>
+<p>Creates ZIP and TAR.GZ archives:</p>
+<ul>
+<li>Output: <code>Bin/Release/Zips/Krypton-Release_YYYYMMDD.zip</code></li>
+<li>Output: <code>Bin/Release/Zips/Krypton-Release_YYYYMMDD.tar.gz</code></li>
+</ul>
+<p>Methods used (in order of preference):</p>
+<ol>
+<li>7-Zip (if available at <code>C:\Program Files\7-Zip\7z.exe</code>)</li>
+<li>PowerShell <code>Compress-Archive</code></li>
+<li>Windows tar command</li>
+<li>Git Bash tar</li>
+</ol>
+<p><strong>Push</strong> (local development only):</p>
+<pre><code class="lang-cmd">set NUGET_API_KEY=your-key
+msbuild build.proj /t:Push /p:Configuration=Release
+</code></pre>
+<p>Pushes packages matching pattern: <code>*.$(LibraryVersion).nupkg</code></p>
+<p><strong>Note</strong>: GitHub Actions workflows handle pushing with enhanced error handling</p>
+<hr>
+<h3 id="longtermstableproj---lts-releases">longtermstable.proj - LTS Releases</h3>
+<p><strong>Used By</strong>: V85-LTS branch<br>
+<strong>Configuration</strong>: <code>Release</code><br>
+<strong>Output</strong>: <code>Bin/Release/</code>, <code>Bin/Packages/Release/</code><br>
+<strong>Package Names</strong>: <code>Krypton.*.LTS</code></p>
+<h4 id="target-frameworks-9-total">Target Frameworks (9 total)</h4>
+<pre><code>.NET Framework 4.6.2  (net462)
+.NET Framework 4.7    (net47)
+.NET Framework 4.7.1  (net471)
+.NET Framework 4.7.2  (net472)
+.NET Framework 4.8    (net48)
+.NET Framework 4.8.1  (net481)
+.NET 6.0 Windows      (net6.0-windows)
+.NET 7.0 Windows      (net7.0-windows)
+.NET 8.0 Windows      (net8.0-windows)
+</code></pre>
+<p><strong>Note</strong>: Broadest framework support for maximum compatibility</p>
+<h4 id="key-differences-from-buildproj">Key Differences from build.proj</h4>
+<ol>
+<li><strong>No PackLite/PackAll split</strong> - Only <code>PackAll</code> target</li>
+<li><strong>Different package IDs</strong> - Configured in V85-LTS branch's <code>.csproj</code> files</li>
+<li><strong>Stable SDKs only</strong> - Uses .NET 6, 7, 8 (no 9 or 10)</li>
+<li><strong>Legacy support</strong> - Includes net462 (2015), net47, net471</li>
+</ol>
+<h4 id="usage">Usage</h4>
+<pre><code class="lang-cmd">REM Build LTS packages
+msbuild longtermstable.proj /t:Build /p:Configuration=Release /p:TFMs=all
+
+REM Pack LTS packages
+msbuild longtermstable.proj /t:Pack /p:Configuration=Release
+
+REM View created packages
+dir ..\Bin\Packages\Release\*.LTS.*.nupkg
+</code></pre>
+<hr>
+<h3 id="canaryproj---pre-release-builds">canary.proj - Pre-Release Builds</h3>
+<p><strong>Used By</strong>: Canary branch<br>
+<strong>Configuration</strong>: <code>Canary</code><br>
+<strong>Output</strong>: <code>Bin/Canary/</code>, <code>Bin/Packages/Canary/</code></p>
+<h4 id="target-frameworks-6-total">Target Frameworks (6 total)</h4>
+<pre><code>net472
+net48
+net481
+net8.0-windows
+net9.0-windows
+net10.0-windows
+</code></pre>
+<p><strong>Same as nightly</strong>, includes net472 for compatibility testing</p>
+<h4 id="targets">Targets</h4>
+<p><strong>PackAll</strong> only (no lite/full split):</p>
+<pre><code class="lang-cmd">msbuild canary.proj /t:Pack /p:Configuration=Canary
+</code></pre>
+<p><strong>CreateAllCanaryArchives</strong>:</p>
+<pre><code class="lang-cmd">msbuild canary.proj /t:CreateAllCanaryArchives /p:Configuration=Canary
+</code></pre>
+<p>Output: <code>Bin/Canary/Zips/Krypton-Canary_YYYYMMDD.{zip,tar.gz}</code></p>
+<h4 id="usage-1">Usage</h4>
+<pre><code class="lang-cmd">REM Build canary packages locally
+cd Scripts
+msbuild canary.proj /t:Clean
+msbuild canary.proj /t:Restore
+msbuild canary.proj /t:Build /p:Configuration=Canary
+msbuild canary.proj /t:Pack /p:Configuration=Canary
+
+REM View packages
+dir ..\Bin\Packages\Canary\
+</code></pre>
+<hr>
+<h3 id="nightlyproj---nightly-builds">nightly.proj - Nightly Builds</h3>
+<p><strong>Used By</strong>: Alpha branch<br>
+<strong>Configuration</strong>: <code>Nightly</code><br>
+<strong>Output</strong>: <code>Bin/Nightly/</code>, <code>Bin/Packages/Nightly/</code></p>
+<h4 id="target-frameworks-6-total-1">Target Frameworks (6 total)</h4>
+<pre><code>net472
+net48
+net481
+net8.0-windows
+net9.0-windows
+net10.0-windows
+</code></pre>
+<h4 id="special-targets">Special Targets</h4>
+<p><strong>Rebuild</strong>:</p>
+<pre><code class="lang-cmd">msbuild nightly.proj /t:Rebuild /p:Configuration=Nightly
+</code></pre>
+<p>Combines <code>Clean</code> + <code>Build</code> (full rebuild)</p>
+<p><strong>CreateAllArchives</strong>:</p>
+<pre><code class="lang-cmd">msbuild nightly.proj /t:CreateAllArchives /p:Configuration=Nightly
+</code></pre>
+<p>Output: <code>Bin/Nightly/Zips/Krypton-Nightly_YYYYMMDD.{zip,tar.gz}</code></p>
+<h4 id="usage-2">Usage</h4>
+<pre><code class="lang-cmd">REM Quick nightly build
+cd Scripts
+build-nightly.cmd
+
+REM Or manually
+msbuild nightly.proj /t:Rebuild /p:Configuration=Nightly
+msbuild nightly.proj /t:Pack /p:Configuration=Nightly
+</code></pre>
+<hr>
+<h2 id="project-structure">Project Structure</h2>
+<h3 id="solution-layout">Solution Layout</h3>
+<pre><code>Source/Krypton Components/
+├── Krypton Toolkit Suite 2022 - VS2022.sln
+├── Directory.Build.props           # Global properties
+├── Directory.Build.targets         # Global targets
+├── Krypton.Toolkit/
+│   ├── Krypton.Toolkit 2022.csproj
+│   └── [source files]
+├── Krypton.Ribbon/
+│   ├── Krypton.Ribbon 2022.csproj
+│   └── [source files]
+├── Krypton.Navigator/
+│   ├── Krypton.Navigator 2022.csproj
+│   └── [source files]
+├── Krypton.Workspace/
+│   ├── Krypton.Workspace 2022.csproj
+│   └── [source files]
+├── Krypton.Docking/
+│   ├── Krypton.Docking 2022.csproj
+│   └── [source files]
+└── TestForm/                       # Test application
+    └── TestForm.csproj
+</code></pre>
+<h3 id="directorybuildprops">Directory.Build.props</h3>
+<p><strong>Purpose</strong>: Global properties inherited by all projects</p>
+<p><strong>Key Settings</strong>:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+  &lt;!-- Versioning --&gt;
+  &lt;LibraryVersion&gt;100.25.1.1&lt;/LibraryVersion&gt;
+  &lt;Version&gt;$(LibraryVersion)&lt;/Version&gt;
+  &lt;AssemblyVersion&gt;$(LibraryVersion)&lt;/AssemblyVersion&gt;
+  &lt;FileVersion&gt;$(LibraryVersion)&lt;/FileVersion&gt;
+  
+  &lt;!-- Package Metadata --&gt;
+  &lt;Company&gt;Component Factory Pty Ltd, Peter Wagner, Simon Coghlan et al.&lt;/Company&gt;
+  &lt;Authors&gt;Peter William Wagner &amp;amp; Simon Coghlan &amp;amp; ...&lt;/Authors&gt;
+  &lt;PackageLicenseExpression&gt;BSD-3-Clause&lt;/PackageLicenseExpression&gt;
+  &lt;PackageReadmeFile&gt;README.md&lt;/PackageReadmeFile&gt;
+  &lt;PackageRequireLicenseAcceptance&gt;True&lt;/PackageRequireLicenseAcceptance&gt;
+  &lt;PackageTags&gt;Krypton ComponentFactory WinForms Themes Controls ...&lt;/PackageTags&gt;
+  
+  &lt;!-- Output Paths --&gt;
+  &lt;OutputPath&gt;..\..\..\Bin\$(Configuration)\&lt;/OutputPath&gt;
+  &lt;PackageOutputPath&gt;..\..\..\Bin\Packages\$(Configuration)\&lt;/PackageOutputPath&gt;
+&lt;/PropertyGroup&gt;
+
+&lt;!-- README in all packages --&gt;
+&lt;ItemGroup&gt;
+  &lt;None Include=&quot;..\..\..\README.md&quot;&gt;
+    &lt;Pack&gt;True&lt;/Pack&gt;
+    &lt;PackagePath&gt;\&lt;/PackagePath&gt;
+  &lt;/None&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<p><strong>Applies To</strong>: All 5 Krypton component projects</p>
+<h3 id="directorybuildtargets">Directory.Build.targets</h3>
+<p><strong>Purpose</strong>: Global build targets and symbol package configuration</p>
+<p><strong>Key Settings</strong>:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup Condition=&quot;'$(Configuration)' == 'Nightly' Or '$(Configuration)' == 'Canary'&quot;&gt;
+  &lt;!-- Symbol Packages --&gt;
+  &lt;IncludeSymbols&gt;True&lt;/IncludeSymbols&gt;
+  &lt;SymbolPackageFormat&gt;snupkg&lt;/SymbolPackageFormat&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Effect</strong>: Nightly and Canary builds automatically create <code>.snupkg</code> symbol packages</p>
+<hr>
+<h2 id="multi-targeting">Multi-Targeting</h2>
+<h3 id="how-it-works">How It Works</h3>
+<p>Projects use <code>&lt;TargetFrameworks&gt;</code> (plural) to build for multiple .NET versions:</p>
+<pre><code class="lang-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+  &lt;PropertyGroup&gt;
+    &lt;TargetFrameworks&gt;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+  &lt;/PropertyGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<p><strong>Build Process</strong>:</p>
+<ol>
+<li>MSBuild detects multiple targets</li>
+<li>Builds each framework sequentially (or parallel with <code>/m</code>)</li>
+<li>Outputs to separate directories:
+<ul>
+<li><code>Bin/Release/net48/Krypton.Toolkit.dll</code></li>
+<li><code>Bin/Release/net481/Krypton.Toolkit.dll</code></li>
+<li><code>Bin/Release/net8.0-windows/Krypton.Toolkit.dll</code></li>
+<li>etc.</li>
+</ul>
+</li>
+</ol>
+<h3 id="configuration-based-targeting">Configuration-Based Targeting</h3>
+<p>Projects use <code>&lt;Choose&gt;</code> to vary frameworks by configuration:</p>
+<pre><code class="lang-xml">&lt;Choose&gt;
+  &lt;!-- Nightly, Canary, Debug: Include net472 --&gt;
+  &lt;When Condition=&quot;'$(Configuration)' == 'Nightly' Or '$(Configuration)' == 'Canary' Or '$(Configuration)' == 'Debug'&quot;&gt;
+    &lt;PropertyGroup&gt;
+      &lt;TargetFrameworks&gt;net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+    &lt;/PropertyGroup&gt;
+  &lt;/When&gt;
+  
+  &lt;!-- Release: Exclude net472 by default --&gt;
+  &lt;Otherwise&gt;
+    &lt;PropertyGroup&gt;
+      &lt;TargetFrameworks&gt;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+      
+      &lt;!-- Override with TFMs=all to include net472 --&gt;
+      &lt;TargetFrameworks Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;
+        net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows
+      &lt;/TargetFrameworks&gt;
+    &lt;/PropertyGroup&gt;
+  &lt;/Otherwise&gt;
+&lt;/Choose&gt;
+</code></pre>
+<h3 id="target-framework-matrix">Target Framework Matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>Default TFMs</th>
+<th>With <code>TFMs=all</code></th>
+<th>Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Debug</td>
+<td>net472, 48, 481, 8, 9, 10</td>
+<td>Same</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Release</td>
+<td>net48, 481, 8, 9, 10</td>
+<td>+ net472</td>
+<td>5 → 6</td>
+</tr>
+<tr>
+<td>Nightly</td>
+<td>net472, 48, 481, 8, 9, 10</td>
+<td>Same</td>
+<td>6</td>
+</tr>
+<tr>
+<td>Canary</td>
+<td>net472, 48, 481, 8, 9, 10</td>
+<td>Same</td>
+<td>6</td>
+</tr>
+<tr>
+<td>LTS (V85-LTS branch)</td>
+<td>net462, 47, 471, 472, 48, 481, 6, 7, 8</td>
+<td>Same</td>
+<td>9</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tfm-property-usage">TFM Property Usage</h3>
+<p>The <code>TFMs</code> property controls which frameworks to build:</p>
+<pre><code class="lang-cmd">REM Build with default frameworks
+msbuild build.proj /t:Build /p:Configuration=Release
+
+REM Build with all frameworks (includes net472)
+msbuild build.proj /t:Build /p:Configuration=Release /p:TFMs=all
+
+REM Build with lite frameworks (same as default for Release)
+msbuild build.proj /t:Build /p:Configuration=Release /p:TFMs=lite
+</code></pre>
+<p><strong>Used in</strong>:</p>
+<ul>
+<li><code>build.proj</code> - PackLite (default) vs PackAll (TFMs=all)</li>
+<li>All build scripts - Pass to MSBuild for individual projects</li>
+</ul>
+<hr>
+<h2 id="package-configuration">Package Configuration</h2>
+<h3 id="nuget-package-structure">NuGet Package Structure</h3>
+<p>Each NuGet package contains:</p>
+<pre><code>Krypton.Toolkit.100.25.1.1.nupkg
+├── lib/
+│   ├── net472/
+│   │   └── Krypton.Toolkit.dll
+│   ├── net48/
+│   │   └── Krypton.Toolkit.dll
+│   ├── net481/
+│   │   └── Krypton.Toolkit.dll
+│   ├── net8.0-windows/
+│   │   └── Krypton.Toolkit.dll
+│   ├── net9.0-windows/
+│   │   └── Krypton.Toolkit.dll
+│   └── net10.0-windows/
+│       └── Krypton.Toolkit.dll
+├── README.md
+└── [metadata]
+</code></pre>
+<h3 id="symbol-packages">Symbol Packages</h3>
+<p>Configured in <code>Directory.Build.targets</code>:</p>
+<pre><code class="lang-xml">&lt;IncludeSymbols&gt;True&lt;/IncludeSymbols&gt;
+&lt;SymbolPackageFormat&gt;snupkg&lt;/SymbolPackageFormat&gt;
+</code></pre>
+<p><strong>Creates</strong>:</p>
+<pre><code>Krypton.Toolkit.100.25.1.1.snupkg
+├── lib/
+│   ├── net472/
+│   │   ├── Krypton.Toolkit.dll
+│   │   └── Krypton.Toolkit.pdb
+│   └── [other frameworks...]
+└── [source files for Source Link]
+</code></pre>
+<p><strong>Publishing</strong>: Automatically uploaded when pushing main package</p>
+<p><strong>Benefit</strong>: Developers can debug through Krypton Toolkit code</p>
+<h3 id="package-metadata">Package Metadata</h3>
+<p><strong>From Directory.Build.props</strong>:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+  &lt;Company&gt;Component Factory Pty Ltd, Peter Wagner, Simon Coghlan et al.&lt;/Company&gt;
+  &lt;Product&gt;Krypton Toolkit&lt;/Product&gt;
+  &lt;Copyright&gt;© Component Factory Pty Ltd, Peter Wagner, Simon Coghlan et al. 2017 - 2025. All rights reserved.&lt;/Copyright&gt;
+  
+  &lt;Authors&gt;Peter William Wagner &amp;amp; Simon Coghlan &amp;amp; Giduac &amp;amp; Ahmed Abdelhameed &amp;amp; Lesandro &amp;amp; tobitege &amp;amp; Thomas Bolon&lt;/Authors&gt;
+  &lt;PackageLicenseExpression&gt;BSD-3-Clause&lt;/PackageLicenseExpression&gt;
+  &lt;PackageReadmeFile&gt;README.md&lt;/PackageReadmeFile&gt;
+  &lt;PackageRequireLicenseAcceptance&gt;True&lt;/PackageRequireLicenseAcceptance&gt;
+  &lt;PackageTags&gt;Krypton ComponentFactory WinForms Themes Controls DataGrid Ribbon Workspace Tabs .NET Toolkit&lt;/PackageTags&gt;
+  &lt;PackageReleaseNotes&gt;Get updates here: https://github.com/Krypton-Suite/Standard-Toolkit&lt;/PackageReleaseNotes&gt;
+  
+  &lt;RepositoryUrl&gt;https://github.com/Krypton-Suite/Standard-Toolkit&lt;/RepositoryUrl&gt;
+  &lt;RepositoryType&gt;git&lt;/RepositoryType&gt;
+  &lt;PackageProjectUrl&gt;https://github.com/Krypton-Suite/Standard-Toolkit&lt;/PackageProjectUrl&gt;
+  &lt;PackageIcon&gt;Krypton.png&lt;/PackageIcon&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Per-Project</strong>:</p>
+<pre><code class="lang-xml">&lt;!-- In Krypton.Toolkit 2022.csproj --&gt;
+&lt;PropertyGroup&gt;
+  &lt;PackageId&gt;Krypton.Toolkit&lt;/PackageId&gt;
+  &lt;Description&gt;This is the core toolkit module.&lt;/Description&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p>Similar for Ribbon, Navigator, Workspace, Docking</p>
+<hr>
+<h2 id="local-development">Local Development</h2>
+<h3 id="quick-start">Quick Start</h3>
+<h4 id="debug-build-fast">Debug Build (Fast)</h4>
+<pre><code class="lang-cmd">cd &quot;Source\Krypton Components&quot;
+dotnet build &quot;Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<p>Output: <code>Bin/Debug/net472/</code>, <code>Bin/Debug/net48/</code>, etc.</p>
+<h4 id="run-test-application">Run Test Application</h4>
+<pre><code class="lang-cmd">dotnet run --project &quot;TestForm/TestForm.csproj&quot; -c Debug
+</code></pre>
+<p><strong>Or</strong> open solution in Visual Studio 2022 and press F5</p>
+<hr>
+<h3 id="building-specific-configurations">Building Specific Configurations</h3>
+<h4 id="stable-release-build">Stable Release Build</h4>
+<pre><code class="lang-cmd">cd Scripts
+
+REM Using batch file (recommended)
+build-stable.cmd
+
+REM Or manually
+msbuild build.proj /t:Clean
+msbuild build.proj /t:Restore
+msbuild build.proj /t:Build /p:Configuration=Release /p:TFMs=all
+msbuild build.proj /t:Pack /p:Configuration=Release
+</code></pre>
+<p><strong>Output</strong>:</p>
+<ul>
+<li>Binaries: <code>Bin/Release/{framework}/</code></li>
+<li>Packages: <code>Bin/Packages/Release/</code></li>
+</ul>
+<h4 id="lts-build">LTS Build</h4>
+<pre><code class="lang-cmd">cd Scripts
+msbuild longtermstable.proj /t:Rebuild /p:Configuration=Release
+msbuild longtermstable.proj /t:Pack /p:Configuration=Release
+</code></pre>
+<p><strong>Requires</strong>: .NET 6, 7, 8 SDKs installed</p>
+<h4 id="canary-build">Canary Build</h4>
+<pre><code class="lang-cmd">cd Scripts
+build-canary.cmd
+
+REM Or manually
+msbuild canary.proj /t:Build /p:Configuration=Canary
+msbuild canary.proj /t:Pack /p:Configuration=Canary
+</code></pre>
+<h4 id="nightly-build">Nightly Build</h4>
+<pre><code class="lang-cmd">cd Scripts
+build-nightly.cmd
+
+REM Or manually
+msbuild nightly.proj /t:Rebuild /p:Configuration=Nightly
+msbuild nightly.proj /t:Pack /p:Configuration=Nightly
+</code></pre>
+<hr>
+<h3 id="working-with-packages-locally">Working with Packages Locally</h3>
+<h4 id="create-packages">Create Packages</h4>
+<pre><code class="lang-cmd">cd Scripts
+msbuild build.proj /t:Pack /p:Configuration=Release
+</code></pre>
+<p><strong>View created packages</strong>:</p>
+<pre><code class="lang-cmd">dir ..\Bin\Packages\Release\*.nupkg
+</code></pre>
+<p><strong>Expected output</strong>:</p>
+<pre><code>Krypton.Toolkit.100.25.1.1.nupkg
+Krypton.Toolkit.100.25.1.1.snupkg
+Krypton.Ribbon.100.25.1.1.nupkg
+Krypton.Ribbon.100.25.1.1.snupkg
+Krypton.Navigator.100.25.1.1.nupkg
+Krypton.Navigator.100.25.1.1.snupkg
+Krypton.Workspace.100.25.1.1.nupkg
+Krypton.Workspace.100.25.1.1.snupkg
+Krypton.Docking.100.25.1.1.nupkg
+Krypton.Docking.100.25.1.1.snupkg
+</code></pre>
+<h4 id="inspect-package-contents">Inspect Package Contents</h4>
+<pre><code class="lang-cmd">REM Extract package (it's a ZIP file)
+cd ..\Bin\Packages\Release
+7z x Krypton.Toolkit.100.25.1.1.nupkg -o&quot;extracted&quot;
+
+REM Or use NuGet Package Explorer (GUI)
+REM Download from: https://github.com/NuGetPackageExplorer/NuGetPackageExplorer
+</code></pre>
+<h4 id="test-package-locally">Test Package Locally</h4>
+<p><strong>Method 1: Local folder source</strong></p>
+<pre><code class="lang-cmd">REM Add local folder as NuGet source
+nuget sources add -Name &quot;Local&quot; -Source &quot;Z:\Development\Krypton\Standard-Toolkit\Bin\Packages\Release&quot;
+
+REM In test project
+dotnet add package Krypton.Toolkit --version 100.25.1.1 --source Local
+</code></pre>
+<p><strong>Method 2: Direct package reference</strong></p>
+<pre><code class="lang-xml">&lt;!-- In test .csproj --&gt;
+&lt;ItemGroup&gt;
+  &lt;PackageReference Include=&quot;Krypton.Toolkit&quot; Version=&quot;100.25.1.1&quot;&gt;
+    &lt;Source&gt;Z:\Development\Krypton\Standard-Toolkit\Bin\Packages\Release&lt;/Source&gt;
+  &lt;/PackageReference&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<h4 id="publish-to-test-feed">Publish to Test Feed</h4>
+<p><strong>Azure Artifacts / GitHub Packages / MyGet</strong>:</p>
+<pre><code class="lang-cmd">set TEST_FEED_URL=https://pkgs.dev.azure.com/yourorg/_packaging/test/nuget/v3/index.json
+set TEST_FEED_KEY=your-test-key
+
+dotnet nuget push Krypton.Toolkit.100.25.1.1.nupkg --source %TEST_FEED_URL% --api-key %TEST_FEED_KEY%
+</code></pre>
+<hr>
+<h2 id="build-customization">Build Customization</h2>
+<h3 id="adding-a-new-target-framework">Adding a New Target Framework</h3>
+<p><strong>Example</strong>: Add .NET 11.0 support</p>
+<h4 id="1-update-project-files">1. Update Project Files</h4>
+<p>Edit all 5 component <code>.csproj</code> files:</p>
+<pre><code class="lang-xml">&lt;TargetFrameworks&gt;net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows&lt;/TargetFrameworks&gt;
+</code></pre>
+<p><strong>Files to update</strong>:</p>
+<ul>
+<li><code>Krypton.Toolkit/Krypton.Toolkit 2022.csproj</code></li>
+<li><code>Krypton.Ribbon/Krypton.Ribbon 2022.csproj</code></li>
+<li><code>Krypton.Navigator/Krypton.Navigator 2022.csproj</code></li>
+<li><code>Krypton.Workspace/Krypton.Workspace 2022.csproj</code></li>
+<li><code>Krypton.Docking/Krypton.Docking 2022.csproj</code></li>
+</ul>
+<h4 id="2-test-locally">2. Test Locally</h4>
+<pre><code class="lang-cmd">REM Install .NET 11 SDK first
+dotnet --list-sdks  # Verify 11.0.x present
+
+REM Build
+cd &quot;Source\Krypton Components&quot;
+dotnet build &quot;Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<h4 id="3-update-github-actions-workflows">3. Update GitHub Actions Workflows</h4>
+<p>See <a href="GitHubActionsIndex.html">GitHub Actions Workflows Guide</a></p>
+<hr>
+<h3 id="conditional-compilation">Conditional Compilation</h3>
+<p>Use preprocessor directives for framework-specific code:</p>
+<pre><code class="lang-csharp">#if NET472
+    // Code for .NET Framework 4.7.2 only
+#elif NET48_OR_GREATER
+    // Code for .NET Framework 4.8+
+#elif NET8_0_OR_GREATER
+    // Code for .NET 8.0+
+#endif
+</code></pre>
+<p><strong>Common Symbols</strong>:</p>
+<ul>
+<li><code>NET472</code>, <code>NET48</code>, <code>NET481</code> - Specific .NET Framework versions</li>
+<li><code>NET6_0</code>, <code>NET7_0</code>, <code>NET8_0</code>, <code>NET9_0</code>, <code>NET10_0</code> - Specific .NET versions</li>
+<li><code>NET48_OR_GREATER</code> - .NET Framework 4.8+</li>
+<li><code>NET6_0_OR_GREATER</code> - .NET 6.0+</li>
+<li><code>NETCOREAPP</code> - Any .NET Core/.NET 5+ version</li>
+<li><code>NETFRAMEWORK</code> - Any .NET Framework version</li>
+<li><code>WINDOWS</code> - Windows-specific TFMs</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">#if NETFRAMEWORK
+    // Use .NET Framework APIs
+    using System.Configuration;
+#else
+    // Use modern .NET APIs
+    using System.Text.Json;
+#endif
+</code></pre>
+<hr>
+<h3 id="custom-build-configurations">Custom Build Configurations</h3>
+<h4 id="add-new-configuration">Add New Configuration</h4>
+<p><strong>In Directory.Build.props</strong>:</p>
+<pre><code class="lang-xml">&lt;Configurations&gt;Debug;Release;Installer;Nightly;Canary;LTS;MyCustomConfig&lt;/Configurations&gt;
+</code></pre>
+<p><strong>In individual .csproj</strong>:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup Condition=&quot;'$(Configuration)' == 'MyCustomConfig'&quot;&gt;
+  &lt;TargetFrameworks&gt;net48;net9.0-windows&lt;/TargetFrameworks&gt;
+  &lt;DefineConstants&gt;MY_CUSTOM_FLAG&lt;/DefineConstants&gt;
+  &lt;Optimize&gt;True&lt;/Optimize&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Create build script</strong> (<code>Scripts/mycustom.proj</code>):</p>
+<pre><code class="lang-xml">&lt;Project&gt;
+  &lt;Import Project=&quot;..\Directory.Build.props&quot; /&gt;
+  
+  &lt;PropertyGroup&gt;
+    &lt;Configuration&gt;MyCustomConfig&lt;/Configuration&gt;
+  &lt;/PropertyGroup&gt;
+  
+  &lt;Target Name=&quot;Build&quot;&gt;
+    &lt;ItemGroup&gt;
+      &lt;Projects Include=&quot;..\Source\Krypton Components\Krypton.*\*.csproj&quot; /&gt;
+    &lt;/ItemGroup&gt;
+    &lt;MSBuild Projects=&quot;@(Projects)&quot; Properties=&quot;Configuration=$(Configuration)&quot; /&gt;
+  &lt;/Target&gt;
+&lt;/Project&gt;
+</code></pre>
+<p><strong>Build</strong>:</p>
+<pre><code class="lang-cmd">msbuild mycustom.proj /t:Build
+</code></pre>
+<hr>
+<h3 id="version-management">Version Management</h3>
+<h4 id="version-location">Version Location</h4>
+<p><strong>Single source of truth</strong>: <code>Directory.Build.props</code></p>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+  &lt;LibraryVersion&gt;100.25.1.1&lt;/LibraryVersion&gt;
+  &lt;Version&gt;$(LibraryVersion)&lt;/Version&gt;
+  &lt;AssemblyVersion&gt;$(LibraryVersion)&lt;/AssemblyVersion&gt;
+  &lt;FileVersion&gt;$(LibraryVersion)&lt;/FileVersion&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Propagates to</strong>:</p>
+<ul>
+<li>All 5 component assemblies</li>
+<li>All NuGet packages</li>
+<li>All symbol packages</li>
+<li>GitHub release tags</li>
+</ul>
+<h4 id="updating-version">Updating Version</h4>
+<p><strong>For new release</strong>:</p>
+<ol>
+<li><p>Edit <code>Directory.Build.props</code>:</p>
+<pre><code class="lang-xml">&lt;LibraryVersion&gt;100.26.0.0&lt;/LibraryVersion&gt;
+</code></pre>
+</li>
+<li><p>Update changelog in <code>Documents/Changelog/Changelog.md</code></p>
+</li>
+<li><p>Commit:</p>
+<pre><code class="lang-cmd">git add Directory.Build.props Documents/Changelog/Changelog.md
+git commit -m &quot;Bump version to 100.26.0.0&quot;
+</code></pre>
+</li>
+<li><p>Push to trigger release workflow</p>
+</li>
+</ol>
+<p><strong>Do NOT</strong>:</p>
+<ul>
+<li>❌ Edit version in individual <code>.csproj</code> files</li>
+<li>❌ Edit <code>AssemblyInfo.cs</code> files (not used)</li>
+<li>❌ Manually edit assembly attributes</li>
+</ul>
+<h4 id="version-format">Version Format</h4>
+<p><strong>Semantic versioning</strong>: <code>Major.Minor.Build.Revision</code></p>
+<p><strong>Example</strong>: <code>100.25.1.1</code></p>
+<ul>
+<li><strong>100</strong> - Major version (product generation, V100 = current)</li>
+<li><strong>25</strong> - Minor version (feature set, monthly releases)</li>
+<li><strong>1</strong> - Build number (increment for each release)</li>
+<li><strong>1</strong> - Revision (hotfixes, usually 1)</li>
+</ul>
+<p><strong>LTS versioning</strong>: <code>85.24.0.0</code></p>
+<ul>
+<li><strong>85</strong> - Major version (V85 = LTS branch)</li>
+<li><strong>24</strong> - Minor version</li>
+<li><strong>0</strong> - Build number</li>
+<li><strong>0</strong> - Revision</li>
+</ul>
+<hr>
+<h2 id="build-output-structure">Build Output Structure</h2>
+<h3 id="directory-layout">Directory Layout</h3>
+<pre><code>Bin/
+├── Debug/
+│   ├── net472/
+│   │   ├── Krypton.Toolkit.dll
+│   │   ├── Krypton.Toolkit.pdb
+│   │   └── [dependencies]
+│   ├── net48/
+│   ├── net481/
+│   ├── net8.0-windows/
+│   ├── net9.0-windows/
+│   └── net10.0-windows/
+│
+├── Release/
+│   ├── net48/          # Lite package
+│   ├── net481/
+│   ├── net472/         # Full package only
+│   ├── net8.0-windows/
+│   ├── net9.0-windows/
+│   └── net10.0-windows/
+│
+├── Canary/
+│   └── [6 frameworks]
+│
+├── Nightly/
+│   └── [6 frameworks]
+│
+├── Packages/
+│   ├── Release/
+│   │   ├── Krypton.Toolkit.100.25.1.1.nupkg
+│   │   ├── Krypton.Toolkit.100.25.1.1.snupkg
+│   │   ├── Krypton.Ribbon.100.25.1.1.nupkg
+│   │   ├── Krypton.Ribbon.100.25.1.1.snupkg
+│   │   └── [other packages]
+│   ├── Canary/
+│   │   └── [canary packages]
+│   └── Nightly/
+│       └── [nightly packages]
+│
+└── Release/
+    └── Zips/
+        ├── Krypton-Release_20251024.zip
+        └── Krypton-Release_20251024.tar.gz
+</code></pre>
+<h3 id="file-sizes">File Sizes</h3>
+<p><strong>Typical sizes</strong> (per framework):</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Debug</th>
+<th>Release</th>
+<th>Difference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Krypton.Toolkit.dll</td>
+<td>~1.8 MB</td>
+<td>~1.3 MB</td>
+<td>-28% (optimizations)</td>
+</tr>
+<tr>
+<td>Krypton.Ribbon.dll</td>
+<td>~600 KB</td>
+<td>~450 KB</td>
+<td>-25%</td>
+</tr>
+<tr>
+<td>Krypton.Navigator.dll</td>
+<td>~400 KB</td>
+<td>~300 KB</td>
+<td>-25%</td>
+</tr>
+<tr>
+<td>Krypton.Workspace.dll</td>
+<td>~200 KB</td>
+<td>~150 KB</td>
+<td>-25%</td>
+</tr>
+<tr>
+<td>Krypton.Docking.dll</td>
+<td>~150 KB</td>
+<td>~110 KB</td>
+<td>-27%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>NuGet Package sizes</strong> (all frameworks):</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Without Symbols</th>
+<th>With Symbols</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Krypton.Toolkit</td>
+<td>~8-10 MB</td>
+<td>+2 MB</td>
+</tr>
+<tr>
+<td>Krypton.Ribbon</td>
+<td>~3-4 MB</td>
+<td>+1 MB</td>
+</tr>
+<tr>
+<td>Krypton.Navigator</td>
+<td>~2-2.5 MB</td>
+<td>+0.5 MB</td>
+</tr>
+<tr>
+<td>Krypton.Workspace</td>
+<td>~1-1.2 MB</td>
+<td>+0.3 MB</td>
+</tr>
+<tr>
+<td>Krypton.Docking</td>
+<td>~0.8-1 MB</td>
+<td>+0.2 MB</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="build-performance">Build Performance</h2>
+<h3 id="optimization-strategies">Optimization Strategies</h3>
+<h4 id="parallel-builds">Parallel Builds</h4>
+<pre><code class="lang-cmd">REM Use all CPU cores (default)
+msbuild build.proj /t:Build /m
+
+REM Limit to 4 cores
+msbuild build.proj /t:Build /m:4
+
+REM Single-threaded (for debugging)
+msbuild build.proj /t:Build /m:1
+</code></pre>
+<p><strong>Typical speedup</strong>: 2-4x on multi-core systems</p>
+<h4 id="incremental-builds">Incremental Builds</h4>
+<p><strong>First build</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build
+</code></pre>
+<p>Compiles everything: ~5-10 minutes</p>
+<p><strong>Subsequent builds</strong>:</p>
+<pre><code class="lang-cmd">REM Change one file
+msbuild build.proj /t:Build
+</code></pre>
+<p>Only recompiles changed files: ~30-60 seconds</p>
+<p><strong>Force full rebuild</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Rebuild
+</code></pre>
+<h4 id="build-only-what-you-need">Build Only What You Need</h4>
+<p><strong>Single project</strong>:</p>
+<pre><code class="lang-cmd">cd &quot;Source\Krypton Components\Krypton.Toolkit&quot;
+dotnet build &quot;Krypton.Toolkit 2022.csproj&quot; -c Debug
+</code></pre>
+<p><strong>Single framework</strong>:</p>
+<pre><code class="lang-cmd">dotnet build &quot;Krypton.Toolkit 2022.csproj&quot; -c Debug -f net10.0-windows
+</code></pre>
+<p><strong>Single configuration</strong>:</p>
+<pre><code class="lang-cmd">REM Build only Debug (skip Release, Nightly, etc.)
+dotnet build &quot;Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<hr>
+<h3 id="build-troubleshooting">Build Troubleshooting</h3>
+<h4 id="issue-build-fails-with-sdk-not-found">Issue: Build Fails with SDK Not Found</h4>
+<p><strong>Error</strong>: <code>error NETSDK1045: The current .NET SDK does not support targeting .NET 9.0</code></p>
+<p><strong>Cause</strong>: Required SDK not installed</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-cmd">REM Check installed SDKs
+dotnet --list-sdks
+
+REM Install missing SDK
+REM Download from: https://dotnet.microsoft.com/download
+</code></pre>
+<p><strong>Required SDKs by Configuration</strong>:</p>
+<ul>
+<li><strong>Debug/Nightly/Canary</strong>: .NET 9, 10</li>
+<li><strong>Release</strong>: .NET 9, 10 (for full build)</li>
+<li><strong>LTS</strong>: .NET 6, 7, 8</li>
+</ul>
+<hr>
+<h4 id="issue-nuget-restore-fails">Issue: NuGet Restore Fails</h4>
+<p><strong>Error</strong>: <code>NU1101: Unable to find package ...</code></p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Clear NuGet cache</strong>:</p>
+<pre><code class="lang-cmd">dotnet nuget locals all --clear
+</code></pre>
+</li>
+<li><p><strong>Verify NuGet sources</strong>:</p>
+<pre><code class="lang-cmd">dotnet nuget list source
+</code></pre>
+</li>
+<li><p><strong>Manually restore</strong>:</p>
+<pre><code class="lang-cmd">dotnet restore &quot;Source\Krypton Components\Krypton Toolkit Suite 2022 - VS2022.sln&quot; --force
+</code></pre>
+</li>
+<li><p><strong>Check internet connection</strong> (required for nuget.org)</p>
+</li>
+</ol>
+<hr>
+<h4 id="issue-duplicate-symbol-errors">Issue: Duplicate Symbol Errors</h4>
+<p><strong>Error</strong>: <code>error CS0433: The type exists in both ...</code></p>
+<p><strong>Cause</strong>: Same assembly referenced multiple times</p>
+<p><strong>Solution</strong>: Clean and rebuild</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Clean
+msbuild build.proj /t:Rebuild
+</code></pre>
+<p><strong>Prevention</strong>: Use <code>dotnet clean</code> before major builds</p>
+<hr>
+<h4 id="issue-out-of-memory-during-build">Issue: Out of Memory During Build</h4>
+<p><strong>Error</strong>: <code>error MSB4018: OutOfMemoryException</code></p>
+<p><strong>Cause</strong>: Building too many frameworks simultaneously</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Reduce parallelization</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /m:2
+</code></pre>
+</li>
+<li><p><strong>Build frameworks sequentially</strong>:</p>
+<pre><code class="lang-cmd">dotnet build -f net472
+dotnet build -f net48
+# etc.
+</code></pre>
+</li>
+<li><p><strong>Close other applications</strong> (Visual Studio, browsers)</p>
+</li>
+<li><p><strong>Increase system page file</strong> (Windows virtual memory)</p>
+</li>
+</ol>
+<hr>
+<h2 id="build-script-reference">Build Script Reference</h2>
+<h3 id="common-msbuild-properties">Common MSBuild Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Values</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Configuration</code></td>
+<td>Debug, Release, Nightly, Canary, LTS</td>
+<td>Build configuration</td>
+<td><code>/p:Configuration=Release</code></td>
+</tr>
+<tr>
+<td><code>TFMs</code></td>
+<td><code>all</code>, <code>lite</code>, (empty)</td>
+<td>Target framework set</td>
+<td><code>/p:TFMs=all</code></td>
+</tr>
+<tr>
+<td><code>Platform</code></td>
+<td><code>Any CPU</code>, x86, x64</td>
+<td>Target platform</td>
+<td><code>/p:Platform=&quot;Any CPU&quot;</code></td>
+</tr>
+<tr>
+<td><code>LibraryVersion</code></td>
+<td>100.25.1.1</td>
+<td>Package version</td>
+<td>Defined in props</td>
+</tr>
+</tbody>
+</table>
+<h3 id="common-msbuild-targets">Common MSBuild Targets</h3>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Purpose</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Clean</code></td>
+<td>Remove outputs</td>
+<td><code>msbuild build.proj /t:Clean</code></td>
+</tr>
+<tr>
+<td><code>Restore</code></td>
+<td>Restore NuGet packages</td>
+<td><code>msbuild build.proj /t:Restore</code></td>
+</tr>
+<tr>
+<td><code>Build</code></td>
+<td>Compile projects</td>
+<td><code>msbuild build.proj /t:Build</code></td>
+</tr>
+<tr>
+<td><code>Rebuild</code></td>
+<td>Clean + Build</td>
+<td><code>msbuild build.proj /t:Rebuild</code></td>
+</tr>
+<tr>
+<td><code>Pack</code></td>
+<td>Create NuGet packages</td>
+<td><code>msbuild build.proj /t:Pack</code></td>
+</tr>
+<tr>
+<td><code>PackLite</code></td>
+<td>Create lite packages</td>
+<td><code>msbuild build.proj /t:PackLite</code></td>
+</tr>
+<tr>
+<td><code>PackAll</code></td>
+<td>Create full packages</td>
+<td><code>msbuild build.proj /t:PackAll</code></td>
+</tr>
+<tr>
+<td><code>Push</code></td>
+<td>Upload to NuGet</td>
+<td><code>msbuild build.proj /t:Push</code></td>
+</tr>
+<tr>
+<td><code>CreateAllReleaseArchives</code></td>
+<td>Create ZIP/TAR.GZ</td>
+<td><code>msbuild build.proj /t:CreateAllReleaseArchives</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="msbuild-verbosity-levels">MSBuild Verbosity Levels</h3>
+<pre><code class="lang-cmd">REM Quiet (minimal output)
+msbuild build.proj /v:q
+
+REM Minimal
+msbuild build.proj /v:m
+
+REM Normal (default)
+msbuild build.proj /v:n
+
+REM Detailed
+msbuild build.proj /v:d
+
+REM Diagnostic (very verbose)
+msbuild build.proj /v:diag
+</code></pre>
+<p><strong>Use diagnostic</strong> when troubleshooting build issues</p>
+<h3 id="binary-logging">Binary Logging</h3>
+<pre><code class="lang-cmd">REM Create binary log for analysis
+msbuild build.proj /t:Build /bl:build.binlog
+
+REM View with MSBuild Structured Log Viewer
+REM Download: http://msbuildlog.com/
+</code></pre>
+<p><strong>Benefits</strong>:</p>
+<ul>
+<li>Post-mortem analysis of builds</li>
+<li>Share build logs without sensitive data</li>
+<li>Visualize build graph and timing</li>
+</ul>
+<hr>
+<h2 id="package-publishing">Package Publishing</h2>
+<h3 id="local-publishing-to-nugetorg">Local Publishing to nuget.org</h3>
+<p><strong>Prerequisites</strong>:</p>
+<ol>
+<li>NuGet API key from nuget.org</li>
+<li>Packages built (<code>.nupkg</code> files)</li>
+</ol>
+<p><strong>Steps</strong>:</p>
+<pre><code class="lang-cmd">REM Set API key (session only)
+set NUGET_API_KEY=your-api-key-here
+
+REM Navigate to packages
+cd Bin\Packages\Release
+
+REM Push single package
+dotnet nuget push Krypton.Toolkit.100.25.1.1.nupkg ^
+  --api-key %NUGET_API_KEY% ^
+  --source https://api.nuget.org/v3/index.json
+
+REM Push all packages (with duplicate protection)
+for %%f in (*.nupkg) do (
+  dotnet nuget push %%f ^
+    --api-key %NUGET_API_KEY% ^
+    --source https://api.nuget.org/v3/index.json ^
+    --skip-duplicate
+)
+</code></pre>
+<p><strong>Symbol packages</strong>: Automatically pushed with main packages</p>
+<hr>
+<h3 id="publishing-to-alternative-feeds">Publishing to Alternative Feeds</h3>
+<h4 id="github-packages">GitHub Packages</h4>
+<pre><code class="lang-cmd">REM Authenticate (one-time)
+dotnet nuget add source https://nuget.pkg.github.com/Krypton-Suite/index.json ^
+  --name github ^
+  --username YOUR_GITHUB_USERNAME ^
+  --password YOUR_GITHUB_PAT
+
+REM Push
+dotnet nuget push Krypton.Toolkit.100.25.1.1.nupkg ^
+  --source github
+</code></pre>
+<h4 id="azure-artifacts">Azure Artifacts</h4>
+<pre><code class="lang-cmd">REM Add feed source
+dotnet nuget add source https://pkgs.dev.azure.com/yourorg/_packaging/yourfeed/nuget/v3/index.json ^
+  --name azure ^
+  --username any ^
+  --password YOUR_PAT
+
+REM Push
+dotnet nuget push Krypton.Toolkit.100.25.1.1.nupkg --source azure
+</code></pre>
+<h4 id="private-nuget-server">Private NuGet Server</h4>
+<pre><code class="lang-cmd">dotnet nuget push Krypton.Toolkit.100.25.1.1.nupkg ^
+  --source https://your-nuget-server.com/api/v2/package ^
+  --api-key your-key
+</code></pre>
+<hr>
+<h2 id="development-best-practices">Development Best Practices</h2>
+<h3 id="before-building">Before Building</h3>
+<ol>
+<li><p><strong>Pull latest changes</strong>:</p>
+<pre><code class="lang-cmd">git pull origin master
+</code></pre>
+</li>
+<li><p><strong>Clean previous outputs</strong>:</p>
+<pre><code class="lang-cmd">cd Scripts
+msbuild build.proj /t:Clean
+</code></pre>
+</li>
+<li><p><strong>Restore packages</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Restore
+</code></pre>
+</li>
+</ol>
+<h3 id="during-development">During Development</h3>
+<ol>
+<li><p><strong>Use incremental builds</strong>:</p>
+<pre><code class="lang-cmd">REM In Visual Studio: Ctrl+Shift+B
+REM Or command line:
+dotnet build -c Debug
+</code></pre>
+</li>
+<li><p><strong>Build specific project</strong>:</p>
+<pre><code class="lang-cmd">cd &quot;Source\Krypton Components\Krypton.Toolkit&quot;
+dotnet build -c Debug
+</code></pre>
+</li>
+<li><p><strong>Test immediately</strong>:</p>
+<pre><code class="lang-cmd">cd ..\TestForm
+dotnet run -c Debug
+</code></pre>
+</li>
+</ol>
+<h3 id="before-committing">Before Committing</h3>
+<ol>
+<li><p><strong>Build all configurations</strong>:</p>
+<pre><code class="lang-cmd">dotnet build -c Debug
+dotnet build -c Release
+</code></pre>
+</li>
+<li><p><strong>Check for warnings</strong>:</p>
+<pre><code class="lang-cmd">REM Review build output for warnings
+REM Fix any CS#### warnings
+</code></pre>
+</li>
+<li><p><strong>Test in TestForm</strong>:</p>
+<ul>
+<li>Run application</li>
+<li>Test changed functionality</li>
+<li>Verify no regressions</li>
+</ul>
+</li>
+<li><p><strong>Clean build</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Rebuild /p:Configuration=Release /p:TFMs=all
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2 id="build-system-maintenance">Build System Maintenance</h2>
+<h3 id="regular-tasks">Regular Tasks</h3>
+<p><strong>Weekly</strong>:</p>
+<ul>
+<li>✅ Clean build outputs: <code>msbuild build.proj /t:Clean</code></li>
+<li>✅ Update NuGet packages: <code>dotnet restore --force</code></li>
+</ul>
+<p><strong>Monthly</strong>:</p>
+<ul>
+<li>✅ Check for .NET SDK updates</li>
+<li>✅ Review build warnings (aim for zero warnings)</li>
+<li>✅ Clean NuGet cache: <code>dotnet nuget locals all --clear</code></li>
+</ul>
+<p><strong>Per Release</strong>:</p>
+<ul>
+<li>✅ Bump version in <code>Directory.Build.props</code></li>
+<li>✅ Update <code>Changelog.md</code></li>
+<li>✅ Full rebuild with all TFMs</li>
+<li>✅ Test packages locally before publishing</li>
+</ul>
+<h3 id="updating-dependencies">Updating Dependencies</h3>
+<h4 id="nuget-package-dependencies">NuGet Package Dependencies</h4>
+<p><strong>Check for updates</strong>:</p>
+<pre><code class="lang-cmd">dotnet list package --outdated
+</code></pre>
+<p><strong>Update specific package</strong>:</p>
+<pre><code class="lang-cmd">dotnet add package System.Resources.Extensions --version 9.0.0
+</code></pre>
+<p><strong>Update in <code>.csproj</code></strong>:</p>
+<pre><code class="lang-xml">&lt;PackageReference Include=&quot;System.Resources.Extensions&quot; Version=&quot;9.0.0&quot; /&gt;
+</code></pre>
+<p><strong>Test after updating</strong>:</p>
+<ul>
+<li>Build all configurations</li>
+<li>Run TestForm</li>
+<li>Check for breaking changes</li>
+</ul>
+<hr>
+<h2 id="advanced-build-scenarios">Advanced Build Scenarios</h2>
+<h3 id="cross-configuration-builds">Cross-Configuration Builds</h3>
+<p><strong>Build multiple configs in sequence</strong>:</p>
+<pre><code class="lang-cmd">FOR %%c IN (Debug,Release,Nightly,Canary) DO (
+  msbuild build.proj /t:Build /p:Configuration=%%c
+)
+</code></pre>
+<h3 id="selective-project-builds">Selective Project Builds</h3>
+<p><strong>Build only Toolkit and Ribbon</strong>:</p>
+<pre><code class="lang-xml">&lt;!-- Custom build script --&gt;
+&lt;Target Name=&quot;BuildCore&quot;&gt;
+  &lt;ItemGroup&gt;
+    &lt;CoreProjects Include=&quot;..\Source\Krypton Components\Krypton.Toolkit\*.csproj&quot; /&gt;
+    &lt;CoreProjects Include=&quot;..\Source\Krypton Components\Krypton.Ribbon\*.csproj&quot; /&gt;
+  &lt;/ItemGroup&gt;
+  &lt;MSBuild Projects=&quot;@(CoreProjects)&quot; Properties=&quot;Configuration=Release&quot; /&gt;
+&lt;/Target&gt;
+</code></pre>
+<h3 id="custom-package-output">Custom Package Output</h3>
+<p><strong>Change package output directory</strong>:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+  &lt;PackageOutputPath&gt;C:\MyPackages\&lt;/PackageOutputPath&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p>Or via command line:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Pack /p:PackageOutputPath=C:\MyPackages\
+</code></pre>
+<hr>
+<h2 id="build-system-integration">Build System Integration</h2>
+<h3 id="visual-studio-integration">Visual Studio Integration</h3>
+<p><strong>Configurations available in VS</strong>:</p>
+<ul>
+<li>Debug</li>
+<li>Release</li>
+<li>Nightly</li>
+<li>Canary</li>
+<li>LTS (on V85-LTS branch)</li>
+</ul>
+<p><strong>Select configuration</strong>: Build → Configuration Manager</p>
+<p><strong>Build from VS</strong>:</p>
+<ul>
+<li>Build → Build Solution (Ctrl+Shift+B)</li>
+<li>Build → Rebuild Solution</li>
+<li>Build → Clean Solution</li>
+</ul>
+<p><strong>NuGet Package Manager</strong>:</p>
+<ul>
+<li>Tools → NuGet Package Manager → Package Manager Console</li>
+<li><code>dotnet pack</code> from console</li>
+</ul>
+<hr>
+<h3 id="command-line-build-tools">Command-Line Build Tools</h3>
+<h4 id="visual-studio-developer-command-prompt">Visual Studio Developer Command Prompt</h4>
+<p><strong>Launch</strong>:</p>
+<ul>
+<li>Start → Visual Studio 2022 → Developer Command Prompt</li>
+</ul>
+<p><strong>Advantages</strong>:</p>
+<ul>
+<li>MSBuild in PATH</li>
+<li>All Visual Studio tools available</li>
+<li>Correct environment variables set</li>
+</ul>
+<p><strong>Build</strong>:</p>
+<pre><code class="lang-cmd">cd Z:\Development\Krypton\Standard-Toolkit\Scripts
+msbuild build.proj /t:Build /p:Configuration=Release /p:TFMs=all
+</code></pre>
+<h4 id="standard-command-prompt">Standard Command Prompt</h4>
+<p><strong>Requirements</strong>:</p>
+<ul>
+<li>.NET SDK installed (includes MSBuild)</li>
+<li>PATH includes .NET SDK location</li>
+</ul>
+<p><strong>Build</strong>:</p>
+<pre><code class="lang-cmd">dotnet build &quot;Source\Krypton Components\Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Release
+</code></pre>
+<hr>
+<h2 id="troubleshooting-build-issues">Troubleshooting Build Issues</h2>
+<h3 id="common-build-errors">Common Build Errors</h3>
+<h4 id="error-project-file-not-found">Error: Project File Not Found</h4>
+<p><strong>Error</strong>: <code>error MSB4019: The imported project &quot;...&quot; was not found</code></p>
+<p><strong>Cause</strong>: Relative paths incorrect</p>
+<p><strong>Solution</strong>: Run MSBuild from correct directory</p>
+<pre><code class="lang-cmd">REM Must be in Scripts/ directory
+cd Scripts
+msbuild build.proj /t:Build
+</code></pre>
+<hr>
+<h4 id="error-target-framework-not-supported">Error: Target Framework Not Supported</h4>
+<p><strong>Error</strong>: <code>error NU1202: Package ... is not compatible with net10.0-windows</code></p>
+<p><strong>Cause</strong>: Dependency doesn't support target framework</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Conditional dependency</strong>:</p>
+<pre><code class="lang-xml">&lt;PackageReference Include=&quot;LegacyPackage&quot; Version=&quot;1.0.0&quot; Condition=&quot;$(TargetFramework.StartsWith('net4'))&quot; /&gt;
+</code></pre>
+</li>
+<li><p><strong>Framework-specific dependencies</strong>:</p>
+<pre><code class="lang-xml">&lt;ItemGroup Condition=&quot;'$(TargetFramework)' == 'net48'&quot;&gt;
+  &lt;PackageReference Include=&quot;SpecificPackage&quot; Version=&quot;1.0.0&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+</li>
+<li><p><strong>Remove unsupported framework</strong> from <code>TargetFrameworks</code></p>
+</li>
+</ol>
+<hr>
+<h4 id="error-assembly-version-conflict">Error: Assembly Version Conflict</h4>
+<p><strong>Error</strong>: <code>error CS1703: Multiple assemblies with equivalent identity have been imported</code></p>
+<p><strong>Cause</strong>: Binding redirect needed or duplicate references</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-xml">&lt;!-- Add to .csproj --&gt;
+&lt;PropertyGroup&gt;
+  &lt;AutoGenerateBindingRedirects&gt;true&lt;/AutoGenerateBindingRedirects&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p>Or for .NET Framework only:</p>
+<pre><code class="lang-xml">&lt;ItemGroup Condition=&quot;$(TargetFramework.StartsWith('net4'))&quot;&gt;
+  &lt;Reference Include=&quot;System.ValueTuple&quot;&gt;
+    &lt;HintPath&gt;..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll&lt;/HintPath&gt;
+  &lt;/Reference&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<hr>
+<h3 id="build-performance-issues">Build Performance Issues</h3>
+<h4 id="slow-builds">Slow Builds</h4>
+<p><strong>Diagnostics</strong>:</p>
+<pre><code class="lang-cmd">REM Binary log captures timing
+msbuild build.proj /t:Build /bl:build.binlog
+
+REM Open in MSBuild Structured Log Viewer
+REM Download: http://msbuildlog.com/
+</code></pre>
+<p><strong>Common Causes</strong>:</p>
+<ol>
+<li>Antivirus scanning (exclude Bin/, obj/ directories)</li>
+<li>Network latency (NuGet restore)</li>
+<li>Insufficient RAM (reduce parallelization)</li>
+<li>Disk I/O (use SSD, exclude from indexing)</li>
+</ol>
+<p><strong>Optimizations</strong>:</p>
+<pre><code class="lang-xml">&lt;!-- In .csproj --&gt;
+&lt;PropertyGroup&gt;
+  &lt;AccelerateBuildsInVisualStudio&gt;true&lt;/AccelerateBuildsInVisualStudio&gt;
+  &lt;UseSharedCompilation&gt;true&lt;/UseSharedCompilation&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<hr>
+<h2 id="build-script-internals">Build Script Internals</h2>
+<h3 id="itemgroup-patterns">ItemGroup Patterns</h3>
+<p>Build scripts use wildcards to include all Krypton projects:</p>
+<pre><code class="lang-xml">&lt;ItemGroup&gt;
+  &lt;Projects Include=&quot;..\Source\Krypton Components\Krypton.*\*.csproj&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<p><strong>Matches</strong>:</p>
+<ul>
+<li><code>Krypton.Toolkit/Krypton.Toolkit 2022.csproj</code></li>
+<li><code>Krypton.Ribbon/Krypton.Ribbon 2022.csproj</code></li>
+<li><code>Krypton.Navigator/Krypton.Navigator 2022.csproj</code></li>
+<li><code>Krypton.Workspace/Krypton.Workspace 2022.csproj</code></li>
+<li><code>Krypton.Docking/Krypton.Docking 2022.csproj</code></li>
+</ul>
+<p><strong>Excludes</strong>:</p>
+<ul>
+<li><code>TestForm/</code> (doesn't match pattern)</li>
+<li>Other non-component projects</li>
+</ul>
+<p><strong>Benefit</strong>: Automatically includes new components without script changes</p>
+<h3 id="target-dependencies">Target Dependencies</h3>
+<p>Targets can depend on other targets:</p>
+<pre><code class="lang-xml">&lt;Target Name=&quot;Pack&quot; DependsOnTargets=&quot;CleanPackages;PackLite;PackAll&quot;&gt;
+  &lt;!-- Runs CleanPackages, then PackLite, then PackAll --&gt;
+&lt;/Target&gt;
+
+&lt;Target Name=&quot;Build&quot; DependsOnTargets=&quot;Restore&quot;&gt;
+  &lt;!-- Runs Restore first, then Build --&gt;
+&lt;/Target&gt;
+</code></pre>
+<p><strong>Order of execution</strong>: Dependencies run first, in order specified</p>
+<h3 id="property-evaluation">Property Evaluation</h3>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+  &lt;Configuration&gt;Release&lt;/Configuration&gt;
+  &lt;ReleaseBuildPath&gt;..\Bin\Release\Zips&lt;/ReleaseBuildPath&gt;
+  &lt;ReleaseZipName&gt;Krypton-Release&lt;/ReleaseZipName&gt;
+  &lt;StringDate&gt;$([System.DateTime]::Now.ToString('yyyyMMdd'))&lt;/StringDate&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Property Functions</strong>:</p>
+<ul>
+<li><code>$([System.DateTime]::Now.ToString('yyyyMMdd'))</code> - Current date</li>
+<li><code>$([System.IO.Path]::GetFullPath(...))</code> - Absolute path</li>
+<li><code>$(MSBuildProjectDirectory)</code> - Script directory</li>
+</ul>
+<hr>
+<h2 id="package-verification">Package Verification</h2>
+<h3 id="after-local-build">After Local Build</h3>
+<h4 id="check-package-contents">Check Package Contents</h4>
+<pre><code class="lang-cmd">cd Bin\Packages\Release
+
+REM List files
+7z l Krypton.Toolkit.100.25.1.1.nupkg
+
+REM Extract
+7z x Krypton.Toolkit.100.25.1.1.nupkg -o&quot;extracted&quot;
+dir extracted\lib\
+</code></pre>
+<p><strong>Expected structure</strong>:</p>
+<pre><code>lib/
+├── net472/
+├── net48/
+├── net481/
+├── net8.0-windows/
+├── net9.0-windows/
+└── net10.0-windows/
+</code></pre>
+<h4 id="validate-package-metadata">Validate Package Metadata</h4>
+<p><strong>Using NuGet</strong>:</p>
+<pre><code class="lang-cmd">nuget spec Krypton.Toolkit.100.25.1.1.nupkg
+</code></pre>
+<p><strong>Check</strong>:</p>
+<ul>
+<li>✅ All target frameworks present</li>
+<li>✅ Dependencies correct</li>
+<li>✅ Version matches expected</li>
+<li>✅ README.md included</li>
+<li>✅ License expression present</li>
+</ul>
+<h4 id="test-installation">Test Installation</h4>
+<pre><code class="lang-cmd">REM Create test project
+mkdir test
+cd test
+dotnet new console -f net8.0
+
+REM Add local package
+dotnet add package Krypton.Toolkit --version 100.25.1.1 --source ..\Bin\Packages\Release
+
+REM Verify installation
+dotnet list package
+</code></pre>
+<hr>
+<h2 id="reference">Reference</h2>
+<h3 id="build-script-parameters">Build Script Parameters</h3>
+<h4 id="buildproj">build.proj</h4>
+<pre><code class="lang-cmd">msbuild build.proj /t:{Target} /p:Configuration={Config} /p:TFMs={TFMs} /p:Platform={Platform}
+</code></pre>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>Target</code>: Clean, Restore, Build, Pack, Push, CreateAllReleaseArchives</li>
+<li><code>Config</code>: Release</li>
+<li><code>TFMs</code>: <code>all</code> (includes net472), <code>lite</code> (excludes net472), or empty (default)</li>
+<li><code>Platform</code>: <code>Any CPU</code> (required)</li>
+</ul>
+<p><strong>Examples</strong>:</p>
+<pre><code class="lang-cmd">REM Full build with all frameworks
+msbuild build.proj /t:Build /p:Configuration=Release /p:TFMs=all /p:Platform=&quot;Any CPU&quot;
+
+REM Pack both lite and full
+msbuild build.proj /t:Pack /p:Configuration=Release
+
+REM Create archives
+msbuild build.proj /t:CreateAllReleaseArchives /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
+</code></pre>
+<h4 id="longtermstableproj">longtermstable.proj</h4>
+<pre><code class="lang-cmd">REM LTS build
+msbuild longtermstable.proj /t:Build /p:Configuration=Release /p:TFMs=all /p:Platform=&quot;Any CPU&quot;
+
+REM LTS pack
+msbuild longtermstable.proj /t:Pack /p:Configuration=Release
+</code></pre>
+<p><strong>Note</strong>: Always uses <code>TFMs=all</code> (all 9 frameworks)</p>
+<h4 id="canaryproj">canary.proj</h4>
+<pre><code class="lang-cmd">REM Canary build
+msbuild canary.proj /t:Build /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;
+
+REM Canary pack
+msbuild canary.proj /t:Pack /p:Configuration=Canary
+
+REM Canary archives
+msbuild canary.proj /t:CreateAllCanaryArchives /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;
+</code></pre>
+<h4 id="nightlyproj">nightly.proj</h4>
+<pre><code class="lang-cmd">REM Nightly rebuild
+msbuild nightly.proj /t:Rebuild /p:Configuration=Nightly /p:Platform=&quot;Any CPU&quot;
+
+REM Nightly pack
+msbuild nightly.proj /t:Pack /p:Configuration=Nightly
+
+REM Nightly archives
+msbuild nightly.proj /t:CreateAllArchives /p:Configuration=Nightly /p:Platform=&quot;Any CPU&quot;
+</code></pre>
+<hr>
+<h3 id="output-directory-reference">Output Directory Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>Binaries</th>
+<th>Packages</th>
+<th>Archives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Debug</td>
+<td><code>Bin/Debug/{tfm}/</code></td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>Release</td>
+<td><code>Bin/Release/{tfm}/</code></td>
+<td><code>Bin/Packages/Release/</code></td>
+<td><code>Bin/Release/Zips/</code></td>
+</tr>
+<tr>
+<td>Nightly</td>
+<td><code>Bin/Nightly/{tfm}/</code></td>
+<td><code>Bin/Packages/Nightly/</code></td>
+<td><code>Bin/Nightly/Zips/</code></td>
+</tr>
+<tr>
+<td>Canary</td>
+<td><code>Bin/Canary/{tfm}/</code></td>
+<td><code>Bin/Packages/Canary/</code></td>
+<td><code>Bin/Canary/Zips/</code></td>
+</tr>
+<tr>
+<td>LTS</td>
+<td><code>Bin/Release/{tfm}/</code></td>
+<td><code>Bin/Packages/Release/</code></td>
+<td><code>Bin/Release/Zips/</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note</strong>: LTS uses Release directories but creates <code>*.LTS.*.nupkg</code> packages</p>
+<hr>
+<h3 id="component-projects">Component Projects</h3>
+<p>All 5 components follow same structure:</p>
+<h4 id="kryptontoolkit">Krypton.Toolkit</h4>
+<p><strong>Package ID</strong>: <code>Krypton.Toolkit</code> (or <code>Krypton.Toolkit.LTS</code> on V85-LTS)<br>
+<strong>Description</strong>: Core toolkit module<br>
+<strong>Size</strong>: Largest (~8-10 MB package)<br>
+<strong>Dependencies</strong>: None (base library)</p>
+<h4 id="kryptonribbon">Krypton.Ribbon</h4>
+<p><strong>Package ID</strong>: <code>Krypton.Ribbon</code><br>
+<strong>Description</strong>: Ribbon module<br>
+<strong>Dependencies</strong>: Krypton.Toolkit</p>
+<h4 id="kryptonnavigator">Krypton.Navigator</h4>
+<p><strong>Package ID</strong>: <code>Krypton.Navigator</code><br>
+<strong>Description</strong>: Navigator module<br>
+<strong>Dependencies</strong>: Krypton.Toolkit</p>
+<h4 id="kryptonworkspace">Krypton.Workspace</h4>
+<p><strong>Package ID</strong>: <code>Krypton.Workspace</code><br>
+<strong>Description</strong>: Workspace module<br>
+<strong>Dependencies</strong>: Krypton.Navigator, Krypton.Toolkit</p>
+<h4 id="kryptondocking">Krypton.Docking</h4>
+<p><strong>Package ID</strong>: <code>Krypton.Docking</code><br>
+<strong>Description</strong>: Docking module<br>
+<strong>Dependencies</strong>: Krypton.Navigator, Krypton.Toolkit</p>
+<p><strong>Dependency Graph</strong>:</p>
+<pre><code>Krypton.Toolkit (base)
+    ├── Krypton.Ribbon
+    ├── Krypton.Navigator
+    │   ├── Krypton.Workspace
+    │   └── Krypton.Docking
+    └── Krypton.Workspace (indirect)
+</code></pre>
+<hr>
+<h2 id="build-system-customization">Build System Customization</h2>
+<h3 id="adding-a-new-component">Adding a New Component</h3>
+<h4 id="1-create-project">1. Create Project</h4>
+<pre><code class="lang-cmd">cd &quot;Source\Krypton Components&quot;
+dotnet new classlib -n Krypton.NewComponent -f net48
+</code></pre>
+<h4 id="2-configure-project">2. Configure Project</h4>
+<p>Edit <code>Krypton.NewComponent/Krypton.NewComponent.csproj</code>:</p>
+<pre><code class="lang-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+  &lt;!-- Copy target framework setup from existing component --&gt;
+  &lt;Choose&gt;
+    &lt;When Condition=&quot;'$(Configuration)' == 'Nightly' Or '$(Configuration)' == 'Canary' Or '$(Configuration)' == 'Debug'&quot;&gt;
+      &lt;PropertyGroup&gt;
+        &lt;TargetFrameworks&gt;net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+      &lt;/PropertyGroup&gt;
+    &lt;/When&gt;
+    &lt;Otherwise&gt;
+      &lt;PropertyGroup&gt;
+        &lt;TargetFrameworks&gt;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+        &lt;TargetFrameworks Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+      &lt;/PropertyGroup&gt;
+    &lt;/Otherwise&gt;
+  &lt;/Choose&gt;
+  
+  &lt;!-- Package metadata --&gt;
+  &lt;PropertyGroup&gt;
+    &lt;PackageId&gt;Krypton.NewComponent&lt;/PackageId&gt;
+    &lt;Description&gt;This is the new component module.&lt;/Description&gt;
+  &lt;/PropertyGroup&gt;
+  
+  &lt;!-- Copy other properties from existing component --&gt;
+&lt;/Project&gt;
+</code></pre>
+<h4 id="3-add-to-solution">3. Add to Solution</h4>
+<pre><code class="lang-cmd">dotnet sln &quot;Krypton Toolkit Suite 2022 - VS2022.sln&quot; add &quot;Krypton.NewComponent/Krypton.NewComponent.csproj&quot;
+</code></pre>
+<h4 id="4-build-scripts-automatic">4. Build Scripts (Automatic)</h4>
+<p>Build scripts use wildcard pattern <code>Krypton.*\*.csproj</code>, so new component is automatically included!</p>
+<p><strong>Verify</strong>:</p>
+<pre><code class="lang-cmd">cd Scripts
+msbuild build.proj /t:Build /p:Configuration=Release
+</code></pre>
+<p>Should build Krypton.NewComponent automatically</p>
+<h4 id="5-update-workflows">5. Update Workflows</h4>
+<p>See <a href="GitHubActionsIndex.html">GitHub Actions Workflows Guide</a></p>
+<hr>
+<h3 id="custom-build-properties">Custom Build Properties</h3>
+<h4 id="add-build-number">Add Build Number</h4>
+<pre><code class="lang-xml">&lt;!-- In Directory.Build.props --&gt;
+&lt;PropertyGroup&gt;
+  &lt;BuildNumber Condition=&quot;'$(BuildNumber)' == ''&quot;&gt;0&lt;/BuildNumber&gt;
+  &lt;LibraryVersion&gt;100.25.$(BuildNumber).1&lt;/LibraryVersion&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Use from command line</strong>:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /p:BuildNumber=42
+REM Creates version: 100.25.42.1
+</code></pre>
+<p><strong>In CI/CD</strong>:</p>
+<pre><code class="lang-cmd">REM Use GitHub run number
+msbuild build.proj /t:Build /p:BuildNumber=%GITHUB_RUN_NUMBER%
+</code></pre>
+<h4 id="add-git-commit-hash">Add Git Commit Hash</h4>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+  &lt;SourceRevisionId&gt;$(SourceRevisionId)&lt;/SourceRevisionId&gt;
+  &lt;InformationalVersion&gt;$(Version)+$(SourceRevisionId)&lt;/InformationalVersion&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Reads from</strong>: Git (automatic with .NET SDK)</p>
+<p><strong>Results in</strong>:</p>
+<ul>
+<li>Package version: <code>100.25.1.1</code></li>
+<li>Informational version: <code>100.25.1.1+a1b2c3d4</code></li>
+</ul>
+<hr>
+<h2 id="build-environment-requirements">Build Environment Requirements</h2>
+<h3 id="minimum-requirements">Minimum Requirements</h3>
+<p><strong>Operating System</strong>:</p>
+<ul>
+<li>Windows 10 version 1809 or later</li>
+<li>Windows 11</li>
+<li>Windows Server 2019 or later</li>
+</ul>
+<p><strong>Software</strong>:</p>
+<ul>
+<li>Visual Studio 2022 (v17.0 or later)</li>
+<li>.NET SDK 8.0 or later (minimum)</li>
+<li>MSBuild (included with VS or .NET SDK)</li>
+</ul>
+<p><strong>For Full Builds</strong>:</p>
+<ul>
+<li>All .NET SDKs: 6.0, 7.0, 8.0, 9.0, 10.0</li>
+<li>NuGet CLI (optional, for <code>nuget.exe push</code>)</li>
+</ul>
+<p><strong>Disk Space</strong>:</p>
+<ul>
+<li>Source code: ~200 MB</li>
+<li>Build outputs: ~500 MB per configuration</li>
+<li>NuGet cache: ~1-2 GB</li>
+<li><strong>Recommended</strong>: 5 GB free space</li>
+</ul>
+<p><strong>Memory</strong>:</p>
+<ul>
+<li>Minimum: 4 GB RAM</li>
+<li>Recommended: 8 GB RAM</li>
+<li>For parallel builds: 16 GB RAM</li>
+</ul>
+<hr>
+<h3 id="sdk-installation">SDK Installation</h3>
+<h4 id="install-all-required-sdks">Install All Required SDKs</h4>
+<p><strong>Using Visual Studio Installer</strong>:</p>
+<ol>
+<li>Visual Studio Installer → Modify</li>
+<li>Individual components tab</li>
+<li>Select:
+<ul>
+<li>✅ .NET 6.0 Runtime</li>
+<li>✅ .NET 7.0 Runtime</li>
+<li>✅ .NET 8.0 Runtime</li>
+<li>✅ .NET 9.0 Runtime</li>
+<li>✅ .NET 10.0 Preview Runtime</li>
+</ul>
+</li>
+</ol>
+<p><strong>Using winget</strong> (Windows Package Manager):</p>
+<pre><code class="lang-cmd">winget install Microsoft.DotNet.SDK.6
+winget install Microsoft.DotNet.SDK.7
+winget install Microsoft.DotNet.SDK.8
+winget install Microsoft.DotNet.SDK.9
+winget install Microsoft.DotNet.SDK.Preview  # .NET 10
+</code></pre>
+<p><strong>Using dotnet-install script</strong>:</p>
+<pre><code class="lang-powershell"># Download script
+Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
+
+# Install each SDK
+.\dotnet-install.ps1 -Version 6.0
+.\dotnet-install.ps1 -Version 7.0
+.\dotnet-install.ps1 -Version 8.0
+.\dotnet-install.ps1 -Version 9.0
+.\dotnet-install.ps1 -Channel 10.0 -Quality preview
+</code></pre>
+<h4 id="verify-installation">Verify Installation</h4>
+<pre><code class="lang-cmd">dotnet --list-sdks
+</code></pre>
+<p><strong>Expected output</strong>:</p>
+<pre><code>6.0.xxx [C:\Program Files\dotnet\sdk]
+7.0.xxx [C:\Program Files\dotnet\sdk]
+8.0.xxx [C:\Program Files\dotnet\sdk]
+9.0.xxx [C:\Program Files\dotnet\sdk]
+10.0.xxx-preview.x [C:\Program Files\dotnet\sdk]
+</code></pre>
+<hr>
+<h2 id="build-system-faq">Build System FAQ</h2>
+<h3 id="q-why-does-release-build-both-lite-and-full-packages">Q: Why does Release build both lite and full packages?</h3>
+<p><strong>A</strong>: Deployment flexibility:</p>
+<ul>
+<li><strong>Lite</strong> (5 TFMs): Smaller download, modern frameworks only</li>
+<li><strong>Full</strong> (6 TFMs): Maximum compatibility, includes net472</li>
+</ul>
+<p>Users choose based on their minimum supported framework.</p>
+<h3 id="q-whats-the-difference-between-configuration-and-tfms">Q: What's the difference between Configuration and TFMs?</h3>
+<p><strong>A</strong>:</p>
+<ul>
+<li><strong>Configuration</strong>: Build type (Debug, Release, Nightly, etc.)
+<ul>
+<li>Controls: Optimizations, symbols, output directory</li>
+</ul>
+</li>
+<li><strong>TFMs</strong>: Which frameworks to target
+<ul>
+<li>Controls: Which DLLs are generated</li>
+</ul>
+</li>
+</ul>
+<p>Both are independent:</p>
+<pre><code class="lang-cmd">REM Release config, all TFMs
+msbuild build.proj /t:Build /p:Configuration=Release /p:TFMs=all
+
+REM Debug config, all TFMs
+msbuild build.proj /t:Build /p:Configuration=Debug /p:TFMs=all
+</code></pre>
+<h3 id="q-why-are-there-so-many-build-scripts">Q: Why are there so many build scripts?</h3>
+<p><strong>A</strong>: Each release channel has different requirements:</p>
+<ul>
+<li><strong>build.proj</strong>: Lite + full packages (unique)</li>
+<li><strong>longtermstable.proj</strong>: 9 target frameworks (unique)</li>
+<li><strong>canary.proj</strong>: Canary-specific packaging</li>
+<li><strong>nightly.proj</strong>: Nightly-specific packaging</li>
+</ul>
+<p>Separate scripts ensure clean builds for each channel.</p>
+<h3 id="q-can-i-build-without-visual-studio">Q: Can I build without Visual Studio?</h3>
+<p><strong>A</strong>: Yes, only .NET SDK required:</p>
+<pre><code class="lang-cmd">REM Install .NET SDK only (no Visual Studio)
+winget install Microsoft.DotNet.SDK.9
+
+REM Build
+cd Scripts
+dotnet build &quot;..\Source\Krypton Components\Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Release
+</code></pre>
+<p><strong>Limitation</strong>: Designer support requires Visual Studio</p>
+<h3 id="q-how-do-i-build-for-only-one-framework">Q: How do I build for only one framework?</h3>
+<p><strong>A</strong>: Use <code>dotnet build</code> with <code>-f</code> flag:</p>
+<pre><code class="lang-cmd">cd &quot;Source\Krypton Components\Krypton.Toolkit&quot;
+dotnet build -c Debug -f net10.0-windows
+</code></pre>
+<p><strong>Output</strong>: Only <code>Bin/Debug/net10.0-windows/</code> (other frameworks skipped)</p>
+<hr>
+<h2 id="document-information">Document Information</h2>
+<p><strong>Document</strong>: Build System Guide
+<strong>Companion Document</strong>: <a href="GitHubActionsIndex.html">GitHub Actions Workflows Guide</a></p>
+<h3 id="related-documentation">Related Documentation</h3>
+<ul>
+<li><a href="GitHubActionsIndex.html">GitHub Actions Workflows Guide</a> - CI/CD pipelines</li>
+</ul>
+<hr>
+<h2 id="next-steps">Next Steps</h2>
+<p>✅ <strong>Read Next</strong>: <a href="GitHubActionsIndex.html">GitHub Actions Workflows Guide</a> for CI/CD automation<br>
+✅ <strong>Setup</strong>: Install all required .NET SDKs<br>
+✅ <strong>Test</strong>: Run local build to verify environment<br>
+✅ <strong>Develop</strong>: Use incremental builds for fast iteration</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonTaskDialog Technical Architecture | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonTaskDialog Technical Architecture | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptontaskdialog-technical-architecture">KryptonTaskDialog Technical Architecture</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#class-hierarchy">Class Hierarchy</a></li>
+<li><a href="#design-patterns">Design Patterns</a></li>
+<li><a href="#component-details">Component Details</a></li>
+<li><a href="#layout-system">Layout System</a></li>
+<li><a href="#event-flow">Event Flow</a></li>
+<li><a href="#theme-integration">Theme Integration</a></li>
+<li><a href="#memory-management">Memory Management</a></li>
+<li><a href="#extending-the-component">Extending the Component</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonTaskDialog</code> implements a composable dialog system using a vertical layout of independent elements. The architecture emphasizes:</p>
+<ul>
+<li><strong>Separation of Concerns</strong>: Each element is self-contained</li>
+<li><strong>Late Binding</strong>: Layout is calculated just before display</li>
+<li><strong>Theme Integration</strong>: Automatic synchronization with Krypton themes</li>
+<li><strong>Form Reusability</strong>: Single instance can be shown multiple times</li>
+<li><strong>Lazy Layout</strong>: Elements only calculate size when visible or requested</li>
+</ul>
+<h3 id="key-architectural-decisions">Key Architectural Decisions</h3>
+<ol>
+<li><strong>Element-Based Composition</strong>: Rather than a monolithic dialog, functionality is split into independent, reusable elements</li>
+<li><strong>TableLayoutPanel Stacking</strong>: Elements are stacked vertically in a <code>TableLayoutPanel</code> with <code>AutoSize</code> rows</li>
+<li><strong>Dirty Layout Tracking</strong>: Elements track when layout is &quot;dirty&quot; and defer calculations until needed</li>
+<li><strong>Form Hiding vs. Disposal</strong>: Forms are hidden rather than disposed to enable reuse</li>
+</ol>
+<hr>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<h3 id="core-classes">Core Classes</h3>
+<pre><code>KryptonTaskDialog
+├── Implements: IDisposable
+├── Contains: KryptonTaskDialogKryptonForm
+├── Contains: TableLayoutPanel (main layout)
+├── Contains: List&lt;KryptonTaskDialogElementBase&gt; (all elements)
+├── Contains: KryptonTaskDialogDefaults (configuration)
+└── Contains: KryptonTaskDialogFormProperties (form access)
+
+KryptonTaskDialogKryptonForm : KryptonForm
+├── Override: ProcessCmdKey (Alt+F4 handling)
+└── Override: OnFormClosing (hide instead of close)
+
+KryptonTaskDialogFormProperties
+├── Contains: FormInstance (form properties wrapper)
+└── Contains: GlobalInstance (global element settings)
+
+KryptonTaskDialogElementBase (abstract)
+├── Implements: IKryptonTaskDialogElementBase
+├── Implements: IKryptonTaskDialogElementEventSizeChanged
+├── Implements: IDisposable
+├── Contains: KryptonTaskDialogKryptonPanel
+├── Virtual: PerformLayout()
+├── Virtual: OnSizeChanged()
+└── Virtual: OnPalettePaint()
+</code></pre>
+<h3 id="element-hierarchy">Element Hierarchy</h3>
+<p>All elements derive from <code>KryptonTaskDialogElementBase</code>:</p>
+<pre><code>KryptonTaskDialogElementBase (abstract)
+│
+├── KryptonTaskDialogElementHeading
+│   ├── Implements: IKryptonTaskDialogElementIconType
+│   ├── Implements: IKryptonTaskDialogElementTextAlignmentHorizontal
+│   ├── Implements: IKryptonTaskDialogElementForeColor
+│   └── Implements: IKryptonTaskDialogElementText
+│
+├── KryptonTaskDialogElementContent
+│   ├── Implements: IKryptonTaskDialogElementContent
+│   ├── Implements: IKryptonTaskDialogElementForeColor
+│   └── Contains: ContentImageStorage (nested class)
+│
+├── KryptonTaskDialogElementFooterBar
+│   ├── Implements: IKryptonTaskDialogElementForeColor
+│   ├── Implements: IKryptonTaskDialogElementRoundedCorners
+│   ├── Contains: CommonButtonProperties (nested class)
+│   └── Contains: FooterProperties (nested class)
+│
+├── KryptonTaskDialogElementCommandLinkButtons
+│   ├── Implements: IKryptonTaskDialogElementRoundedCorners
+│   ├── Implements: IKryptonTaskDialogElementFlowDirection
+│   └── Contains: ButtonsCollectionEditor (nested class)
+│
+├── KryptonTaskDialogElementSingleLineControlBase (abstract)
+│   ├── Contains: TableLayoutPanel (for simple controls)
+│   │
+│   ├── KryptonTaskDialogElementCheckBox
+│   │   └── Implements: IKryptonTaskDialogElementText
+│   │
+│   ├── KryptonTaskDialogElementComboBox
+│   │   ├── Implements: IKryptonTaskDialogElementDescription
+│   │   └── Implements: IKryptonTaskDialogElementRoundedCorners
+│   │
+│   ├── KryptonTaskDialogElementHyperLink
+│   │   ├── Implements: IKryptonTaskDialogElementDescription
+│   │   └── Implements: IKryptonTaskDialogElementUrl
+│   │
+│   ├── KryptonTaskDialogElementProgresBar
+│   │   ├── Implements: IKryptonTaskDialogElementDescription
+│   │   └── Implements: IKryptonTaskDialogElementRoundedCorners
+│   │
+│   └── KryptonTaskDialogElementFreeWheeler1
+│       └── Implements: IKryptonTaskDialogElementHeight
+│
+├── KryptonTaskDialogElementRichTextBox
+│   ├── Implements: IKryptonTaskDialogElementText
+│   ├── Implements: IKryptonTaskDialogElementHeight
+│   └── Implements: IKryptonTaskDialogElementRoundedCorners
+│
+└── KryptonTaskDialogElementFreeWheeler2
+    └── Implements: IKryptonTaskDialogElementHeight
+</code></pre>
+<hr>
+<h2 id="design-patterns">Design Patterns</h2>
+<h3 id="1-composite-pattern">1. Composite Pattern</h3>
+<p>Elements are composed into a tree structure where the dialog is the composite and elements are leaves.</p>
+<pre><code class="lang-csharp">// Composite
+KryptonTaskDialog
+    // Leaves
+    - Heading
+    - Content
+    - FooterBar
+    // etc.
+</code></pre>
+<h3 id="2-template-method-pattern">2. Template Method Pattern</h3>
+<p><code>KryptonTaskDialogElementBase</code> provides template methods that derived classes override:</p>
+<pre><code class="lang-csharp">public abstract class KryptonTaskDialogElementBase
+{
+    // Template method
+    internal virtual void PerformLayout()
+    {
+        // Base implementation
+    }
+    
+    // Template method
+    protected virtual void OnSizeChanged(bool performLayout = false)
+    {
+        // Base implementation with notification
+        SizeChanged?.Invoke();
+    }
+}
+
+// Derived class overrides
+public class KryptonTaskDialogElementContent : KryptonTaskDialogElementBase
+{
+    internal override void PerformLayout()
+    {
+        base.PerformLayout();
+        OnSizeChanged(true);
+    }
+}
+</code></pre>
+<h3 id="3-observer-pattern">3. Observer Pattern</h3>
+<p>Elements notify the dialog of changes through events:</p>
+<pre><code class="lang-csharp">// In KryptonTaskDialogElementBase
+public event Action VisibleChanged;
+public event Action SizeChanged;
+
+// In KryptonTaskDialog constructor
+element.VisibleChanged += UpdateFormSizing;
+if (element is IKryptonTaskDialogElementEventSizeChanged e)
+{
+    e.SizeChanged += UpdateFormSizing;
+}
+</code></pre>
+<h3 id="4-lazy-initialization--dirty-flag-pattern">4. Lazy Initialization / Dirty Flag Pattern</h3>
+<p>Layout calculations are deferred until needed:</p>
+<pre><code class="lang-csharp">// Mark dirty
+LayoutDirty = true;
+
+// Calculate only when needed
+protected override void OnSizeChanged(bool performLayout = false)
+{
+    if (LayoutDirty &amp;&amp; (Visible || performLayout))
+    {
+        // Perform expensive calculations
+        LayoutDirty = false;
+    }
+}
+</code></pre>
+<h3 id="5-interface-segregation">5. Interface Segregation</h3>
+<p>Elements implement only the interfaces they need:</p>
+<pre><code class="lang-csharp">// Element with text
+interface IKryptonTaskDialogElementText
+{
+    string Text { get; set; }
+}
+
+// Element with icon
+interface IKryptonTaskDialogElementIconType
+{
+    KryptonTaskDialogIconType IconType { get; set; }
+}
+
+// Element implements what it needs
+public class KryptonTaskDialogElementHeading : 
+    KryptonTaskDialogElementBase,
+    IKryptonTaskDialogElementIconType,
+    IKryptonTaskDialogElementText
+{
+    // Implementation
+}
+</code></pre>
+<h3 id="6-builder-pattern">6. Builder Pattern</h3>
+<p>Dialog is constructed by setting properties rather than passing constructor parameters:</p>
+<pre><code class="lang-csharp">// Builder pattern usage
+var dialog = new KryptonTaskDialog();
+dialog.Dialog.Form.Text = &quot;Title&quot;;
+dialog.Heading.Text = &quot;Message&quot;;
+dialog.Heading.IconType = KryptonTaskDialogIconType.ShieldInformation;
+dialog.ShowDialog();
+</code></pre>
+<hr>
+<h2 id="component-details">Component Details</h2>
+<h3 id="kryptontaskdialog">KryptonTaskDialog</h3>
+<p><strong>Responsibilities:</strong></p>
+<ul>
+<li>Orchestrate all elements</li>
+<li>Manage form lifecycle</li>
+<li>Calculate total dialog height</li>
+<li>Handle form positioning</li>
+<li>Coordinate theme changes</li>
+</ul>
+<p><strong>Key Fields:</strong></p>
+<pre><code class="lang-csharp">private KryptonTaskDialogKryptonForm _form;
+private TableLayoutPanel _tableLayoutPanel;
+private List&lt;KryptonTaskDialogElementBase&gt; _elements;
+private Rectangle _clientRectangle;
+private KryptonTaskDialogDefaults _taskDialogDefaults;
+private KryptonPanel _fillerPanel;  // Border compensation
+</code></pre>
+<p><strong>Key Methods:</strong></p>
+<pre><code class="lang-csharp">private void SetupForm()
+private void SetupTableLayoutPanel()
+private void SetupElements()
+private void AddElement(KryptonTaskDialogElementBase element)
+private int GetVisibleElementsHeight()
+private void UpdateFormSizing()
+private void UpdateFormPosition(IWin32Window? owner)
+</code></pre>
+<h3 id="kryptontaskdialogelementbase">KryptonTaskDialogElementBase</h3>
+<p><strong>Responsibilities:</strong></p>
+<ul>
+<li>Manage element visibility</li>
+<li>Provide background color control</li>
+<li>Track layout state</li>
+<li>Integrate with themes</li>
+<li>Notify of changes</li>
+</ul>
+<p><strong>Key Fields:</strong></p>
+<pre><code class="lang-csharp">private KryptonTaskDialogKryptonPanel _panel;  // Host panel
+private bool _panelVisible;                     // Visibility state
+private KryptonTaskDialogDefaults _taskDialogDefaults;
+internal PaletteBase Palette;                   // Current theme
+internal bool LayoutDirty;                      // Needs layout
+</code></pre>
+<p><strong>Key Virtual Methods:</strong></p>
+<pre><code class="lang-csharp">internal virtual void PerformLayout()
+    // Called before dialog is shown to ensure layout is current
+    
+protected virtual void OnSizeChanged(bool performLayout = false)
+    // Called when element size changes
+    // performLayout forces calculation even when not visible
+    
+protected virtual void OnPalettePaint(object? sender, PaletteLayoutEventArgs e)
+    // Called when theme repaints
+    
+protected virtual void OnGlobalPaletteChanged(object? sender, EventArgs e)
+    // Called when theme changes
+</code></pre>
+<h3 id="kryptontaskdialogkryptonpanel">KryptonTaskDialogKryptonPanel</h3>
+<p><strong>Responsibilities:</strong></p>
+<ul>
+<li>Host element controls</li>
+<li>Draw separator lines</li>
+<li>React to theme changes</li>
+<li>Provide themed background</li>
+</ul>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>Derives from <code>KryptonPanel</code></li>
+<li>Overrides <code>OnPaint</code> to draw separator</li>
+<li>Calculates separator colors based on background</li>
+<li>Subscribes to theme changes</li>
+</ul>
+<p><strong>Separator Algorithm:</strong></p>
+<pre><code class="lang-csharp">private (Color, Color) GetSeparatorColors()
+{
+    // Get background color
+    Color tmp = StateCommon.Color1 != Color.Empty
+        ? StateCommon.Color1
+        : _palette.GetBackColor1(PaletteBackStyle.PanelClient, PaletteState.Normal);
+    
+    // Calculate darker/lighter colors based on luminosity
+    if (tmp.R &gt; 205 &amp;&amp; tmp.G &gt; 205 &amp;&amp; tmp.B &gt; 205)
+    {
+        // Light background - darken
+        color1 = Color.FromArgb(tmp.R - 75, tmp.G - 75, tmp.B - 75);
+        color2 = Color.White;
+    }
+    else if (tmp.R &lt; 50 &amp;&amp; tmp.G &lt; 50 &amp;&amp; tmp.B &lt; 50)
+    {
+        // Dark background - lighten
+        color2 = ControlPaint.Light(tmp);
+        color1 = ControlPaint.Light(Color.LightSlateGray);
+    }
+    // ... more cases
+    
+    return (color1, color2);
+}
+</code></pre>
+<h3 id="kryptontaskdialogkryptonform">KryptonTaskDialogKryptonForm</h3>
+<p><strong>Responsibilities:</strong></p>
+<ul>
+<li>Provide specialized form behavior</li>
+<li>Handle Alt+F4 interception</li>
+<li>Hide instead of close for reusability</li>
+</ul>
+<p><strong>Key Overrides:</strong></p>
+<pre><code class="lang-csharp">protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+{
+    // Intercept Alt+F4 when IgnoreAltF4 is true
+    return IgnoreAltF4 &amp;&amp; keyData == KEYS_ALT_F4;
+}
+
+protected override void OnFormClosing(FormClosingEventArgs e)
+{
+    // Hide instead of close when user closes
+    if (Visible &amp;&amp; e.CloseReason == CloseReason.UserClosing)
+    {
+        e.Cancel = true;
+        Hide();
+    }
+}
+</code></pre>
+<h3 id="kryptontaskdialogiconcontroller">KryptonTaskDialogIconController</h3>
+<p><strong>Responsibilities:</strong></p>
+<ul>
+<li>Load icons from resources</li>
+<li>Resize icons to requested size</li>
+<li>Cache resized icons</li>
+<li>Manage icon disposal</li>
+</ul>
+<p><strong>Cache Structure:</strong></p>
+<pre><code class="lang-csharp">// Key: IconType + Size
+public class ImageItem : IEquatable&lt;ImageItem&gt;
+{
+    public KryptonTaskDialogIconType IconType { get; }
+    public int Size { get; }
+}
+
+// Cache: Dictionary&lt;ImageItem, Image&gt;
+private Dictionary&lt;ImageItem, Image&gt; _imageCache;
+</code></pre>
+<p><strong>Icon Loading:</strong></p>
+<pre><code class="lang-csharp">public Image GetImage(KryptonTaskDialogIconType icontype, int size)
+{
+    ImageItem imageItem = new(icontype, size);
+    
+    // Check cache
+    if (_imageCache.TryGetValue(imageItem, out Image? image))
+        return image;
+    
+    // Load from resources
+    Image newImage = GetImageInternal(in imageItem);
+    
+    // Resize if needed
+    if (newImage.Size.Width != size || newImage.Size.Height != size)
+    {
+        newImage = new Bitmap(newImage, size, size);
+        _imageCache.Add(imageItem, newImage);
+    }
+    
+    return newImage;
+}
+</code></pre>
+<hr>
+<h2 id="layout-system">Layout System</h2>
+<h3 id="vertical-stacking">Vertical Stacking</h3>
+<p>Elements are stacked vertically using <code>TableLayoutPanel</code>:</p>
+<pre><code>┌────────────────────────────────┐
+│ Filler Panel (border fix)      │ ← Top border compensation
+├────────────────────────────────┤
+│ Heading Element                │ ← AutoSize row
+├────────────────────────────────┤
+│ Content Element                │ ← AutoSize row
+├────────────────────────────────┤
+│ Expander Element               │ ← AutoSize row
+├────────────────────────────────┤
+│ RichTextBox Element            │ ← AutoSize row
+├────────────────────────────────┤
+│ ... more elements ...          │
+├────────────────────────────────┤
+│ Footer Bar Element             │ ← AutoSize row
+├────────────────────────────────┤
+│ Filler Panel (border fix)      │ ← Bottom border compensation
+└────────────────────────────────┘
+</code></pre>
+<h3 id="layout-configuration">Layout Configuration</h3>
+<pre><code class="lang-csharp">_tableLayoutPanel.AutoSize = true;
+_tableLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+_tableLayoutPanel.Dock = DockStyle.Top;
+
+// Single column, 100% width
+_tableLayoutPanel.ColumnCount = 1;
+_tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+
+// Rows added per element
+_tableLayoutPanel.RowCount += 1;
+_tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+</code></pre>
+<h3 id="element-layout">Element Layout</h3>
+<p>Each element contains a panel that hosts its controls:</p>
+<pre><code>Element
+└── KryptonTaskDialogKryptonPanel (Panel property)
+    ├── Padding: PanelPadding1 (10, 10, 10, 10)
+    └── Controls: (element-specific)
+</code></pre>
+<h3 id="height-calculation">Height Calculation</h3>
+<p>Dialog height is sum of visible element heights:</p>
+<pre><code class="lang-csharp">private int GetVisibleElementsHeight()
+{
+    return _elements.Sum(element =&gt; 
+    {
+        // Force update if needed
+        if (element.LayoutDirty)
+        {
+            element.PerformLayout();
+        }
+        
+        // Height automatically returns zero when not visible
+        return element.Height;
+    });
+}
+
+private void UpdateFormSizing()
+{
+    _form.ClientSize = new Size(
+        _taskDialogDefaults.ClientWidth, 
+        GetVisibleElementsHeight() + _fillerPanelOffset
+    );
+}
+</code></pre>
+<h3 id="border-compensation">Border Compensation</h3>
+<p>Windows forms have border rendering issues where internal panels can slide under borders. This is compensated with filler panels:</p>
+<pre><code class="lang-csharp">// Top filler (6 pixels)
+_fillerPanel = new KryptonPanel()
+{
+    Height = _fillerPanelOffset,
+    Dock = DockStyle.Top
+};
+
+// Added to dialog height
+_form.ClientSize = new Size(
+    width, 
+    height + _fillerPanelOffset  // Compensate
+);
+</code></pre>
+<hr>
+<h2 id="event-flow">Event Flow</h2>
+<h3 id="dialog-creation">Dialog Creation</h3>
+<pre><code>1. new KryptonTaskDialog()
+   ├── Create KryptonTaskDialogDefaults
+   ├── Create KryptonTaskDialogKryptonForm
+   ├── Create all elements (in display order)
+   │   └── Each element:
+   │       ├── Create KryptonTaskDialogKryptonPanel
+   │       ├── Create internal controls
+   │       ├── Subscribe to palette changes
+   │       └── Mark LayoutDirty = true
+   ├── Add elements to list
+   └── SetupForm()
+       ├── SetupTableLayoutPanel()
+       └── SetupElements()
+           └── For each element:
+               ├── Add to TableLayoutPanel
+               ├── Wire VisibleChanged event
+               └── Wire SizeChanged event (if applicable)
+</code></pre>
+<h3 id="showing-dialog">Showing Dialog</h3>
+<pre><code>1. ShowDialog() or Show()
+   ├── UpdateFormSizing()
+   │   └── GetVisibleElementsHeight()
+   │       └── For each element:
+   │           ├── if (LayoutDirty) PerformLayout()
+   │           └── return Height
+   ├── UpdateFormPosition(owner)
+   │   └── Calculate position based on StartPosition
+   └── _form.ShowDialog() or _form.Show()
+</code></pre>
+<h3 id="element-visibility-change">Element Visibility Change</h3>
+<pre><code>1. element.Visible = true
+   ├── _panelVisible = true
+   ├── _panel.Visible = true
+   └── OnVisibleChanged()
+       └── VisibleChanged?.Invoke()
+           └── KryptonTaskDialog.UpdateFormSizing()
+               └── Recalculate form height
+</code></pre>
+<h3 id="element-size-change">Element Size Change</h3>
+<pre><code>1. element.Text = &quot;New text&quot;
+   ├── Update internal control
+   ├── LayoutDirty = true
+   └── OnSizeChanged()
+       └── if (LayoutDirty &amp;&amp; Visible)
+           ├── Calculate new height
+           ├── Panel.Height = newHeight
+           ├── SizeChanged?.Invoke()
+           │   └── KryptonTaskDialog.UpdateFormSizing()
+           └── LayoutDirty = false
+</code></pre>
+<h3 id="theme-change">Theme Change</h3>
+<pre><code>1. KryptonManager.CurrentGlobalPalette changed
+   └── KryptonManager.GlobalPaletteChanged event fires
+       └── For each element:
+           ├── OnGlobalPaletteChanged()
+           │   ├── Detach from old palette
+           │   ├── Update Palette reference
+           │   └── Attach to new palette
+           └── Palette.PalettePaint event fires
+               └── OnPalettePaint()
+                   ├── LayoutDirty = true
+                   └── if (Visible) OnSizeChanged()
+</code></pre>
+<hr>
+<h2 id="theme-integration">Theme Integration</h2>
+<h3 id="palette-connection">Palette Connection</h3>
+<p>Each element maintains a connection to the active palette:</p>
+<pre><code class="lang-csharp">public abstract class KryptonTaskDialogElementBase
+{
+    internal PaletteBase Palette { get; private set; }
+    
+    protected KryptonTaskDialogElementBase(KryptonTaskDialogDefaults taskDialogDefaults)
+    {
+        // Initial palette
+        Palette = KryptonManager.CurrentGlobalPalette;
+        
+        // Subscribe to global palette changes
+        KryptonManager.GlobalPaletteChanged += OnGlobalPaletteChanged;
+        
+        // Subscribe to current palette paint events
+        Palette.PalettePaint += OnPalettePaint;
+    }
+    
+    protected virtual void OnGlobalPaletteChanged(object? sender, EventArgs e)
+    {
+        // Detach from old palette
+        if (Palette is not null)
+        {
+            Palette.PalettePaint -= OnPalettePaint;
+        }
+        
+        // Attach to new palette
+        Palette = KryptonManager.CurrentGlobalPalette;
+        if (Palette is not null)
+        {
+            Palette.PalettePaint += OnPalettePaint;
+        }
+    }
+}
+</code></pre>
+<h3 id="color-queries">Color Queries</h3>
+<p>Elements query palette for theme colors:</p>
+<pre><code class="lang-csharp">// Get background color from theme
+Color backColor = Palette.GetBackColor1(
+    PaletteBackStyle.PanelClient, 
+    PaletteState.Normal
+);
+
+// Get text color from theme
+Color textColor = Palette.GetContentShortTextColor1(
+    PaletteContentStyle.LabelNormalControl, 
+    PaletteState.Normal
+);
+
+// Get font from theme
+Font font = Palette.GetContentShortTextFont(
+    PaletteContentStyle.LabelNormalControl, 
+    PaletteState.Normal
+);
+</code></pre>
+<h3 id="theme-override">Theme Override</h3>
+<p>Users can override theme colors:</p>
+<pre><code class="lang-csharp">// Override element background
+element.BackColor1 = Color.LightBlue;  // Sets Panel.StateCommon.Color1
+element.BackColor2 = Color.White;      // Sets Panel.StateCommon.Color2
+
+// Check for override in element
+Color backColor = Panel.StateCommon.Color1 != Color.Empty
+    ? Panel.StateCommon.Color1  // User override
+    : Palette.GetBackColor1(PaletteBackStyle.PanelClient, PaletteState.Normal);  // Theme
+</code></pre>
+<hr>
+<h2 id="memory-management">Memory Management</h2>
+<h3 id="disposal-pattern">Disposal Pattern</h3>
+<p><code>KryptonTaskDialog</code> implements <code>IDisposable</code>:</p>
+<pre><code class="lang-csharp">protected virtual void Dispose(bool disposing)
+{
+    if (!_disposed &amp;&amp; disposing)
+    {
+        // Dispose all elements
+        _elements.ForEach(x =&gt; 
+        {
+            // Unwire events
+            x.VisibleChanged -= UpdateFormSizing;
+            
+            if (x is IKryptonTaskDialogElementEventSizeChanged e)
+            {
+                e.SizeChanged -= UpdateFormSizing;
+            }
+            
+            // Dispose element
+            x.Dispose();
+        });
+        
+        // Dispose form
+        _form.Close();
+        _form.Dispose();
+        
+        _disposed = true;
+    }
+}
+
+public void Dispose()
+{
+    Dispose(disposing: true);
+    GC.SuppressFinalize(this);
+}
+</code></pre>
+<h3 id="element-disposal">Element Disposal</h3>
+<p>Each element disposes its resources:</p>
+<pre><code class="lang-csharp">protected virtual void Dispose(bool disposing)
+{
+    if (!_disposed &amp;&amp; disposing)
+    {
+        // Unwire global events
+        KryptonManager.GlobalPaletteChanged -= OnGlobalPaletteChanged;
+        
+        // Unwire palette events
+        if (Palette is not null)
+        {
+            Palette.PalettePaint -= OnPalettePaint;
+            Palette = null!;
+        }
+        
+        // Element-specific cleanup
+        // (e.g., dispose icon controllers, context menus, etc.)
+        
+        _disposed = true;
+    }
+}
+</code></pre>
+<h3 id="event-unwiring">Event Unwiring</h3>
+<p>Critical to prevent memory leaks:</p>
+<pre><code class="lang-csharp">// In element constructor
+KryptonManager.GlobalPaletteChanged += OnGlobalPaletteChanged;
+Palette.PalettePaint += OnPalettePaint;
+
+// In element Dispose
+KryptonManager.GlobalPaletteChanged -= OnGlobalPaletteChanged;
+Palette.PalettePaint -= OnPalettePaint;
+</code></pre>
+<hr>
+<h2 id="extending-the-component">Extending the Component</h2>
+<h3 id="creating-a-custom-element">Creating a Custom Element</h3>
+<ol>
+<li><strong>Derive from KryptonTaskDialogElementBase</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">public class KryptonTaskDialogElementCustom : KryptonTaskDialogElementBase
+{
+    private KryptonButton _button;
+    
+    public KryptonTaskDialogElementCustom(KryptonTaskDialogDefaults taskDialogDefaults) 
+        : base(taskDialogDefaults)
+    {
+        _button = new KryptonButton();
+        _button.Text = &quot;Click Me&quot;;
+        _button.Click += OnButtonClick;
+        
+        Panel.Controls.Add(_button);
+        Panel.Height = 50;
+    }
+    
+    private void OnButtonClick(object? sender, EventArgs e)
+    {
+        // Handle click
+    }
+    
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _button.Click -= OnButtonClick;
+        }
+        base.Dispose(disposing);
+    }
+}
+</code></pre>
+<ol start="2">
+<li><strong>Implement Relevant Interfaces</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">public class KryptonTaskDialogElementCustom : 
+    KryptonTaskDialogElementBase,
+    IKryptonTaskDialogElementText
+{
+    public string Text 
+    { 
+        get =&gt; _button.Text;
+        set =&gt; _button.Text = value;
+    }
+}
+</code></pre>
+<ol start="3">
+<li><strong>Override Layout Methods if Needed</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">protected override void OnSizeChanged(bool performLayout = false)
+{
+    if (LayoutDirty &amp;&amp; (Visible || performLayout))
+    {
+        // Calculate size
+        Panel.Height = _button.Height + Defaults.PanelTop + Defaults.PanelBottom;
+        
+        base.OnSizeChanged(performLayout);
+        LayoutDirty = false;
+    }
+}
+
+internal override void PerformLayout()
+{
+    base.PerformLayout();
+    OnSizeChanged(true);
+}
+</code></pre>
+<ol start="4">
+<li><strong>Add to KryptonTaskDialog</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">public class KryptonTaskDialog : IDisposable
+{
+    public KryptonTaskDialogElementCustom CustomElement { get; }
+    
+    public KryptonTaskDialog(int dialogWidth = 0)
+    {
+        // ... existing code ...
+        
+        CustomElement = new KryptonTaskDialogElementCustom(_taskDialogDefaults);
+        _elements.Add(CustomElement);
+        
+        // ... existing code ...
+    }
+}
+</code></pre>
+<h3 id="implementing-a-custom-interface">Implementing a Custom Interface</h3>
+<p>Create interfaces for common features:</p>
+<pre><code class="lang-csharp">public interface IKryptonTaskDialogElementCustomFeature
+{
+    /// &lt;summary&gt;
+    /// Gets or sets the custom value.
+    /// &lt;/summary&gt;
+    int CustomValue { get; set; }
+}
+
+// Use in element
+public class KryptonTaskDialogElementCustom : 
+    KryptonTaskDialogElementBase,
+    IKryptonTaskDialogElementCustomFeature
+{
+    public int CustomValue { get; set; }
+}
+</code></pre>
+<h3 id="using-property-changed-notifications">Using Property Changed Notifications</h3>
+<p>For complex properties, use property changed notifications:</p>
+<pre><code class="lang-csharp">public class CustomProperties
+{
+    public event Action&lt;CustomPropertyType&gt; PropertyChanged;
+    
+    public string Value
+    {
+        get =&gt; field;
+        set
+        {
+            if (field != value)
+            {
+                field = value;
+                PropertyChanged?.Invoke(CustomPropertyType.Value);
+            }
+        }
+    }
+}
+
+// In element
+CustomProperties.PropertyChanged += OnCustomPropertyChanged;
+
+private void OnCustomPropertyChanged(CustomPropertyType property)
+{
+    if (property == CustomPropertyType.Value)
+    {
+        // React to change
+        LayoutDirty = true;
+        OnSizeChanged();
+    }
+}
+</code></pre>
+<hr>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="layout-deferral">Layout Deferral</h3>
+<p>Expensive layout calculations are deferred:</p>
+<pre><code class="lang-csharp">// When property changes
+LayoutDirty = true;
+OnSizeChanged();  // Will skip if not visible
+
+// Layout happens only when:
+// 1. Element becomes visible
+// 2. Dialog is about to be shown (PerformLayout called)
+</code></pre>
+<h3 id="icon-caching">Icon Caching</h3>
+<p>Icons are cached after first load and resize:</p>
+<pre><code class="lang-csharp">// First request: Load and resize
+Image icon = _iconController.GetImage(KryptonTaskDialogIconType.ShieldInformation, 48);
+
+// Subsequent requests: Return cached
+Image icon = _iconController.GetImage(KryptonTaskDialogIconType.ShieldInformation, 48);
+</code></pre>
+<h3 id="event-batching">Event Batching</h3>
+<p>Multiple property changes don't trigger multiple layouts:</p>
+<pre><code class="lang-csharp">// Multiple changes
+element.Text = &quot;New text&quot;;        // LayoutDirty = true
+element.ForeColor = Color.Red;    // No additional layout
+element.BackColor1 = Color.Blue;  // No additional layout
+
+// Single layout before display
+dialog.ShowDialog();  // PerformLayout() called once
+</code></pre>
+<h3 id="form-reuse">Form Reuse</h3>
+<p>Reusing form instances avoids repeated creation overhead:</p>
+<pre><code class="lang-csharp">// Efficient: Single creation
+using (var dialog = new KryptonTaskDialog())
+{
+    for (int i = 0; i &lt; 100; i++)
+    {
+        dialog.Content.Text = $&quot;Item {i}&quot;;
+        dialog.ShowDialog();  // Reuses same form
+    }
+}
+</code></pre>
+<hr>
+<h2 id="conclusion">Conclusion</h2>
+<p>The <code>KryptonTaskDialog</code> architecture provides:</p>
+<ul>
+<li><strong>Modularity</strong>: Elements are independent and reusable</li>
+<li><strong>Efficiency</strong>: Lazy layout calculation and icon caching</li>
+<li><strong>Flexibility</strong>: Interface-based feature extension</li>
+<li><strong>Maintainability</strong>: Clear separation of concerns</li>
+<li><strong>Theme Integration</strong>: Automatic synchronization with Krypton themes</li>
+<li><strong>Reusability</strong>: Forms can be shown multiple times</li>
+</ul>
+<p>This design allows for easy extension and maintenance while providing excellent performance and user experience.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

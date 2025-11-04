@@ -69,6 +69,545 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonlinkwraplabel">KryptonLinkWrapLabel</h1>
 
+<h2 id="overview">Overview</h2>
+<p><code>KryptonLinkWrapLabel</code> is a Windows Forms control that extends the standard <code>LinkLabel</code> with Krypton palette styling and theming capabilities. It provides a themed link label with automatic text wrapping, supporting all Krypton visual styles and palettes.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> Krypton.Toolkit<br>
+<strong>Inheritance:</strong> <code>Object</code> → <code>MarshalByRefObject</code> → <code>Component</code> → <code>Control</code> → <code>Label</code> → <code>LinkLabel</code> → <code>KryptonLinkWrapLabel</code></p>
+<h2 id="key-features">Key Features</h2>
+<h3 id="palette-integration">Palette Integration</h3>
+<ul>
+<li>Full Krypton palette support with automatic theme switching</li>
+<li>Support for built-in and custom palettes</li>
+<li>Responds to global palette changes</li>
+<li>State-based styling (Normal, Disabled, Common)</li>
+</ul>
+<h3 id="visual-capabilities">Visual Capabilities</h3>
+<ul>
+<li>Automatic text wrapping</li>
+<li>Transparent background rendering</li>
+<li>Custom font and color overrides per state</li>
+<li>Text rendering hints (ClearType, AntiAlias, etc.)</li>
+<li>Multiple label styles (NormalPanel, BoldPanel, ItalicPanel, etc.)</li>
+</ul>
+<h3 id="behavior-features">Behavior Features</h3>
+<ul>
+<li>Mnemonic support with target control focus</li>
+<li>KryptonContextMenu integration</li>
+<li>Right-click context menu with keyboard shortcuts</li>
+<li>Designer-friendly with proper serialization</li>
+</ul>
+<h3 id="performance">Performance</h3>
+<ul>
+<li>Double-buffered rendering to reduce flicker</li>
+<li>Optimized palette change handling</li>
+<li>Efficient parent background painting</li>
+</ul>
+<hr>
+<h2 id="constructor">Constructor</h2>
+<h3 id="kryptonlinkwraplabel-1">KryptonLinkWrapLabel()</h3>
+<p>Initializes a new instance of the <code>KryptonLinkWrapLabel</code> class.</p>
+<pre><code class="lang-csharp">public KryptonLinkWrapLabel()
+</code></pre>
+<p><strong>Default Settings:</strong></p>
+<ul>
+<li><code>AutoSize</code> = <code>true</code></li>
+<li><code>TabStop</code> = <code>false</code></li>
+<li><code>LabelStyle</code> = <code>LabelStyle.NormalPanel</code></li>
+<li><code>PaletteMode</code> = <code>PaletteMode.Global</code></li>
+<li>Double buffering enabled</li>
+</ul>
+<hr>
+<h2 id="properties">Properties</h2>
+<h3 id="appearance-properties">Appearance Properties</h3>
+<h4 id="labelstyle">LabelStyle</h4>
+<p>Gets or sets the visual style of the label.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Label style.&quot;)]
+[DefaultValue(LabelStyle.NormalPanel)]
+public LabelStyle LabelStyle { get; set; }
+</code></pre>
+<p><strong>Available Styles:</strong></p>
+<ul>
+<li><code>NormalPanel</code> - Standard panel label</li>
+<li><code>BoldPanel</code> - Bold panel label</li>
+<li><code>ItalicPanel</code> - Italic panel label</li>
+<li><code>TitlePanel</code> - Title-style panel label</li>
+<li><code>NormalControl</code> - Standard control label</li>
+<li><code>BoldControl</code> - Bold control label</li>
+<li><code>ItalicControl</code> - Italic control label</li>
+<li><code>TitleControl</code> - Title-style control label</li>
+<li><code>GroupBoxCaption</code> - Group box caption style</li>
+<li><code>ToolTip</code> - Tooltip style</li>
+<li><code>SuperTip</code> - Super tooltip style</li>
+<li><code>KeyTip</code> - Key tip style</li>
+<li><code>Custom1</code> through <code>Custom3</code> - Custom styles</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonLinkWrapLabel1.LabelStyle = LabelStyle.BoldPanel;
+</code></pre>
+<hr>
+<h4 id="autosize">AutoSize</h4>
+<p>Gets or sets whether the control automatically resizes to fit its content.</p>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public override bool AutoSize { get; set; }
+</code></pre>
+<p><strong>Default:</strong> <code>true</code></p>
+<hr>
+<h3 id="palette-properties">Palette Properties</h3>
+<h4 id="palettemode">PaletteMode</h4>
+<p>Gets or sets the palette mode to use for styling.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Palette applied to drawing.&quot;)]
+public PaletteMode PaletteMode { get; set; }
+</code></pre>
+<p><strong>Available Modes:</strong></p>
+<ul>
+<li><code>Global</code> - Use the global palette (default)</li>
+<li><code>ProfessionalSystem</code> - Professional system palette</li>
+<li><code>ProfessionalOffice2003</code> - Office 2003 style</li>
+<li><code>Office2007Blue/Silver/Black</code> - Office 2007 variants</li>
+<li><code>Office2010Blue/Silver/Black</code> - Office 2010 variants</li>
+<li><code>Office2013White</code> - Office 2013 style</li>
+<li><code>Office365Blue/Silver/Black</code> - Office 365 variants</li>
+<li><code>SparkleBlue/Orange/Purple</code> - Sparkle variants</li>
+<li><code>Custom</code> - Use custom palette (set via <code>Palette</code> property)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonLinkWrapLabel1.PaletteMode = PaletteMode.Office2010Blue;
+</code></pre>
+<hr>
+<h4 id="palette">Palette</h4>
+<p>Gets or sets a custom palette for the control.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Custom palette applied to drawing.&quot;)]
+[DefaultValue(null)]
+public PaletteBase? Palette { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Setting this property automatically changes <code>PaletteMode</code> to <code>PaletteMode.Custom</code></li>
+<li>Setting to <code>null</code> reverts to <code>PaletteMode.Global</code></li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var customPalette = new KryptonPalette();
+// Configure custom palette...
+kryptonLinkWrapLabel1.Palette = customPalette;
+</code></pre>
+<hr>
+<h3 id="state-properties">State Properties</h3>
+<h4 id="statecommon">StateCommon</h4>
+<p>Gets access to common appearance settings that other states can override.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining common wrap label appearance that other states can override.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteWrapLabel StateCommon { get; }
+</code></pre>
+<p><strong>Properties Available:</strong></p>
+<ul>
+<li><code>Font</code> - Override font</li>
+<li><code>TextColor</code> - Override text color</li>
+<li><code>Hint</code> - Text rendering hint</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonLinkWrapLabel1.StateCommon.Font = new Font(&quot;Segoe UI&quot;, 10F, FontStyle.Bold);
+kryptonLinkWrapLabel1.StateCommon.TextColor = Color.Navy;
+kryptonLinkWrapLabel1.StateCommon.Hint = PaletteTextHint.ClearTypeGridFit;
+</code></pre>
+<hr>
+<h4 id="statenormal">StateNormal</h4>
+<p>Gets access to normal state appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining normal wrap label appearance.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteWrapLabel StateNormal { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Applied when the control is enabled</li>
+<li>Overrides <code>StateCommon</code> settings</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonLinkWrapLabel1.StateNormal.TextColor = Color.Blue;
+</code></pre>
+<hr>
+<h4 id="statedisabled">StateDisabled</h4>
+<p>Gets access to disabled state appearance settings.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Overrides for defining disabled wrap label appearance.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public PaletteWrapLabel StateDisabled { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Applied when <code>Enabled = false</code></li>
+<li>Overrides <code>StateCommon</code> settings</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonLinkWrapLabel1.StateDisabled.TextColor = Color.Gray;
+</code></pre>
+<hr>
+<h3 id="behavior-properties">Behavior Properties</h3>
+<h4 id="target">Target</h4>
+<p>Gets or sets the target control for mnemonic and click actions.</p>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Target control for mnemonic and click actions.&quot;)]
+[DefaultValue(null)]
+public Control? Target { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>When a mnemonic is activated (e.g., Alt+Key), focus moves to the target control</li>
+<li>The target must have <code>CanFocus = true</code></li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonLinkWrapLabel1.Text = &quot;&amp;Name:&quot;;
+kryptonLinkWrapLabel1.Target = kryptonTextBox1;
+// Pressing Alt+N will focus kryptonTextBox1
+</code></pre>
+<hr>
+<h4 id="kryptoncontextmenu">KryptonContextMenu</h4>
+<p>Gets or sets the KryptonContextMenu to display on right-click.</p>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[Description(&quot;The shortcut menu to show when the user right-clicks the page.&quot;)]
+[DefaultValue(null)]
+public KryptonContextMenu? KryptonContextMenu { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var contextMenu = new KryptonContextMenu();
+contextMenu.Items.Add(new KryptonContextMenuItem(&quot;Copy&quot;));
+contextMenu.Items.Add(new KryptonContextMenuItem(&quot;Paste&quot;));
+kryptonLinkWrapLabel1.KryptonContextMenu = contextMenu;
+</code></pre>
+<hr>
+<h3 id="hidden-properties">Hidden Properties</h3>
+<p>The following base class properties are hidden as they conflict with Krypton theming:</p>
+<ul>
+<li><code>BackColor</code> - Use palette settings instead</li>
+<li><code>ForeColor</code> - Use <code>StateNormal.TextColor</code> or <code>StateDisabled.TextColor</code></li>
+<li><code>Font</code> - Use <code>StateNormal.Font</code> or <code>StateDisabled.Font</code></li>
+<li><code>BorderStyle</code> - Not supported</li>
+<li><code>FlatStyle</code> - Not supported</li>
+<li><code>TabIndex</code> - Hidden (but functional)</li>
+<li><code>TabStop</code> - Hidden (defaults to <code>false</code>)</li>
+</ul>
+<hr>
+<h2 id="methods">Methods</h2>
+<h3 id="public-methods">Public Methods</h3>
+<h4 id="updatefont">UpdateFont()</h4>
+<p>Manually updates the font based on current state and palette settings.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public void UpdateFont()
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Automatically called during paint operations</li>
+<li>Rarely needs to be called manually</li>
+<li>Respects state hierarchy: State-specific → StateCommon → Palette default</li>
+</ul>
+<hr>
+<h4 id="getresolvedpalette">GetResolvedPalette()</h4>
+<p>Gets the actual palette being used for rendering.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public PaletteBase GetResolvedPalette()
+</code></pre>
+<p><strong>Returns:</strong> The active <code>PaletteBase</code> instance.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var activePalette = kryptonLinkWrapLabel1.GetResolvedPalette();
+Console.WriteLine($&quot;Using palette: {activePalette.GetType().Name}&quot;);
+</code></pre>
+<hr>
+<h4 id="createtoolstriprenderer">CreateToolStripRenderer()</h4>
+<p>Creates a ToolStripRenderer matching the current palette.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Advanced)]
+public ToolStripRenderer? CreateToolStripRenderer()
+</code></pre>
+<p><strong>Returns:</strong> A <code>ToolStripRenderer</code> instance configured for the current palette.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var contextMenuStrip = new ContextMenuStrip();
+contextMenuStrip.Renderer = kryptonLinkWrapLabel1.CreateToolStripRenderer();
+</code></pre>
+<hr>
+<h4 id="attachglobalevents--unattachglobalevents">AttachGlobalEvents() / UnattachGlobalEvents()</h4>
+<p>Controls whether the control responds to global palette changes.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public void AttachGlobalEvents()
+
+[Browsable(false)]
+[EditorBrowsable(EditorBrowsableState.Never)]
+public void UnattachGlobalEvents()
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Automatically managed by the control</li>
+<li>Useful for temporarily suspending palette updates during batch operations</li>
+</ul>
+<hr>
+<h4 id="resetpalettemode--resetpalette--resetlabelstyle">ResetPaletteMode() / ResetPalette() / ResetLabelStyle()</h4>
+<p>Resets properties to their default values.</p>
+<pre><code class="lang-csharp">public void ResetPaletteMode()  // Resets to PaletteMode.Global
+public void ResetPalette()       // Resets to null (uses Global)
+public void ResetLabelStyle()    // Resets to LabelStyle.NormalPanel
+</code></pre>
+<hr>
+<h3 id="protected-methods">Protected Methods</h3>
+<h4 id="processmnemonicchar">ProcessMnemonic(char)</h4>
+<p>Processes mnemonic characters for keyboard navigation.</p>
+<pre><code class="lang-csharp">protected override bool ProcessMnemonic(char charCode)
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Automatically handles Alt+Key combinations</li>
+<li>Focuses the <code>Target</code> control if set</li>
+<li>Respects <code>UseMnemonic</code> property</li>
+</ul>
+<hr>
+<h4 id="processcmdkeyref-message-keys">ProcessCmdKey(ref Message, Keys)</h4>
+<p>Processes keyboard shortcuts for the context menu.</p>
+<pre><code class="lang-csharp">protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Automatically invokes <code>KryptonContextMenu</code> shortcuts</li>
+</ul>
+<hr>
+<h2 id="events">Events</h2>
+<h3 id="palettechanged">PaletteChanged</h3>
+<p>Occurs when the palette is changed.</p>
+<pre><code class="lang-csharp">[Category(&quot;Property Changed&quot;)]
+[Description(&quot;Occurs when the value of the Palette property is changed.&quot;)]
+public event EventHandler? PaletteChanged
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">kryptonLinkWrapLabel1.PaletteChanged += (s, e) =&gt; 
+{
+    Console.WriteLine(&quot;Palette changed!&quot;);
+};
+</code></pre>
+<hr>
+<h3 id="inherited-link-events">Inherited Link Events</h3>
+<p>All standard <code>LinkLabel</code> events are available:</p>
+<ul>
+<li><code>LinkClicked</code> (Default Event)</li>
+<li><code>LinkArea</code></li>
+<li><code>Links</code></li>
+<li><code>LinkBehavior</code></li>
+<li><code>LinkColor</code></li>
+<li><code>ActiveLinkColor</code></li>
+<li><code>VisitedLinkColor</code></li>
+<li><code>DisabledLinkColor</code></li>
+</ul>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<pre><code class="lang-csharp">var linkLabel = new KryptonLinkWrapLabel
+{
+    Text = &quot;Click here to visit our website&quot;,
+    LabelStyle = LabelStyle.NormalPanel,
+    AutoSize = true,
+    Location = new Point(10, 10)
+};
+
+linkLabel.LinkClicked += (s, e) =&gt; 
+{
+    System.Diagnostics.Process.Start(&quot;https://example.com&quot;);
+};
+
+this.Controls.Add(linkLabel);
+</code></pre>
+<hr>
+<h3 id="with-custom-styling">With Custom Styling</h3>
+<pre><code class="lang-csharp">var linkLabel = new KryptonLinkWrapLabel
+{
+    Text = &quot;Important Link&quot;,
+    LabelStyle = LabelStyle.BoldPanel
+};
+
+// Customize normal state
+linkLabel.StateNormal.Font = new Font(&quot;Segoe UI&quot;, 12F, FontStyle.Bold);
+linkLabel.StateNormal.TextColor = Color.DarkBlue;
+
+// Customize disabled state
+linkLabel.StateDisabled.TextColor = Color.LightGray;
+</code></pre>
+<hr>
+<h3 id="with-mnemonic-support">With Mnemonic Support</h3>
+<pre><code class="lang-csharp">var nameLabel = new KryptonLinkWrapLabel
+{
+    Text = &quot;&amp;Username:&quot;,
+    Target = usernameTextBox,
+    Location = new Point(10, 10)
+};
+
+// User can press Alt+U to focus the username textbox
+</code></pre>
+<hr>
+<h3 id="with-context-menu">With Context Menu</h3>
+<pre><code class="lang-csharp">var linkLabel = new KryptonLinkWrapLabel
+{
+    Text = &quot;Right-click for options&quot;
+};
+
+var contextMenu = new KryptonContextMenu();
+var menuItems = contextMenu.Items.Add(new KryptonContextMenuItems());
+
+menuItems.Items.Add(new KryptonContextMenuItem(&quot;Copy Link&quot;, null, (s, e) =&gt; 
+{
+    Clipboard.SetText(linkLabel.Text);
+}));
+
+menuItems.Items.Add(new KryptonContextMenuItem(&quot;Open in Browser&quot;, null, (s, e) =&gt; 
+{
+    // Open link logic
+}));
+
+linkLabel.KryptonContextMenu = contextMenu;
+</code></pre>
+<hr>
+<h3 id="dynamic-palette-switching">Dynamic Palette Switching</h3>
+<pre><code class="lang-csharp">private void SwitchTheme(PaletteMode mode)
+{
+    kryptonLinkWrapLabel1.PaletteMode = mode;
+    // Label automatically updates its appearance
+}
+
+// Example usage:
+buttonOffice2010.Click += (s, e) =&gt; SwitchTheme(PaletteMode.Office2010Blue);
+buttonOffice365.Click += (s, e) =&gt; SwitchTheme(PaletteMode.Office365Blue);
+</code></pre>
+<hr>
+<h3 id="transparent-background">Transparent Background</h3>
+<pre><code class="lang-csharp">// The control automatically paints a transparent background
+// when placed on a parent with a background image or gradient
+
+var linkLabel = new KryptonLinkWrapLabel
+{
+    Text = &quot;Transparent label&quot;,
+    BackColor = Color.Transparent  // Automatically handled
+};
+
+// Place on a panel with a background image
+panelWithImage.Controls.Add(linkLabel);
+</code></pre>
+<hr>
+<h2 id="design-considerations">Design Considerations</h2>
+<h3 id="state-hierarchy">State Hierarchy</h3>
+<p>The control resolves appearance properties using the following priority:</p>
+<ol>
+<li><strong>State-specific property</strong> (e.g., <code>StateNormal.Font</code>)</li>
+<li><strong>StateCommon property</strong> (e.g., <code>StateCommon.Font</code>)</li>
+<li><strong>Palette default</strong> (from current palette)</li>
+</ol>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// If StateNormal.Font is null, falls back to StateCommon.Font
+// If StateCommon.Font is also null, uses palette default font
+</code></pre>
+<hr>
+<h3 id="performance-tips">Performance Tips</h3>
+<ol>
+<li><strong>Batch Updates:</strong> Suspend drawing during multiple property changes</li>
+</ol>
+<pre><code class="lang-csharp">kryptonLinkWrapLabel1.SuspendLayout();
+kryptonLinkWrapLabel1.Text = &quot;New text&quot;;
+kryptonLinkWrapLabel1.LabelStyle = LabelStyle.BoldPanel;
+kryptonLinkWrapLabel1.StateNormal.TextColor = Color.Blue;
+kryptonLinkWrapLabel1.ResumeLayout();
+</code></pre>
+<ol start="2">
+<li><p><strong>Global Events:</strong> Automatically attached/detached - no manual management needed</p>
+</li>
+<li><p><strong>Palette Caching:</strong> The control caches palette references for efficient lookups</p>
+</li>
+</ol>
+<hr>
+<h3 id="designer-support">Designer Support</h3>
+<p>The control is fully designer-compatible:</p>
+<ul>
+<li>Appears in the Toolbox under &quot;Krypton Toolkit&quot;</li>
+<li>Property grid shows categorized properties</li>
+<li>Smart tags for common operations</li>
+<li>Serializes only non-default values</li>
+</ul>
+<hr>
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="read-only-information-display">Read-only Information Display</h3>
+<pre><code class="lang-csharp">var infoLabel = new KryptonLinkWrapLabel
+{
+    Text = &quot;Learn more about this feature&quot;,
+    LabelStyle = LabelStyle.NormalPanel,
+    AutoSize = true
+};
+
+infoLabel.LinkClicked += (s, e) =&gt; 
+{
+    // Show help or documentation
+    ShowHelp();
+};
+</code></pre>
+<hr>
+<h3 id="status-indicator-with-link">Status Indicator with Link</h3>
+<pre><code class="lang-csharp">var statusLabel = new KryptonLinkWrapLabel
+{
+    Text = &quot;Update available - Click to download&quot;,
+    LabelStyle = LabelStyle.BoldPanel
+};
+
+statusLabel.StateNormal.TextColor = Color.Orange;
+
+statusLabel.LinkClicked += async (s, e) =&gt; 
+{
+    await DownloadUpdate();
+};
+</code></pre>
+<hr>
+<h3 id="multi-line-wrapped-link">Multi-line Wrapped Link</h3>
+<pre><code class="lang-csharp">var wrappedLink = new KryptonLinkWrapLabel
+{
+    Text = &quot;This is a very long link label that will automatically &quot; +
+           &quot;wrap to multiple lines when the control width is constrained.&quot;,
+    MaximumSize = new Size(300, 0),  // Constrain width, allow height to grow
+    AutoSize = true
+};
+</code></pre>
+<hr>
+<h2 id="compatibility">Compatibility</h2>
+<ul>
+<li><strong>Target Frameworks:</strong> <code>net472</code>, <code>net48</code>, <code>net481</code>, <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+<li><strong>Windows Forms:</strong> Required</li>
+<li><strong>Dependencies:</strong> Krypton.Toolkit core components</li>
+</ul>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="KryptonLabel.html">KryptonLabel</a> - Non-link label variant</li>
+<li><a href="KryptonWrapLabel.html">KryptonWrapLabel</a> - Plain wrap label</li>
+<li><a href="../Palette/PaletteBase.md">PaletteBase</a> - Palette system</li>
+<li><a href="../Enumerations/LabelStyle.md">LabelStyle Enumeration</a> - Available styles</li>
+<li><a href="../Enumerations/PaletteMode.md">PaletteMode Enumeration</a> - Palette modes</li>
+</ul>
+<hr>
+<h2 id="remarks">Remarks</h2>
+<h3 id="differences-from-standard-linklabel">Differences from Standard LinkLabel</h3>
+<ol>
+<li><strong>Theming:</strong> Full Krypton palette integration</li>
+<li><strong>States:</strong> Separate styling for normal and disabled states</li>
+<li><strong>Transparent:</strong> Automatic transparent background painting</li>
+<li><strong>Context Menu:</strong> Native KryptonContextMenu support</li>
+<li><strong>Target:</strong> Built-in mnemonic target support</li>
+</ol>
+<hr>
+<h3 id="when-to-use">When to Use</h3>
+<p><strong>Use KryptonLinkWrapLabel when:</strong></p>
+<ul>
+<li>You need a link label that matches Krypton theme</li>
+<li>You want automatic text wrapping</li>
+<li>You need separate normal/disabled styling</li>
+<li>You want transparent background support</li>
+</ul>
 
 </article>
           </div>
