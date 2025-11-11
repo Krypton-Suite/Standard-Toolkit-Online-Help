@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>ModernBuild Tool | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="ModernBuild Tool | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="modernbuild-tool">ModernBuild Tool</h1>
+
+<h2 id="overview">Overview</h2>
+<p>ModernBuild is an interactive Terminal UI (TUI) application that provides a modern, user-friendly interface for building, packing, and publishing the Krypton Toolkit. It offers real-time build output, comprehensive configuration options, and simplified NuGet operations.</p>
+<p><strong>Location</strong>: <code>Scripts/ModernBuild/</code></p>
+<p><strong>Technology</strong>: .NET with Terminal.Gui</p>
+<p><strong>Target Frameworks</strong>: net472, net8.0-windows, net9.0-windows, net10.0-windows</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>Interactive keyboard-driven UI</li>
+<li>Real-time build output streaming</li>
+<li>Auto-detection of MSBuild and NuGet</li>
+<li>Support for all build configurations (Stable, Canary, Nightly, Debug)</li>
+<li>Integrated NuGet package publishing</li>
+<li>Build log management</li>
+<li>Clean operations</li>
+<li>Create ZIP archives</li>
+<li>Test/preview NuGet push commands</li>
+</ul>
+<h2 id="installation-and-running">Installation and Running</h2>
+<h3 id="running-with-dotnet-run-recommended">Running with dotnet run (Recommended)</h3>
+<pre><code class="lang-cmd">cd Scripts/ModernBuild
+dotnet run --project ModernBuild.csproj
+</code></pre>
+<p><strong>Advantages</strong>:</p>
+<ul>
+<li>No build step required</li>
+<li>Always uses latest code</li>
+<li>Works across all platforms</li>
+</ul>
+<h3 id="building-and-running-executable">Building and Running Executable</h3>
+<pre><code class="lang-cmd">cd Scripts/ModernBuild
+dotnet build ModernBuild.csproj -c Release
+
+# Run built executable
+bin\Release\net10.0-windows\ModernBuild.exe
+</code></pre>
+<h3 id="running-from-repository-root">Running from Repository Root</h3>
+<pre><code class="lang-cmd">dotnet run --project Scripts/ModernBuild/ModernBuild.csproj
+</code></pre>
+<p><strong>Important</strong>: Always run from repository root for correct path detection.</p>
+<h2 id="user-interface">User Interface</h2>
+<h3 id="ui-layout">UI Layout</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│ Tasks                  │ Live Output                            │
+│ ┌───────────────────┐  │ ┌───────────────────────────────────┐ │
+│ │ F1: Channel       │  │ │ MSBuild output appears here...    │ │
+│ │ F2: Action        │  │ │ Real-time streaming...            │ │
+│ │ F3: Config        │  │ │                                   │ │
+│ │ F4: Switch Page   │  │ │ Press Enter on a line to copy it  │ │
+│ │ F5: Run/Stop      │  │ └───────────────────────────────────┘ │
+│ │ ESC/F10: Exit     │  │                                       │
+│ └───────────────────┘  │                                       │
+├─────────────────────────────────────────────────────────────────┤
+│ Build Settings                                                  │
+│ Project: Scripts/nightly.proj                                   │
+│ MSBuild: C:\Program Files\...\MSBuild.exe                       │
+│ Log: Logs/nightly-build.binlog                                  │
+├─────────────────────────────────────────────────────────────────┤
+│ Summary (paged)                                                 │
+│ ┌───────────────────────────────────────────────────────────┐   │
+│ │ Build completed successfully                              │   │
+│ │ Time: 00:05:23                                            │   │
+│ └───────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="ui-components">UI Components</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Tasks</strong></td>
+<td>Hotkeys and current selections</td>
+</tr>
+<tr>
+<td><strong>Live Output</strong></td>
+<td>Streaming MSBuild/NuGet output</td>
+</tr>
+<tr>
+<td><strong>Build Settings</strong></td>
+<td>Current project, MSBuild path, log location</td>
+</tr>
+<tr>
+<td><strong>Summary</strong></td>
+<td>Recent log tail for quick diagnostics</td>
+</tr>
+<tr>
+<td><strong>Status Bar</strong></td>
+<td>Run status, elapsed time, error/warning counts</td>
+</tr>
+</tbody>
+</table>
+<h2 id="global-controls">Global Controls</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F4</strong></td>
+<td>Switch between Ops and NuGet pages</td>
+</tr>
+<tr>
+<td><strong>F5</strong></td>
+<td>Start/Stop current action</td>
+</tr>
+<tr>
+<td><strong>ESC</strong> or <strong>F10</strong></td>
+<td>Exit application</td>
+</tr>
+<tr>
+<td><strong>Auto-Scroll</strong></td>
+<td>Toggle following live output</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ops-page-build-operations">Ops Page (Build Operations)</h2>
+<h3 id="purpose">Purpose</h3>
+<p>Build, rebuild, pack, and clean operations</p>
+<h3 id="controls">Controls</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+<th>Options</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F1</strong></td>
+<td>Channel</td>
+<td>Nightly → Canary → Stable</td>
+</tr>
+<tr>
+<td><strong>F2</strong></td>
+<td>Action</td>
+<td>Build → Rebuild → Pack → BuildPack → Debug</td>
+</tr>
+<tr>
+<td><strong>F3</strong></td>
+<td>Config</td>
+<td>Release ↔ Debug</td>
+</tr>
+<tr>
+<td><strong>F5</strong></td>
+<td>Run</td>
+<td>Execute selected action</td>
+</tr>
+<tr>
+<td><strong>F6</strong></td>
+<td>Tail</td>
+<td>Buffer size: 200 → 500 → 1000 lines</td>
+</tr>
+<tr>
+<td><strong>F7</strong></td>
+<td>Clean</td>
+<td>Delete Bin/, obj/, Logs/</td>
+</tr>
+<tr>
+<td><strong>F8</strong></td>
+<td>Clear</td>
+<td>Clear live output</td>
+</tr>
+<tr>
+<td><strong>F9</strong></td>
+<td>PackMode</td>
+<td>Pack → PackLite → PackAll (Stable only)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="channel-selection-f1">Channel Selection (F1)</h3>
+<p><strong>Nightly</strong>:</p>
+<ul>
+<li>Project: <code>Scripts/nightly.proj</code></li>
+<li>Config: Defaults to Debug</li>
+<li>Packages: <code>.Nightly</code> with <code>-alpha</code> suffix</li>
+</ul>
+<p><strong>Canary</strong>:</p>
+<ul>
+<li>Project: <code>Scripts/canary.proj</code></li>
+<li>Config: Canary or Release</li>
+<li>Packages: <code>.Canary</code> with <code>-beta</code> suffix</li>
+</ul>
+<p><strong>Stable</strong>:</p>
+<ul>
+<li>Project: <code>Scripts/build.proj</code></li>
+<li>Config: Release</li>
+<li>Packages: Standard and <code>.Lite</code> variants</li>
+</ul>
+<h3 id="action-selection-f2">Action Selection (F2)</h3>
+<p><strong>Build</strong>:</p>
+<ul>
+<li>Runs <code>MSBuild /t:Rebuild</code></li>
+<li>Compiles all projects</li>
+<li>Generates binaries</li>
+</ul>
+<p><strong>Rebuild</strong>:</p>
+<ul>
+<li>Same as Build</li>
+<li>Ensures clean compilation</li>
+</ul>
+<p><strong>Pack</strong>:</p>
+<ul>
+<li>Runs <code>MSBuild /t:Pack</code></li>
+<li>Creates NuGet packages</li>
+<li>Requires prior build</li>
+</ul>
+<p><strong>BuildPack</strong>:</p>
+<ul>
+<li>Runs <code>MSBuild /t:Rebuild;Pack</code></li>
+<li>Builds then packs in one step</li>
+</ul>
+<p><strong>Debug</strong>:</p>
+<ul>
+<li>Runs <code>MSBuild /t:Clean;Rebuild</code></li>
+<li>Switches to Nightly channel</li>
+<li>Uses Debug configuration</li>
+</ul>
+<h3 id="configuration-selection-f3">Configuration Selection (F3)</h3>
+<p><strong>Release</strong>:</p>
+<ul>
+<li>Optimized builds</li>
+<li>No debug symbols (except for Canary/Nightly)</li>
+<li>Recommended for production</li>
+</ul>
+<p><strong>Debug</strong>:</p>
+<ul>
+<li>Debug symbols included</li>
+<li>No optimizations</li>
+<li>Used for development</li>
+</ul>
+<p><strong>Note</strong>: Nightly channel may auto-switch to Debug</p>
+<h3 id="pack-mode-f9---stable-only">Pack Mode (F9) - Stable Only</h3>
+<p>Available when Channel is Stable and Action is Pack or BuildPack:</p>
+<p><strong>Pack</strong>:</p>
+<ul>
+<li>Runs both PackLite and PackAll</li>
+<li>Generates standard and lite packages</li>
+</ul>
+<p><strong>PackLite</strong>:</p>
+<ul>
+<li>Runs <code>MSBuild /t:PackLite /p:TFMs=lite</code></li>
+<li>Generates lite packages only</li>
+</ul>
+<p><strong>PackAll</strong>:</p>
+<ul>
+<li>Runs <code>MSBuild /t:PackAll /p:TFMs=all</code></li>
+<li>Generates standard packages only</li>
+</ul>
+<h3 id="clean-operation-f7">Clean Operation (F7)</h3>
+<p>Deletes:</p>
+<ul>
+<li><code>Bin/</code> directory</li>
+<li><code>obj/</code> directories in all Krypton projects</li>
+<li><code>Logs/</code> directory</li>
+</ul>
+<p><strong>Warning</strong>: This is destructive and cannot be undone!</p>
+<h3 id="clear-output-f8">Clear Output (F8)</h3>
+<ul>
+<li>Clears live output display</li>
+<li>Resets horizontal scroll</li>
+<li>Does not delete log files</li>
+</ul>
+<h2 id="nuget-page-package-publishing">NuGet Page (Package Publishing)</h2>
+<h3 id="purpose-1">Purpose</h3>
+<p>Package creation, validation, and publishing to NuGet.org or GitHub Packages</p>
+<h3 id="controls-1">Controls</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Control</th>
+<th>Options</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F1</strong></td>
+<td>Channel</td>
+<td>Nightly → Canary → Stable</td>
+</tr>
+<tr>
+<td><strong>F2</strong></td>
+<td>Action</td>
+<td>Rebuild+Pack → Push → Pack+Push → Rebuild+Pack+Push → Update NuGet</td>
+</tr>
+<tr>
+<td><strong>F3</strong></td>
+<td>Config</td>
+<td>Release ↔ Debug (keep Release for publishing)</td>
+</tr>
+<tr>
+<td><strong>F5</strong></td>
+<td>Run</td>
+<td>Execute selected action(s)</td>
+</tr>
+<tr>
+<td><strong>F6</strong></td>
+<td>Symbols</td>
+<td>Toggle <code>.snupkg</code> inclusion</td>
+</tr>
+<tr>
+<td><strong>F7</strong></td>
+<td>SkipDup</td>
+<td>Toggle <code>--skip-duplicate</code> flag</td>
+</tr>
+<tr>
+<td><strong>F8</strong></td>
+<td>Source</td>
+<td>Default → NuGet.org → GitHub → Custom</td>
+</tr>
+<tr>
+<td><strong>Create ZIP</strong></td>
+<td>Create <code>Bin/&lt;yyyyMMdd&gt;_NuGet_Packages.zip</code></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>TEST</strong></td>
+<td>Preview push commands without executing</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="action-selection-f2-1">Action Selection (F2)</h3>
+<p><strong>Rebuild+Pack</strong>:</p>
+<ul>
+<li>Rebuilds projects</li>
+<li>Packs NuGet packages</li>
+<li>Does not publish</li>
+</ul>
+<p><strong>Push</strong>:</p>
+<ul>
+<li>Publishes existing packages only</li>
+<li>Requires packages in <code>Bin/Packages/&lt;Configuration&gt;/</code></li>
+</ul>
+<p><strong>Pack+Push</strong>:</p>
+<ul>
+<li>Packs packages</li>
+<li>Publishes to selected source</li>
+</ul>
+<p><strong>Rebuild+Pack+Push</strong>:</p>
+<ul>
+<li>Complete workflow</li>
+<li>Rebuilds, packs, and publishes</li>
+</ul>
+<p><strong>Update NuGet</strong>:</p>
+<ul>
+<li>Runs <code>nuget.exe update -Self -NonInteractive</code></li>
+<li>Updates NuGet CLI tool</li>
+</ul>
+<h3 id="symbol-packages-f6">Symbol Packages (F6)</h3>
+<p><strong>Enabled</strong>:</p>
+<ul>
+<li>Includes <code>.snupkg</code> files in push operations</li>
+<li>Required for debugging support</li>
+</ul>
+<p><strong>Disabled</strong>:</p>
+<ul>
+<li>Only pushes <code>.nupkg</code> files</li>
+</ul>
+<h3 id="skip-duplicate-f7">Skip Duplicate (F7)</h3>
+<p><strong>Enabled</strong>:</p>
+<ul>
+<li>Adds <code>--skip-duplicate</code> flag</li>
+<li>Silently skips packages that already exist on server</li>
+</ul>
+<p><strong>Disabled</strong>:</p>
+<ul>
+<li>Fails if package already exists</li>
+</ul>
+<h3 id="source-selection-f8">Source Selection (F8)</h3>
+<p><strong>Default</strong>:</p>
+<ul>
+<li>Uses default NuGet configuration</li>
+<li>Typically NuGet.org</li>
+</ul>
+<p><strong>NuGet.org</strong>:</p>
+<ul>
+<li>Explicit NuGet.org publishing</li>
+<li>Requires API key configuration</li>
+</ul>
+<p><strong>GitHub</strong>:</p>
+<ul>
+<li>GitHub Packages</li>
+<li>Requires <code>github</code> source configured</li>
+</ul>
+<p><strong>Custom</strong>:</p>
+<ul>
+<li>Custom NuGet source</li>
+<li>Not configurable via UI (requires manual setup)</li>
+</ul>
+<h3 id="nugetorg-configuration">NuGet.org Configuration</h3>
+<h4 id="set-api-key">Set API Key</h4>
+<pre><code class="lang-cmd">nuget.exe setapikey &lt;YOUR_API_KEY&gt; -Source https://api.nuget.org/v3/index.json
+</code></pre>
+<h4 id="verify-configuration">Verify Configuration</h4>
+<pre><code class="lang-cmd">nuget.exe sources list
+</code></pre>
+<h3 id="github-packages-configuration">GitHub Packages Configuration</h3>
+<h4 id="add-source">Add Source</h4>
+<pre><code class="lang-cmd">nuget.exe sources add -Name github ^
+  -Source https://nuget.pkg.github.com/Krypton-Suite/index.json ^
+  -Username YOUR_USERNAME ^
+  -Password YOUR_GITHUB_TOKEN
+</code></pre>
+<h4 id="generate-token">Generate Token</h4>
+<ol>
+<li>Go to GitHub Settings → Developer settings → Personal access tokens</li>
+<li>Generate token with <code>write:packages</code> scope</li>
+<li>Use token as password</li>
+</ol>
+<h3 id="create-zip">Create ZIP</h3>
+<p>Creates archive of all NuGet packages:</p>
+<ul>
+<li>Filename: <code>Bin/&lt;yyyyMMdd&gt;_NuGet_Packages.zip</code></li>
+<li>Includes all <code>.nupkg</code> and optionally <code>.snupkg</code> files</li>
+<li>Useful for offline distribution</li>
+</ul>
+<h3 id="test-mode">TEST Mode</h3>
+<p>Previews <code>nuget.exe push</code> commands without executing:</p>
+<pre><code>nuget.exe push Bin\Packages\Release\Krypton.Toolkit.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
+nuget.exe push Bin\Packages\Release\Krypton.Ribbon.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
+...
+</code></pre>
+<p><strong>Use Cases</strong>:</p>
+<ul>
+<li>Verify package names</li>
+<li>Check version numbers</li>
+<li>Validate configuration before actual push</li>
+</ul>
+<h2 id="build-logs">Build Logs</h2>
+<h3 id="log-locations">Log Locations</h3>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Text Log</th>
+<th>Binary Log</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Nightly</strong></td>
+<td><code>Logs/nightly-build-summary.log</code></td>
+<td><code>Logs/nightly-build.binlog</code></td>
+</tr>
+<tr>
+<td><strong>Canary</strong></td>
+<td><code>Logs/canary-build-summary.log</code></td>
+<td><code>Logs/canary-build.binlog</code></td>
+</tr>
+<tr>
+<td><strong>Stable</strong></td>
+<td><code>Logs/stable-build-summary.log</code></td>
+<td><code>Logs/stable-build.binlog</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="log-types">Log Types</h3>
+<p><strong>Text Log</strong> (<code>.log</code>):</p>
+<ul>
+<li>Human-readable</li>
+<li>Build summary</li>
+<li>Error and warning messages</li>
+</ul>
+<p><strong>Binary Log</strong> (<code>.binlog</code>):</p>
+<ul>
+<li>Complete MSBuild log</li>
+<li>Viewable with MSBuild Structured Log Viewer</li>
+<li>Best for detailed analysis</li>
+</ul>
+<h3 id="viewing-binary-logs">Viewing Binary Logs</h3>
+<pre><code class="lang-cmd"># Install viewer
+dotnet tool install --global MSBuildStructuredLogViewer
+
+# Open log
+msbuildlogviewer Logs/nightly-build.binlog
+</code></pre>
+<h2 id="status-information">Status Information</h2>
+<h3 id="status-bar">Status Bar</h3>
+<p>Displays:</p>
+<ul>
+<li><strong>Status</strong>: RUNNING / DONE / FAILED</li>
+<li><strong>Elapsed Time</strong>: <code>00:05:23</code></li>
+<li><strong>Errors</strong>: <code>Errors: 0</code></li>
+<li><strong>Warnings</strong>: <code>Warnings: 3</code></li>
+</ul>
+<h3 id="summary-panel-navigation">Summary Panel Navigation</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PageUp</strong></td>
+<td>Previous page</td>
+</tr>
+<tr>
+<td><strong>PageDown</strong></td>
+<td>Next page</td>
+</tr>
+<tr>
+<td><strong>Home</strong></td>
+<td>First page</td>
+</tr>
+<tr>
+<td><strong>End</strong></td>
+<td>Last page</td>
+</tr>
+</tbody>
+</table>
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="required">Required</h3>
+<ol>
+<li><p><strong>Visual Studio 2022</strong></p>
+<ul>
+<li>ModernBuild auto-detects MSBuild via <code>vswhere.exe</code></li>
+</ul>
+</li>
+<li><p><strong>NuGet CLI</strong></p>
+<ul>
+<li>Download: <a href="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe">https://dist.nuget.org/win-x86-commandline/latest/nuget.exe</a></li>
+<li>Place in PATH or <code>Scripts/</code> directory</li>
+</ul>
+</li>
+</ol>
+<h3 id="optional">Optional</h3>
+<ul>
+<li><strong>.NET 10 SDK</strong>: For building ModernBuild itself</li>
+</ul>
+<h2 id="project-file-detection">Project File Detection</h2>
+<p>ModernBuild looks for project files in these locations:</p>
+<p><strong>Nightly</strong>:</p>
+<ol>
+<li><code>Scripts/nightly.proj</code></li>
+<li><code>Scripts/Project-Files/nightly.proj</code></li>
+</ol>
+<p><strong>Canary</strong>:</p>
+<ol>
+<li><code>Scripts/canary.proj</code></li>
+<li><code>Scripts/Project-Files/canary.proj</code></li>
+</ol>
+<p><strong>Stable</strong>:</p>
+<ol>
+<li><code>Scripts/build.proj</code></li>
+<li><code>Scripts/Project-Files/build.proj</code></li>
+</ol>
+<p><strong>Installer</strong> (not exposed in UI):</p>
+<ol>
+<li><code>Scripts/installer.proj</code></li>
+<li><code>Scripts/Project-Files/installer.proj</code></li>
+</ol>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="could-not-find-msbuildexe">&quot;Could not find MSBuild.exe&quot;</h3>
+<p><strong>Cause</strong>: Visual Studio 2022 not installed or not detected</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Install Visual Studio 2022</li>
+<li>Verify installation:</li>
+</ol>
+<pre><code class="lang-cmd">dir &quot;%ProgramFiles%\Microsoft Visual Studio\2022\&quot;
+</code></pre>
+<ol start="3">
+<li>ModernBuild checks these locations:
+<ul>
+<li>Preview</li>
+<li>Enterprise</li>
+<li>Professional</li>
+<li>Community</li>
+<li>BuildTools</li>
+</ul>
+</li>
+</ol>
+<h3 id="nugetexe-not-found">&quot;nuget.exe not found&quot;</h3>
+<p><strong>Cause</strong>: NuGet CLI not in PATH</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Download NuGet CLI:</li>
+</ol>
+<pre><code class="lang-cmd">curl -o Scripts\nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+</code></pre>
+<ol start="2">
+<li>Add to PATH</li>
+</ol>
+<h3 id="project-file-not-found-">&quot;Project file not found: ...&quot;</h3>
+<p><strong>Cause</strong>: <code>.proj</code> files missing or wrong location</p>
+<p><strong>Solution</strong>: Verify files exist:</p>
+<pre><code class="lang-cmd">dir Scripts\*.proj
+</code></pre>
+<h3 id="build-succeeds-with-no-observable-work">Build Succeeds with No Observable Work</h3>
+<p><strong>Cause</strong>: Configuration/TFM mismatch</p>
+<p><strong>Solution</strong>:</p>
+<ol>
+<li>Check ModernBuild output for skipped targets</li>
+<li>Verify <code>TFMs</code> property in build settings</li>
+<li>Clean and rebuild</li>
+</ol>
+<h3 id="no-packages-found-to-push">No Packages Found to Push</h3>
+<p><strong>Cause</strong>: Packages not created or wrong location</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Run Rebuild+Pack before Push</li>
+<li>Verify packages exist:</li>
+</ol>
+<pre><code class="lang-cmd">dir Bin\Packages\Release\*.nupkg
+</code></pre>
+<h3 id="custom-nuget-source-fails">Custom NuGet Source Fails</h3>
+<p><strong>Cause</strong>: Custom source not implemented in UI</p>
+<p><strong>Workaround</strong>: Use command line for custom sources</p>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="process-management">Process Management</h3>
+<p>ModernBuild kills the entire MSBuild process tree when you stop a running action:</p>
+<ul>
+<li>Terminates MSBuild.exe</li>
+<li>Terminates child processes</li>
+<li>Prevents zombie processes</li>
+</ul>
+<h3 id="real-time-output">Real-time Output</h3>
+<ul>
+<li>Streams MSBuild output line-by-line</li>
+<li>Auto-scrolls when enabled</li>
+<li>Supports copy-to-clipboard (press Enter on line)</li>
+</ul>
+<h3 id="build-statistics">Build Statistics</h3>
+<p>Tracks:</p>
+<ul>
+<li>Elapsed time</li>
+<li>Error count</li>
+<li>Warning count</li>
+<li>Build status</li>
+</ul>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-run-from-repository-root">1. Run from Repository Root</h3>
+<pre><code class="lang-cmd">cd Z:\Development\Krypton\Standard-Toolkit
+dotnet run --project Scripts/ModernBuild/ModernBuild.csproj
+</code></pre>
+<h3 id="2-clean-before-major-builds">2. Clean Before Major Builds</h3>
+<p>Use F7 (Clean) before switching configurations or channels.</p>
+<h3 id="3-test-before-publishing">3. Test Before Publishing</h3>
+<p>Use TEST button on NuGet page to preview push commands.</p>
+<h3 id="4-monitor-logs">4. Monitor Logs</h3>
+<p>Check binary logs for detailed troubleshooting:</p>
+<pre><code class="lang-cmd">msbuildlogviewer Logs/nightly-build.binlog
+</code></pre>
+<h3 id="5-use-skip-duplicate-for-safety">5. Use Skip Duplicate for Safety</h3>
+<p>Enable SkipDup (F7) when testing publishing to avoid errors.</p>
+<h3 id="6-verify-packages-locally">6. Verify Packages Locally</h3>
+<p>Before publishing:</p>
+<ol>
+<li>Check <code>Bin/Packages/&lt;Configuration&gt;/</code></li>
+<li>Verify version numbers</li>
+<li>Inspect with NuGet Package Explorer</li>
+</ol>
+<h2 id="comparison-with-command-line-scripts">Comparison with Command-Line Scripts</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>ModernBuild</th>
+<th>Build Scripts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>UI</strong></td>
+<td>Interactive TUI</td>
+<td>Command-line</td>
+</tr>
+<tr>
+<td><strong>Real-time Output</strong></td>
+<td>Yes</td>
+<td>Yes (console)</td>
+</tr>
+<tr>
+<td><strong>Build Logs</strong></td>
+<td>Binary + text</td>
+<td>Text only</td>
+</tr>
+<tr>
+<td><strong>NuGet Publishing</strong></td>
+<td>Integrated</td>
+<td>Separate scripts</td>
+</tr>
+<tr>
+<td><strong>Configuration Switching</strong></td>
+<td>F-key toggle</td>
+<td>Command parameter</td>
+</tr>
+<tr>
+<td><strong>Package Preview</strong></td>
+<td>TEST mode</td>
+<td>Manual inspection</td>
+</tr>
+<tr>
+<td><strong>Clean Operations</strong></td>
+<td>F7 key</td>
+<td>purge.cmd</td>
+</tr>
+<tr>
+<td><strong>Learning Curve</strong></td>
+<td>Low</td>
+<td>Medium</td>
+</tr>
+</tbody>
+</table>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="03-Build-Scripts.md">Build Scripts</a> - Command-line alternatives</li>
+<li><a href="06-NuGet-Packaging.md">NuGet Packaging</a> - Package details</li>
+<li><a href="02-MSBuild-Project-Files.md">MSBuild Project Files</a> - Build targets</li>
+<li><a href="09-Local-Development-Workflow.md">Local Development Workflow</a> - Developer workflows</li>
+<li><a href="10-Troubleshooting.md">Troubleshooting</a> - Common issues</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

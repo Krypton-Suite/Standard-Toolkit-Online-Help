@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Local Development Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Local Development Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="local-development-workflow">Local Development Workflow</h1>
+
+<h2 id="overview">Overview</h2>
+<p>This guide provides recommended workflows for local development of the Krypton Toolkit. It covers daily development tasks, testing changes, debugging, and preparing releases.</p>
+<h2 id="development-environment-setup">Development Environment Setup</h2>
+<h3 id="initial-setup">Initial Setup</h3>
+<ol>
+<li><p><strong>Install Prerequisites</strong>:</p>
+<ul>
+<li>Visual Studio 2022 (Community, Professional, or Enterprise)</li>
+<li>.NET 8.0 SDK (minimum)</li>
+<li>.NET 9.0 SDK (recommended)</li>
+<li>.NET 10.0 SDK (optional)</li>
+<li>Git for Windows</li>
+</ul>
+</li>
+<li><p><strong>Clone Repository</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd">git clone https://github.com/Krypton-Suite/Standard-Toolkit.git
+cd Standard-Toolkit
+</code></pre>
+<ol start="3">
+<li><strong>Enable Windows Long Paths</strong>:</li>
+</ol>
+<pre><code class="lang-cmd"># Run as Administrator
+reg add HKLM\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled /t REG_DWORD /d 1 /f
+</code></pre>
+<ol start="4">
+<li><strong>Restore NuGet Packages</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet restore &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot;
+</code></pre>
+<h3 id="opening-the-solution">Opening the Solution</h3>
+<p><strong>Option 1: Visual Studio 2022</strong></p>
+<pre><code class="lang-cmd">start &quot;Source\Krypton Components\Krypton Toolkit Suite 2022 - VS2022.sln&quot;
+</code></pre>
+<p><strong>Option 2: Command Line</strong></p>
+<pre><code class="lang-cmd">cd &quot;Source\Krypton Components&quot;
+devenv &quot;Krypton Toolkit Suite 2022 - VS2022.sln&quot;
+</code></pre>
+<h2 id="daily-development-workflow">Daily Development Workflow</h2>
+<h3 id="typical-development-cycle">Typical Development Cycle</h3>
+<ol>
+<li><strong>Pull Latest Changes</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">git pull origin master
+</code></pre>
+<ol start="2">
+<li><strong>Create Feature Branch</strong> (optional):</li>
+</ol>
+<pre><code class="lang-cmd">git checkout -b feature/my-new-feature
+</code></pre>
+<ol start="3">
+<li><strong>Build Debug Configuration</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<p>Or in Visual Studio:</p>
+<ul>
+<li>Press <code>Ctrl+Shift+B</code> or</li>
+<li>Menu: Build → Build Solution</li>
+</ul>
+<ol start="4">
+<li><strong>Make Code Changes</strong>:</li>
+</ol>
+<ul>
+<li>Edit source files in <code>Source/Krypton Components/</code></li>
+<li>Follow coding guidelines in <code>Source/.editorconfig</code></li>
+</ul>
+<ol start="5">
+<li><strong>Test Changes</strong>:</li>
+</ol>
+<ul>
+<li>Run TestForm: <code>dotnet run --project &quot;Source/Krypton Components/TestForm/TestForm.csproj&quot; -c Debug</code></li>
+<li>Or press <code>F5</code> in Visual Studio with TestForm as startup project</li>
+</ul>
+<ol start="6">
+<li><strong>Rebuild After Changes</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<ol start="7">
+<li><strong>Commit Changes</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">git add .
+git commit -m &quot;Fix autosizing issue (#2433)&quot;
+</code></pre>
+<h2 id="building-specific-projects">Building Specific Projects</h2>
+<h3 id="build-single-component">Build Single Component</h3>
+<pre><code class="lang-cmd"># Toolkit only
+dotnet build &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj&quot; -c Debug
+
+# Ribbon only
+dotnet build &quot;Source/Krypton Components/Krypton.Ribbon/Krypton.Ribbon 2022.csproj&quot; -c Debug
+</code></pre>
+<h3 id="build-all-components">Build All Components</h3>
+<pre><code class="lang-cmd">cd Scripts
+msbuild debug.proj /t:Build
+</code></pre>
+<p>Or:</p>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<h3 id="clean-build">Clean Build</h3>
+<pre><code class="lang-cmd">cd Scripts
+msbuild debug.proj /t:Clean;Build
+</code></pre>
+<p>Or:</p>
+<pre><code class="lang-cmd">dotnet clean &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<h2 id="testing-changes">Testing Changes</h2>
+<h3 id="using-testform">Using TestForm</h3>
+<p><strong>TestForm</strong> is a WinForms sample application for validating changes.</p>
+<p><strong>Location</strong>: <code>Source/Krypton Components/TestForm/</code></p>
+<p><strong>Running TestForm</strong>:</p>
+<p>Option 1: Command Line</p>
+<pre><code class="lang-cmd">dotnet run --project &quot;Source/Krypton Components/TestForm/TestForm.csproj&quot; -c Debug
+</code></pre>
+<p>Option 2: Visual Studio</p>
+<ol>
+<li>Right-click TestForm project</li>
+<li>Set as StartUp Project</li>
+<li>Press <code>F5</code></li>
+</ol>
+<p><strong>Adding Test Scenarios</strong>:</p>
+<ol>
+<li>Open <code>TestForm/Form1.cs</code> (or appropriate form)</li>
+<li>Add controls to test your changes</li>
+<li>Run and verify behavior</li>
+</ol>
+<p>Example:</p>
+<pre><code class="lang-csharp">// Add to Form1.cs
+private void AddMyTestControl()
+{
+    var button = new KryptonButton
+    {
+        Text = &quot;Test Button&quot;,
+        Location = new Point(10, 10)
+    };
+    this.Controls.Add(button);
+}
+</code></pre>
+<h3 id="using-test-harnesses">Using Test Harnesses</h3>
+<p><strong>Location</strong>: <code>Source/TestHarnesses/</code></p>
+<p><strong>Available Harnesses</strong>:</p>
+<ul>
+<li><code>DockingConfigTest/</code> - Docking configuration tests</li>
+<li><code>FormBorderStyleNoneTest/</code> - Form border testing</li>
+<li><code>KryptonFormDimensionTest/</code> - Form dimension tests</li>
+<li><code>MultiSelectionTest/</code> - Multi-selection scenarios</li>
+<li><code>ShowTabsTest/</code> - Tab control tests</li>
+<li><code>ThemeSwapRepro/</code> - Theme switching tests</li>
+</ul>
+<p><strong>Running a Harness</strong>:</p>
+<pre><code class="lang-cmd">cd &quot;Source/TestHarnesses/ThemeSwapRepro&quot;
+dotnet run -c Debug
+</code></pre>
+<p><strong>Creating a New Harness</strong>:</p>
+<ol>
+<li>Create new WinForms project in <code>Source/TestHarnesses/</code></li>
+<li>Add reference to Krypton components:</li>
+</ol>
+<pre><code class="lang-xml">&lt;ItemGroup&gt;
+    &lt;ProjectReference Include=&quot;..\..\Krypton Components\Krypton.Toolkit\Krypton.Toolkit 2022.csproj&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<ol start="3">
+<li>Implement minimal repro of issue</li>
+<li>Document reproduction steps</li>
+</ol>
+<h2 id="debugging">Debugging</h2>
+<h3 id="debug-in-visual-studio">Debug in Visual Studio</h3>
+<ol>
+<li><p><strong>Set Breakpoints</strong>:</p>
+<ul>
+<li>Click in left margin of code editor</li>
+<li>Or press <code>F9</code> on desired line</li>
+</ul>
+</li>
+<li><p><strong>Start Debugging</strong>:</p>
+<ul>
+<li>Press <code>F5</code></li>
+<li>Or Menu: Debug → Start Debugging</li>
+</ul>
+</li>
+<li><p><strong>Debug Controls</strong>:</p>
+<ul>
+<li><code>F5</code> - Continue</li>
+<li><code>F10</code> - Step Over</li>
+<li><code>F11</code> - Step Into</li>
+<li><code>Shift+F11</code> - Step Out</li>
+<li><code>Shift+F5</code> - Stop Debugging</li>
+</ul>
+</li>
+</ol>
+<h3 id="debug-specific-framework">Debug Specific Framework</h3>
+<pre><code class="lang-cmd"># Debug with .NET 8
+dotnet run --project &quot;Source/Krypton Components/TestForm/TestForm.csproj&quot; -c Debug -f net8.0-windows
+
+# Debug with .NET Framework 4.8
+dotnet run --project &quot;Source/Krypton Components/TestForm/TestForm.csproj&quot; -c Debug -f net48
+</code></pre>
+<h3 id="attach-to-running-process">Attach to Running Process</h3>
+<ol>
+<li>Run TestForm or harness</li>
+<li>Visual Studio: Debug → Attach to Process</li>
+<li>Select TestForm.exe or harness</li>
+<li>Click Attach</li>
+</ol>
+<h3 id="debug-build-output">Debug Build Output</h3>
+<p><strong>Debug binaries</strong> are in:</p>
+<pre><code>Bin/Debug/&lt;tfm&gt;/
+├── net48/
+│   ├── Krypton.Toolkit.dll
+│   ├── Krypton.Toolkit.pdb
+│   └── ...
+├── net8.0-windows/
+│   └── ...
+</code></pre>
+<h2 id="working-with-multiple-target-frameworks">Working with Multiple Target Frameworks</h2>
+<h3 id="build-for-specific-tfm">Build for Specific TFM</h3>
+<pre><code class="lang-cmd"># .NET Framework 4.8 only
+dotnet build &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj&quot; -c Debug -f net48
+
+# .NET 8 only
+dotnet build &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj&quot; -c Debug -f net8.0-windows
+</code></pre>
+<h3 id="conditional-compilation">Conditional Compilation</h3>
+<p>Use preprocessor directives for framework-specific code:</p>
+<pre><code class="lang-csharp">#if NET8_0_OR_GREATER
+    // .NET 8+ code
+    using System.Runtime.CompilerServices;
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+#elif NETFRAMEWORK
+    // .NET Framework code
+#endif
+</code></pre>
+<h3 id="configuration-specific-code">Configuration-Specific Code</h3>
+<pre><code class="lang-csharp">#if DEBUG
+    Console.WriteLine(&quot;Debug mode&quot;);
+#endif
+
+#if NIGHTLY
+    // Nightly build code
+#endif
+
+#if CANARY
+    // Canary build code
+#endif
+</code></pre>
+<h2 id="code-style-and-guidelines">Code Style and Guidelines</h2>
+<h3 id="editorconfig">EditorConfig</h3>
+<p>The repository uses <code>.editorconfig</code> for consistent formatting:</p>
+<ul>
+<li>Location: <code>Source/.editorconfig</code></li>
+<li>Enforces: Indentation, line endings, naming conventions</li>
+</ul>
+<h3 id="coding-standards">Coding Standards</h3>
+<ol>
+<li><strong>Indentation</strong>: 4 spaces</li>
+<li><strong>Line Endings</strong>: CRLF (Windows)</li>
+<li><strong>Encoding</strong>: UTF-8 with BOM</li>
+<li><strong>No Variable Aliasing</strong>: Check for existing variables before adding new ones</li>
+<li><strong>Use Global Usings</strong>: Defined in <code>GlobalDeclarations.cs</code></li>
+<li><strong>WinForms Designer</strong>: Keep object declarations at file bottom</li>
+</ol>
+<h3 id="example">Example:</h3>
+<pre><code class="lang-csharp">// Good
+private void HandleButtonClick(object sender, EventArgs e)
+{
+    if (sender is KryptonButton button)
+    {
+        button.Enabled = false;
+    }
+}
+
+// Bad
+private void HandleButtonClick(object sender,EventArgs e){
+  var btn = sender as KryptonButton;
+  if(btn != null)
+    btn.Enabled=false;
+}
+</code></pre>
+<h2 id="making-a-pull-request">Making a Pull Request</h2>
+<h3 id="pre-pr-checklist">Pre-PR Checklist</h3>
+<ol>
+<li><strong>Build Successfully</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Release
+</code></pre>
+<ol start="2">
+<li><p><strong>Test Changes</strong>:</p>
+<ul>
+<li>Run TestForm</li>
+<li>Verify in relevant test harnesses</li>
+</ul>
+</li>
+<li><p><strong>Check Linting</strong> (if available):</p>
+</li>
+</ol>
+<pre><code class="lang-cmd">dotnet format &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; --verify-no-changes
+</code></pre>
+<ol start="4">
+<li><strong>Commit with Good Message</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">git commit -m &quot;Fix autosizing in KryptonDataGridView (#2433)&quot;
+</code></pre>
+<h3 id="creating-pr">Creating PR</h3>
+<ol>
+<li><strong>Push to Fork</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">git push origin feature/my-new-feature
+</code></pre>
+<ol start="2">
+<li><p><strong>Open PR on GitHub</strong>:</p>
+<ul>
+<li>Go to <a href="https://github.com/Krypton-Suite/Standard-Toolkit">https://github.com/Krypton-Suite/Standard-Toolkit</a></li>
+<li>Click &quot;New Pull Request&quot;</li>
+<li>Select your branch</li>
+<li>Fill in description with:
+<ul>
+<li>What changed</li>
+<li>Why it changed</li>
+<li>How to test</li>
+<li>Screenshots/GIFs for UI changes</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Address Review Comments</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd"># Make changes
+git add .
+git commit -m &quot;Address review comments&quot;
+git push origin feature/my-new-feature
+</code></pre>
+<h2 id="local-package-testing">Local Package Testing</h2>
+<h3 id="create-local-packages">Create Local Packages</h3>
+<pre><code class="lang-cmd">cd Scripts
+msbuild debug.proj /t:Build
+msbuild debug.proj /t:Pack
+</code></pre>
+<p><strong>Note</strong>: Debug packages go to <code>Bin/Packages/Debug/</code></p>
+<h3 id="install-local-packages">Install Local Packages</h3>
+<ol>
+<li><strong>Create Local NuGet Source</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">mkdir C:\LocalNuGet
+nuget.exe sources add -Name local -Source C:\LocalNuGet
+</code></pre>
+<ol start="2">
+<li><strong>Copy Packages</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">copy Bin\Packages\Debug\*.nupkg C:\LocalNuGet\
+</code></pre>
+<ol start="3">
+<li><strong>Install in Test Project</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">cd MyTestProject
+dotnet add package Krypton.Toolkit --source local
+</code></pre>
+<h3 id="test-in-another-solution">Test in Another Solution</h3>
+<p>Create a simple test project:</p>
+<pre><code class="lang-cmd">dotnet new winforms -n KryptonTest -f net8.0-windows
+cd KryptonTest
+dotnet add package Krypton.Toolkit --source C:\LocalNuGet
+</code></pre>
+<p>Add test code:</p>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+
+public class Form1 : KryptonForm
+{
+    public Form1()
+    {
+        var button = new KryptonButton { Text = &quot;Click Me&quot; };
+        Controls.Add(button);
+    }
+}
+</code></pre>
+<h2 id="performance-profiling">Performance Profiling</h2>
+<h3 id="using-visual-studio-profiler">Using Visual Studio Profiler</h3>
+<ol>
+<li><p>Open solution in Visual Studio 2022</p>
+</li>
+<li><p>Debug → Performance Profiler</p>
+</li>
+<li><p>Select profiling tools:</p>
+<ul>
+<li>CPU Usage</li>
+<li>Memory Usage</li>
+<li>.NET Object Allocation</li>
+</ul>
+</li>
+<li><p>Start profiling</p>
+</li>
+<li><p>Perform actions in TestForm</p>
+</li>
+<li><p>Stop profiling</p>
+</li>
+<li><p>Analyze results</p>
+</li>
+</ol>
+<h3 id="benchmarking">Benchmarking</h3>
+<p>For micro-benchmarks, use BenchmarkDotNet:</p>
+<pre><code class="lang-csharp">using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
+
+[MemoryDiagnoser]
+public class ButtonBenchmarks
+{
+    [Benchmark]
+    public void CreateButton()
+    {
+        var button = new KryptonButton();
+    }
+}
+
+// Run
+BenchmarkRunner.Run&lt;ButtonBenchmarks&gt;();
+</code></pre>
+<h2 id="troubleshooting-development-issues">Troubleshooting Development Issues</h2>
+<h3 id="build-errors">Build Errors</h3>
+<p><strong>&quot;SDK not found&quot;</strong>:</p>
+<ul>
+<li>Install required .NET SDK</li>
+<li>Verify with <code>dotnet --list-sdks</code></li>
+</ul>
+<p><strong>&quot;Project file could not be loaded&quot;</strong>:</p>
+<ul>
+<li>Check <code>.csproj</code> XML syntax</li>
+<li>Restore NuGet packages</li>
+</ul>
+<p><strong>&quot;Type or namespace not found&quot;</strong>:</p>
+<ul>
+<li>Clean and rebuild</li>
+<li>Check project references</li>
+</ul>
+<h3 id="runtime-errors">Runtime Errors</h3>
+<p><strong>&quot;Could not load file or assembly&quot;</strong>:</p>
+<ul>
+<li>Verify DLL in <code>Bin/Debug/&lt;tfm&gt;/</code></li>
+<li>Check binding redirects (for .NET Framework)</li>
+</ul>
+<p><strong>Designer Errors</strong>:</p>
+<ul>
+<li>Rebuild solution</li>
+<li>Close and reopen designer</li>
+<li>Clean <code>obj/</code> directories</li>
+</ul>
+<h3 id="git-issues">Git Issues</h3>
+<p><strong>Merge Conflicts</strong>:</p>
+<pre><code class="lang-cmd">git status
+# Resolve conflicts in files
+git add .
+git commit -m &quot;Resolve merge conflicts&quot;
+</code></pre>
+<p><strong>Undo Local Changes</strong>:</p>
+<pre><code class="lang-cmd">git checkout -- path/to/file.cs
+</code></pre>
+<p><strong>Reset to Remote</strong>:</p>
+<pre><code class="lang-cmd">git fetch origin
+git reset --hard origin/master
+</code></pre>
+<h2 id="quick-reference">Quick Reference</h2>
+<h3 id="common-commands">Common Commands</h3>
+<pre><code class="lang-cmd"># Build Debug
+dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+
+# Run TestForm
+dotnet run --project &quot;Source/Krypton Components/TestForm/TestForm.csproj&quot; -c Debug
+
+# Clean
+dotnet clean &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot;
+
+# Restore
+dotnet restore &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot;
+
+# Purge
+cd Scripts
+purge.cmd
+</code></pre>
+<h3 id="keyboard-shortcuts-visual-studio">Keyboard Shortcuts (Visual Studio)</h3>
+<table>
+<thead>
+<tr>
+<th>Shortcut</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+Shift+B</code></td>
+<td>Build Solution</td>
+</tr>
+<tr>
+<td><code>F5</code></td>
+<td>Start Debugging</td>
+</tr>
+<tr>
+<td><code>Ctrl+F5</code></td>
+<td>Start Without Debugging</td>
+</tr>
+<tr>
+<td><code>F9</code></td>
+<td>Toggle Breakpoint</td>
+</tr>
+<tr>
+<td><code>F10</code></td>
+<td>Step Over</td>
+</tr>
+<tr>
+<td><code>F11</code></td>
+<td>Step Into</td>
+</tr>
+<tr>
+<td><code>Ctrl+K, Ctrl+D</code></td>
+<td>Format Document</td>
+</tr>
+<tr>
+<td><code>Ctrl+.</code></td>
+<td>Quick Actions</td>
+</tr>
+</tbody>
+</table>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="03-Build-Scripts.md">Build Scripts</a> - Build commands</li>
+<li><a href="02-MSBuild-Project-Files.md">MSBuild Project Files</a> - Build system</li>
+<li><a href="08-ModernBuild-Tool.md">ModernBuild Tool</a> - Interactive builds</li>
+<li><a href="10-Troubleshooting.md">Troubleshooting</a> - Common issues</li>
+<li><a href="01-Build-System-Overview.md">Build System Overview</a> - System architecture</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

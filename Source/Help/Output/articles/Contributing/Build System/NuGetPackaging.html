@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>NuGet Package Creation and Publishing | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="NuGet Package Creation and Publishing | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="nuget-package-creation-and-publishing">NuGet Package Creation and Publishing</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The Krypton Toolkit build system creates NuGet packages for all five component libraries across multiple target frameworks and configurations. Packages are automatically configured with appropriate metadata, icons, dependencies, and source linking.</p>
+<h2 id="package-structure">Package Structure</h2>
+<h3 id="core-packages">Core Packages</h3>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Description</th>
+<th>Assembly</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Krypton.Toolkit</code></td>
+<td>Core toolkit controls</td>
+<td>Krypton.Toolkit.dll</td>
+</tr>
+<tr>
+<td><code>Krypton.Ribbon</code></td>
+<td>Ribbon controls</td>
+<td>Krypton.Ribbon.dll</td>
+</tr>
+<tr>
+<td><code>Krypton.Navigator</code></td>
+<td>Navigation controls</td>
+<td>Krypton.Navigator.dll</td>
+</tr>
+<tr>
+<td><code>Krypton.Workspace</code></td>
+<td>Workspace controls</td>
+<td>Krypton.Workspace.dll</td>
+</tr>
+<tr>
+<td><code>Krypton.Docking</code></td>
+<td>Docking system</td>
+<td>Krypton.Docking.dll</td>
+</tr>
+</tbody>
+</table>
+<h3 id="package-variants">Package Variants</h3>
+<h4 id="releasestable-packages">Release/Stable Packages</h4>
+<p><strong>Standard Package</strong> (<code>TFMs=all</code>):</p>
+<ul>
+<li>Name: <code>Krypton.Toolkit.{version}.nupkg</code></li>
+<li>Frameworks: net472, net48, net481, net8.0-windows, net9.0-windows, net10.0-windows</li>
+<li>Use Case: Full framework support</li>
+</ul>
+<p><strong>Lite Package</strong> (<code>TFMs=lite</code>):</p>
+<ul>
+<li>Name: <code>Krypton.Toolkit.Lite.{version}.nupkg</code></li>
+<li>Frameworks: net48, net481, net8.0-windows, net9.0-windows, net10.0-windows</li>
+<li>Use Case: Modern frameworks only</li>
+</ul>
+<h4 id="canary-packages-beta">Canary Packages (Beta)</h4>
+<ul>
+<li>Name: <code>Krypton.Toolkit.Canary.{version}-beta.nupkg</code></li>
+<li>Frameworks: All (net472 - net10.0-windows)</li>
+<li>Symbol Package: <code>Krypton.Toolkit.Canary.{version}-beta.snupkg</code></li>
+<li>Use Case: Beta testing</li>
+</ul>
+<h4 id="nightly-packages-alpha">Nightly Packages (Alpha)</h4>
+<ul>
+<li>Name: <code>Krypton.Toolkit.Nightly.{version}-alpha.nupkg</code></li>
+<li>Frameworks: All (net472 - net10.0-windows)</li>
+<li>Symbol Package: <code>Krypton.Toolkit.Nightly.{version}-alpha.snupkg</code></li>
+<li>Use Case: Nightly builds</li>
+</ul>
+<h2 id="package-creation-workflow">Package Creation Workflow</h2>
+<h3 id="1-clean-previous-packages">1. Clean Previous Packages</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:CleanPackages
+</code></pre>
+<p><strong>Actions</strong>:</p>
+<ul>
+<li>Deletes all <code>.nupkg</code> files from <code>Bin/Packages/&lt;Configuration&gt;/</code></li>
+</ul>
+<h3 id="2-clean-build-artifacts">2. Clean Build Artifacts</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Clean
+</code></pre>
+<p><strong>Actions</strong>:</p>
+<ul>
+<li>Cleans all Krypton projects</li>
+<li>Removes <code>obj/</code> and <code>bin/</code> directories</li>
+<li>Deletes intermediate NuGet assets:
+<ul>
+<li><code>*.json</code></li>
+<li><code>*.cache</code></li>
+<li><code>*.g.targets</code></li>
+<li><code>*.g.props</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="3-restore-dependencies">3. Restore Dependencies</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Restore
+</code></pre>
+<p><strong>Actions</strong>:</p>
+<ul>
+<li>Restores NuGet packages for all Krypton projects</li>
+<li>Downloads dependencies</li>
+<li>Generates assets files</li>
+</ul>
+<h3 id="4-build-projects">4. Build Projects</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /p:TFMs=all
+</code></pre>
+<p><strong>Actions</strong>:</p>
+<ul>
+<li>Compiles all Krypton projects</li>
+<li>Targets all frameworks specified by <code>TFMs</code> property</li>
+<li>Generates assemblies in <code>Bin/&lt;Configuration&gt;/&lt;TFM&gt;/</code></li>
+</ul>
+<h3 id="5-pack-projects">5. Pack Projects</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Pack /p:TFMs=all
+</code></pre>
+<p><strong>Actions</strong>:</p>
+<ul>
+<li>Creates NuGet packages from built assemblies</li>
+<li>Applies configuration-specific metadata</li>
+<li>Generates <code>.nupkg</code> and optionally <code>.snupkg</code> files</li>
+<li>Outputs to <code>Bin/Packages/&lt;Configuration&gt;/</code></li>
+</ul>
+<h3 id="complete-workflow">Complete Workflow</h3>
+<pre><code class="lang-cmd">cd Scripts
+msbuild build.proj /t:Clean;Restore;Build;Pack /p:Configuration=Release /p:TFMs=all
+</code></pre>
+<p>Or use build scripts:</p>
+<pre><code class="lang-cmd">cd Scripts
+build-stable.cmd Build
+build-stable.cmd Pack
+</code></pre>
+<h2 id="package-metadata">Package Metadata</h2>
+<h3 id="common-metadata-all-configurations">Common Metadata (All Configurations)</h3>
+<p><strong>From <code>Directory.Build.props</code> and <code>Directory.Build.targets</code></strong>:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;Authors&gt;Peter William Wagner &amp;amp; Simon Coghlan &amp;amp; Giduac &amp;amp; Ahmed Abdelhameed &amp;amp; Lesandro &amp;amp; tobitege &amp;amp; Thomas Bolon&lt;/Authors&gt;
+    &lt;Copyright&gt;© Krypton Suite 2017 - 2025. Component Factory Pty Ltd 2006 - 2016. All rights reserved.&lt;/Copyright&gt;
+    &lt;PackageLicenseExpression&gt;BSD-3-Clause&lt;/PackageLicenseExpression&gt;
+    &lt;PackageRequireLicenseAcceptance&gt;True&lt;/PackageRequireLicenseAcceptance&gt;
+    &lt;PackageProjectUrl&gt;https://github.com/Krypton-Suite/Standard-Toolkit&lt;/PackageProjectUrl&gt;
+    &lt;RepositoryURL&gt;https://github.com/Krypton-Suite/Standard-Toolkit&lt;/RepositoryURL&gt;
+    &lt;PackageTags&gt;Krypton ComponentFactory WinForms Themes Controls DataGrid Ribbon Workspace Tabs .NET Toolkit&lt;/PackageTags&gt;
+    &lt;PackageReleaseNotes&gt;Get updates here: https://github.com/Krypton-Suite/Standard-Toolkit&lt;/PackageReleaseNotes&gt;
+    &lt;PublishRepositoryUrl&gt;true&lt;/PublishRepositoryUrl&gt;
+    &lt;EmbedUntrackedSources&gt;true&lt;/EmbedUntrackedSources&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h3 id="configuration-specific-metadata">Configuration-Specific Metadata</h3>
+<h4 id="stable-release">Stable Release</h4>
+<p><strong>Icon</strong>: <code>Krypton Stable.png</code></p>
+<p><strong>Description Template</strong>:</p>
+<pre><code>An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 10.
+This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 10.
+Also, all libraries are included targeting each specific framework version for performance purposes.
+To view all of the standard toolkit package latest version information, please visit:
+https://github.com/Krypton-Suite/Krypton-Toolkit-Suite-Version-Dashboard
+</code></pre>
+<p><strong>Files Included</strong>:</p>
+<ul>
+<li>Icon: <code>Krypton Stable.png</code></li>
+<li>License: <code>License.md</code></li>
+<li>Readme: <code>README.md</code></li>
+</ul>
+<h4 id="canary-beta">Canary (Beta)</h4>
+<p><strong>Icon</strong>: <code>Krypton Canary.png</code></p>
+<p><strong>Description Addendum</strong>:</p>
+<pre><code>This package is for those who want to try out the latest features before deployment.
+</code></pre>
+<p><strong>Changelog Link</strong>: <code>https://github.com/Krypton-Suite/Standard-Toolkit/blob/canary/Documents/Help/Changelog.md</code></p>
+<p><strong>Symbol Packages</strong>: Enabled (<code>.snupkg</code>)</p>
+<h4 id="nightly-alpha">Nightly (Alpha)</h4>
+<p><strong>Icon</strong>: <code>Krypton Nightly.png</code></p>
+<p><strong>Description Addendum</strong>:</p>
+<pre><code>This package is for those who want to try out the latest cutting edge features before deployment.
+</code></pre>
+<p><strong>Changelog Link</strong>: <code>https://github.com/Krypton-Suite/Standard-Toolkit/blob/alpha/Documents/Help/Changelog.md</code></p>
+<p><strong>Symbol Packages</strong>: Enabled (<code>.snupkg</code>)</p>
+<h2 id="package-dependencies">Package Dependencies</h2>
+<h3 id="framework-dependencies">Framework Dependencies</h3>
+<p>All packages automatically include framework references based on target:</p>
+<p><strong>NET Framework (net472, net48, net481)</strong>:</p>
+<ul>
+<li>System.dll</li>
+<li>System.Core.dll</li>
+<li>System.Data.dll</li>
+<li>System.Drawing.dll</li>
+<li>System.Windows.Forms.dll</li>
+<li>System.Xml.dll</li>
+</ul>
+<p><strong>.NET (net8.0-windows, net9.0-windows, net10.0-windows)</strong>:</p>
+<ul>
+<li>Microsoft.WindowsDesktop.App.WindowsForms</li>
+<li>Microsoft.WindowsDesktop.App.WPF (transitive)</li>
+</ul>
+<h3 id="inter-package-dependencies">Inter-Package Dependencies</h3>
+<p><strong>Dependency Chain</strong>:</p>
+<pre><code>Krypton.Toolkit (base)
+    ↑
+Krypton.Navigator
+    ↑
+Krypton.Workspace
+    ↑
+Krypton.Docking
+
+Krypton.Ribbon → Krypton.Toolkit
+</code></pre>
+<p><strong>Example</strong>: Installing <code>Krypton.Docking</code> automatically installs:</p>
+<ul>
+<li>Krypton.Workspace</li>
+<li>Krypton.Navigator</li>
+<li>Krypton.Toolkit</li>
+</ul>
+<h2 id="package-output-locations">Package Output Locations</h2>
+<h3 id="by-configuration">By Configuration</h3>
+<pre><code>Bin/
+├── Packages/
+│   ├── Release/
+│   │   ├── Krypton.Toolkit.100.25.1.305.nupkg
+│   │   ├── Krypton.Toolkit.Lite.100.25.1.305.nupkg
+│   │   ├── Krypton.Ribbon.100.25.1.305.nupkg
+│   │   └── ...
+│   ├── Canary/
+│   │   ├── Krypton.Toolkit.Canary.100.25.1.305-beta.nupkg
+│   │   ├── Krypton.Toolkit.Canary.100.25.1.305-beta.snupkg
+│   │   └── ...
+│   ├── Nightly/
+│   │   ├── Krypton.Toolkit.Nightly.100.25.1.305-alpha.nupkg
+│   │   ├── Krypton.Toolkit.Nightly.100.25.1.305-alpha.snupkg
+│   │   └── ...
+│   └── Installer/
+│       └── ...
+</code></pre>
+<h2 id="package-content-structure">Package Content Structure</h2>
+<h3 id="assemblies-lib">Assemblies (lib/)</h3>
+<pre><code>lib/
+├── net472/
+│   └── Krypton.Toolkit.dll
+├── net48/
+│   └── Krypton.Toolkit.dll
+├── net481/
+│   └── Krypton.Toolkit.dll
+├── net8.0-windows/
+│   └── Krypton.Toolkit.dll
+├── net9.0-windows/
+│   └── Krypton.Toolkit.dll
+└── net10.0-windows/
+    └── Krypton.Toolkit.dll
+</code></pre>
+<h3 id="package-files">Package Files</h3>
+<pre><code>/
+├── Icon.png (package icon)
+├── License.md
+└── README.md
+</code></pre>
+<h3 id="symbol-packages-snupkg">Symbol Packages (.snupkg)</h3>
+<pre><code>lib/
+├── net472/
+│   └── Krypton.Toolkit.pdb
+├── net48/
+│   └── Krypton.Toolkit.pdb
+└── ...
+</code></pre>
+<h2 id="publishing-packages">Publishing Packages</h2>
+<h3 id="publishing-to-nugetorg">Publishing to NuGet.org</h3>
+<h4 id="prerequisites">Prerequisites</h4>
+<ol>
+<li><strong>NuGet Account</strong>: Create at <a href="https://www.nuget.org">https://www.nuget.org</a></li>
+<li><strong>API Key</strong>: Generate at <a href="https://www.nuget.org/account/apikeys">https://www.nuget.org/account/apikeys</a></li>
+<li><strong>Configure Key</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">nuget.exe setapikey &lt;YOUR_API_KEY&gt; -Source https://api.nuget.org/v3/index.json
+</code></pre>
+<h4 id="manual-publishing">Manual Publishing</h4>
+<pre><code class="lang-cmd">cd Scripts
+
+# Build and pack
+msbuild build.proj /t:Build;Pack
+
+# Push to NuGet.org
+msbuild build.proj /t:Push
+</code></pre>
+<p>Or use <code>publish.cmd</code>:</p>
+<pre><code class="lang-cmd">cd Scripts
+publish.cmd
+</code></pre>
+<h4 id="push-individual-package">Push Individual Package</h4>
+<pre><code class="lang-cmd">cd Bin/Packages/Release
+nuget.exe push Krypton.Toolkit.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
+</code></pre>
+<h4 id="push-with-symbol-package">Push with Symbol Package</h4>
+<pre><code class="lang-cmd">nuget.exe push Krypton.Toolkit.Canary.100.25.1.305-beta.nupkg -Source https://api.nuget.org/v3/index.json
+# Symbol package (.snupkg) is automatically uploaded
+</code></pre>
+<h3 id="publishing-to-github-packages">Publishing to GitHub Packages</h3>
+<h4 id="prerequisites-1">Prerequisites</h4>
+<ol>
+<li><strong>GitHub Token</strong>: Generate personal access token with <code>write:packages</code> scope</li>
+<li><strong>Configure Source</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">nuget.exe sources add -Name github -Source https://nuget.pkg.github.com/Krypton-Suite/index.json -Username USERNAME -Password TOKEN
+</code></pre>
+<h4 id="publish-to-github">Publish to GitHub</h4>
+<pre><code class="lang-cmd">nuget.exe push Krypton.Toolkit.100.25.1.305.nupkg -Source github
+</code></pre>
+<h3 id="publishing-options">Publishing Options</h3>
+<h4 id="skip-duplicate-packages">Skip Duplicate Packages</h4>
+<pre><code class="lang-cmd">dotnet nuget push *.nupkg --skip-duplicate
+</code></pre>
+<p><strong>Behavior</strong>: Silently skips packages that already exist on server</p>
+<h4 id="dry-run-test-mode">Dry Run (Test Mode)</h4>
+<p>Using <code>ModernBuild</code> tool:</p>
+<ol>
+<li>Run ModernBuild</li>
+<li>Switch to NuGet page (F4)</li>
+<li>Click TEST button</li>
+</ol>
+<p>Shows preview of push commands without actually pushing.</p>
+<h2 id="package-verification">Package Verification</h2>
+<h3 id="inspect-package-contents">Inspect Package Contents</h3>
+<h4 id="using-nuget-cli">Using NuGet CLI</h4>
+<pre><code class="lang-cmd">nuget.exe list Krypton.Toolkit -Source Bin/Packages/Release -AllVersions
+</code></pre>
+<h4 id="using-nuget-package-explorer">Using NuGet Package Explorer</h4>
+<ol>
+<li>Download: <a href="https://github.com/NuGetPackageExplorer/NuGetPackageExplorer">https://github.com/NuGetPackageExplorer/NuGetPackageExplorer</a></li>
+<li>Open <code>.nupkg</code> file</li>
+<li>Inspect:
+<ul>
+<li>Package metadata</li>
+<li>File contents</li>
+<li>Dependencies</li>
+<li>Framework targets</li>
+</ul>
+</li>
+</ol>
+<h4 id="using-command-line">Using Command Line</h4>
+<pre><code class="lang-cmd"># Extract package (it's a ZIP file)
+cd Bin/Packages/Release
+mkdir extracted
+tar -xf Krypton.Toolkit.100.25.1.305.nupkg -C extracted
+dir extracted
+</code></pre>
+<h3 id="validate-package">Validate Package</h3>
+<h4 id="using-dotnet-pack---no-build">Using dotnet pack --no-build</h4>
+<p>After building:</p>
+<pre><code class="lang-cmd">dotnet pack &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj&quot; --no-build --output test-packages
+</code></pre>
+<p>Compare with production packages.</p>
+<h4 id="using-nuget-validator">Using NuGet Validator</h4>
+<pre><code class="lang-powershell"># Install validator
+dotnet tool install --global NuGet.Validator
+
+# Validate package
+nuget-validator Krypton.Toolkit.100.25.1.305.nupkg
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="package-already-exists-on-nugetorg">Package Already Exists on NuGet.org</h3>
+<p><strong>Symptom</strong>: &quot;409 Conflict&quot; when pushing</p>
+<p><strong>Cause</strong>: Version already published</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Use <code>--skip-duplicate</code> flag</li>
+<li>Bump version (rebuild on different day)</li>
+<li>Delete package from NuGet.org (within 72 hours)</li>
+</ol>
+<h3 id="missing-dependencies">Missing Dependencies</h3>
+<p><strong>Symptom</strong>: Runtime errors about missing assemblies</p>
+<p><strong>Cause</strong>: Incorrect package references</p>
+<p><strong>Solution</strong>: Verify <code>PackageReference</code> in <code>.csproj</code>:</p>
+<pre><code class="lang-xml">&lt;ItemGroup&gt;
+    &lt;PackageReference Include=&quot;Krypton.Toolkit&quot; Version=&quot;100.25.1.305&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<h3 id="wrong-framework-assemblies">Wrong Framework Assemblies</h3>
+<p><strong>Symptom</strong>: Assemblies for wrong .NET version</p>
+<p><strong>Cause</strong>: Incorrect TFM selection</p>
+<p><strong>Solution</strong>: Rebuild with correct TFMs:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Clean;Build;Pack /p:TFMs=all
+</code></pre>
+<h3 id="symbol-package-not-uploading">Symbol Package Not Uploading</h3>
+<p><strong>Symptom</strong>: <code>.snupkg</code> not appearing on NuGet.org</p>
+<p><strong>Cause</strong>: Symbols not enabled or format wrong</p>
+<p><strong>Solution</strong>: Verify in <code>Directory.Build.targets</code>:</p>
+<pre><code class="lang-xml">&lt;IncludeSymbols&gt;True&lt;/IncludeSymbols&gt;
+&lt;SymbolPackageFormat&gt;snupkg&lt;/SymbolPackageFormat&gt;
+</code></pre>
+<h3 id="package-icon-not-showing">Package Icon Not Showing</h3>
+<p><strong>Symptom</strong>: Default icon on NuGet.org</p>
+<p><strong>Cause</strong>: Icon file not embedded or path wrong</p>
+<p><strong>Solution</strong>: Verify in <code>Directory.Build.props</code>:</p>
+<pre><code class="lang-xml">&lt;None Include=&quot;../../../Assets/PNG/NuGet Package Icons/Krypton Stable.png&quot; 
+      Link=&quot;Icon.png&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot; /&gt;
+&lt;PackageIcon&gt;Krypton Stable.png&lt;/PackageIcon&gt;
+</code></pre>
+<h2 id="advanced-scenarios">Advanced Scenarios</h2>
+<h3 id="local-package-testing">Local Package Testing</h3>
+<h4 id="local-nuget-source">Local NuGet Source</h4>
+<pre><code class="lang-cmd"># Create local source
+mkdir C:\LocalNuGet
+nuget.exe sources add -Name local -Source C:\LocalNuGet
+
+# Copy packages
+copy Bin\Packages\Release\*.nupkg C:\LocalNuGet\
+
+# Install from local
+nuget.exe install Krypton.Toolkit -Source local -OutputDirectory packages
+</code></pre>
+<h4 id="test-project">Test Project</h4>
+<pre><code class="lang-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+    &lt;PropertyGroup&gt;
+        &lt;TargetFramework&gt;net8.0-windows&lt;/TargetFramework&gt;
+        &lt;UseWindowsForms&gt;true&lt;/UseWindowsForms&gt;
+    &lt;/PropertyGroup&gt;
+    
+    &lt;ItemGroup&gt;
+        &lt;PackageReference Include=&quot;Krypton.Toolkit&quot; Version=&quot;100.25.1.305&quot; /&gt;
+    &lt;/ItemGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<h3 id="automated-package-testing">Automated Package Testing</h3>
+<pre><code class="lang-powershell"># Extract and verify
+$package = &quot;Krypton.Toolkit.100.25.1.305.nupkg&quot;
+$temp = &quot;temp-extract&quot;
+mkdir $temp
+tar -xf $package -C $temp
+
+# Check frameworks
+$frameworks = Get-ChildItem &quot;$temp/lib&quot; -Directory
+Write-Host &quot;Frameworks: $($frameworks.Name -join ', ')&quot;
+
+# Cleanup
+Remove-Item $temp -Recurse -Force
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-always-clean-before-packing">1. Always Clean Before Packing</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Clean;Pack
+</code></pre>
+<h3 id="2-test-packages-locally-first">2. Test Packages Locally First</h3>
+<p>Install from local source before publishing to NuGet.org.</p>
+<h3 id="3-verify-package-contents">3. Verify Package Contents</h3>
+<p>Use NuGet Package Explorer or extract and inspect.</p>
+<h3 id="4-use-semantic-versioning">4. Use Semantic Versioning</h3>
+<p>Follow pre-release conventions:</p>
+<ul>
+<li><code>-alpha</code> for nightly</li>
+<li><code>-beta</code> for canary</li>
+<li>No suffix for stable</li>
+</ul>
+<h3 id="5-include-symbol-packages">5. Include Symbol Packages</h3>
+<p>Enable for pre-release packages to aid debugging:</p>
+<pre><code class="lang-xml">&lt;IncludeSymbols&gt;True&lt;/IncludeSymbols&gt;
+&lt;SymbolPackageFormat&gt;snupkg&lt;/SymbolPackageFormat&gt;
+</code></pre>
+<h3 id="6-document-changes">6. Document Changes</h3>
+<p>Update release notes and changelog before major releases.</p>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="05-Version-Management.md">Version Management</a> - Version strategy</li>
+<li><a href="02-MSBuild-Project-Files.md">MSBuild Project Files</a> - Pack targets</li>
+<li><a href="04-Directory-Build-Configuration.md">Directory.Build Configuration</a> - Package metadata</li>
+<li><a href="07-GitHub-Actions-Workflows.md">GitHub Actions Workflows</a> - Automated publishing</li>
+<li><a href="03-Build-Scripts.md">Build Scripts</a> - Packaging commands</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

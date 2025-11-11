@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Build Scripts | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Build Scripts | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="build-scripts">Build Scripts</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The Krypton Toolkit provides Windows Command Prompt (<code>.cmd</code>) batch scripts for convenient building, packaging, and maintenance. These scripts are located in the <code>Scripts/</code> directory and provide user-friendly interfaces to the MSBuild project files.</p>
+<h2 id="core-build-scripts">Core Build Scripts</h2>
+<h3 id="build-stablecmd">build-stable.cmd</h3>
+<p><strong>Purpose</strong>: Builds stable/release packages interactively</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="lang-cmd">cd Scripts
+build-stable.cmd [target]
+</code></pre>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>target</code> (optional) - MSBuild target to execute (default: <code>Build</code>)</li>
+</ul>
+<p><strong>Examples</strong>:</p>
+<pre><code class="lang-cmd">build-stable.cmd           # Build only
+build-stable.cmd Pack      # Pack only
+build-stable.cmd Clean     # Clean only
+</code></pre>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Auto-detects Visual Studio 2022 installation</li>
+<li>Supports Preview, Enterprise, Professional, Community, and BuildTools editions</li>
+<li>Displays start and end timestamps with timezone</li>
+<li>Creates detailed build logs in <code>../Logs/stable-build-log.log</code></li>
+<li>Creates binary log in <code>../Logs/stable-build-log.binlog</code></li>
+<li>Shows build summary with timestamps</li>
+<li>Interactive menu option to return to main menu</li>
+</ul>
+<p><strong>Visual Studio Detection Order</strong>:</p>
+<ol>
+<li>Visual Studio 2022 Preview</li>
+<li>Visual Studio 2022 Enterprise</li>
+<li>Visual Studio 2022 Professional</li>
+<li>Visual Studio 2022 Community</li>
+<li>Visual Studio 2022 BuildTools</li>
+</ol>
+<p><strong>Output</strong>:</p>
+<ul>
+<li>Text log: <code>Logs/stable-build-log.log</code></li>
+<li>Binary log: <code>Logs/stable-build-log.binlog</code></li>
+<li>Console summary with timing</li>
+</ul>
+<h3 id="build-canarycmd">build-canary.cmd</h3>
+<p><strong>Purpose</strong>: Builds canary (beta) pre-release packages</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="lang-cmd">cd Scripts
+build-canary.cmd [target]
+</code></pre>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>target</code> (optional) - MSBuild target (default: <code>Build</code>)</li>
+</ul>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Same Visual Studio detection as build-stable.cmd</li>
+<li>Builds using <code>canary.proj</code></li>
+<li>Outputs to <code>../Logs/canary-build-log.log</code> and <code>.binlog</code></li>
+<li>Packages go to <code>Bin/Packages/Canary/</code></li>
+<li>Interactive menu integration</li>
+</ul>
+<p><strong>Examples</strong>:</p>
+<pre><code class="lang-cmd">build-canary.cmd Build     # Build canary
+build-canary.cmd Pack      # Pack canary packages
+</code></pre>
+<h3 id="build-nightlycmd">build-nightly.cmd</h3>
+<p><strong>Purpose</strong>: Builds nightly (alpha) bleeding-edge packages</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="lang-cmd">cd Scripts
+build-nightly.cmd [target]
+</code></pre>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>target</code> (optional) - MSBuild target (default: <code>Build</code>)</li>
+</ul>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Uses <code>nightly.proj</code></li>
+<li>Outputs to <code>../Logs/nightly-build-log.log</code> and <code>.binlog</code></li>
+<li>Packages go to <code>Bin/Packages/Nightly/</code></li>
+<li>Interactive menu integration</li>
+</ul>
+<p><strong>Examples</strong>:</p>
+<pre><code class="lang-cmd">build-nightly.cmd Build    # Build nightly
+build-nightly.cmd Rebuild  # Clean and rebuild
+build-nightly.cmd Pack     # Pack nightly packages
+</code></pre>
+<p><strong>Notes</strong>:</p>
+<ul>
+<li>Includes commented options for <code>-graphBuild:True</code> (parallel project graph builds)</li>
+</ul>
+<h2 id="utility-scripts">Utility Scripts</h2>
+<h3 id="buildsolutioncmd">buildsolution.cmd</h3>
+<p><strong>Purpose</strong>: Interactive solution builder with VS 2019/2022 support</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="lang-cmd">cd Scripts
+buildsolution.cmd [target]
+</code></pre>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Prompts for Visual Studio version (2019 or 2022)</li>
+<li>Builds using <code>build.proj</code></li>
+<li>Interactive NuGet package creation prompt</li>
+<li>Displays completion timestamps</li>
+</ul>
+<p><strong>Workflow</strong>:</p>
+<ol>
+<li>Select Visual Studio version</li>
+<li>Build completes</li>
+<li>Prompt: Create NuGet packages? (y/n)</li>
+<li>If yes, prompt for VS version for packing</li>
+<li>Complete</li>
+</ol>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>target</code> (optional) - MSBuild target (default: <code>Build</code>)</li>
+</ul>
+<p><strong>Examples</strong>:</p>
+<pre><code class="lang-cmd">buildsolution.cmd          # Interactive build
+buildsolution.cmd Rebuild  # Interactive rebuild
+</code></pre>
+<h3 id="purgecmd">purge.cmd</h3>
+<p><strong>Purpose</strong>: Cleans build artifacts and intermediate files</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="lang-cmd">cd Scripts
+purge.cmd
+</code></pre>
+<p><strong>Interactive Prompts</strong>:</p>
+<pre><code>You are about to delete the Bin folder; do you want to continue? (Y/N)
+</code></pre>
+<p><strong>Deletes</strong>:</p>
+<ul>
+<li><code>Bin/</code> - All build outputs</li>
+<li><code>Source/Krypton Components/Krypton.Docking/obj/</code></li>
+<li><code>Source/Krypton Components/Krypton.Navigator/obj/</code></li>
+<li><code>Source/Krypton Components/Krypton.Ribbon/obj/</code></li>
+<li><code>Source/Krypton Components/Krypton.Toolkit/obj/</code></li>
+<li><code>Source/Krypton Components/Krypton.Workspace/obj/</code></li>
+<li><code>Logs/</code> (if exists)</li>
+</ul>
+<p><strong>Warning</strong>: This operation is destructive and cannot be undone!</p>
+<p><strong>Use Cases</strong>:</p>
+<ul>
+<li>Before major version changes</li>
+<li>When switching between configurations</li>
+<li>To resolve build cache issues</li>
+<li>To free disk space</li>
+</ul>
+<h3 id="publishcmd">publish.cmd</h3>
+<p><strong>Purpose</strong>: Simplified NuGet package publishing</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="lang-cmd">cd Scripts
+publish.cmd
+</code></pre>
+<p><strong>Workflow</strong>:</p>
+<ol>
+<li>Executes <code>build.cmd Pack</code></li>
+<li>Executes <code>build.cmd Push</code></li>
+</ol>
+<p><strong>Prerequisites</strong>:</p>
+<ul>
+<li>NuGet API key must be configured</li>
+<li>Packages must exist in <code>Bin/Packages/Release/</code></li>
+</ul>
+<p><strong>Configuration</strong>:
+Set API key once:</p>
+<pre><code class="lang-cmd">nuget.exe setapikey &lt;YOUR_API_KEY&gt; -Source https://api.nuget.org/v3/index.json
+</code></pre>
+<h3 id="main-menucmd">main-menu.cmd</h3>
+<p><strong>Purpose</strong>: Returns to the main build menu system</p>
+<p><strong>Usage</strong>:</p>
+<pre><code class="lang-cmd">cd Scripts
+main-menu.cmd
+</code></pre>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Changes directory to parent (<code>cd ..</code>)</li>
+<li>Executes <code>run.cmd</code> (main menu launcher)</li>
+</ul>
+<p><strong>Note</strong>: This assumes a <code>run.cmd</code> exists in the root directory.</p>
+<h2 id="script-patterns">Script Patterns</h2>
+<h3 id="visual-studio-detection-pattern">Visual Studio Detection Pattern</h3>
+<p>All build scripts use this pattern:</p>
+<pre><code class="lang-batch">if exist &quot;%ProgramFiles%\Microsoft Visual Studio\2022\Preview\MSBuild\Current\Bin&quot; goto vs17prev
+if exist &quot;%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin&quot; goto vs17ent
+if exist &quot;%ProgramFiles%\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin&quot; goto vs17pro
+if exist &quot;%ProgramFiles%\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin&quot; goto vs17com
+if exist &quot;%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin&quot; goto vs17build
+
+echo &quot;Unable to detect suitable environment. Check if VS 2022 is installed.&quot;
+pause
+goto exitbatch
+
+:vs17prev
+set msbuildpath=%ProgramFiles%\Microsoft Visual Studio\2022\Preview\MSBuild\Current\Bin
+goto build
+</code></pre>
+<h3 id="logging-pattern">Logging Pattern</h3>
+<p>Scripts enable detailed logging:</p>
+<pre><code class="lang-batch">&quot;%msbuildpath%\msbuild.exe&quot; /t:%targets% build.proj ^
+    /fl ^
+    /flp:logfile=../Logs/stable-build-log.log ^
+    /bl:../Logs/stable-build-log.binlog ^
+    /clp:Summary;ShowTimestamp ^
+    /v:quiet
+</code></pre>
+<p>Parameters:</p>
+<ul>
+<li><code>/fl</code> - Enable file logging</li>
+<li><code>/flp:logfile=&lt;path&gt;</code> - Specify log file location</li>
+<li><code>/bl:&lt;path&gt;</code> - Binary log file</li>
+<li><code>/clp:Summary;ShowTimestamp</code> - Console logger parameters</li>
+<li><code>/v:quiet</code> - Verbosity level</li>
+</ul>
+<h3 id="timezone-detection">Timezone Detection</h3>
+<p>Scripts capture timezone information:</p>
+<pre><code class="lang-batch">for /f &quot;tokens=* usebackq&quot; %%A in (`tzutil /g`) do (
+    set &quot;zone=%%A&quot;
+)
+</code></pre>
+<h3 id="target-parameter-pattern">Target Parameter Pattern</h3>
+<p>Scripts accept optional target parameter:</p>
+<pre><code class="lang-batch">set targets=Build
+if not &quot;%~1&quot; == &quot;&quot; set targets=%~1
+&quot;%msbuildpath%\msbuild.exe&quot; /t:%targets% build.proj ...
+</code></pre>
+<p>Usage:</p>
+<pre><code class="lang-cmd">build-stable.cmd Pack      # Sets targets=Pack
+build-stable.cmd           # Uses default targets=Build
+</code></pre>
+<h2 id="advanced-usage">Advanced Usage</h2>
+<h3 id="custom-logging">Custom Logging</h3>
+<p>Add custom MSBuild parameters:</p>
+<pre><code class="lang-cmd">build-stable.cmd Build /v:detailed /flp:logfile=custom.log
+</code></pre>
+<h3 id="parallel-builds">Parallel Builds</h3>
+<p>Enable multi-core builds:</p>
+<pre><code class="lang-cmd">build-stable.cmd Build /m:4
+</code></pre>
+<h3 id="binary-log-analysis">Binary Log Analysis</h3>
+<p>View binary logs with MSBuild Structured Log Viewer:</p>
+<pre><code class="lang-cmd"># Install viewer
+dotnet tool install --global MSBuildStructuredLogViewer
+
+# Open log
+msbuildlogviewer Logs/stable-build-log.binlog
+</code></pre>
+<h3 id="automated-builds-cicd">Automated Builds (CI/CD)</h3>
+<p>For non-interactive automation:</p>
+<pre><code class="lang-cmd">@echo off
+cd Scripts
+
+REM Clean build
+purge.cmd &lt; nul
+
+REM Build stable
+echo Y | purge.cmd
+build-stable.cmd Build
+
+REM Check exit code
+if %ERRORLEVEL% NEQ 0 (
+    echo Build failed!
+    exit /b %ERRORLEVEL%
+)
+
+echo Build succeeded!
+</code></pre>
+<h2 id="environment-requirements">Environment Requirements</h2>
+<h3 id="required-environment-variables">Required Environment Variables</h3>
+<p>None explicitly required, but these are respected:</p>
+<ul>
+<li><code>ProgramFiles</code> - Visual Studio installation detection</li>
+<li><code>PATH</code> - For finding <code>nuget.exe</code> during publish</li>
+</ul>
+<h3 id="optional-environment-variables">Optional Environment Variables</h3>
+<ul>
+<li><code>NUGET_API_KEY</code> - For automated package publishing</li>
+<li><code>MSBUILDPATH</code> - Override MSBuild location</li>
+</ul>
+<h3 id="setting-custom-msbuild-path">Setting Custom MSBuild Path</h3>
+<pre><code class="lang-cmd">set MSBUILDPATH=C:\CustomPath\MSBuild\Current\Bin
+build-stable.cmd Build
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="unable-to-detect-suitable-environment">&quot;Unable to detect suitable environment&quot;</h3>
+<p><strong>Cause</strong>: Visual Studio 2022 not found</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Install Visual Studio 2022</li>
+<li>Verify installation path:
+<pre><code class="lang-cmd">dir &quot;%ProgramFiles%\Microsoft Visual Studio\2022\&quot;
+</code></pre>
+</li>
+<li>Manual MSBuild invocation:
+<pre><code class="lang-cmd">&quot;C:\Path\To\MSBuild.exe&quot; /t:Build build.proj
+</code></pre>
+</li>
+</ol>
+<h3 id="build-hangs-or-stalls">Build Hangs or Stalls</h3>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Kill MSBuild processes:
+<pre><code class="lang-cmd">taskkill /F /IM MSBuild.exe
+</code></pre>
+</li>
+<li>Clean and retry:
+<pre><code class="lang-cmd">purge.cmd
+build-stable.cmd Build
+</code></pre>
+</li>
+</ol>
+<h3 id="incorrect-build-configuration">Incorrect Build Configuration</h3>
+<p><strong>Cause</strong>: Cached build state</p>
+<p><strong>Solutions</strong>:</p>
+<pre><code class="lang-cmd">purge.cmd
+build-stable.cmd Build
+</code></pre>
+<h3 id="permission-denied-errors">Permission Denied Errors</h3>
+<p><strong>Cause</strong>: Files locked by IDE or antivirus</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Close Visual Studio</li>
+<li>Disable antivirus temporarily</li>
+<li>Run as Administrator</li>
+</ol>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-always-check-logs">1. Always Check Logs</h3>
+<p>After any build failure:</p>
+<pre><code class="lang-cmd">notepad Logs\stable-build-log.log
+</code></pre>
+<h3 id="2-clean-between-configurations">2. Clean Between Configurations</h3>
+<pre><code class="lang-cmd">purge.cmd
+build-stable.cmd Build
+</code></pre>
+<h3 id="3-verify-before-publishing">3. Verify Before Publishing</h3>
+<pre><code class="lang-cmd">build-stable.cmd Pack
+# Manually inspect Bin/Packages/Release/
+build-stable.cmd Push
+</code></pre>
+<h3 id="4-use-binary-logs-for-complex-issues">4. Use Binary Logs for Complex Issues</h3>
+<pre><code class="lang-cmd">build-stable.cmd Build
+# If issues occur:
+msbuildlogviewer Logs/stable-build-log.binlog
+</code></pre>
+<h3 id="5-script-automation">5. Script Automation</h3>
+<p>Create custom automation scripts:</p>
+<pre><code class="lang-batch">@echo off
+call build-stable.cmd Clean
+call build-stable.cmd Build
+call build-stable.cmd Pack
+echo All operations completed!
+</code></pre>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="02-MSBuild-Project-Files.md">MSBuild Project Files</a> - Understanding .proj files</li>
+<li><a href="09-Local-Development-Workflow.md">Local Development Workflow</a> - Developer workflows</li>
+<li><a href="10-Troubleshooting.md">Troubleshooting</a> - Common issues</li>
+<li><a href="08-ModernBuild-Tool.md">ModernBuild Tool</a> - Alternative TUI tool</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
