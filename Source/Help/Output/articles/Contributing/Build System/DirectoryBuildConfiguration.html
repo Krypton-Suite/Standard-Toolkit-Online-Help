@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Directory.Build Configuration | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Directory.Build Configuration | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="directorybuild-configuration">Directory.Build Configuration</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The Krypton Toolkit uses MSBuild's <code>Directory.Build.props</code> and <code>Directory.Build.targets</code> files to centralize build configuration and ensure consistent settings across all projects. These files are automatically imported by MSBuild for all projects in the directory tree.</p>
+<h2 id="file-hierarchy">File Hierarchy</h2>
+<h3 id="root-level">Root Level</h3>
+<ul>
+<li><code>Directory.Build.props</code> - Global versioning and configuration</li>
+</ul>
+<h3 id="component-level">Component Level</h3>
+<ul>
+<li><code>Source/Krypton Components/Directory.Build.props</code> - Component-specific properties</li>
+<li><code>Source/Krypton Components/Directory.Build.targets</code> - Component-specific targets</li>
+</ul>
+<h3 id="inheritance-chain">Inheritance Chain</h3>
+<pre><code>Directory.Build.props (root)
+    ↓ imported by
+Source/Krypton Components/Directory.Build.props
+    ↓ imported by
+Each Krypton.*.csproj
+</code></pre>
+<h2 id="root-directorybuildprops">Root Directory.Build.props</h2>
+<p><strong>Location</strong>: <code>Directory.Build.props</code></p>
+<p><strong>Purpose</strong>: Global version calculation and conditional compilation symbols</p>
+<h3 id="version-calculation">Version Calculation</h3>
+<p>The toolkit uses date-based semantic versioning:</p>
+<p><strong>Format</strong>: <code>Major.YY.MM.DayOfYear[-suffix]</code></p>
+<p><strong>Components</strong>:</p>
+<ul>
+<li><strong>Major</strong>: <code>100</code> (fixed)</li>
+<li><strong>Minor</strong>: Current year (2 digits, e.g., <code>25</code> for 2025)</li>
+<li><strong>Build</strong>: Current month (2 digits, e.g., <code>01</code> for January)</li>
+<li><strong>Revision</strong>: Day of year (1-366)</li>
+<li><strong>Suffix</strong>: Configuration-dependent (e.g., <code>-alpha</code>, <code>-beta</code>)</li>
+</ul>
+<p><strong>Example</strong>: <code>100.25.1.305</code> = Version 100, released in 2025, January, on the 305th day of the year</p>
+<h3 id="configuration-based-versioning">Configuration-Based Versioning</h3>
+<h4 id="canary-configuration">Canary Configuration</h4>
+<pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Canary'&quot;&gt;
+    &lt;PropertyGroup&gt;
+        &lt;Minor&gt;$([System.DateTime]::Now.ToString(yy))&lt;/Minor&gt;
+        &lt;Build&gt;$([System.DateTime]::Now.ToString(MM))&lt;/Build&gt;
+        &lt;Revision&gt;$([System.DateTime]::Now.get_DayOfYear().ToString())&lt;/Revision&gt;
+        
+        &lt;LibraryVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/LibraryVersion&gt;
+        &lt;PackageVersion&gt;100.$(Minor).$(Build).$(Revision)-beta&lt;/PackageVersion&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/When&gt;
+</code></pre>
+<p><strong>Properties</strong>:</p>
+<ul>
+<li><code>LibraryVersion</code>: Assembly version</li>
+<li><code>PackageVersion</code>: NuGet package version with <code>-beta</code> suffix</li>
+</ul>
+<h4 id="nightly-configuration">Nightly Configuration</h4>
+<pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Nightly'&quot;&gt;
+    &lt;PropertyGroup&gt;
+        &lt;Minor&gt;$([System.DateTime]::Now.ToString(yy))&lt;/Minor&gt;
+        &lt;Build&gt;$([System.DateTime]::Now.ToString(MM))&lt;/Build&gt;
+        &lt;Revision&gt;$([System.DateTime]::Now.get_DayOfYear().ToString())&lt;/Revision&gt;
+        
+        &lt;LibraryVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/LibraryVersion&gt;
+        &lt;PackageVersion&gt;100.$(Minor).$(Build).$(Revision)-alpha&lt;/PackageVersion&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/When&gt;
+</code></pre>
+<p><strong>Properties</strong>:</p>
+<ul>
+<li><code>PackageVersion</code>: Has <code>-alpha</code> suffix for nightly builds</li>
+</ul>
+<h4 id="installer-configuration">Installer Configuration</h4>
+<pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Installer'&quot;&gt;
+    &lt;PropertyGroup&gt;
+        &lt;Minor&gt;$([System.DateTime]::Now.ToString(yy))&lt;/Minor&gt;
+        &lt;Build&gt;$([System.DateTime]::Now.ToString(MM))&lt;/Build&gt;
+        &lt;Revision&gt;$([System.DateTime]::Now.get_DayOfYear().ToString())&lt;/Revision&gt;
+        
+        &lt;LibraryVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/LibraryVersion&gt;
+        &lt;PackageVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/PackageVersion&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/When&gt;
+</code></pre>
+<p><strong>Special Notes</strong>:</p>
+<ul>
+<li>WiX installers require build numbers ≤ 256</li>
+<li>Uses month number for Build component</li>
+</ul>
+<h4 id="releasestable-configuration-default">Release/Stable Configuration (Default)</h4>
+<pre><code class="lang-xml">&lt;Otherwise&gt;
+    &lt;PropertyGroup&gt;
+        &lt;Minor&gt;$([System.DateTime]::Now.ToString(yy))&lt;/Minor&gt;
+        &lt;Build&gt;$([System.DateTime]::Now.ToString(MM))&lt;/Build&gt;
+        &lt;Revision&gt;$([System.DateTime]::Now.get_DayOfYear().ToString())&lt;/Revision&gt;
+        
+        &lt;LibraryVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/LibraryVersion&gt;
+        &lt;PackageVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/PackageVersion&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/Otherwise&gt;
+</code></pre>
+<h3 id="net-10-resource-handling">.NET 10 Resource Handling</h3>
+<p>For .NET 10 compatibility:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup Condition=&quot;'$(TargetFramework)' == 'net10.0-windows'&quot;&gt;
+    &lt;GenerateResourceUsePreserializedResources&gt;true&lt;/GenerateResourceUsePreserializedResources&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Purpose</strong>: Uses pre-serialized resources for better performance and compatibility</p>
+<h3 id="conditional-compilation-symbols">Conditional Compilation Symbols</h3>
+<p>Defines configuration-specific compilation symbols:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup Condition=&quot;'$(Configuration)' == 'Nightly'&quot;&gt;
+    &lt;DefineConstants&gt;$(DefineConstants);NIGHTLY&lt;/DefineConstants&gt;
+&lt;/PropertyGroup&gt;
+
+&lt;PropertyGroup Condition=&quot;'$(Configuration)' == 'Canary'&quot;&gt;
+    &lt;DefineConstants&gt;$(DefineConstants);CANARY&lt;/DefineConstants&gt;
+&lt;/PropertyGroup&gt;
+
+&lt;PropertyGroup Condition=&quot;'$(Configuration)' == 'Alpha'&quot;&gt;
+    &lt;DefineConstants&gt;$(DefineConstants);ALPHA&lt;/DefineConstants&gt;
+&lt;/PropertyGroup&gt;
+
+&lt;PropertyGroup Condition=&quot;'$(Configuration)' == 'Release'&quot;&gt;
+    &lt;DefineConstants&gt;$(DefineConstants);RELEASE&lt;/DefineConstants&gt;
+&lt;/PropertyGroup&gt;
+
+&lt;PropertyGroup Condition=&quot;'$(Configuration)' == 'LTS'&quot;&gt;
+    &lt;DefineConstants&gt;$(DefineConstants);LTS&lt;/DefineConstants&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Usage in Code</strong>:</p>
+<pre><code class="lang-csharp">#if NIGHTLY
+    // Nightly-specific code
+#endif
+
+#if CANARY
+    // Canary-specific code
+#endif
+
+#if DEBUG
+    // Debug-specific code
+#endif
+</code></pre>
+<h2 id="component-directorybuildprops">Component Directory.Build.props</h2>
+<p><strong>Location</strong>: <code>Source/Krypton Components/Directory.Build.props</code></p>
+<p><strong>Purpose</strong>: Component-specific build settings, assembly info, and NuGet package metadata</p>
+<h3 id="import-chain">Import Chain</h3>
+<pre><code class="lang-xml">&lt;Import Project=&quot;$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../../'))&quot; /&gt;
+</code></pre>
+<p>Imports the root <code>Directory.Build.props</code> first, ensuring version properties are available.</p>
+<h3 id="language-version">Language Version</h3>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;LangVersion&gt;preview&lt;/LangVersion&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Purpose</strong>: Enables latest C# language features (preview)</p>
+<h3 id="assembly-information">Assembly Information</h3>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;GenerateAssemblyInfo&gt;true&lt;/GenerateAssemblyInfo&gt;
+    &lt;NeutralLanguage&gt;en&lt;/NeutralLanguage&gt;
+    &lt;Authors&gt;Phil Wright (A.K.A ComponentFactory), Peter Wagner (A.K.A Wagnerp), Simon Coghlan (A.K.A Smurf-IV), Giduac, Ahmed Abdelhameed, Lesandro and tobitege&lt;/Authors&gt;
+    &lt;Copyright&gt;© Component Factory Pty Ltd, 2006 - 2016. Then modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, Lesandro and tobitege et al. 2017 - 2025. All rights reserved.&lt;/Copyright&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Generated Files</strong>: Auto-generates <code>AssemblyInfo.cs</code> with these attributes</p>
+<h3 id="version-assignment">Version Assignment</h3>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;Version&gt;$(LibraryVersion)&lt;/Version&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p>Uses <code>LibraryVersion</code> from root <code>Directory.Build.props</code>.</p>
+<h3 id="package-output-directory">Package Output Directory</h3>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;PackageOutputPath&gt;$(MSBuildThisFileDirectory)..\..\Bin\Packages\$(Configuration)\&lt;/PackageOutputPath&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Result</strong>: Packages go to <code>Bin/Packages/&lt;Configuration&gt;/</code></p>
+<ul>
+<li><code>Bin/Packages/Release/</code></li>
+<li><code>Bin/Packages/Canary/</code></li>
+<li><code>Bin/Packages/Nightly/</code></li>
+</ul>
+<h3 id="configuration-specific-package-metadata">Configuration-Specific Package Metadata</h3>
+<h4 id="canary-configuration-1">Canary Configuration</h4>
+<pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Canary'&quot;&gt;
+    &lt;ItemGroup&gt;
+        &lt;None Include=&quot;../../../Assets/PNG/NuGet Package Icons/Krypton Canary.png&quot; 
+              Link=&quot;Icon.png&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot; /&gt;
+        &lt;None Include=&quot;..\..\..\Documents\License\License.md&quot;&gt;
+            &lt;Pack&gt;True&lt;/Pack&gt;
+            &lt;PackagePath&gt;\&lt;/PackagePath&gt;
+        &lt;/None&gt;
+        &lt;None Include=&quot;..\..\..\README.md&quot;&gt;
+            &lt;Pack&gt;True&lt;/Pack&gt;
+            &lt;PackagePath&gt;\&lt;/PackagePath&gt;
+        &lt;/None&gt;
+    &lt;/ItemGroup&gt;
+    
+    &lt;PropertyGroup&gt;
+        &lt;PackageProjectUrl&gt;https://github.com/Krypton-Suite/Standard-Toolkit&lt;/PackageProjectUrl&gt;
+        &lt;PackageIcon&gt;Krypton Canary.png&lt;/PackageIcon&gt;
+        &lt;Authors&gt;Peter William Wagner &amp;amp; Simon Coghlan &amp;amp; Giduac &amp;amp; Ahmed Abdelhameed &amp;amp; Lesandro &amp;amp; tobitege &amp;amp; Thomas Bolon&lt;/Authors&gt;
+        &lt;PackageLicenseExpression&gt;BSD-3-Clause&lt;/PackageLicenseExpression&gt;
+        &lt;PackageRequireLicenseAcceptance&gt;True&lt;/PackageRequireLicenseAcceptance&gt;
+        &lt;PackageTags&gt;Krypton ComponentFactory WinForms Themes Controls DataGrid Ribbon Workspace Tabs .NET Toolkit&lt;/PackageTags&gt;
+        &lt;PackageReleaseNotes&gt;Get updates here: https://github.com/Krypton-Suite/Standard-Toolkit&lt;/PackageReleaseNotes&gt;
+        &lt;RepositoryURL&gt;https://github.com/Krypton-Suite/Standard-Toolkit&lt;/RepositoryURL&gt;
+        &lt;PublishRepositoryUrl&gt;true&lt;/PublishRepositoryUrl&gt;
+        &lt;EmbedUntrackedSources&gt;true&lt;/EmbedUntrackedSources&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/When&gt;
+</code></pre>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Custom Canary icon</li>
+<li>Includes License.md and README.md</li>
+<li>Source link enabled</li>
+</ul>
+<h4 id="nightly-configuration-1">Nightly Configuration</h4>
+<p>Similar to Canary, but uses <code>Krypton Nightly.png</code> icon.</p>
+<h4 id="releasestable-configuration">Release/Stable Configuration</h4>
+<pre><code class="lang-xml">&lt;Otherwise&gt;
+    &lt;ItemGroup&gt;
+        &lt;None Include=&quot;../../../Assets/PNG/NuGet Package Icons/Krypton Stable.png&quot; 
+              Link=&quot;Icon.png&quot; Pack=&quot;true&quot; PackagePath=&quot;&quot; /&gt;
+        &lt;None Include=&quot;..\..\..\Documents\License\License.md&quot;&gt;
+            &lt;Pack&gt;True&lt;/Pack&gt;
+            &lt;PackagePath&gt;\&lt;/PackagePath&gt;
+        &lt;/None&gt;
+        &lt;None Include=&quot;..\..\..\README.md&quot;&gt;
+            &lt;Pack&gt;True&lt;/Pack&gt;
+            &lt;PackagePath&gt;\&lt;/PackagePath&gt;
+        &lt;/None&gt;
+    &lt;/ItemGroup&gt;
+    
+    &lt;PropertyGroup&gt;
+        &lt;TFMs Condition=&quot;'$(TFMs)' == ''&quot;&gt;lite&lt;/TFMs&gt;
+    &lt;/PropertyGroup&gt;
+    
+    &lt;PropertyGroup&gt;
+        &lt;PackageProjectUrl&gt;https://github.com/Krypton-Suite/Standard-Toolkit&lt;/PackageProjectUrl&gt;
+        &lt;PackageIcon&gt;Krypton Stable.png&lt;/PackageIcon&gt;
+        &lt;Authors&gt;Peter William Wagner &amp;amp; Simon Coghlan &amp;amp; Giduac &amp;amp; Ahmed Abdelhameed &amp;amp; Lesandro &amp;amp; tobitege &amp;amp; Thomas Bolon&lt;/Authors&gt;
+        &lt;PackageLicenseExpression&gt;BSD-3-Clause&lt;/PackageLicenseExpression&gt;
+        &lt;PackageReadmeFile&gt;README.md&lt;/PackageReadmeFile&gt;
+        &lt;PackageRequireLicenseAcceptance&gt;True&lt;/PackageRequireLicenseAcceptance&gt;
+        &lt;PackageTags&gt;Krypton ComponentFactory WinForms Themes Controls DataGrid Ribbon Workspace Tabs .NET Toolkit&lt;/PackageTags&gt;
+        &lt;PackageReleaseNotes&gt;Get updates here: https://github.com/Krypton-Suite/Standard-Toolkit&lt;/PackageReleaseNotes&gt;
+        &lt;RepositoryURL&gt;https://github.com/Krypton-Suite/Standard-Toolkit&lt;/RepositoryURL&gt;
+        &lt;PublishRepositoryUrl&gt;true&lt;/PublishRepositoryUrl&gt;
+        &lt;EmbedUntrackedSources&gt;true&lt;/EmbedUntrackedSources&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/Otherwise&gt;
+</code></pre>
+<p><strong>Special Feature</strong>: Defaults <code>TFMs</code> to <code>lite</code> if not specified</p>
+<h2 id="component-directorybuildtargets">Component Directory.Build.targets</h2>
+<p><strong>Location</strong>: <code>Source/Krypton Components/Directory.Build.targets</code></p>
+<p><strong>Purpose</strong>: Advanced versioning, assembly metadata, and package ID customization</p>
+<h3 id="version-properties-by-configuration">Version Properties by Configuration</h3>
+<h4 id="canary">Canary</h4>
+<pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Canary'&quot;&gt;
+    &lt;PropertyGroup&gt;
+        &lt;LibraryVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/LibraryVersion&gt;
+        &lt;PackageVersion&gt;100.$(Minor).$(Build).$(Revision)-beta&lt;/PackageVersion&gt;
+        &lt;AssemblyVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/AssemblyVersion&gt;
+        &lt;FileVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/FileVersion&gt;
+        
+        &lt;LangVersion&gt;preview&lt;/LangVersion&gt;
+        &lt;AnalysLevel&gt;preview&lt;/AnalysLevel&gt;
+        
+        &lt;IncludeSymbols&gt;True&lt;/IncludeSymbols&gt;
+        &lt;SymbolPackageFormat&gt;snupkg&lt;/SymbolPackageFormat&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/When&gt;
+</code></pre>
+<p><strong>Features</strong>:</p>
+<ul>
+<li>Separate symbol packages (<code>.snupkg</code>)</li>
+<li>Preview language and analyzer versions</li>
+</ul>
+<h4 id="nightly">Nightly</h4>
+<p>Similar to Canary with <code>-alpha</code> suffix and symbol packages.</p>
+<h4 id="releasestable">Release/Stable</h4>
+<pre><code class="lang-xml">&lt;Otherwise&gt;
+    &lt;PropertyGroup&gt;
+        &lt;LibraryVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/LibraryVersion&gt;
+        &lt;PackageVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/PackageVersion&gt;
+        &lt;AssemblyVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/AssemblyVersion&gt;
+        &lt;FileVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/FileVersion&gt;
+        
+        &lt;LangVersion&gt;preview&lt;/LangVersion&gt;
+        &lt;AnalysLevel&gt;preview&lt;/AnalysLevel&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/Otherwise&gt;
+</code></pre>
+<h3 id="assembly-info">Assembly Info</h3>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;GenerateAssemblyInfo&gt;true&lt;/GenerateAssemblyInfo&gt;
+    &lt;NeutralLanguage&gt;en&lt;/NeutralLanguage&gt;
+    &lt;Authors&gt;Peter Wagner (A.K.A Wagnerp) and Simon Coghlan (A.K.A Smurf-IV), Giduac, Ahmed Abdelhameed, Lesandro, tobitege, Phil Wright (A.K.A ComponentFactory)&lt;/Authors&gt;
+    &lt;Copyright&gt;© Krypton Suite (Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, Lesandro and tobitege) 2017 - 2025. Component Factory Pty Ltd (Phil Wright), 2006 - 2016. All rights reserved.&lt;/Copyright&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h3 id="package-id-customization">Package ID Customization</h3>
+<h4 id="canary-1">Canary</h4>
+<pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Canary'&quot;&gt;
+    &lt;PropertyGroup&gt;
+        &lt;PackageId Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;$(PackageId).Canary&lt;/PackageId&gt;
+        &lt;Description Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;
+            An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 10. 
+            $(Description) This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 10. 
+            Also, all libraries are included targeting each specific framework version for performance purposes. 
+            To view all of the standard toolkit package latest version information, please visit: 
+            https://github.com/Krypton-Suite/Krypton-Toolkit-Suite-Version-Dashboard/blob/main/Documents/Modules/Standard/Krypton-Toolkit-Suite-Standard-Modules.md 
+            To find out what's new, please visit: https://github.com/Krypton-Suite/Standard-Toolkit/blob/canary/Documents/Help/Changelog.md 
+            This package is for those who want to try out the latest features before deployment.
+        &lt;/Description&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/When&gt;
+</code></pre>
+<p><strong>Result</strong>: Package named <code>Krypton.Toolkit.Canary</code> with detailed description</p>
+<h4 id="nightly-1">Nightly</h4>
+<p>Similar with <code>.Nightly</code> suffix and alpha-specific description.</p>
+<h4 id="release-lite">Release (Lite)</h4>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;PackageId Condition=&quot;'$(TFMs)' == 'lite'&quot;&gt;$(PackageId).Lite&lt;/PackageId&gt;
+    &lt;Description Condition=&quot;'$(TFMs)' == 'lite'&quot;&gt;
+        An update to Component factory's krypton toolkit to support .NET Framework 4.8 - 4.8.1 and .NET 8 - 10. 
+        $(Description) This package supports all .NET Framework versions starting .NET Framework 4.8 - 4.8.1, .NET 6 - 8. 
+        Also, all libraries are included targeting each specific framework version for performance purposes.
+    &lt;/Description&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h4 id="release-all">Release (All)</h4>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;PackageId Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;$(PackageId)&lt;/PackageId&gt;
+    &lt;Description Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;
+        An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 10. 
+        $(Description) This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 10.
+    &lt;/Description&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h2 id="properties-reference">Properties Reference</h2>
+<h3 id="global-properties">Global Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Source</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LibraryVersion</code></td>
+<td>Root Directory.Build.props</td>
+<td>Assembly version</td>
+</tr>
+<tr>
+<td><code>PackageVersion</code></td>
+<td>Root Directory.Build.props</td>
+<td>NuGet package version</td>
+</tr>
+<tr>
+<td><code>Configuration</code></td>
+<td>MSBuild</td>
+<td>Build configuration</td>
+</tr>
+<tr>
+<td><code>TFMs</code></td>
+<td>MSBuild/props</td>
+<td>Target frameworks mode (lite/all)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="component-properties">Component Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Source</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LangVersion</code></td>
+<td>Component Directory.Build.props</td>
+<td>C# language version</td>
+</tr>
+<tr>
+<td><code>PackageOutputPath</code></td>
+<td>Component Directory.Build.props</td>
+<td>NuGet output directory</td>
+</tr>
+<tr>
+<td><code>Version</code></td>
+<td>Component Directory.Build.props</td>
+<td>Project version</td>
+</tr>
+<tr>
+<td><code>AssemblyVersion</code></td>
+<td>Component Directory.Build.targets</td>
+<td>Assembly version</td>
+</tr>
+<tr>
+<td><code>FileVersion</code></td>
+<td>Component Directory.Build.targets</td>
+<td>File version</td>
+</tr>
+</tbody>
+</table>
+<h2 id="customization">Customization</h2>
+<h3 id="override-version-locally">Override Version Locally</h3>
+<p>In a project file (<code>.csproj</code>):</p>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;Version&gt;1.2.3.4&lt;/Version&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h3 id="override-package-output">Override Package Output</h3>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;PackageOutputPath&gt;C:\CustomPath\&lt;/PackageOutputPath&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h3 id="add-custom-compilation-symbol">Add Custom Compilation Symbol</h3>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;DefineConstants&gt;$(DefineConstants);CUSTOM_SYMBOL&lt;/DefineConstants&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="05-Version-Management.md">Version Management</a> - Detailed versioning strategy</li>
+<li><a href="06-NuGet-Packaging.md">NuGet Packaging</a> - Package creation</li>
+<li><a href="02-MSBuild-Project-Files.md">MSBuild Project Files</a> - .proj files</li>
+<li><a href="01-Build-System-Overview.md">Build System Overview</a> - System overview</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

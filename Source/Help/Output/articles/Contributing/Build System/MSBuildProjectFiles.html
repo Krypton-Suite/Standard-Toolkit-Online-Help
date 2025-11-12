@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>MSBuild Project Files | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="MSBuild Project Files | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="msbuild-project-files">MSBuild Project Files</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The Krypton Toolkit build system uses MSBuild project files (<code>.proj</code>) to orchestrate multi-project builds, NuGet package creation, and distribution archive generation. These files are located in the <code>Scripts/</code> directory.</p>
+<h2 id="project-file-structure">Project File Structure</h2>
+<p>All <code>.proj</code> files follow a similar structure:</p>
+<ol>
+<li>Import global properties</li>
+<li>Define configuration-specific properties</li>
+<li>Define targets for Clean, Restore, Build</li>
+<li>Define targets for package creation</li>
+<li>Define targets for archive creation</li>
+</ol>
+<h2 id="core-project-files">Core Project Files</h2>
+<h3 id="buildproj---stablerelease-builds">build.proj - Stable/Release Builds</h3>
+<p><strong>Purpose</strong>: Builds stable production releases</p>
+<p><strong>Key Properties</strong>:</p>
+<pre><code class="lang-xml">&lt;Configuration&gt;Release&lt;/Configuration&gt;
+&lt;ReleaseBuildPath&gt;..\Bin\Release\Zips&lt;/ReleaseBuildPath&gt;
+&lt;ReleaseZipName&gt;Krypton-Release&lt;/ReleaseZipName&gt;
+</code></pre>
+<p><strong>Available Targets</strong>:</p>
+<h4 id="clean">Clean</h4>
+<p>Cleans all Krypton component projects for the Release configuration.</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Clean
+</code></pre>
+<h4 id="restore">Restore</h4>
+<p>Restores NuGet packages for all Krypton components.</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Restore
+</code></pre>
+<h4 id="build-default">Build (Default)</h4>
+<p>Builds all Krypton components. Depends on Restore.</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build
+</code></pre>
+<h4 id="cleanpackages">CleanPackages</h4>
+<p>Deletes existing NuGet packages from <code>Bin/Packages/Release/</code>.</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:CleanPackages
+</code></pre>
+<h4 id="packlite">PackLite</h4>
+<p>Creates NuGet packages for &quot;lite&quot; target frameworks (net48, net481, net8.0+).</p>
+<ul>
+<li>Cleans projects and NuGet assets</li>
+<li>Restores with <code>TFMs=lite</code></li>
+<li>Packs with <code>TFMs=lite</code></li>
+</ul>
+<pre><code class="lang-cmd">msbuild build.proj /t:PackLite
+</code></pre>
+<h4 id="packall">PackAll</h4>
+<p>Creates NuGet packages for all target frameworks (net472-net10.0-windows).</p>
+<ul>
+<li>Cleans projects and NuGet assets</li>
+<li>Restores with <code>TFMs=all</code></li>
+<li>Packs with <code>TFMs=all</code></li>
+</ul>
+<pre><code class="lang-cmd">msbuild build.proj /t:PackAll
+</code></pre>
+<h4 id="pack">Pack</h4>
+<p>Master packaging target. Depends on CleanPackages, PackLite, and PackAll.
+Generates both Lite and full packages.</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Pack
+</code></pre>
+<h4 id="push">Push</h4>
+<p>Publishes NuGet packages to NuGet.org using <code>nuget.exe</code>.</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Push
+</code></pre>
+<p><strong>Note</strong>: Requires <code>NUGET_API_KEY</code> environment variable or configured API key.</p>
+<h4 id="createreleasezip">CreateReleaseZip</h4>
+<p>Creates ZIP archive of Release binaries.</p>
+<ul>
+<li>Uses 7-Zip if available</li>
+<li>Falls back to PowerShell <code>Compress-Archive</code></li>
+<li>Output: <code>Bin/Release/Zips/Krypton-Release_&lt;yyyyMMdd&gt;.zip</code></li>
+</ul>
+<pre><code class="lang-cmd">msbuild build.proj /t:CreateReleaseZip
+</code></pre>
+<h4 id="createreleasetar">CreateReleaseTar</h4>
+<p>Creates TAR.GZ archive of Release binaries.</p>
+<ul>
+<li>Tries 7-Zip (recommended)</li>
+<li>Falls back to Windows 10/11 tar command</li>
+<li>Falls back to Git Bash tar</li>
+<li>Output: <code>Bin/Release/Zips/Krypton-Release_&lt;yyyyMMdd&gt;.tar.gz</code></li>
+</ul>
+<pre><code class="lang-cmd">msbuild build.proj /t:CreateReleaseTar
+</code></pre>
+<h4 id="createallreleasearchives">CreateAllReleaseArchives</h4>
+<p>Creates both ZIP and TAR.GZ archives.</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:CreateAllReleaseArchives
+</code></pre>
+<h3 id="canaryproj---beta-pre-release-builds">canary.proj - Beta Pre-Release Builds</h3>
+<p><strong>Purpose</strong>: Builds beta pre-release packages for early adopters</p>
+<p><strong>Key Properties</strong>:</p>
+<pre><code class="lang-xml">&lt;Configuration&gt;Canary&lt;/Configuration&gt;
+&lt;CanaryBuildPath&gt;..\Bin\Canary\Zips&lt;/CanaryBuildPath&gt;
+&lt;CanaryZipName&gt;Krypton-Canary&lt;/CanaryZipName&gt;
+</code></pre>
+<p><strong>Available Targets</strong>:</p>
+<ul>
+<li><code>Clean</code> - Clean Canary configuration</li>
+<li><code>Restore</code> - Restore packages</li>
+<li><code>Build</code> - Build Canary configuration</li>
+<li><code>CleanPackages</code> - Delete packages from <code>Bin/Packages/Canary/</code></li>
+<li><code>PackAll</code> - Create Canary packages (all TFMs, no Lite variant)</li>
+<li><code>Pack</code> - Master packaging target (CleanPackages + PackAll)</li>
+<li><code>Push</code> - Publish Canary packages</li>
+<li><code>CreateCanaryZip</code> - Create Canary ZIP archive</li>
+<li><code>CreateCanaryTar</code> - Create Canary TAR.GZ archive</li>
+<li><code>CreateAllCanaryArchives</code> - Create both archives</li>
+</ul>
+<p><strong>Key Differences from Stable</strong>:</p>
+<ul>
+<li>No <code>PackLite</code> target (Canary always packs all TFMs)</li>
+<li>Packages get <code>-beta</code> suffix in NuGet</li>
+<li>Outputs to <code>Bin/Canary/</code> and <code>Bin/Packages/Canary/</code></li>
+</ul>
+<h3 id="nightlyproj---alpha-nightly-builds">nightly.proj - Alpha Nightly Builds</h3>
+<p><strong>Purpose</strong>: Builds bleeding-edge alpha releases for developers and testers</p>
+<p><strong>Key Properties</strong>:</p>
+<pre><code class="lang-xml">&lt;Configuration&gt;Nightly&lt;/Configuration&gt;
+&lt;NightlyBuildPath&gt;..\Bin\Nightly\Zips&lt;/NightlyBuildPath&gt;
+&lt;NightlyZipName&gt;Krypton-Nightly&lt;/NightlyZipName&gt;
+</code></pre>
+<p><strong>Available Targets</strong>:</p>
+<ul>
+<li><code>Clean</code> - Clean Nightly configuration</li>
+<li><code>Restore</code> - Restore packages</li>
+<li><code>Build</code> - Build Nightly configuration</li>
+<li><code>Rebuild</code> - Clean + Build</li>
+<li><code>CleanPackages</code> - Delete packages from <code>Bin/Packages/Nightly/</code></li>
+<li><code>PackAll</code> - Create Nightly packages (all TFMs)</li>
+<li><code>Pack</code> - Master packaging target</li>
+<li><code>Push</code> - Publish Nightly packages</li>
+<li><code>CreateNightlyZip</code> - Create Nightly ZIP archive</li>
+<li><code>CreateNightlyTar</code> - Create Nightly TAR.GZ archive</li>
+<li><code>CreateAllArchives</code> - Create both archives</li>
+</ul>
+<p><strong>Key Differences</strong>:</p>
+<ul>
+<li>Includes <code>Rebuild</code> target</li>
+<li>Packages get <code>-alpha</code> suffix in NuGet</li>
+<li>Outputs to <code>Bin/Nightly/</code> and <code>Bin/Packages/Nightly/</code></li>
+</ul>
+<h3 id="debugproj---debug-builds">debug.proj - Debug Builds</h3>
+<p><strong>Purpose</strong>: Local development debug builds</p>
+<p><strong>Key Properties</strong>:</p>
+<pre><code class="lang-xml">&lt;Configuration&gt;Debug&lt;/Configuration&gt;
+</code></pre>
+<p><strong>Available Targets</strong>:</p>
+<ul>
+<li><code>Clean</code> - Clean Debug configuration</li>
+<li><code>Restore</code> - Restore packages</li>
+<li><code>Build</code> - Build Debug configuration</li>
+</ul>
+<p><strong>Key Differences</strong>:</p>
+<ul>
+<li>No packaging or archive targets</li>
+<li>Simplified for local development</li>
+</ul>
+<h3 id="installerproj---installer-builds">installer.proj - Installer Builds</h3>
+<p><strong>Purpose</strong>: Builds packages for demo installers</p>
+<p><strong>Key Properties</strong>:</p>
+<pre><code class="lang-xml">&lt;Configuration&gt;Installer&lt;/Configuration&gt;
+</code></pre>
+<p><strong>Available Targets</strong>:</p>
+<ul>
+<li><code>Clean</code> - Clean Installer configuration</li>
+<li><code>Restore</code> - Restore packages</li>
+<li><code>Build</code> - Build Installer configuration</li>
+<li><code>CleanPackages</code> - Delete packages from <code>Bin/Packages/Installer/</code></li>
+<li><code>PackAll</code> - Create Installer packages</li>
+<li><code>Pack</code> - Master packaging target</li>
+<li><code>Push</code> - Publish Installer packages</li>
+<li><code>CreateNightlyZip</code> - Create Installer ZIP (reuses Nightly zip logic)</li>
+</ul>
+<p><strong>Special Notes</strong>:</p>
+<ul>
+<li>WiX installers require build numbers ≤ 256</li>
+<li>Version uses month number for Build component</li>
+</ul>
+<h2 id="project-file-patterns">Project File Patterns</h2>
+<h3 id="project-selection-pattern">Project Selection Pattern</h3>
+<p>All <code>.proj</code> files use this pattern to select Krypton projects:</p>
+<pre><code class="lang-xml">&lt;ItemGroup&gt;
+    &lt;Projects Include=&quot;..\Source\Krypton Components\Krypton.*\*.csproj&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<p>This selects:</p>
+<ul>
+<li><code>Krypton.Toolkit\Krypton.Toolkit 2022.csproj</code></li>
+<li><code>Krypton.Ribbon\Krypton.Ribbon 2022.csproj</code></li>
+<li><code>Krypton.Navigator\Krypton.Navigator 2022.csproj</code></li>
+<li><code>Krypton.Workspace\Krypton.Workspace 2022.csproj</code></li>
+<li><code>Krypton.Docking\Krypton.Docking 2022.csproj</code></li>
+</ul>
+<h3 id="nuget-asset-cleanup-pattern">NuGet Asset Cleanup Pattern</h3>
+<p>Before packing, intermediate NuGet files are deleted:</p>
+<pre><code class="lang-xml">&lt;ItemGroup&gt;
+    &lt;NugetAssets Include=&quot;..\Source\Krypton Components\Krypton.*\obj\*.json&quot; /&gt;
+    &lt;NugetAssets Include=&quot;..\Source\Krypton Components\Krypton.*\obj\*.cache&quot; /&gt;
+    &lt;NugetAssets Include=&quot;..\Source\Krypton Components\Krypton.*\obj\*.g.targets&quot; /&gt;
+    &lt;NugetAssets Include=&quot;..\Source\Krypton Components\Krypton.*\obj\*.g.props&quot; /&gt;
+&lt;/ItemGroup&gt;
+&lt;Delete Files=&quot;@(NugetAssets)&quot; /&gt;
+</code></pre>
+<p>This ensures clean package generation.</p>
+<h3 id="msbuild-invocation-pattern">MSBuild Invocation Pattern</h3>
+<p>Projects are built with configuration and TFM control:</p>
+<pre><code class="lang-xml">&lt;MSBuild Projects=&quot;@(Projects)&quot; 
+         Properties=&quot;Configuration=$(Configuration);TFMs=all&quot; 
+         Targets=&quot;Build&quot; /&gt;
+</code></pre>
+<p>Key properties passed:</p>
+<ul>
+<li><code>Configuration</code> - Debug, Release, Canary, Nightly, Installer</li>
+<li><code>TFMs</code> - <code>lite</code>, <code>all</code>, or empty</li>
+</ul>
+<h2 id="archive-generation">Archive Generation</h2>
+<h3 id="zip-archives">ZIP Archives</h3>
+<p>Uses multiple fallback methods:</p>
+<ol>
+<li><strong>7-Zip</strong> (preferred): Fast, best compression</li>
+<li><strong>PowerShell Compress-Archive</strong>: Built-in Windows</li>
+</ol>
+<p>Example:</p>
+<pre><code class="lang-xml">&lt;!-- 7-Zip method --&gt;
+&lt;Exec Command=&quot;7z.exe a -tzip &amp;quot;$(ReleaseBuildPath)\$(ReleaseZipName)_$(StringDate).zip&amp;quot; &amp;quot;..\Bin\Release\*&amp;quot; -x!*.json -x!*.pdb&quot;
+      Condition=&quot;Exists('C:\Program Files\7-Zip\7z.exe')&quot; /&gt;
+
+&lt;!-- PowerShell fallback --&gt;
+&lt;Exec Command=&quot;powershell.exe -Command &amp;quot;Get-ChildItem '..\Bin\Release\*' -Recurse | Where-Object {$_.Extension -notin '.json','.pdb'} | Compress-Archive -DestinationPath '$(ReleaseBuildPath)\$(ReleaseZipName)_$(StringDate).zip' -Force&amp;quot;&quot;
+      Condition=&quot;!Exists('C:\Program Files\7-Zip\7z.exe')&quot; /&gt;
+</code></pre>
+<h3 id="targz-archives">TAR.GZ Archives</h3>
+<p>Uses multiple fallback methods:</p>
+<ol>
+<li><strong>7-Zip</strong>: Creates tar then compresses to tar.gz</li>
+<li><strong>Windows tar</strong>: Native tar in Windows 10/11</li>
+<li><strong>Git Bash tar</strong>: Uses Git's bundled tar</li>
+</ol>
+<h2 id="custom-target-execution">Custom Target Execution</h2>
+<h3 id="execute-specific-target">Execute Specific Target</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:TargetName
+</code></pre>
+<h3 id="execute-multiple-targets">Execute Multiple Targets</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Clean;Build
+</code></pre>
+<h3 id="override-configuration">Override Configuration</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /p:Configuration=Debug
+</code></pre>
+<h3 id="override-tfms">Override TFMs</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /p:TFMs=lite
+</code></pre>
+<h3 id="verbose-output">Verbose Output</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /v:detailed
+</code></pre>
+<h3 id="save-to-log-file">Save to Log File</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /fl /flp:logfile=build.log
+</code></pre>
+<h3 id="binary-log">Binary Log</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /bl:build.binlog
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-clean-before-major-builds">1. Clean Before Major Builds</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Clean;Build
+</code></pre>
+<h3 id="2-use-rebuild-for-complete-rebuild">2. Use Rebuild for Complete Rebuild</h3>
+<pre><code class="lang-cmd">msbuild nightly.proj /t:Rebuild
+</code></pre>
+<h3 id="3-test-packaging-locally-before-push">3. Test Packaging Locally Before Push</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Pack
+# Verify packages in Bin/Packages/Release/
+msbuild build.proj /t:Push
+</code></pre>
+<h3 id="4-use-binary-logs-for-troubleshooting">4. Use Binary Logs for Troubleshooting</h3>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /bl:build.binlog
+# View with MSBuild Structured Log Viewer
+</code></pre>
+<h3 id="5-parallel-builds">5. Parallel Builds</h3>
+<p>MSBuild automatically parallelizes project builds. For explicit control:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /m:4
+</code></pre>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="03-Build-Scripts.md">Build Scripts</a> - Command-line build scripts</li>
+<li><a href="04-Directory-Build-Configuration.md">Directory.Build Configuration</a> - Property inheritance</li>
+<li><a href="06-NuGet-Packaging.md">NuGet Packaging</a> - Package configuration</li>
+<li><a href="05-Version-Management.md">Version Management</a> - Versioning details</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

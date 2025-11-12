@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Version Management and Versioning Strategy | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Version Management and Versioning Strategy | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="version-management-and-versioning-strategy">Version Management and Versioning Strategy</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The Krypton Toolkit uses an automated, date-based semantic versioning system that generates unique version numbers based on the build date and configuration. This ensures consistent, traceable versioning across all releases without manual intervention.</p>
+<h2 id="version-format">Version Format</h2>
+<h3 id="structure">Structure</h3>
+<pre><code>Major.Minor.Build.Revision[-Suffix]
+</code></pre>
+<h3 id="components">Components</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Description</th>
+<th>Value</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Major</strong></td>
+<td>Major version number (fixed)</td>
+<td><code>100</code></td>
+<td><code>100</code></td>
+</tr>
+<tr>
+<td><strong>Minor</strong></td>
+<td>Year of release (2 digits)</td>
+<td>Current YY</td>
+<td><code>25</code> (2025)</td>
+</tr>
+<tr>
+<td><strong>Build</strong></td>
+<td>Month of release (2 digits)</td>
+<td>Current MM</td>
+<td><code>01</code> (January)</td>
+</tr>
+<tr>
+<td><strong>Revision</strong></td>
+<td>Day of year (1-366)</td>
+<td>Current DayOfYear</td>
+<td><code>305</code></td>
+</tr>
+<tr>
+<td><strong>Suffix</strong></td>
+<td>Pre-release identifier</td>
+<td>Configuration-dependent</td>
+<td><code>-alpha</code>, <code>-beta</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="examples">Examples</h3>
+<pre><code>100.25.1.305        # Stable release on Jan 31, 2025 (day 305 of year)
+100.25.1.305-beta   # Canary release on Jan 31, 2025
+100.25.1.305-alpha  # Nightly release on Jan 31, 2025
+</code></pre>
+<h2 id="configuration-specific-versioning">Configuration-Specific Versioning</h2>
+<h3 id="releasestable">Release/Stable</h3>
+<p><strong>LibraryVersion</strong>: <code>100.YY.MM.DayOfYear</code><br>
+<strong>PackageVersion</strong>: <code>100.YY.MM.DayOfYear</code></p>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-xml">&lt;LibraryVersion&gt;100.25.1.305&lt;/LibraryVersion&gt;
+&lt;PackageVersion&gt;100.25.1.305&lt;/PackageVersion&gt;
+</code></pre>
+<p><strong>NuGet Package Names</strong>:</p>
+<ul>
+<li><code>Krypton.Toolkit.100.25.1.305.nupkg</code></li>
+<li><code>Krypton.Toolkit.Lite.100.25.1.305.nupkg</code> (lite variant)</li>
+</ul>
+<p><strong>Use Cases</strong>:</p>
+<ul>
+<li>Production releases</li>
+<li>Stable deployments</li>
+<li>Long-term support</li>
+</ul>
+<h3 id="canary-beta">Canary (Beta)</h3>
+<p><strong>LibraryVersion</strong>: <code>100.YY.MM.DayOfYear</code><br>
+<strong>PackageVersion</strong>: <code>100.YY.MM.DayOfYear-beta</code></p>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-xml">&lt;LibraryVersion&gt;100.25.1.305&lt;/LibraryVersion&gt;
+&lt;PackageVersion&gt;100.25.1.305-beta&lt;/PackageVersion&gt;
+</code></pre>
+<p><strong>NuGet Package Names</strong>:</p>
+<ul>
+<li><code>Krypton.Toolkit.Canary.100.25.1.305-beta.nupkg</code></li>
+</ul>
+<p><strong>Pre-release Tag</strong>: <code>-beta</code></p>
+<p><strong>Use Cases</strong>:</p>
+<ul>
+<li>Beta testing</li>
+<li>Feature previews</li>
+<li>Pre-release validation</li>
+</ul>
+<h3 id="nightly-alpha">Nightly (Alpha)</h3>
+<p><strong>LibraryVersion</strong>: <code>100.YY.MM.DayOfYear</code><br>
+<strong>PackageVersion</strong>: <code>100.YY.MM.DayOfYear-alpha</code></p>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-xml">&lt;LibraryVersion&gt;100.25.1.305&lt;/LibraryVersion&gt;
+&lt;PackageVersion&gt;100.25.1.305-alpha&lt;/PackageVersion&gt;
+</code></pre>
+<p><strong>NuGet Package Names</strong>:</p>
+<ul>
+<li><code>Krypton.Toolkit.Nightly.100.25.1.305-alpha.nupkg</code></li>
+</ul>
+<p><strong>Pre-release Tag</strong>: <code>-alpha</code></p>
+<p><strong>Use Cases</strong>:</p>
+<ul>
+<li>Bleeding-edge builds</li>
+<li>Developer testing</li>
+<li>Continuous integration</li>
+</ul>
+<h3 id="installer">Installer</h3>
+<p><strong>LibraryVersion</strong>: <code>100.YY.MM.DayOfYear</code><br>
+<strong>PackageVersion</strong>: <code>100.YY.MM.DayOfYear</code></p>
+<p><strong>Special Constraint</strong>: WiX installers require Build ≤ 256, so the month-based Build component works well.</p>
+<p><strong>Use Cases</strong>:</p>
+<ul>
+<li>Demo installers</li>
+<li>Setup packages</li>
+<li>Distribution media</li>
+</ul>
+<h2 id="version-calculation-implementation">Version Calculation Implementation</h2>
+<h3 id="msbuild-property-functions">MSBuild Property Functions</h3>
+<p>Located in <code>Directory.Build.props</code>:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;Minor&gt;$([System.DateTime]::Now.ToString(yy))&lt;/Minor&gt;
+    &lt;Build&gt;$([System.DateTime]::Now.ToString(MM))&lt;/Build&gt;
+    &lt;Revision&gt;$([System.DateTime]::Now.get_DayOfYear().ToString())&lt;/Revision&gt;
+    
+    &lt;LibraryVersion&gt;100.$(Minor).$(Build).$(Revision)&lt;/LibraryVersion&gt;
+    &lt;PackageVersion&gt;100.$(Minor).$(Build).$(Revision)[-suffix]&lt;/PackageVersion&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h3 id="date-functions">Date Functions</h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Purpose</th>
+<th>Format</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DateTime.Now.ToString(yy)</code></td>
+<td>2-digit year</td>
+<td><code>yy</code></td>
+<td><code>25</code> (2025)</td>
+</tr>
+<tr>
+<td><code>DateTime.Now.ToString(MM)</code></td>
+<td>2-digit month</td>
+<td><code>MM</code></td>
+<td><code>01</code> (January)</td>
+</tr>
+<tr>
+<td><code>DateTime.Now.get_DayOfYear()</code></td>
+<td>Day of year</td>
+<td><code>1-366</code></td>
+<td><code>305</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="build-time-consistency">Build Time Consistency</h3>
+<p>All version components are calculated <strong>at build time</strong>, ensuring:</p>
+<ul>
+<li>Same version across all projects in single build</li>
+<li>Reproducible builds on same date</li>
+<li>No manual version updates required</li>
+</ul>
+<h2 id="version-properties">Version Properties</h2>
+<h3 id="assembly-version">Assembly Version</h3>
+<p><strong>Property</strong>: <code>AssemblyVersion</code><br>
+<strong>Applied To</strong>: All assemblies (DLLs)</p>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-xml">&lt;AssemblyVersion&gt;100.25.1.305&lt;/AssemblyVersion&gt;
+</code></pre>
+<p><strong>Visible In</strong>:</p>
+<ul>
+<li>Assembly properties</li>
+<li>File properties dialog</li>
+<li>Reflection API</li>
+</ul>
+<h3 id="file-version">File Version</h3>
+<p><strong>Property</strong>: <code>FileVersion</code><br>
+<strong>Applied To</strong>: Binary files</p>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-xml">&lt;FileVersion&gt;100.25.1.305&lt;/FileVersion&gt;
+</code></pre>
+<p><strong>Visible In</strong>:</p>
+<ul>
+<li>File properties dialog</li>
+<li>Windows Explorer details</li>
+</ul>
+<h3 id="informational-version">Informational Version</h3>
+<p><strong>Property</strong>: <code>Version</code> (MSBuild) / <code>InformationalVersion</code> (Assembly)<br>
+<strong>Applied To</strong>: Assemblies</p>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-xml">&lt;Version&gt;100.25.1.305&lt;/Version&gt;
+</code></pre>
+<p><strong>Visible In</strong>:</p>
+<ul>
+<li>NuGet package metadata</li>
+<li>Assembly informational version</li>
+<li><code>AssemblyInformationalVersionAttribute</code></li>
+</ul>
+<h3 id="package-version">Package Version</h3>
+<p><strong>Property</strong>: <code>PackageVersion</code><br>
+<strong>Applied To</strong>: NuGet packages</p>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-xml">&lt;PackageVersion&gt;100.25.1.305-beta&lt;/PackageVersion&gt;
+</code></pre>
+<p><strong>Visible In</strong>:</p>
+<ul>
+<li>NuGet package filename</li>
+<li>NuGet.org metadata</li>
+<li>Package dependency resolution</li>
+</ul>
+<h2 id="version-ordering">Version Ordering</h2>
+<h3 id="semantic-versioning-rules">Semantic Versioning Rules</h3>
+<p>NuGet follows semantic versioning (SemVer 2.0):</p>
+<p><strong>Stable Release</strong>:</p>
+<pre><code>100.25.1.305
+</code></pre>
+<p><strong>Pre-release Ordering</strong> (lower to higher):</p>
+<pre><code>100.25.1.305-alpha    # Nightly (lowest precedence)
+100.25.1.305-beta     # Canary
+100.25.1.305          # Stable (highest precedence)
+</code></pre>
+<h3 id="multiple-builds-same-day">Multiple Builds Same Day</h3>
+<p>If multiple builds occur on the same day:</p>
+<p><strong>Option 1</strong>: Sequential revision numbers</p>
+<ul>
+<li>Not currently implemented</li>
+<li>Would require manual intervention</li>
+</ul>
+<p><strong>Option 2</strong>: Time-based revision</p>
+<ul>
+<li>Could use hours/minutes</li>
+<li>Example: <code>100.25.1.30512</code> (day 305, 12:00)</li>
+</ul>
+<p><strong>Current Behavior</strong>: Same version for multiple builds on same day</p>
+<h2 id="querying-version-information">Querying Version Information</h2>
+<h3 id="at-build-time">At Build Time</h3>
+<p>From MSBuild:</p>
+<pre><code class="lang-cmd">msbuild /t:Build /p:Version
+</code></pre>
+<h3 id="from-assembly">From Assembly</h3>
+<p>Using PowerShell:</p>
+<pre><code class="lang-powershell">$dll = Get-Item &quot;Bin/Release/net48/Krypton.Toolkit.dll&quot;
+$version = [System.Reflection.AssemblyName]::GetAssemblyName($dll.FullName).Version
+Write-Host &quot;Version: $version&quot;
+</code></pre>
+<p>Using C#:</p>
+<pre><code class="lang-csharp">using System.Reflection;
+
+var assembly = Assembly.LoadFrom(&quot;Krypton.Toolkit.dll&quot;);
+var version = assembly.GetName().Version;
+Console.WriteLine($&quot;Version: {version}&quot;);
+</code></pre>
+<h3 id="from-nuget-package">From NuGet Package</h3>
+<p>Using PowerShell:</p>
+<pre><code class="lang-powershell">$package = Get-ChildItem &quot;Bin/Packages/Release/*.nupkg&quot; | Select-Object -First 1
+$packageName = $package.Name
+Write-Host &quot;Package: $packageName&quot;
+</code></pre>
+<h2 id="version-visibility">Version Visibility</h2>
+<h3 id="where-versions-appear">Where Versions Appear</h3>
+<ol>
+<li><p><strong>Assembly Attributes</strong></p>
+<ul>
+<li><code>AssemblyVersion</code></li>
+<li><code>AssemblyFileVersion</code></li>
+<li><code>AssemblyInformationalVersion</code></li>
+</ul>
+</li>
+<li><p><strong>NuGet Package Metadata</strong></p>
+<ul>
+<li>Package filename</li>
+<li><code>.nuspec</code> version element</li>
+<li>NuGet.org listing</li>
+</ul>
+</li>
+<li><p><strong>Build Logs</strong></p>
+<ul>
+<li>MSBuild output</li>
+<li>CI/CD logs</li>
+</ul>
+</li>
+<li><p><strong>File Properties</strong></p>
+<ul>
+<li>Windows Explorer</li>
+<li>Right-click → Properties → Details</li>
+</ul>
+</li>
+<li><p><strong>Runtime</strong></p>
+<ul>
+<li><code>Assembly.GetName().Version</code></li>
+<li>Application about dialogs</li>
+</ul>
+</li>
+</ol>
+<h2 id="versioning-best-practices">Versioning Best Practices</h2>
+<h3 id="1-never-manually-override">1. Never Manually Override</h3>
+<p>Let the build system calculate versions automatically to ensure consistency.</p>
+<h3 id="2-use-pre-release-tags-correctly">2. Use Pre-release Tags Correctly</h3>
+<ul>
+<li><code>-alpha</code> for nightly/unstable builds</li>
+<li><code>-beta</code> for canary/preview builds</li>
+<li>No suffix for stable releases</li>
+</ul>
+<h3 id="3-understand-nuget-versioning">3. Understand NuGet Versioning</h3>
+<p>Pre-releases are <strong>not</strong> installed by default:</p>
+<pre><code class="lang-cmd"># Installs latest stable only
+Install-Package Krypton.Toolkit
+
+# Includes pre-releases
+Install-Package Krypton.Toolkit -Pre
+</code></pre>
+<h3 id="4-version-pinning">4. Version Pinning</h3>
+<p>For production, always pin to specific stable versions:</p>
+<pre><code class="lang-xml">&lt;PackageReference Include=&quot;Krypton.Toolkit&quot; Version=&quot;100.25.1.305&quot; /&gt;
+</code></pre>
+<p>Avoid floating versions in production:</p>
+<pre><code class="lang-xml">&lt;!-- Don't use in production --&gt;
+&lt;PackageReference Include=&quot;Krypton.Toolkit&quot; Version=&quot;100.*&quot; /&gt;
+</code></pre>
+<h3 id="5-cicd-version-retrieval">5. CI/CD Version Retrieval</h3>
+<p>In GitHub Actions workflows:</p>
+<pre><code class="lang-yaml">- name: Get Version
+  id: get_version
+  shell: pwsh
+  run: |
+    $dll = Get-Item &quot;Bin/Release/net48/Krypton.Toolkit.dll&quot;
+    $version = [System.Reflection.AssemblyName]::GetAssemblyName($dll.FullName).Version.ToString()
+    echo &quot;version=$version&quot; &gt;&gt; $env:GITHUB_OUTPUT
+</code></pre>
+<h2 id="version-history-and-tracking">Version History and Tracking</h2>
+<h3 id="build-logs">Build Logs</h3>
+<p>Every build records version information:</p>
+<pre><code>Logs/stable-build-log.log
+Logs/canary-build-log.log
+Logs/nightly-build-log.log
+</code></pre>
+<h3 id="git-tags">Git Tags</h3>
+<p>Release workflows create Git tags:</p>
+<pre><code>v100.25.1.305        # Stable
+v100.25.1.305-beta   # Canary
+v100.25.1.305-alpha  # Nightly
+v100.25.1.305-lts    # LTS
+</code></pre>
+<h3 id="nuget-history">NuGet History</h3>
+<p>All published versions are tracked on NuGet.org:</p>
+<ul>
+<li><a href="https://www.nuget.org/packages/Krypton.Toolkit">https://www.nuget.org/packages/Krypton.Toolkit</a></li>
+<li><a href="https://www.nuget.org/packages/Krypton.Toolkit.Canary">https://www.nuget.org/packages/Krypton.Toolkit.Canary</a></li>
+<li><a href="https://www.nuget.org/packages/Krypton.Toolkit.Nightly">https://www.nuget.org/packages/Krypton.Toolkit.Nightly</a></li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="version-mismatch-between-builds">Version Mismatch Between Builds</h3>
+<p><strong>Symptom</strong>: Different projects have different versions in same build</p>
+<p><strong>Cause</strong>: Builds span midnight or year/month boundary</p>
+<p><strong>Solution</strong>: Rebuild all projects in single invocation:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Rebuild
+</code></pre>
+<h3 id="old-version-after-clean-build">Old Version After Clean Build</h3>
+<p><strong>Symptom</strong>: Version doesn't update after purge</p>
+<p><strong>Cause</strong>: Cached NuGet packages or IDE state</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-cmd">purge.cmd
+nuget.exe locals all -clear
+msbuild build.proj /t:Rebuild
+</code></pre>
+<h3 id="pre-release-not-showing-in-nuget">Pre-release Not Showing in NuGet</h3>
+<p><strong>Symptom</strong>: Can't find <code>-alpha</code> or <code>-beta</code> packages</p>
+<p><strong>Cause</strong>: Pre-release filter not enabled</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-cmd"># Command line
+nuget.exe install Krypton.Toolkit -Pre
+
+# Visual Studio
+Check &quot;Include prerelease&quot; in NuGet Package Manager
+</code></pre>
+<h3 id="version-conflict-in-multi-project-solution">Version Conflict in Multi-Project Solution</h3>
+<p><strong>Symptom</strong>: Different Krypton assemblies have different versions</p>
+<p><strong>Cause</strong>: Mixed configurations or stale binaries</p>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-cmd">purge.cmd
+msbuild build.proj /t:Rebuild /p:Configuration=Release
+</code></pre>
+<h2 id="advanced-scenarios">Advanced Scenarios</h2>
+<h3 id="custom-version-format">Custom Version Format</h3>
+<p>To use a custom version format, override in project:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;Version&gt;1.2.3-custom&lt;/Version&gt;
+    &lt;AssemblyVersion&gt;1.2.3.0&lt;/AssemblyVersion&gt;
+    &lt;FileVersion&gt;1.2.3.0&lt;/FileVersion&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p><strong>Warning</strong>: This breaks automated versioning!</p>
+<h3 id="build-metadata">Build Metadata</h3>
+<p>Add build metadata per SemVer 2.0:</p>
+<pre><code class="lang-xml">&lt;PackageVersion&gt;100.25.1.305-beta+buildid.12345&lt;/PackageVersion&gt;
+</code></pre>
+<p><strong>Note</strong>: Build metadata is ignored in version precedence.</p>
+<h3 id="version-stamping-from-ci">Version Stamping from CI</h3>
+<p>Override version in CI/CD:</p>
+<pre><code class="lang-cmd">msbuild build.proj /t:Pack /p:PackageVersion=100.25.1.305-ci.%BUILD_NUMBER%
+</code></pre>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="04-Directory-Build-Configuration.md">Directory.Build Configuration</a> - Version calculation details</li>
+<li><a href="06-NuGet-Packaging.md">NuGet Packaging</a> - Package versioning</li>
+<li><a href="07-GitHub-Actions-Workflows.md">GitHub Actions Workflows</a> - Automated versioning</li>
+<li><a href="02-MSBuild-Project-Files.md">MSBuild Project Files</a> - Build orchestration</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

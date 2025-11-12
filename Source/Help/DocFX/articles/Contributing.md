@@ -3,7 +3,7 @@
 If you are wanting to contribute to the toolkit, the articles below will guide you through the process.
 
 * [Allowing for Longer Path and File Names](Contributing/AllowingforLongerPathandFileNames.md)
-* [Build System](Contributing/BuildSystem.md)
+* [Build System](Contributing/BuildSystemDocumentationIndex.md)
 * [Contributing Guidelines](Contributing/ContributingGuidelines.md)
 * [Enable Preview SDKs](Contributing/EnablePreviewSDK.md)
 * [GitHub Actions Workflows](Contributing/GitHubActionsWorkflows.md)

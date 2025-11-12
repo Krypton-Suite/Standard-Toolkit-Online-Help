@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Build System Overview | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Build System Overview | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="build-system-overview">Build System Overview</h1>
+
+<h2 id="introduction">Introduction</h2>
+<p>The Krypton Toolkit Suite uses a sophisticated MSBuild-based build system designed for Windows environments. The build system supports multiple release channels, target frameworks, and automated CI/CD workflows.</p>
+<h2 id="key-features">Key Features</h2>
+<ul>
+<li><strong>Multi-Channel Builds</strong>: Support for Stable, Canary, Nightly, Debug, and Installer configurations</li>
+<li><strong>Multi-Target Framework</strong>: Builds for .NET Framework 4.7.2-4.8.1, .NET 8-10 Windows</li>
+<li><strong>Automated Versioning</strong>: Date-based semantic versioning (Major.YY.MM.DayOfYear)</li>
+<li><strong>NuGet Package Creation</strong>: Automated package generation with configuration-specific metadata</li>
+<li><strong>Archive Generation</strong>: Creates ZIP and TAR.GZ distribution archives</li>
+<li><strong>CI/CD Integration</strong>: Full GitHub Actions workflow support</li>
+<li><strong>Modern Build Tool</strong>: Optional Terminal UI tool for interactive builds</li>
+</ul>
+<h2 id="build-system-components">Build System Components</h2>
+<h3 id="1-msbuild-project-files-proj">1. MSBuild Project Files (<code>.proj</code>)</h3>
+<p>Located in <code>Scripts/</code>:</p>
+<ul>
+<li><code>build.proj</code> - Stable/Release builds</li>
+<li><code>canary.proj</code> - Beta pre-release builds</li>
+<li><code>nightly.proj</code> - Alpha nightly builds</li>
+<li><code>debug.proj</code> - Debug builds</li>
+<li><code>installer.proj</code> - Installer-specific builds</li>
+</ul>
+<h3 id="2-windows-command-scripts-cmd">2. Windows Command Scripts (<code>.cmd</code>)</h3>
+<p>Located in <code>Scripts/</code>:</p>
+<ul>
+<li><code>build-stable.cmd</code> - Build stable releases</li>
+<li><code>build-canary.cmd</code> - Build canary releases</li>
+<li><code>build-nightly.cmd</code> - Build nightly releases</li>
+<li><code>buildsolution.cmd</code> - Interactive solution builder</li>
+<li><code>purge.cmd</code> - Clean build artifacts</li>
+<li><code>publish.cmd</code> - Publish packages to NuGet</li>
+</ul>
+<h3 id="3-directorybuild-files">3. Directory.Build Files</h3>
+<ul>
+<li><code>Directory.Build.props</code> (root) - Global build properties and versioning</li>
+<li><code>Source/Krypton Components/Directory.Build.props</code> - Component-specific properties</li>
+<li><code>Source/Krypton Components/Directory.Build.targets</code> - Component-specific targets</li>
+</ul>
+<h3 id="4-github-actions-workflows">4. GitHub Actions Workflows</h3>
+<p>Located in <code>.github/workflows/</code>:</p>
+<ul>
+<li><code>build.yml</code> - CI builds for pull requests and branches</li>
+<li><code>release.yml</code> - Production releases for multiple branches</li>
+<li><code>nightly.yml</code> - Automated nightly releases with change detection</li>
+</ul>
+<h3 id="5-modernbuild-tool">5. ModernBuild Tool</h3>
+<p>Located in <code>Scripts/ModernBuild/</code>:</p>
+<ul>
+<li>Modern Terminal UI tool for interactive builds</li>
+<li>Supports all build configurations and NuGet operations</li>
+<li>Real-time build output and logging</li>
+</ul>
+<h2 id="build-configurations">Build Configurations</h2>
+<h3 id="configuration-overview">Configuration Overview</h3>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>Purpose</th>
+<th>Package Suffix</th>
+<th>Target Audience</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Release</td>
+<td>Stable production releases</td>
+<td>None or <code>.Lite</code></td>
+<td>Production users</td>
+</tr>
+<tr>
+<td>Canary</td>
+<td>Beta pre-releases</td>
+<td><code>.Canary</code> (with <code>-beta</code> tag)</td>
+<td>Early adopters</td>
+</tr>
+<tr>
+<td>Nightly</td>
+<td>Alpha nightly builds</td>
+<td><code>.Nightly</code> (with <code>-alpha</code> tag)</td>
+<td>Developers/testers</td>
+</tr>
+<tr>
+<td>Debug</td>
+<td>Development debugging</td>
+<td>N/A</td>
+<td>Local development</td>
+</tr>
+<tr>
+<td>Installer</td>
+<td>Demo installer packages</td>
+<td><code>.Installer</code></td>
+<td>Demo/installer use</td>
+</tr>
+</tbody>
+</table>
+<h3 id="target-frameworks-tfms">Target Frameworks (TFMs)</h3>
+<p>The build system supports multiple target framework monikers:</p>
+<ul>
+<li><strong>Full Framework</strong>: <code>net472</code>, <code>net48</code>, <code>net481</code></li>
+<li><strong>.NET</strong>: <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+</ul>
+<p>Two packaging modes:</p>
+<ul>
+<li><strong>Lite</strong> (<code>TFMs=lite</code>): Latest frameworks only (net48, net481, net8.0+)</li>
+<li><strong>All</strong> (<code>TFMs=all</code>): All supported frameworks</li>
+</ul>
+<h2 id="directory-structure">Directory Structure</h2>
+<pre><code>Standard-Toolkit/
+├── Scripts/              # Build scripts and project files
+│   ├── *.cmd            # Windows batch scripts
+│   ├── *.proj           # MSBuild project files
+│   └── ModernBuild/     # Modern build tool
+├── Source/
+│   └── Krypton Components/
+│       ├── Krypton.Toolkit/
+│       ├── Krypton.Ribbon/
+│       ├── Krypton.Navigator/
+│       ├── Krypton.Workspace/
+│       └── Krypton.Docking/
+├── Bin/                 # Build outputs
+│   ├── Debug/
+│   ├── Release/
+│   ├── Canary/
+│   ├── Nightly/
+│   └── Packages/        # NuGet packages
+├── Logs/                # Build logs
+└── Documents/
+    └── Workflows/       # Build documentation
+</code></pre>
+<h2 id="build-outputs">Build Outputs</h2>
+<h3 id="binary-outputs">Binary Outputs</h3>
+<p>Location: <code>Bin/&lt;Configuration&gt;/</code></p>
+<p>Each configuration produces outputs for all target frameworks in separate subdirectories:</p>
+<ul>
+<li><code>net472/</code>, <code>net48/</code>, <code>net481/</code></li>
+<li><code>net8.0-windows/</code>, <code>net9.0-windows/</code>, <code>net10.0-windows/</code></li>
+</ul>
+<h3 id="nuget-packages">NuGet Packages</h3>
+<p>Location: <code>Bin/Packages/&lt;Configuration&gt;/</code></p>
+<p>Generated packages:</p>
+<ul>
+<li><code>Krypton.Toolkit[.Suffix].&lt;version&gt;.nupkg</code></li>
+<li><code>Krypton.Ribbon[.Suffix].&lt;version&gt;.nupkg</code></li>
+<li><code>Krypton.Navigator[.Suffix].&lt;version&gt;.nupkg</code></li>
+<li><code>Krypton.Workspace[.Suffix].&lt;version&gt;.nupkg</code></li>
+<li><code>Krypton.Docking[.Suffix].&lt;version&gt;.nupkg</code></li>
+<li>Symbol packages: <code>*.snupkg</code> (for Canary and Nightly)</li>
+</ul>
+<h3 id="distribution-archives">Distribution Archives</h3>
+<p>Location: <code>Bin/&lt;Configuration&gt;/Zips/</code></p>
+<p>Generated archives:</p>
+<ul>
+<li><code>Krypton-&lt;Channel&gt;_&lt;yyyyMMdd&gt;.zip</code></li>
+<li><code>Krypton-&lt;Channel&gt;_&lt;yyyyMMdd&gt;.tar.gz</code></li>
+</ul>
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="required-software">Required Software</h3>
+<ol>
+<li><p><strong>Windows 10/11</strong></p>
+<ul>
+<li>Long paths must be enabled for local builds</li>
+</ul>
+</li>
+<li><p><strong>Visual Studio 2022</strong></p>
+<ul>
+<li>Any edition: Preview, Enterprise, Professional, Community, or BuildTools</li>
+<li>Required workload: .NET desktop development</li>
+</ul>
+</li>
+<li><p><strong>.NET SDKs</strong></p>
+<ul>
+<li>.NET Framework 4.7.2-4.8.1 developer packs</li>
+<li>.NET 8.0 SDK (minimum)</li>
+<li>.NET 9.0 SDK (recommended)</li>
+<li>.NET 10.0 SDK (optional, for latest builds)</li>
+</ul>
+</li>
+<li><p><strong>NuGet CLI</strong> (for package publishing)</p>
+<ul>
+<li>Download from: <a href="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe">https://dist.nuget.org/win-x86-commandline/latest/nuget.exe</a></li>
+<li>Place in PATH or in <code>Scripts/</code> directory</li>
+</ul>
+</li>
+</ol>
+<h3 id="optional-software">Optional Software</h3>
+<ul>
+<li><strong>7-Zip</strong> - For creating TAR.GZ archives</li>
+<li><strong>Git</strong> - For source control and automated workflows</li>
+</ul>
+<h2 id="common-build-tasks">Common Build Tasks</h2>
+<h3 id="build-debug-local-development">Build Debug (Local Development)</h3>
+<pre><code class="lang-cmd">cd Scripts
+build-stable.cmd Build
+</code></pre>
+<p>or</p>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<h3 id="build-release">Build Release</h3>
+<pre><code class="lang-cmd">cd Scripts
+build-stable.cmd Build
+</code></pre>
+<h3 id="build-and-pack-release">Build and Pack Release</h3>
+<pre><code class="lang-cmd">cd Scripts
+msbuild build.proj /t:Build
+msbuild build.proj /t:Pack
+</code></pre>
+<h3 id="build-nightly">Build Nightly</h3>
+<pre><code class="lang-cmd">cd Scripts
+build-nightly.cmd Build
+</code></pre>
+<h3 id="clean-build-artifacts">Clean Build Artifacts</h3>
+<pre><code class="lang-cmd">cd Scripts
+purge.cmd
+</code></pre>
+<h3 id="create-distribution-archives">Create Distribution Archives</h3>
+<pre><code class="lang-cmd">cd Scripts
+msbuild build.proj /t:CreateAllReleaseArchives
+</code></pre>
+<h2 id="build-system-workflow">Build System Workflow</h2>
+<ol>
+<li><strong>Configuration Selection</strong>: Choose build configuration (Debug, Release, Canary, Nightly)</li>
+<li><strong>Version Calculation</strong>: Automatic version generation based on current date</li>
+<li><strong>Project Restore</strong>: NuGet package restoration for all projects</li>
+<li><strong>Compilation</strong>: Multi-target compilation for all frameworks</li>
+<li><strong>Package Creation</strong>: NuGet package generation with metadata</li>
+<li><strong>Archive Generation</strong>: Optional ZIP/TAR.GZ archive creation</li>
+<li><strong>Publishing</strong>: Optional push to NuGet.org or GitHub Packages</li>
+</ol>
+<h2 id="next-steps">Next Steps</h2>
+<p>For detailed information about specific aspects of the build system:</p>
+<ul>
+<li><a href="02-MSBuild-Project-Files.md">MSBuild Project Files</a> - Detailed .proj file documentation</li>
+<li><a href="03-Build-Scripts.md">Build Scripts</a> - Command script documentation</li>
+<li><a href="04-Directory-Build-Configuration.md">Directory.Build Configuration</a> - MSBuild configuration</li>
+<li><a href="05-Version-Management.md">Version Management</a> - Versioning strategy</li>
+<li><a href="06-NuGet-Packaging.md">NuGet Packaging</a> - Package creation and publishing</li>
+<li><a href="07-GitHub-Actions-Workflows.md">GitHub Actions Workflows</a> - CI/CD documentation</li>
+<li><a href="08-ModernBuild-Tool.md">ModernBuild Tool</a> - Interactive build tool</li>
+<li><a href="09-Local-Development-Workflow.md">Local Development</a> - Developer workflow guide</li>
+<li><a href="10-Troubleshooting.md">Troubleshooting</a> - Common issues and solutions</li>
+</ul>
+<h2 id="additional-resources">Additional Resources</h2>
+<ul>
+<li><a href="https://visualstudio.microsoft.com/downloads/">Visual Studio 2022 Downloads</a></li>
+<li><a href="https://dotnet.microsoft.com/download">.NET SDK Downloads</a></li>
+<li><a href="https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild">MSBuild Reference</a></li>
+<li><a href="https://docs.microsoft.com/en-us/nuget/">NuGet Documentation</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

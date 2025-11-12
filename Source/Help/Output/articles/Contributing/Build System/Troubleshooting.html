@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Troubleshooting Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Troubleshooting Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="troubleshooting-guide">Troubleshooting Guide</h1>
+
+<h2 id="overview">Overview</h2>
+<p>This guide provides solutions to common issues encountered when building, developing, and deploying the Krypton Toolkit. Issues are organized by category with symptoms, causes, and detailed solutions.</p>
+<h2 id="build-system-issues">Build System Issues</h2>
+<h3 id="visual-studio-2022-not-detected">Visual Studio 2022 Not Detected</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Build scripts report &quot;Unable to detect suitable environment&quot;</li>
+<li>MSBuild not found</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Visual Studio 2022 not installed</li>
+<li>Non-standard installation path</li>
+<li>Missing MSBuild component</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Verify Visual Studio Installation</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dir &quot;%ProgramFiles%\Microsoft Visual Studio\2022\&quot;
+</code></pre>
+<p>Expected editions: Preview, Enterprise, Professional, Community, BuildTools</p>
+<ol start="2">
+<li><p><strong>Install Visual Studio 2022</strong>:</p>
+<ul>
+<li>Download from: <a href="https://visualstudio.microsoft.com/downloads/">https://visualstudio.microsoft.com/downloads/</a></li>
+<li>Install &quot;.NET desktop development&quot; workload</li>
+</ul>
+</li>
+<li><p><strong>Manually Specify MSBuild Path</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd">set MSBUILDPATH=C:\CustomPath\MSBuild\Current\Bin
+cd Scripts
+&quot;%MSBUILDPATH%\msbuild.exe&quot; /t:Build build.proj
+</code></pre>
+<ol start="4">
+<li><strong>Use dotnet build Instead</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<h3 id="sdk-version-not-found">SDK Version Not Found</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Error: &quot;The SDK 'Microsoft.NET.Sdk' specified could not be found&quot;</li>
+<li>Build fails with SDK errors</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Required .NET SDK not installed</li>
+<li>Incorrect SDK version in <code>global.json</code></li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Check Installed SDKs</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet --list-sdks
+</code></pre>
+<ol start="2">
+<li><p><strong>Install Required SDK</strong>:</p>
+<ul>
+<li>Download from: <a href="https://dotnet.microsoft.com/download">https://dotnet.microsoft.com/download</a></li>
+<li>Minimum: .NET 8.0 SDK</li>
+</ul>
+</li>
+<li><p><strong>Remove or Update global.json</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd">del global.json
+</code></pre>
+<p>Or edit to use available SDK:</p>
+<pre><code class="lang-json">{
+  &quot;sdk&quot;: {
+    &quot;version&quot;: &quot;8.0.100&quot;,
+    &quot;rollForward&quot;: &quot;latestFeature&quot;
+  }
+}
+</code></pre>
+<h3 id="long-path-errors">Long Path Errors</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Error: &quot;The specified path, file name, or both are too long&quot;</li>
+<li>Build fails with path length errors</li>
+</ul>
+<p><strong>Cause</strong>:</p>
+<ul>
+<li>Windows long paths not enabled</li>
+<li>Path exceeds 260 characters</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Enable Long Paths</strong> (Run as Administrator):</li>
+</ol>
+<pre><code class="lang-cmd">reg add HKLM\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled /t REG_DWORD /d 1 /f
+</code></pre>
+<ol start="2">
+<li><p><strong>Restart Computer</strong> after enabling</p>
+</li>
+<li><p><strong>Verify Setting</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd">reg query HKLM\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled
+</code></pre>
+<p>Should show: <code>LongPathsEnabled    REG_DWORD    0x1</code></p>
+<ol start="4">
+<li><strong>Move Repository Closer to Root</strong>:</li>
+</ol>
+<pre><code class="lang-cmd"># Instead of: C:\Users\Username\Documents\Projects\Krypton\Standard-Toolkit
+# Use: C:\Dev\Standard-Toolkit
+</code></pre>
+<h3 id="nuget-restore-failures">NuGet Restore Failures</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Error: &quot;Unable to load the service index for source&quot;</li>
+<li>Package restore fails</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Network connectivity issues</li>
+<li>Corrupted NuGet cache</li>
+<li>Firewall/proxy blocking</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Clear NuGet Cache</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">nuget.exe locals all -clear
+</code></pre>
+<p>Or:</p>
+<pre><code class="lang-cmd">dotnet nuget locals all --clear
+</code></pre>
+<ol start="2">
+<li><strong>Verify Network</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">ping api.nuget.org
+</code></pre>
+<ol start="3">
+<li><strong>Check NuGet Sources</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">nuget.exe sources list
+</code></pre>
+<ol start="4">
+<li><strong>Reset NuGet Configuration</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">del %APPDATA%\NuGet\NuGet.Config
+</code></pre>
+<ol start="5">
+<li><strong>Configure Proxy</strong> (if behind corporate proxy):</li>
+</ol>
+<pre><code class="lang-cmd">nuget.exe config -set http_proxy=http://proxy:port
+nuget.exe config -set http_proxy.user=username
+nuget.exe config -set http_proxy.password=password
+</code></pre>
+<h3 id="build-hangs-or-stalls">Build Hangs or Stalls</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Build process hangs indefinitely</li>
+<li>No output for extended period</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Deadlocked MSBuild processes</li>
+<li>Antivirus scanning files</li>
+<li>Corrupted build state</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Kill MSBuild Processes</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">taskkill /F /IM MSBuild.exe
+taskkill /F /IM dotnet.exe
+</code></pre>
+<ol start="2">
+<li><p><strong>Disable Antivirus Temporarily</strong>:</p>
+<ul>
+<li>Add repository folder to exclusions</li>
+<li>Or disable real-time scanning during build</li>
+</ul>
+</li>
+<li><p><strong>Clean and Rebuild</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd">cd Scripts
+purge.cmd
+build-stable.cmd Build
+</code></pre>
+<ol start="4">
+<li><strong>Use Single-Threaded Build</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /m:1
+</code></pre>
+<h3 id="permission-denied-errors">Permission Denied Errors</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Error: &quot;Access to the path '...' is denied&quot;</li>
+<li>Cannot delete or overwrite files</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Files locked by Visual Studio or other processes</li>
+<li>Insufficient permissions</li>
+<li>Antivirus interference</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Close Visual Studio</strong>:
+<ul>
+<li>File → Exit</li>
+<li>Verify no devenv.exe processes:</li>
+</ul>
+</li>
+</ol>
+<pre><code class="lang-cmd">tasklist | findstr devenv
+</code></pre>
+<ol start="2">
+<li><p><strong>Close File Explorer</strong> in repository directory</p>
+</li>
+<li><p><strong>Run as Administrator</strong>:</p>
+<ul>
+<li>Right-click CMD → Run as Administrator</li>
+</ul>
+</li>
+<li><p><strong>Check File Locks</strong>:</p>
+<ul>
+<li>Download Process Explorer: <a href="https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer">https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer</a></li>
+<li>Find → Find Handle or DLL</li>
+<li>Search for locked file</li>
+</ul>
+</li>
+<li><p><strong>Restart Computer</strong> (last resort)</p>
+</li>
+</ol>
+<h2 id="compilation-errors">Compilation Errors</h2>
+<h3 id="type-or-namespace-not-found">Type or Namespace Not Found</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Error: &quot;The type or namespace name 'X' could not be found&quot;</li>
+<li>Missing using directives</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Missing project reference</li>
+<li>Incorrect namespace</li>
+<li>Using global usings incorrectly</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Rebuild Solution</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<ol start="2">
+<li><p><strong>Check Project References</strong>:</p>
+<ul>
+<li>Open <code>.csproj</code> file</li>
+<li>Verify <code>&lt;ProjectReference&gt;</code> elements</li>
+</ul>
+</li>
+<li><p><strong>Check Global Usings</strong>:</p>
+<ul>
+<li>Location: <code>Source/Krypton Components/Krypton.*/Global/GlobalDeclarations.cs</code></li>
+<li>Don't add new <code>using</code> statements in individual files</li>
+</ul>
+</li>
+<li><p><strong>Clean and Restore</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd">cd Scripts
+purge.cmd
+dotnet restore &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot;
+dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<h3 id="designer-errors">Designer Errors</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>&quot;The designer could not be shown for this file&quot;</li>
+<li>Designer crashes or shows errors</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Corrupted designer cache</li>
+<li>Build errors in referenced projects</li>
+<li>WinForms designer compatibility issues</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Rebuild Solution</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<ol start="2">
+<li><strong>Clean Designer Cache</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">rd /s /q &quot;%LOCALAPPDATA%\Microsoft\VisualStudio\17.0_*\ComponentModelCache&quot;
+</code></pre>
+<ol start="3">
+<li><p><strong>Close and Reopen Designer</strong>:</p>
+<ul>
+<li>Close form</li>
+<li>Rebuild project</li>
+<li>Reopen form</li>
+</ul>
+</li>
+<li><p><strong>Check Build Errors</strong>:</p>
+<ul>
+<li>Fix any compilation errors first</li>
+<li>Designer requires clean build</li>
+</ul>
+</li>
+<li><p><strong>Use Code-Behind</strong> (if designer won't open):</p>
+<ul>
+<li>Edit <code>.Designer.cs</code> directly</li>
+<li>Or use <code>InitializeComponent()</code> manually</li>
+</ul>
+</li>
+</ol>
+<h3 id="c-language-version-errors">C# Language Version Errors</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>&quot;Feature 'X' is not available in C# 7.3&quot;</li>
+<li>Language feature errors</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Using newer C# features in .NET Framework targets</li>
+<li><code>LangVersion</code> mismatch</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Use Conditional Compilation</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">#if NET8_0_OR_GREATER
+    // C# 12 features
+    string result = $&quot;Value: {value}&quot;;
+#else
+    // C# 7.3 compatible
+    string result = string.Format(&quot;Value: {0}&quot;, value);
+#endif
+</code></pre>
+<ol start="2">
+<li><p><strong>Check LangVersion Setting</strong>:</p>
+<ul>
+<li>Location: <code>Source/Krypton Components/Directory.Build.props</code></li>
+<li>Should be: <code>&lt;LangVersion&gt;preview&lt;/LangVersion&gt;</code></li>
+</ul>
+</li>
+<li><p><strong>Avoid Newer Features in Shared Code</strong>:</p>
+<ul>
+<li>Use features compatible with C# 7.3 for .NET Framework</li>
+<li>Use newer features only in .NET 8+ code paths</li>
+</ul>
+</li>
+</ol>
+<h2 id="nuget-package-issues">NuGet Package Issues</h2>
+<h3 id="package-already-exists-on-nugetorg">Package Already Exists on NuGet.org</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Error: &quot;409 Conflict - The package version already exists&quot;</li>
+<li>Cannot publish package</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Version already published</li>
+<li>Trying to republish same version</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Use Skip Duplicate</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet nuget push *.nupkg --skip-duplicate
+</code></pre>
+<ol start="2">
+<li><p><strong>Delete Package</strong> (within 72 hours):</p>
+<ul>
+<li>Go to <a href="https://www.nuget.org">https://www.nuget.org</a></li>
+<li>My Packages → Select package → Delete</li>
+</ul>
+</li>
+<li><p><strong>Wait for Different Version</strong>:</p>
+<ul>
+<li>Build on a different day (version changes daily)</li>
+</ul>
+</li>
+<li><p><strong>Manually Bump Version</strong> (not recommended):</p>
+</li>
+</ol>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;Version&gt;100.25.1.999&lt;/Version&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h3 id="missing-dependencies-in-package">Missing Dependencies in Package</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Runtime error: &quot;Could not load file or assembly 'X'&quot;</li>
+<li>NuGet package doesn't include dependencies</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Incorrect <code>PackageReference</code> in <code>.csproj</code></li>
+<li>Dependencies not transitive</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Verify Package Contents</strong>:</li>
+</ol>
+<pre><code class="lang-cmd"># Extract package (it's a ZIP)
+tar -xf Krypton.Toolkit.100.25.1.305.nupkg -C extracted
+type extracted\*.nuspec
+</code></pre>
+<ol start="2">
+<li><strong>Check Project References</strong>:</li>
+</ol>
+<pre><code class="lang-xml">&lt;ItemGroup&gt;
+    &lt;ProjectReference Include=&quot;..\Krypton.Toolkit\Krypton.Toolkit 2022.csproj&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<ol start="3">
+<li><strong>Rebuild and Repack</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">cd Scripts
+msbuild build.proj /t:Clean;Build;Pack
+</code></pre>
+<h3 id="wrong-framework-assemblies">Wrong Framework Assemblies</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Runtime error: &quot;Could not load file or assembly&quot;</li>
+<li>Wrong .NET version loaded</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Incorrect TFM in package</li>
+<li><code>TFMs</code> property not set correctly</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Verify Package Frameworks</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">tar -xf Krypton.Toolkit.100.25.1.305.nupkg -C extracted
+dir extracted\lib
+</code></pre>
+<p>Should show: <code>net472/</code>, <code>net48/</code>, <code>net481/</code>, <code>net8.0-windows/</code>, etc.</p>
+<ol start="2">
+<li><strong>Rebuild with Correct TFMs</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">cd Scripts
+msbuild build.proj /t:Clean;Build;Pack /p:TFMs=all
+</code></pre>
+<ol start="3">
+<li><strong>Check Target Framework in Consumer Project</strong>:</li>
+</ol>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;net8.0-windows&lt;/TargetFramework&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h3 id="symbol-package-not-uploading">Symbol Package Not Uploading</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li><code>.snupkg</code> file not appearing on NuGet.org</li>
+<li>Cannot debug with source link</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Symbols not enabled in build</li>
+<li>Incorrect symbol format</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Verify Symbol Settings</strong>:
+<ul>
+<li>Location: <code>Source/Krypton Components/Directory.Build.targets</code></li>
+</ul>
+</li>
+</ol>
+<pre><code class="lang-xml">&lt;IncludeSymbols&gt;True&lt;/IncludeSymbols&gt;
+&lt;SymbolPackageFormat&gt;snupkg&lt;/SymbolPackageFormat&gt;
+</code></pre>
+<ol start="2">
+<li><strong>Rebuild with Symbols</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">cd Scripts
+build-canary.cmd Pack
+</code></pre>
+<ol start="3">
+<li><strong>Manually Upload Symbols</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">nuget.exe push Krypton.Toolkit.Canary.100.25.1.305-beta.nupkg -Source https://api.nuget.org/v3/index.json
+# .snupkg is automatically uploaded
+</code></pre>
+<h2 id="github-actions-issues">GitHub Actions Issues</h2>
+<h3 id="workflow-not-triggering">Workflow Not Triggering</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Push to branch doesn't trigger workflow</li>
+<li>Scheduled workflow doesn't run</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Workflow disabled</li>
+<li>Branch not in trigger list</li>
+<li>Kill-switch enabled (for nightly)</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Check Workflow Status</strong>:</p>
+<ul>
+<li>Go to Actions tab</li>
+<li>Check if workflow is enabled</li>
+</ul>
+</li>
+<li><p><strong>Verify Triggers</strong>:</p>
+<ul>
+<li>Open <code>.github/workflows/build.yml</code></li>
+<li>Check <code>on:</code> section for branch names</li>
+</ul>
+</li>
+<li><p><strong>Check Kill-Switch</strong> (nightly only):</p>
+<ul>
+<li>Settings → Secrets and variables → Actions → Variables</li>
+<li>Set <code>NIGHTLY_DISABLED=false</code> or delete</li>
+</ul>
+</li>
+<li><p><strong>Manually Trigger</strong>:</p>
+<ul>
+<li>Actions tab → Select workflow → Run workflow</li>
+</ul>
+</li>
+</ol>
+<h3 id="nuget-push-fails-in-ci">NuGet Push Fails in CI</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Error: &quot;401 Unauthorized&quot;</li>
+<li>Packages not published</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Invalid or expired <code>NUGET_API_KEY</code></li>
+<li>Secret not configured</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Generate New API Key</strong>:</p>
+<ul>
+<li>Go to <a href="https://www.nuget.org/account/apikeys">https://www.nuget.org/account/apikeys</a></li>
+<li>Create API Key with push permission</li>
+<li>Expiration: At least 1 year</li>
+</ul>
+</li>
+<li><p><strong>Update Secret</strong>:</p>
+<ul>
+<li>Repository Settings → Secrets and variables → Actions → Secrets</li>
+<li>Update <code>NUGET_API_KEY</code></li>
+</ul>
+</li>
+<li><p><strong>Verify Secret in Workflow</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-yaml">env:
+  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+</code></pre>
+<h3 id="release-creation-fails">Release Creation Fails</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Error: &quot;Resource not accessible by integration&quot;</li>
+<li>Release not created</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Insufficient <code>GITHUB_TOKEN</code> permissions</li>
+<li>Release already exists</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Check Token Permissions</strong>:</p>
+<ul>
+<li>Repository Settings → Actions → General</li>
+<li>Workflow permissions: &quot;Read and write permissions&quot;</li>
+</ul>
+</li>
+<li><p><strong>Delete Existing Release</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd">gh release delete v100.25.1.305
+</code></pre>
+<ol start="3">
+<li><strong>Recreate Release</strong>:
+<ul>
+<li>Workflow updates existing release instead of failing</li>
+</ul>
+</li>
+</ol>
+<h2 id="runtime-issues">Runtime Issues</h2>
+<h3 id="could-not-load-file-or-assembly">Could Not Load File or Assembly</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Error: &quot;Could not load file or assembly 'Krypton.Toolkit'&quot;</li>
+<li>Assembly not found at runtime</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>DLL not in output directory</li>
+<li>Version mismatch</li>
+<li>Missing binding redirect (.NET Framework)</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Verify DLL Location</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dir &quot;Bin\Debug\net48\Krypton.Toolkit.dll&quot;
+</code></pre>
+<ol start="2">
+<li><strong>Check Binding Redirects</strong> (.NET Framework):</li>
+</ol>
+<pre><code class="lang-xml">&lt;runtime&gt;
+  &lt;assemblyBinding xmlns=&quot;urn:schemas-microsoft-com:asm.v1&quot;&gt;
+    &lt;dependentAssembly&gt;
+      &lt;assemblyIdentity name=&quot;Krypton.Toolkit&quot; publicKeyToken=&quot;...&quot; culture=&quot;neutral&quot; /&gt;
+      &lt;bindingRedirect oldVersion=&quot;0.0.0.0-100.255.255.255&quot; newVersion=&quot;100.25.1.305&quot; /&gt;
+    &lt;/dependentAssembly&gt;
+  &lt;/assemblyBinding&gt;
+&lt;/runtime&gt;
+</code></pre>
+<ol start="3">
+<li><strong>Clean and Rebuild</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">cd Scripts
+purge.cmd
+dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<ol start="4">
+<li><strong>Copy DLLs Manually</strong> (if project reference fails):</li>
+</ol>
+<pre><code class="lang-cmd">copy &quot;Bin\Debug\net48\Krypton.*.dll&quot; &quot;MyApp\bin\Debug\net48\&quot;
+</code></pre>
+<h3 id="theme-or-palette-issues">Theme or Palette Issues</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Controls don't apply theme</li>
+<li>Palette changes not visible</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li><code>KryptonManager</code> not set up</li>
+<li>Palette not assigned to controls</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Add KryptonManager</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">private KryptonManager kryptonManager = new KryptonManager();
+
+public Form1()
+{
+    InitializeComponent();
+    kryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;
+}
+</code></pre>
+<ol start="2">
+<li><strong>Assign Palette to Form</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">this.Palette = new KryptonPalette();
+</code></pre>
+<ol start="3">
+<li><strong>Check Palette Inheritance</strong>:
+<ul>
+<li>Controls inherit from form palette</li>
+<li>Verify <code>PaletteMode</code> is set</li>
+</ul>
+</li>
+</ol>
+<h3 id="high-dpi-scaling-issues">High DPI Scaling Issues</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Controls appear blurry</li>
+<li>Layout breaks on high DPI screens</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>DPI awareness not enabled</li>
+<li>WinForms auto-scaling issues</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><strong>Enable DPI Awareness</strong> (app.manifest):</li>
+</ol>
+<pre><code class="lang-xml">&lt;dpiAware&gt;true/PM&lt;/dpiAware&gt;
+&lt;dpiAwareness&gt;PerMonitorV2&lt;/dpiAwareness&gt;
+</code></pre>
+<ol start="2">
+<li><strong>Set Application DPI Mode</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">// Program.cs
+Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+Application.EnableVisualStyles();
+Application.SetCompatibleTextRenderingDefault(false);
+</code></pre>
+<ol start="3">
+<li><strong>Use AutoScaleMode</strong>:</li>
+</ol>
+<pre><code class="lang-csharp">this.AutoScaleMode = AutoScaleMode.Dpi;
+</code></pre>
+<h2 id="performance-issues">Performance Issues</h2>
+<h3 id="slow-build-times">Slow Build Times</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Build takes excessive time</li>
+<li>Build slower than expected</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Antivirus scanning</li>
+<li>Too many parallel builds</li>
+<li>Large solution</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Exclude from Antivirus</strong>:</p>
+<ul>
+<li>Add repository folder to exclusions</li>
+<li>Add <code>Bin/</code>, <code>obj/</code>, <code>.git/</code> to exclusions</li>
+</ul>
+</li>
+<li><p><strong>Adjust Parallel Builds</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd"># Reduce parallelism
+msbuild build.proj /t:Build /m:2
+
+# Or disable
+msbuild build.proj /t:Build /m:1
+</code></pre>
+<ol start="3">
+<li><strong>Build Specific Projects</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj&quot; -c Debug
+</code></pre>
+<ol start="4">
+<li><strong>Use Binary Logs for Analysis</strong>:</li>
+</ol>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /bl:build.binlog
+msbuildlogviewer build.binlog
+</code></pre>
+<h3 id="memory-issues-during-build">Memory Issues During Build</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Out of memory errors</li>
+<li>Build process crashes</li>
+</ul>
+<p><strong>Causes</strong>:</p>
+<ul>
+<li>Insufficient RAM</li>
+<li>Memory leak in MSBuild</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Increase Available Memory</strong>:</p>
+<ul>
+<li>Close other applications</li>
+<li>Close Visual Studio during command-line builds</li>
+</ul>
+</li>
+<li><p><strong>Reduce Parallel Builds</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd">msbuild build.proj /t:Build /m:1
+</code></pre>
+<ol start="3">
+<li><strong>Build in Chunks</strong>:</li>
+</ol>
+<pre><code class="lang-cmd"># Build Toolkit first
+dotnet build &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj&quot;
+
+# Then Ribbon
+dotnet build &quot;Source/Krypton Components/Krypton.Ribbon/Krypton.Ribbon 2022.csproj&quot;
+</code></pre>
+<ol start="4">
+<li><strong>Restart Computer</strong> to free memory</li>
+</ol>
+<h2 id="getting-help">Getting Help</h2>
+<h3 id="check-documentation">Check Documentation</h3>
+<ol>
+<li>Read relevant documentation:
+<ul>
+<li><a href="01-Build-System-Overview.md">Build System Overview</a></li>
+<li><a href="02-MSBuild-Project-Files.md">MSBuild Project Files</a></li>
+<li><a href="03-Build-Scripts.md">Build Scripts</a></li>
+<li><a href="09-Local-Development-Workflow.md">Local Development Workflow</a></li>
+</ul>
+</li>
+</ol>
+<h3 id="check-logs">Check Logs</h3>
+<ol>
+<li><p><strong>Build Logs</strong>:</p>
+<ul>
+<li>Location: <code>Logs/*.log</code></li>
+<li>Binary logs: <code>Logs/*.binlog</code></li>
+</ul>
+</li>
+<li><p><strong>View Binary Logs</strong>:</p>
+</li>
+</ol>
+<pre><code class="lang-cmd">dotnet tool install --global MSBuildStructuredLogViewer
+msbuildlogviewer Logs/stable-build.binlog
+</code></pre>
+<h3 id="search-issues">Search Issues</h3>
+<ol>
+<li><p><strong>GitHub Issues</strong>:</p>
+<ul>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues">https://github.com/Krypton-Suite/Standard-Toolkit/issues</a></li>
+<li>Search for similar problems</li>
+</ul>
+</li>
+<li><p><strong>Stack Overflow</strong>:</p>
+<ul>
+<li>Tag: <code>krypton-toolkit</code></li>
+<li>Search for error messages</li>
+</ul>
+</li>
+</ol>
+<h3 id="report-issues">Report Issues</h3>
+<p>If problem persists:</p>
+<ol>
+<li><p><strong>Create GitHub Issue</strong>:</p>
+<ul>
+<li>Go to: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/new">https://github.com/Krypton-Suite/Standard-Toolkit/issues/new</a></li>
+<li>Use issue template</li>
+<li>Include:
+<ul>
+<li>Symptoms</li>
+<li>Steps to reproduce</li>
+<li>Environment (OS, VS version, .NET version)</li>
+<li>Build logs (if applicable)</li>
+<li>Screenshots/GIFs</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Provide Minimal Repro</strong>:</p>
+<ul>
+<li>Create minimal test case</li>
+<li>Share in test harness format</li>
+</ul>
+</li>
+</ol>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="01-Build-System-Overview.md">Build System Overview</a> - System architecture</li>
+<li><a href="09-Local-Development-Workflow.md">Local Development Workflow</a> - Development guide</li>
+<li><a href="03-Build-Scripts.md">Build Scripts</a> - Build commands</li>
+<li><a href="07-GitHub-Actions-Workflows.md">GitHub Actions Workflows</a> - CI/CD</li>
+<li><a href="06-NuGet-Packaging.md">NuGet Packaging</a> - Package troubleshooting</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
