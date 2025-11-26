@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Release Workflow Kill Switches | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Release Workflow Kill Switches | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="release-workflow-kill-switches">Release Workflow Kill Switches</h1>
+
+<h2 id="purpose">Purpose</h2>
+<p>Kill switches give maintainers an emergency brake for every automated release channel without having to edit <code>.github/workflows/release.yml</code>. Setting the appropriate repository variable forces the corresponding job to short-circuit before any tooling runs, which is safer than letting a known-bad build progress and fail later in the pipeline.</p>
+<h2 id="how-the-guard-works">How the guard works</h2>
+<h3 id="1-each-job-starts-with-a-powershell-probe">1. Each job starts with a PowerShell probe</h3>
+<p>Every release job begins with a <code>Kill Switch Check</code> step that reads a repository variable, writes a warning when the switch is active, and emits an <code>enabled</code> output. When the switch is off (<code>false</code> or undefined), the step prints a pass message and sets <code>enabled=true</code> so the remainder of the job can execute.</p>
+<pre><code class="lang-21:36:.github/workflows/release.yml">- name: Release Kill Switch Check
+  id: release_kill_switch
+  shell: pwsh
+  run: |
+    $disabled = '${{ vars.RELEASE_DISABLED }}'
+    if ($disabled -eq 'true') {
+      Write-Host &quot;::warning:: Release workflow is currently DISABLED via kill switch (RELEASE_DISABLED=true)&quot;
+      echo &quot;enabled=false&quot; &gt;&gt; $env:GITHUB_OUTPUT
+    } else {
+      echo &quot;enabled=true&quot; &gt;&gt; $env:GITHUB_OUTPUT
+    }
+</code></pre>
+<h3 id="2-all-downstream-steps-are-gated">2. All downstream steps are gated</h3>
+<p>Every subsequent action in the job checks the <code>enabled</code> output. If the switch is active the expression evaluates to <code>false</code>, GitHub skips the step, and the build/page/publish stages never start.</p>
+<pre><code class="lang-38:115:.github/workflows/release.yml">- name: Build Release
+  if: steps.release_kill_switch.outputs.enabled == 'true'
+  run: msbuild &quot;Scripts/build.proj&quot; /t:Build /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
+- name: Push NuGet Packages to nuget.org
+  if: steps.release_kill_switch.outputs.enabled == 'true'
+  id: push_nuget
+  shell: pwsh
+</code></pre>
+<h2 id="configuration">Configuration</h2>
+<table>
+<thead>
+<tr>
+<th>Branch / Job Id</th>
+<th>Variable name</th>
+<th>Protected artifacts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master</code> (<code>release-master</code>)</td>
+<td><code>RELEASE_DISABLED</code></td>
+<td>Stable builds, packages, Discord master announcement</td>
+</tr>
+<tr>
+<td><code>V105-LTS</code> (<code>release-v105-lts</code>)</td>
+<td><code>RELEASE_DISABLED</code></td>
+<td>Latest LTS stream (shares the same switch to avoid drift)</td>
+</tr>
+<tr>
+<td><code>V85-LTS</code> (<code>release-v85-lts</code>)</td>
+<td><code>LTS_DISABLED</code></td>
+<td>Legacy LTS channel</td>
+</tr>
+<tr>
+<td><code>canary</code> (<code>release-canary</code>)</td>
+<td><code>CANARY_DISABLED</code></td>
+<td>Canary builds and related Discord/webhook posts</td>
+</tr>
+<tr>
+<td><code>alpha</code> (<code>release-alpha</code>)</td>
+<td><code>NIGHTLY_DISABLED</code></td>
+<td>Nightly/alpha drops and notifications</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Why two LTS jobs share <code>RELEASE_DISABLED</code>: the V105 branch follows the same release cadence as <code>master</code>, so maintainers typically want to freeze both at once. If you need V105 to keep running while master is frozen, temporarily duplicate the kill-switch step under a new variable before toggling.</p>
+</blockquote>
+<h3 id="setting-or-clearing-a-switch">Setting or clearing a switch</h3>
+<ol>
+<li>Open the repository in GitHub and navigate to <strong>Settings → Secrets and variables → Actions → Variables</strong>.</li>
+<li>Select the variable listed above or create it if it does not exist.</li>
+<li>Set the value to the string <code>true</code> to disable that job. Leave it empty or set to <code>false</code> to allow runs. Please note that these values are case sensitive and <strong>must</strong> always be in lowercase.</li>
+<li>Save. The next workflow run on the matching branch will respect the new state without requiring a commit.</li>
+</ol>
+<h3 id="verifying-the-state-during-a-run">Verifying the state during a run</h3>
+<ul>
+<li>When disabled, the job log shows the warning emitted by the PowerShell step and the job exits with a green “Skipped” badge because all guarded steps evaluate to false.</li>
+<li>When enabled, the log includes “kill switch check has passed” and normal build/pack/publish steps begin immediately afterward.</li>
+</ul>
+<h2 id="operational-playbook">Operational playbook</h2>
+<p><strong>Freezing a channel before a risky commit</strong></p>
+<ol>
+<li>Flip the relevant variable to <code>true</code>.</li>
+<li>Push your work—CI will run but the guarded job will skip, preventing packages and notifications.</li>
+<li>Once the branch is healthy again, set the variable back to <code>false</code> and rerun the latest workflow from the Actions tab if you need artifacts.</li>
+</ol>
+<p><strong>Recovering after an accidental freeze</strong></p>
+<ol>
+<li>Confirm the variable value in Settings.</li>
+<li>Re-enable (<code>false</code>), then re-run the failed workflow from Actions → select the skipped run → “Re-run all jobs”. Because kill switches act at runtime, no workflow edits are required.</li>
+</ol>
+<p><strong>Auditing who changed a switch</strong>
+Repository variables track the last editor in the activity log (<strong>Settings → Audit log</strong>). Filter for <code>repo.variable.update</code> events to see when and by whom a kill switch was toggled.</p>
+<h2 id="extending-the-pattern">Extending the pattern</h2>
+<p>To add a new kill switch (e.g., for a future <code>beta</code> branch), copy the existing pattern:</p>
+<ol>
+<li>Add a <code>Kill Switch Check</code> step with a unique <code>id</code> and variable name.</li>
+<li>Gate every subsequent step with <code>if: steps.&lt;id&gt;.outputs.enabled == 'true'</code>.</li>
+<li>Document the variable under Configuration so on-call engineers know which switch to flip.</li>
+</ol>
+<p>Keeping the guard self-contained inside the workflow ensures you can pause or resume publishing safely even while other infrastructure (NuGet, Discord, etc.) stays configured.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

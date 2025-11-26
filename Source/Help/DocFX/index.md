@@ -1,5 +1,5 @@
 # Introduction
-The `Krypton Suite` contains user interface components designed to make it quick and easy for developers to create professional looking applications. It provides the essential building blocks needed to create a consistent look and feel across all your products. You can use the built-in palettes to achieve the same appearance as industry standard applications such as _Microsoft Office 2007/2010/2013/365_ and _Visual Studio_. Alternatively you can create your own custom palettes to create a completely unique user interface.
+The `Krypton Suite` contains user interface components designed to make it quick and easy for developers to create professional looking applications. It provides the essential building blocks needed to create a consistent look and feel across all your products. You can use the built-in palettes to achieve the same appearance as industry standard applications such as _Microsoft Office 2007/2010/2013/365_, _Visual Studio_ and _Material_. Alternatively you can create your own custom palettes to create a completely unique user interface.
 The `Krypton Suite` consists of five products called `Krypton Toolkit`, `Krypton Ribbon`, `Krypton Navigator`, `Krypton Workspace` and `Krypton Docking`.
 
 

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>release.yml Developer Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="release.yml Developer Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="releaseyml-developer-guide"><code>release.yml</code> Developer Guide</h1>
+
+<p>Authoritative documentation for <code>.github/workflows/release.yml</code>, which coordinates all production and pre-release promotions across branches (<code>master</code>, <code>alpha</code>, <code>canary</code>, <code>V105-LTS</code>, <code>V85-LTS</code>).</p>
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Job Id</th>
+<th>Runner</th>
+<th>Build Script</th>
+<th>Kill Switch Variable</th>
+<th>Discord Webhook</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master</code></td>
+<td><code>release-master</code></td>
+<td><code>windows-2025</code></td>
+<td><code>Scripts/build.proj</code> (Build/Pack)</td>
+<td><code>vars.RELEASE_DISABLED</code></td>
+<td><code>secrets.DISCORD_WEBHOOK_MASTER</code></td>
+</tr>
+<tr>
+<td><code>V105-LTS</code></td>
+<td><code>release-v105-lts</code></td>
+<td><code>windows-2025</code></td>
+<td><code>Scripts/build.proj</code></td>
+<td><code>vars.RELEASE_DISABLED</code></td>
+<td><code>secrets.DISCORD_WEBHOOK_MASTER</code></td>
+</tr>
+<tr>
+<td><code>V85-LTS</code></td>
+<td><code>release-v85-lts</code></td>
+<td><code>windows-2025</code></td>
+<td><code>Scripts/longtermstable.proj</code></td>
+<td><code>vars.LTS_DISABLED</code></td>
+<td><code>secrets.DISCORD_WEBHOOK_LTS</code></td>
+</tr>
+<tr>
+<td><code>canary</code></td>
+<td><code>release-canary</code></td>
+<td><code>windows-2025</code></td>
+<td><code>Scripts/canary.proj</code></td>
+<td><code>vars.CANARY_DISABLED</code></td>
+<td><code>secrets.DISCORD_WEBHOOK_CANARY</code></td>
+</tr>
+<tr>
+<td><code>alpha</code></td>
+<td><code>release-alpha</code></td>
+<td><code>windows-2025</code></td>
+<td><code>Scripts/nightly.proj</code></td>
+<td><code>vars.NIGHTLY_DISABLED</code></td>
+<td><code>secrets.DISCORD_WEBHOOK_NIGHTLY</code></td>
+</tr>
+</tbody>
+</table>
+<p>Common characteristics:</p>
+<ul>
+<li>Every job runs only when the push target matches its branch <strong>and</strong> the corresponding kill switch reports <code>enabled=true</code>.</li>
+<li>All jobs repeat the same setup sequence (checkout → install SDKs → generate <code>global.json</code> → MSBuild &amp; NuGet tooling → restore).</li>
+<li>Package publishing relies on <code>secrets.NUGET_API_KEY</code> and writes <code>.nupkg</code> files into branch-specific directories under <code>Bin/</code>.</li>
+</ul>
+<h2 id="kill-switches">Kill Switches</h2>
+<ul>
+<li>Stored under <strong>Repository Settings → Actions → Variables</strong>.</li>
+<li>Each job exits early if its switch evaluates to <code>'true'</code>, logging a warning that includes remediation steps.</li>
+<li>When disabled, the pipeline still shows as successful but with most steps skipped, making it clear releases are paused intentionally.</li>
+</ul>
+<h2 id="job-deep-dive">Job Deep Dive</h2>
+<h3 id="1-release-master-stable">1. <code>release-master</code> (Stable)</h3>
+<p><strong>Trigger:</strong> <code>push</code> to <code>master</code>.</p>
+<ol>
+<li><strong>Release Kill Switch Check (<code>vars.RELEASE_DISABLED</code>)</strong>
+<ul>
+<li>Emits <code>enabled</code> output consumed by every subsequent step.</li>
+</ul>
+</li>
+<li><strong>Checkout + Tooling Setup</strong>
+<ul>
+<li>Dual SDK install (9.0.x and 10.0.x) plus generated <code>global.json</code>.</li>
+</ul>
+</li>
+<li><strong>Restore</strong>, <strong>Build</strong>, <strong>Pack</strong> via <code>Scripts/build.proj</code>.</li>
+<li><strong>Push NuGet Packages</strong>
+<ul>
+<li>Searches <code>Bin/Packages/Release/*.nupkg</code>.</li>
+<li>Uses <code>dotnet nuget push ... --skip-duplicate</code>.</li>
+<li>Records <code>packages_published</code> output for notification gating.</li>
+</ul>
+</li>
+<li><strong>Get Version</strong>
+<ul>
+<li>Prefers reading <code>Bin/Release/net48/Krypton.Toolkit.dll</code> assembly version.</li>
+<li>Falls back to <code>Krypton.Toolkit 2022.csproj</code> <code>&lt;Version&gt;</code> or default <code>100.25.1.1</code>.</li>
+</ul>
+</li>
+<li><strong>Announce Release on Discord</strong> (if packages published and webhook present)
+<ul>
+<li>Posts embed with version, package list, TFM coverage, and nuget.org links.</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-release-v105-lts-105-lts-line">2. <code>release-v105-lts</code> (105 LTS line)</h3>
+<p>Matches the <code>master</code> job with two differences:</p>
+<ul>
+<li>Messaging still uses the stable Discord webhook (<code>DISCORD_WEBHOOK_MASTER</code>).</li>
+<li>Fallback version tag remains standard (<code>v&lt;version&gt;</code>), aligning with non-LTS naming.</li>
+</ul>
+<h3 id="3-release-v85-lts-85-lts-line">3. <code>release-v85-lts</code> (85 LTS line)</h3>
+<p>Key divergences:</p>
+<ul>
+<li>Kill switch variable is <code>vars.LTS_DISABLED</code>.</li>
+<li>SDK set includes .NET 6, 7, and 8 to cover older target frameworks.</li>
+<li>Build/Pack script is <code>Scripts/longtermstable.proj</code>.</li>
+<li>Packages publish from <code>Bin/Packages/Release/*.nupkg</code> but contain <code>.LTS</code> suffixes.</li>
+<li>Version fallback defaults to <code>85.25.1.1</code> and the git tag output is <code>v&lt;version&gt;-lts</code>.</li>
+<li>Discord notifications use <code>secrets.DISCORD_WEBHOOK_LTS</code> with LTS-specific copy.</li>
+</ul>
+<h3 id="4-release-canary-canary-channel">4. <code>release-canary</code> (Canary channel)</h3>
+<p>Highlights:</p>
+<ul>
+<li>Kill switch <code>vars.CANARY_DISABLED</code>.</li>
+<li>Build/Packing script <code>Scripts/canary.proj</code>, configuration <code>Canary</code>.</li>
+<li>Artifacts live in <code>Bin/Packages/Canary</code> and binaries under <code>Bin/Canary/...</code>.</li>
+<li>Version extraction reads <code>Bin/Canary/net48/Krypton.Toolkit.dll</code>; fallback <code>100.25.1.1</code>.</li>
+<li>Discord uses <code>DISCORD_WEBHOOK_CANARY</code> and points to <code>.Canary</code> nuget.org packages.</li>
+</ul>
+<h3 id="5-release-alpha-nightlyalpha-channel">5. <code>release-alpha</code> (Nightly/alpha channel)</h3>
+<p>Characteristics:</p>
+<ul>
+<li>Kill switch <code>vars.NIGHTLY_DISABLED</code>.</li>
+<li>Uses <code>Scripts/nightly.proj</code> with <code>Configuration=Nightly</code>.</li>
+<li>Packages stored under <code>Bin/Packages/Nightly</code>.</li>
+<li>Discord uses <code>DISCORD_WEBHOOK_NIGHTLY</code>, referencing <code>.Nightly</code> packages.</li>
+</ul>
+<h2 id="shared-step-details">Shared Step Details</h2>
+<h3 id="sdk--tooling-provisioning">SDK &amp; Tooling Provisioning</h3>
+<pre><code class="lang-pwsh">dotnet --list-sdks | Select-String &quot;10.0&quot; | Split(&quot; &quot;)[0]
+</code></pre>
+<p>The snippet above enforces the latest 10.0 SDK. If GitHub images add previews, adjust the filter to avoid matching pre-release identifiers.</p>
+<h3 id="nuget-publishing-logic">NuGet Publishing Logic</h3>
+<ul>
+<li>Packages iterate serially; failures log warnings but do not fail the workflow (resilience for flaky pushes).</li>
+<li>Successful pushes toggle <code>$publishedAny</code> to <code>$true</code>, which determines whether Discord announcements run.</li>
+<li>Missing <code>NUGET_API_KEY</code> skips publishing gracefully; ensure repo secrets are populated before enabling release branches.</li>
+</ul>
+<h3 id="version-discovery">Version Discovery</h3>
+<p>Priority order:</p>
+<ol>
+<li>Assembly version via <code>[System.Reflection.AssemblyName]::GetAssemblyName(...)</code>.</li>
+<li><code>&lt;Version&gt;</code> node from <code>Krypton.Toolkit 2022.csproj</code>.</li>
+<li>Hard-coded fallback (channel-specific).</li>
+</ol>
+<p>Outputs <code>version</code> and <code>tag</code>, enabling downstream release automation or manual tagging.</p>
+<h2 id="extending-the-workflow">Extending the Workflow</h2>
+<ul>
+<li><strong>New Release Channel</strong>: Duplicate a job, change branch filter, update kill switch variable name, and point to the correct MSBuild project and Discord webhook.</li>
+<li><strong>Custom Notifications</strong>: Add steps after <code>Announce ...</code> conditioned on the same outputs (<code>packages_published</code> + kill switch).</li>
+<li><strong>Artifact Sharing</strong>: Insert <code>actions/upload-artifact</code> after pack steps if packages must be inspected before publishing.</li>
+<li><strong>Telemetry</strong>: Wrap <code>dotnet</code> commands with additional logging by piping to <code>Tee-Object</code> or storing logs in <code>Logs/</code>.</li>
+</ul>
+<h2 id="troubleshooting-playbook">Troubleshooting Playbook</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Diagnosis</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Job skipped entirely</td>
+<td>Branch mismatch or kill switch <code>true</code></td>
+<td>Verify <code>github.ref</code> and repository variables.</td>
+</tr>
+<tr>
+<td><code>dotnet nuget push</code> failing with 403</td>
+<td>Expired or missing <code>NUGET_API_KEY</code></td>
+<td>Rotate key in repo secrets; rerun job.</td>
+</tr>
+<tr>
+<td>Discord step skipped</td>
+<td><code>packages_published=false</code> or missing webhook secret</td>
+<td>Confirm packages actually produced, check secret names.</td>
+</tr>
+<tr>
+<td>Version fallback used unexpectedly</td>
+<td>Assembly or csproj not accessible</td>
+<td>Ensure build outputs exist at expected paths; confirm script edits.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="operational-checklist">Operational Checklist</h2>
+<ul>
+<li>[ ] Confirm kill switch variable is <code>false</code> before triggering releases.</li>
+<li>[ ] Monitor package push logs for <code>already exists</code> messages; duplicates are expected on reruns.</li>
+<li>[ ] Validate Discord message in the target channel after publication.</li>
+<li>[ ] Tag repository manually if you rely on the <code>get_version</code> output for git tagging.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
