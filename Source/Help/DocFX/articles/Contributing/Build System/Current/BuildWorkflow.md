@@ -34,7 +34,7 @@ pull_request / push
 - **Dynamic `global.json`** ensures the pipeline pins to the newest 10.0 SDK present on the runner. This protects against SDK rollouts that include previews and automatically maintains parity with GitHub's hosted images.
 - **NuGet cache** keys off the hash of every `*.csproj`, so template changes automatically refresh the cache.
 
-### `build` Job (windows-2022)
+### `build` Job (windows-2025)
 
 Purpose: validate the solution for PRs and pushes, producing a Release build via the nightly build script.
 
