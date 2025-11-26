@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>build.yml Developer Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="build.yml Developer Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="buildyml-developer-guide"><code>build.yml</code> Developer Guide</h1>
+
+<p>Comprehensive reference for the Build workflow located at <code>.github/workflows/build.yml</code>. Use this when responding to failed CI runs or when modifying the pipeline.</p>
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Triggers</td>
+<td><code>pull_request</code> (all branches) for open/sync/reopen events, <code>push</code> to <code>master</code>, <code>alpha</code>, <code>canary</code>, <code>gold</code>, <code>V105-LTS</code>, <code>V85-LTS</code></td>
+</tr>
+<tr>
+<td>Jobs</td>
+<td><code>build</code>, <code>release</code> (release depends on build)</td>
+</tr>
+<tr>
+<td>Hosted Images</td>
+<td><code>windows-2025</code> (build), <code>windows-2025</code> (release)</td>
+</tr>
+<tr>
+<td>Toolchains</td>
+<td>.NET SDKs 9.0.x and 10.0.x, MSBuild x64, NuGet CLI 6.x</td>
+</tr>
+<tr>
+<td>Global.json</td>
+<td>Generated on the fly to force the latest installed 10.0 SDK</td>
+</tr>
+<tr>
+<td>Build Scripts</td>
+<td><code>Scripts/nightly.proj</code> (build job), <code>Scripts/build.proj</code> (release job)</td>
+</tr>
+<tr>
+<td>Secrets/Vars</td>
+<td><code>NUGET_API_KEY</code> (only needed when invoking release job manually)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="job-topology">Job Topology</h2>
+<pre><code>pull_request / push
+└── build (windows-2025)
+    └── release (windows-2025, master pushes only)
+</code></pre>
+<ul>
+<li><code>build</code> executes for all configured events.</li>
+<li><code>release</code> runs only on <code>refs/heads/master</code> pushes <strong>after</strong> <code>build</code> succeeds.</li>
+</ul>
+<h2 id="step-by-step-breakdown">Step-by-Step Breakdown</h2>
+<h3 id="shared-patterns">Shared Patterns</h3>
+<ul>
+<li><strong>Checkout</strong> leverages <code>actions/checkout@v6</code> without depth limits.</li>
+<li><strong>SDK provisioning</strong> installs both .NET 9 and .NET 10 so multi-target solutions build consistently.</li>
+<li><strong>Dynamic <code>global.json</code></strong> ensures the pipeline pins to the newest 10.0 SDK present on the runner. This protects against SDK rollouts that include previews and automatically maintains parity with GitHub's hosted images.</li>
+<li><strong>NuGet cache</strong> keys off the hash of every <code>*.csproj</code>, so template changes automatically refresh the cache.</li>
+</ul>
+<h3 id="build-job-windows-2022"><code>build</code> Job (windows-2022)</h3>
+<p>Purpose: validate the solution for PRs and pushes, producing a Release build via the nightly build script.</p>
+<ol>
+<li><strong>Checkout</strong> source.</li>
+<li><strong>Setup .NET 9 / .NET 10</strong>: installs SDKs required by the solution.</li>
+<li><strong>Force SDK via <code>global.json</code></strong>:
+<ul>
+<li>Runs <code>dotnet --list-sdks</code>.</li>
+<li>Picks the first entry containing <code>10.0</code>.</li>
+<li>Writes <code>global.json</code> with <code>&quot;rollForward&quot;: &quot;latestFeature&quot;</code> so 10.x feature bands remain valid.</li>
+</ul>
+</li>
+<li><strong>Setup MSBuild (x64)</strong> for compatibility with legacy csproj tooling.</li>
+<li><strong>Setup NuGet CLI</strong> to support restore operations not exposed via dotnet.</li>
+<li><strong>Cache NuGet packages</strong> under <code>~/.nuget/packages</code>.</li>
+<li><strong>Restore</strong> the full solution (<code>Krypton Toolkit Suite 2022 - VS2022.sln</code>).</li>
+<li><strong>Build</strong> via <code>msbuild Scripts/nightly.proj /t:Rebuild /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;</code>.
+<ul>
+<li>Script encapsulates multi-project orchestration and ensures parity with nightly builds.</li>
+</ul>
+</li>
+</ol>
+<h3 id="release-job-windows-2025-master-pushes-only"><code>release</code> Job (windows-2025, master pushes only)</h3>
+<p>Purpose: promote master builds to NuGet packages when commits land directly on <code>master</code>.</p>
+<ol>
+<li><strong>Checkout + SDK setup + global.json + tooling</strong>: mirrored from the <code>build</code> job to avoid cross-runner drift.</li>
+<li><strong>Restore</strong> solution again (isolated workspace).</li>
+<li><strong>Build Release</strong>: <code>msbuild Scripts/build.proj /t:Build /p:Configuration=Release</code>.</li>
+<li><strong>Pack Release</strong>: <code>msbuild Scripts/build.proj /t:Pack ...</code> creates <code>.nupkg</code> artifacts under <code>Bin/Packages/Release</code>.</li>
+<li><strong>Get Version</strong> (<code>pwsh</code>):
+<ul>
+<li>Runs <code>dotnet build</code> on <code>Krypton.Toolkit.csproj</code> quietly.</li>
+<li>Parses the <code>Version=</code> log line; default fallback <code>100.25.1.1</code>.</li>
+<li>Emits <code>version</code> and <code>tag</code> outputs used downstream (e.g., release notes or notifications).</li>
+</ul>
+</li>
+<li><strong>(Optional) Publish NuGet packages</strong>: not automated in this workflow; packages remain as artifacts unless another step consumes them.</li>
+</ol>
+<h3 id="toolchain-notes">Toolchain Notes</h3>
+<ul>
+<li>All commands run via PowerShell (<code>pwsh</code>) inline scripts, so any modifications should stay compatible with Core PowerShell 7.</li>
+<li>Keep scripts idempotent; the workflow assumes clean workspaces on each hosted runner.</li>
+</ul>
+<h2 id="extending-the-workflow">Extending the Workflow</h2>
+<ul>
+<li><strong>New SDKs</strong>: mirror the <code>Setup .NET X</code> pattern, then update the global.json writer if the preferred default changes.</li>
+<li><strong>Additional caches</strong>: leverage <code>actions/cache@v4</code>; ensure keys incorporate relevant files (e.g., <code>packages.lock.json</code>).</li>
+<li><strong>Artifacts</strong>: if you need to consume build outputs later, add <code>actions/upload-artifact</code> after the build/pack steps.</li>
+<li><strong>Testing hooks</strong>: insert test commands between restore and build stages to fail fast on regressions.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely Cause</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>The SDK 'Microsoft.NET.Sdk' specified could not be found</code></td>
+<td><code>global.json</code> pinned to missing SDK</td>
+<td>Confirm the <code>dotnet --list-sdks</code> output includes <code>10.0.x</code>; update script to handle installation lag.</td>
+</tr>
+<tr>
+<td>Restore fails with <code>NU1100</code></td>
+<td>NuGet cache corrupted or feed hiccup</td>
+<td>Manually invalidate cache by tweaking key seed (e.g., add <code>-nuget-v2</code>).</td>
+</tr>
+<tr>
+<td>Release job skipped</td>
+<td>Non-master branch or workflow triggered via PR</td>
+<td>Push to <code>master</code> or temporarily change the <code>if</code> condition for testing.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="verification-checklist">Verification Checklist</h2>
+<ul>
+<li>[ ] For PRs: ensure <code>build</code> completes successfully before merging.</li>
+<li>[ ] For master pushes: confirm both <code>build</code> and <code>release</code> jobs succeed; inspect <code>Pack Release</code> logs for produced <code>.nupkg</code> files.</li>
+<li>[ ] If packages need to be published, run the dedicated release workflow or a manual job that consumes the packaged artifacts.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
