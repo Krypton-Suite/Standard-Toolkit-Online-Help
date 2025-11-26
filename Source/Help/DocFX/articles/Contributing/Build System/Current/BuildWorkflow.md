@@ -8,7 +8,7 @@ Comprehensive reference for the Build workflow located at `.github/workflows/bui
 | --- | --- |
 | Triggers | `pull_request` (all branches) for open/sync/reopen events, `push` to `master`, `alpha`, `canary`, `gold`, `V105-LTS`, `V85-LTS` |
 | Jobs | `build`, `release` (release depends on build) |
-| Hosted Images | `windows-2025` (build), `windows-2025` (release) |
+| Hosted Images | `windows-latest` (build), `windows-latest` (release) |
 | Toolchains | .NET SDKs 9.0.x and 10.0.x, MSBuild x64, NuGet CLI 6.x |
 | Global.json | Generated on the fly to force the latest installed 10.0 SDK |
 | Build Scripts | `Scripts/nightly.proj` (build job), `Scripts/build.proj` (release job) |
@@ -18,8 +18,8 @@ Comprehensive reference for the Build workflow located at `.github/workflows/bui
 
 ```
 pull_request / push
-└── build (windows-2025)
-    └── release (windows-2025, master pushes only)
+└── build (windows-latest)
+    └── release (windows-latest, master pushes only)
 ```
 
 - `build` executes for all configured events.  
@@ -34,7 +34,7 @@ pull_request / push
 - **Dynamic `global.json`** ensures the pipeline pins to the newest 10.0 SDK present on the runner. This protects against SDK rollouts that include previews and automatically maintains parity with GitHub's hosted images.
 - **NuGet cache** keys off the hash of every `*.csproj`, so template changes automatically refresh the cache.
 
-### `build` Job (windows-2025)
+### `build` Job (windows-latest)
 
 Purpose: validate the solution for PRs and pushes, producing a Release build via the nightly build script.
 
@@ -51,7 +51,7 @@ Purpose: validate the solution for PRs and pushes, producing a Release build via
 8. **Build** via `msbuild Scripts/nightly.proj /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU"`.
    - Script encapsulates multi-project orchestration and ensures parity with nightly builds.
 
-### `release` Job (windows-2025, master pushes only)
+### `release` Job (windows-latest, master pushes only)
 
 Purpose: promote master builds to NuGet packages when commits land directly on `master`.
 
