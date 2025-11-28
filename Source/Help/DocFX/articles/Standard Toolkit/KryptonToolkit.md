@@ -18,6 +18,7 @@ the toolbox.
 * [KryptonDomainUpDown](Toolkit/Controls/KryptonDomainUpDown.md)  
 * [KryptonDropDown](Toolkit/Controls/KryptonDropButton.md)  
 * [KryptonGroup](Toolkit/Controls/KryptonGroup.md)  
+* [KryptonGroupBox](Toolkit/Controls/KryptonGroupBox.md)
 * [KryptonHeader](Toolkit/Controls/KryptonHeader.md)  
 * [KryptonHeaderGroup](Toolkit/Controls/KryptonHeaderGroup.md)  
 * [KryptonLabel](Toolkit/Controls/KryptonLabel.md)  

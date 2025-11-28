@@ -90,6 +90,7 @@ This document provides links to the documentation provided, each will be split u
 * [Krypton Domain Up Down](Standard%20Toolkit/Toolkit/Controls/KryptonDomainUpDown.md)
 * [Krypton Drop Button](Standard%20Toolkit/Toolkit/Controls/KryptonDropButton.md)
 * [Krypton Group](Standard%20Toolkit/Toolkit/Controls/KryptonGroup.md)
+* [Krypton Group Box](Standard%20Toolkit/Toolkit/Controls/KryptonGroupBox.md)
 * [Krypton Header](Standard%20Toolkit/Toolkit/Controls/KryptonHeader.md)
 * [Krypton Header Group](Standard%20Toolkit/Toolkit/Controls/KryptonHeaderGroup.md)
 * [Krypton Label](Standard%20Toolkit/Toolkit/Controls/KryptonLabel.md)
