@@ -89,7 +89,7 @@
 </tr>
 <tr>
 <td>Hosted Images</td>
-<td><code>windows-2025</code> (build), <code>windows-2025</code> (release)</td>
+<td><code>windows-latest</code> (build), <code>windows-latest</code> (release)</td>
 </tr>
 <tr>
 <td>Toolchains</td>
@@ -111,8 +111,8 @@
 </table>
 <h2 id="job-topology">Job Topology</h2>
 <pre><code>pull_request / push
-└── build (windows-2025)
-    └── release (windows-2025, master pushes only)
+└── build (windows-latest)
+    └── release (windows-latest, master pushes only)
 </code></pre>
 <ul>
 <li><code>build</code> executes for all configured events.</li>
@@ -126,7 +126,7 @@
 <li><strong>Dynamic <code>global.json</code></strong> ensures the pipeline pins to the newest 10.0 SDK present on the runner. This protects against SDK rollouts that include previews and automatically maintains parity with GitHub's hosted images.</li>
 <li><strong>NuGet cache</strong> keys off the hash of every <code>*.csproj</code>, so template changes automatically refresh the cache.</li>
 </ul>
-<h3 id="build-job-windows-2022"><code>build</code> Job (windows-2022)</h3>
+<h3 id="build-job-windows-latest"><code>build</code> Job (windows-latest)</h3>
 <p>Purpose: validate the solution for PRs and pushes, producing a Release build via the nightly build script.</p>
 <ol>
 <li><strong>Checkout</strong> source.</li>
@@ -148,7 +148,7 @@
 </ul>
 </li>
 </ol>
-<h3 id="release-job-windows-2025-master-pushes-only"><code>release</code> Job (windows-2025, master pushes only)</h3>
+<h3 id="release-job-windows-latest-master-pushes-only"><code>release</code> Job (windows-latest, master pushes only)</h3>
 <p>Purpose: promote master builds to NuGet packages when commits land directly on <code>master</code>.</p>
 <ol>
 <li><strong>Checkout + SDK setup + global.json + tooling</strong>: mirrored from the <code>build</code> job to avoid cross-runner drift.</li>
