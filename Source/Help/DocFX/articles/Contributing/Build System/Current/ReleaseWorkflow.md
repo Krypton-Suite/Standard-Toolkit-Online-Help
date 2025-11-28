@@ -6,11 +6,11 @@ Authoritative documentation for `.github/workflows/release.yml`, which coordinat
 
 | Branch | Job Id | Runner | Build Script | Kill Switch Variable | Discord Webhook |
 | --- | --- | --- | --- | --- | --- |
-| `master` | `release-master` | `windows-2025` | `Scripts/build.proj` (Build/Pack) | `vars.RELEASE_DISABLED` | `secrets.DISCORD_WEBHOOK_MASTER` |
-| `V105-LTS` | `release-v105-lts` | `windows-2025` | `Scripts/build.proj` | `vars.RELEASE_DISABLED` | `secrets.DISCORD_WEBHOOK_MASTER` |
-| `V85-LTS` | `release-v85-lts` | `windows-2025` | `Scripts/longtermstable.proj` | `vars.LTS_DISABLED` | `secrets.DISCORD_WEBHOOK_LTS` |
-| `canary` | `release-canary` | `windows-2025` | `Scripts/canary.proj` | `vars.CANARY_DISABLED` | `secrets.DISCORD_WEBHOOK_CANARY` |
-| `alpha` | `release-alpha` | `windows-2025` | `Scripts/nightly.proj` | `vars.NIGHTLY_DISABLED` | `secrets.DISCORD_WEBHOOK_NIGHTLY` |
+| `master` | `release-master` | `windows-latest` | `Scripts/build.proj` (Build/Pack) | `vars.RELEASE_DISABLED` | `secrets.DISCORD_WEBHOOK_MASTER` |
+| `V105-LTS` | `release-v105-lts` | `windows-latest` | `Scripts/build.proj` | `vars.RELEASE_DISABLED` | `secrets.DISCORD_WEBHOOK_MASTER` |
+| `V85-LTS` | `release-v85-lts` | `windows-latest` | `Scripts/longtermstable.proj` | `vars.LTS_DISABLED` | `secrets.DISCORD_WEBHOOK_LTS` |
+| `canary` | `release-canary` | `windows-latest` | `Scripts/canary.proj` | `vars.CANARY_DISABLED` | `secrets.DISCORD_WEBHOOK_CANARY` |
+| `alpha` | `release-alpha` | `windows-latest` | `Scripts/nightly.proj` | `vars.NIGHTLY_DISABLED` | `secrets.DISCORD_WEBHOOK_NIGHTLY` |
 
 Common characteristics:
 
