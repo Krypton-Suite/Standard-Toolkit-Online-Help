@@ -9,6 +9,7 @@ If you are wanting to contribute to the toolkit, the articles below will guide y
 * [Dependabot Configuration](Contributing/Build%20System/DependabotConfiguration.md)
 * [Enable Preview SDKs](Contributing/EnablePreviewSDK.md)
 * [GitHub Actions Workflows](Contributing/GitHubActionsWorkflows.md)
+* [GitHub Workflows](Contributing/GitHubWorkflowIndex.md)
 * [How to Build the Standard Toolkit](Contributing/HowtoBuild.md)
 * [How to Create a Pull Request](Contributing/HowtoCreateaPullRequest.md)
 * [How to Create the API Reference](Contributing/HowtoCreatetheAPIReference.md)

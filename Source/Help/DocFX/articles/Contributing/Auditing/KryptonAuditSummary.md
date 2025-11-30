@@ -40,9 +40,9 @@ All standard input controls, display controls, data grids, dialogs, and forms ar
 ### Fully Replaced by Enhanced Krypton Controls:
 - ✅ **TabControl → KryptonNavigator** (15+ modes, use `BarTabGroup` for simple tabs)
 - ✅ **ContextMenuStrip → KryptonContextMenu** (rich content with colors, calendars, etc.)
+- ✅ M**enuStrip → KryptonMenuStrip -** Standard `MenuStrip` is automatically themed by Krypton (no dedicated control needed)
 
 ### Automatically Themed by Krypton Renderer:
-- ✅ **MenuStrip** - Standard `MenuStrip` is automatically themed by Krypton (no dedicated control needed)
   - **Limitation:** Font cannot be customized
 - ✅ **ToolStrip** - Both `KryptonToolStrip` and standard `ToolStrip` work with theming
 - ✅ **StatusStrip** - Both `KryptonStatusStrip` and standard `StatusStrip` work with theming
