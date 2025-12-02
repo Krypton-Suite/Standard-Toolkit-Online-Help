@@ -110,6 +110,7 @@ This document provides links to the documentation provided, each will be split u
 * [Krypton Radio Button](Standard%20Toolkit/Toolkit/Controls/KryptonRadioButton.md)
 * [Krypton RichTextBox](Standard%20Toolkit/Toolkit/Controls/KryptonRichTextBox.md)
 * [Krypton Scroll Bar](Standard%20Toolkit/Toolkit/Controls/KryptonScrollBar.md)
+* [Krypton Search Box](Standard%20Toolkit/Toolkit/Controls/KryptonSearchBox.md)
 * [Krypton Separator](Standard%20Toolkit/Toolkit/Controls/KryptonSeparator.md)
 * [Krypton Split Container](Standard%20Toolkit/Toolkit/Controls/KryptonSplitContainer.md)
 * [Krypton Status Strip](Standard%20Toolkit/Toolkit/Controls/KryptonStatusStrip.md)
