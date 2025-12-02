@@ -54,6 +54,7 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 - [KryptonThemeListBox](Toolkit/Controls/KryptonThemeListBox.md)
 - [KryptonToggleSwitch](Toolkit/Controls/KryptonToggleSwitch.md)
 - [KryptonToolStrip](Toolkit/Controls/KryptonToolStrip.md)
+- [KryptonToolStripContainer](Toolkit/Controls/KryptonToolStripContainer.md)
 - [KryptonTrackBar](Toolkit/Controls/KryptonTrackBar.md)
 - [KryptonTreeView](Toolkit/Controls/KryptonTreeView.md)
 - [KryptonWebBrowser](Toolkit/Controls/KryptonWebBrowser.md)

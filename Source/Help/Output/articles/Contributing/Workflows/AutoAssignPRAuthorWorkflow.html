@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Auto-Assign PR Author Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Auto-Assign PR Author Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="auto-assign-pr-author-workflow">Auto-Assign PR Author Workflow</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The Auto-Assign PR Author workflow automatically assigns the pull request author as an assignee when a new pull request is opened. This ensures that PR authors are immediately notified of any activity on their pull requests and helps maintain clear ownership.</p>
+<h2 id="purpose">Purpose</h2>
+<ul>
+<li><strong>Automated Assignment</strong>: Eliminates the need for manual assignment of PR authors</li>
+<li><strong>Dependabot Handling</strong>: Special handling for Dependabot PRs assigns the repository owner instead</li>
+<li><strong>Non-Intrusive</strong>: Only assigns if no assignees are already present</li>
+</ul>
+<h2 id="trigger-conditions">Trigger Conditions</h2>
+<h3 id="events">Events</h3>
+<ul>
+<li><strong><code>pull_request_target</code></strong> with type <code>opened</code>
+<ul>
+<li>Triggers when a pull request is opened</li>
+<li>Uses <code>pull_request_target</code> to access repository context even for forks</li>
+</ul>
+</li>
+</ul>
+<h3 id="permissions">Permissions</h3>
+<ul>
+<li><code>issues: write</code> - Required to modify issue/PR assignments</li>
+<li><code>pull-requests: write</code> - Required to assign PR authors</li>
+</ul>
+<h2 id="workflow-structure">Workflow Structure</h2>
+<h3 id="job-assign-author">Job: <code>assign-author</code></h3>
+<p><strong>Runner</strong>: <code>ubuntu-latest</code></p>
+<p><strong>Steps</strong>:</p>
+<ol>
+<li><strong>Assign PR author</strong>
+<ul>
+<li>Uses <code>actions/github-script@v8</code> to execute JavaScript</li>
+<li>Accesses PR context via <code>context.payload.pull_request</code></li>
+<li>Determines assignee based on branch name</li>
+<li>Assigns only if no assignees exist</li>
+</ul>
+</li>
+</ol>
+<h2 id="detailed-behavior">Detailed Behavior</h2>
+<h3 id="assignee-selection-logic">Assignee Selection Logic</h3>
+<pre><code class="lang-javascript">let assignee = context.actor;  // Default: PR author
+
+if (branch.startsWith('dependabot/')) {
+  assignee = owner;  // Repository owner for Dependabot PRs
+}
+</code></pre>
+<p><strong>Rules</strong>:</p>
+<ol>
+<li><strong>Standard PRs</strong>: Assigns the PR author (<code>context.actor</code>)</li>
+<li><strong>Dependabot PRs</strong>: Assigns the repository owner when branch starts with <code>dependabot/</code></li>
+<li><strong>Existing Assignees</strong>: Skips assignment if PR already has assignees</li>
+</ol>
+<h3 id="assignment-process">Assignment Process</h3>
+<ol>
+<li>Extracts repository owner and name from <code>context.repo</code></li>
+<li>Gets PR details from <code>context.payload.pull_request</code></li>
+<li>Determines the appropriate assignee</li>
+<li>Checks if PR already has assignees</li>
+<li>Adds assignee if none exist</li>
+</ol>
+<h2 id="security-considerations">Security Considerations</h2>
+<h3 id="pull_request_target-event"><code>pull_request_target</code> Event</h3>
+<p>This workflow uses <code>pull_request_target</code> instead of <code>pull_request</code> to:</p>
+<ul>
+<li>Access repository context even for PRs from forks</li>
+<li>Use <code>GITHUB_TOKEN</code> with write permissions</li>
+<li>Avoid security risks from untrusted code</li>
+</ul>
+<p><strong>Important</strong>: The workflow script itself is trusted (runs from the base repository), but it processes data from potentially untrusted PRs. The current implementation only reads PR metadata and doesn't execute untrusted code.</p>
+<h2 id="example-scenarios">Example Scenarios</h2>
+<h3 id="scenario-1-standard-pr-from-contributor">Scenario 1: Standard PR from Contributor</h3>
+<p><strong>Input</strong>: PR opened by <code>@contributor</code> from branch <code>feature/new-feature</code></p>
+<p><strong>Result</strong>: <code>@contributor</code> is assigned to the PR</p>
+<h3 id="scenario-2-dependabot-pr">Scenario 2: Dependabot PR</h3>
+<p><strong>Input</strong>: PR opened by <code>@dependabot[bot]</code> from branch <code>dependabot/nuget/microsoft.net.test.sdk</code></p>
+<p><strong>Result</strong>: Repository owner is assigned (not Dependabot)</p>
+<h3 id="scenario-3-pr-with-existing-assignees">Scenario 3: PR with Existing Assignees</h3>
+<p><strong>Input</strong>: PR opened with <code>@maintainer</code> already assigned</p>
+<p><strong>Result</strong>: No additional assignment (workflow skips)</p>
+<h2 id="configuration">Configuration</h2>
+<h3 id="no-configuration-required">No Configuration Required</h3>
+<p>This workflow requires no secrets, variables, or environment configuration. It uses the default <code>GITHUB_TOKEN</code> provided by GitHub Actions.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="pr-author-not-assigned">PR Author Not Assigned</h3>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li>PR already has assignees - This is expected behavior</li>
+<li>Workflow failed to run - Check Actions tab for errors</li>
+<li>Permission issues - Verify workflow has <code>issues: write</code> and <code>pull-requests: write</code> permissions</li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Check workflow run logs in the Actions tab</li>
+<li>Verify the PR trigger conditions are met</li>
+<li>Ensure workflow file is in <code>.github/workflows/</code> directory</li>
+</ul>
+<h3 id="dependabot-prs-not-assigned-correctly">Dependabot PRs Not Assigned Correctly</h3>
+<p><strong>Check</strong>:</p>
+<ul>
+<li>Branch name starts with <code>dependabot/</code></li>
+<li>Repository owner is correctly identified</li>
+<li>Workflow has necessary permissions</li>
+</ul>
+<h2 id="related-workflows">Related Workflows</h2>
+<ul>
+<li><strong>Build Workflow</strong>: Runs on PRs to validate changes</li>
+<li><strong>Auto-Label Issue Areas</strong>: Similar automation for issues</li>
+</ul>
+<h2 id="code-reference">Code Reference</h2>
+<p><strong>File</strong>: <code>.github/workflows/auto-assign-pr-author.yml</code></p>
+<p><strong>Key Components</strong>:</p>
+<ul>
+<li>Event: <code>pull_request_target</code> with type <code>opened</code></li>
+<li>Action: <code>actions/github-script@v8</code></li>
+<li>Logic: Branch-based assignee selection</li>
+</ul>
+<h2 id="maintenance-notes">Maintenance Notes</h2>
+<ul>
+<li>The workflow is lightweight and requires minimal maintenance</li>
+<li>Branch name patterns (e.g., <code>dependabot/</code>) should be updated if Dependabot changes its naming convention</li>
+<li>Consider adding support for other bot types if needed in the future</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

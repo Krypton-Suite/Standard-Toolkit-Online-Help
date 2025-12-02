@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonMenuStrip Developer Documentation | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonMenuStrip Developer Documentation | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonmenustrip-developer-documentation">KryptonMenuStrip Developer Documentation</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonMenuStrip</code> is a Krypton-themed wrapper around the standard Windows Forms <code>MenuStrip</code> control. It provides seamless integration with the Krypton palette system, enabling dynamic theming, consistent visual styling, and automatic font management based on the active palette.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#class-hierarchy">Class Hierarchy</a></li>
+<li><a href="#key-features">Key Features</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#palette-system-integration">Palette System Integration</a></li>
+<li><a href="#visual-states">Visual States</a></li>
+<li><a href="#font-management">Font Management</a></li>
+<li><a href="#event-handling">Event Handling</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#implementation-details">Implementation Details</a></li>
+</ol>
+<hr>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Windows.Forms.Control
+  └── System.Windows.Forms.ToolStrip
+      └── System.Windows.Forms.MenuStrip
+          └── Krypton.Toolkit.KryptonMenuStrip
+</code></pre>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Inherits From:</strong> <code>System.Windows.Forms.MenuStrip</code></p>
+<hr>
+<h2 id="key-features">Key Features</h2>
+<h3 id="1-krypton-palette-integration">1. <strong>Krypton Palette Integration</strong></h3>
+<ul>
+<li>Automatic theme synchronization with the global Krypton palette</li>
+<li>Support for built-in palette modes (Office 2007, Office 2013, Microsoft 365, etc.)</li>
+<li>Custom palette support for application-specific theming</li>
+<li>Dynamic palette switching at runtime</li>
+</ul>
+<h3 id="2-automatic-font-management">2. <strong>Automatic Font Management</strong></h3>
+<ul>
+<li>Font automatically synchronized with palette's <code>ToolStripFont</code></li>
+<li>Responds to global palette <code>BaseFont</code> changes</li>
+<li>Updates when palette changes occur</li>
+</ul>
+<h3 id="3-visual-state-customization">3. <strong>Visual State Customization</strong></h3>
+<ul>
+<li>Per-state appearance overrides (Common, Disabled, Normal)</li>
+<li>Background color, gradient, and image support</li>
+<li>Inheritance-based styling system</li>
+</ul>
+<h3 id="4-professional-rendering">4. <strong>Professional Rendering</strong></h3>
+<ul>
+<li>Uses <code>ToolStripRenderMode.ManagerRenderMode</code> for Krypton renderer integration</li>
+<li>Consistent appearance with other Krypton controls</li>
+<li>Theme-aware color table integration</li>
+</ul>
+<h3 id="5-event-driven-updates">5. <strong>Event-Driven Updates</strong></h3>
+<ul>
+<li>Automatic repainting on palette changes</li>
+<li>Layout updates when visual properties change</li>
+<li>Global palette change notifications</li>
+</ul>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<h3 id="core-components">Core Components</h3>
+<h4 id="1-palette-management">1. <strong>Palette Management</strong></h4>
+<p>The control maintains references to:</p>
+<ul>
+<li><code>_palette</code>: The active palette instance (can be global or custom)</li>
+<li><code>_hookedPalette</code>: The palette currently subscribed to for paint events</li>
+<li><code>_hookedGlobalPalette</code>: The global palette subscribed to for BaseFont changes</li>
+<li><code>_paletteMode</code>: The current palette mode (Global, Custom, or specific theme)</li>
+</ul>
+<h4 id="2-visual-state-storage">2. <strong>Visual State Storage</strong></h4>
+<p>Three <code>PaletteBack</code> instances provide state-specific styling:</p>
+<ul>
+<li><code>_stateCommon</code>: Base appearance inherited by all states</li>
+<li><code>_stateDisabled</code>: Appearance when the control is disabled</li>
+<li><code>_stateNormal</code>: Appearance in the normal (enabled) state</li>
+</ul>
+<h4 id="3-inheritance-chain">3. <strong>Inheritance Chain</strong></h4>
+<ul>
+<li><code>PaletteBackInheritMenuStrip</code>: Bridges palette ColorTable to PaletteBack interface</li>
+<li>Retrieves colors from <code>KryptonColorTable.MenuStripGradientBegin/End</code></li>
+<li>Provides inheritance chain for state-specific overrides</li>
+</ul>
+<h3 id="data-flow">Data Flow</h3>
+<pre><code>KryptonManager (Global Palette)
+    ↓
+PaletteBase (Theme-specific palette)
+    ↓
+KryptonColorTable (MenuStrip colors)
+    ↓
+PaletteBackInheritMenuStrip (Adapter)
+    ↓
+PaletteBack (_stateCommon, _stateDisabled, _stateNormal)
+    ↓
+KryptonMenuStrip (Visual rendering)
+</code></pre>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="constructors">Constructors</h3>
+<h4 id="kryptonmenustrip"><code>KryptonMenuStrip()</code></h4>
+<p>Initializes a new instance of the <code>KryptonMenuStrip</code> class.</p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Sets <code>RenderMode</code> to <code>ToolStripRenderMode.ManagerRenderMode</code></li>
+<li>Initializes palette mode to <code>PaletteMode.Global</code></li>
+<li>Creates visual state storage instances</li>
+<li>Hooks into global palette change events</li>
+<li>Sets initial font from palette</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var menuStrip = new KryptonMenuStrip();
+</code></pre>
+<hr>
+<h3 id="properties">Properties</h3>
+<h4 id="palettemode-palettemode"><code>PaletteMode</code> (PaletteMode)</h4>
+<p>Gets or sets the palette mode used for rendering.</p>
+<p><strong>Category:</strong> <code>Visuals</code><br>
+<strong>Default Value:</strong> <code>PaletteMode.Global</code><br>
+<strong>Description:</strong> Sets the palette mode.</p>
+<p><strong>Values:</strong></p>
+<ul>
+<li><code>PaletteMode.Global</code>: Uses the current global palette from <code>KryptonManager</code></li>
+<li><code>PaletteMode.Custom</code>: Uses a custom palette (requires <code>Palette</code> property to be set)</li>
+<li>Other values: Uses built-in theme palettes (e.g., <code>PaletteMode.Office2007Blue</code>, <code>PaletteMode.Microsoft365Blue</code>)</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>When set to a built-in mode, automatically retrieves the corresponding palette</li>
+<li>When set to <code>PaletteMode.Custom</code>, does nothing until <code>Palette</code> is assigned</li>
+<li>Triggers palette event re-hooking, inheritance updates, appearance refresh, and font update</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Use Office 2007 Blue theme
+menuStrip.PaletteMode = PaletteMode.Office2007Blue;
+
+// Use Microsoft 365 theme
+menuStrip.PaletteMode = PaletteMode.Microsoft365Blue;
+
+// Use custom palette
+menuStrip.PaletteMode = PaletteMode.Custom;
+menuStrip.Palette = myCustomPalette;
+</code></pre>
+<p><strong>Serialization:</strong></p>
+<ul>
+<li>Only serialized if not equal to <code>PaletteMode.Global</code></li>
+<li>Can be reset using <code>ResetPaletteMode()</code> method</li>
+</ul>
+<hr>
+<h4 id="palette-palettebase"><code>Palette</code> (PaletteBase?)</h4>
+<p>Gets or sets the custom palette implementation.</p>
+<p><strong>Category:</strong> <code>Visuals</code><br>
+<strong>Default Value:</strong> <code>null</code><br>
+<strong>Description:</strong> Sets the custom palette to be used.</p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Returns <code>null</code> unless <code>PaletteMode</code> is <code>PaletteMode.Custom</code></li>
+<li>When set to a non-null value:
+<ul>
+<li>Sets <code>_palette</code> to the provided value</li>
+<li>Changes <code>PaletteMode</code> to <code>PaletteMode.Custom</code></li>
+<li>Updates hooks, inheritance, appearance, and font</li>
+</ul>
+</li>
+<li>When set to <code>null</code>:
+<ul>
+<li>Reverts to <code>PaletteMode.Global</code></li>
+<li>Uses <code>KryptonManager.CurrentGlobalPalette</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Create and assign custom palette
+var customPalette = new KryptonCustomPaletteBase();
+customPalette.BasePalette = KryptonManager.GetPaletteForMode(PaletteMode.Office2013White);
+// ... customize palette properties ...
+menuStrip.Palette = customPalette;
+menuStrip.PaletteMode = PaletteMode.Custom;
+
+// Revert to global palette
+menuStrip.Palette = null; // Automatically switches to Global mode
+</code></pre>
+<p><strong>Serialization:</strong></p>
+<ul>
+<li>Only serialized when <code>PaletteMode == PaletteMode.Custom &amp;&amp; _palette != null</code></li>
+<li>Can be reset using <code>ResetPalette()</code> method</li>
+</ul>
+<hr>
+<h4 id="statecommon-paletteback"><code>StateCommon</code> (PaletteBack)</h4>
+<p>Gets access to the common menu strip appearance that other states can override.</p>
+<p><strong>Category:</strong> <code>Visuals</code><br>
+<strong>Description:</strong> Overrides for defining common menu strip appearance that other states can override.<br>
+<strong>Designer Serialization:</strong> Content (expanded in designer)</p>
+<p><strong>Properties Available:</strong></p>
+<ul>
+<li><code>Draw</code> (InheritBool): Whether to draw the background</li>
+<li><code>GraphicsHint</code> (PaletteGraphicsHint): Graphics rendering hint</li>
+<li><code>Color1</code> (Color): First background color (gradient start)</li>
+<li><code>Color2</code> (Color): Second background color (gradient end)</li>
+<li><code>ColorStyle</code> (PaletteColorStyle): Color drawing style</li>
+<li><code>ColorAlign</code> (PaletteRectangleAlign): Color alignment</li>
+<li><code>ColorAngle</code> (float): Gradient angle</li>
+<li><code>Image</code> (Image): Background image</li>
+<li><code>ImageStyle</code> (PaletteImageStyle): Image drawing style</li>
+<li><code>ImageAlign</code> (PaletteRectangleAlign): Image alignment</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Override common background to use a solid color
+menuStrip.StateCommon.Color1 = Color.FromArgb(240, 240, 240);
+menuStrip.StateCommon.Color2 = Color.FromArgb(240, 240, 240);
+menuStrip.StateCommon.ColorStyle = PaletteColorStyle.Solid;
+</code></pre>
+<p><strong>Serialization:</strong></p>
+<ul>
+<li>Only serialized if not in default state (<code>!IsDefault</code>)</li>
+</ul>
+<hr>
+<h4 id="statedisabled-paletteback"><code>StateDisabled</code> (PaletteBack)</h4>
+<p>Gets access to the disabled menu strip appearance.</p>
+<p><strong>Category:</strong> <code>Visuals</code><br>
+<strong>Description:</strong> Overrides for defining disabled menu strip appearance.<br>
+<strong>Designer Serialization:</strong> Content (expanded in designer)</p>
+<p><strong>Inheritance:</strong></p>
+<ul>
+<li>Inherits from <code>StateCommon</code></li>
+<li>Only properties explicitly set override the common state</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Customize disabled state appearance
+menuStrip.StateDisabled.Color1 = Color.FromArgb(220, 220, 220);
+menuStrip.StateDisabled.Color2 = Color.FromArgb(220, 220, 220);
+menuStrip.StateDisabled.ColorStyle = PaletteColorStyle.Solid;
+</code></pre>
+<p><strong>Serialization:</strong></p>
+<ul>
+<li>Only serialized if not in default state (<code>!IsDefault</code>)</li>
+</ul>
+<hr>
+<h4 id="statenormal-paletteback"><code>StateNormal</code> (PaletteBack)</h4>
+<p>Gets access to the normal menu strip appearance.</p>
+<p><strong>Category:</strong> <code>Visuals</code><br>
+<strong>Description:</strong> Overrides for defining normal menu strip appearance.<br>
+<strong>Designer Serialization:</strong> Content (expanded in designer)</p>
+<p><strong>Inheritance:</strong></p>
+<ul>
+<li>Inherits from <code>StateCommon</code></li>
+<li>Only properties explicitly set override the common state</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Customize normal state appearance
+menuStrip.StateNormal.Color1 = Color.FromArgb(250, 250, 250);
+menuStrip.StateNormal.Color2 = Color.FromArgb(230, 230, 230);
+menuStrip.StateNormal.ColorStyle = PaletteColorStyle.Linear;
+menuStrip.StateNormal.ColorAngle = 90f; // Vertical gradient
+</code></pre>
+<p><strong>Serialization:</strong></p>
+<ul>
+<li>Only serialized if not in default state (<code>!IsDefault</code>)</li>
+</ul>
+<hr>
+<h3 id="methods">Methods</h3>
+<h4 id="disposebool-disposing"><code>Dispose(bool disposing)</code></h4>
+<p>Cleans up resources used by the control.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>disposing</code> (bool): <code>true</code> if managed resources should be disposed; otherwise, <code>false</code>.</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Unhooks from <code>KryptonManager.GlobalPaletteChanged</code> event</li>
+<li>Unhooks from palette <code>PalettePaintInternal</code> events</li>
+<li>Unhooks from global palette <code>PalettePaintInternal</code> events</li>
+<li>Calls base <code>Dispose(disposing)</code></li>
+</ul>
+<p><strong>Note:</strong> Always call <code>Dispose()</code> when finished with the control to prevent memory leaks from event subscriptions.</p>
+<hr>
+<h4 id="onrendererchangedeventargs-e"><code>OnRendererChanged(EventArgs e)</code></h4>
+<p>Raises the <code>RendererChanged</code> event.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>e</code> (EventArgs): Event data</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Calls base implementation</li>
+<li>Invalidates the control to trigger repaint</li>
+</ul>
+<p><strong>Override:</strong> Override this method to perform custom actions when the renderer changes.</p>
+<hr>
+<h3 id="events">Events</h3>
+<p>The control inherits all standard <code>MenuStrip</code> events. Additionally, it responds to:</p>
+<ul>
+<li><strong>KryptonManager.GlobalPaletteChanged</strong>: Automatically subscribed; updates control when global palette changes</li>
+<li><strong>Palette.PalettePaintInternal</strong>: Automatically subscribed; updates font and appearance when palette changes</li>
+</ul>
+<hr>
+<h2 id="palette-system-integration">Palette System Integration</h2>
+<h3 id="how-palette-selection-works">How Palette Selection Works</h3>
+<ol>
+<li><p><strong>Global Mode (Default)</strong></p>
+<pre><code class="lang-csharp">menuStrip.PaletteMode = PaletteMode.Global;
+// Uses KryptonManager.CurrentGlobalPalette
+</code></pre>
+</li>
+<li><p><strong>Built-in Theme Mode</strong></p>
+<pre><code class="lang-csharp">menuStrip.PaletteMode = PaletteMode.Office2007Blue;
+// Uses KryptonManager.GetPaletteForMode(PaletteMode.Office2007Blue)
+</code></pre>
+</li>
+<li><p><strong>Custom Mode</strong></p>
+<pre><code class="lang-csharp">menuStrip.PaletteMode = PaletteMode.Custom;
+menuStrip.Palette = myCustomPalette;
+// Uses the assigned custom palette
+</code></pre>
+</li>
+</ol>
+<h3 id="palette-change-propagation">Palette Change Propagation</h3>
+<p>When a palette change occurs:</p>
+<ol>
+<li><p><strong>Global Palette Changed</strong></p>
+<ul>
+<li><code>OnGlobalPaletteChanged</code> is invoked</li>
+<li>If using Global mode: Updates palette reference, re-hooks events, updates inheritance/appearance/font</li>
+<li>If using other modes: Still updates font (BaseFont changes affect all controls)</li>
+</ul>
+</li>
+<li><p><strong>Palette Paint Event</strong></p>
+<ul>
+<li><code>OnPalettePaint</code> or <code>OnGlobalPalettePaint</code> is invoked</li>
+<li>Calls <code>UpdateFont()</code> to synchronize font with palette</li>
+</ul>
+</li>
+<li><p><strong>Palette Mode Changed</strong></p>
+<ul>
+<li>Retrieves new palette via <code>KryptonManager.GetPaletteForMode()</code></li>
+<li>Re-hooks palette events</li>
+<li>Updates inheritance chain</li>
+<li>Refreshes appearance</li>
+<li>Updates font</li>
+</ul>
+</li>
+</ol>
+<h3 id="color-table-integration">Color Table Integration</h3>
+<p>The control uses <code>PaletteBackInheritMenuStrip</code> to bridge the palette's <code>ColorTable</code> to the <code>PaletteBack</code> system:</p>
+<ul>
+<li><code>MenuStripGradientBegin</code> → <code>Color1</code></li>
+<li><code>MenuStripGradientEnd</code> → <code>Color2</code></li>
+<li>Colors are retrieved from <code>palette.ColorTable.MenuStripGradientBegin/End</code></li>
+</ul>
+<p>This allows the control to use theme-specific colors while maintaining the flexibility of the <code>PaletteBack</code> override system.</p>
+<hr>
+<h2 id="visual-states">Visual States</h2>
+<h3 id="state-hierarchy">State Hierarchy</h3>
+<pre><code>StateCommon (base)
+    ├── StateDisabled (inherits from Common)
+    └── StateNormal (inherits from Common)
+</code></pre>
+<h3 id="state-resolution">State Resolution</h3>
+<p>When rendering, the control determines which state to use:</p>
+<ol>
+<li><p><strong>Disabled State</strong>: Used when <code>Enabled == false</code></p>
+<ul>
+<li>Inherits from <code>StateCommon</code></li>
+<li>Can override any <code>StateCommon</code> property</li>
+</ul>
+</li>
+<li><p><strong>Normal State</strong>: Used when <code>Enabled == true</code></p>
+<ul>
+<li>Inherits from <code>StateCommon</code></li>
+<li>Can override any <code>StateCommon</code> property</li>
+</ul>
+</li>
+</ol>
+<h3 id="inheritance-behavior">Inheritance Behavior</h3>
+<p>Properties in <code>PaletteBack</code> use an inheritance model:</p>
+<ul>
+<li><strong>Inherit</strong>: Uses value from parent state (or palette default)</li>
+<li><strong>Explicit Value</strong>: Overrides parent state</li>
+</ul>
+<p>Example inheritance chain:</p>
+<pre><code>Palette ColorTable (default)
+    ↓
+StateCommon (can override)
+    ↓
+StateNormal/StateDisabled (can override)
+</code></pre>
+<hr>
+<h2 id="font-management">Font Management</h2>
+<h3 id="automatic-font-synchronization">Automatic Font Synchronization</h3>
+<p>The control automatically synchronizes its <code>Font</code> property with the palette's <code>ToolStripFont</code>:</p>
+<ol>
+<li><p><strong>Initial Setup</strong></p>
+<ul>
+<li>Constructor calls <code>UpdateFont()</code> after palette initialization</li>
+<li>Font is set from <code>palette.ColorTable.ToolStripFont</code></li>
+</ul>
+</li>
+<li><p><strong>Palette Changes</strong></p>
+<ul>
+<li><code>OnPalettePaint</code>: Updates font when palette paint events occur</li>
+<li><code>OnGlobalPalettePaint</code>: Updates font when global palette BaseFont changes</li>
+<li><code>OnGlobalPaletteChanged</code>: Updates font when global palette instance changes</li>
+</ul>
+</li>
+<li><p><strong>Palette Mode Changes</strong></p>
+<ul>
+<li><code>PaletteMode</code> setter calls <code>UpdateFont()</code> after switching palettes</li>
+<li><code>Palette</code> setter calls <code>UpdateFont()</code> after assigning custom palette</li>
+</ul>
+</li>
+</ol>
+<h3 id="font-update-implementation">Font Update Implementation</h3>
+<pre><code class="lang-csharp">private void UpdateFont()
+{
+    if (!IsDisposed)
+    {
+        try
+        {
+            var currentPalette = _palette ?? KryptonManager.CurrentGlobalPalette;
+            if (currentPalette != null)
+            {
+                var colorTable = currentPalette.ColorTable;
+                var toolStripFont = colorTable.ToolStripFont;
+                if (Font != toolStripFont)
+                {
+                    Font = toolStripFont;
+                }
+            }
+        }
+        catch
+        {
+            // Ignore errors accessing ColorTable (may not be initialized yet)
+        }
+    }
+}
+</code></pre>
+<p><strong>Key Points:</strong></p>
+<ul>
+<li>Uses try-catch to handle cases where ColorTable may not be initialized</li>
+<li>Only updates Font if it differs from palette font (prevents unnecessary updates)</li>
+<li>Checks <code>IsDisposed</code> to avoid operations on disposed controls</li>
+</ul>
+<h3 id="font-source">Font Source</h3>
+<p>The font comes from the palette's <code>ColorTable.ToolStripFont</code> property, which typically:</p>
+<ul>
+<li>Defaults to <code>SystemInformation.MenuFont</code></li>
+<li>Can be customized in custom palettes</li>
+<li>Updates when palette <code>BaseFont</code> changes</li>
+</ul>
+<hr>
+<h2 id="event-handling">Event Handling</h2>
+<h3 id="internal-event-subscriptions">Internal Event Subscriptions</h3>
+<p>The control subscribes to several events for automatic updates:</p>
+<h4 id="1-kryptonmanagerglobalpalettechanged">1. <strong>KryptonManager.GlobalPaletteChanged</strong></h4>
+<ul>
+<li><strong>Subscribed:</strong> In constructor</li>
+<li><strong>Unsubscribed:</strong> In <code>Dispose(bool disposing)</code></li>
+<li><strong>Handler:</strong> <code>OnGlobalPaletteChanged</code></li>
+<li><strong>Purpose:</strong> React to global palette changes</li>
+</ul>
+<h4 id="2-palettepalettepaintinternal">2. <strong>Palette.PalettePaintInternal</strong></h4>
+<ul>
+<li><strong>Subscribed:</strong> Via <code>HookPaletteEvents()</code> when palette changes</li>
+<li><strong>Unsubscribed:</strong> Via <code>HookPaletteEvents()</code> when switching palettes</li>
+<li><strong>Handler:</strong> <code>OnPalettePaint</code></li>
+<li><strong>Purpose:</strong> React to palette paint events (e.g., BaseFont changes)</li>
+</ul>
+<h4 id="3-globalpalettepalettepaintinternal">3. <strong>GlobalPalette.PalettePaintInternal</strong></h4>
+<ul>
+<li><strong>Subscribed:</strong> Via <code>HookGlobalPaletteEvents()</code> in constructor</li>
+<li><strong>Unsubscribed:</strong> In <code>Dispose(bool disposing)</code></li>
+<li><strong>Handler:</strong> <code>OnGlobalPalettePaint</code></li>
+<li><strong>Purpose:</strong> React to global palette BaseFont changes even when not using Global mode</li>
+</ul>
+<h3 id="event-handler-behavior">Event Handler Behavior</h3>
+<h4 id="onglobalpalettechangedobject-sender-eventargs-e"><code>OnGlobalPaletteChanged(object? sender, EventArgs e)</code></h4>
+<pre><code class="lang-csharp">private void OnGlobalPaletteChanged(object? sender, EventArgs e)
+{
+    // Re-hook global palette events in case the global palette instance changed
+    HookGlobalPaletteEvents();
+
+    // Only update if we're using the global palette
+    if (_paletteMode == PaletteMode.Global)
+    {
+        _palette = KryptonManager.CurrentGlobalPalette;
+        HookPaletteEvents();
+        UpdateInherit();
+        UpdateAppearance();
+        UpdateFont();
+    }
+    else
+    {
+        // Even if not using global palette, BaseFont changes might affect us
+        UpdateFont();
+    }
+}
+</code></pre>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Always re-hooks global palette events (instance may have changed)</li>
+<li>If using Global mode: Full update (palette, hooks, inheritance, appearance, font)</li>
+<li>If using other modes: Only updates font (BaseFont changes are global)</li>
+</ul>
+<h4 id="onpalettepaintobject-sender-palettelayouteventargs-e"><code>OnPalettePaint(object? sender, PaletteLayoutEventArgs e)</code></h4>
+<pre><code class="lang-csharp">private void OnPalettePaint(object? sender, PaletteLayoutEventArgs e)
+{
+    if (!IsDisposed)
+    {
+        UpdateFont();
+    }
+}
+</code></pre>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Updates font when palette paint events occur</li>
+<li>Checks <code>IsDisposed</code> before updating</li>
+</ul>
+<h4 id="onglobalpalettepaintobject-sender-palettelayouteventargs-e"><code>OnGlobalPalettePaint(object? sender, PaletteLayoutEventArgs e)</code></h4>
+<pre><code class="lang-csharp">private void OnGlobalPalettePaint(object? sender, PaletteLayoutEventArgs e)
+{
+    if (!IsDisposed)
+    {
+        UpdateFont();
+    }
+}
+</code></pre>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Updates font when global palette BaseFont changes</li>
+<li>Ensures font stays synchronized even when not using Global mode</li>
+</ul>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-basic-usage">Example 1: Basic Usage</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+
+// Create menu strip
+var menuStrip = new KryptonMenuStrip();
+menuStrip.Dock = DockStyle.Top;
+
+// Add menu items
+var fileMenu = new ToolStripMenuItem(&quot;File&quot;);
+fileMenu.DropDownItems.Add(new ToolStripMenuItem(&quot;New&quot;));
+fileMenu.DropDownItems.Add(new ToolStripMenuItem(&quot;Open&quot;));
+menuStrip.Items.Add(fileMenu);
+
+var editMenu = new ToolStripMenuItem(&quot;Edit&quot;);
+editMenu.DropDownItems.Add(new ToolStripMenuItem(&quot;Cut&quot;));
+editMenu.DropDownItems.Add(new ToolStripMenuItem(&quot;Copy&quot;));
+menuStrip.Items.Add(editMenu);
+
+// Add to form
+this.Controls.Add(menuStrip);
+</code></pre>
+<h3 id="example-2-using-a-specific-theme">Example 2: Using a Specific Theme</h3>
+<pre><code class="lang-csharp">// Use Office 2007 Blue theme
+menuStrip.PaletteMode = PaletteMode.Office2007Blue;
+
+// Or use Microsoft 365 theme
+menuStrip.PaletteMode = PaletteMode.Microsoft365Blue;
+</code></pre>
+<h3 id="example-3-custom-palette">Example 3: Custom Palette</h3>
+<pre><code class="lang-csharp">// Create custom palette
+var customPalette = new KryptonCustomPaletteBase();
+customPalette.BasePalette = KryptonManager.GetPaletteForMode(PaletteMode.Office2013White);
+
+// Customize menu strip colors in the palette
+customPalette.ColorTable.MenuStripGradientBegin = Color.FromArgb(240, 240, 240);
+customPalette.ColorTable.MenuStripGradientEnd = Color.FromArgb(220, 220, 220);
+
+// Apply to menu strip
+menuStrip.PaletteMode = PaletteMode.Custom;
+menuStrip.Palette = customPalette;
+</code></pre>
+<h3 id="example-4-per-control-visual-overrides">Example 4: Per-Control Visual Overrides</h3>
+<pre><code class="lang-csharp">// Override common background
+menuStrip.StateCommon.Color1 = Color.FromArgb(250, 250, 250);
+menuStrip.StateCommon.Color2 = Color.FromArgb(230, 230, 230);
+menuStrip.StateCommon.ColorStyle = PaletteColorStyle.Linear;
+menuStrip.StateCommon.ColorAngle = 90f; // Vertical gradient
+
+// Override disabled state
+menuStrip.StateDisabled.Color1 = Color.FromArgb(240, 240, 240);
+menuStrip.StateDisabled.Color2 = Color.FromArgb(240, 240, 240);
+menuStrip.StateDisabled.ColorStyle = PaletteColorStyle.Solid;
+</code></pre>
+<h3 id="example-5-responding-to-global-palette-changes">Example 5: Responding to Global Palette Changes</h3>
+<pre><code class="lang-csharp">// The control automatically responds to global palette changes
+// No additional code needed - it's handled internally
+
+// However, you can listen to KryptonManager events if needed
+KryptonManager.GlobalPaletteChanged += (sender, e) =&gt;
+{
+    // Your custom logic here
+    // Note: KryptonMenuStrip already handles this internally
+};
+</code></pre>
+<h3 id="example-6-designer-usage">Example 6: Designer Usage</h3>
+<p>In the Visual Studio designer:</p>
+<ol>
+<li>Drag <code>KryptonMenuStrip</code> from toolbox onto form</li>
+<li>Set <code>PaletteMode</code> property in Properties window</li>
+<li>Expand <code>StateCommon</code>, <code>StateDisabled</code>, or <code>StateNormal</code> to customize appearance</li>
+<li>Add menu items using the designer</li>
+</ol>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-palette-mode-selection">1. <strong>Palette Mode Selection</strong></h3>
+<ul>
+<li><strong>Use Global Mode</strong> when you want all controls to follow the global theme</li>
+<li><strong>Use Built-in Themes</strong> when you want a specific control to use a different theme</li>
+<li><strong>Use Custom Mode</strong> when you need fine-grained control over a specific control's appearance</li>
+</ul>
+<h3 id="2-font-management">2. <strong>Font Management</strong></h3>
+<ul>
+<li><strong>Don't manually set Font property</strong> - let the control manage it automatically</li>
+<li>If you need custom fonts, customize the palette's <code>BaseFont</code> or <code>ColorTable.ToolStripFont</code></li>
+<li>The control will automatically sync with palette font changes</li>
+</ul>
+<h3 id="3-visual-state-overrides">3. <strong>Visual State Overrides</strong></h3>
+<ul>
+<li><strong>Use StateCommon</strong> for changes that apply to all states</li>
+<li><strong>Use StateNormal/StateDisabled</strong> only when you need state-specific differences</li>
+<li>Prefer palette customization over per-control overrides for consistency</li>
+</ul>
+<h3 id="4-disposal">4. <strong>Disposal</strong></h3>
+<ul>
+<li>Always call <code>Dispose()</code> when removing the control</li>
+<li>The control properly unsubscribes from events in <code>Dispose()</code></li>
+<li>Prevents memory leaks from event subscriptions</li>
+</ul>
+<h3 id="5-thread-safety">5. <strong>Thread Safety</strong></h3>
+<ul>
+<li>All operations should be performed on the UI thread</li>
+<li>Palette changes are thread-safe, but UI updates must be on the UI thread</li>
+</ul>
+<h3 id="6-performance">6. <strong>Performance</strong></h3>
+<ul>
+<li>Avoid frequent palette mode changes</li>
+<li>Use state overrides sparingly (they add to the inheritance chain)</li>
+<li>Prefer palette-level customization for application-wide changes</li>
+</ul>
+<hr>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="render-mode">Render Mode</h3>
+<p>The control uses <code>ToolStripRenderMode.ManagerRenderMode</code>, which:</p>
+<ul>
+<li>Uses the renderer specified by <code>KryptonManager</code></li>
+<li>Integrates with Krypton's professional renderer system</li>
+<li>Provides theme-aware rendering via <code>KryptonColorTable</code></li>
+</ul>
+<h3 id="palette-event-hooking-strategy">Palette Event Hooking Strategy</h3>
+<p>The control uses a dual-hooking strategy:</p>
+<ol>
+<li><p><strong>Palette-Specific Hooks</strong> (<code>_hookedPalette</code>)</p>
+<ul>
+<li>Hooks into the active palette (global or custom)</li>
+<li>Updates when <code>PaletteMode</code> or <code>Palette</code> changes</li>
+<li>Used for general palette paint events</li>
+</ul>
+</li>
+<li><p><strong>Global Palette Hooks</strong> (<code>_hookedGlobalPalette</code>)</p>
+<ul>
+<li>Always hooks into <code>KryptonManager.CurrentGlobalPalette</code></li>
+<li>Updates when global palette instance changes</li>
+<li>Used specifically for BaseFont change detection</li>
+<li>Ensures font updates even when not using Global mode</li>
+</ul>
+</li>
+</ol>
+<h3 id="inheritance-chain-construction">Inheritance Chain Construction</h3>
+<pre><code class="lang-csharp">// In constructor:
+_inherit = new PaletteBackInheritMenuStrip(_palette);
+_stateCommon = new PaletteBack(_inherit, OnNeedPaint);
+_stateDisabled = new PaletteBack(_stateCommon, OnNeedPaint);
+_stateNormal = new PaletteBack(_stateCommon, OnNeedPaint);
+</code></pre>
+<p><strong>Chain:</strong></p>
+<pre><code>PaletteBase.ColorTable
+    ↓
+PaletteBackInheritMenuStrip (_inherit)
+    ↓
+PaletteBack (_stateCommon)
+    ↓
+PaletteBack (_stateDisabled / _stateNormal)
+</code></pre>
+<h3 id="needpaint-event-handling">NeedPaint Event Handling</h3>
+<p>The <code>OnNeedPaint</code> handler:</p>
+<ul>
+<li>Checks if control is disposed</li>
+<li>Performs layout if <code>NeedLayout</code> is true</li>
+<li>Invalidates the control to trigger repaint</li>
+</ul>
+<p>This ensures the control updates when palette properties change.</p>
+<h3 id="error-handling">Error Handling</h3>
+<p>The <code>UpdateFont()</code> method uses try-catch to handle:</p>
+<ul>
+<li><code>ColorTable</code> not being initialized yet</li>
+<li>Palette access errors during initialization</li>
+<li>Prevents exceptions from breaking control initialization</li>
+</ul>
+<hr>
+<h2 id="related-classes">Related Classes</h2>
+<h3 id="dependencies">Dependencies</h3>
+<ul>
+<li><strong>PaletteBase</strong>: Base palette interface</li>
+<li><strong>PaletteBack</strong>: Background appearance storage</li>
+<li><strong>PaletteBackInheritMenuStrip</strong>: MenuStrip-specific palette adapter</li>
+<li><strong>KryptonManager</strong>: Global palette management</li>
+<li><strong>KryptonColorTable</strong>: Color table for ToolStrip rendering</li>
+</ul>
+<h3 id="similar-controls">Similar Controls</h3>
+<ul>
+<li><strong>KryptonToolStrip</strong>: Themed ToolStrip control</li>
+<li><strong>KryptonStatusStrip</strong>: Themed StatusStrip control</li>
+<li>Both use similar palette integration patterns</li>
+</ul>
+<hr>
+<h2 id="version-history">Version History</h2>
+<p>This documentation applies to the current implementation. Key implementation details:</p>
+<ul>
+<li>Uses <code>ToolStripRenderMode.ManagerRenderMode</code> for Krypton rendering</li>
+<li>Dual palette event hooking (palette-specific + global)</li>
+<li>Automatic font synchronization with palette</li>
+<li>State-based appearance inheritance</li>
+<li>Proper event cleanup in <code>Dispose()</code></li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="font-not-updating">Font Not Updating</h3>
+<p><strong>Problem:</strong> Font doesn't change when palette BaseFont changes.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Ensure control is not disposed</li>
+<li>Check that palette events are properly hooked</li>
+<li>Verify <code>ColorTable.ToolStripFont</code> is accessible</li>
+</ul>
+<h3 id="appearance-not-updating">Appearance Not Updating</h3>
+<p><strong>Problem:</strong> Visual appearance doesn't change when palette changes.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Call <code>Invalidate()</code> if making manual changes</li>
+<li>Ensure <code>PaletteMode</code> or <code>Palette</code> is set correctly</li>
+<li>Check that state overrides aren't blocking palette values</li>
+</ul>
+<h3 id="memory-leaks">Memory Leaks</h3>
+<p><strong>Problem:</strong> Control causes memory leaks.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Always call <code>Dispose()</code> when removing control</li>
+<li>Ensure form properly disposes child controls</li>
+<li>Check for circular references in event handlers</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

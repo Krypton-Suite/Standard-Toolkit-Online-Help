@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Auto-Label Issue Areas Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Auto-Label Issue Areas Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="auto-label-issue-areas-workflow">Auto-Label Issue Areas Workflow</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The Auto-Label Issue Areas workflow automatically processes issues to:</p>
+<ol>
+<li><strong>Extract area labels</strong> from the &quot;Areas Affected&quot; field in bug reports</li>
+<li><strong>Prefix issue titles</strong> based on the issue template type (Bug, Feature Request, Question, etc.)</li>
+<li><strong>Apply area labels</strong> to help categorize and route issues to the appropriate maintainers</li>
+</ol>
+<h2 id="purpose">Purpose</h2>
+<ul>
+<li><strong>Automated Categorization</strong>: Reduces manual labeling effort</li>
+<li><strong>Consistent Formatting</strong>: Ensures issue titles follow a standard format</li>
+<li><strong>Better Organization</strong>: Helps maintainers quickly identify issue scope</li>
+<li><strong>Template Integration</strong>: Works with GitHub issue form templates</li>
+</ul>
+<h2 id="trigger-conditions">Trigger Conditions</h2>
+<h3 id="events">Events</h3>
+<ul>
+<li><strong><code>issues</code></strong> with types:
+<ul>
+<li><code>opened</code> - When a new issue is created</li>
+<li><code>edited</code> - When an existing issue is edited (allows re-labeling if areas change)</li>
+</ul>
+</li>
+</ul>
+<h3 id="permissions">Permissions</h3>
+<ul>
+<li><code>issues: write</code> - Required to modify issue labels and titles</li>
+</ul>
+<h2 id="workflow-structure">Workflow Structure</h2>
+<h3 id="job-label-areas">Job: <code>label-areas</code></h3>
+<p><strong>Runner</strong>: <code>ubuntu-latest</code></p>
+<p><strong>Steps</strong>:</p>
+<ol>
+<li><strong>Extract and apply area labels</strong>
+<ul>
+<li>Uses <code>actions/github-script@v8</code> to execute JavaScript</li>
+<li>Processes issue body and title</li>
+<li>Extracts area information</li>
+<li>Applies labels and updates title</li>
+</ul>
+</li>
+</ol>
+<h2 id="detailed-behavior">Detailed Behavior</h2>
+<h3 id="title-prefixing-logic">Title Prefixing Logic</h3>
+<p>The workflow automatically prefixes issue titles based on template type and labels:</p>
+<table>
+<thead>
+<tr>
+<th>Template Type</th>
+<th>Prefix</th>
+<th>Detection Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bug Report</td>
+<td><code>[Bug]: </code></td>
+<td>Has <code>bug</code> label OR contains &quot;### Steps to Reproduce&quot;</td>
+</tr>
+<tr>
+<td>Feature Request</td>
+<td><code>[Feature Request]: </code></td>
+<td>Has <code>enhancement</code>, <code>new feature</code>, or <code>suggestion</code> label OR contains &quot;### Feature Description&quot;</td>
+</tr>
+<tr>
+<td>Other Issues</td>
+<td><code>[Other Issues]: </code></td>
+<td>Has <code>discussion</code> or <code>other</code> label OR contains &quot;### Please describe your issue&quot;</td>
+</tr>
+<tr>
+<td>Question</td>
+<td><code>[Question]: </code></td>
+<td>Has <code>question</code> label OR contains &quot;### What do you want to ask?&quot;</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Rules</strong>:</p>
+<ul>
+<li>Only applies to newly opened issues (not edits)</li>
+<li>Skips if title already has the correct prefix</li>
+<li>Applies the first matching template type</li>
+</ul>
+<h3 id="area-label-mapping">Area Label Mapping</h3>
+<p>The workflow maps area names from issue forms to GitHub labels:</p>
+<table>
+<thead>
+<tr>
+<th>Area Name</th>
+<th>Label</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Docking</td>
+<td><code>area:docking</code></td>
+</tr>
+<tr>
+<td>Navigator</td>
+<td><code>area:navigator</code></td>
+</tr>
+<tr>
+<td>Ribbon</td>
+<td><code>area:ribbon</code></td>
+</tr>
+<tr>
+<td>Toolkit</td>
+<td><code>area:toolkit</code></td>
+</tr>
+<tr>
+<td>Workspace</td>
+<td><code>area:workspace</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="area-extraction-process">Area Extraction Process</h3>
+<ol>
+<li><strong>Template Detection</strong>: Identifies if the issue is a bug report</li>
+<li><strong>Field Extraction</strong>: Searches for &quot;Areas Affected&quot; field using multiple regex patterns</li>
+<li><strong>Content Parsing</strong>: Extracts bullet list items or single selections</li>
+<li><strong>Validation</strong>: Verifies extracted areas match known area names</li>
+<li><strong>Label Application</strong>: Maps areas to labels and applies them</li>
+</ol>
+<h3 id="regex-patterns">Regex Patterns</h3>
+<p>The workflow uses multiple patterns to find the &quot;Areas Affected&quot; field:</p>
+<pre><code class="lang-javascript">const patterns = [
+  /###\s+Areas Affected\s*\n+([\s\S]*?)(?=\n###|$)/i,
+  /###\s+Areas Affected\s*([\s\S]*?)(?=\n###|$)/i,
+  /Areas Affected\s*\n+([\s\S]*?)(?=\n###|$)/i,
+  /Areas Affected\s*([\s\S]*?)(?=\n###|$)/i
+];
+</code></pre>
+<p>These patterns handle various markdown formatting differences in GitHub issue forms.</p>
+<h3 id="empty-field-handling">Empty Field Handling</h3>
+<p>The workflow skips processing if:</p>
+<ul>
+<li>Field is empty</li>
+<li>Field contains &quot;no selection&quot;</li>
+<li>Field contains &quot;none&quot;</li>
+<li>Field contains &quot;<em>No response</em>&quot;</li>
+</ul>
+<h3 id="label-deduplication">Label Deduplication</h3>
+<ul>
+<li>Checks existing labels before adding new ones</li>
+<li>Only adds labels that aren't already present</li>
+<li>Prevents duplicate labels</li>
+</ul>
+<h2 id="example-scenarios">Example Scenarios</h2>
+<h3 id="scenario-1-bug-report-with-single-area">Scenario 1: Bug Report with Single Area</h3>
+<p><strong>Issue Body</strong>:</p>
+<pre><code class="lang-markdown">### Areas Affected
+- Toolkit
+</code></pre>
+<p><strong>Result</strong>:</p>
+<ul>
+<li>Title prefixed: <code>[Bug]: Original Title</code></li>
+<li>Label added: <code>area:toolkit</code></li>
+</ul>
+<h3 id="scenario-2-bug-report-with-multiple-areas">Scenario 2: Bug Report with Multiple Areas</h3>
+<p><strong>Issue Body</strong>:</p>
+<pre><code class="lang-markdown">### Areas Affected
+- Toolkit
+- Ribbon
+- Navigator
+</code></pre>
+<p><strong>Result</strong>:</p>
+<ul>
+<li>Labels added: <code>area:toolkit</code>, <code>area:ribbon</code>, <code>area:navigator</code></li>
+</ul>
+<h3 id="scenario-3-feature-request">Scenario 3: Feature Request</h3>
+<p><strong>Issue Body</strong>:</p>
+<pre><code class="lang-markdown">### Feature Description
+Add new feature...
+</code></pre>
+<p><strong>Result</strong>:</p>
+<ul>
+<li>Title prefixed: <code>[Feature Request]: Original Title</code></li>
+<li>No area labels (only applies to bug reports)</li>
+</ul>
+<h3 id="scenario-4-issue-edit">Scenario 4: Issue Edit</h3>
+<p><strong>Original Issue</strong>: No areas selected
+<strong>Edit</strong>: User adds &quot;Areas Affected: Toolkit&quot;</p>
+<p><strong>Result</strong>:</p>
+<ul>
+<li>Label added: <code>area:toolkit</code></li>
+<li>Title not modified (only prefixed on open)</li>
+</ul>
+<h2 id="error-handling">Error Handling</h2>
+<h3 id="graceful-degradation">Graceful Degradation</h3>
+<ul>
+<li><strong>Title Update Failure</strong>: Logs warning but continues with label processing</li>
+<li><strong>Label Addition Failure</strong>: Attempts to add labels individually</li>
+<li><strong>Missing Field</strong>: Logs message and exits gracefully</li>
+<li><strong>Invalid Area</strong>: Skips unknown areas</li>
+</ul>
+<h3 id="logging">Logging</h3>
+<p>The workflow provides detailed logging:</p>
+<ul>
+<li>Pattern matching results</li>
+<li>Extracted areas</li>
+<li>Label operations</li>
+<li>Error messages</li>
+</ul>
+<h2 id="configuration">Configuration</h2>
+<h3 id="no-configuration-required">No Configuration Required</h3>
+<p>This workflow requires no secrets, variables, or environment configuration. It uses the default <code>GITHUB_TOKEN</code> provided by GitHub Actions.</p>
+<h3 id="label-requirements">Label Requirements</h3>
+<p>The following labels must exist in the repository:</p>
+<ul>
+<li><code>area:docking</code></li>
+<li><code>area:navigator</code></li>
+<li><code>area:ribbon</code></li>
+<li><code>area:toolkit</code></li>
+<li><code>area:workspace</code></li>
+</ul>
+<p>If labels don't exist, the workflow will log warnings but continue processing.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="labels-not-applied">Labels Not Applied</h3>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li>Issue is not a bug report - Area labels only apply to bug reports</li>
+<li>&quot;Areas Affected&quot; field not found - Check issue body format</li>
+<li>Labels don't exist - Create missing labels in repository settings</li>
+<li>Field is empty - This is expected behavior</li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Verify issue uses bug report template</li>
+<li>Check workflow logs for extraction details</li>
+<li>Ensure labels exist in repository</li>
+<li>Review issue body formatting</li>
+</ul>
+<h3 id="title-not-prefixed">Title Not Prefixed</h3>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li>Issue was edited, not opened - Prefixing only occurs on open</li>
+<li>Title already has prefix - Workflow skips if prefix exists</li>
+<li>Template type not detected - Check labels and issue body</li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Prefix is only added when issue is first opened</li>
+<li>Manually add prefix if needed for existing issues</li>
+<li>Verify issue template is being used correctly</li>
+</ul>
+<h3 id="multiple-patterns-matched">Multiple Patterns Matched</h3>
+<p><strong>Behavior</strong>: The workflow tries patterns in order and uses the first match. This is expected and helps handle various formatting differences.</p>
+<h2 id="related-workflows">Related Workflows</h2>
+<ul>
+<li><strong>Auto-Assign PR Author</strong>: Similar automation pattern for PRs</li>
+<li><strong>Build Workflow</strong>: May reference labeled issues</li>
+</ul>
+<h2 id="code-reference">Code Reference</h2>
+<p><strong>File</strong>: <code>.github/workflows/auto-label-issue-areas.yml</code></p>
+<p><strong>Key Components</strong>:</p>
+<ul>
+<li>Event: <code>issues</code> with types <code>opened</code> and <code>edited</code></li>
+<li>Action: <code>actions/github-script@v8</code></li>
+<li>Logic: Regex-based field extraction and label mapping</li>
+</ul>
+<h2 id="maintenance-notes">Maintenance Notes</h2>
+<h3 id="adding-new-areas">Adding New Areas</h3>
+<p>To add support for new areas:</p>
+<ol>
+<li><p>Add mapping in <code>areaToLabel</code> object:</p>
+<pre><code class="lang-javascript">'NewArea': 'area:newarea'
+</code></pre>
+</li>
+<li><p>Create the label in repository settings: <code>area:newarea</code></p>
+</li>
+<li><p>Update issue template to include the new area option</p>
+</li>
+</ol>
+<h3 id="modifying-title-prefixes">Modifying Title Prefixes</h3>
+<p>To change or add title prefixes:</p>
+<ol>
+<li>Update the prefix detection logic in the script</li>
+<li>Modify the <code>titlePrefix</code> assignment logic</li>
+<li>Test with sample issues</li>
+</ol>
+<h3 id="template-changes">Template Changes</h3>
+<p>If issue templates change:</p>
+<ul>
+<li>Update regex patterns if field names change</li>
+<li>Adjust detection logic for new template types</li>
+<li>Test extraction with new template format</li>
+</ul>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li><strong>Keep Labels Consistent</strong>: Use the <code>area:*</code> naming convention</li>
+<li><strong>Test Templates</strong>: Verify templates work with the workflow</li>
+<li><strong>Monitor Logs</strong>: Check workflow runs for extraction issues</li>
+<li><strong>Document Areas</strong>: Keep area list in sync with actual codebase structure</li>
+</ol>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
