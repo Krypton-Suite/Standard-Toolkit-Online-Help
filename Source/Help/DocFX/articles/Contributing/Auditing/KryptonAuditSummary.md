@@ -2,7 +2,7 @@
 
 ## Quick Stats
 
-- **Overall Coverage:** ~86% of standard WinForms controls
+- **Overall Coverage:** ~87% of standard WinForms controls
 - **Total Krypton Controls:** 100+ controls (including DataGridView columns)
 - **Unique Krypton Controls:** 20+ controls not in standard WinForms
 - **Critical Missing Controls:** 4 (ErrorProvider, ToolTip, FlowLayoutPanel, HelpProvider)
@@ -187,7 +187,6 @@ These controls exist but may need feature completeness audit:
 ### Phase 3: Nice to Have
 
 7. **KryptonNotifyIcon** - System tray apps
-8. **KryptonSearchBox** - Modern search (or document ButtonSpec pattern)
 9. **KryptonSplitButton** - True split button
 10. **KryptonTagInput** - Token/chip input
 
