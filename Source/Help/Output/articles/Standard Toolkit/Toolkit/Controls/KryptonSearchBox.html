@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonSearchBox | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonSearchBox | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonsearchbox">KryptonSearchBox</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonSearchBox</code> is a modern, feature-rich search input control that extends <code>KryptonTextBox</code> to provide a comprehensive search experience with built-in suggestions, search history, and customizable display options. It is designed for Windows Forms applications using the Krypton Toolkit.</p>
+<h2 id="key-features">Key Features</h2>
+<ul>
+<li><strong>Search and Clear Buttons</strong>: Integrated search and clear buttons with customizable visibility</li>
+<li><strong>Auto-complete Suggestions</strong>: Real-time suggestions as the user types</li>
+<li><strong>Rich Suggestions</strong>: Support for <code>IContentValues</code> objects with icons, descriptions, and custom formatting</li>
+<li><strong>Search History</strong>: Optional search history tracking with configurable maximum count</li>
+<li><strong>Multiple Display Types</strong>: Support for ListBox or DataGridView suggestion displays</li>
+<li><strong>Custom Filtering</strong>: Extensible filtering system with support for custom filter functions</li>
+<li><strong>Keyboard Navigation</strong>: Full keyboard support for navigating and selecting suggestions</li>
+<li><strong>Placeholder Text</strong>: Watermark text support when the control is empty</li>
+<li><strong>Theme Integration</strong>: Full integration with Krypton palette system</li>
+</ul>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>System.Object
+  └─ System.MarshalByRefObject
+      └─ System.ComponentModel.Component
+          └─ System.Windows.Forms.Control
+              └─ System.Windows.Forms.TextBoxBase
+                  └─ System.Windows.Forms.TextBox
+                      └─ Krypton.Toolkit.KryptonTextBox
+                          └─ Krypton.Toolkit.KryptonSearchBox
+</code></pre>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="properties">Properties</h3>
+<h4 id="searchboxvalues">SearchBoxValues</h4>
+<pre><code class="lang-csharp">public KryptonSearchBoxValues SearchBoxValues { get; }
+</code></pre>
+<p>Gets access to the search box configuration values. This property provides access to all configurable aspects of the search box including button visibility, suggestion settings, history settings, and behavior options.</p>
+<p><strong>Category</strong>: Visuals<br>
+<strong>Type</strong>: <code>KryptonSearchBoxValues</code></p>
+<h4 id="suggestions">Suggestions</h4>
+<pre><code class="lang-csharp">public List&lt;string&gt; Suggestions { get; }
+</code></pre>
+<p>Gets the collection of suggestion strings. This collection is used to provide auto-complete suggestions when the user types. Suggestions are filtered based on the current text input.</p>
+<p><strong>Category</strong>: Data<br>
+<strong>Type</strong>: <code>List&lt;string&gt;</code></p>
+<h4 id="searchhistory">SearchHistory</h4>
+<pre><code class="lang-csharp">public IReadOnlyList&lt;string&gt; SearchHistory { get; }
+</code></pre>
+<p>Gets the collection of search history items. This is a read-only collection that contains previously searched terms (when search history is enabled). Items are automatically added when a search is performed.</p>
+<p><strong>Category</strong>: Hidden (Browsable: false)<br>
+<strong>Type</strong>: <code>IReadOnlyList&lt;string&gt;</code></p>
+<h4 id="customfilter">CustomFilter</h4>
+<pre><code class="lang-csharp">public Func&lt;string, IEnumerable&lt;object&gt;, IEnumerable&lt;object&gt;&gt;? CustomFilter { get; set; }
+</code></pre>
+<p><strong>Note</strong>: This property exists but is currently not used by the filtering logic. Use <code>SearchBoxValues.CustomFilter</code> instead, which is the property that actually controls custom filtering behavior.</p>
+<p><strong>Category</strong>: Hidden (Browsable: false)<br>
+<strong>Type</strong>: <code>Func&lt;string, IEnumerable&lt;object&gt;, IEnumerable&lt;object&gt;&gt;?</code></p>
+<h4 id="datagridviewcolumns">DataGridViewColumns</h4>
+<pre><code class="lang-csharp">public List&lt;SearchSuggestionColumnDefinition&gt; DataGridViewColumns { get; }
+</code></pre>
+<p>Gets the collection of column definitions for DataGridView suggestion display. This property is only used when <code>SearchBoxValues.SuggestionDisplayType</code> is set to <code>SearchSuggestionDisplayType.DataGridView</code>.</p>
+<p><strong>Note</strong>: By default, a single column named &quot;Suggestion&quot; is automatically added to this collection during initialization. You can replace it by calling <code>SetDataGridViewColumns()</code> or modify the existing collection.</p>
+<p><strong>Category</strong>: Data<br>
+<strong>Type</strong>: <code>List&lt;SearchSuggestionColumnDefinition&gt;</code></p>
+<h4 id="searchbutton">SearchButton</h4>
+<pre><code class="lang-csharp">public ButtonSpecAny? SearchButton { get; }
+</code></pre>
+<p>Gets access to the search button specification. This allows customization of the search button's appearance, tooltip, and behavior.</p>
+<p><strong>Category</strong>: Hidden (Browsable: false)<br>
+<strong>Type</strong>: <code>ButtonSpecAny?</code></p>
+<h4 id="clearbutton">ClearButton</h4>
+<pre><code class="lang-csharp">public ButtonSpecAny? ClearButton { get; }
+</code></pre>
+<p>Gets access to the clear button specification. This allows customization of the clear button's appearance, tooltip, and behavior.</p>
+<p><strong>Category</strong>: Hidden (Browsable: false)<br>
+<strong>Type</strong>: <code>ButtonSpecAny?</code></p>
+<h3 id="methods">Methods</h3>
+<h4 id="clear">Clear()</h4>
+<pre><code class="lang-csharp">public new void Clear()
+</code></pre>
+<p>Clears the search text, hides suggestions, and raises the <code>SearchCleared</code> event. This method also maintains focus on the control after clearing.</p>
+<p><strong>Overrides</strong>: <code>KryptonTextBox.Clear()</code></p>
+<h4 id="performsearch">PerformSearch()</h4>
+<pre><code class="lang-csharp">public void PerformSearch()
+</code></pre>
+<p>Triggers the search event programmatically. If the text is not empty, it will:</p>
+<ul>
+<li>Add the search term to history (if history is enabled)</li>
+<li>Hide the suggestion popup</li>
+<li>Raise the <code>Search</code> event with the current text</li>
+</ul>
+<p><strong>Usage</strong>: Call this method when you want to programmatically trigger a search without user interaction.</p>
+<h4 id="setsearchsuggestionsienumerable">SetSearchSuggestions(IEnumerable<string>)</string></h4>
+<pre><code class="lang-csharp">public void SetSearchSuggestions(IEnumerable&lt;string&gt; suggestions)
+</code></pre>
+<p>Sets the search suggestions from a collection of strings. This replaces all existing string suggestions.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>suggestions</code>: The collection of suggestion strings. Cannot be null.</li>
+</ul>
+<p><strong>Exceptions</strong>:</p>
+<ul>
+<li><code>ArgumentNullException</code>: Thrown when <code>suggestions</code> is null.</li>
+</ul>
+<h4 id="addtosearchhistorystring">AddToSearchHistory(string)</h4>
+<pre><code class="lang-csharp">public void AddToSearchHistory(string searchText)
+</code></pre>
+<p>Adds a search term to the search history. If the term already exists, it is moved to the top. The history is automatically trimmed to the maximum count specified in <code>SearchBoxValues.SearchHistoryMaxCount</code>.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>searchText</code>: The search text to add. If null or whitespace, the method returns without adding.</li>
+</ul>
+<p><strong>Note</strong>: This method respects the <code>SearchHistoryMaxCount</code> setting and will remove the oldest items if the limit is exceeded.</p>
+<h4 id="clearsearchhistory">ClearSearchHistory()</h4>
+<pre><code class="lang-csharp">public void ClearSearchHistory()
+</code></pre>
+<p>Clears all search history items.</p>
+<h4 id="setrichsuggestionsienumerable">SetRichSuggestions(IEnumerable<object>)</object></h4>
+<pre><code class="lang-csharp">public void SetRichSuggestions(IEnumerable&lt;object&gt; suggestions)
+</code></pre>
+<p>Sets rich suggestions that support <code>IContentValues</code> (icons, descriptions, etc.). This replaces all existing rich suggestions. Rich suggestions can be:</p>
+<ul>
+<li>Strings (converted to text)</li>
+<li>Objects implementing <code>IContentValues</code> (for icons, descriptions, etc.)</li>
+<li>Any object (converted via <code>ToString()</code>)</li>
+</ul>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>suggestions</code>: Collection of suggestion objects. Cannot be null.</li>
+</ul>
+<p><strong>Exceptions</strong>:</p>
+<ul>
+<li><code>ArgumentNullException</code>: Thrown when <code>suggestions</code> is null.</li>
+</ul>
+<h4 id="addrichsuggestionobject">AddRichSuggestion(object)</h4>
+<pre><code class="lang-csharp">public void AddRichSuggestion(object suggestion)
+</code></pre>
+<p>Adds a single rich suggestion item to the collection.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>suggestion</code>: The suggestion object (string or <code>IContentValues</code>). If null, the method returns without adding.</li>
+</ul>
+<h4 id="clearrichsuggestions">ClearRichSuggestions()</h4>
+<pre><code class="lang-csharp">public void ClearRichSuggestions()
+</code></pre>
+<p>Clears all rich suggestions.</p>
+<h4 id="setdatagridviewcolumnsienumerable">SetDataGridViewColumns(IEnumerable<searchsuggestioncolumndefinition>)</searchsuggestioncolumndefinition></h4>
+<pre><code class="lang-csharp">public void SetDataGridViewColumns(IEnumerable&lt;SearchSuggestionColumnDefinition&gt; columns)
+</code></pre>
+<p>Sets the column definitions for DataGridView suggestion display. This method clears existing columns (including the default &quot;Suggestion&quot; column) and replaces them with the provided definitions. If the suggestion popup already exists, it will be recreated to apply the new columns.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>columns</code>: The column definitions. Cannot be null.</li>
+</ul>
+<p><strong>Exceptions</strong>:</p>
+<ul>
+<li><code>ArgumentNullException</code>: Thrown when <code>columns</code> is null.</li>
+</ul>
+<h3 id="events">Events</h3>
+<h4 id="search">Search</h4>
+<pre><code class="lang-csharp">public event EventHandler&lt;SearchEventArgs&gt;? Search;
+</code></pre>
+<p>Occurs when the search is triggered. This event is raised when:</p>
+<ul>
+<li>The user presses Enter (and no suggestion is selected)</li>
+<li>The user clicks the search button</li>
+<li><code>PerformSearch()</code> is called programmatically</li>
+</ul>
+<p><strong>Event Data</strong>: <code>SearchEventArgs</code> containing the search text.</p>
+<p><strong>Category</strong>: Action</p>
+<h4 id="searchcleared">SearchCleared</h4>
+<pre><code class="lang-csharp">public event EventHandler? SearchCleared;
+</code></pre>
+<p>Occurs when the search text is cleared. This event is raised when:</p>
+<ul>
+<li>The user clicks the clear button</li>
+<li>The user presses Escape (if <code>ClearOnEscape</code> is enabled and suggestions are not visible)</li>
+<li><code>Clear()</code> is called programmatically</li>
+</ul>
+<p><strong>Event Data</strong>: <code>EventArgs</code></p>
+<p><strong>Category</strong>: Action</p>
+<h4 id="suggestionselected">SuggestionSelected</h4>
+<pre><code class="lang-csharp">public event EventHandler&lt;SuggestionSelectedEventArgs&gt;? SuggestionSelected;
+</code></pre>
+<p>Occurs when a suggestion is selected from the suggestion list. This event is raised when:</p>
+<ul>
+<li>The user clicks on a suggestion</li>
+<li>The user presses Enter while a suggestion is highlighted</li>
+<li>A suggestion is selected programmatically</li>
+</ul>
+<p><strong>Event Data</strong>: <code>SuggestionSelectedEventArgs</code> containing the selected suggestion index, text, and object.</p>
+<p><strong>Category</strong>: Action</p>
+<h2 id="kryptonsearchboxvalues-configuration">KryptonSearchBoxValues Configuration</h2>
+<p>The <code>SearchBoxValues</code> property provides access to all configuration options:</p>
+<h3 id="button-properties">Button Properties</h3>
+<h4 id="showsearchbutton">ShowSearchButton</h4>
+<pre><code class="lang-csharp">public bool ShowSearchButton { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether the search button is displayed.</p>
+<p><strong>Default</strong>: <code>true</code><br>
+<strong>Category</strong>: Buttons</p>
+<h4 id="showclearbutton">ShowClearButton</h4>
+<pre><code class="lang-csharp">public bool ShowClearButton { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether the clear button is displayed when text is entered.</p>
+<p><strong>Default</strong>: <code>true</code><br>
+<strong>Category</strong>: Buttons</p>
+<h3 id="suggestion-properties">Suggestion Properties</h3>
+<h4 id="enablesuggestions">EnableSuggestions</h4>
+<pre><code class="lang-csharp">public bool EnableSuggestions { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether custom suggestions are enabled.</p>
+<p><strong>Default</strong>: <code>true</code><br>
+<strong>Category</strong>: Suggestions</p>
+<h4 id="suggestionmaxcount">SuggestionMaxCount</h4>
+<pre><code class="lang-csharp">public int SuggestionMaxCount { get; set; }
+</code></pre>
+<p>Gets or sets the maximum number of suggestions to display. The value must be at least 1.</p>
+<p><strong>Default</strong>: <code>10</code><br>
+<strong>Category</strong>: Suggestions<br>
+<strong>Validation</strong>: Minimum value is 1</p>
+<h4 id="suggestiondisplaytype">SuggestionDisplayType</h4>
+<pre><code class="lang-csharp">public SearchSuggestionDisplayType SuggestionDisplayType { get; set; }
+</code></pre>
+<p>Gets or sets the type of control used to display suggestions.</p>
+<p><strong>Default</strong>: <code>SearchSuggestionDisplayType.ListBox</code><br>
+<strong>Category</strong>: Suggestions<br>
+<strong>Values</strong>:</p>
+<ul>
+<li><code>ListBox</code>: Display suggestions using a <code>KryptonListBox</code></li>
+<li><code>DataGridView</code>: Display suggestions using a <code>KryptonDataGridView</code></li>
+</ul>
+<h4 id="minimumsearchlength">MinimumSearchLength</h4>
+<pre><code class="lang-csharp">public int MinimumSearchLength { get; set; }
+</code></pre>
+<p>Gets or sets the minimum number of characters required before showing suggestions. The value must be at least 0.</p>
+<p><strong>Default</strong>: <code>0</code><br>
+<strong>Category</strong>: Suggestions<br>
+<strong>Validation</strong>: Minimum value is 0</p>
+<h3 id="history-properties">History Properties</h3>
+<h4 id="enablesearchhistory">EnableSearchHistory</h4>
+<pre><code class="lang-csharp">public bool EnableSearchHistory { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether search history is enabled. When enabled, search terms are automatically added to the history when <code>PerformSearch()</code> is called.</p>
+<p><strong>Default</strong>: <code>false</code><br>
+<strong>Category</strong>: History</p>
+<h4 id="searchhistorymaxcount">SearchHistoryMaxCount</h4>
+<pre><code class="lang-csharp">public int SearchHistoryMaxCount { get; set; }
+</code></pre>
+<p>Gets or sets the maximum number of search history items to remember. The value must be at least 1.</p>
+<p><strong>Default</strong>: <code>10</code><br>
+<strong>Category</strong>: History<br>
+<strong>Validation</strong>: Minimum value is 1</p>
+<h3 id="behavior-properties">Behavior Properties</h3>
+<h4 id="clearonescape">ClearOnEscape</h4>
+<pre><code class="lang-csharp">public bool ClearOnEscape { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether pressing Escape clears the text. If suggestions are visible, Escape will hide them first before clearing (if enabled).</p>
+<p><strong>Default</strong>: <code>true</code><br>
+<strong>Category</strong>: Behavior</p>
+<h4 id="placeholdertext">PlaceholderText</h4>
+<pre><code class="lang-csharp">public string PlaceholderText { get; set; }
+</code></pre>
+<p>Gets or sets the placeholder text (watermark) displayed when the text box is empty.</p>
+<p><strong>Default</strong>: <code>&quot;&quot;</code> (empty string)<br>
+<strong>Category</strong>: Appearance<br>
+<strong>Localizable</strong>: Yes</p>
+<h4 id="customfilter-1">CustomFilter</h4>
+<pre><code class="lang-csharp">public Func&lt;string, IEnumerable&lt;object&gt;, IEnumerable&lt;object&gt;&gt;? CustomFilter { get; set; }
+</code></pre>
+<p>Gets or sets a custom filter function for suggestions. If set, this function will be used instead of the default filtering logic. <strong>This is the property that actually controls custom filtering</strong> - use this instead of the class-level <code>CustomFilter</code> property.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>string</code>: The search text (already converted to lowercase)</li>
+<li><code>IEnumerable&lt;object&gt;</code>: The collection of all suggestions (strings and rich suggestions combined)</li>
+</ul>
+<p><strong>Returns</strong>: <code>IEnumerable&lt;object&gt;</code>: The filtered collection of suggestions</p>
+<p><strong>Category</strong>: Hidden (Browsable: false)</p>
+<h2 id="event-arguments">Event Arguments</h2>
+<h3 id="searcheventargs">SearchEventArgs</h3>
+<p>Provides data for the <code>Search</code> event.</p>
+<p><strong>Properties</strong>:</p>
+<ul>
+<li><code>SearchText</code> (string): Gets the search text that triggered the search.</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">private void searchBox_Search(object sender, SearchEventArgs e)
+{
+    string searchTerm = e.SearchText;
+    // Perform search operation
+}
+</code></pre>
+<h3 id="suggestionselectedeventargs">SuggestionSelectedEventArgs</h3>
+<p>Provides data for the <code>SuggestionSelected</code> event.</p>
+<p><strong>Properties</strong>:</p>
+<ul>
+<li><code>Index</code> (int): Gets the index of the selected suggestion.</li>
+<li><code>Suggestion</code> (string?): Gets the selected suggestion text (for backward compatibility).</li>
+<li><code>SuggestionObject</code> (object?): Gets the selected suggestion object (can be string or <code>IContentValues</code>).</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">private void searchBox_SuggestionSelected(object sender, SuggestionSelectedEventArgs e)
+{
+    if (e.SuggestionObject is IContentValues contentValues)
+    {
+        // Handle rich suggestion with icon/description
+        string text = contentValues.GetShortText();
+        Image? icon = contentValues.GetImage(PaletteState.Normal);
+    }
+    else
+    {
+        // Handle simple string suggestion
+        string text = e.Suggestion ?? string.Empty;
+    }
+}
+</code></pre>
+<h2 id="searchsuggestioncolumndefinition">SearchSuggestionColumnDefinition</h2>
+<p>Represents a column definition for DataGridView suggestion display. Used when <code>SuggestionDisplayType</code> is set to <code>DataGridView</code>.</p>
+<p><strong>Properties</strong>:</p>
+<ul>
+<li><code>Name</code> (string): Gets or sets the column name.</li>
+<li><code>DataPropertyName</code> (string): Gets or sets the data property name (for binding).</li>
+<li><code>HeaderText</code> (string): Gets or sets the header text.</li>
+<li><code>Width</code> (int): Gets or sets the column width (0 = auto-size).</li>
+<li><code>AutoSizeMode</code> (DataGridViewAutoSizeColumnMode): Gets or sets the auto-size mode. Default: <code>Fill</code>.</li>
+<li><code>ValueExtractor</code> (Func&lt;object, object?&gt;?): Gets or sets a function to extract the column value from a suggestion object.</li>
+</ul>
+<p><strong>Constructors</strong>:</p>
+<ul>
+<li><code>SearchSuggestionColumnDefinition()</code>: Initializes a new instance with default values.</li>
+<li><code>SearchSuggestionColumnDefinition(string name, string headerText, Func&lt;object, object?&gt;? valueExtractor = null)</code>: Initializes a new instance with specified values.</li>
+</ul>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<pre><code class="lang-csharp">// Create and configure a basic search box
+var searchBox = new KryptonSearchBox
+{
+    Width = 300,
+    Height = 30
+};
+
+// Set placeholder text
+searchBox.SearchBoxValues.PlaceholderText = &quot;Search...&quot;;
+
+// Add suggestions
+searchBox.SetSearchSuggestions(new[]
+{
+    &quot;Apple&quot;, &quot;Banana&quot;, &quot;Cherry&quot;, &quot;Date&quot;, &quot;Elderberry&quot;
+});
+
+// Handle search event
+searchBox.Search += (sender, e) =&gt;
+{
+    MessageBox.Show($&quot;Searching for: {e.SearchText}&quot;);
+};
+
+// Add to form
+form.Controls.Add(searchBox);
+</code></pre>
+<h3 id="rich-suggestions-with-icontentvalues">Rich Suggestions with IContentValues</h3>
+<pre><code class="lang-csharp">// Create a class implementing IContentValues
+public class ProductSuggestion : IContentValues
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public Image? Icon { get; set; }
+
+    public string GetShortText() =&gt; Name;
+    public string GetLongText() =&gt; Description;
+    public Image? GetImage(PaletteState state) =&gt; Icon;
+    public Color GetImageTransparentColor(PaletteState state) =&gt; Color.Empty;
+}
+
+// Create suggestions
+var suggestions = new List&lt;object&gt;
+{
+    new ProductSuggestion { Name = &quot;Laptop&quot;, Description = &quot;High-performance laptop&quot;, Icon = laptopIcon },
+    new ProductSuggestion { Name = &quot;Mouse&quot;, Description = &quot;Wireless mouse&quot;, Icon = mouseIcon },
+    new ProductSuggestion { Name = &quot;Keyboard&quot;, Description = &quot;Mechanical keyboard&quot;, Icon = keyboardIcon }
+};
+
+searchBox.SetRichSuggestions(suggestions);
+</code></pre>
+<h3 id="datagridview-display-type">DataGridView Display Type</h3>
+<pre><code class="lang-csharp">// Configure for DataGridView display
+searchBox.SearchBoxValues.SuggestionDisplayType = SearchSuggestionDisplayType.DataGridView;
+
+// Define columns (replaces the default &quot;Suggestion&quot; column)
+var columns = new List&lt;SearchSuggestionColumnDefinition&gt;
+{
+    new SearchSuggestionColumnDefinition(&quot;Name&quot;, &quot;Product Name&quot;, 
+        obj =&gt; obj is ProductSuggestion p ? p.Name : obj.ToString()),
+    new SearchSuggestionColumnDefinition(&quot;Description&quot;, &quot;Description&quot;, 
+        obj =&gt; obj is ProductSuggestion p ? p.Description : string.Empty)
+};
+
+searchBox.SetDataGridViewColumns(columns);
+</code></pre>
+<h3 id="custom-filtering">Custom Filtering</h3>
+<pre><code class="lang-csharp">// Implement custom filter function using SearchBoxValues.CustomFilter
+searchBox.SearchBoxValues.CustomFilter = (searchText, suggestions) =&gt;
+{
+    // Custom filtering logic
+    return suggestions
+        .Where(s =&gt; 
+        {
+            string text = s is IContentValues cv ? cv.GetShortText() : s.ToString() ?? string.Empty;
+            return text.Contains(searchText, StringComparison.OrdinalIgnoreCase);
+        })
+        .OrderBy(s =&gt; 
+        {
+            string text = s is IContentValues cv ? cv.GetShortText() : s.ToString() ?? string.Empty;
+            return text.StartsWith(searchText, StringComparison.OrdinalIgnoreCase) ? 0 : 1;
+        });
+};
+</code></pre>
+<h3 id="search-history">Search History</h3>
+<pre><code class="lang-csharp">// Enable search history
+searchBox.SearchBoxValues.EnableSearchHistory = true;
+searchBox.SearchBoxValues.SearchHistoryMaxCount = 20;
+
+// Access history
+var history = searchBox.SearchHistory;
+foreach (string term in history)
+{
+    Console.WriteLine($&quot;Previous search: {term}&quot;);
+}
+
+// Clear history
+searchBox.ClearSearchHistory();
+</code></pre>
+<h3 id="keyboard-navigation">Keyboard Navigation</h3>
+<p>The control supports full keyboard navigation:</p>
+<ul>
+<li><strong>Enter</strong>: Performs search (if no suggestion is highlighted) or selects the highlighted suggestion</li>
+<li><strong>Escape</strong>: Hides suggestions (if visible) or clears text (if <code>ClearOnEscape</code> is enabled)</li>
+<li><strong>Up Arrow</strong>: Navigates to previous suggestion</li>
+<li><strong>Down Arrow</strong>: Navigates to next suggestion</li>
+</ul>
+<h3 id="customizing-buttons">Customizing Buttons</h3>
+<pre><code class="lang-csharp">// Access button specifications
+var searchButton = searchBox.SearchButton;
+if (searchButton != null)
+{
+    // Customize search button
+    searchButton.Image = customSearchIcon;
+    searchButton.ToolTipTitle = &quot;Perform Search&quot;;
+    searchButton.ToolTipBody = &quot;Click to search for the entered text&quot;;
+}
+
+var clearButton = searchBox.ClearButton;
+if (clearButton != null)
+{
+    // Customize clear button
+    clearButton.Image = customClearIcon;
+}
+</code></pre>
+<h2 id="filtering-behavior">Filtering Behavior</h2>
+<h3 id="default-filtering">Default Filtering</h3>
+<p>By default, the control filters suggestions using case-insensitive substring matching:</p>
+<ol>
+<li><strong>String Suggestions</strong>: Filters using <code>IndexOf</code> (case-insensitive) on the suggestion text</li>
+<li><strong>Rich Suggestions</strong>: Filters using <code>GetShortText()</code> and <code>GetLongText()</code> from <code>IContentValues</code> (searches both short and long text)</li>
+<li><strong>Search History</strong>: Included when no other suggestions match and history is enabled</li>
+</ol>
+<p>The filtering combines string suggestions and rich suggestions, with string suggestions taking priority up to <code>SuggestionMaxCount</code>, then rich suggestions filling the remaining slots.</p>
+<h3 id="custom-filtering-1">Custom Filtering</h3>
+<p>When <code>SearchBoxValues.CustomFilter</code> is set, the default filtering logic is bypassed. The custom function receives:</p>
+<ul>
+<li>The search text (already converted to lowercase)</li>
+<li>All suggestions (strings and rich suggestions combined)</li>
+</ul>
+<p>The function should return a filtered and optionally sorted collection. The control will then apply <code>SuggestionMaxCount</code> to limit the results.</p>
+<p><strong>Important</strong>: Use <code>SearchBoxValues.CustomFilter</code>, not the class-level <code>CustomFilter</code> property, as only the former is actually used by the filtering logic.</p>
+<h2 id="suggestion-display">Suggestion Display</h2>
+<h3 id="listbox-display">ListBox Display</h3>
+<p>When <code>SuggestionDisplayType</code> is <code>ListBox</code>:</p>
+<ul>
+<li>Suggestions are displayed in a <code>KryptonListBox</code></li>
+<li>Supports <code>IContentValues</code> for rich display (icons, descriptions)</li>
+<li>Maximum 8 items visible at once (with scrolling)</li>
+<li>Single-click or double-click to select</li>
+</ul>
+<h3 id="datagridview-display">DataGridView Display</h3>
+<p>When <code>SuggestionDisplayType</code> is <code>DataGridView</code>:</p>
+<ul>
+<li>Suggestions are displayed in a <code>KryptonDataGridView</code></li>
+<li>Requires column definitions via <code>DataGridViewColumns</code> (a default &quot;Suggestion&quot; column is automatically added)</li>
+<li>Supports multi-column display</li>
+<li>Column headers shown only when multiple columns are defined</li>
+<li>Single-click or double-click to select</li>
+<li>Maximum 8 rows visible at once (with scrolling)</li>
+</ul>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li><p><strong>Performance</strong>: For large suggestion lists, use <code>MinimumSearchLength</code> to delay filtering until the user has typed a few characters.</p>
+</li>
+<li><p><strong>Memory</strong>: Clear suggestions when they're no longer needed, especially for dynamic data sources.</p>
+</li>
+<li><p><strong>User Experience</strong>:</p>
+<ul>
+<li>Set appropriate <code>SuggestionMaxCount</code> to avoid overwhelming users</li>
+<li>Use placeholder text to guide users</li>
+<li>Enable search history for frequently used applications</li>
+</ul>
+</li>
+<li><p><strong>Rich Suggestions</strong>: Use <code>IContentValues</code> for suggestions that benefit from icons or descriptions, but keep the implementation lightweight.</p>
+</li>
+<li><p><strong>Custom Filtering</strong>: Implement custom filters for complex matching logic (fuzzy matching, weighted results, etc.), but ensure the function is performant. Remember to use <code>SearchBoxValues.CustomFilter</code>, not the class-level property.</p>
+</li>
+<li><p><strong>Threading</strong>: All operations should be performed on the UI thread. If loading suggestions from a background operation, use <code>Invoke</code> or <code>BeginInvoke</code>.</p>
+</li>
+<li><p><strong>DataGridView Columns</strong>: When using DataGridView display, you can either modify the default column or replace all columns using <code>SetDataGridViewColumns()</code>. Column definitions should be set before suggestions are shown for best results.</p>
+</li>
+</ol>
+<h2 id="integration-with-krypton-themes">Integration with Krypton Themes</h2>
+<p>The <code>KryptonSearchBox</code> fully integrates with the Krypton palette system:</p>
+<ul>
+<li>Inherits theme from parent control or form</li>
+<li>Suggestion popup inherits theme from the search box</li>
+<li>Buttons respect theme colors and styles</li>
+<li>Supports all Krypton palette modes</li>
+</ul>
+<h2 id="limitations-and-considerations">Limitations and Considerations</h2>
+<ol>
+<li><p><strong>Focus Management</strong>: The suggestion popup is designed not to steal focus from the search box. This ensures smooth keyboard navigation.</p>
+</li>
+<li><p><strong>Screen Boundaries</strong>: The popup positions itself below the search box. If there's insufficient space, it may appear off-screen (this could be enhanced in future versions).</p>
+</li>
+<li><p><strong>DataGridView Columns</strong>: When using DataGridView display, a default &quot;Suggestion&quot; column is automatically created. You can replace it by calling <code>SetDataGridViewColumns()</code> or modify the existing collection. Changing columns after the popup is created requires the popup to be recreated.</p>
+</li>
+<li><p><strong>Thread Safety</strong>: The control is not thread-safe. All operations must be performed on the UI thread.</p>
+</li>
+<li><p><strong>CustomFilter Property</strong>: The class-level <code>CustomFilter</code> property exists but is not currently used. Always use <code>SearchBoxValues.CustomFilter</code> for custom filtering functionality.</p>
+</li>
+</ol>
+<h2 id="related-types">Related Types</h2>
+<ul>
+<li><code>KryptonTextBox</code>: Base class providing text input functionality</li>
+<li><code>KryptonSearchBoxValues</code>: Configuration values container</li>
+<li><code>SearchEventArgs</code>: Event arguments for Search event</li>
+<li><code>SuggestionSelectedEventArgs</code>: Event arguments for SuggestionSelected event</li>
+<li><code>SearchSuggestionColumnDefinition</code>: Column definition for DataGridView display</li>
+<li><code>SearchSuggestionDisplayType</code>: Enumeration for display type selection</li>
+<li><code>IContentValues</code>: Interface for rich suggestion content</li>
+<li><code>ButtonSpecAny</code>: Button specification for search and clear buttons</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

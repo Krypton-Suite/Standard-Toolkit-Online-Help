@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Build Workflow Documentation | Krypton Standard Toolkit Documentation </title>
+      <title>Build Workflow | Krypton Standard Toolkit Documentation </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Build Workflow Documentation | Krypton Standard Toolkit Documentation ">
+      <meta name="title" content="Build Workflow | Krypton Standard Toolkit Documentation ">
     
     
       <link rel="shortcut icon" href="../../../Krypton.ico">
@@ -67,1045 +67,336 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="build-workflow-documentation">Build Workflow Documentation</h1>
+<h1 id="build-workflow">Build Workflow</h1>
 
-<p><strong>Workflow File</strong>: <code>.github/workflows/build.yml</code><br>
-<strong>Version</strong>: 1.0</p>
-<hr>
-<h2 id="table-of-contents">Table of Contents</h2>
-<ol>
-<li><a href="#overview">Overview</a></li>
-<li><a href="#purpose">Purpose</a></li>
-<li><a href="#triggers">Triggers</a></li>
-<li><a href="#jobs">Jobs</a></li>
-<li><a href="#configuration">Configuration</a></li>
-<li><a href="#usage-examples">Usage Examples</a></li>
-<li><a href="#troubleshooting">Troubleshooting</a></li>
-<li><a href="#best-practices">Best Practices</a></li>
-</ol>
-<hr>
 <h2 id="overview">Overview</h2>
-<p>The Build workflow is the primary continuous integration (CI) gate for the Krypton Toolkit repository. It validates code quality, ensures compilability across all supported target frameworks, and optionally creates GitHub releases for stable master branch pushes.</p>
-<h3 id="key-features">Key Features</h3>
-<ul>
-<li>✅ Multi-framework validation (.NET Framework 4.7.2 - 4.8.1, .NET 8-11)</li>
-<li>✅ Pull request validation</li>
-<li>✅ Automated release creation for master branch</li>
-<li>✅ NuGet package caching for performance</li>
-<li>✅ Cross-branch support</li>
-<li>✅ Fork protection (prevents abuse from external contributors)</li>
-</ul>
-<h3 id="workflow-architecture">Workflow Architecture</h3>
-<pre><code>┌─────────────────────────────────────────┐
-│         Build Workflow Trigger          │
-└───────────┬─────────────────────────────┘
-            │
-    ┌───────┴──────────┐
-    │                  │
-┌───▼────┐      ┌──────▼─────┐
-│   PR   │      │    Push    │
-│  Event │      │   Event    │
-└───┬────┘      └──────┬─────┘
-    │                  │
-    │      ┌───────────┴──────────┐
-    │      │                      │
-    │   Master?              Other Branch?
-    │      │                      │
-    └──────┴──────────────────────┴──────┐
-                                          │
-                                    ┌─────▼─────┐
-                                    │ Build Job │
-                                    └─────┬─────┘
-                                          │
-                                    Success?
-                                          │
-                                ┌─────────┴──────────┐
-                                │                    │
-                           Yes + Master?            No
-                                │                    │
-                         ┌──────▼──────┐            │
-                         │ Release Job │            │
-                         └─────────────┘            │
-                                                     │
-                                              ┌──────▼──────┐
-                                              │  Workflow   │
-                                              │  Complete   │
-                                              └─────────────┘
-</code></pre>
-<hr>
+<p>The Build workflow provides continuous integration (CI) for the Krypton Standard Toolkit. It validates code changes by building the solution on pull requests and pushes to main branches, ensuring build integrity before code is merged or released.</p>
 <h2 id="purpose">Purpose</h2>
-<p>The Build workflow serves multiple critical functions:</p>
-<h3 id="1-continuous-integration-ci">1. Continuous Integration (CI)</h3>
 <ul>
-<li>Validates all pull requests before merge</li>
-<li>Ensures code compiles across all target frameworks</li>
-<li>Catches breaking changes early in development cycle</li>
-<li>Provides fast feedback to developers</li>
+<li><strong>CI Validation</strong>: Ensures all changes compile successfully</li>
+<li><strong>Multi-Target Framework Support</strong>: Builds for multiple .NET versions</li>
+<li><strong>Pre-Release Validation</strong>: Validates builds before they reach release workflows</li>
+<li><strong>Security</strong>: Only builds PRs from the same repository (prevents fork-based attacks)</li>
 </ul>
-<h3 id="2-branch-protection">2. Branch Protection</h3>
+<h2 id="trigger-conditions">Trigger Conditions</h2>
+<h3 id="pull-requests">Pull Requests</h3>
 <ul>
-<li>Acts as required status check for protected branches</li>
-<li>Prevents merging of broken code</li>
-<li>Only allows builds from same repository (prevents fork abuse)</li>
-</ul>
-<h3 id="3-automated-release-pipeline">3. Automated Release Pipeline</h3>
+<li><strong>Branches</strong>: All branches (<code>**</code>)</li>
+<li><strong>Types</strong>: <code>opened</code>, <code>synchronize</code>, <code>reopened</code>
 <ul>
-<li>Creates GitHub releases automatically when master is updated</li>
-<li>Packages release artifacts (ZIP, TAR.GZ)</li>
-<li>Provides downloadable distributions for end users</li>
-<li>Integrates with tag-based versioning</li>
+<li>Runs when PR is created, updated, or reopened</li>
 </ul>
-<h3 id="4-build-validation">4. Build Validation</h3>
+</li>
+</ul>
+<h3 id="pushes">Pushes</h3>
 <ul>
-<li>Multi-framework compatibility testing</li>
-<li>Dependency resolution verification</li>
-<li>MSBuild configuration validation</li>
-<li>Output artifact verification</li>
-</ul>
-<hr>
-<h2 id="triggers">Triggers</h2>
-<pre><code class="lang-yaml">on:
-  pull_request:
-    branches: ['**']
-    types: [opened, synchronize, reopened]
-  push:
-    branches:
-      - master
-      - alpha
-      - canary
-      - gold
-      - V85-LTS
-    paths-ignore: ['.git*', '.vscode']
-</code></pre>
-<h3 id="pull-request-events">Pull Request Events</h3>
-<p><strong>Branches</strong>: All branches (<code>['**']</code>)</p>
-<p><strong>Event Types</strong>:</p>
+<li><strong>Branches</strong>:
 <ul>
-<li><code>opened</code>: New pull request created</li>
-<li><code>synchronize</code>: Pull request updated with new commits</li>
-<li><code>reopened</code>: Previously closed pull request reopened</li>
+<li><code>master</code></li>
+<li><code>alpha</code></li>
+<li><code>canary</code></li>
+<li><code>gold</code></li>
+<li><code>V105-LTS</code></li>
+<li><code>V85-LTS</code></li>
 </ul>
-<p><strong>Behavior</strong>:</p>
-<ul>
-<li>Runs build job only (no release)</li>
-<li>Validates changes before merge</li>
-<li>Provides status check for branch protection</li>
+</li>
+<li><strong>Path Filters</strong>: Ignores changes to <code>.git*</code> and <code>.vscode</code> directories</li>
 </ul>
-<p><strong>Example</strong>:</p>
-<pre><code class="lang-bash"># Create feature branch and push
-git checkout -b feature/new-component
-git push origin feature/new-component
-
-# Open PR to master → Build workflow triggers automatically
-</code></pre>
-<h3 id="push-events">Push Events</h3>
-<p><strong>Branches</strong>:</p>
-<ul>
-<li><code>master</code>: Stable production branch</li>
-<li><code>alpha</code>: Development/nightly branch</li>
-<li><code>canary</code>: Pre-release testing branch</li>
-<li><code>gold</code>: (Reserved for future use)</li>
-<li><code>V85-LTS</code>: Long-term support branch</li>
-</ul>
-<p><strong>Paths Ignored</strong>:</p>
-<ul>
-<li><code>.git*</code>: Git configuration files</li>
-<li><code>.vscode</code>: VSCode workspace settings</li>
-</ul>
-<p><strong>Behavior</strong>:</p>
-<ul>
-<li>Runs build job for all listed branches</li>
-<li>Runs release job <strong>only for master branch</strong></li>
-<li>Skips workflow if only ignored paths changed</li>
-</ul>
-<p><strong>Example</strong>:</p>
-<pre><code class="lang-bash"># Push to master
-git checkout master
-git merge develop
-git push origin master
-
-# → Build job runs → Release job runs (master only)
-</code></pre>
-<hr>
-<h2 id="jobs">Jobs</h2>
-<h3 id="job-1-build">Job 1: Build</h3>
-<p><strong>Runner</strong>: <code>windows-latest</code></p>
-<p><strong>Condition</strong>:</p>
+<h3 id="security-filter">Security Filter</h3>
+<p>The build job includes a security check:</p>
 <pre><code class="lang-yaml">if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
 </code></pre>
-<p><strong>Explanation</strong>:</p>
+<p>This ensures:</p>
 <ul>
-<li>Always runs for push events</li>
-<li>For pull requests, only runs if PR is from the same repository</li>
-<li>Prevents external forks from consuming CI resources or accessing secrets</li>
+<li>All pushes are built</li>
+<li>Only PRs from the same repository are built (not forks)</li>
 </ul>
-<h4 id="steps-breakdown">Steps Breakdown</h4>
-<h5 id="1-checkout">1. Checkout</h5>
-<pre><code class="lang-yaml">- name: Checkout
-  uses: actions/checkout@v5
-</code></pre>
-<p><strong>Purpose</strong>: Clone repository at the commit that triggered the workflow</p>
-<p><strong>Default Behavior</strong>:</p>
+<h2 id="workflow-structure">Workflow Structure</h2>
+<h3 id="job-1-build">Job 1: <code>build</code></h3>
+<p><strong>Runner</strong>: <code>windows-latest</code></p>
+<p><strong>Purpose</strong>: Builds the solution to validate changes</p>
+<p><strong>Steps</strong>:</p>
+<ol>
+<li><p><strong>Checkout</strong></p>
 <ul>
-<li>Shallow clone (last commit only)</li>
-<li>No submodules</li>
-<li>Checks out the PR merge commit (for PRs) or branch HEAD (for pushes)</li>
+<li>Uses <code>actions/checkout@v6</code></li>
+<li>Checks out the source code</li>
 </ul>
-<h5 id="2-setup-net-9-ga">2. Setup .NET 9 (GA)</h5>
-<pre><code class="lang-yaml">- name: Setup .NET 9
-  uses: actions/setup-dotnet@v4
-  with:
-    dotnet-version: 9.0.x
-</code></pre>
-<p><strong>Purpose</strong>: Install stable .NET 9 SDK</p>
-<p><strong>Configuration</strong>:</p>
+</li>
+<li><p><strong>Setup .NET</strong></p>
 <ul>
-<li><code>9.0.x</code>: Latest stable 9.0 patch version</li>
-<li>Required for .NET 9.0-windows target framework</li>
+<li>Uses <code>actions/setup-dotnet@v5</code></li>
+<li>Installs .NET 9.0.x and 10.0.x SDKs</li>
+<li>Required for building multi-target projects</li>
 </ul>
-<h5 id="3-setup-net-10-ga">3. Setup .NET 10 (GA)</h5>
-<pre><code class="lang-yaml">- name: Setup .NET 10
-  uses: actions/setup-dotnet@v4
-  with:
-    dotnet-version: 10.0.x
-  continue-on-error: true
-</code></pre>
-<p><strong>Purpose</strong>: Install .NET 10 SDK (if available)</p>
-<p><strong>Configuration</strong>:</p>
+</li>
+<li><p><strong>Force .NET 10 SDK via global.json</strong></p>
 <ul>
-<li><code>continue-on-error: true</code>: Workflow continues if .NET 10 unavailable</li>
-<li>Supports future .NET 10.0-windows targets</li>
-<li>Graceful degradation for preview periods</li>
+<li>Dynamically generates <code>global.json</code> to pin SDK version</li>
+<li>Uses PowerShell to detect installed .NET 10 SDK</li>
+<li>Sets <code>rollForward: latestFeature</code> for compatibility</li>
 </ul>
-<h5 id="4-setup-net-11-preview">4. Setup .NET 11 (Preview)</h5>
-<pre><code class="lang-yaml">- name: Setup .NET 11
-  uses: actions/setup-dotnet@v4
-  with:
-    dotnet-version: 11.0.x
-  continue-on-error: true
-</code></pre>
-<p><strong>Purpose</strong>: Install .NET 11 preview SDK (if available)</p>
-<p><strong>Configuration</strong>:</p>
+</li>
+<li><p><strong>Setup MSBuild</strong></p>
 <ul>
-<li>Forward-looking for .NET 11 support</li>
-<li>Optional - won't fail build if unavailable</li>
+<li>Uses <code>microsoft/setup-msbuild@v2</code></li>
+<li>Configures MSBuild with x64 architecture</li>
+<li>Required for building .NET Framework targets</li>
 </ul>
-<h5 id="5-force-net-10-sdk-via-globaljson">5. Force .NET 10 SDK via global.json</h5>
-<pre><code class="lang-yaml">- name: Force .NET 10 SDK via global.json
-  run: |
-    $sdkVersion = (dotnet --list-sdks | Select-String &quot;10.0&quot;).ToString().Split(&quot; &quot;)[0]
-    Write-Output &quot;Using SDK $sdkVersion&quot;
-    @&quot;
-    {
-      &quot;sdk&quot;: {
-        &quot;version&quot;: &quot;$sdkVersion&quot;,
-        &quot;rollForward&quot;: &quot;latestFeature&quot;
-      }
-    }
-    &quot;@ | Out-File -Encoding utf8 global.json
-</code></pre>
-<p><strong>Purpose</strong>: Dynamically select the latest .NET 10 SDK for build</p>
-<p><strong>Fallback Logic</strong>:</p>
-<pre><code class="lang-powershell">if (-not $sdkVersion) {
-  # Fallback to .NET 8 if .NET 10 is not available
-  $sdkVersion = (dotnet --list-sdks | Select-String &quot;8.0&quot;).ToString().Split(&quot; &quot;)[0]
-}
-</code></pre>
-<p><strong>Why This Is Needed</strong>:</p>
+</li>
+<li><p><strong>Setup NuGet</strong></p>
 <ul>
-<li>Ensures consistent SDK across build steps</li>
-<li>Enables multi-targeting to work correctly</li>
-<li>Provides fallback when newer SDKs unavailable</li>
-<li><code>rollForward: latestFeature</code> allows minor version flexibility</li>
+<li>Uses <code>NuGet/setup-nuget@v2.0.1</code></li>
+<li>Configures NuGet for package restoration</li>
 </ul>
-<h5 id="6-setup-msbuild">6. Setup MSBuild</h5>
-<pre><code class="lang-yaml">- name: Setup MSBuild
-  uses: microsoft/setup-msbuild@v2
-  with:
-    msbuild-architecture: x64
-</code></pre>
-<p><strong>Purpose</strong>: Configure MSBuild for x64 builds</p>
-<p><strong>Why MSBuild</strong>:</p>
+</li>
+<li><p><strong>Cache NuGet</strong></p>
 <ul>
-<li>Required for full .NET Framework support</li>
-<li>Handles complex multi-targeting scenarios</li>
-<li>Integrates with custom build scripts (<code>*.proj</code> files)</li>
+<li>Uses <code>actions/cache@v4</code></li>
+<li>Caches <code>~/.nuget/packages</code> directory</li>
+<li>Cache key based on project file hashes</li>
+<li>Speeds up subsequent builds</li>
 </ul>
-<h5 id="7-setup-nuget">7. Setup NuGet</h5>
-<pre><code class="lang-yaml">- name: Setup NuGet
-  uses: NuGet/setup-nuget@v1.2.0
+</li>
+<li><p><strong>Restore</strong></p>
+<ul>
+<li>Restores NuGet packages for the solution</li>
+<li>Solution: <code>Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln</code></li>
+</ul>
+</li>
+<li><p><strong>Build</strong></p>
+<ul>
+<li>Builds using MSBuild with <code>nightly.proj</code></li>
+<li>Configuration: <code>Release</code></li>
+<li>Platform: <code>Any CPU</code></li>
+<li>Target: <code>Rebuild</code> (clean and build)</li>
+</ul>
+</li>
+</ol>
+<h3 id="job-2-release">Job 2: <code>release</code></h3>
+<p><strong>Runner</strong>: <code>windows-latest</code></p>
+<p><strong>Condition</strong>: Only runs on <code>master</code> branch pushes</p>
+<p><strong>Purpose</strong>: Prepares release artifacts (builds and packages)</p>
+<p><strong>Dependencies</strong>: Requires <code>build</code> job to complete successfully</p>
+<p><strong>Steps</strong>:</p>
+<ol>
+<li><p><strong>Checkout</strong> - Same as build job</p>
+</li>
+<li><p><strong>Setup .NET</strong> - Same as build job</p>
+</li>
+<li><p><strong>Force .NET 10 SDK via global.json</strong> - Same as build job</p>
+</li>
+<li><p><strong>Setup MSBuild</strong> - Same as build job</p>
+</li>
+<li><p><strong>Setup NuGet</strong> - Same as build job</p>
+</li>
+<li><p><strong>Cache NuGet</strong> - Same as build job</p>
+</li>
+<li><p><strong>Restore</strong> - Same as build job</p>
+</li>
+<li><p><strong>Build Release</strong></p>
+<ul>
+<li>Uses <code>Scripts/build.proj</code> instead of <code>nightly.proj</code></li>
+<li>Configuration: <code>Release</code></li>
+<li>Platform: <code>Any CPU</code></li>
+<li>Target: <code>Build</code></li>
+</ul>
+</li>
+<li><p><strong>Pack Release</strong></p>
+<ul>
+<li>Uses <code>Scripts/build.proj</code></li>
+<li>Configuration: <code>Release</code></li>
+<li>Platform: <code>Any CPU</code></li>
+<li>Target: <code>Pack</code></li>
+<li>Creates NuGet packages in <code>Bin/Packages/Release/</code></li>
+</ul>
+</li>
+<li><p><strong>Get Version</strong></p>
+<ul>
+<li>Extracts version from built assembly or project file</li>
+<li>Sets output variables: <code>version</code> and <code>tag</code></li>
+<li>Fallback version: <code>100.25.1.1</code> if extraction fails</li>
+</ul>
+</li>
+</ol>
+<h2 id="detailed-behavior">Detailed Behavior</h2>
+<h3 id="net-sdk-management">.NET SDK Management</h3>
+<p>The workflow uses a dynamic <code>global.json</code> approach:</p>
+<pre><code class="lang-powershell">$sdkVersion = (dotnet --list-sdks | Select-String &quot;10.0&quot;).ToString().Split(&quot; &quot;)[0]
 </code></pre>
-<p><strong>Purpose</strong>: Install NuGet CLI for package restoration</p>
-<p><strong>Note</strong>: While <code>dotnet restore</code> could be used, NuGet CLI provides better compatibility with .NET Framework projects.</p>
-<h5 id="8-cache-nuget">8. Cache NuGet</h5>
-<pre><code class="lang-yaml">- name: Cache NuGet
-  uses: actions/cache@v4
-  with:
-    path: ~/.nuget/packages
-    key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
-    restore-keys: |
-      ${{ runner.os }}-nuget-
-</code></pre>
-<p><strong>Purpose</strong>: Cache NuGet packages between workflow runs</p>
+<p><strong>Benefits</strong>:</p>
+<ul>
+<li>Automatically uses the latest installed .NET 10 SDK</li>
+<li>Handles version variations across GitHub runners</li>
+<li>Ensures consistent SDK usage</li>
+</ul>
+<h3 id="build-projects">Build Projects</h3>
+<p><strong>Build Job</strong>:</p>
+<ul>
+<li>Uses <code>Scripts/nightly.proj</code></li>
+<li>Rebuilds everything from scratch</li>
+<li>Validates full build process</li>
+</ul>
+<p><strong>Release Job</strong>:</p>
+<ul>
+<li>Uses <code>Scripts/build.proj</code></li>
+<li>Standard release build configuration</li>
+<li>Creates packages for distribution</li>
+</ul>
+<h3 id="nuget-caching">NuGet Caching</h3>
 <p><strong>Cache Strategy</strong>:</p>
 <ul>
-<li><strong>Key</strong>: OS + hash of all csproj files</li>
-<li><strong>Path</strong>: Global NuGet packages directory</li>
-<li><strong>Restore Keys</strong>: Fallback to any previous cache for this OS</li>
+<li><strong>Key</strong>: <code>${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}</code></li>
+<li><strong>Path</strong>: <code>~/.nuget/packages</code></li>
+<li><strong>Restore Keys</strong>: Falls back to partial match if exact key not found</li>
 </ul>
-<p><strong>Performance Impact</strong>:</p>
+<p><strong>Benefits</strong>:</p>
 <ul>
-<li>First run: ~2-3 minutes to download all packages</li>
-<li>Cached runs: ~10-15 seconds to restore from cache</li>
-<li>Cache miss only occurs when csproj files change</li>
+<li>Faster builds by reusing packages</li>
+<li>Reduces network traffic</li>
+<li>Speeds up CI pipeline</li>
 </ul>
-<h5 id="9-restore">9. Restore</h5>
-<pre><code class="lang-yaml">- name: Restore
-  run: dotnet restore &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot;
-</code></pre>
-<p><strong>Purpose</strong>: Download and restore all NuGet package dependencies</p>
-<p><strong>What Happens</strong>:</p>
+<h3 id="version-extraction">Version Extraction</h3>
+<p>The release job attempts multiple methods to extract version:</p>
 <ol>
-<li>Reads solution file</li>
-<li>Parses all project files</li>
-<li>Resolves package dependencies</li>
-<li>Downloads packages (or uses cache)</li>
-<li>Prepares for build</li>
+<li><p><strong>Assembly Version</strong> (Primary)</p>
+<ul>
+<li>Reads version from built DLL</li>
+<li>Most reliable method</li>
+</ul>
+</li>
+<li><p><strong>Project File</strong> (Fallback)</p>
+<ul>
+<li>Parses XML from <code>.csproj</code> file</li>
+<li>Extracts <code>&lt;Version&gt;</code> element</li>
+</ul>
+</li>
+<li><p><strong>Hardcoded Fallback</strong></p>
+<ul>
+<li>Uses <code>100.25.1.1</code> if all methods fail</li>
+<li>Ensures workflow doesn't fail due to version issues</li>
+</ul>
+</li>
 </ol>
-<p><strong>Common Issues</strong>:</p>
+<h2 id="build-artifacts">Build Artifacts</h2>
+<h3 id="build-job-outputs">Build Job Outputs</h3>
 <ul>
-<li>Network timeouts: NuGet.org connectivity issues</li>
-<li>Version conflicts: Incompatible package versions</li>
-<li>Missing packages: Package no longer available</li>
+<li>Compiled assemblies in <code>Bin/Release/</code> or <code>Bin/Nightly/</code></li>
+<li>Organized by target framework (e.g., <code>net48</code>, <code>net8.0-windows</code>)</li>
 </ul>
-<h5 id="10-build">10. Build</h5>
-<pre><code class="lang-yaml">- name: Build
-  run: msbuild &quot;Scripts/nightly.proj&quot; /t:Rebuild /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
-</code></pre>
-<p><strong>Purpose</strong>: Compile all projects in Release configuration</p>
-<p><strong>MSBuild Parameters</strong>:</p>
+<h3 id="release-job-outputs">Release Job Outputs</h3>
 <ul>
-<li><code>/t:Rebuild</code>: Clean + Build (ensures fresh compile)</li>
-<li><code>/p:Configuration=Release</code>: Release mode optimizations</li>
-<li><code>/p:Platform=&quot;Any CPU&quot;</code>: Target all CPU architectures</li>
+<li>NuGet packages in <code>Bin/Packages/Release/</code></li>
+<li>Version information in job outputs</li>
 </ul>
-<p><strong>Build Script</strong>: <code>Scripts/nightly.proj</code></p>
+<h2 id="target-frameworks">Target Frameworks</h2>
+<p>The solution builds for multiple target frameworks:</p>
 <ul>
-<li>Orchestrates multi-project builds</li>
-<li>Handles target framework switching</li>
-<li>Manages output paths</li>
+<li><strong>.NET Framework</strong>: 4.7.2, 4.8, 4.8.1</li>
+<li><strong>.NET</strong>: 8.0, 9.0, 10.0 (Windows-specific)</li>
 </ul>
-<p><strong>Target Frameworks Built</strong>:</p>
-<ul>
-<li>.NET Framework 4.7.2</li>
-<li>.NET Framework 4.8</li>
-<li>.NET Framework 4.8.1</li>
-<li>.NET 8.0-windows</li>
-<li>.NET 9.0-windows</li>
-<li>.NET 10.0-windows (if SDK available)</li>
-</ul>
-<p><strong>Output Location</strong>: <code>Bin/Release/</code></p>
-<hr>
-<h3 id="job-2-release">Job 2: Release</h3>
-<p><strong>Runner</strong>: <code>windows-latest</code></p>
-<p><strong>Condition</strong>:</p>
-<pre><code class="lang-yaml">if: github.ref == 'refs/heads/master' &amp;&amp; github.event_name == 'push'
-needs: build
-</code></pre>
-<p><strong>When It Runs</strong>:</p>
-<ul>
-<li>✅ Only after build job succeeds</li>
-<li>✅ Only for pushes to master branch</li>
-<li>❌ Never for pull requests</li>
-<li>❌ Never for other branches</li>
-</ul>
-<h4 id="steps-breakdown-1">Steps Breakdown</h4>
-<h5 id="1-10-build-steps">1-10. Build Steps</h5>
-<p>Repeats checkout, .NET setup, MSBuild configuration, restore</p>
-<p><strong>Why Repeat?</strong></p>
-<ul>
-<li>Each job runs in isolated environment</li>
-<li>No shared filesystem between jobs</li>
-<li>Jobs can run on different runners</li>
-</ul>
-<h5 id="11-build-release">11. Build Release</h5>
-<pre><code class="lang-yaml">- name: Build Release
-  run: msbuild &quot;Scripts/build.proj&quot; /t:Build /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
-</code></pre>
-<p><strong>Difference from Build Job</strong>: Uses <code>Scripts/build.proj</code> instead of <code>nightly.proj</code></p>
-<p><strong>build.proj Purpose</strong>:</p>
-<ul>
-<li>Production release configuration</li>
-<li>Includes signing (if configured)</li>
-<li>Optimized for distribution</li>
-</ul>
-<h5 id="12-pack-release">12. Pack Release</h5>
-<pre><code class="lang-yaml">- name: Pack Release
-  run: msbuild &quot;Scripts/build.proj&quot; /t:Pack /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
-</code></pre>
-<p><strong>Purpose</strong>: Create NuGet packages for all components</p>
-<p><strong>Target</strong>: <code>Pack</code> MSBuild target</p>
-<p><strong>Output</strong>: <code>Bin/Packages/Release/*.nupkg</code></p>
-<p><strong>Packages Created</strong>:</p>
-<ul>
-<li>Krypton.Toolkit.{version}.nupkg</li>
-<li>Krypton.Ribbon.{version}.nupkg</li>
-<li>Krypton.Navigator.{version}.nupkg</li>
-<li>Krypton.Workspace.{version}.nupkg</li>
-<li>Krypton.Docking.{version}.nupkg</li>
-</ul>
-<h5 id="13-create-release-archives">13. Create Release Archives</h5>
-<pre><code class="lang-yaml">- name: Create Release Archives
-  run: msbuild &quot;Scripts/build.proj&quot; /t:CreateAllReleaseArchives /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
-</code></pre>
-<p><strong>Purpose</strong>: Package binaries into distributable archives</p>
-<p><strong>Target</strong>: <code>CreateAllReleaseArchives</code> MSBuild target</p>
-<p><strong>Output</strong>: <code>Bin/Release/Zips/</code></p>
-<ul>
-<li><code>Krypton-Release_*.zip</code></li>
-<li><code>Krypton-Release_*.tar.gz</code></li>
-</ul>
-<p><strong>Archive Contents</strong>:</p>
-<ul>
-<li>All DLLs for all target frameworks</li>
-<li>XML documentation files</li>
-<li>License and readme files</li>
-<li>Example configurations</li>
-</ul>
-<h5 id="14-get-version">14. Get Version</h5>
-<pre><code class="lang-yaml">- name: Get Version
-  id: get_version
-  run: |
-    $version = (dotnet build &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit.csproj&quot; --no-restore --verbosity quiet | Select-String &quot;Version&quot; | ForEach-Object { $_.Line.Split('=')[1].Trim() })
-    if (-not $version) {
-      $version = &quot;100.25.1.1&quot;  # Fallback version
-    }
-    echo &quot;version=$version&quot; &gt;&gt; $env:GITHUB_OUTPUT
-    echo &quot;tag=v$version&quot; &gt;&gt; $env:GITHUB_OUTPUT
-</code></pre>
-<p><strong>Purpose</strong>: Extract version number for release tagging</p>
-<p><strong>Strategy</strong>:</p>
-<ol>
-<li>Build project and parse output for version</li>
-<li>Fallback to hardcoded version if extraction fails</li>
-</ol>
-<p><strong>Outputs</strong>:</p>
-<ul>
-<li><code>version</code>: e.g., <code>100.25.1.1</code></li>
-<li><code>tag</code>: e.g., <code>v100.25.1.1</code></li>
-</ul>
-<p><strong>Used By</strong>: Subsequent steps for release creation and tagging</p>
-<h5 id="15-create-release">15. Create Release</h5>
-<pre><code class="lang-yaml">- name: Create Release
-  run: |
-    $releaseBody = @&quot;
-    ## Krypton Toolkit Suite Release ${{ steps.get_version.outputs.version }}
-    
-    This release includes:
-    - All Krypton Toolkit components
-    - NuGet packages for multiple target frameworks
-    - Release archives (ZIP and TAR.GZ formats)
-    
-    ### Downloads
-    - **ZIP Archive**: `Krypton-Release_*.zip`
-    - **TAR.GZ Archive**: `Krypton-Release_*.tar.gz`
-    
-    ### Target Frameworks
-    - .NET Framework 4.7.2
-    - .NET Framework 4.8
-    - .NET Framework 4.8.1
-    - .NET 8.0 Windows
-    - .NET 9.0 Windows
-    - .NET 10.0 Windows
-    &quot;@
-    
-    gh release create ${{ steps.get_version.outputs.tag }} `
-      --title &quot;Release ${{ steps.get_version.outputs.version }}&quot; `
-      --notes &quot;$releaseBody&quot; `
-      --latest
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-</code></pre>
-<p><strong>Purpose</strong>: Create GitHub release with tag</p>
-<p><strong>GitHub CLI Command</strong>: <code>gh release create</code></p>
-<p><strong>Parameters</strong>:</p>
-<ul>
-<li><code>--title</code>: Human-readable release title</li>
-<li><code>--notes</code>: Markdown-formatted release notes</li>
-<li><code>--latest</code>: Mark as latest release</li>
-</ul>
-<p><strong>Authentication</strong>: Uses automatic <code>GITHUB_TOKEN</code> secret</p>
-<p><strong>Result</strong>: Creates release at <code>https://github.com/{owner}/{repo}/releases/tag/{tag}</code></p>
-<h5 id="16-upload-release-assets">16. Upload Release Assets</h5>
-<pre><code class="lang-yaml">- name: Upload Release Assets
-  run: |
-    $zipFile = Get-ChildItem &quot;Bin/Release/Zips/Krypton-Release_*.zip&quot; | Select-Object -First 1
-    $tarFile = Get-ChildItem &quot;Bin/Release/Zips/Krypton-Release_*.tar.gz&quot; | Select-Object -First 1
-    
-    if ($zipFile) {
-      gh release upload ${{ steps.get_version.outputs.tag }} &quot;$($zipFile.FullName)&quot; --clobber
-    }
-    if ($tarFile) {
-      gh release upload ${{ steps.get_version.outputs.tag }} &quot;$($tarFile.FullName)&quot; --clobber
-    }
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-</code></pre>
-<p><strong>Purpose</strong>: Attach distribution archives to GitHub release</p>
-<p><strong>GitHub CLI Command</strong>: <code>gh release upload</code></p>
-<p><strong>Parameters</strong>:</p>
-<ul>
-<li><code>--clobber</code>: Replace existing assets with same name</li>
-</ul>
-<p><strong>Error Handling</strong>: Checks for file existence before upload</p>
-<p><strong>Result</strong>: Assets available for download from release page</p>
-<hr>
+<p>All frameworks are built in a single workflow run.</p>
 <h2 id="configuration">Configuration</h2>
-<h3 id="environment-variables">Environment Variables</h3>
-<p>None required. All configuration is provided through workflow parameters and GitHub secrets.</p>
-<h3 id="required-secrets">Required Secrets</h3>
-<h4 id="github_token">GITHUB_TOKEN</h4>
+<h3 id="no-secrets-required">No Secrets Required</h3>
+<p>The build workflow doesn't require any secrets. It only validates builds and doesn't publish packages.</p>
+<h3 id="required-tools">Required Tools</h3>
 <ul>
-<li><strong>Type</strong>: Automatic secret (provided by GitHub)</li>
-<li><strong>Purpose</strong>: Authenticate GitHub CLI for release creation</li>
-<li><strong>Permissions Required</strong>:
-<ul>
-<li><code>contents: write</code> - Create releases and upload assets</li>
-<li><code>actions: read</code> - Read workflow metadata</li>
+<li>.NET 9.0.x and 10.0.x SDKs (installed by workflow)</li>
+<li>MSBuild (installed by workflow)</li>
+<li>NuGet (installed by workflow)</li>
 </ul>
-</li>
-</ul>
-<p><strong>Configuration</strong>: No manual setup required</p>
-<p><strong>Verification</strong>:</p>
-<pre><code class="lang-yaml">- name: Verify Token
-  run: |
-    if ($env:GITHUB_TOKEN) {
-      Write-Host &quot;✓ GITHUB_TOKEN is available&quot;
-    } else {
-      Write-Host &quot;✗ GITHUB_TOKEN is missing&quot;
-    }
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-</code></pre>
-<h3 id="build-scripts">Build Scripts</h3>
-<p>The workflow depends on MSBuild project files in <code>Scripts/</code> directory:</p>
-<h4 id="scriptsnightlyproj">Scripts/nightly.proj</h4>
-<p><strong>Used By</strong>: Build job (step 10)</p>
-<p><strong>Purpose</strong>:</p>
-<ul>
-<li>Development/CI build configuration</li>
-<li>Multi-targeting orchestration</li>
-<li>Output path management</li>
-</ul>
-<p><strong>Key Targets</strong>:</p>
-<ul>
-<li><code>Rebuild</code>: Clean and build all projects</li>
-</ul>
-<h4 id="scriptsbuildproj">Scripts/build.proj</h4>
-<p><strong>Used By</strong>: Release job (steps 11-13)</p>
-<p><strong>Purpose</strong>:</p>
-<ul>
-<li>Production release configuration</li>
-<li>Package creation</li>
-<li>Archive generation</li>
-</ul>
-<p><strong>Key Targets</strong>:</p>
-<ul>
-<li><code>Build</code>: Compile all projects</li>
-<li><code>Pack</code>: Create NuGet packages</li>
-<li><code>CreateAllReleaseArchives</code>: Generate distribution archives</li>
-</ul>
-<h3 id="repository-settings">Repository Settings</h3>
-<h4 id="actions-permissions">Actions Permissions</h4>
-<p><strong>Required Settings</strong> (Settings → Actions → General):</p>
-<ul>
-<li>✅ &quot;Allow all actions and reusable workflows&quot; (or selected actions)</li>
-<li>✅ Workflow permissions: &quot;Read and write permissions&quot;</li>
-<li>✅ &quot;Allow GitHub Actions to create and approve pull requests&quot;</li>
-</ul>
-<h4 id="branch-protection">Branch Protection</h4>
-<p><strong>Recommended for Master Branch</strong> (Settings → Branches):</p>
-<ul>
-<li>✅ Require status checks to pass before merging
-<ul>
-<li>✅ Require &quot;build&quot; check to pass</li>
-</ul>
-</li>
-<li>✅ Require pull request reviews before merging</li>
-<li>✅ Require conversation resolution before merging</li>
-</ul>
-<hr>
-<h2 id="usage-examples">Usage Examples</h2>
-<h3 id="example-1-pull-request-workflow">Example 1: Pull Request Workflow</h3>
-<pre><code class="lang-bash"># 1. Create feature branch
-git checkout -b feature/add-new-button
-git push origin feature/add-new-button
-
-# 2. Make changes and push
-# (edit files)
-git add .
-git commit -m &quot;Add new button component&quot;
-git push origin feature/add-new-button
-
-# 3. Open Pull Request on GitHub
-# → Build workflow triggers automatically
-# → Status check appears on PR
-
-# 4. Push updates to PR
-git commit -m &quot;Address review feedback&quot;
-git push origin feature/add-new-button
-
-# → Build workflow triggers again (synchronize event)
-# → Updated status check on PR
-
-# 5. Merge PR when build passes
-# (merge on GitHub)
-</code></pre>
-<p><strong>Workflow Behavior</strong>:</p>
-<ul>
-<li>Validates each push to PR branch</li>
-<li>Shows build status on PR page</li>
-<li>Prevents merge if build fails (with branch protection)</li>
-<li>Does NOT create releases</li>
-</ul>
-<h3 id="example-2-direct-push-to-master">Example 2: Direct Push to Master</h3>
-<pre><code class="lang-bash"># 1. Ensure local master is up to date
-git checkout master
-git pull origin master
-
-# 2. Merge feature branch
-git merge feature/add-new-button
-
-# 3. Push to master
-git push origin master
-
-# → Build job runs
-# → If build succeeds → Release job runs
-# → GitHub release created automatically
-# → Release assets uploaded
-</code></pre>
-<p><strong>Workflow Behavior</strong>:</p>
-<ul>
-<li>Builds code in Release configuration</li>
-<li>Creates NuGet packages</li>
-<li>Generates distribution archives</li>
-<li>Creates GitHub release with version tag</li>
-<li>Uploads ZIP and TAR.GZ to release</li>
-</ul>
-<p><strong>Result</strong>: New release available at <code>https://github.com/{owner}/{repo}/releases</code></p>
-<h3 id="example-3-push-to-protected-branch-not-master">Example 3: Push to Protected Branch (Not Master)</h3>
-<pre><code class="lang-bash"># Push to alpha branch
-git checkout alpha
-git push origin alpha
-
-# → Build job runs
-# → Release job DOES NOT run (not master)
-# → No GitHub release created
-</code></pre>
-<p><strong>Workflow Behavior</strong>:</p>
-<ul>
-<li>Validates build succeeds</li>
-<li>Ensures code compiles across frameworks</li>
-<li>No release artifacts created</li>
-<li>No GitHub release generated</li>
-</ul>
-<h3 id="example-4-updating-documentation-only">Example 4: Updating Documentation Only</h3>
-<pre><code class="lang-bash"># Edit README
-git checkout master
-git add README.md
-git commit -m &quot;Update installation instructions&quot;
-git push origin master
-
-# → Build workflow SKIPPED (paths-ignore: .git*)
-# → No build triggered
-</code></pre>
-<p><strong>Workflow Behavior</strong>: Skipped entirely due to <code>paths-ignore</code> configuration</p>
-<hr>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="common-issues-and-solutions">Common Issues and Solutions</h3>
-<h4 id="issue-1-build-fails---project-not-found">Issue 1: Build Fails - Project Not Found</h4>
-<p><strong>Symptoms</strong>:</p>
-<pre><code>error MSB4025: The project file could not be loaded. Could not find file
-</code></pre>
-<p><strong>Causes</strong>:</p>
-<ul>
-<li>Incorrect file path in workflow YAML</li>
-<li>Working directory changed unexpectedly</li>
-<li>File renamed or moved</li>
-</ul>
-<p><strong>Solution</strong>:</p>
-<pre><code class="lang-yaml"># Add diagnostic step before build
-- name: Debug - Show Current Directory
-  run: |
-    Write-Host &quot;Current directory: $(Get-Location)&quot;
-    Write-Host &quot;Solution file exists: $(Test-Path 'Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln')&quot;
-</code></pre>
-<h4 id="issue-2-multi-targeting-build-failure">Issue 2: Multi-Targeting Build Failure</h4>
-<p><strong>Symptoms</strong>:</p>
-<pre><code>error NETSDK1045: The current .NET SDK does not support targeting .NET 10.0
-</code></pre>
-<p><strong>Causes</strong>:</p>
-<ul>
-<li>.NET 10 SDK not installed</li>
-<li>SDK setup step failed silently</li>
-<li>Wrong SDK selected by global.json</li>
-</ul>
-<p><strong>Solution</strong>:</p>
-<pre><code class="lang-yaml"># Add diagnostic step after SDK setup
-- name: Debug - List Installed SDKs
-  run: |
-    Write-Host &quot;Installed .NET SDKs:&quot;
-    dotnet --list-sdks
-    Write-Host &quot;`nGlobal.json content:&quot;
-    Get-Content global.json
-</code></pre>
-<p><strong>Fix</strong>:</p>
+<h3 id="build-failures">Build Failures</h3>
+<p><strong>Common Causes</strong>:</p>
 <ol>
-<li>Verify &quot;Setup .NET 10&quot; step succeeded</li>
-<li>Check if <code>continue-on-error: true</code> is masking failures</li>
-<li>Update fallback logic in &quot;Force .NET SDK&quot; step</li>
+<li><strong>Compilation Errors</strong>: Check code for syntax or type errors</li>
+<li><strong>Missing Dependencies</strong>: Verify all NuGet packages restore correctly</li>
+<li><strong>SDK Version Issues</strong>: Check <code>global.json</code> generation in logs</li>
+<li><strong>MSBuild Errors</strong>: Review build logs for specific errors</li>
 </ol>
-<h4 id="issue-3-nuget-restore-fails">Issue 3: NuGet Restore Fails</h4>
-<p><strong>Symptoms</strong>:</p>
-<pre><code>error NU1301: Unable to load the service index for source https://api.nuget.org/v3/index.json
-</code></pre>
-<p><strong>Causes</strong>:</p>
+<p><strong>Solutions</strong>:</p>
 <ul>
-<li>Network connectivity issues</li>
-<li>NuGet.org service outage</li>
-<li>TLS/SSL certificate problems</li>
-<li>Proxy configuration issues</li>
+<li>Review build logs in Actions tab</li>
+<li>Test builds locally with same SDK versions</li>
+<li>Check for breaking changes in dependencies</li>
+<li>Verify project file configurations</li>
 </ul>
-<p><strong>Solution</strong>:</p>
-<pre><code class="lang-yaml"># Add retry logic to restore step
-- name: Restore with Retry
-  run: |
-    $retries = 3
-    $delay = 10
-    for ($i = 1; $i -le $retries; $i++) {
-      Write-Host &quot;Restore attempt $i of $retries&quot;
-      dotnet restore &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot;
-      if ($LASTEXITCODE -eq 0) {
-        break
-      }
-      if ($i -lt $retries) {
-        Write-Host &quot;Restore failed, waiting $delay seconds...&quot;
-        Start-Sleep -Seconds $delay
-      }
-    }
-</code></pre>
-<p><strong>Check Status</strong>: <a href="https://status.nuget.org/">https://status.nuget.org/</a></p>
-<h4 id="issue-4-github-release-creation-fails">Issue 4: GitHub Release Creation Fails</h4>
-<p><strong>Symptoms</strong>:</p>
-<pre><code>error: HTTP 404: Not Found (https://api.github.com/repos/.../releases)
-</code></pre>
-<p><strong>Causes</strong>:</p>
-<ul>
-<li>Insufficient GITHUB_TOKEN permissions</li>
-<li>Release with tag already exists</li>
-<li>Invalid tag name format</li>
-<li>Rate limiting</li>
-</ul>
-<p><strong>Solution</strong>:</p>
-<pre><code class="lang-yaml"># Check permissions
-- name: Verify Permissions
-  run: |
-    Write-Host &quot;Checking repository permissions...&quot;
-    gh api repos/${{ github.repository }} --jq '.permissions'
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-</code></pre>
-<p><strong>Permission Fix</strong>:</p>
+<h3 id="nuget-restore-failures">NuGet Restore Failures</h3>
+<p><strong>Possible Causes</strong>:</p>
 <ol>
-<li>Go to Settings → Actions → General</li>
-<li>Under &quot;Workflow permissions&quot;, select &quot;Read and write permissions&quot;</li>
-<li>Save changes</li>
+<li>Network issues</li>
+<li>Package source unavailable</li>
+<li>Invalid package references</li>
+<li>Cache corruption</li>
 </ol>
-<h4 id="issue-5-cache-not-working">Issue 5: Cache Not Working</h4>
-<p><strong>Symptoms</strong>:</p>
+<p><strong>Solutions</strong>:</p>
 <ul>
-<li>Restore takes 2-3 minutes every run</li>
-<li>Cache restore step shows &quot;Cache not found&quot;</li>
+<li>Check NuGet package sources</li>
+<li>Clear cache and retry</li>
+<li>Verify package versions exist</li>
+<li>Review <code>nuget.config</code> if present</li>
 </ul>
-<p><strong>Causes</strong>:</p>
+<h3 id="version-extraction-failures">Version Extraction Failures</h3>
+<p><strong>Behavior</strong>: Workflow continues with fallback version</p>
+<p><strong>Solutions</strong>:</p>
 <ul>
-<li>Cache key changed (csproj files modified)</li>
-<li>Cache expired (7 days old)</li>
-<li>Cache size limit reached (10 GB per repository)</li>
+<li>Check if assembly was built successfully</li>
+<li>Verify project file has <code>&lt;Version&gt;</code> element</li>
+<li>Review version extraction script in logs</li>
 </ul>
-<p><strong>Solution</strong>:</p>
-<pre><code class="lang-yaml"># Add cache diagnostics
-- name: Cache Statistics
-  run: |
-    Write-Host &quot;Cache path: ~/.nuget/packages&quot;
-    if (Test-Path ~/.nuget/packages) {
-      $size = (Get-ChildItem ~/.nuget/packages -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB
-      Write-Host &quot;Cache size: $([math]::Round($size, 2)) MB&quot;
-    }
-</code></pre>
-<p><strong>Optimization</strong>:</p>
+<h3 id="pr-from-fork-not-building">PR from Fork Not Building</h3>
+<p><strong>Expected Behavior</strong>: This is a security feature</p>
+<p><strong>Reason</strong>: Prevents potential security risks from untrusted code</p>
+<p><strong>Solution</strong>: Fork PRs should be merged via a branch in the main repository</p>
+<h2 id="related-workflows">Related Workflows</h2>
 <ul>
-<li>Review cache key specificity</li>
-<li>Consider using restore-keys for partial matches</li>
-<li>Manually clear old caches if needed</li>
+<li><strong>Release Workflow</strong>: Uses similar build process for publishing</li>
+<li><strong>Nightly Workflow</strong>: Uses <code>nightly.proj</code> for scheduled builds</li>
 </ul>
-<h4 id="issue-6-release-assets-not-uploading">Issue 6: Release Assets Not Uploading</h4>
-<p><strong>Symptoms</strong>:</p>
-<pre><code>warning: Failed to upload ZIP: ...
-</code></pre>
-<p><strong>Causes</strong>:</p>
+<h2 id="code-reference">Code Reference</h2>
+<p><strong>File</strong>: <code>.github/workflows/build.yml</code></p>
+<p><strong>Key Components</strong>:</p>
 <ul>
-<li>Archive creation step failed</li>
-<li>File path incorrect</li>
-<li>File size exceeds 2GB limit</li>
-<li>Network timeout</li>
+<li>Event: <code>pull_request</code> and <code>push</code></li>
+<li>Jobs: <code>build</code> and <code>release</code></li>
+<li>Build Tools: MSBuild, .NET SDK, NuGet</li>
 </ul>
-<p><strong>Solution</strong>:</p>
-<pre><code class="lang-yaml"># Add verification before upload
-- name: Verify Archives
-  run: |
-    Write-Host &quot;Checking for ZIP archive...&quot;
-    $zipFile = Get-ChildItem &quot;Bin/Release/Zips/Krypton-Release_*.zip&quot; -ErrorAction SilentlyContinue
-    if ($zipFile) {
-      Write-Host &quot;✓ Found: $($zipFile.Name)&quot;
-      Write-Host &quot;  Size: $([math]::Round($zipFile.Length / 1MB, 2)) MB&quot;
-    } else {
-      Write-Host &quot;✗ ZIP file not found&quot;
-    }
-    
-    Write-Host &quot;`nChecking for TAR.GZ archive...&quot;
-    $tarFile = Get-ChildItem &quot;Bin/Release/Zips/Krypton-Release_*.tar.gz&quot; -ErrorAction SilentlyContinue
-    if ($tarFile) {
-      Write-Host &quot;✓ Found: $($tarFile.Name)&quot;
-      Write-Host &quot;  Size: $([math]::Round($tarFile.Length / 1MB, 2)) MB&quot;
-    } else {
-      Write-Host &quot;✗ TAR.GZ file not found&quot;
-    }
-</code></pre>
-<h4 id="issue-7-build-succeeds-locally-but-fails-in-ci">Issue 7: Build Succeeds Locally But Fails in CI</h4>
-<p><strong>Symptoms</strong>: Build works on developer machine but fails in GitHub Actions</p>
-<p><strong>Causes</strong>:</p>
-<ul>
-<li>Environment differences</li>
-<li>Missing dependencies</li>
-<li>Hardcoded paths</li>
-<li>Local configuration files not committed</li>
-</ul>
-<p><strong>Solution</strong>:</p>
+<h2 id="maintenance-notes">Maintenance Notes</h2>
+<h3 id="updating-net-versions">Updating .NET Versions</h3>
+<p>To add support for new .NET versions:</p>
 <ol>
-<li><p><strong>Compare Environments</strong>:</p>
-<pre><code class="lang-yaml">- name: Environment Diagnostics
-  run: |
-    Write-Host &quot;OS: ${{ runner.os }}&quot;
-    Write-Host &quot;Architecture: $env:PROCESSOR_ARCHITECTURE&quot;
-    Write-Host &quot;.NET SDKs:&quot;
-    dotnet --list-sdks
-    Write-Host &quot;`nEnvironment Variables:&quot;
-    Get-ChildItem Env: | Sort-Object Name
+<li><p>Add version to <code>Setup .NET</code> step:</p>
+<pre><code class="lang-yaml">dotnet-version: |
+  9.0.x
+  10.0.x
+  11.0.x  # New version
 </code></pre>
 </li>
-<li><p><strong>Test with Clean Repository</strong>:</p>
-<pre><code class="lang-bash"># Clone fresh copy
-git clone https://github.com/{owner}/{repo}.git test-repo
-cd test-repo
-
-# Try local build
-dotnet restore &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot;
-msbuild &quot;Scripts/nightly.proj&quot; /t:Rebuild /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
-</code></pre>
+<li><p>Update <code>global.json</code> generation if needed</p>
 </li>
-<li><p><strong>Check for Uncommitted Files</strong>:</p>
-<pre><code class="lang-bash">git status
-# Look for untracked files that might be needed
-</code></pre>
+<li><p>Test with sample PR</p>
 </li>
 </ol>
-<hr>
+<h3 id="modifying-build-projects">Modifying Build Projects</h3>
+<p>If build project files change:</p>
+<ol>
+<li>Update paths in workflow steps</li>
+<li>Verify target names (<code>Build</code>, <code>Pack</code>, <code>Rebuild</code>)</li>
+<li>Test configuration changes</li>
+</ol>
+<h3 id="cache-invalidation">Cache Invalidation</h3>
+<p>To force cache refresh:</p>
+<ul>
+<li>Modify a <code>.csproj</code> file (changes hash)</li>
+<li>Or manually clear cache in Actions settings</li>
+</ul>
 <h2 id="best-practices">Best Practices</h2>
-<h3 id="1-pull-request-workflow">1. Pull Request Workflow</h3>
-<p><strong>Do</strong>:</p>
-<ul>
-<li>✅ Always create feature branches from latest master</li>
-<li>✅ Keep PRs focused and reasonably sized</li>
-<li>✅ Wait for build to pass before requesting review</li>
-<li>✅ Address build failures immediately</li>
-</ul>
-<p><strong>Don't</strong>:</p>
-<ul>
-<li>❌ Push directly to master (use PRs)</li>
-<li>❌ Force push to PR branches (confuses reviewers)</li>
-<li>❌ Merge PRs with failing builds</li>
-<li>❌ Ignore build warnings</li>
-</ul>
-<h3 id="2-version-management">2. Version Management</h3>
-<p><strong>Do</strong>:</p>
-<ul>
-<li>✅ Update version in project files before release</li>
-<li>✅ Use semantic versioning (MAJOR.MINOR.PATCH)</li>
-<li>✅ Tag releases consistently</li>
-<li>✅ Document version changes in changelog</li>
-</ul>
-<p><strong>Don't</strong>:</p>
-<ul>
-<li>❌ Reuse version numbers</li>
-<li>❌ Skip versions</li>
-<li>❌ Use non-standard version formats</li>
-</ul>
-<h3 id="3-build-optimization">3. Build Optimization</h3>
-<p><strong>Do</strong>:</p>
-<ul>
-<li>✅ Leverage NuGet caching</li>
-<li>✅ Use <code>--no-restore</code> when appropriate</li>
-<li>✅ Minimize dependencies</li>
-<li>✅ Keep build scripts maintainable</li>
-</ul>
-<p><strong>Don't</strong>:</p>
-<ul>
-<li>❌ Install unnecessary SDKs</li>
-<li>❌ Restore packages multiple times</li>
-<li>❌ Build in Debug mode for releases</li>
-<li>❌ Include source code in release archives</li>
-</ul>
-<h3 id="4-release-management">4. Release Management</h3>
-<p><strong>Do</strong>:</p>
-<ul>
-<li>✅ Test releases before tagging</li>
-<li>✅ Include comprehensive release notes</li>
-<li>✅ Verify archive contents</li>
-<li>✅ Announce releases to users</li>
-</ul>
-<p><strong>Don't</strong>:</p>
-<ul>
-<li>❌ Delete or modify releases after publishing</li>
-<li>❌ Omit target framework information</li>
-<li>❌ Skip testing of release archives</li>
-<li>❌ Push broken code to master</li>
-</ul>
-<h3 id="5-debugging-workflow-issues">5. Debugging Workflow Issues</h3>
-<p><strong>When Build Fails</strong>:</p>
 <ol>
-<li>Read error message carefully</li>
-<li>Check recent changes to workflow file</li>
-<li>Review step logs in GitHub Actions UI</li>
-<li>Reproduce locally if possible</li>
-<li>Add diagnostic steps to narrow down issue</li>
-<li>Check GitHub Actions status page for outages</li>
+<li><strong>Keep Builds Fast</strong>: Leverage caching and parallel builds</li>
+<li><strong>Fail Fast</strong>: Build should fail on any compilation error</li>
+<li><strong>Consistent Environments</strong>: Use same SDK versions as local development</li>
+<li><strong>Clear Logs</strong>: Ensure build output is readable and actionable</li>
 </ol>
-<p><strong>Diagnostic Template</strong>:</p>
-<pre><code class="lang-yaml">- name: Diagnostics
-  if: failure()  # Only runs if previous step failed
-  run: |
-    Write-Host &quot;=== Diagnostics ===&quot;
-    Write-Host &quot;Current Directory: $(Get-Location)&quot;
-    Write-Host &quot;Runner OS: ${{ runner.os }}&quot;
-    Write-Host &quot;GitHub Ref: ${{ github.ref }}&quot;
-    Write-Host &quot;Event: ${{ github.event_name }}&quot;
-    Write-Host &quot;`nDirectory Contents:&quot;
-    Get-ChildItem -Recurse -Depth 2
-</code></pre>
-<hr>
-<h2 id="related-documentation">Related Documentation</h2>
-<ul>
-<li><a href="ReleaseWorkflow.html">Release Workflow</a> - Handles production releases for all branches</li>
-<li><a href="NightlyWorkflow.html">Nightly Workflow</a> - Scheduled nightly builds with change detection</li>
-<li><a href="GitHubWorkflows.html">GitHub Workflows Overview</a> - Complete workflow documentation</li>
-</ul>
-<hr>
-<h2 id="quick-reference">Quick Reference</h2>
-<h3 id="workflow-summary">Workflow Summary</h3>
-<table>
-<thead>
-<tr>
-<th>Aspect</th>
-<th>Details</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>File</strong></td>
-<td><code>.github/workflows/build.yml</code></td>
-</tr>
-<tr>
-<td><strong>Triggers</strong></td>
-<td>Pull requests (all branches), Push (master, alpha, canary, gold, V85-LTS)</td>
-</tr>
-<tr>
-<td><strong>Runner</strong></td>
-<td>windows-latest</td>
-</tr>
-<tr>
-<td><strong>Jobs</strong></td>
-<td>2 (build, release)</td>
-</tr>
-<tr>
-<td><strong>Duration</strong></td>
-<td>~5-10 minutes (build), ~8-12 minutes (release)</td>
-</tr>
-<tr>
-<td><strong>Dependencies</strong></td>
-<td>Build scripts, .NET SDKs 9-11, MSBuild, NuGet</td>
-</tr>
-</tbody>
-</table>
-<h3 id="required-secrets-1">Required Secrets</h3>
-<table>
-<thead>
-<tr>
-<th>Secret</th>
-<th>Required</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>GITHUB_TOKEN</code></td>
-<td>Yes (automatic)</td>
-<td>Create GitHub releases</td>
-</tr>
-</tbody>
-</table>
-<h3 id="target-frameworks">Target Frameworks</h3>
-<table>
-<thead>
-<tr>
-<th>Framework</th>
-<th>Minimum Version</th>
-<th>Required SDK</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>.NET Framework</td>
-<td>4.7.2</td>
-<td>Windows SDK</td>
-</tr>
-<tr>
-<td>.NET Framework</td>
-<td>4.8</td>
-<td>Windows SDK</td>
-</tr>
-<tr>
-<td>.NET Framework</td>
-<td>4.8.1</td>
-<td>Windows SDK</td>
-</tr>
-<tr>
-<td>.NET</td>
-<td>8.0-windows</td>
-<td>.NET 8 SDK</td>
-</tr>
-<tr>
-<td>.NET</td>
-<td>9.0-windows</td>
-<td>.NET 9 SDK</td>
-</tr>
-<tr>
-<td>.NET</td>
-<td>10.0-windows</td>
-<td>.NET 10 SDK</td>
-</tr>
-</tbody>
-</table>
 
 </article>
           </div>

@@ -1,6 +1,4 @@
-KryptonGroupBox
-
- 
+# KryptonGroupBox
 
 Use the *KryptonGroupBox* control when you need to group related controls
 together and provide a caption. For example, you can use group boxes to
@@ -9,7 +7,7 @@ contained controls to also be moved along with it as it acts as a container.
 This control is similar to the *KryptonGroup* except it provides a caption as
 well as a grouping ability.
 
-**Appearance** 
+## Appearance
 
 The *GroupBackStyle* and *GroupBorderStyle* properties are used to define the
 level styling required for the background and border areas of the
@@ -22,15 +20,12 @@ caption. If you would prefer the caption to be entirely outside of the border
 then set this property to *100%*. To place the caption entirely inside the
 border you can set the *CaptionOverlap* to *0%*.
 
- 
 
-**Two States** 
+## Two States
 
 Only two possible states of *Disabled* and *Normal* are used by the group box
 control. In order to customize the appearance use the corresponding
 *StateDisabled* and *StateNormal* properties.
-
- 
 
 To speed up the customization process an extra *StateCommon* property has been
 provided. The settings from this are used if no override has been defined for
@@ -40,17 +35,11 @@ precedence and so if you define the background color in *StateNormal* and
 in the *Normal* state. Only if the *StateNormal* value is not overridden will it
 look in *StateCommon*.
 
- 
-
-**Examples of Appearance** 
+## Examples of Appearance
 
 Figure 1 shows the appearance when *GroupBackStyle* and *GroupBorderStyle* are
 both defined as the default *ControlGroupBox*.
 
- 
-
- 
-
- 
+![Krypton Group Box](../Images/KryptonGroupBox.png)
 
 *Figure 1 – KryptonGroupBox examples*

@@ -35,5 +35,8 @@ When writing your own custom controls that are working alongside the Krypton con
 
 Alternatively you might want to leverage the same rendering code that the Krypton Toolkit controls use. In this case follow the [Using IRenderer](articles/Standard%20Toolkit/Custom%20Controls/UsingIRenderer.md) article to understand how to render background, border and content elements within your custom control client area. Although a little more complicated this technique has the advantage of performing the hard work for you. You can use the renderer to draw vertical orientated text and elements with tiled images without the need to write the actual drawing code yourself.
 
+## [Comparison with the WinForms Controls](articles/Contributing/Auditing/KryptonToolkitAudit.md)
+The article as described in the heading will show you how the Krypton Standard Toolkit compares with the standard WinForms controls. Please make sure to follow this [issue](https://github.com/Krypton-Suite/Standard-Toolkit/issues/2658), as we continue to plug the gaps moving forward.
+
 ## [Contributing to the Standard Toolkit](./articles/Contributing.md)
 Want to contribute to the Standard Toolkit project? Learn more [here](articles/Contributing.md).
