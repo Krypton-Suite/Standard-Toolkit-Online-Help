@@ -57,6 +57,7 @@ the toolbox.
 * [KryptonContextMenu](Toolkit/Components/KryptonContextMenu.md)  
 * [KryptonCustomPaletteBase](Toolkit/Components/KryptonCustomPaletteBase.md) 
 * [KryptonColorDialog](Toolkit/Components/KryptonColorDialog.md)
+* [KryptonErrorProvider](Toolkit/Components/KryptonErrorProvider.md)
 * [KryptonFolderBrowserDialog](Toolkit/Components/KryptonFolderBrowserDialog.md)
 * [KryptonFontDialog](Toolkit/Components/KryptonFontDialog.md)
 * [KryptonInputBox](Toolkit/Components/KryptonInputBox.md)  

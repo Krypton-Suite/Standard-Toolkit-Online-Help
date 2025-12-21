@@ -1,10 +1,10 @@
 # KryptonWebView2 API Reference
 
 ## Namespace
-`Krypton.Toolkit`
+`Krypton.Utilities`
 
 ## Assembly
-`Krypton.Toolkit.dll`
+`Krypton.Utilities.dll`
 
 ## Inheritance Hierarchy
 ```
@@ -13,11 +13,11 @@ System.Object
     └── System.ComponentModel.Component
         └── System.Windows.Forms.Control
             └── Microsoft.Web.WebView2.WinForms.WebView2
-                └── Krypton.Toolkit.KryptonWebView2
+                └── Krypton.Utilities.KryptonWebView2
 ```
 
 ## Conditional Compilation
-This control is only available when `WEBVIEW2_AVAILABLE` is defined.
+This control is only available when `WEBVIEW2_AVAILABLE` is defined **and** the target framework is .NET 8.0 or greater (`NET8_0_OR_GREATER`).
 
 ---
 
@@ -87,6 +87,110 @@ var contextMenu = new KryptonContextMenu();
 contextMenu.Items.Add(new KryptonContextMenuItem("Copy"));
 contextMenu.Items.Add(new KryptonContextMenuItem("Paste"));
 webView.KryptonContextMenu = contextMenu;
+```
+
+### AllowExternalDrop
+
+**Type:** `bool`
+
+**Access:** Public get/set
+
+**Attributes:**
+- `[Category("Behavior")]`
+- `[Description("Indicates whether the control allows external drag and drop operations.")]`
+- `[DefaultValue(false)]`
+
+**Summary:** Gets or sets a value indicating whether the control allows external drag and drop operations.
+
+**Value:** `true` if external drag and drop is allowed; otherwise, `false`.
+
+**Remarks:** This property forwards to the base WebView2 `AllowExternalDrop` property.
+
+**Example:**
+```csharp
+webView.AllowExternalDrop = true;
+```
+
+### CreationProperties
+
+**Type:** `object?`
+
+**Access:** Public get/set
+
+**Attributes:**
+- `[Category("Behavior")]`
+- `[Description("Gets or sets the creation properties for the WebView2 control.")]`
+- `[DefaultValue(null)]`
+
+**Summary:** Gets or sets the creation properties for the WebView2 control.
+
+**Value:** The creation properties, or `null` to use default properties.
+
+**Remarks:** This property forwards to the base WebView2 `CreationProperties` property.
+
+### DefaultBackgroundColor
+
+**Type:** `Color`
+
+**Access:** Public get/set
+
+**Attributes:**
+- `[Category("Appearance")]`
+- `[Description("Gets or sets the default background color for the WebView2 control.")]`
+
+**Summary:** Gets or sets the default background color for the WebView2 control.
+
+**Value:** The default background color.
+
+**Remarks:** This property forwards to the base WebView2 `DefaultBackgroundColor` property.
+
+**Example:**
+```csharp
+webView.DefaultBackgroundColor = Color.White;
+```
+
+### ZoomFactor
+
+**Type:** `double`
+
+**Access:** Public get/set
+
+**Attributes:**
+- `[Category("Behavior")]`
+- `[Description("Gets or sets the zoom factor for the WebView2 control.")]`
+- `[DefaultValue(1.0)]`
+
+**Summary:** Gets or sets the zoom factor for the WebView2 control.
+
+**Value:** The zoom factor (1.0 = 100%).
+
+**Remarks:** This property forwards to the base WebView2 `ZoomFactor` property.
+
+**Example:**
+```csharp
+webView.ZoomFactor = 1.5; // 150% zoom
+```
+
+### Dock
+
+**Type:** `DockStyle`
+
+**Access:** Public get/set
+
+**Attributes:**
+- `[Category("Layout")]`
+- `[Description("Gets or sets which edge of the parent container a control is docked to.")]`
+- `[DefaultValue(DockStyle.None)]`
+
+**Summary:** Gets or sets which edge of the parent container a control is docked to.
+
+**Value:** One of the `DockStyle` values. The default is `DockStyle.None`.
+
+**Remarks:** This property forwards to the base Control `Dock` property.
+
+**Example:**
+```csharp
+webView.Dock = DockStyle.Fill;
 ```
 
 ---
@@ -503,7 +607,7 @@ webView.CoreWebView2.NewWindowRequested += (sender, e) =>
 ### System Requirements
 - Windows 10 version 1803 (build 17134) or later
 - WebView2 Runtime installed on target system
-- .NET Framework 4.7.2 or later, or .NET 8.0 or later
+- **.NET 8.0 or later** (.NET Framework is not supported for this control)
 
 ### Dependencies
 - `Microsoft.Web.WebView2.WinForms` NuGet package
@@ -511,7 +615,7 @@ webView.CoreWebView2.NewWindowRequested += (sender, e) =>
 - `WebView2Loader.dll` (included with WinForms package)
 
 ### Conditional Compilation
-The control is only available when `WEBVIEW2_AVAILABLE` is defined. This ensures compatibility with systems that don't have WebView2 dependencies.
+The control is only available when `WEBVIEW2_AVAILABLE` is defined **and** the target framework is .NET 8.0 or greater (`NET8_0_OR_GREATER`). This ensures compatibility with systems that don't have WebView2 dependencies and limits availability to supported frameworks.
 
 ---
 
