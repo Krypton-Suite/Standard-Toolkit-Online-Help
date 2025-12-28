@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Touchscreen Support Feature | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Touchscreen Support Feature | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="touchscreen-support-feature">Touchscreen Support Feature</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The Touchscreen Support feature provides a global mechanism to automatically scale Krypton controls to make them more suitable for touch interaction. When enabled, all Krypton controls are scaled by a configurable factor (default 1.25, representing a 25% size increase) to improve usability on touchscreen devices. <strong>Both control sizes and text fonts are scaled</strong>, ensuring that text remains readable and proportional to the larger controls.</p>
+<p>This feature was introduced to address the growing prevalence of touchscreen devices, where standard-sized controls can be difficult to interact with using touch input.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#implementation-details">Implementation Details</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#known-limitations">Known Limitations</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+<hr>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="enable-touchscreen-support">Enable Touchscreen Support</h3>
+<pre><code class="lang-csharp">// Enable with default 25% scaling (1.25x)
+KryptonManager.GlobalTouchscreenSupport = true;
+</code></pre>
+<h3 id="customize-scale-factor">Customize Scale Factor</h3>
+<pre><code class="lang-csharp">// Enable with custom 50% scaling (1.5x)
+KryptonManager.GlobalTouchscreenSupport = true;
+KryptonManager.GlobalTouchscreenScaleFactor = 1.5f;
+</code></pre>
+<h3 id="using-the-touchscreensettings-api-recommended">Using the TouchscreenSettings API (Recommended)</h3>
+<pre><code class="lang-csharp">// All touchscreen settings grouped together (designer-friendly)
+KryptonManager.TouchscreenSettings.Enabled = true;
+KryptonManager.TouchscreenSettings.ControlScaleFactor = 1.5f;
+KryptonManager.TouchscreenSettings.FontScalingEnabled = true;
+KryptonManager.TouchscreenSettings.FontScaleFactor = 1.25f;
+</code></pre>
+<h3 id="disable-touchscreen-support">Disable Touchscreen Support</h3>
+<pre><code class="lang-csharp">// Disable to return controls to normal size
+KryptonManager.GlobalTouchscreenSupport = false;
+// Or using the new API:
+KryptonManager.TouchscreenSettings.Enabled = false;
+</code></pre>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="kryptonmanager-class">KryptonManager Class</h3>
+<h4 id="static-properties">Static Properties</h4>
+<h5 id="usetouchscreensupport-static"><code>UseTouchscreenSupport</code> (static)</h5>
+<p>Gets or sets the global flag that determines if touchscreen support is enabled.</p>
+<p><strong>Type:</strong> <code>bool</code><br>
+<strong>Default:</strong> <code>false</code></p>
+<pre><code class="lang-csharp">public static bool UseTouchscreenSupport { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>When set to <code>true</code>, all Krypton controls will be scaled according to the <code>TouchscreenScaleFactorValue</code></li>
+<li>When set to <code>false</code>, controls return to their normal size</li>
+<li>Changing this value fires the <code>GlobalTouchscreenSupportChanged</code> event</li>
+<li>All controls automatically refresh when this value changes</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">KryptonManager.UseTouchscreenSupport = true;
+</code></pre>
+<hr>
+<h5 id="touchscreenscalefactorvalue-static"><code>TouchscreenScaleFactorValue</code> (static)</h5>
+<p>Gets or sets the global scale factor applied to controls when touchscreen support is enabled.</p>
+<p><strong>Type:</strong> <code>float</code><br>
+<strong>Default:</strong> <code>1.25f</code> (25% larger)</p>
+<pre><code class="lang-csharp">public static float TouchscreenScaleFactorValue { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Must be greater than 0</li>
+<li>A value of <code>1.25</code> means controls will be 25% larger</li>
+<li>A value of <code>1.5</code> means controls will be 50% larger</li>
+<li>A value of <code>1.0</code> means no scaling (same as disabled)</li>
+<li>Changing this value fires the <code>GlobalTouchscreenSupportChanged</code> event (only if touchscreen support is enabled)</li>
+<li>Uses epsilon comparison (0.001f) to avoid unnecessary updates</li>
+</ul>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>ArgumentOutOfRangeException</code> if value is less than or equal to 0</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">KryptonManager.TouchscreenScaleFactorValue = 1.5f; // 50% larger
+</code></pre>
+<hr>
+<h5 id="touchscreenscalefactor-static-read-only"><code>TouchscreenScaleFactor</code> (static, read-only)</h5>
+<p>Gets the effective touchscreen scale factor based on the current settings.</p>
+<p><strong>Type:</strong> <code>float</code><br>
+<strong>Returns:</strong> The configured scale factor when touchscreen support is enabled, otherwise <code>1.0f</code></p>
+<pre><code class="lang-csharp">public static float TouchscreenScaleFactor { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Returns <code>TouchscreenScaleFactorValue</code> when <code>UseTouchscreenSupport</code> is <code>true</code></li>
+<li>Returns <code>1.0f</code> when <code>UseTouchscreenSupport</code> is <code>false</code></li>
+<li>This is the value used internally by the layout system</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">float currentScale = KryptonManager.TouchscreenScaleFactor;
+// Returns 1.25 if enabled, 1.0 if disabled
+</code></pre>
+<hr>
+<h4 id="instance-properties-designer-support">Instance Properties (Designer Support)</h4>
+<h5 id="globaltouchscreensupport"><code>GlobalTouchscreenSupport</code></h5>
+<p>Gets or sets a value indicating if touchscreen support is enabled, making controls larger based on the scale factor.</p>
+<p><strong>Type:</strong> <code>bool</code><br>
+<strong>Default:</strong> <code>false</code><br>
+<strong>Category:</strong> <code>Visuals</code></p>
+<pre><code class="lang-csharp">[Category(@&quot;Visuals&quot;)]
+[Description(@&quot;Should touchscreen support be enabled, making controls larger for easier touch interaction.&quot;)]
+[DefaultValue(false)]
+public bool GlobalTouchscreenSupport { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>This property wraps the static <code>UseTouchscreenSupport</code> property</li>
+<li>Provided for designer support and instance-based configuration</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Via instance (designer-friendly)
+kryptonManager1.GlobalTouchscreenSupport = true;
+
+// Via static (programmatic)
+KryptonManager.UseTouchscreenSupport = true;
+</code></pre>
+<hr>
+<h5 id="globaltouchscreenscalefactor"><code>GlobalTouchscreenScaleFactor</code></h5>
+<p>Gets or sets the scale factor applied to controls when touchscreen support is enabled.</p>
+<p><strong>Type:</strong> <code>float</code><br>
+<strong>Default:</strong> <code>1.25f</code><br>
+<strong>Category:</strong> <code>Visuals</code></p>
+<pre><code class="lang-csharp">[Category(@&quot;Visuals&quot;)]
+[Description(@&quot;The scale factor applied to controls when touchscreen support is enabled. Default is 1.25 (25% larger).&quot;)]
+[DefaultValue(1.25f)]
+public float GlobalTouchscreenScaleFactor { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>This property wraps the static <code>TouchscreenScaleFactorValue</code> property</li>
+<li>Provided for designer support and instance-based configuration</li>
+<li>Must be greater than 0</li>
+</ul>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>ArgumentOutOfRangeException</code> if value is less than or equal to 0</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Via instance (designer-friendly)
+kryptonManager1.GlobalTouchscreenScaleFactor = 1.5f;
+
+// Via static (programmatic)
+KryptonManager.TouchscreenScaleFactorValue = 1.5f;
+</code></pre>
+<hr>
+<h5 id="globaltouchscreenfontscaling"><code>GlobalTouchscreenFontScaling</code></h5>
+<p>Gets or sets a value indicating if font scaling is enabled when touchscreen support is active.</p>
+<p><strong>Type:</strong> <code>bool</code><br>
+<strong>Default:</strong> <code>true</code><br>
+<strong>Category:</strong> <code>Visuals</code></p>
+<pre><code class="lang-csharp">[Category(@&quot;Visuals&quot;)]
+[Description(@&quot;Should font scaling be enabled when touchscreen support is active.&quot;)]
+[DefaultValue(true)]
+public bool GlobalTouchscreenFontScaling { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>This property wraps the static <code>UseTouchscreenFontScaling</code> property</li>
+<li>When enabled, fonts are scaled by the <code>GlobalTouchscreenFontScaleFactor</code> value</li>
+<li>Font scaling is independent of control scaling and can be disabled separately</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Enable font scaling (default)
+KryptonManager.GlobalTouchscreenFontScaling = true;
+
+// Disable font scaling (only controls scale, not text)
+KryptonManager.GlobalTouchscreenFontScaling = false;
+</code></pre>
+<hr>
+<h5 id="globaltouchscreenfontscalefactor"><code>GlobalTouchscreenFontScaleFactor</code></h5>
+<p>Gets or sets the scale factor applied to fonts when touchscreen support and font scaling are enabled.</p>
+<p><strong>Type:</strong> <code>float</code><br>
+<strong>Default:</strong> <code>1.25f</code><br>
+<strong>Category:</strong> <code>Visuals</code></p>
+<pre><code class="lang-csharp">[Category(@&quot;Visuals&quot;)]
+[Description(@&quot;The scale factor applied to fonts when touchscreen support and font scaling are enabled. Default is 1.25 (25% larger).&quot;)]
+[DefaultValue(1.25f)]
+public float GlobalTouchscreenFontScaleFactor { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>This property wraps the static <code>TouchscreenFontScaleFactorValue</code> property</li>
+<li>Must be greater than 0</li>
+<li>Can be set independently from control scaling</li>
+</ul>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>ArgumentOutOfRangeException</code> if value is less than or equal to 0</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Scale fonts by 30% (1.3x)
+KryptonManager.GlobalTouchscreenFontScaleFactor = 1.3f;
+</code></pre>
+<hr>
+<h5 id="touchscreensettings"><code>TouchscreenSettings</code></h5>
+<p>Gets the touchscreen settings object that groups all touchscreen-related properties.</p>
+<p><strong>Type:</strong> <code>KryptonTouchscreenSettings</code><br>
+<strong>Category:</strong> <code>Visuals</code></p>
+<pre><code class="lang-csharp">[Category(@&quot;Visuals&quot;)]
+[Description(@&quot;Touchscreen support settings.&quot;)]
+[MergableProperty(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+[TypeConverter(typeof(ExpandableObjectConverter))]
+public KryptonTouchscreenSettings TouchscreenSettings { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>This property provides a convenient way to access all touchscreen settings in one place</li>
+<li>Appears as an expandable property in the Visual Studio designer</li>
+<li>All properties in this object map to the corresponding static properties in <code>KryptonManager</code></li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Configure all touchscreen settings via the grouped API
+KryptonManager.TouchscreenSettings.Enabled = true;
+KryptonManager.TouchscreenSettings.ControlScaleFactor = 1.5f;
+KryptonManager.TouchscreenSettings.FontScalingEnabled = true;
+KryptonManager.TouchscreenSettings.FontScaleFactor = 1.3f;
+</code></pre>
+<hr>
+<h4 id="static-properties-font-scaling">Static Properties (Font Scaling)</h4>
+<h5 id="usetouchscreenfontscaling-static"><code>UseTouchscreenFontScaling</code> (static)</h5>
+<p>Gets or sets the global flag that determines if font scaling is enabled when touchscreen support is active.</p>
+<p><strong>Type:</strong> <code>bool</code><br>
+<strong>Default:</strong> <code>true</code></p>
+<pre><code class="lang-csharp">public static bool UseTouchscreenFontScaling { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>When set to <code>true</code>, fonts are scaled by <code>TouchscreenFontScaleFactorValue</code> when touchscreen support is enabled</li>
+<li>When set to <code>false</code>, fonts are not scaled even if touchscreen support is enabled</li>
+<li>Changing this value fires the <code>GlobalTouchscreenSupportChanged</code> event</li>
+<li>All controls automatically refresh when this value changes</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">KryptonManager.UseTouchscreenFontScaling = true;
+</code></pre>
+<hr>
+<h5 id="touchscreenfontscalefactorvalue-static"><code>TouchscreenFontScaleFactorValue</code> (static)</h5>
+<p>Gets or sets the global scale factor applied to fonts when touchscreen support and font scaling are enabled.</p>
+<p><strong>Type:</strong> <code>float</code><br>
+<strong>Default:</strong> <code>1.25f</code> (25% larger)</p>
+<pre><code class="lang-csharp">public static float TouchscreenFontScaleFactorValue { get; set; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Must be greater than 0</li>
+<li>A value of <code>1.25</code> means fonts will be 25% larger</li>
+<li>A value of <code>1.5</code> means fonts will be 50% larger</li>
+<li>A value of <code>1.0</code> means no font scaling</li>
+<li>Changing this value fires the <code>GlobalTouchscreenSupportChanged</code> event (only if touchscreen support and font scaling are enabled)</li>
+<li>Uses epsilon comparison (0.001f) to avoid unnecessary updates</li>
+</ul>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>ArgumentOutOfRangeException</code> if value is less than or equal to 0</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">KryptonManager.TouchscreenFontScaleFactorValue = 1.3f; // 30% larger fonts
+</code></pre>
+<hr>
+<h5 id="touchscreenfontscalefactor-static-read-only"><code>TouchscreenFontScaleFactor</code> (static, read-only)</h5>
+<p>Gets the effective font scale factor based on the current settings.</p>
+<p><strong>Type:</strong> <code>float</code><br>
+<strong>Returns:</strong> The configured font scale factor when touchscreen support and font scaling are enabled, otherwise <code>1.0f</code></p>
+<pre><code class="lang-csharp">public static float TouchscreenFontScaleFactor { get; }
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Returns <code>TouchscreenFontScaleFactorValue</code> when both <code>UseTouchscreenSupport</code> and <code>UseTouchscreenFontScaling</code> are <code>true</code></li>
+<li>Returns <code>1.0f</code> when either touchscreen support or font scaling is disabled</li>
+<li>This is the value used internally by the font scaling system</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">float currentFontScale = KryptonManager.TouchscreenFontScaleFactor;
+// Returns 1.25 if both enabled, 1.0 if either disabled
+</code></pre>
+<hr>
+<h4 id="static-events">Static Events</h4>
+<h5 id="globaltouchscreensupportchanged"><code>GlobalTouchscreenSupportChanged</code></h5>
+<p>Occurs when the touchscreen support setting or scale factor changes.</p>
+<p><strong>Type:</strong> <code>EventHandler</code><br>
+<strong>Category:</strong> <code>Property Changed</code></p>
+<pre><code class="lang-csharp">[Category(@&quot;Property Changed&quot;)]
+[Description(@&quot;Occurs when the value of the GlobalTouchscreenSupport or GlobalTouchscreenScaleFactor property is changed.&quot;)]
+public static event EventHandler? GlobalTouchscreenSupportChanged;
+</code></pre>
+<p><strong>Remarks:</strong></p>
+<ul>
+<li>Fires when <code>UseTouchscreenSupport</code> changes</li>
+<li>Fires when <code>TouchscreenScaleFactorValue</code> changes (only if touchscreen support is enabled)</li>
+<li>Fires when <code>UseTouchscreenFontScaling</code> changes</li>
+<li>Fires when <code>TouchscreenFontScaleFactorValue</code> changes (only if touchscreen support and font scaling are enabled)</li>
+<li>All Krypton controls automatically subscribe to this event</li>
+<li>Controls automatically refresh their layout when this event fires</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">KryptonManager.GlobalTouchscreenSupportChanged += (sender, e) =&gt;
+{
+    Console.WriteLine(&quot;Touchscreen support settings changed&quot;);
+    // All controls have already refreshed automatically
+};
+</code></pre>
+<hr>
+<h3 id="kryptontouchscreensettings-class">KryptonTouchscreenSettings Class</h3>
+<p>The <code>KryptonTouchscreenSettings</code> class provides a convenient way to access all touchscreen-related settings as a single expandable object in the Visual Studio designer.</p>
+<h4 id="properties">Properties</h4>
+<h5 id="enabled"><code>Enabled</code></h5>
+<p>Gets or sets a value indicating if touchscreen support is enabled.</p>
+<p><strong>Type:</strong> <code>bool</code><br>
+<strong>Default:</strong> <code>false</code></p>
+<p>Maps to: <code>KryptonManager.UseTouchscreenSupport</code></p>
+<hr>
+<h5 id="controlscalefactor"><code>ControlScaleFactor</code></h5>
+<p>Gets or sets the scale factor applied to controls when touchscreen support is enabled.</p>
+<p><strong>Type:</strong> <code>float</code><br>
+<strong>Default:</strong> <code>1.25f</code><br>
+<strong>Must be:</strong> Greater than 0</p>
+<p>Maps to: <code>KryptonManager.TouchscreenScaleFactorValue</code></p>
+<hr>
+<h5 id="fontscalingenabled"><code>FontScalingEnabled</code></h5>
+<p>Gets or sets a value indicating if font scaling is enabled when touchscreen support is active.</p>
+<p><strong>Type:</strong> <code>bool</code><br>
+<strong>Default:</strong> <code>true</code></p>
+<p>Maps to: <code>KryptonManager.UseTouchscreenFontScaling</code></p>
+<hr>
+<h5 id="fontscalefactor"><code>FontScaleFactor</code></h5>
+<p>Gets or sets the scale factor applied to fonts when touchscreen support and font scaling are enabled.</p>
+<p><strong>Type:</strong> <code>float</code><br>
+<strong>Default:</strong> <code>1.25f</code><br>
+<strong>Must be:</strong> Greater than 0</p>
+<p>Maps to: <code>KryptonManager.TouchscreenFontScaleFactorValue</code></p>
+<hr>
+<h4 id="methods">Methods</h4>
+<h5 id="reset"><code>Reset()</code></h5>
+<p>Resets all touchscreen settings to their default values.</p>
+<pre><code class="lang-csharp">public void Reset()
+</code></pre>
+<hr>
+<h5 id="isdefault"><code>IsDefault</code></h5>
+<p>Gets a value indicating whether all settings are at their default values.</p>
+<p><strong>Type:</strong> <code>bool</code></p>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-basic-enabledisable">Example 1: Basic Enable/Disable</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+
+public class MainForm : KryptonForm
+{
+    private void EnableTouchscreenMode()
+    {
+        // Enable touchscreen support with default 25% scaling
+        KryptonManager.GlobalTouchscreenSupport = true;
+        // All controls on all forms will now be 25% larger
+    }
+
+    private void DisableTouchscreenMode()
+    {
+        // Disable touchscreen support
+        KryptonManager.GlobalTouchscreenSupport = false;
+        // All controls return to normal size
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-2-custom-scale-factor">Example 2: Custom Scale Factor</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+
+public class TouchscreenApp
+{
+    public void ConfigureForTablet()
+    {
+        // Enable with 50% larger controls for tablet devices
+        KryptonManager.GlobalTouchscreenSupport = true;
+        KryptonManager.GlobalTouchscreenScaleFactor = 1.5f;
+    }
+
+    public void ConfigureForPhone()
+    {
+        // Enable with 75% larger controls for phone devices
+        KryptonManager.GlobalTouchscreenSupport = true;
+        KryptonManager.GlobalTouchscreenScaleFactor = 1.75f;
+    }
+
+    public void ConfigureForDesktop()
+    {
+        // Disable for traditional desktop
+        KryptonManager.GlobalTouchscreenSupport = false;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-3-runtime-toggle-using-touchscreensettings-api">Example 3: Runtime Toggle (Using TouchscreenSettings API)</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+using System.Windows.Forms;
+
+public class SettingsForm : KryptonForm
+{
+    private KryptonCheckBox chkTouchscreenMode;
+    private KryptonTrackBar trackControlScale;
+    private KryptonCheckBox chkFontScaling;
+    private KryptonTrackBar trackFontScale;
+
+    public SettingsForm()
+    {
+        InitializeComponent();
+        
+        // Initialize UI from TouchscreenSettings
+        chkTouchscreenMode.Checked = KryptonManager.TouchscreenSettings.Enabled;
+        trackControlScale.Value = (int)(KryptonManager.TouchscreenSettings.ControlScaleFactor * 100);
+        chkFontScaling.Checked = KryptonManager.TouchscreenSettings.FontScalingEnabled;
+        trackFontScale.Value = (int)(KryptonManager.TouchscreenSettings.FontScaleFactor * 100);
+        trackFontScale.Enabled = chkFontScaling.Checked;
+        
+        // Wire up events
+        chkTouchscreenMode.CheckedChanged += ChkTouchscreenMode_CheckedChanged;
+        trackControlScale.ValueChanged += TrackControlScale_ValueChanged;
+        chkFontScaling.CheckedChanged += ChkFontScaling_CheckedChanged;
+        trackFontScale.ValueChanged += TrackFontScale_ValueChanged;
+    }
+
+    private void ChkTouchscreenMode_CheckedChanged(object sender, EventArgs e)
+    {
+        // Toggle touchscreen support
+        KryptonManager.TouchscreenSettings.Enabled = chkTouchscreenMode.Checked;
+        // Controls automatically refresh
+    }
+
+    private void TrackControlScale_ValueChanged(object sender, EventArgs e)
+    {
+        // Update control scale factor (convert from percentage to factor)
+        float scaleFactor = 1.0f + (trackControlScale.Value / 100f);
+        KryptonManager.TouchscreenSettings.ControlScaleFactor = scaleFactor;
+        // Controls automatically refresh
+    }
+
+    private void ChkFontScaling_CheckedChanged(object sender, EventArgs e)
+    {
+        KryptonManager.TouchscreenSettings.FontScalingEnabled = chkFontScaling.Checked;
+        trackFontScale.Enabled = chkFontScaling.Checked;
+        // Controls automatically refresh
+    }
+
+    private void TrackFontScale_ValueChanged(object sender, EventArgs e)
+    {
+        // Update font scale factor (convert from percentage to factor)
+        float fontScaleFactor = 1.0f + (trackFontScale.Value / 100f);
+        KryptonManager.TouchscreenSettings.FontScaleFactor = fontScaleFactor;
+        // Controls automatically refresh
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-4-designer-configuration">Example 4: Designer Configuration</h3>
+<ol>
+<li>Add a <code>KryptonManager</code> component to your form from the toolbox</li>
+<li>Select the <code>KryptonManager</code> component</li>
+<li>In the Properties window, expand the <code>TouchscreenSettings</code> property</li>
+<li>Set the following sub-properties:
+<ul>
+<li><code>Enabled</code> = <code>True</code></li>
+<li><code>ControlScaleFactor</code> = <code>1.25</code> (or your desired value)</li>
+<li><code>FontScalingEnabled</code> = <code>True</code> (default)</li>
+<li><code>FontScaleFactor</code> = <code>1.25</code> (or your desired value)</li>
+</ul>
+</li>
+<li>All controls on the form will automatically use touchscreen scaling</li>
+</ol>
+<p><strong>Alternative:</strong> You can also use the individual properties:</p>
+<ul>
+<li><code>GlobalTouchscreenSupport</code> = <code>True</code></li>
+<li><code>GlobalTouchscreenScaleFactor</code> = <code>1.25</code></li>
+<li><code>GlobalTouchscreenFontScaling</code> = <code>True</code></li>
+<li><code>GlobalTouchscreenFontScaleFactor</code> = <code>1.25</code></li>
+</ul>
+<hr>
+<h3 id="example-5-conditional-enable-based-on-device">Example 5: Conditional Enable Based on Device</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+using System.Windows.Forms;
+
+public class AppInitializer
+{
+    public static void InitializeTouchscreenSupport()
+    {
+        // Detect if running on a touchscreen device
+        bool hasTouchscreen = SystemInformation.TabletPC;
+        
+        if (hasTouchscreen)
+        {
+            // Enable touchscreen support
+            KryptonManager.GlobalTouchscreenSupport = true;
+            
+            // Adjust scale factor based on screen DPI
+            float dpiScale = GetDpiScale();
+            if (dpiScale &gt; 1.5f)
+            {
+                // High DPI - use smaller scale factor
+                KryptonManager.GlobalTouchscreenScaleFactor = 1.25f;
+            }
+            else
+            {
+                // Normal DPI - use larger scale factor
+                KryptonManager.GlobalTouchscreenScaleFactor = 1.5f;
+            }
+        }
+        else
+        {
+            // Traditional desktop - disable
+            KryptonManager.GlobalTouchscreenSupport = false;
+        }
+    }
+
+    private static float GetDpiScale()
+    {
+        using (Graphics g = Graphics.FromHwnd(IntPtr.Zero))
+        {
+            return g.DpiX / 96f; // 96 is standard DPI
+        }
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-6-event-monitoring">Example 6: Event Monitoring</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+
+public class TouchscreenMonitor
+{
+    public TouchscreenMonitor()
+    {
+        // Subscribe to changes
+        KryptonManager.GlobalTouchscreenSupportChanged += OnTouchscreenSupportChanged;
+    }
+
+    private void OnTouchscreenSupportChanged(object? sender, EventArgs e)
+    {
+        bool isEnabled = KryptonManager.UseTouchscreenSupport;
+        float scaleFactor = KryptonManager.TouchscreenScaleFactor;
+        
+        Console.WriteLine($&quot;Touchscreen support changed:&quot;);
+        Console.WriteLine($&quot;  Enabled: {isEnabled}&quot;);
+        Console.WriteLine($&quot;  Scale Factor: {scaleFactor}&quot;);
+        Console.WriteLine($&quot;  Effective Size: {(scaleFactor * 100 - 100):F1}% larger&quot;);
+        
+        // All controls have already refreshed automatically
+        // You can perform additional actions here if needed
+    }
+
+    public void Dispose()
+    {
+        KryptonManager.GlobalTouchscreenSupportChanged -= OnTouchscreenSupportChanged;
+    }
+}
+</code></pre>
+<hr>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="how-it-works">How It Works</h3>
+<ol>
+<li><p><strong>Global Setting</strong>: The touchscreen support is controlled by static properties in <code>KryptonManager</code>, making it a global setting that affects all Krypton controls application-wide.</p>
+</li>
+<li><p><strong>Size Calculation</strong>: When a control needs to determine its preferred size, it calls <code>ViewManager.GetPreferredSize()</code>. This method:</p>
+<ul>
+<li>Calculates the preferred size based on the control's content and layout</li>
+<li>If touchscreen support is enabled, multiplies the width and height by the scale factor</li>
+<li>Returns the scaled size</li>
+</ul>
+</li>
+<li><p><strong>Font Scaling</strong>: When a control retrieves a font from the palette system, <code>PaletteRedirect</code> intercepts the font retrieval:</p>
+<ul>
+<li>If touchscreen support and font scaling are both enabled, creates a new font with the size multiplied by the font scale factor</li>
+<li>Preserves the font family, style, and unit</li>
+<li>Returns the scaled font to the control</li>
+<li>Font scaling can be enabled/disabled independently from control scaling</li>
+</ul>
+</li>
+<li><p><strong>Automatic Refresh</strong>: When touchscreen settings change:</p>
+<ul>
+<li>The <code>GlobalTouchscreenSupportChanged</code> event fires</li>
+<li>All controls that inherit from <code>VisualControlBase</code> automatically subscribe to this event</li>
+<li>Each control calls <code>OnNeedPaint()</code> with layout required</li>
+<li>Controls recalculate their sizes and refresh their display</li>
+</ul>
+</li>
+</ol>
+<h3 id="code-flow">Code Flow</h3>
+<pre><code>User sets GlobalTouchscreenSupport = true
+    ↓
+UseTouchscreenSupport setter fires
+    ↓
+OnGlobalTouchscreenSupportChanged() called
+    ↓
+GlobalTouchscreenSupportChanged event fires
+    ↓
+All VisualControlBase controls receive event
+    ↓
+Each control calls OnGlobalTouchscreenSupportChanged()
+    ↓
+OnNeedPaint() called with NeedLayoutEventArgs(true)
+    ↓
+Control layout recalculated
+    ↓
+ViewManager.GetPreferredSize() called
+    ↓
+Scaling applied if UseTouchscreenSupport is true
+    ↓
+Control displays at new size
+</code></pre>
+<h3 id="performance-considerations">Performance Considerations</h3>
+<ul>
+<li><p><strong>Scaling Calculation</strong>: The scaling is applied during layout calculation, which is already a necessary operation. The additional overhead is minimal (a single multiplication per dimension).</p>
+</li>
+<li><p><strong>Event Handling</strong>: Controls automatically subscribe to the change event, but the event only fires when settings actually change, not on every layout.</p>
+</li>
+<li><p><strong>Memory</strong>: No additional memory is required - the scaling is applied on-the-fly during size calculations.</p>
+</li>
+</ul>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-set-scale-factors-before-enabling">1. Set Scale Factors Before Enabling</h3>
+<p>If you're customizing the scale factors, set them before enabling touchscreen support to avoid extra refreshes:</p>
+<pre><code class="lang-csharp">// Good: Set scale factors first, then enable
+KryptonManager.TouchscreenSettings.ControlScaleFactor = 1.5f;
+KryptonManager.TouchscreenSettings.FontScaleFactor = 1.3f;
+KryptonManager.TouchscreenSettings.Enabled = true; // Only one refresh
+
+// Less efficient: Enable first, then change scales
+KryptonManager.TouchscreenSettings.Enabled = true; // First refresh
+KryptonManager.TouchscreenSettings.ControlScaleFactor = 1.5f; // Second refresh
+KryptonManager.TouchscreenSettings.FontScaleFactor = 1.3f; // Third refresh
+</code></pre>
+<h3 id="2-independent-control-and-font-scaling">2. Independent Control and Font Scaling</h3>
+<p>Control scaling and font scaling are independent. You can:</p>
+<ul>
+<li>Scale controls but not fonts (useful if fonts are already large enough)</li>
+<li>Scale fonts differently than controls (useful for fine-tuning readability)</li>
+<li>Disable font scaling entirely while keeping control scaling</li>
+</ul>
+<pre><code class="lang-csharp">// Scale controls but not fonts
+KryptonManager.TouchscreenSettings.Enabled = true;
+KryptonManager.TouchscreenSettings.FontScalingEnabled = false;
+
+// Different scale factors for controls and fonts
+KryptonManager.TouchscreenSettings.ControlScaleFactor = 1.5f; // 50% larger controls
+KryptonManager.TouchscreenSettings.FontScaleFactor = 1.2f; // 20% larger fonts
+</code></pre>
+<h3 id="3-use-appropriate-scale-factors">3. Use Appropriate Scale Factors</h3>
+<ul>
+<li><strong>1.25 (25% larger)</strong>: Good default for most touchscreen devices</li>
+<li><strong>1.5 (50% larger)</strong>: Better for smaller screens or users with dexterity issues</li>
+<li><strong>1.75 (75% larger)</strong>: For very small screens or accessibility needs</li>
+<li><strong>2.0 (100% larger)</strong>: Extreme cases only, may cause layout issues</li>
+</ul>
+<h3 id="4-test-layout-at-different-scale-factors">4. Test Layout at Different Scale Factors</h3>
+<p>Some layouts may break at extreme scale factors. Test your application with different scale factors to ensure:</p>
+<ul>
+<li>Controls don't overlap</li>
+<li>Forms fit on screen</li>
+<li>Text remains readable</li>
+<li>Scrollbars appear when needed</li>
+</ul>
+<h3 id="5-consider-dpi-scaling">5. Consider DPI Scaling</h3>
+<p>Windows DPI scaling and touchscreen scaling are independent:</p>
+<ul>
+<li>DPI scaling affects the entire application</li>
+<li>Touchscreen scaling only affects Krypton controls</li>
+<li>Both can be active simultaneously</li>
+</ul>
+<p>Consider the combined effect when setting scale factors.</p>
+<h3 id="6-disable-for-non-touch-devices">6. Disable for Non-Touch Devices</h3>
+<p>If your application runs on both touch and non-touch devices, detect the device type and only enable touchscreen support when appropriate:</p>
+<pre><code class="lang-csharp">if (SystemInformation.TabletPC || HasTouchInput())
+{
+    KryptonManager.GlobalTouchscreenSupport = true;
+}
+</code></pre>
+<h3 id="7-user-preference-storage">7. User Preference Storage</h3>
+<p>Store the user's touchscreen preferences in application settings:</p>
+<pre><code class="lang-csharp">// Save
+Properties.Settings.Default.TouchscreenEnabled = KryptonManager.TouchscreenSettings.Enabled;
+Properties.Settings.Default.TouchscreenControlScale = KryptonManager.TouchscreenSettings.ControlScaleFactor;
+Properties.Settings.Default.TouchscreenFontScaling = KryptonManager.TouchscreenSettings.FontScalingEnabled;
+Properties.Settings.Default.TouchscreenFontScale = KryptonManager.TouchscreenSettings.FontScaleFactor;
+Properties.Settings.Default.Save();
+
+// Load
+KryptonManager.TouchscreenSettings.ControlScaleFactor = Properties.Settings.Default.TouchscreenControlScale;
+KryptonManager.TouchscreenSettings.FontScaleFactor = Properties.Settings.Default.TouchscreenFontScale;
+KryptonManager.TouchscreenSettings.FontScalingEnabled = Properties.Settings.Default.TouchscreenFontScaling;
+KryptonManager.TouchscreenSettings.Enabled = Properties.Settings.Default.TouchscreenEnabled;
+</code></pre>
+<hr>
+<h2 id="advanced-components-support">Advanced Components Support</h2>
+<p>The touchscreen support feature works seamlessly with all advanced Krypton components:</p>
+<h3 id="kryptonnavigator">KryptonNavigator</h3>
+<p>The <code>KryptonNavigator</code> control inherits from <code>VisualSimple</code>, which uses <code>ViewManager.GetPreferredSize()</code>. This means:</p>
+<ul>
+<li>All navigator modes (Bar, Tabs, CheckButtons, Outlook, etc.) scale automatically</li>
+<li>Tab buttons, page headers, and navigation buttons all scale</li>
+<li>The entire navigator control scales proportionally</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">KryptonManager.GlobalTouchscreenSupport = true;
+// Navigator tabs and buttons will be 25% larger automatically
+</code></pre>
+<h3 id="kryptonribbon">KryptonRibbon</h3>
+<p>The <code>KryptonRibbon</code> control inherits from <code>VisualSimple</code>, so it automatically scales:</p>
+<ul>
+<li>Ribbon tabs scale larger</li>
+<li>Ribbon groups scale larger</li>
+<li>Ribbon buttons (large and small) scale proportionally</li>
+<li>Quick Access Toolbar buttons scale</li>
+<li>Application button scales</li>
+</ul>
+<p><strong>Note:</strong> Ribbon is typically docked to the top of a form. When scaled, it will take more vertical space, so ensure your form has adequate height.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">KryptonManager.GlobalTouchscreenSupport = true;
+KryptonManager.GlobalTouchscreenScaleFactor = 1.5f;
+// Ribbon will be 50% larger, making it easier to touch
+</code></pre>
+<h3 id="kryptonworkspace">KryptonWorkspace</h3>
+<p>The <code>KryptonWorkspace</code> control inherits from <code>VisualContainerControl</code>, so it scales automatically:</p>
+<ul>
+<li>Workspace cells scale larger</li>
+<li>Cell tabs scale larger</li>
+<li>Splitter bars scale (making them easier to grab)</li>
+<li>All content within workspace cells scales</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">KryptonManager.GlobalTouchscreenSupport = true;
+// Workspace cells and their tabs will scale automatically
+</code></pre>
+<h3 id="kryptonworkspacecell">KryptonWorkspaceCell</h3>
+<p><code>KryptonWorkspaceCell</code> inherits from <code>KryptonNavigator</code>, so it automatically benefits from touchscreen scaling:</p>
+<ul>
+<li>Cell tabs scale larger</li>
+<li>Navigation buttons scale larger</li>
+<li>All content within cells scales</li>
+</ul>
+<h3 id="kryptondockingmanager">KryptonDockingManager</h3>
+<p>Docking panels and controls scale automatically:</p>
+<ul>
+<li>Docking panels scale larger</li>
+<li>Auto-hide slide panels scale larger</li>
+<li>Floating windows scale larger</li>
+<li>Docking separators scale (making them easier to grab)</li>
+</ul>
+<p><strong>Note:</strong> <code>KryptonDockingManager</code> itself is a component (not a control), so it doesn't have a size. However, all docking-related controls scale automatically.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">KryptonManager.GlobalTouchscreenSupport = true;
+// All docking panels and controls will scale automatically
+</code></pre>
+<h3 id="how-it-works-1">How It Works</h3>
+<p>All these components inherit from base classes that use <code>ViewManager.GetPreferredSize()</code>:</p>
+<ul>
+<li><code>KryptonNavigator</code> → <code>VisualSimple</code> → <code>VisualControlBase</code> → Uses <code>ViewManager</code></li>
+<li><code>KryptonRibbon</code> → <code>VisualSimple</code> → <code>VisualControlBase</code> → Uses <code>ViewManager</code></li>
+<li><code>KryptonWorkspace</code> → <code>VisualContainerControl</code> → <code>VisualContainerControlBase</code> → Uses <code>ViewManager</code></li>
+<li><code>KryptonWorkspaceCell</code> → <code>KryptonNavigator</code> → Uses <code>ViewManager</code></li>
+</ul>
+<p>Since the scaling is applied in <code>ViewManager.GetPreferredSize()</code>, all these components automatically benefit from touchscreen support without any additional code.</p>
+<hr>
+<h2 id="known-limitations">Known Limitations</h2>
+<h3 id="1-only-affects-preferred-size">1. Only Affects Preferred Size</h3>
+<p>The scaling only affects the control's preferred size calculation. If a control has:</p>
+<ul>
+<li>Fixed <code>Size</code> or <code>Width</code>/<code>Height</code> properties set</li>
+<li><code>Dock</code> or <code>Anchor</code> properties that constrain size</li>
+<li>Parent container size constraints</li>
+</ul>
+<p>The scaling may not be fully effective. Controls should use <code>AutoSize</code> or allow natural sizing for best results.</p>
+<h3 id="2-non-krypton-controls">2. Non-Krypton Controls</h3>
+<p>This feature only affects Krypton controls. Standard Windows Forms controls are not scaled. If your form mixes Krypton and standard controls, they may appear mismatched in size.</p>
+<h3 id="3-advanced-components-support">3. Advanced Components Support</h3>
+<p>The following advanced Krypton components <strong>DO</strong> support touchscreen scaling because they inherit from <code>VisualControlBase</code>:</p>
+<ul>
+<li><strong>KryptonNavigator</strong>: All navigator modes (Bar, Tabs, CheckButtons, etc.) scale automatically</li>
+<li><strong>KryptonRibbon</strong>: Ribbon tabs, groups, and buttons scale automatically</li>
+<li><strong>KryptonWorkspace</strong>: Workspace cells and their content scale automatically</li>
+<li><strong>KryptonWorkspaceCell</strong>: Inherits from <code>KryptonNavigator</code>, so it scales automatically</li>
+<li><strong>KryptonDockingManager</strong>: Docking panels and controls scale automatically (docking manager itself is a component, not a control)</li>
+</ul>
+<p>All of these components use <code>ViewManager.GetPreferredSize()</code> internally, so they automatically benefit from touchscreen scaling without any additional code.</p>
+<h3 id="4-minimummaximum-size-constraints">4. Minimum/Maximum Size Constraints</h3>
+<p>Controls with <code>MinimumSize</code> or <code>MaximumSize</code> set may not scale as expected if the scaled size exceeds these constraints.</p>
+<h3 id="5-custom-controls">5. Custom Controls</h3>
+<p>Custom controls that don't inherit from <code>VisualControlBase</code> won't automatically receive touchscreen scaling. They would need to manually implement scaling in their <code>GetPreferredSize()</code> method.</p>
+<h3 id="6-form-size">6. Form Size</h3>
+<p>Forms themselves are not automatically resized. If controls grow larger, you may need to:</p>
+<ul>
+<li>Increase form size</li>
+<li>Enable scrolling</li>
+<li>Use layout panels that handle overflow</li>
+</ul>
+<h3 id="7-image-scaling">7. Image Scaling</h3>
+<p>Images within controls are not automatically scaled. Only the control's overall size is affected. If controls contain images, they may appear relatively smaller when controls are scaled up.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="controls-not-scaling">Controls Not Scaling</h3>
+<p><strong>Problem:</strong> Controls don't appear larger when touchscreen support is enabled.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Verify <code>KryptonManager.UseTouchscreenSupport</code> is <code>true</code></li>
+<li>Check that controls inherit from <code>VisualControlBase</code></li>
+<li>Ensure controls don't have fixed <code>Size</code> properties</li>
+<li>Verify controls use <code>AutoSize</code> or allow natural sizing</li>
+<li>Check for <code>MinimumSize</code>/<code>MaximumSize</code> constraints</li>
+</ol>
+<h3 id="controls-dont-return-to-normal-size">Controls Don't Return to Normal Size</h3>
+<p><strong>Problem:</strong> Controls remain large after disabling touchscreen support.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Verify <code>KryptonManager.UseTouchscreenSupport</code> is <code>false</code></li>
+<li>Force a layout refresh: <code>form.PerformLayout()</code> or <code>control.Invalidate()</code></li>
+<li>Check if controls have cached sizes that need clearing</li>
+</ol>
+<h3 id="layout-issues-at-high-scale-factors">Layout Issues at High Scale Factors</h3>
+<p><strong>Problem:</strong> Controls overlap or forms don't fit on screen at high scale factors.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Reduce the scale factor (try 1.25 instead of 1.5 or higher)</li>
+<li>Increase form size</li>
+<li>Use scrollable containers</li>
+<li>Review layout constraints and anchors</li>
+<li>Consider responsive layout techniques</li>
+</ol>
+<h3 id="performance-issues">Performance Issues</h3>
+<p><strong>Problem:</strong> Application feels sluggish with touchscreen support enabled.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Verify you're not changing scale factor frequently</li>
+<li>Check for excessive layout calculations</li>
+<li>Profile to identify bottlenecks</li>
+<li>Consider caching calculated sizes if implementing custom controls</li>
+</ol>
+<h3 id="event-not-firing">Event Not Firing</h3>
+<p><strong>Problem:</strong> <code>GlobalTouchscreenSupportChanged</code> event doesn't fire.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li>Verify you're subscribing to the static event: <code>KryptonManager.GlobalTouchscreenSupportChanged</code></li>
+<li>Check that the value is actually changing (not setting to the same value)</li>
+<li>Ensure you're not disposing the subscriber before the event fires</li>
+</ol>
+<hr>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li>[KryptonManager API Reference](../Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonManager.cs)</li>
+<li>[ViewManager Implementation](../Source/Krypton Components/Krypton.Toolkit/View Base/ViewManager.cs)</li>
+<li>[VisualControlBase Implementation](../Source/Krypton Components/Krypton.Toolkit/Controls Visuals/VisualControlBase.cs)</li>
+<li><a href="../Documents/palette-mechanics-intro.md">Palette Mechanics</a></li>
+</ul>
+<hr>
+<h2 id="version-history">Version History</h2>
+<ul>
+<li><strong>Version 110</strong>: Initial implementation of touchscreen support feature
+<ul>
+<li>Added <code>GlobalTouchscreenSupport</code> property</li>
+<li>Added <code>GlobalTouchscreenScaleFactor</code> property</li>
+<li>Added <code>GlobalTouchscreenSupportChanged</code> event</li>
+<li>Automatic control refresh on setting changes</li>
+<li>Added font scaling support
+<ul>
+<li>Added <code>GlobalTouchscreenFontScaling</code> property</li>
+<li>Added <code>GlobalTouchscreenFontScaleFactor</code> property</li>
+<li>Added <code>UseTouchscreenFontScaling</code> static property</li>
+<li>Added <code>TouchscreenFontScaleFactorValue</code> static property</li>
+<li>Added <code>TouchscreenFontScaleFactor</code> static read-only property</li>
+</ul>
+</li>
+<li>Added <code>KryptonTouchscreenSettings</code> class
+<ul>
+<li>Groups all touchscreen settings into an expandable object</li>
+<li>Provides <code>Enabled</code>, <code>ControlScaleFactor</code>, <code>FontScalingEnabled</code>, and <code>FontScaleFactor</code> properties</li>
+<li>Designer-friendly with <code>ExpandableObjectConverter</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="feedback-and-contributions">Feedback and Contributions</h2>
+<p>For issues, feature requests, or contributions related to touchscreen support, please visit:</p>
+<ul>
+<li>GitHub Issues: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues">https://github.com/Krypton-Suite/Standard-Toolkit/issues</a></li>
+<li>Feature Request: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/1760">https://github.com/Krypton-Suite/Standard-Toolkit/issues/1760</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
