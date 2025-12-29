@@ -60,6 +60,7 @@ This document provides links to the documentation provided, each will be split u
 * [Krypton Command](Standard%20Toolkit/Toolkit/Components/KryptonCommand.md)
 * [Krypton Context Menu](Standard%20Toolkit/Toolkit/Components/KryptonContextMenu.md)
 * [Krypton Custom Palette Base](Standard%20Toolkit/Toolkit/Components/KryptonCustomPaletteBase.md)
+* [Krypton Error Provider](Standard%20Toolkit/Toolkit/Components/KryptonErrorProvider.md)
 * [Krypton Exception Dialog](Standard%20Toolkit/Toolkit/Components/KryptonExceptionDialog.md)
 * [Krypton Folder Browser Dialog](Standard%20Toolkit/Toolkit/Components/KryptonFolderBrowserDialog.md)
 * [Krypton Font Dialog](Standard%20Toolkit/Toolkit/Components/KryptonFontDialog.md)
