@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Ribbon Merging Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Ribbon Merging Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="ribbon-merging-guide">Ribbon Merging Guide</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Ribbon merging allows you to dynamically combine ribbon controls, enabling plugin architectures where multiple modules can contribute tabs, groups, and contexts to a main application ribbon. This guide provides comprehensive documentation on how to use the ribbon merging functionality.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#core-concepts">Core Concepts</a></li>
+<li><a href="#basic-usage">Basic Usage</a></li>
+<li><a href="#merge-behavior">Merge Behavior</a></li>
+<li><a href="#advanced-features">Advanced Features</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+</ol>
+<h2 id="introduction">Introduction</h2>
+<h3 id="what-is-ribbon-merging">What is Ribbon Merging?</h3>
+<p>Ribbon merging is the process of combining ribbon controls by:</p>
+<ul>
+<li>Moving tabs from a source ribbon to a target ribbon</li>
+<li>Merging groups with matching names</li>
+<li>Merging items within groups with matching names</li>
+<li>Preserving the original structure for unmerging</li>
+</ul>
+<h3 id="why-use-ribbon-merging">Why Use Ribbon Merging?</h3>
+<ul>
+<li><strong>Plugin Architectures</strong>: Each plugin can contribute its own ribbon tabs</li>
+<li><strong>Modular Applications</strong>: Different modules can add functionality dynamically</li>
+<li><strong>Dynamic UI</strong>: Load and unload features at runtime</li>
+<li><strong>Clean Separation</strong>: Each module manages its own ribbon independently</li>
+</ul>
+<h2 id="core-concepts">Core Concepts</h2>
+<h3 id="source-vs-target-ribbon">Source vs Target Ribbon</h3>
+<ul>
+<li><strong>Target Ribbon</strong>: The main application ribbon that receives merged items</li>
+<li><strong>Source Ribbon</strong>: The plugin/module ribbon that provides items to merge</li>
+</ul>
+<h3 id="merge-operations">Merge Operations</h3>
+<ol>
+<li><strong>Merge</strong>: Combine source ribbon into target ribbon</li>
+<li><strong>Unmerge</strong>: Restore source ribbon by reversing the merge operation</li>
+</ol>
+<h3 id="item-tracking">Item Tracking</h3>
+<p>The merger maintains a <code>HashSet&lt;Component&gt;</code> to track all merged items, enabling proper unmerging.</p>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="using-extension-methods-recommended">Using Extension Methods (Recommended)</h3>
+<p>The simplest way to merge ribbons:</p>
+<pre><code class="lang-csharp">using Krypton.Ribbon;
+
+// Merge a plugin ribbon into the main ribbon
+mainRibbon.Merge(pluginRibbon);
+
+// Later, unmerge when plugin is unloaded
+mainRibbon.Unmerge(pluginRibbon);
+</code></pre>
+<h3 id="using-kryptonribbonmerger-class">Using KryptonRibbonMerger Class</h3>
+<p>For more control or when reusing a merger instance:</p>
+<pre><code class="lang-csharp">using Krypton.Ribbon;
+
+// Create a merger instance
+var merger = new KryptonRibbonMerger(mainRibbon);
+
+// Merge a plugin ribbon
+merger.Merge(pluginRibbon);
+
+// Fix group widths if needed
+merger.FixGroupWidths();
+
+// Later, unmerge
+merger.Unmerge(pluginRibbon);
+</code></pre>
+<h3 id="using-createmerger-extension-method">Using CreateMerger Extension Method</h3>
+<pre><code class="lang-csharp">using Krypton.Ribbon;
+
+// Create merger using extension method
+var merger = mainRibbon.CreateMerger();
+
+// Use the merger
+merger.Merge(pluginRibbon);
+</code></pre>
+<h2 id="merge-behavior">Merge Behavior</h2>
+<h3 id="tab-merging">Tab Merging</h3>
+<p><strong>When tabs with the same name exist:</strong></p>
+<ul>
+<li>Groups from source tab are merged into existing tab</li>
+<li>If groups have matching names, their items are merged</li>
+<li>If groups don't exist, they are added to the existing tab</li>
+</ul>
+<p><strong>When tabs don't exist:</strong></p>
+<ul>
+<li>Tab is moved from source to target ribbon</li>
+<li>Tab order can be controlled using <code>Tag</code> property</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Source ribbon has &quot;Image Editor&quot; tab
+// Target ribbon already has &quot;Image Editor&quot; tab
+// Result: Groups from source are merged into existing tab
+mainRibbon.Merge(pluginRibbon);
+</code></pre>
+<h3 id="group-merging">Group Merging</h3>
+<p><strong>When groups with matching names exist:</strong></p>
+<ul>
+<li>Items from source group are merged into existing group</li>
+<li>Matching is based on <code>TextLine1</code> and <code>TextLine2</code> properties</li>
+<li>Items are inserted based on <code>Tag</code> property for ordering</li>
+</ul>
+<p><strong>When groups don't exist:</strong></p>
+<ul>
+<li>Group is moved from source tab to target tab</li>
+<li>Group order can be controlled using <code>Tag</code> property</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Source has group &quot;Editing&quot; with items [Crop, Rotate]
+// Target has group &quot;Editing&quot; with items [Copy, Paste]
+// Result: Target group has [Copy, Paste, Crop, Rotate]
+mainRibbon.Merge(pluginRibbon);
+</code></pre>
+<h3 id="item-merging">Item Merging</h3>
+<p><strong>When merging group items:</strong></p>
+<ul>
+<li>Items are moved from source group to target group</li>
+<li>Items are inserted based on <code>Tag</code> property</li>
+<li>Duplicate items (same reference) are skipped</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var sourceGroup = new KryptonRibbonGroup { TextLine1 = &quot;Tools&quot; };
+var button1 = new KryptonRibbonGroupButton { TextLine1 = &quot;Tool 1&quot; };
+button1.Tag = 0; // Insert at beginning
+sourceGroup.Items.Add(new KryptonRibbonGroupTriple());
+sourceGroup.Items[0].Items.Add(button1);
+
+// Merge into target group
+mainRibbon.Merge(pluginRibbon);
+</code></pre>
+<h3 id="context-merging">Context Merging</h3>
+<p><strong>When contexts with matching names exist:</strong></p>
+<ul>
+<li>Context is skipped (not merged)</li>
+<li>Matching is based on <code>ContextTitle</code> property</li>
+</ul>
+<p><strong>When contexts don't exist:</strong></p>
+<ul>
+<li>Context is moved from source to target ribbon</li>
+<li>Context order can be controlled using <code>Tag</code> property</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var context = new KryptonRibbonContext
+{
+    ContextTitle = &quot;Image Editing&quot;
+};
+context.Tag = 1; // Insert at position 1
+pluginRibbon.RibbonContexts.Add(context);
+mainRibbon.Merge(pluginRibbon);
+</code></pre>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="controlling-merge-order">Controlling Merge Order</h3>
+<p>Use the <code>Tag</code> property to control the position of merged items:</p>
+<pre><code class="lang-csharp">// Add tab at position 0 (first)
+var tab = new KryptonRibbonTab { Text = &quot;First Tab&quot; };
+tab.Tag = 0;
+ribbon.RibbonTabs.Add(tab);
+
+// Add group at position 2 (third)
+var group = new KryptonRibbonGroup { TextLine1 = &quot;Third Group&quot; };
+group.Tag = 2;
+tab.Groups.Add(group);
+
+// Add item at position 1 (second)
+var button = new KryptonRibbonGroupButton { TextLine1 = &quot;Second Button&quot; };
+button.Tag = 1;
+group.Items[0].Items.Add(button);
+</code></pre>
+<p><strong>Tag Value Rules:</strong></p>
+<ul>
+<li>Numeric values (int, string that parses to int): Used as index</li>
+<li><code>null</code>: Item is added at the end</li>
+<li>Invalid values: Item is added at the end</li>
+</ul>
+<h3 id="fixing-group-widths">Fixing Group Widths</h3>
+<p>After merging, groups with long names but little content may be clipped. Use <code>FixGroupWidths()</code>:</p>
+<pre><code class="lang-csharp">var merger = new KryptonRibbonMerger(mainRibbon);
+merger.Merge(pluginRibbon);
+merger.FixGroupWidths(); // Ensures proper group sizing
+</code></pre>
+<p>This method:</p>
+<ul>
+<li>Measures text width for each group</li>
+<li>Calculates minimum width based on DPI</li>
+<li>Sets <code>MinimumWidth</code> property on groups</li>
+</ul>
+<h3 id="preserving-selection">Preserving Selection</h3>
+<p>The merger automatically preserves the selected tab and context:</p>
+<pre><code class="lang-csharp">// Before merge
+mainRibbon.SelectedTab = mainRibbon.RibbonTabs[0];
+mainRibbon.SelectedContext = &quot;Design&quot;;
+
+// After merge
+mainRibbon.Merge(pluginRibbon);
+// SelectedTab and SelectedContext are preserved
+</code></pre>
+<h3 id="layout-refresh">Layout Refresh</h3>
+<p>The merger automatically refreshes layout:</p>
+<pre><code class="lang-csharp">merger.Merge(pluginRibbon);
+// Automatically calls:
+// - TargetRibbon.PerformLayout()
+// - TargetRibbon.Invalidate()
+// - pluginRibbon.PerformLayout()
+// - pluginRibbon.Invalidate()
+</code></pre>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="kryptonribbonmerger-class">KryptonRibbonMerger Class</h3>
+<pre><code class="lang-csharp">public class KryptonRibbonMerger
+{
+    // Properties
+    public KryptonRibbon TargetRibbon { get; }
+
+    // Constructors
+    public KryptonRibbonMerger(KryptonRibbon targetRibbon);
+
+    // Methods
+    public void Merge(KryptonRibbon? ribbon);
+    public void Unmerge(KryptonRibbon? ribbon);
+    public void FixGroupWidths();
+}
+</code></pre>
+<h3 id="extension-methods">Extension Methods</h3>
+<pre><code class="lang-csharp">public static class KryptonRibbonExtensions
+{
+    // Merge source ribbon into target ribbon
+    public static void Merge(
+        this KryptonRibbon targetRibbon, 
+        KryptonRibbon? sourceRibbon);
+
+    // Unmerge source ribbon from target ribbon
+    public static void Unmerge(
+        this KryptonRibbon targetRibbon, 
+        KryptonRibbon? sourceRibbon);
+
+    // Create a merger instance
+    public static KryptonRibbonMerger CreateMerger(
+        this KryptonRibbon targetRibbon);
+}
+</code></pre>
+<h3 id="method-details">Method Details</h3>
+<h4 id="merge-method">Merge Method</h4>
+<pre><code class="lang-csharp">public void Merge(KryptonRibbon? ribbon)
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>ribbon</code>: The source ribbon to merge. Can be <code>null</code> (no-op).</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ol>
+<li>Preserves current selection (tab and context)</li>
+<li>Merges tabs from source to target</li>
+<li>Merges contexts from source to target</li>
+<li>Refreshes layout on both ribbons</li>
+<li>Restores selection</li>
+<li>Tracks all merged items for unmerging</li>
+</ol>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var merger = new KryptonRibbonMerger(mainRibbon);
+merger.Merge(pluginRibbon);
+</code></pre>
+<h4 id="unmerge-method">Unmerge Method</h4>
+<pre><code class="lang-csharp">public void Unmerge(KryptonRibbon? ribbon)
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>ribbon</code>: The source ribbon to unmerge. Can be <code>null</code> (no-op).</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ol>
+<li>Preserves current selection</li>
+<li>Unmerges contexts from target to source</li>
+<li>Unmerges tabs from target to source</li>
+<li>Refreshes layout on both ribbons</li>
+<li>Restores selection (or resets if tab no longer exists)</li>
+</ol>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var merger = new KryptonRibbonMerger(mainRibbon);
+merger.Unmerge(pluginRibbon);
+</code></pre>
+<h4 id="fixgroupwidths-method">FixGroupWidths Method</h4>
+<pre><code class="lang-csharp">public void FixGroupWidths()
+</code></pre>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Measures text width for each group in each tab</li>
+<li>Calculates minimum width based on DPI scaling</li>
+<li>Sets <code>MinimumWidth</code> property to prevent clipping</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var merger = new KryptonRibbonMerger(mainRibbon);
+merger.Merge(pluginRibbon);
+merger.FixGroupWidths();
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-always-unmerge-before-disposal">1. Always Unmerge Before Disposal</h3>
+<pre><code class="lang-csharp">// ✅ Good
+public void UnloadPlugin(IPlugin plugin)
+{
+    mainRibbon.Unmerge(plugin.Ribbon);
+    plugin.Dispose();
+}
+
+// ❌ Bad - Can cause issues
+public void UnloadPlugin(IPlugin plugin)
+{
+    plugin.Dispose(); // Ribbon still merged!
+}
+</code></pre>
+<h3 id="2-hide-source-ribbon-after-merging">2. Hide Source Ribbon After Merging</h3>
+<pre><code class="lang-csharp">// ✅ Good
+pluginRibbon.Visible = false;
+mainRibbon.Merge(pluginRibbon);
+
+// ❌ Bad - Shows duplicate ribbon
+mainRibbon.Merge(pluginRibbon);
+</code></pre>
+<h3 id="3-use-tag-property-for-ordering">3. Use Tag Property for Ordering</h3>
+<pre><code class="lang-csharp">// ✅ Good - Explicit ordering
+tab.Tag = 0; // First position
+group.Tag = 2; // Third position
+
+// ❌ Bad - Unpredictable order
+// No Tag set, items added at end
+</code></pre>
+<h3 id="4-reuse-merger-instance">4. Reuse Merger Instance</h3>
+<pre><code class="lang-csharp">// ✅ Good - Reuse merger
+var merger = mainRibbon.CreateMerger();
+merger.Merge(plugin1Ribbon);
+merger.Merge(plugin2Ribbon);
+merger.Unmerge(plugin1Ribbon);
+
+// ❌ Bad - Creates new merger each time
+mainRibbon.Merge(plugin1Ribbon);
+mainRibbon.Merge(plugin2Ribbon);
+</code></pre>
+<h3 id="5-handle-null-ribbons">5. Handle Null Ribbons</h3>
+<pre><code class="lang-csharp">// ✅ Good - Null-safe
+if (pluginRibbon != null)
+{
+    mainRibbon.Merge(pluginRibbon);
+}
+
+// Extension methods handle null automatically
+mainRibbon.Merge(pluginRibbon); // Safe even if pluginRibbon is null
+</code></pre>
+<h3 id="6-fix-group-widths-after-merging">6. Fix Group Widths After Merging</h3>
+<pre><code class="lang-csharp">// ✅ Good
+var merger = mainRibbon.CreateMerger();
+merger.Merge(pluginRibbon);
+merger.FixGroupWidths(); // Prevents clipping
+
+// ❌ Bad - Groups may be clipped
+mainRibbon.Merge(pluginRibbon);
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-tabs-not-appearing-after-merge">Issue: Tabs Not Appearing After Merge</h3>
+<p><strong>Symptoms:</strong> Merged tabs don't appear in target ribbon.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li>Source ribbon has no tabs</li>
+<li>Ribbon is disposed</li>
+<li>Layout not refreshed</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<pre><code class="lang-csharp">// Check tabs exist
+if (pluginRibbon.RibbonTabs.Count &gt; 0)
+{
+    mainRibbon.Merge(pluginRibbon);
+}
+
+// Ensure not disposed
+if (!pluginRibbon.IsDisposed)
+{
+    mainRibbon.Merge(pluginRibbon);
+}
+
+// Force layout refresh
+mainRibbon.Merge(pluginRibbon);
+mainRibbon.PerformLayout();
+mainRibbon.Invalidate();
+</code></pre>
+<h3 id="issue-groups-not-merging-correctly">Issue: Groups Not Merging Correctly</h3>
+<p><strong>Symptoms:</strong> Groups with same name create duplicates instead of merging.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li>Group names don't match exactly (case-sensitive)</li>
+<li><code>TextLine1</code> or <code>TextLine2</code> differ</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<pre><code class="lang-csharp">// Ensure exact match
+var group = new KryptonRibbonGroup
+{
+    TextLine1 = &quot;Editing&quot;,  // Must match exactly
+    TextLine2 = &quot;&quot;         // Must match exactly
+};
+</code></pre>
+<h3 id="issue-items-not-merging-into-groups">Issue: Items Not Merging Into Groups</h3>
+<p><strong>Symptoms:</strong> Items don't appear in merged groups.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li>Group structure mismatch</li>
+<li>Items not properly added to containers</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<pre><code class="lang-csharp">// Ensure proper structure
+var group = new KryptonRibbonGroup { TextLine1 = &quot;Tools&quot; };
+var triple = new KryptonRibbonGroupTriple();
+var button = new KryptonRibbonGroupButton { TextLine1 = &quot;Tool&quot; };
+triple.Items.Add(button);
+group.Items.Add(triple);
+</code></pre>
+<h3 id="issue-unmerge-not-working">Issue: Unmerge Not Working</h3>
+<p><strong>Symptoms:</strong> Items not restored to source ribbon after unmerge.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li>Source ribbon disposed</li>
+<li>Items not tracked properly</li>
+<li>Unmerge called multiple times</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<pre><code class="lang-csharp">// Ensure source ribbon exists
+if (!pluginRibbon.IsDisposed)
+{
+    mainRibbon.Unmerge(pluginRibbon);
+}
+
+// Don't unmerge twice
+if (loadedPlugins.Contains(plugin))
+{
+    mainRibbon.Unmerge(plugin.Ribbon);
+    loadedPlugins.Remove(plugin);
+}
+</code></pre>
+<h3 id="issue-performance-problems">Issue: Performance Problems</h3>
+<p><strong>Symptoms:</strong> Slow merge/unmerge operations.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li>Too many items</li>
+<li>Frequent merge/unmerge operations</li>
+<li>Layout refresh overhead</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<pre><code class="lang-csharp">// Batch operations
+SuspendLayout();
+foreach (var plugin in plugins)
+{
+    mainRibbon.Merge(plugin.Ribbon);
+}
+ResumeLayout();
+
+// Reuse merger instance
+var merger = mainRibbon.CreateMerger();
+foreach (var plugin in plugins)
+{
+    merger.Merge(plugin.Ribbon);
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="merge-performance">Merge Performance</h3>
+<ul>
+<li><strong>Time Complexity</strong>: O(n) where n is the number of items to merge</li>
+<li><strong>Space Complexity</strong>: O(n) for tracking merged items</li>
+<li><strong>Layout Refresh</strong>: Can be expensive for large ribbons</li>
+</ul>
+<h3 id="optimization-tips">Optimization Tips</h3>
+<ol>
+<li><strong>Batch Operations</strong>: Merge multiple plugins at once</li>
+<li><strong>Suspend Layout</strong>: Use <code>SuspendLayout()</code>/<code>ResumeLayout()</code> for multiple operations</li>
+<li><strong>Reuse Merger</strong>: Create one merger instance and reuse it</li>
+<li><strong>Lazy Merging</strong>: Only merge when plugins are actually loaded</li>
+</ol>
+<h3 id="example-optimized-merging">Example: Optimized Merging</h3>
+<pre><code class="lang-csharp">public void LoadPlugins(IEnumerable&lt;IPlugin&gt; plugins)
+{
+    var merger = mainRibbon.CreateMerger();
+    
+    // Suspend layout for batch operations
+    mainRibbon.SuspendLayout();
+    
+    try
+    {
+        foreach (var plugin in plugins)
+        {
+            var control = plugin.CreateControl();
+            if (control is IPluginUserControl pluginControl)
+            {
+                pluginControl.Ribbon.Visible = false;
+                merger.Merge(pluginControl.Ribbon);
+                loadedPlugins.Add(plugin, pluginControl);
+            }
+        }
+        
+        // Fix widths once after all merges
+        merger.FixGroupWidths();
+    }
+    finally
+    {
+        mainRibbon.ResumeLayout();
+        mainRibbon.PerformLayout();
+    }
+}
+</code></pre>
+<h2 id="summary">Summary</h2>
+<p>Ribbon merging provides a powerful mechanism for building dynamic, plugin-based applications. By understanding merge behavior, using best practices, and following the patterns outlined in this guide, you can create robust, maintainable plugin architectures.</p>
+<p>Key takeaways:</p>
+<ul>
+<li>Use extension methods for simple cases</li>
+<li>Use <code>KryptonRibbonMerger</code> class for advanced scenarios</li>
+<li>Always unmerge before disposal</li>
+<li>Use <code>Tag</code> property for ordering</li>
+<li>Fix group widths after merging</li>
+<li>Handle null values appropriately</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
