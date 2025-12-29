@@ -22,7 +22,8 @@ The `KryptonWebView2` control is a modern web browser control that integrates Mi
 ### Basic Usage
 
 ```csharp
-using Krypton.Toolkit;
+using Krypton.Utilities;  // For KryptonWebView2
+using Krypton.Toolkit;     // For KryptonContextMenu and related types
 
 // Create the control
 var webView = new KryptonWebView2();
@@ -72,7 +73,7 @@ KryptonWebView2 : WebView2
 
 ### Conditional Compilation
 
-The control is wrapped in `#if WEBVIEW2_AVAILABLE` directives, ensuring it only compiles when WebView2 dependencies are available.
+The control is wrapped in `#if WEBVIEW2_AVAILABLE && NET8_0_OR_GREATER` directives, ensuring it only compiles when WebView2 dependencies are available **and** the target framework is .NET 8.0 or greater.
 
 ## API Reference
 

@@ -116,9 +116,10 @@ Your repository should look like this:
 Standard-Toolkit/
 ├── Source/
 │   └── Krypton Components/
-│       └── Krypton.Toolkit/
-│           └── Controls Toolkit/
-│               └── KryptonWebView2.cs
+│       └── Krypton.Utilities/
+│           └── KryptonWebView2/
+│               └── Controls Toolkit/
+│                   └── KryptonWebView2.cs
 ├── Scripts/
 │   ├── Setup-WebView2SDK.cmd
 │   ├── Update-WebView2SDK.cmd

@@ -146,7 +146,7 @@
 **Solutions:**
 
 1. **Check Target Framework:**
-   - Ensure project targets .NET Framework 4.7.2+ or .NET 8+
+   - Ensure project targets .NET 8.0 or later (this control is not available for .NET Framework)
    - Verify platform target matches (x86/x64/AnyCPU)
 
 2. **Copy Assemblies Manually:**
@@ -533,7 +533,7 @@
 
 ### Q: Is KryptonWebView2 compatible with .NET Framework?
 
-**A:** Yes, it supports .NET Framework 4.7.2 and later, as well as .NET 8+.
+**A:** No, KryptonWebView2 is only available for .NET 8.0 and later. It is not available for .NET Framework versions. If you need WebView2 functionality on .NET Framework, consider using the base `Microsoft.Web.WebView2.WinForms.WebView2` control directly.
 
 ### Q: How do I handle different screen DPI settings?
 

@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonFileSystemTreeView | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonFileSystemTreeView | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonfilesystemtreeview">KryptonFileSystemTreeView</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#features">Features</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#properties-reference">Properties Reference</a></li>
+<li><a href="#methods-reference">Methods Reference</a></li>
+<li><a href="#events-reference">Events Reference</a></li>
+<li><a href="#related-classes">Related Classes</a></li>
+<li><a href="#root-modes">Root Modes</a></li>
+<li><a href="#icon-management">Icon Management</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#known-limitations">Known Limitations</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonFileSystemTreeView</code> is a specialized WinForms TreeView control that provides a hierarchical file system browser with native Windows icons, multiple root display modes, and comprehensive file system navigation capabilities. It extends <code>KryptonTreeView</code> to provide a Krypton-styled, feature-rich file browser component similar to Windows Explorer.</p>
+<h3 id="key-capabilities">Key Capabilities</h3>
+<ul>
+<li><strong>Multiple Root Modes</strong>: Desktop, Computer, Drives, or CustomPath</li>
+<li><strong>Hierarchical Navigation</strong>: Expandable tree structure for browsing directories</li>
+<li><strong>Native Icon Support</strong>: Displays Windows shell icons for files, folders, and drives</li>
+<li><strong>Special Folders</strong>: Support for Desktop, Computer, Network, Recycle Bin, etc.</li>
+<li><strong>File Filtering</strong>: Filter files by extension patterns</li>
+<li><strong>Hidden/System File Control</strong>: Toggle visibility of hidden and system files</li>
+<li><strong>Lazy Loading</strong>: Directories are loaded on-demand when expanded</li>
+<li><strong>Icon Caching</strong>: Efficient icon caching to improve performance</li>
+<li><strong>Error Handling</strong>: Comprehensive error event system for file system access issues</li>
+</ul>
+<h3 id="namespace">Namespace</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+</code></pre>
+<h3 id="inheritance-hierarchy">Inheritance Hierarchy</h3>
+<pre><code>System.Object
+  └─ System.MarshalByRefObject
+      └─ System.ComponentModel.Component
+          └─ System.Windows.Forms.Control
+              └─ System.Windows.Forms.TreeView
+                  └─ Krypton.Toolkit.KryptonTreeView
+                      └─ Krypton.Utilities.KryptonFileSystemTreeView
+</code></pre>
+<hr>
+<h2 id="features">Features</h2>
+<h3 id="core-features">Core Features</h3>
+<ol>
+<li><p><strong>Root Display Modes</strong></p>
+<ul>
+<li><strong>Desktop</strong>: Explorer-style with special folders (Computer, Network, Recycle Bin, etc.) and drives</li>
+<li><strong>Computer</strong>: Computer root with all drives</li>
+<li><strong>Drives</strong>: All drives directly as root nodes</li>
+<li><strong>CustomPath</strong>: Custom root directory path</li>
+</ul>
+</li>
+<li><p><strong>Directory Navigation</strong></p>
+<ul>
+<li>Expandable tree structure</li>
+<li>Lazy loading (directories loaded on expansion)</li>
+<li>Parent-child relationships</li>
+<li>Drive-level navigation</li>
+</ul>
+</li>
+<li><p><strong>File Display</strong></p>
+<ul>
+<li>Display files and folders with proper icons</li>
+<li>File type detection via extension</li>
+<li>Configurable file filtering</li>
+<li>Optional file display (directories-only mode)</li>
+</ul>
+</li>
+<li><p><strong>Icon Management</strong></p>
+<ul>
+<li>Windows shell icon extraction</li>
+<li>Icon caching for performance</li>
+<li>Drive-specific icons (Fixed, Removable, CD-ROM, Network, RAM)</li>
+<li>Folder open/closed state icons</li>
+<li>Fallback icon system for missing icons</li>
+</ul>
+</li>
+<li><p><strong>Special Folders</strong></p>
+<ul>
+<li>Desktop folder</li>
+<li>Computer (CLSID-based)</li>
+<li>Control Panel (CLSID-based)</li>
+<li>Network (CLSID-based)</li>
+<li>Recycle Bin (CLSID-based)</li>
+<li>My Documents</li>
+<li>Shared Documents</li>
+</ul>
+</li>
+<li><p><strong>Filtering Options</strong></p>
+<ul>
+<li>Show/hide files</li>
+<li>Show/hide hidden files</li>
+<li>Show/hide system files</li>
+<li>File extension filtering (e.g., &quot;<em>.txt&quot;, &quot;</em>.txt;*.doc&quot;)</li>
+<li>Show/hide special folders (Desktop mode only)</li>
+</ul>
+</li>
+<li><p><strong>Error Handling</strong></p>
+<ul>
+<li>File system error events</li>
+<li>Graceful handling of access denied errors</li>
+<li>Directory not found handling</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<h3 id="component-structure">Component Structure</h3>
+<pre><code>KryptonFileSystemTreeView
+├── FileSystemTreeViewValues (expandable properties)
+│   ├── RootMode (FileSystemRootMode)
+│   ├── RootPath (string)
+│   ├── ShowFiles (bool)
+│   ├── ShowHiddenFiles (bool)
+│   ├── ShowSystemFiles (bool)
+│   ├── FileFilter (string)
+│   └── ShowSpecialFolders (bool)
+├── ImageList (icon storage)
+├── IconCache (Dictionary&lt;string, int&gt;)
+├── Dummy Nodes (for lazy loading)
+└── Event Handlers
+    ├── DirectoryExpanding
+    ├── DirectoryExpanded
+    └── FileSystemError
+</code></pre>
+<h3 id="key-components">Key Components</h3>
+<ol>
+<li><strong>FileSystemTreeViewValues</strong>: Groups file system-specific properties in an expandable PropertyGrid object</li>
+<li><strong>ImageList</strong>: Stores icons for display (16x16 pixels, fixed size)</li>
+<li><strong>IconCache</strong>: Dictionary caching icon indices by file extension, directory marker, or drive type</li>
+<li><strong>Dummy Nodes</strong>: Hidden placeholder nodes (<code>&quot;__DUMMY__&quot;</code>) used to enable expansion without pre-loading children</li>
+<li><strong>Helper Classes</strong>:
+<ul>
+<li><code>FileSystemIconHelper</code>: Extracts icons from Windows Shell</li>
+<li><code>StockIconHelper</code>: Provides fallback stock icons</li>
+</ul>
+</li>
+</ol>
+<h3 id="data-flow">Data Flow</h3>
+<ol>
+<li><strong>Initialization</strong>: Constructor → <code>InitializeImageList()</code> → <code>AddDefaultIcon()</code> → <code>Reload()</code> (on handle creation)</li>
+<li><strong>Expansion</strong>: User expands node → <code>OnBeforeExpand()</code> → Check for dummy node → <code>LoadDirectoryNodes()</code> → Replace dummy with real nodes</li>
+<li><strong>Icon Loading</strong>: <code>GetIconIndex()</code> → Check cache → Extract icon → Add to ImageList → Cache index</li>
+<li><strong>Property Changes</strong>: Property setter → <code>Reload()</code> → Refresh display based on <code>RootMode</code></li>
+</ol>
+<h3 id="lazy-loading-mechanism">Lazy Loading Mechanism</h3>
+<p>The control uses dummy nodes to implement lazy loading:</p>
+<ol>
+<li>Each directory node initially contains one dummy child node (<code>&quot;__DUMMY__&quot;</code>)</li>
+<li>When user expands a node, <code>OnBeforeExpand()</code> detects the dummy node</li>
+<li>Dummy node is removed and replaced with actual directory/file nodes</li>
+<li>Dummy nodes are hidden from view via <code>OnDrawNode()</code> event handler</li>
+</ol>
+<p>This ensures directories are only loaded when needed, improving initial load time.</p>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="class-declaration">Class Declaration</h3>
+<pre><code class="lang-csharp">[ToolboxItem(true)]
+[ToolboxBitmap(typeof(KryptonTreeView), &quot;ToolboxBitmaps.KryptonTreeView.bmp&quot;)]
+[DefaultEvent(nameof(AfterSelect))]
+[DefaultProperty(nameof(FileSystemTreeViewValues))]
+[DesignerCategory(@&quot;code&quot;)]
+[Description(@&quot;Displays a hierarchical file system tree with Krypton styling.&quot;)]
+[Docking(DockingBehavior.Ask)]
+public class KryptonFileSystemTreeView : KryptonTreeView
+</code></pre>
+<h3 id="constructor">Constructor</h3>
+<pre><code class="lang-csharp">public KryptonFileSystemTreeView()
+</code></pre>
+<p>Initializes a new instance with default settings:</p>
+<ul>
+<li>Root mode: <code>FileSystemRootMode.Drives</code></li>
+<li>Show files: <code>true</code></li>
+<li>Show hidden files: <code>false</code></li>
+<li>Show system files: <code>false</code></li>
+<li>File filter: <code>&quot;*.*&quot;</code></li>
+<li>Show special folders: <code>true</code></li>
+<li>Icon size: 16x16 pixels</li>
+<li>Show plus/minus: <code>true</code></li>
+<li>Show root lines: <code>true</code></li>
+<li>Show lines: <code>true</code></li>
+</ul>
+<hr>
+<h2 id="properties-reference">Properties Reference</h2>
+<h3 id="public-properties">Public Properties</h3>
+<h4 id="filesystemtreeviewvalues">FileSystemTreeViewValues</h4>
+<pre><code class="lang-csharp">public FileSystemTreeViewValues FileSystemTreeViewValues { get; }
+</code></pre>
+<p>Gets the file system TreeView values object containing all file system-specific properties. This is an expandable object that groups related properties for better PropertyGrid organization.</p>
+<p><strong>Access Pattern:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.FileSystemTreeViewValues.RootMode = FileSystemRootMode.Desktop;
+fileSystemTreeView.FileSystemTreeViewValues.ShowFiles = true;
+</code></pre>
+<h4 id="rootmode">RootMode</h4>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;Determines the root display mode: Desktop (Explorer-style with special folders), Computer (drives only), Drives (all drives), or CustomPath (use RootPath).&quot;)]
+[DefaultValue(FileSystemRootMode.Drives)]
+public FileSystemRootMode RootMode { get; set; }
+</code></pre>
+<p>Gets or sets the root mode for the tree view.</p>
+<p><strong>Values:</strong></p>
+<ul>
+<li><code>FileSystemRootMode.Desktop</code>: Desktop root with special folders and drives</li>
+<li><code>FileSystemRootMode.Computer</code>: Computer root with all drives</li>
+<li><code>FileSystemRootMode.Drives</code>: All drives as root nodes (default)</li>
+<li><code>FileSystemRootMode.CustomPath</code>: Custom root directory (uses <code>RootPath</code>)</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Changing this property automatically calls <code>Reload()</code> to refresh the display</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.RootMode = FileSystemRootMode.Desktop;
+</code></pre>
+<h4 id="rootpath">RootPath</h4>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;The root directory path to display in the tree view (used when RootMode is CustomPath).&quot;)]
+[DefaultValue(&quot;&quot;)]
+public string RootPath { get; set; }
+</code></pre>
+<p>Gets or sets the root directory path to display in the tree view (used when <code>RootMode</code> is <code>CustomPath</code>).</p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Only used when <code>RootMode</code> is <code>FileSystemRootMode.CustomPath</code></li>
+<li>If path is invalid or empty when in CustomPath mode, falls back to <code>Drives</code> mode</li>
+<li>Changing this property automatically calls <code>Reload()</code> if in CustomPath mode</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.RootMode = FileSystemRootMode.CustomPath;
+fileSystemTreeView.RootPath = @&quot;C:\Users&quot;;
+</code></pre>
+<h4 id="showfiles">ShowFiles</h4>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;Indicates whether files should be displayed in the tree view.&quot;)]
+[DefaultValue(true)]
+public bool ShowFiles { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether files should be displayed in the tree view.</p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>When <code>false</code>, only directories are displayed</li>
+<li>Changing this property triggers <code>Reload()</code></li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Show only directories
+fileSystemTreeView.ShowFiles = false;
+</code></pre>
+<h4 id="showhiddenfiles">ShowHiddenFiles</h4>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;Indicates whether hidden files should be displayed.&quot;)]
+[DefaultValue(false)]
+public bool ShowHiddenFiles { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether hidden files should be displayed.</p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Files and folders with <code>FileAttributes.Hidden</code> are filtered based on this setting</li>
+<li>Changing this property triggers <code>Reload()</code></li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.ShowHiddenFiles = true;
+</code></pre>
+<h4 id="showsystemfiles">ShowSystemFiles</h4>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;Indicates whether system files should be displayed.&quot;)]
+[DefaultValue(false)]
+public bool ShowSystemFiles { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether system files should be displayed.</p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Files and folders with <code>FileAttributes.System</code> are filtered based on this setting</li>
+<li>Changing this property triggers <code>Reload()</code></li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.ShowSystemFiles = true;
+</code></pre>
+<h4 id="filefilter">FileFilter</h4>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(&quot;The file filter to apply when showing files (e.g., \&quot;*.txt\&quot; or \&quot;*.txt;*.doc\&quot;).&quot;)]
+[DefaultValue(&quot;*.*&quot;)]
+public string FileFilter { get; set; }
+</code></pre>
+<p>Gets or sets the file filter to apply when showing files.</p>
+<p><strong>Filter Syntax:</strong></p>
+<ul>
+<li>Single pattern: <code>&quot;*.txt&quot;</code> - shows only .txt files</li>
+<li>Multiple patterns: <code>&quot;*.txt;*.doc;*.pdf&quot;</code> - shows files matching any pattern</li>
+<li>All files: <code>&quot;*.*&quot;</code> - shows all files</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Used with <code>Directory.GetFiles(directoryPath, filter)</code></li>
+<li>Changing this property triggers <code>Reload()</code> only if <code>ShowFiles</code> is <code>true</code></li>
+<li>Null values are converted to <code>&quot;*.*&quot;</code></li>
+</ul>
+<p><strong>Examples:</strong></p>
+<pre><code class="lang-csharp">// Show only text files
+fileSystemTreeView.FileFilter = &quot;*.txt&quot;;
+
+// Show multiple file types
+fileSystemTreeView.FileFilter = &quot;*.txt;*.doc;*.pdf&quot;;
+</code></pre>
+<h4 id="showspecialfolders">ShowSpecialFolders</h4>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;Indicates whether special folders (Desktop, Computer, Network, Recycle Bin, etc.) should be displayed when RootMode is Desktop.&quot;)]
+[DefaultValue(true)]
+public bool ShowSpecialFolders { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether special folders should be displayed when <code>RootMode</code> is <code>Desktop</code>.</p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Only affects display when <code>RootMode</code> is <code>FileSystemRootMode.Desktop</code></li>
+<li>Special folders include: Computer, Control Panel, Network, Recycle Bin, My Documents, Shared Documents</li>
+<li>Changing this property triggers <code>Reload()</code> only if in Desktop mode</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.RootMode = FileSystemRootMode.Desktop;
+fileSystemTreeView.ShowSpecialFolders = false; // Hide special folders
+</code></pre>
+<h4 id="selectedpath">SelectedPath</h4>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public string? SelectedPath { get; }
+</code></pre>
+<p>Gets the full path of the currently selected file or folder.</p>
+<p><strong>Returns:</strong></p>
+<ul>
+<li>The full path string if a node is selected, otherwise <code>null</code></li>
+<li>Path is stored in <code>TreeNode.Tag</code> property</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">string? selectedPath = fileSystemTreeView.SelectedPath;
+if (!string.IsNullOrEmpty(selectedPath))
+{
+    Console.WriteLine($&quot;Selected: {selectedPath}&quot;);
+}
+</code></pre>
+<hr>
+<h2 id="methods-reference">Methods Reference</h2>
+<h3 id="public-methods">Public Methods</h3>
+<h4 id="reload">Reload()</h4>
+<pre><code class="lang-csharp">public void Reload()
+</code></pre>
+<p>Reloads the tree view from the root path based on the current <code>RootMode</code>.</p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Clears all nodes</li>
+<li>Loads root nodes based on <code>RootMode</code>:
+<ul>
+<li><code>Desktop</code>: Calls <code>LoadDesktopRoot()</code></li>
+<li><code>Computer</code>: Calls <code>LoadComputerRoot()</code></li>
+<li><code>Drives</code>: Calls <code>LoadDriveRoots()</code></li>
+<li><code>CustomPath</code>: Calls <code>LoadCustomPath()</code></li>
+</ul>
+</li>
+<li>Does not clear icon cache (icons persist across reloads)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Refresh the tree view
+fileSystemTreeView.Reload();
+</code></pre>
+<p><strong>When to Use:</strong></p>
+<ul>
+<li>After changing <code>RootMode</code> or <code>RootPath</code> programmatically</li>
+<li>To refresh the display after external file system changes</li>
+<li>After modifying <code>FileSystemTreeViewValues</code> properties directly</li>
+</ul>
+<h4 id="navigatetopathstring-path">NavigateToPath(string path)</h4>
+<pre><code class="lang-csharp">public bool NavigateToPath(string path)
+</code></pre>
+<p>Navigates to the specified path in the tree view and selects it.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>path</code> (string): The directory or file path to navigate to.</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>true</code> if the path was found and selected; otherwise, <code>false</code>.</li>
+</ul>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Splits path into components</li>
+<li>Traverses tree nodes matching path components</li>
+<li>Expands nodes as needed (but doesn't force expansion of all parent nodes)</li>
+<li>Selects the target node and ensures it's visible</li>
+<li>Returns <code>false</code> if path doesn't exist or cannot be found in tree</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">bool success = fileSystemTreeView.NavigateToPath(@&quot;C:\Users\Public\Documents&quot;);
+if (success)
+{
+    Console.WriteLine(&quot;Navigation successful&quot;);
+}
+else
+{
+    Console.WriteLine(&quot;Path not found in tree&quot;);
+}
+</code></pre>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>Requires path to be already loaded in the tree (parent nodes must be expanded)</li>
+<li>May not work for paths under collapsed nodes</li>
+<li>For best results, ensure parent directories are expanded first</li>
+</ul>
+<hr>
+<h3 id="protected-methods">Protected Methods</h3>
+<h4 id="onhandlecreatedeventargs-e">OnHandleCreated(EventArgs e)</h4>
+<pre><code class="lang-csharp">protected override void OnHandleCreated(EventArgs e)
+</code></pre>
+<p>Ensures initial population of the tree when the control is created.</p>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>Calls base implementation</li>
+<li>Calls <code>Reload()</code> if not in design mode</li>
+<li>Ensures tree is populated when control becomes visible</li>
+</ul>
+<p><strong>Usage:</strong>
+Override to add custom initialization logic.</p>
+<h4 id="ondirectoryexpandingdirectoryexpandingeventargs-e">OnDirectoryExpanding(DirectoryExpandingEventArgs e)</h4>
+<pre><code class="lang-csharp">protected virtual void OnDirectoryExpanding(DirectoryExpandingEventArgs e)
+</code></pre>
+<p>Raises the <code>DirectoryExpanding</code> event.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>e</code>: A <code>DirectoryExpandingEventArgs</code> containing the event data.</li>
+</ul>
+<p><strong>Usage:</strong>
+Override to add custom behavior before directory expansion.</p>
+<h4 id="ondirectoryexpandeddirectoryexpandedeventargs-e">OnDirectoryExpanded(DirectoryExpandedEventArgs e)</h4>
+<pre><code class="lang-csharp">protected virtual void OnDirectoryExpanded(DirectoryExpandedEventArgs e)
+</code></pre>
+<p>Raises the <code>DirectoryExpanded</code> event.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>e</code>: A <code>DirectoryExpandedEventArgs</code> containing the event data.</li>
+</ul>
+<p><strong>Usage:</strong>
+Override to add custom behavior after directory expansion.</p>
+<h4 id="onfilesystemerrorfilesystemerroreventargs-e">OnFileSystemError(FileSystemErrorEventArgs e)</h4>
+<pre><code class="lang-csharp">protected virtual void OnFileSystemError(FileSystemErrorEventArgs e)
+</code></pre>
+<p>Raises the <code>FileSystemError</code> event.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>e</code>: A <code>FileSystemErrorEventArgs</code> containing the event data.</li>
+</ul>
+<p><strong>Usage:</strong>
+Override to add custom error handling or logging.</p>
+<hr>
+<h2 id="events-reference">Events Reference</h2>
+<h3 id="directoryexpanding">DirectoryExpanding</h3>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;Occurs when a directory is being expanded.&quot;)]
+public event EventHandler&lt;DirectoryExpandingEventArgs&gt;? DirectoryExpanding;
+</code></pre>
+<p>Occurs when a directory is being expanded.</p>
+<p><strong>Event Data:</strong> <code>DirectoryExpandingEventArgs</code></p>
+<ul>
+<li><code>DirectoryPath</code> (string, read-only): The path of the directory being expanded</li>
+<li><code>Cancel</code> (bool): Set to <code>true</code> to cancel the expansion</li>
+</ul>
+<p><strong>Raised When:</strong></p>
+<ul>
+<li>User expands a directory node</li>
+<li>Before directory contents are loaded</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.DirectoryExpanding += (sender, e) =&gt;
+{
+    Console.WriteLine($&quot;Expanding: {e.DirectoryPath}&quot;);
+    
+    // Optionally cancel expansion
+    // e.Cancel = true;
+};
+</code></pre>
+<p><strong>Use Cases:</strong></p>
+<ul>
+<li>Log directory access</li>
+<li>Validate permissions before loading</li>
+<li>Cancel expansion based on custom logic</li>
+<li>Show loading indicators</li>
+</ul>
+<h3 id="directoryexpanded">DirectoryExpanded</h3>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;Occurs when a directory has been expanded.&quot;)]
+public event EventHandler&lt;DirectoryExpandedEventArgs&gt;? DirectoryExpanded;
+</code></pre>
+<p>Occurs when a directory has been expanded or a node is selected.</p>
+<p><strong>Event Data:</strong> <code>DirectoryExpandedEventArgs</code></p>
+<ul>
+<li><code>Path</code> (string, read-only): The path that was expanded or selected</li>
+</ul>
+<p><strong>Raised When:</strong></p>
+<ul>
+<li>Directory expansion completes</li>
+<li>Node is selected (via <code>AfterSelect</code> event)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.DirectoryExpanded += (sender, e) =&gt;
+{
+    Console.WriteLine($&quot;Expanded/Selected: {e.Path}&quot;);
+};
+</code></pre>
+<p><strong>Use Cases:</strong></p>
+<ul>
+<li>Update status bar with current path</li>
+<li>Load related data based on selected directory</li>
+<li>Update other UI controls</li>
+</ul>
+<h3 id="filesystemerror">FileSystemError</h3>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;Occurs when an error occurs while loading the file system.&quot;)]
+public event EventHandler&lt;FileSystemErrorEventArgs&gt;? FileSystemError;
+</code></pre>
+<p>Occurs when an error occurs while loading the file system.</p>
+<p><strong>Event Data:</strong> <code>FileSystemErrorEventArgs</code></p>
+<ul>
+<li><code>Path</code> (string, read-only): The path where the error occurred</li>
+<li><code>Exception</code> (Exception, read-only): The exception that occurred</li>
+</ul>
+<p><strong>Raised When:</strong></p>
+<ul>
+<li>Access denied when reading directory contents</li>
+<li>General exceptions during directory loading</li>
+<li>Drive access errors</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.FileSystemError += (sender, e) =&gt;
+{
+    MessageBox.Show(
+        $&quot;Error accessing {e.Path}:\n{e.Exception.Message}&quot;,
+        &quot;File System Error&quot;,
+        MessageBoxButtons.OK,
+        MessageBoxIcon.Warning
+    );
+};
+</code></pre>
+<p><strong>Common Exception Types:</strong></p>
+<ul>
+<li><code>UnauthorizedAccessException</code>: Insufficient permissions</li>
+<li><code>IOException</code>: General I/O errors</li>
+<li><code>DirectoryNotFoundException</code>: Directory doesn't exist</li>
+</ul>
+<hr>
+<h2 id="related-classes">Related Classes</h2>
+<h3 id="filesystemtreeviewvalues-1">FileSystemTreeViewValues</h3>
+<p>Groups file system-specific properties for PropertyGrid display.</p>
+<p><strong>Location:</strong> <code>Krypton.Utilities.FileSystemTreeViewValues</code></p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>RootMode</code> (FileSystemRootMode)</li>
+<li><code>RootPath</code> (string)</li>
+<li><code>ShowFiles</code> (bool)</li>
+<li><code>ShowHiddenFiles</code> (bool)</li>
+<li><code>ShowSystemFiles</code> (bool)</li>
+<li><code>FileFilter</code> (string)</li>
+<li><code>ShowSpecialFolders</code> (bool)</li>
+</ul>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Expandable object converter for PropertyGrid</li>
+<li>Automatic <code>Reload()</code> on property changes</li>
+<li>Inherits from <code>Storage</code> base class</li>
+</ul>
+<h3 id="filesystemrootmode-enum">FileSystemRootMode Enum</h3>
+<p>Specifies the root display mode for the file system tree view.</p>
+<p><strong>Location:</strong> <code>Krypton.Toolkit.FileSystemRootMode</code></p>
+<p><strong>Values:</strong></p>
+<ul>
+<li><code>Desktop</code>: Desktop root with special folders and drives</li>
+<li><code>Computer</code>: Computer root with all drives</li>
+<li><code>Drives</code>: All drives as root nodes</li>
+<li><code>CustomPath</code>: Custom root directory</li>
+</ul>
+<h3 id="directoryexpandingeventargs">DirectoryExpandingEventArgs</h3>
+<p>Provides data for the <code>DirectoryExpanding</code> event.</p>
+<p><strong>Location:</strong> <code>Krypton.Toolkit.DirectoryExpandingEventArgs</code></p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>DirectoryPath</code> (string, read-only): The path of the directory being expanded</li>
+<li><code>Cancel</code> (bool): Set to <code>true</code> to cancel the expansion</li>
+</ul>
+<p><strong>Inherits from:</strong> <code>CancelEventArgs</code></p>
+<h3 id="directoryexpandedeventargs">DirectoryExpandedEventArgs</h3>
+<p>Provides data for the <code>DirectoryExpanded</code> event.</p>
+<p><strong>Location:</strong> <code>Krypton.Toolkit.DirectoryExpandedEventArgs</code></p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>Path</code> (string, read-only): The path that was expanded or selected</li>
+</ul>
+<h3 id="filesystemerroreventargs">FileSystemErrorEventArgs</h3>
+<p>Provides data for the <code>FileSystemError</code> event.</p>
+<p><strong>Location:</strong> <code>Krypton.Toolkit.FileSystemErrorEventArgs</code></p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>Path</code> (string, read-only): The path where the error occurred</li>
+<li><code>Exception</code> (Exception, read-only): The exception that occurred</li>
+</ul>
+<hr>
+<h2 id="root-modes">Root Modes</h2>
+<h3 id="desktop-mode">Desktop Mode</h3>
+<p>Displays Desktop as root with special folders (Computer, Network, Recycle Bin, etc.) and drives, similar to Windows Explorer.</p>
+<p><strong>Structure:</strong></p>
+<pre><code>Desktop
+├── Computer (CLSID: ::{20D04FE0-3AEA-1069-A2D8-08002B30309D})
+│   └── [All Drives]
+├── Control Panel (CLSID: ::{21EC2020-3AEA-1069-A2DD-08002B30309D})
+├── My Documents
+├── Shared Documents
+├── Network (CLSID: ::{208D2C60-3AEA-1069-A2D7-08002B30309D})
+├── Recycle Bin (CLSID: ::{645FF040-5081-101B-9F08-00AA002F954E})
+└── [All Drives directly under Desktop]
+</code></pre>
+<p><strong>Special Folders:</strong></p>
+<ul>
+<li>Only shown when <code>ShowSpecialFolders</code> is <code>true</code></li>
+<li>Computer CLSID expands to show all drives</li>
+<li>Other CLSID folders (Control Panel, Network, Recycle Bin) don't expand to file system contents</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.RootMode = FileSystemRootMode.Desktop;
+fileSystemTreeView.ShowSpecialFolders = true;
+</code></pre>
+<h3 id="computer-mode">Computer Mode</h3>
+<p>Displays Computer as root with all drives.</p>
+<p><strong>Structure:</strong></p>
+<pre><code>Computer
+├── C:\ (Local Disk)
+├── D:\ (CD Drive)
+├── E:\ (Removable Disk)
+└── ...
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.RootMode = FileSystemRootMode.Computer;
+</code></pre>
+<h3 id="drives-mode-default">Drives Mode (Default)</h3>
+<p>Displays all drives directly as root nodes.</p>
+<p><strong>Structure:</strong></p>
+<pre><code>C:\ (Local Disk)
+D:\ (CD Drive)
+E:\ (Removable Disk)
+...
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.RootMode = FileSystemRootMode.Drives;
+</code></pre>
+<h3 id="custompath-mode">CustomPath Mode</h3>
+<p>Uses the custom <code>RootPath</code> property to determine the root directory.</p>
+<p><strong>Structure:</strong></p>
+<pre><code>[RootPath Directory]
+├── [Subdirectories]
+└── [Files]
+</code></pre>
+<p><strong>Behavior:</strong></p>
+<ul>
+<li>If <code>RootPath</code> is invalid or empty, falls back to <code>Drives</code> mode</li>
+<li>Root node is expanded by default</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">fileSystemTreeView.RootMode = FileSystemRootMode.CustomPath;
+fileSystemTreeView.RootPath = @&quot;C:\Users&quot;;
+</code></pre>
+<hr>
+<h2 id="icon-management">Icon Management</h2>
+<h3 id="icon-extraction-process">Icon Extraction Process</h3>
+<ol>
+<li><strong>Cache Check</strong>: First checks <code>_iconCache</code> dictionary</li>
+<li><strong>Icon Extraction</strong>:
+<ul>
+<li><strong>Directories</strong>: Uses <code>FileSystemIconHelper.GetFolderIcon()</code></li>
+<li><strong>Files</strong>: Uses <code>FileSystemIconHelper.GetFileIcon(extension)</code></li>
+<li><strong>Drives</strong>: Uses <code>GetDriveIconIndex()</code> which maps drive types to stock icons</li>
+</ul>
+</li>
+<li><strong>Bitmap Conversion</strong>: Converts <code>Icon</code> to <code>Bitmap</code> at ImageList size (16x16)</li>
+<li><strong>ImageList Addition</strong>: Adds bitmap to ImageList, forces handle creation</li>
+<li><strong>Caching</strong>: Stores index in cache dictionary</li>
+</ol>
+<h3 id="icon-cache">Icon Cache</h3>
+<p><strong>Cache Key Format:</strong></p>
+<ul>
+<li>Directories: <code>&quot;DIR&quot;</code></li>
+<li>Files: File extension (lowercase), e.g., <code>&quot;.txt&quot;</code></li>
+<li>Drives: <code>&quot;DRIVE_{DriveType}&quot;</code> (e.g., <code>&quot;DRIVE_Fixed&quot;</code>)</li>
+<li>Folder Open: <code>&quot;DIR_OPEN&quot;</code></li>
+</ul>
+<p><strong>Cache Benefits:</strong></p>
+<ul>
+<li>Avoids re-extracting icons for same file types</li>
+<li>Improves performance when displaying many files</li>
+<li>Reduces Windows Shell API calls</li>
+</ul>
+<p><strong>Cache Management:</strong></p>
+<ul>
+<li>Not cleared on <code>Reload()</code> (icons persist)</li>
+<li>Dictionary uses case-insensitive string comparison</li>
+</ul>
+<h3 id="icon-sizes">Icon Sizes</h3>
+<ul>
+<li><strong>Fixed Size</strong>: 16x16 pixels (not configurable)</li>
+<li><strong>Large Icons</strong>: Not supported (unlike <code>KryptonFileSystemListView</code>)</li>
+</ul>
+<h3 id="drive-icons">Drive Icons</h3>
+<p>Drive icons are mapped based on <code>DriveType</code>:</p>
+<ul>
+<li><code>DriveType.Fixed</code> → <code>StockIconHelper.StockIconId.DriveFixed</code></li>
+<li><code>DriveType.Network</code> → <code>StockIconHelper.StockIconId.DriveNetwork</code></li>
+<li><code>DriveType.CDRom</code> → <code>StockIconHelper.StockIconId.DriveCD</code></li>
+<li><code>DriveType.Removable</code> → <code>StockIconHelper.StockIconId.DriveRemove</code></li>
+<li><code>DriveType.Ram</code> → <code>StockIconHelper.StockIconId.DriveRAM</code></li>
+<li>Default → <code>StockIconHelper.StockIconId.DriveFixed</code></li>
+</ul>
+<h3 id="folder-openclosed-states">Folder Open/Closed States</h3>
+<ul>
+<li><strong>Closed Folder</strong>: Standard folder icon (from <code>GetIconIndex()</code>)</li>
+<li><strong>Open Folder</strong>: <code>StockIconHelper.StockIconId.FolderOpen</code> (set on <code>AfterExpand</code>)</li>
+<li><strong>Collapsed</strong>: Resets to closed folder icon (on <code>BeforeCollapse</code>)</li>
+</ul>
+<h3 id="icon-fallback-strategy">Icon Fallback Strategy</h3>
+<p>The control implements a multi-tier fallback system:</p>
+<ol>
+<li><strong>Primary</strong>: Extract icon from actual file/folder path or extension</li>
+<li><strong>Secondary</strong>: Use generic folder icon or extension-based icon</li>
+<li><strong>Tertiary</strong>: Use Windows stock icons</li>
+<li><strong>Final</strong>: Use default icon (index 0) - blue bitmap</li>
+</ol>
+<p>This ensures icons are always displayed, even when extraction fails.</p>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+
+// Create control
+KryptonFileSystemTreeView fileTreeView = new KryptonFileSystemTreeView();
+fileTreeView.Dock = DockStyle.Fill;
+
+// Add to form
+this.Controls.Add(fileTreeView);
+</code></pre>
+<h3 id="configure-root-mode">Configure Root Mode</h3>
+<pre><code class="lang-csharp">// Desktop mode (Explorer-style)
+fileTreeView.RootMode = FileSystemRootMode.Desktop;
+fileTreeView.ShowSpecialFolders = true;
+
+// Computer mode
+fileTreeView.RootMode = FileSystemRootMode.Computer;
+
+// Drives mode (default)
+fileTreeView.RootMode = FileSystemRootMode.Drives;
+
+// Custom path mode
+fileTreeView.RootMode = FileSystemRootMode.CustomPath;
+fileTreeView.RootPath = @&quot;C:\Users&quot;;
+</code></pre>
+<h3 id="configure-display-options">Configure Display Options</h3>
+<pre><code class="lang-csharp">// Hide files, show only directories
+fileTreeView.ShowFiles = false;
+
+// Show hidden and system files
+fileTreeView.ShowHiddenFiles = true;
+fileTreeView.ShowSystemFiles = true;
+
+// Filter files
+fileTreeView.FileFilter = &quot;*.exe;*.dll&quot;;
+</code></pre>
+<h3 id="handle-events">Handle Events</h3>
+<pre><code class="lang-csharp">// Directory expanding event
+fileTreeView.DirectoryExpanding += (sender, e) =&gt;
+{
+    statusLabel.Text = $&quot;Loading: {e.DirectoryPath}&quot;;
+    
+    // Optionally cancel expansion
+    // if (someCondition) e.Cancel = true;
+};
+
+// Directory expanded event
+fileTreeView.DirectoryExpanded += (sender, e) =&gt;
+{
+    statusLabel.Text = $&quot;Current: {e.Path}&quot;;
+};
+
+// File system error event
+fileTreeView.FileSystemError += (sender, e) =&gt;
+{
+    if (e.Exception is UnauthorizedAccessException)
+    {
+        MessageBox.Show($&quot;Access denied: {e.Path}&quot;, &quot;Error&quot;, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+    }
+    else
+    {
+        MessageBox.Show($&quot;Error: {e.Exception.Message}&quot;, &quot;Error&quot;, MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+};
+</code></pre>
+<h3 id="get-selected-path">Get Selected Path</h3>
+<pre><code class="lang-csharp">// Handle selection change
+fileTreeView.AfterSelect += (sender, e) =&gt;
+{
+    string? selectedPath = fileTreeView.SelectedPath;
+    if (!string.IsNullOrEmpty(selectedPath))
+    {
+        if (Directory.Exists(selectedPath))
+        {
+            Console.WriteLine($&quot;Selected folder: {selectedPath}&quot;);
+        }
+        else if (File.Exists(selectedPath))
+        {
+            FileInfo fileInfo = new FileInfo(selectedPath);
+            Console.WriteLine($&quot;Selected file: {selectedPath} ({fileInfo.Length} bytes)&quot;);
+        }
+    }
+};
+</code></pre>
+<h3 id="navigate-to-path">Navigate to Path</h3>
+<pre><code class="lang-csharp">// Navigate to a specific path
+bool success = fileTreeView.NavigateToPath(@&quot;C:\Users\Public\Documents&quot;);
+if (success)
+{
+    Console.WriteLine(&quot;Navigation successful&quot;);
+}
+else
+{
+    Console.WriteLine(&quot;Path not found - ensure parent directories are expanded&quot;);
+}
+</code></pre>
+<h3 id="integration-with-file-system-listview">Integration with File System ListView</h3>
+<pre><code class="lang-csharp">// Synchronize TreeView selection with ListView
+fileTreeView.AfterSelect += (sender, e) =&gt;
+{
+    string? selectedPath = fileTreeView.SelectedPath;
+    if (!string.IsNullOrEmpty(selectedPath) &amp;&amp; Directory.Exists(selectedPath))
+    {
+        fileListView.NavigateTo(selectedPath);
+    }
+};
+</code></pre>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-error-handling">1. Error Handling</h3>
+<p>Always handle the <code>FileSystemError</code> event:</p>
+<pre><code class="lang-csharp">fileTreeView.FileSystemError += (sender, e) =&gt;
+{
+    // Log error
+    Logger.LogError($&quot;File system error at {e.Path}: {e.Exception}&quot;);
+    
+    // Show user-friendly message
+    if (e.Exception is UnauthorizedAccessException)
+    {
+        // Handle access denied gracefully
+    }
+};
+</code></pre>
+<h3 id="2-performance-considerations">2. Performance Considerations</h3>
+<ul>
+<li><strong>Lazy Loading</strong>: The control uses lazy loading by default. Directories are only loaded when expanded.</li>
+<li><strong>Large Directories</strong>: For directories with thousands of items, consider:
+<ul>
+<li>Using file filters to limit displayed items</li>
+<li>Showing directories only (<code>ShowFiles = false</code>)</li>
+<li>Implementing custom virtual mode (not currently supported)</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-root-mode-selection">3. Root Mode Selection</h3>
+<p>Choose the appropriate root mode for your use case:</p>
+<ul>
+<li><strong>Desktop</strong>: For Explorer-like interfaces</li>
+<li><strong>Computer</strong>: For drive-focused browsing</li>
+<li><strong>Drives</strong>: For simple drive listing (default)</li>
+<li><strong>CustomPath</strong>: For application-specific root directories</li>
+</ul>
+<h3 id="4-thread-safety">4. Thread Safety</h3>
+<p>File system operations should be performed on the UI thread:</p>
+<pre><code class="lang-csharp">// Correct: On UI thread
+fileTreeView.Reload();
+
+// If loading from background thread:
+this.Invoke(new Action(() =&gt; fileTreeView.Reload()));
+</code></pre>
+<h3 id="5-property-changes">5. Property Changes</h3>
+<p>Properties automatically trigger <code>Reload()</code>. Avoid calling <code>Reload()</code> manually after property changes:</p>
+<pre><code class="lang-csharp">// Correct: Reload happens automatically
+fileTreeView.RootMode = FileSystemRootMode.Desktop;
+
+// Incorrect: Unnecessary reload
+fileTreeView.RootMode = FileSystemRootMode.Desktop;
+fileTreeView.Reload(); // Not needed
+</code></pre>
+<h3 id="6-navigatetopath-limitations">6. NavigateToPath Limitations</h3>
+<p><code>NavigateToPath()</code> requires parent nodes to be expanded. For best results:</p>
+<pre><code class="lang-csharp">// Expand parent nodes first
+TreeNode? parentNode = FindNodeByPath(fileTreeView.Nodes, @&quot;C:\Users&quot;);
+if (parentNode != null)
+{
+    parentNode.Expand();
+    fileTreeView.NavigateToPath(@&quot;C:\Users\Public\Documents&quot;);
+}
+</code></pre>
+<h3 id="7-special-folders">7. Special Folders</h3>
+<p>Special folders (Computer, Network, etc.) use CLSIDs and may not expand to file system contents. Handle these cases:</p>
+<pre><code class="lang-csharp">fileTreeView.DirectoryExpanding += (sender, e) =&gt;
+{
+    if (e.DirectoryPath.StartsWith(&quot;::&quot;, StringComparison.Ordinal))
+    {
+        // Handle special folder CLSID
+        // Most special folders don't expand to file system contents
+    }
+};
+</code></pre>
+<hr>
+<h2 id="known-limitations">Known Limitations</h2>
+<h3 id="1-fixed-icon-size">1. Fixed Icon Size</h3>
+<p>Icon size is fixed at 16x16 pixels. Unlike <code>KryptonFileSystemListView</code>, there's no <code>UseLargeIcons</code> property.</p>
+<h3 id="2-navigatetopath-requires-expanded-parents">2. NavigateToPath Requires Expanded Parents</h3>
+<p><code>NavigateToPath()</code> may fail if parent directories are not already expanded. The method doesn't automatically expand parent nodes.</p>
+<h3 id="3-special-folders-dont-expand">3. Special Folders Don't Expand</h3>
+<p>Most special folders (Control Panel, Network, Recycle Bin) use CLSIDs and don't expand to show file system contents. Only Computer expands to show drives.</p>
+<h3 id="4-no-virtual-mode">4. No Virtual Mode</h3>
+<p>The control does not support virtual mode. All nodes are loaded into memory. For very large directory trees, performance may degrade.</p>
+<h3 id="5-file-filter-limitations">5. File Filter Limitations</h3>
+<p>The filter uses <code>Directory.GetFiles()</code> which supports simple wildcard patterns. Complex regex patterns are not supported.</p>
+<h3 id="6-no-custom-sorting">6. No Custom Sorting</h3>
+<p>Sorting is handled by the base <code>TreeView</code> control. Custom sort comparers can be implemented via <code>TreeViewNodeSorter</code> property.</p>
+<h3 id="7-dummy-nodes-visible-in-some-scenarios">7. Dummy Nodes Visible in Some Scenarios</h3>
+<p>Dummy nodes are hidden via <code>DrawNode</code> event, but may be visible in certain edge cases or custom drawing scenarios.</p>
+<h3 id="8-icon-cache-not-cleared-on-reload">8. Icon Cache Not Cleared on Reload</h3>
+<p>Icon cache persists across <code>Reload()</code> calls. This improves performance but may show stale icons if file associations change.</p>
+<h3 id="9-drive-labels-may-be-incomplete">9. Drive Labels May Be Incomplete</h3>
+<p>Drive labels are formatted as <code>&quot;{VolumeLabel} ({Path})&quot;</code> or <code>&quot;{Path} ({DriveType})&quot;</code>. If volume label cannot be read, drive type is shown instead.</p>
+<h3 id="10-no-drag-and-drop-support">10. No Drag-and-Drop Support</h3>
+<p>Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-drop events.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-tree-not-loading">Issue: Tree Not Loading</h3>
+<p><strong>Symptoms:</strong> Tree view appears empty after creation.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Ensure control handle is created (control is visible)</li>
+<li>Check <code>RootMode</code> and <code>RootPath</code> settings</li>
+<li>Handle <code>FileSystemError</code> event for underlying issues</li>
+<li>Verify <code>OnHandleCreated</code> is called (not in design mode)</li>
+</ul>
+<h3 id="issue-icons-not-displaying">Issue: Icons Not Displaying</h3>
+<p><strong>Symptoms:</strong> Icons appear as default/gray icons or not at all.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Check Windows Shell API availability</li>
+<li>Verify icon extraction permissions</li>
+<li>Check <code>FileSystemError</code> event for underlying issues</li>
+<li>Ensure proper disposal of icon resources</li>
+</ul>
+<h3 id="issue-performance-degradation-with-large-directories">Issue: Performance Degradation with Large Directories</h3>
+<p><strong>Symptoms:</strong> Slow expansion or UI freezing with large directories.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Use file filters to limit displayed items</li>
+<li>Set <code>ShowFiles = false</code> to show directories only</li>
+<li>Consider implementing background loading (requires custom implementation)</li>
+<li>Use lazy loading (already implemented by default)</li>
+</ul>
+<h3 id="issue-navigatetopath-fails">Issue: NavigateToPath Fails</h3>
+<p><strong>Symptoms:</strong> <code>NavigateToPath()</code> returns <code>false</code> even for valid paths.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Ensure parent directories are expanded first</li>
+<li>Verify path exists: <code>Directory.Exists(path) || File.Exists(path)</code></li>
+<li>Check path format (use <code>Path.GetFullPath()</code> if needed)</li>
+<li>Handle case sensitivity (paths are compared case-insensitively)</li>
+</ul>
+<h3 id="issue-special-folders-dont-expand">Issue: Special Folders Don't Expand</h3>
+<p><strong>Symptoms:</strong> Computer, Network, Recycle Bin don't show contents.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>This is expected behavior for most special folders</li>
+<li>Only Computer expands to show drives</li>
+<li>Other CLSID folders don't have file system children</li>
+<li>Consider hiding special folders if not needed: <code>ShowSpecialFolders = false</code></li>
+</ul>
+<h3 id="issue-access-denied-errors">Issue: Access Denied Errors</h3>
+<p><strong>Symptoms:</strong> <code>FileSystemError</code> event raised with <code>UnauthorizedAccessException</code>.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Handle <code>FileSystemError</code> event gracefully</li>
+<li>Check user permissions</li>
+<li>Use <code>ShowHiddenFiles</code> and <code>ShowSystemFiles</code> appropriately</li>
+<li>Consider running with elevated permissions if needed</li>
+</ul>
+<h3 id="issue-drive-icons-wrong">Issue: Drive Icons Wrong</h3>
+<p><strong>Symptoms:</strong> Drive icons don't match drive types.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Verify <code>DriveInfo.DriveType</code> is correct</li>
+<li>Check icon cache (may need to clear manually)</li>
+<li>Ensure <code>StockIconHelper</code> is working correctly</li>
+</ul>
+<h3 id="issue-folder-openclosed-icons-not-updating">Issue: Folder Open/Closed Icons Not Updating</h3>
+<p><strong>Symptoms:</strong> Folder icons don't change when expanded/collapsed.</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Verify <code>AfterExpand</code> and <code>BeforeCollapse</code> events are firing</li>
+<li>Check that <code>GetFolderOpenIconIndex()</code> returns valid index</li>
+<li>Ensure ImageList contains open folder icon</li>
+</ul>
+<hr>
+<h2 id="additional-resources">Additional Resources</h2>
+<h3 id="related-controls">Related Controls</h3>
+<ul>
+<li><strong>KryptonFileSystemListView</strong>: List view version of file system browser</li>
+<li><strong>KryptonSystemTreeView</strong>: Simplified version starting from all drives</li>
+<li><strong>KryptonTreeView</strong>: Base TreeView control with Krypton styling</li>
+</ul>
+<h3 id="windows-api-dependencies">Windows API Dependencies</h3>
+<ul>
+<li><strong>Shell32.dll</strong>: Icon extraction (<code>SHGetFileInfo</code>)</li>
+<li><strong>User32.dll</strong>: Icon destruction (<code>DestroyIcon</code>)</li>
+</ul>
+<h3 id="source-code-location">Source Code Location</h3>
+<pre><code>Source/Krypton Components/Krypton.Utilities/KryptonFileSystemTreeView/
+├── Controls Toolkit/
+│   └── KryptonFileSystemTreeView.cs
+└── Values/
+    └── FileSystemTreeViewValues.cs
+</code></pre>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

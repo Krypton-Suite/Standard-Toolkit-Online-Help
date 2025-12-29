@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonExceptionDialog - Quick Start Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonExceptionDialog - Quick Start Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonexceptiondialog---quick-start-guide">KryptonExceptionDialog - Quick Start Guide</h1>
+
+<h2 id="5-minute-getting-started">5-Minute Getting Started</h2>
+<h3 id="installation">Installation</h3>
+<p><code>KryptonExceptionDialog</code> is included in the Krypton.Toolkit package. No additional installation required.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code></p>
+<hr>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="simple-exception-display">Simple Exception Display</h3>
+<pre><code class="lang-csharp">try
+{
+    // Your code that might throw an exception
+    int result = 10 / int.Parse(&quot;0&quot;);
+}
+catch (Exception ex)
+{
+    // Show exception dialog with copy button and search box enabled
+    KryptonExceptionDialog.Show(ex, showCopyButton: true, showSearchBox: true);
+}
+</code></pre>
+<h3 id="using-default-values">Using Default Values</h3>
+<pre><code class="lang-csharp">catch (Exception ex)
+{
+    // Simple display - no copy button or search box (defaults)
+    KryptonExceptionDialog.Show(ex);
+    
+    // Or explicitly use null to get defaults (both false)
+    KryptonExceptionDialog.Show(ex, null, null);
+}
+</code></pre>
+<h3 id="with-custom-highlight-color">With Custom Highlight Color</h3>
+<pre><code class="lang-csharp">catch (Exception ex)
+{
+    // Custom highlight color for search matches
+    KryptonExceptionDialog.Show(ex, Color.LightCyan, true, true);
+}
+</code></pre>
+<h3 id="with-bug-report-feature">With Bug Report Feature</h3>
+<pre><code class="lang-csharp">catch (Exception ex)
+{
+    // Include bug report button with callback
+    KryptonExceptionDialog.Show(
+        ex, 
+        Color.LightYellow,
+        showCopyButton: true, 
+        showSearchBox: true,
+        bugReportCallback: (exception) =&gt; 
+        {
+            // Send to error tracking service
+            ErrorTracker.Report(exception);
+        }
+    );
+}
+</code></pre>
+<hr>
+<h2 id="common-scenarios">Common Scenarios</h2>
+<h3 id="developmentdebug-mode">Development/Debug Mode</h3>
+<pre><code class="lang-csharp">catch (Exception ex)
+{
+    #if DEBUG
+        // Full details in debug mode
+        KryptonExceptionDialog.Show(ex, true, true);
+    #else
+        // User-friendly message in release
+        KryptonMessageBox.Show(
+            &quot;An error occurred. Please contact support.&quot;,
+            &quot;Error&quot;,
+            KryptonMessageBoxButtons.OK,
+            KryptonMessageBoxIcon.Error
+        );
+        
+        // Log the exception internally
+        LogException(ex);
+    #endif
+}
+</code></pre>
+<h3 id="global-exception-handler">Global Exception Handler</h3>
+<pre><code class="lang-csharp">static class Program
+{
+    [STAThread]
+    static void Main()
+    {
+        Application.ThreadException += (sender, e) =&gt;
+        {
+            KryptonExceptionDialog.Show(e.Exception, true, true);
+        };
+        
+        Application.Run(new MainForm());
+    }
+}
+</code></pre>
+<h3 id="with-auto-context-capture">With Auto-Context Capture</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+
+try
+{
+    ProcessData();
+}
+catch (Exception ex)
+{
+    // Automatically captures file name, line number, and method name
+    KryptonExceptionHandler.CaptureException(
+        ex,
+        title: &quot;Data Processing Failed&quot;,
+        showStackTrace: true,
+        useExceptionDialog: true
+    );
+}
+</code></pre>
+<hr>
+<h2 id="key-features-at-a-glance">Key Features at a Glance</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+<th>Parameter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Exception Tree</strong></td>
+<td>Navigate exception hierarchy</td>
+<td>Always visible</td>
+</tr>
+<tr>
+<td><strong>Search</strong></td>
+<td>Search exceptions and stack traces</td>
+<td><code>showSearchBox</code></td>
+</tr>
+<tr>
+<td><strong>Copy to Clipboard</strong></td>
+<td>Copy formatted exception details</td>
+<td><code>showCopyButton</code></td>
+</tr>
+<tr>
+<td><strong>Stack Traces</strong></td>
+<td>View complete call stack with line numbers</td>
+<td>Always visible</td>
+</tr>
+<tr>
+<td><strong>Inner Exceptions</strong></td>
+<td>Drill down into exception chains</td>
+<td>Always visible</td>
+</tr>
+<tr>
+<td><strong>Exception Data</strong></td>
+<td>View custom exception data</td>
+<td>Always visible if present</td>
+</tr>
+<tr>
+<td><strong>Theming</strong></td>
+<td>Matches current Krypton theme</td>
+<td>Automatic</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="method-signatures">Method Signatures</h2>
+<h3 id="kryptonexceptiondialog">KryptonExceptionDialog</h3>
+<pre><code class="lang-csharp">// Overload 1: Simple display (defaults)
+KryptonExceptionDialog.Show(Exception exception);
+
+// Overload 2: With highlight color
+KryptonExceptionDialog.Show(Exception exception, Color? highlightColor);
+
+// Overload 3: With copy and search controls
+KryptonExceptionDialog.Show(
+    Exception exception,      // Required: the exception to display
+    bool? showCopyButton,    // Optional: show copy button (default: false)
+    bool? showSearchBox      // Optional: show search box (default: false)
+);
+
+// Overload 4: With highlight color and controls
+KryptonExceptionDialog.Show(
+    Exception exception,
+    Color? highlightColor,   // Optional: highlight color (default: LightYellow)
+    bool? showCopyButton,    // Optional: show copy button (default: false)
+    bool? showSearchBox      // Optional: show search box (default: false)
+);
+
+// Overload 5: Full featured with bug report callback
+KryptonExceptionDialog.Show(
+    Exception exception,
+    Color? highlightColor,           // Optional: highlight color (default: LightYellow)
+    bool? showCopyButton,            // Optional: show copy button (default: false)
+    bool? showSearchBox,             // Optional: show search box (default: false)
+    Action&lt;Exception&gt;? bugReportCallback  // Optional: callback for bug report button
+);
+</code></pre>
+<h3 id="kryptonexceptionhandler">KryptonExceptionHandler</h3>
+<pre><code class="lang-csharp">// Advanced API with auto-context capture
+KryptonExceptionHandler.CaptureException(
+    Exception exception,                  // Required
+    string title = &quot;Exception Caught&quot;,   // Optional
+    [CallerFilePath] string callerFilePath = &quot;&quot;,     // Auto-captured
+    [CallerLineNumber] int lineNumber = 0,           // Auto-captured
+    [CallerMemberName] string callerMethod = &quot;&quot;,     // Auto-captured
+    bool showStackTrace = false,                     // Optional
+    bool? useExceptionDialog = true                  // Optional
+);
+
+// Log to file
+KryptonExceptionHandler.PrintStackTrace(
+    Exception exception,
+    string fileName
+);
+</code></pre>
+<hr>
+<h2 id="dialog-controls">Dialog Controls</h2>
+<h3 id="what-users-see">What Users See</h3>
+<p><strong>Left Panel (Exception Tree):</strong></p>
+<ul>
+<li>Root exception with type and message</li>
+<li>Stack Trace node (expandable)
+<ul>
+<li>Each stack frame with file/line info</li>
+</ul>
+</li>
+<li>Inner Exception node (if present)
+<ul>
+<li>Recursive exception chain</li>
+</ul>
+</li>
+<li>Data node (if custom data present)
+<ul>
+<li>Key-value pairs</li>
+</ul>
+</li>
+</ul>
+<p><strong>Right Panel (Details):</strong></p>
+<ul>
+<li>Type: Exception type name</li>
+<li>Message: Exception message</li>
+<li>Stack Trace: Formatted call stack</li>
+<li>Inner Exception: Inner exception info or &quot;None&quot;</li>
+</ul>
+<p><strong>Bottom:</strong></p>
+<ul>
+<li>Copy button (copies all details to clipboard)</li>
+<li>OK button (closes dialog)</li>
+</ul>
+<h3 id="search-functionality">Search Functionality</h3>
+<p>When search is enabled:</p>
+<ol>
+<li>Type in the search box at the top of the tree panel</li>
+<li>Tree automatically filters to matching nodes</li>
+<li>Matches are highlighted in <strong>bold</strong> with yellow background</li>
+<li>Result count displayed (e.g., &quot;3 results found&quot;)</li>
+<li>Click the X button to clear search</li>
+</ol>
+<hr>
+<h2 id="common-patterns">Common Patterns</h2>
+<h3 id="pattern-1-try-catch-display">Pattern 1: Try-Catch-Display</h3>
+<pre><code class="lang-csharp">try
+{
+    DoWork();
+}
+catch (Exception ex)
+{
+    KryptonExceptionDialog.Show(ex, true, true);
+}
+</code></pre>
+<h3 id="pattern-2-try-catch-log-display">Pattern 2: Try-Catch-Log-Display</h3>
+<pre><code class="lang-csharp">try
+{
+    DoWork();
+}
+catch (Exception ex)
+{
+    Logger.Error(ex, &quot;Failed to do work&quot;);
+    KryptonExceptionDialog.Show(ex, true, true);
+}
+</code></pre>
+<h3 id="pattern-3-try-catch-save-display">Pattern 3: Try-Catch-Save-Display</h3>
+<pre><code class="lang-csharp">try
+{
+    DoWork();
+}
+catch (Exception ex)
+{
+    string logFile = $&quot;error_{DateTime.Now:yyyyMMdd_HHmmss}.log&quot;;
+    KryptonExceptionHandler.PrintStackTrace(ex, logFile);
+    KryptonExceptionDialog.Show(ex, true, true);
+}
+</code></pre>
+<h3 id="pattern-4-conditional-display">Pattern 4: Conditional Display</h3>
+<pre><code class="lang-csharp">try
+{
+    DoWork();
+}
+catch (Exception ex)
+{
+    if (AppSettings.ShowDetailedErrors)
+    {
+        KryptonExceptionDialog.Show(ex, true, true);
+    }
+    else
+    {
+        KryptonMessageBox.Show(&quot;An error occurred.&quot;, &quot;Error&quot;);
+    }
+}
+</code></pre>
+<hr>
+<h2 id="customization">Customization</h2>
+<h3 id="localization">Localization</h3>
+<p>All strings are customizable via <code>KryptonManager.Strings.ExceptionDialogStrings</code>:</p>
+<pre><code class="lang-csharp">// Set at application startup
+KryptonManager.Strings.ExceptionDialogStrings.WindowTitle = &quot;Error Details&quot;;
+KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = &quot;Type to search...&quot;;
+KryptonManager.Strings.ExceptionDialogStrings.StackTrace = &quot;Call Stack&quot;;
+// ... etc
+</code></pre>
+<h3 id="hide-features">Hide Features</h3>
+<pre><code class="lang-csharp">// No search or copy features
+KryptonExceptionDialog.Show(ex, showCopyButton: false, showSearchBox: false);
+
+// Just the tree and details
+</code></pre>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="-do">✅ DO</h3>
+<ul>
+<li>Use in development/debug builds</li>
+<li>Use in admin/diagnostic tools</li>
+<li>Log exceptions before showing dialog</li>
+<li>Use meaningful exception messages</li>
+<li>Provide context with <code>KryptonExceptionHandler.CaptureException</code></li>
+</ul>
+<h3 id="-dont">❌ DON'T</h3>
+<ul>
+<li>Show to end users in production (too technical)</li>
+<li>Use for validation errors (use specific messages)</li>
+<li>Call from background threads without <code>Invoke</code></li>
+<li>Display for expected/recoverable errors</li>
+<li>Forget to log exceptions before showing</li>
+</ul>
+<hr>
+<h2 id="thread-safety">Thread Safety</h2>
+<p>Always invoke from the UI thread:</p>
+<pre><code class="lang-csharp">Task.Run(() =&gt;
+{
+    try
+    {
+        BackgroundWork();
+    }
+    catch (Exception ex)
+    {
+        // Marshal to UI thread
+        if (mainForm.InvokeRequired)
+        {
+            mainForm.Invoke(() =&gt; KryptonExceptionDialog.Show(ex, true, true));
+        }
+        else
+        {
+            KryptonExceptionDialog.Show(ex, true, true);
+        }
+    }
+});
+</code></pre>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="dialog-doesnt-appear">Dialog doesn't appear</h3>
+<ul>
+<li>Check if exception is null</li>
+<li>Verify you're on the UI thread</li>
+<li>Check if application is in interactive mode</li>
+</ul>
+<h3 id="copy-button-is-disabled">Copy button is disabled</h3>
+<ul>
+<li>Click on an exception node in the tree (not &quot;Stack Trace&quot; or &quot;Inner Exception&quot; parent nodes)</li>
+<li>Details panel must have text</li>
+</ul>
+<h3 id="search-not-working">Search not working</h3>
+<ul>
+<li>Ensure <code>showSearchBox</code> is explicitly set to <code>true</code> (defaults to <code>false</code>)</li>
+<li>Try clicking in the search box</li>
+</ul>
+<hr>
+<h2 id="more-information">More Information</h2>
+<p>For comprehensive API documentation, see:</p>
+<ul>
+<li><a href="KryptonExceptionDialog.html">KryptonExceptionDialog Full API Reference</a></li>
+</ul>
+<p>For related components:</p>
+<ul>
+<li>KryptonMessageBox</li>
+<li>KryptonForm</li>
+<li>Exception Handling Best Practices</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
