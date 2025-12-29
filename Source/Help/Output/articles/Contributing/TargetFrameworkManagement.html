@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Target Framework Management Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Target Framework Management Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="target-framework-management-guide">Target Framework Management Guide</h1>
+
+<p>This document provides comprehensive guidance on managing target framework selection across the Krypton Standard Toolkit solution. The target framework configuration is centralized using MSBuild's <code>Directory.Build.props</code> mechanism, ensuring consistency and maintainability across all projects.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#how-it-works">How It Works</a></li>
+<li><a href="#configuration-scenarios">Configuration Scenarios</a></li>
+<li><a href="#managing-target-frameworks">Managing Target Frameworks</a></li>
+<li><a href="#adding-new-projects">Adding New Projects</a></li>
+<li><a href="#overriding-behavior">Overriding Behavior</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+</ul>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The Krypton Standard Toolkit supports multiple .NET target frameworks to ensure broad compatibility:</p>
+<ul>
+<li><strong>.NET Framework</strong>: <code>net472</code>, <code>net48</code>, <code>net481</code></li>
+<li><strong>.NET (Modern)</strong>: <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+</ul>
+<p>The target framework selection logic is centralized in <code>Source/Krypton Components/Directory.Build.props</code>, eliminating the need to duplicate configuration across individual project files. This approach provides:</p>
+<ul>
+<li><strong>Single Source of Truth</strong>: All target framework logic in one location</li>
+<li><strong>Consistency</strong>: All projects automatically use the same framework selection rules</li>
+<li><strong>Maintainability</strong>: Changes propagate automatically to all projects</li>
+<li><strong>Flexibility</strong>: Support for different build configurations and scenarios</li>
+</ul>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<h3 id="file-structure">File Structure</h3>
+<pre><code>Source/Krypton Components/
+├── Directory.Build.props          ← Centralized target framework logic
+├── Krypton.Toolkit/
+│   └── Krypton.Toolkit 2022.csproj
+├── Krypton.Ribbon/
+│   └── Krypton.Ribbon 2022.csproj
+├── Krypton.Navigator/
+│   └── Krypton.Navigator 2022.csproj
+├── Krypton.Workspace/
+│   └── Krypton.Workspace 2022.csproj
+├── Krypton.Docking/
+│   └── Krypton.Docking 2022.csproj
+├── Krypton.Utilities/
+│   └── Krypton.Utilities.csproj
+├── Krypton.Standard.Toolkit/
+│   └── Krypton.Standard.Toolkit.csproj
+└── TestForm/
+    └── TestForm.csproj
+</code></pre>
+<h3 id="msbuild-import-chain">MSBuild Import Chain</h3>
+<p>The <code>Directory.Build.props</code> file is automatically imported by MSBuild for all projects in the directory and its subdirectories. The import hierarchy is:</p>
+<ol>
+<li>Root <code>Directory.Build.props</code> (if exists)</li>
+<li><code>Source/Krypton Components/Directory.Build.props</code> ← <strong>Target framework logic here</strong></li>
+<li>Individual project <code>.csproj</code> files</li>
+</ol>
+<p>Properties defined in <code>Directory.Build.props</code> are available to all projects, but individual projects can override them if needed.</p>
+<hr>
+<h2 id="how-it-works">How It Works</h2>
+<h3 id="the-selection-logic">The Selection Logic</h3>
+<p>The target framework selection uses MSBuild's <code>&lt;Choose&gt;</code> element with conditional evaluation:</p>
+<pre><code class="lang-xml">&lt;Choose&gt;
+    &lt;!-- Condition 1: Debug/Nightly/Canary builds --&gt;
+    &lt;When Condition=&quot;'$(Configuration)' == 'Nightly' Or '$(Configuration)' == 'Canary' Or '$(Configuration)' == 'Debug'&quot;&gt;
+        &lt;PropertyGroup&gt;
+            &lt;TargetFrameworks&gt;net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+        &lt;/PropertyGroup&gt;
+    &lt;/When&gt;
+    
+    &lt;!-- Condition 2: Skip .NET Framework builds --&gt;
+    &lt;When Condition=&quot;'$(SkipNetFramework)' == 'true'&quot;&gt;
+        &lt;PropertyGroup&gt;
+            &lt;TargetFrameworks&gt;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+        &lt;/PropertyGroup&gt;
+    &lt;/When&gt;
+    
+    &lt;!-- Condition 3: Default (Release/Installer) --&gt;
+    &lt;Otherwise&gt;
+        &lt;PropertyGroup&gt;
+            &lt;TargetFrameworks&gt;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+            &lt;!-- Override when TFMs=all --&gt;
+            &lt;TargetFrameworks Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+        &lt;/PropertyGroup&gt;
+    &lt;/Otherwise&gt;
+&lt;/Choose&gt;
+</code></pre>
+<h3 id="evaluation-order">Evaluation Order</h3>
+<p>MSBuild evaluates conditions in order:</p>
+<ol>
+<li><strong>First</strong>: Checks if Configuration is <code>Debug</code>, <code>Nightly</code>, or <code>Canary</code></li>
+<li><strong>Second</strong>: Checks if <code>SkipNetFramework</code> property is <code>true</code></li>
+<li><strong>Third</strong>: Falls back to the default (<code>Otherwise</code>) case</li>
+</ol>
+<p><strong>Important</strong>: Only the first matching condition applies. If multiple conditions could match, the first one wins.</p>
+<hr>
+<h2 id="configuration-scenarios">Configuration Scenarios</h2>
+<h3 id="scenario-1-debug-development-builds">Scenario 1: Debug Development Builds</h3>
+<p><strong>Configuration</strong>: <code>Debug</code>, <code>Nightly</code>, or <code>Canary</code></p>
+<p><strong>Target Frameworks</strong>: All frameworks</p>
+<pre><code>net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows
+</code></pre>
+<p><strong>Use Case</strong>:</p>
+<ul>
+<li>Comprehensive testing across all supported frameworks</li>
+<li>Ensuring compatibility during development</li>
+<li>CI/CD pipelines that need full coverage</li>
+</ul>
+<p><strong>Example Build Command</strong>:</p>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj&quot; -c Debug
+</code></pre>
+<h3 id="scenario-2-skip-net-framework-modern-only">Scenario 2: Skip .NET Framework (Modern Only)</h3>
+<p><strong>Property</strong>: <code>SkipNetFramework=true</code></p>
+<p><strong>Target Frameworks</strong>: Modern .NET only</p>
+<pre><code>net8.0-windows;net9.0-windows;net10.0-windows
+</code></pre>
+<p><strong>Use Case</strong>:</p>
+<ul>
+<li>Faster builds during development/testing</li>
+<li>CI scenarios where .NET Framework support isn't needed</li>
+<li>Testing modern .NET features only</li>
+</ul>
+<p><strong>Example Build Command</strong>:</p>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj&quot; -p:SkipNetFramework=true
+</code></pre>
+<h3 id="scenario-3-releasestable-builds-default">Scenario 3: Release/Stable Builds (Default)</h3>
+<p><strong>Configuration</strong>: <code>Release</code>, <code>Installer</code>, or any other configuration</p>
+<p><strong>Target Frameworks</strong>: .NET Framework 4.8+ and modern .NET</p>
+<pre><code>net48;net481;net8.0-windows;net9.0-windows;net10.0-windows
+</code></pre>
+<p><strong>Use Case</strong>:</p>
+<ul>
+<li>Production builds</li>
+<li>NuGet package creation</li>
+<li>Balanced build time vs. compatibility</li>
+</ul>
+<p><strong>Example Build Command</strong>:</p>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj&quot; -c Release
+</code></pre>
+<h3 id="scenario-4-all-frameworks-including-net472">Scenario 4: All Frameworks (Including net472)</h3>
+<p><strong>Property</strong>: <code>TFMs=all</code></p>
+<p><strong>Target Frameworks</strong>: All frameworks including .NET Framework 4.7.2</p>
+<pre><code>net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows
+</code></pre>
+<p><strong>Use Case</strong>:</p>
+<ul>
+<li>Full compatibility testing</li>
+<li>Legacy support validation</li>
+<li>Complete framework coverage</li>
+</ul>
+<p><strong>Example Build Command</strong>:</p>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj&quot; -c Release -p:TFMs=all
+</code></pre>
+<p><strong>Note</strong>: This only works when the default (<code>Otherwise</code>) branch is active. It won't work with <code>Debug</code>/<code>Nightly</code>/<code>Canary</code> configurations since they already include all frameworks.</p>
+<hr>
+<h2 id="managing-target-frameworks">Managing Target Frameworks</h2>
+<h3 id="modifying-the-centralized-logic">Modifying the Centralized Logic</h3>
+<p>To change target framework selection for all projects, edit <code>Source/Krypton Components/Directory.Build.props</code>:</p>
+<h4 id="adding-a-new-target-framework">Adding a New Target Framework</h4>
+<ol>
+<li>Locate the relevant <code>&lt;TargetFrameworks&gt;</code> property group</li>
+<li>Add the new TFM to the semicolon-separated list:</li>
+</ol>
+<pre><code class="lang-xml">&lt;TargetFrameworks&gt;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows&lt;/TargetFrameworks&gt;
+</code></pre>
+<ol start="3">
+<li>Update all relevant conditions (Debug, SkipNetFramework, default)</li>
+</ol>
+<h4 id="removing-a-target-framework">Removing a Target Framework</h4>
+<ol>
+<li>Remove the TFM from all <code>&lt;TargetFrameworks&gt;</code> properties</li>
+<li>Ensure you update all three condition branches</li>
+</ol>
+<h4 id="changing-framework-selection-rules">Changing Framework Selection Rules</h4>
+<ol>
+<li>Modify the condition expressions in the <code>&lt;Choose&gt;</code> element</li>
+<li>Adjust the <code>&lt;TargetFrameworks&gt;</code> values in the corresponding <code>&lt;PropertyGroup&gt;</code></li>
+</ol>
+<p><strong>Example</strong>: To exclude <code>net472</code> from Debug builds:</p>
+<pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Nightly' Or '$(Configuration)' == 'Canary' Or '$(Configuration)' == 'Debug'&quot;&gt;
+    &lt;PropertyGroup&gt;
+        &lt;TargetFrameworks&gt;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/When&gt;
+</code></pre>
+<h3 id="adding-a-new-configuration">Adding a New Configuration</h3>
+<p>To add a new build configuration that uses specific target frameworks:</p>
+<ol>
+<li>Add a new <code>&lt;When&gt;</code> condition before the <code>&lt;Otherwise&gt;</code> block:</li>
+</ol>
+<pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'YourNewConfig'&quot;&gt;
+    &lt;PropertyGroup&gt;
+        &lt;TargetFrameworks&gt;net8.0-windows;net9.0-windows&lt;/TargetFrameworks&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/When&gt;
+</code></pre>
+<ol start="2">
+<li>Ensure the new configuration is defined in project files (if needed):</li>
+</ol>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+    &lt;Configurations&gt;Debug;Release;Installer;Nightly;Canary;YourNewConfig&lt;/Configurations&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h3 id="modifying-framework-lists">Modifying Framework Lists</h3>
+<p>When updating framework lists, maintain consistency across all branches:</p>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Typical Frameworks</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Debug/Nightly/Canary</td>
+<td>All frameworks</td>
+<td>Maximum compatibility testing</td>
+</tr>
+<tr>
+<td>SkipNetFramework</td>
+<td>Modern .NET only</td>
+<td>Fast builds, modern features</td>
+</tr>
+<tr>
+<td>Default (Release)</td>
+<td>net48+ and modern</td>
+<td>Production balance</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="adding-new-projects">Adding New Projects</h2>
+<h3 id="automatic-inheritance">Automatic Inheritance</h3>
+<p>New projects added to <code>Source/Krypton Components/</code> or any subdirectory automatically inherit the target framework configuration from <code>Directory.Build.props</code>. <strong>No action is required.</strong></p>
+<h3 id="project-file-structure">Project File Structure</h3>
+<p>Your new project file should look like this:</p>
+<pre><code class="lang-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+  &lt;PropertyGroup&gt;
+    &lt;OutputType&gt;Library&lt;/OutputType&gt;
+    &lt;!-- Other project-specific properties --&gt;
+  &lt;/PropertyGroup&gt;
+  
+  &lt;!-- Target frameworks are automatically set by Directory.Build.props --&gt;
+&lt;/Project&gt;
+</code></pre>
+<h3 id="verification">Verification</h3>
+<p>To verify a project is using the centralized configuration:</p>
+<ol>
+<li>Build the project and check the output</li>
+<li>Inspect the build log for target framework information</li>
+<li>Use MSBuild property evaluation:</li>
+</ol>
+<pre><code class="lang-cmd">dotnet msbuild &quot;YourProject.csproj&quot; -t:GetTargetFramework -p:Configuration=Debug
+</code></pre>
+<hr>
+<h2 id="overriding-behavior">Overriding Behavior</h2>
+<h3 id="project-level-override">Project-Level Override</h3>
+<p>If a specific project needs different target frameworks, you can override the centralized setting by defining <code>&lt;TargetFrameworks&gt;</code> directly in the project file:</p>
+<pre><code class="lang-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+  &lt;!-- Override centralized configuration --&gt;
+  &lt;PropertyGroup&gt;
+    &lt;TargetFrameworks&gt;net8.0-windows;net9.0-windows&lt;/TargetFrameworks&gt;
+  &lt;/PropertyGroup&gt;
+  
+  &lt;!-- Rest of project file --&gt;
+&lt;/Project&gt;
+</code></pre>
+<p><strong>Warning</strong>: Overriding should be rare and well-documented. It breaks the &quot;single source of truth&quot; principle.</p>
+<h3 id="conditional-override">Conditional Override</h3>
+<p>You can also conditionally override based on project-specific needs:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup Condition=&quot;'$(MSBuildProjectName)' == 'SpecialProject'&quot;&gt;
+    &lt;TargetFrameworks&gt;net8.0-windows&lt;/TargetFrameworks&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<h3 id="build-time-override">Build-Time Override</h3>
+<p>Override target frameworks at build time using MSBuild properties:</p>
+<pre><code class="lang-cmd">dotnet build YourProject.csproj -p:TargetFrameworks=net8.0-windows
+</code></pre>
+<p><strong>Note</strong>: This overrides the centralized configuration for that specific build only.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="problem-project-not-using-centralized-configuration">Problem: Project Not Using Centralized Configuration</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Project builds with different frameworks than expected</li>
+<li>Build output shows unexpected target frameworks</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Verify Import Chain</strong>:</p>
+<ul>
+<li>Ensure <code>Directory.Build.props</code> exists in <code>Source/Krypton Components/</code></li>
+<li>Check that the project is in a subdirectory of that location</li>
+</ul>
+</li>
+<li><p><strong>Check for Overrides</strong>:</p>
+<ul>
+<li>Search the project file for <code>&lt;TargetFrameworks&gt;</code> property</li>
+<li>Remove any project-level definitions if they shouldn't be there</li>
+</ul>
+</li>
+<li><p><strong>Verify MSBuild Evaluation</strong>:</p>
+<pre><code class="lang-cmd">dotnet msbuild YourProject.csproj -t:GetTargetFramework -v:detailed
+</code></pre>
+</li>
+</ol>
+<h3 id="problem-configuration-not-matching-expected-behavior">Problem: Configuration Not Matching Expected Behavior</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Debug builds not including all frameworks</li>
+<li>Release builds including net472 when they shouldn't</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Check Configuration Name</strong>:</p>
+<ul>
+<li>Ensure configuration names match exactly (case-sensitive)</li>
+<li>Verify: <code>Debug</code>, <code>Nightly</code>, <code>Canary</code> (not <code>debug</code>, <code>DEBUG</code>)</li>
+</ul>
+</li>
+<li><p><strong>Verify Condition Logic</strong>:</p>
+<ul>
+<li>Review the <code>&lt;Choose&gt;</code> conditions in <code>Directory.Build.props</code></li>
+<li>Ensure conditions are evaluated in the correct order</li>
+</ul>
+</li>
+<li><p><strong>Check Property Values</strong>:</p>
+<pre><code class="lang-cmd">dotnet build YourProject.csproj -c Debug -v:detailed
+</code></pre>
+<p>Look for property evaluation in the build log</p>
+</li>
+</ol>
+<h3 id="problem-tfmsall-not-working">Problem: TFMs=all Not Working</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Setting <code>TFMs=all</code> doesn't include net472</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Check Configuration</strong>:</p>
+<ul>
+<li><code>TFMs=all</code> only works with Release/Installer configurations</li>
+<li>Debug/Nightly/Canary already include all frameworks</li>
+</ul>
+</li>
+<li><p><strong>Verify Property Syntax</strong>:</p>
+<pre><code class="lang-cmd">dotnet build YourProject.csproj -c Release -p:TFMs=all
+</code></pre>
+</li>
+</ol>
+<h3 id="problem-skipnetframework-not-working">Problem: SkipNetFramework Not Working</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Setting <code>SkipNetFramework=true</code> still builds .NET Framework targets</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Check Condition Order</strong>:</p>
+<ul>
+<li>Debug/Nightly/Canary configurations take precedence</li>
+<li>Use Release configuration with SkipNetFramework</li>
+</ul>
+</li>
+<li><p><strong>Verify Property Value</strong>:</p>
+<pre><code class="lang-cmd">dotnet build YourProject.csproj -c Release -p:SkipNetFramework=true -v:detailed
+</code></pre>
+</li>
+</ol>
+<h3 id="problem-build-performance-issues">Problem: Build Performance Issues</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Builds taking too long</li>
+<li>Building unnecessary frameworks</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p><strong>Use SkipNetFramework for Development</strong>:</p>
+<pre><code class="lang-cmd">dotnet build -p:SkipNetFramework=true
+</code></pre>
+</li>
+<li><p><strong>Build Specific Framework</strong>:</p>
+<pre><code class="lang-cmd">dotnet build -f net8.0-windows
+</code></pre>
+</li>
+<li><p><strong>Use Release Configuration</strong>:</p>
+<ul>
+<li>Release builds exclude net472 by default (faster)</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-centralize-all-framework-logic">1. Centralize All Framework Logic</h3>
+<p>✅ <strong>Do</strong>: Keep all target framework selection in <code>Directory.Build.props</code></p>
+<p>❌ <strong>Don't</strong>: Duplicate framework logic in individual project files</p>
+<h3 id="2-document-special-cases">2. Document Special Cases</h3>
+<p>If a project must override the centralized configuration:</p>
+<p>✅ <strong>Do</strong>: Add a comment explaining why:</p>
+<pre><code class="lang-xml">&lt;!-- This project only supports .NET 8+ due to API dependencies --&gt;
+&lt;PropertyGroup&gt;
+    &lt;TargetFrameworks&gt;net8.0-windows;net9.0-windows;net10.0-windows&lt;/TargetFrameworks&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p>❌ <strong>Don't</strong>: Override without documentation</p>
+<h3 id="3-test-configuration-changes">3. Test Configuration Changes</h3>
+<p>Before committing changes to <code>Directory.Build.props</code>:</p>
+<ol>
+<li>Build a representative project in each configuration</li>
+<li>Verify expected frameworks are built</li>
+<li>Check build output for correctness</li>
+</ol>
+<h3 id="4-use-appropriate-configurations">4. Use Appropriate Configurations</h3>
+<ul>
+<li><strong>Development</strong>: Use <code>Debug</code> for comprehensive testing</li>
+<li><strong>CI/CD</strong>: Use <code>Nightly</code> or <code>Canary</code> for full framework coverage</li>
+<li><strong>Local Testing</strong>: Use <code>SkipNetFramework=true</code> for faster iteration</li>
+<li><strong>Production</strong>: Use <code>Release</code> for optimized builds</li>
+</ul>
+<h3 id="5-maintain-framework-lists-consistently">5. Maintain Framework Lists Consistently</h3>
+<p>When adding/removing frameworks:</p>
+<ol>
+<li>Update all three condition branches</li>
+<li>Update documentation</li>
+<li>Test across all configurations</li>
+<li>Update CI/CD pipelines if needed</li>
+</ol>
+<h3 id="6-version-control-considerations">6. Version Control Considerations</h3>
+<ul>
+<li>Commit <code>Directory.Build.props</code> changes with clear messages</li>
+<li>Document breaking changes if framework support is removed</li>
+<li>Tag releases when framework support changes</li>
+</ul>
+<h3 id="7-performance-optimization">7. Performance Optimization</h3>
+<ul>
+<li>Use <code>SkipNetFramework=true</code> during active development</li>
+<li>Use Release configuration for production builds</li>
+<li>Build specific frameworks when testing: <code>-f net8.0-windows</code></li>
+</ul>
+<hr>
+<h2 id="advanced-topics">Advanced Topics</h2>
+<h3 id="msbuild-property-evaluation">MSBuild Property Evaluation</h3>
+<p>Understanding MSBuild property evaluation order helps debug issues:</p>
+<ol>
+<li><strong>Imports</strong>: <code>Directory.Build.props</code> is imported early</li>
+<li><strong>Properties</strong>: Properties are evaluated in order of appearance</li>
+<li><strong>Conditions</strong>: Conditions are evaluated at property evaluation time</li>
+<li><strong>Overrides</strong>: Later definitions override earlier ones</li>
+</ol>
+<h3 id="property-precedence">Property Precedence</h3>
+<p>When multiple sources define <code>&lt;TargetFrameworks&gt;</code>:</p>
+<ol>
+<li><strong>Command-line</strong> (<code>-p:TargetFrameworks=...</code>) - Highest precedence</li>
+<li><strong>Project file</strong> - Medium precedence</li>
+<li><strong>Directory.Build.props</strong> - Lower precedence (but applies to all projects)</li>
+</ol>
+<h3 id="conditional-framework-selection">Conditional Framework Selection</h3>
+<p>You can create more complex conditions if needed:</p>
+<pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Debug' And '$(SkipNetFramework)' != 'true'&quot;&gt;
+    &lt;PropertyGroup&gt;
+        &lt;TargetFrameworks&gt;net472;net48;net481;net8.0-windows&lt;/TargetFrameworks&gt;
+    &lt;/PropertyGroup&gt;
+&lt;/When&gt;
+</code></pre>
+<h3 id="framework-specific-code">Framework-Specific Code</h3>
+<p>When writing framework-specific code, use conditional compilation:</p>
+<pre><code class="lang-csharp">#if NET472 || NET48 || NET481
+    // .NET Framework specific code
+#else
+    // Modern .NET specific code
+#endif
+</code></pre>
+<p>Or use MSBuild conditions in project files:</p>
+<pre><code class="lang-xml">&lt;ItemGroup Condition=&quot;'$(TargetFramework)' == 'net472'&quot;&gt;
+    &lt;Reference Include=&quot;LegacyAssembly&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<hr>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/visualstudio/msbuild/customize-your-build">MSBuild Directory.Build.props Documentation</a></li>
+<li><a href="https://learn.microsoft.com/en-us/dotnet/standard/frameworks">.NET Target Frameworks</a></li>
+<li><a href="https://learn.microsoft.com/en-us/dotnet/standard/frameworks#how-to-specify-target-frameworks">Multi-targeting in .NET</a></li>
+</ul>
+<hr>
+<h2 id="summary">Summary</h2>
+<p>The centralized target framework management system provides:</p>
+<ul>
+<li>✅ Consistent framework selection across all projects</li>
+<li>✅ Easy maintenance through single-file configuration</li>
+<li>✅ Flexible build scenarios via MSBuild properties</li>
+<li>✅ Automatic inheritance for new projects</li>
+</ul>
+<p>By following this guide, you can effectively manage target frameworks across the entire Krypton Standard Toolkit solution while maintaining consistency and reducing maintenance overhead.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
