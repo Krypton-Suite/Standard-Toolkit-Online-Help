@@ -63,6 +63,7 @@ the toolbox.
 * [KryptonInputBox](Toolkit/Components/KryptonInputBox.md)  
 * [KryptonIntegratedToolBarManager](Toolkit/Components/KryptonIntegratedToolBarManager.md)
 * [KryptonManager](Toolkit/Components/KryptonManager.md)  
+    * [Touchscreen Support](Toolkit/Components/TouchscreenSupport.md)
 * [KryptonMessageBox](Toolkit/Components/KryptonMessageBox.md)  
 * [KryptonOpenFileDialog](Toolkit/Components/KryptonOpenFileDialog.md)
 * [KryptonPrintDialog](Toolkit/Components/KryptonPrintDialog.md)

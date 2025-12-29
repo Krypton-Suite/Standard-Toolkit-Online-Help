@@ -67,6 +67,7 @@ This document provides links to the documentation provided, each will be split u
 * [Krypton Input Box](Standard%20Toolkit/Toolkit/Components/KryptonInputBox.md)
 * [Krypton Integrated Tool Bar Manager](Standard%20Toolkit/Toolkit/Components/KryptonIntegratedToolBarManager.md)
 * [Krypton Manager](Standard%20Toolkit/Toolkit/Components/KryptonManager.md)
+    * [Touchscreen Support](Standard%20Toolkit/Toolkit/Components/TouchscreenSupport.md)
 * [Krypton Menu Strip](Standard%20Toolkit/Toolkit/Components/KryptonMenuStrip.md)
 * [Krypton Message Box](Standard%20Toolkit/Toolkit/Components/KryptonMessageBox.md)
 * [Krypton Open File Dialog](Standard%20Toolkit/Toolkit/Components/KryptonOpenFileDialog.md)
