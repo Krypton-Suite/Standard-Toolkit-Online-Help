@@ -567,9 +567,9 @@ Update release notes and changelog before major releases.
 
 ## Related Documentation
 
-- [Version Management](05-Version-Management.md) - Version strategy
-- [MSBuild Project Files](02-MSBuild-Project-Files.md) - Pack targets
-- [Directory.Build Configuration](04-Directory-Build-Configuration.md) - Package metadata
-- [GitHub Actions Workflows](07-GitHub-Actions-Workflows.md) - Automated publishing
-- [Build Scripts](03-Build-Scripts.md) - Packaging commands
+- [Version Management](VersionManagement.md) - Version strategy
+- [MSBuild Project Files](MSBuildProjectFiles.md) - Pack targets
+- [Directory.Build Configuration](DirectoryBuildConfiguration.md) - Package metadata
+- [GitHub Actions Workflows](GitHubActionsWorkflows.md) - Automated publishing
+- [Build Scripts](BuildScripts.md) - Packaging commands
 

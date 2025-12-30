@@ -463,8 +463,8 @@ In a project file (`.csproj`):
 
 ## Related Documentation
 
-- [Version Management](05-Version-Management.md) - Detailed versioning strategy
-- [NuGet Packaging](06-NuGet-Packaging.md) - Package creation
-- [MSBuild Project Files](02-MSBuild-Project-Files.md) - .proj files
-- [Build System Overview](01-Build-System-Overview.md) - System overview
+- [Version Management](VersionManagement.md) - Detailed versioning strategy
+- [NuGet Packaging](NuGetPackaging.md) - Package creation
+- [MSBuild Project Files](MSBuildProjectFiles.md) - .proj files
+- [Build System Overview](BuildSystemOverview.md) - System overview
 

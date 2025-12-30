@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Workflow Documentation Index | Krypton Standard Toolkit Documentation </title>
+      <title>Build Workflows Documentation | Krypton Standard Toolkit Documentation </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Workflow Documentation Index | Krypton Standard Toolkit Documentation ">
+      <meta name="title" content="Build Workflows Documentation | Krypton Standard Toolkit Documentation ">
     
     
       <link rel="shortcut icon" href="../../Krypton.ico">
@@ -67,36 +67,99 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="workflow-documentation-index">Workflow Documentation Index</h1>
+<h1 id="build-workflows-documentation">Build Workflows Documentation</h1>
 
-<p>This directory captures the operational knowledge for the automation hosted under <code>.github/workflows</code>. Each document is scoped to a single workflow so release engineers can reason about triggers, required infrastructure, secrets, and recovery steps without digging through YAML.</p>
-<h2 id="available-guides">Available Guides</h2>
+<h2 id="overview">Overview</h2>
+<p>This document provides an index to build workflow documentation for the Krypton Standard Toolkit. Build workflows are automated processes that handle continuous integration, validation, and release processes.</p>
+<h2 id="build-workflow-documentation">Build Workflow Documentation</h2>
+<h3 id="build-workflow"><a href="Workflows/BuildWorkflow.html">Build Workflow</a></h3>
+<p>The primary CI/CD workflow that validates code quality and creates releases.</p>
+<p><strong>Key Features</strong>:</p>
+<ul>
+<li>✅ Validates all pull requests</li>
+<li>✅ Multi-framework builds (.NET Framework 4.7.2 - 4.8.1, .NET 8 - 10)</li>
+<li>✅ Automated GitHub releases for master branch</li>
+<li>✅ NuGet package caching for performance</li>
+<li>✅ Fork protection</li>
+</ul>
+<p><strong>Triggers</strong>:</p>
+<ul>
+<li>Pull requests to any branch</li>
+<li>Push to protected branches (master, alpha, canary, gold, V85-LTS)</li>
+<li>Manual: workflow_dispatch</li>
+</ul>
+<p><strong>Documentation</strong>: <a href="Workflows/BuildWorkflow.html">Full Build Workflow Documentation →</a></p>
+<hr>
+<h3 id="release-workflow"><a href="Workflows/ReleaseWorkflow.html">Release Workflow</a></h3>
+<p>Handles automated releases for stable, canary, alpha, and LTS branches.</p>
+<p><strong>Documentation</strong>: <a href="Workflows/ReleaseWorkflow.html">Release Workflow Documentation →</a></p>
+<hr>
+<h3 id="nightly-workflow"><a href="Workflows/NightlyWorkflow.html">Nightly Workflow</a></h3>
+<p>Scheduled nightly builds that automatically create and publish bleeding-edge builds.</p>
+<p><strong>Documentation</strong>: <a href="Workflows/NightlyWorkflow.html">Nightly Workflow Documentation →</a></p>
+<hr>
+<h2 id="related-documentation">Related Documentation</h2>
+<h3 id="build-system">Build System</h3>
+<p>For comprehensive build system documentation, see:</p>
+<ul>
+<li><a href="BuildSystemDocumentationIndex.html">Build System Documentation Index</a> - Complete guide to the build system, MSBuild files, scripts, and configuration</li>
+</ul>
+<h3 id="github-actions">GitHub Actions</h3>
+<p>For general GitHub Actions workflow information, see:</p>
+<ul>
+<li><a href="GitHubActionsIndex.html">GitHub Actions Workflows</a> - Overview of all GitHub Actions workflows</li>
+<li><a href="GitHubWorkflowIndex.html">GitHub Workflow Index</a> - Index of all GitHub workflows</li>
+</ul>
+<h2 id="quick-reference">Quick Reference</h2>
 <table>
 <thead>
 <tr>
 <th>Workflow</th>
 <th>Purpose</th>
-<th>Document</th>
+<th>Trigger</th>
+<th>Output</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>build.yml</code></td>
-<td>CI compilation and package prep executed on PRs and mainline pushes.</td>
-<td><a href="Build%20System/Current/BuildWorkflow.html">Build Workflow</a></td>
+<td>Build</td>
+<td>CI validation</td>
+<td>PR/Push/Manual</td>
+<td>Build artifacts</td>
 </tr>
 <tr>
-<td><code>release.yml</code></td>
-<td>Branch-specific release promotion to NuGet/Discord with kill switches.</td>
-<td><a href="Build%20System/Current/ReleaseWorkflow.html">Release Workflow</a></td>
+<td>Release</td>
+<td>Stable releases</td>
+<td>Push to release branches/Manual</td>
+<td>NuGet packages</td>
+</tr>
+<tr>
+<td>Nightly</td>
+<td>Bleeding-edge builds</td>
+<td>Schedule (00:00 UTC)/Manual</td>
+<td>Nightly NuGet packages</td>
 </tr>
 </tbody>
 </table>
-<h3 id="how-to-use-this-index">How to Use This Index</h3>
+<h2 id="common-tasks">Common Tasks</h2>
+<h3 id="understanding-build-workflows">Understanding Build Workflows</h3>
+<ol>
+<li>Start with <a href="Workflows/BuildWorkflow.html">Build Workflow</a> for CI/CD processes</li>
+<li>Review <a href="Workflows/ReleaseWorkflow.html">Release Workflow</a> for release processes</li>
+<li>Check <a href="Workflows/NightlyWorkflow.html">Nightly Workflow</a> for automated nightly builds</li>
+</ol>
+<h3 id="troubleshooting-build-issues">Troubleshooting Build Issues</h3>
+<ol>
+<li>Check workflow logs in the GitHub Actions tab</li>
+<li>Review <a href="Workflows/BuildWorkflow.html#troubleshooting">Build Workflow Documentation</a></li>
+<li>Verify required secrets and variables are configured</li>
+<li>Check kill switch variables if workflows are disabled</li>
+</ol>
+<h2 id="additional-resources">Additional Resources</h2>
 <ul>
-<li>Start with the guide that matches the workflow which fired (link from GitHub Actions run page).</li>
-<li>Each guide begins with a quick reference section for triggers and infrastructure, followed by deep dives into every job and step.</li>
-<li>If you extend a workflow, update both the corresponding document <strong>and</strong> this table so downstream teams stay aware of the change.</li>
+<li><a href="https://docs.github.com/en/actions">GitHub Actions Documentation</a></li>
+<li><a href="https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild">MSBuild Documentation</a></li>
+<li><a href="https://docs.microsoft.com/en-us/nuget/nuget-org/publish-a-package">NuGet Package Publishing</a></li>
 </ul>
 
 </article>

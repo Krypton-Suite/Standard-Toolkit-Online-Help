@@ -28,9 +28,9 @@ The repository uses several automated workflows to handle builds, releases, issu
 
 | Workflow | Trigger | Purpose | Output |
 |----------|---------|---------|--------|
-| Build | PR/Push | CI validation | Build artifacts |
-| Release | Push to release branches | Stable releases | NuGet packages |
-| Nightly | Schedule (00:00 UTC) | Bleeding-edge builds | Nightly NuGet packages |
+| Build | PR/Push/Manual | CI validation | Build artifacts |
+| Release | Push to release branches/Manual | Stable releases | NuGet packages |
+| Nightly | Schedule (00:00 UTC)/Manual | Bleeding-edge builds | Nightly NuGet packages |
 | Auto-Assign PR | PR opened | Assign PR author | Assignment |
 | Auto-Label Issues | Issue opened/edited | Label and title issues | Labels, title prefix |
 

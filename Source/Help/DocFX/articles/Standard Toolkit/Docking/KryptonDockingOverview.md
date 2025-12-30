@@ -96,7 +96,7 @@ can be added as docking pages for display. Our example code merely creates pages
 that contain a simple *KryptonRichTextBox* instance that is docked to fill the
 entire page client area. Your own real world applications would create something
 more interesting. For more details on the best practice for creating docking
-pages see the [Docking Page Creation](Krypton%20Docking%20Page%20Creation.md) section.
+pages see the [Docking Page Creation](KryptonDockingPageCreation.md) section.
 
 Take careful note of the line setting the '*page.UniqueName'* property. It is
 important that each page in your docking system has a unique name because the

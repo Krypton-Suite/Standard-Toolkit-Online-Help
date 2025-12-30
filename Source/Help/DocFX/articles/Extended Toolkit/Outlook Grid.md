@@ -2,10 +2,10 @@
 
 To learn more about how to use the `KryptonOutlookGrid` control, please refer to the articles below.
 
-* [Overview](Components/KryptonOutlookGrid/Overview.md)
-* [How to Use](Components/KryptonOutlookGrid/HowToUse.md)
-* [Additional Columns](Components/KryptonOutlookGrid/AdditionalColumns.md)
-* [Custom Grouping](Components/KryptonOutlookGrid/CustomGrouping.md)
-* [Save & Restore User's Grid Configuration](Components/KryptonOutlookGrid/SaveAndRestoreUserGridConfiguration.md)
-* [Set Up Conditional Formatting](Components/KryptonOutlookGrid/SetUpConditionalFormatting.md)
-* [Tree Grid Mode](Components/KryptonOutlookGrid/TreeGridMode.md)
+* [Overview](Krypton Outlook Grid/Krypton Outlook Grid/Overview.md)
+* [How to Use](Krypton Outlook Grid/Krypton Outlook Grid/HowToUse.md)
+* [Additional Columns](Krypton Outlook Grid/Krypton Outlook Grid/AdditionalColumns.md)
+* [Custom Grouping](Krypton Outlook Grid/Krypton Outlook Grid/CustomGrouping.md)
+* [Save & Restore User's Grid Configuration](Krypton Outlook Grid/Krypton Outlook Grid/SaveAndRestoreUserGridConfiguration.md)
+* [Set Up Conditional Formatting](Krypton Outlook Grid/Krypton Outlook Grid/SetUpConditionalFormatting.md)
+* [Tree Grid Mode](Krypton Outlook Grid/Krypton Outlook Grid/TreeGridMode.md)

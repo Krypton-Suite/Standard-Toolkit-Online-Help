@@ -35,6 +35,7 @@ Primary CI/CD workflow for validating code quality and creating releases.
 **Triggers**:
 - Pull requests to any branch
 - Push to protected branches (master, alpha, canary, gold, V85-LTS)
+- Manual: workflow_dispatch
 
 **Jobs**:
 1. **build** - Compiles and validates code
@@ -58,7 +59,8 @@ Handles production releases across four different release channels.
 - ✅ Intelligent duplicate detection
 
 **Triggers**:
-- Push to: master, alpha, canary, V85-LTS
+- Push to: master, alpha, canary, V105-LTS, V85-LTS
+- Manual: workflow_dispatch
 
 **Release Channels**:
 
@@ -116,8 +118,8 @@ Automated nightly builds with intelligent change detection.
 3. Familiarize yourself with [Nightly Workflow](Workflows/NightlyWorkflow.md) for daily builds
 
 **Common Tasks**:
-- **Submit a Pull Request**: See [Build Workflow Usage Examples](BuildWorkflow.md#usage-examples)
-- **Create a Release**: See [Release Workflow Usage Examples](ReleaseWorkflow.md#usage-examples)
+- **Submit a Pull Request**: See [Build Workflow Usage Examples](Workflows/BuildWorkflow.md#usage-examples)
+- **Create a Release**: See [Release Workflow Usage Examples](Workflows/ReleaseWorkflow.md#usage-examples)
 
 ### For Maintainers
 
@@ -227,14 +229,14 @@ Event: Manual Trigger
 5. Fix any failures before merging
 
 #### Create a Stable Release
-**Workflow**: [Release Workflow - Master](ReleaseWorkflow.md#job-1-release-master)
+**Workflow**: [Release Workflow - Master](Workflows/ReleaseWorkflow.md#job-1-release-master)
 1. Update version in project files
 2. Commit to master branch
 3. Push to master
 4. Workflow creates NuGet packages, GitHub release, and Discord notification
 
 #### Create an LTS Release
-**Workflow**: [Release Workflow - LTS](ReleaseWorkflow.md#job-2-release-v85-lts)
+**Workflow**: [Release Workflow - LTS](Workflows/ReleaseWorkflow.md#job-2-release-v85-lts)
 1. Cherry-pick changes to V85-LTS branch
 2. Update LTS version
 3. Push to V85-LTS

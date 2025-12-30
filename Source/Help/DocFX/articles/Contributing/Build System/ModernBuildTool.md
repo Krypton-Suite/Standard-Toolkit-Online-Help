@@ -557,9 +557,8 @@ Before publishing:
 
 ## Related Documentation
 
-- [Build Scripts](03-Build-Scripts.md) - Command-line alternatives
-- [NuGet Packaging](06-NuGet-Packaging.md) - Package details
-- [MSBuild Project Files](02-MSBuild-Project-Files.md) - Build targets
-- [Local Development Workflow](09-Local-Development-Workflow.md) - Developer workflows
-- [Troubleshooting](10-Troubleshooting.md) - Common issues
+- [Build Scripts](BuildScripts.md) - Command-line alternatives
+- [NuGet Packaging](NuGetPackaging.md) - Package details
+- [MSBuild Project Files](MSBuildProjectFiles.md) - Build targets
+- [Troubleshooting](Troubleshooting.md) - Common issues
 

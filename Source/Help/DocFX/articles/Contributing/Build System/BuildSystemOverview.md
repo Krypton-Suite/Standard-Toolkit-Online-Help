@@ -217,15 +217,14 @@ msbuild build.proj /t:CreateAllReleaseArchives
 
 For detailed information about specific aspects of the build system:
 
-- [MSBuild Project Files](02-MSBuild-Project-Files.md) - Detailed .proj file documentation
-- [Build Scripts](03-Build-Scripts.md) - Command script documentation
-- [Directory.Build Configuration](04-Directory-Build-Configuration.md) - MSBuild configuration
-- [Version Management](05-Version-Management.md) - Versioning strategy
-- [NuGet Packaging](06-NuGet-Packaging.md) - Package creation and publishing
-- [GitHub Actions Workflows](07-GitHub-Actions-Workflows.md) - CI/CD documentation
-- [ModernBuild Tool](08-ModernBuild-Tool.md) - Interactive build tool
-- [Local Development](09-Local-Development-Workflow.md) - Developer workflow guide
-- [Troubleshooting](10-Troubleshooting.md) - Common issues and solutions
+- [MSBuild Project Files](MSBuildProjectFiles.md) - Detailed .proj file documentation
+- [Build Scripts](BuildScripts.md) - Command script documentation
+- [Directory.Build Configuration](DirectoryBuildConfiguration.md) - MSBuild configuration
+- [Version Management](VersionManagement.md) - Versioning strategy
+- [NuGet Packaging](NuGetPackaging.md) - Package creation and publishing
+- [GitHub Actions Workflows](GitHubActionsWorkflows.md) - CI/CD documentation
+- [ModernBuild Tool](ModernBuildTool.md) - Interactive build tool
+- [Troubleshooting](Troubleshooting.md) - Common issues and solutions
 
 ## Additional Resources
 

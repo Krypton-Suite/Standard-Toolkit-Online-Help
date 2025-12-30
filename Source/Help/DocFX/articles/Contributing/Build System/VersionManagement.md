@@ -456,8 +456,8 @@ msbuild build.proj /t:Pack /p:PackageVersion=100.25.1.305-ci.%BUILD_NUMBER%
 
 ## Related Documentation
 
-- [Directory.Build Configuration](04-Directory-Build-Configuration.md) - Version calculation details
-- [NuGet Packaging](06-NuGet-Packaging.md) - Package versioning
-- [GitHub Actions Workflows](07-GitHub-Actions-Workflows.md) - Automated versioning
-- [MSBuild Project Files](02-MSBuild-Project-Files.md) - Build orchestration
+- [Directory.Build Configuration](DirectoryBuildConfiguration.md) - Version calculation details
+- [NuGet Packaging](NuGetPackaging.md) - Package versioning
+- [GitHub Actions Workflows](GitHubActionsWorkflows.md) - Automated versioning
+- [MSBuild Project Files](MSBuildProjectFiles.md) - Build orchestration
 

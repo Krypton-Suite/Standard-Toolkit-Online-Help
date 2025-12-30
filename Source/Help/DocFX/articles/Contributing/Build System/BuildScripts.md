@@ -431,8 +431,7 @@ echo All operations completed!
 
 ## Related Documentation
 
-- [MSBuild Project Files](02-MSBuild-Project-Files.md) - Understanding .proj files
-- [Local Development Workflow](09-Local-Development-Workflow.md) - Developer workflows
-- [Troubleshooting](10-Troubleshooting.md) - Common issues
-- [ModernBuild Tool](08-ModernBuild-Tool.md) - Alternative TUI tool
+- [MSBuild Project Files](MSBuildProjectFiles.md) - Understanding .proj files
+- [Troubleshooting](Troubleshooting.md) - Common issues
+- [ModernBuild Tool](ModernBuildTool.md) - Alternative TUI tool
 

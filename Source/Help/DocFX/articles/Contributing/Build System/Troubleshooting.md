@@ -718,10 +718,9 @@ dotnet build "Source/Krypton Components/Krypton.Ribbon/Krypton.Ribbon 2022.cspro
 ### Check Documentation
 
 1. Read relevant documentation:
-   - [Build System Overview](01-Build-System-Overview.md)
-   - [MSBuild Project Files](02-MSBuild-Project-Files.md)
-   - [Build Scripts](03-Build-Scripts.md)
-   - [Local Development Workflow](09-Local-Development-Workflow.md)
+   - [Build System Overview](BuildSystemOverview.md)
+   - [MSBuild Project Files](MSBuildProjectFiles.md)
+   - [Build Scripts](BuildScripts.md)
 
 ### Check Logs
 
@@ -765,9 +764,8 @@ If problem persists:
 
 ## Related Documentation
 
-- [Build System Overview](01-Build-System-Overview.md) - System architecture
-- [Local Development Workflow](09-Local-Development-Workflow.md) - Development guide
-- [Build Scripts](03-Build-Scripts.md) - Build commands
-- [GitHub Actions Workflows](07-GitHub-Actions-Workflows.md) - CI/CD
-- [NuGet Packaging](06-NuGet-Packaging.md) - Package troubleshooting
+- [Build System Overview](BuildSystemOverview.md) - System architecture
+- [Build Scripts](BuildScripts.md) - Build commands
+- [GitHub Actions Workflows](GitHubActionsWorkflows.md) - CI/CD
+- [NuGet Packaging](NuGetPackaging.md) - Package troubleshooting
 

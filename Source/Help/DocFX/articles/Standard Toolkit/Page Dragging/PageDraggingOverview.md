@@ -42,7 +42,7 @@ workspace edges or edges for each individual workspace cell and so the returned
 list of targets could be quite extensive. When the drop occurs the relevant
 target then performs the appropriate action.
 
-For more detailed information see the [Drag Enabling Controls](Drag%20Enabling%20Controls.md) section.
+For more detailed information see the [Drag Enabling Controls](DragEnablingControls.md) section.
 
 **IDragPageNotify**  
 Any control that needs to initiate dragging needs to do so my making calls into
@@ -61,7 +61,7 @@ expose the *DragPageNotify* property for this very purpose. You can provide the
 same instance of the *IDragPageNotify* interface to more than one control as
 only one control at a time can be performing a drag operation.
 
-For more detailed information see the [Drag Enabling Controls](Drag%20Enabling%20Controls.md) section.
+For more detailed information see the [Drag Enabling Controls](DragEnablingControls.md) section.
 
 **DragManager**  
 Use the *DragManager* to orchestrate page dragging with the targets and provide
