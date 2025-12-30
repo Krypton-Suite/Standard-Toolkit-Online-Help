@@ -349,8 +349,8 @@ msbuild build.proj /t:Build /m:4
 
 ## Related Documentation
 
-- [Build Scripts](03-Build-Scripts.md) - Command-line build scripts
-- [Directory.Build Configuration](04-Directory-Build-Configuration.md) - Property inheritance
-- [NuGet Packaging](06-NuGet-Packaging.md) - Package configuration
-- [Version Management](05-Version-Management.md) - Versioning details
+- [Build Scripts](BuildScripts.md) - Command-line build scripts
+- [Directory.Build Configuration](DirectoryBuildConfiguration.md) - Property inheritance
+- [NuGet Packaging](NuGetPackaging.md) - Package configuration
+- [Version Management](VersionManagement.md) - Versioning details
 
