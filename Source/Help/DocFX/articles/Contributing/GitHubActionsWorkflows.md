@@ -85,12 +85,13 @@ on:
       - alpha
       - canary
       - gold
-      - V95
+      - V105-LTS
       - V85-LTS
     paths-ignore: ['.git*', '.vscode']
+  workflow_dispatch:  # Manual trigger
 ```
 
-**Runs On**: Every PR and every push to listed branches
+**Runs On**: Every PR, every push to listed branches, or manual trigger
 
 ### What It Does
 
@@ -156,10 +157,12 @@ on:
       - master
       - alpha
       - canary
+      - V105-LTS
       - V85-LTS
+  workflow_dispatch:  # Manual trigger
 ```
 
-**Only Runs On**: Manual pushes to release branches
+**Runs On**: Manual pushes to release branches or manual trigger from Actions UI
 
 ### Jobs Overview
 
@@ -979,8 +982,8 @@ on:
 **Current Status**:
 
 - ✅ `nightly.yml` - Has `workflow_dispatch`
-- ❌ `release.yml` - Could be added for testing
-- ❌ `build.yml` - Could be added for testing
+- ✅ `release.yml` - Has `workflow_dispatch`
+- ✅ `build.yml` - Has `workflow_dispatch`
 
 ---
 
@@ -1278,8 +1281,8 @@ Before merging workflow changes:
 
 | Workflow | Automatic Triggers | Manual Trigger |
 |----------|-------------------|----------------|
-| build.yml | PR, Push to any release branch | ❌ |
-| release.yml | Push to master/V85-LTS/canary/alpha | ❌ |
+| build.yml | PR, Push to any release branch | ✅ workflow_dispatch |
+| release.yml | Push to master/V105-LTS/V85-LTS/canary/alpha | ✅ workflow_dispatch |
 | nightly.yml | Daily at 00:00 UTC | ✅ workflow_dispatch |
 
 ### Secret Names Reference
@@ -1329,17 +1332,17 @@ gh run watch [run-id]
 ## Document Information
 
 **Document**: GitHub Actions Workflows Guide
-**Companion Document**: [Build System Guide](BuildSystem.md)  
+**Companion Document**: [Build System Guide](BuildSystemDocumentationIndex.md)  
 
 ### Related Documentation
 
-- [Build System Guide](BuildSystem.md) - MSBuild scripts and project configuration
+- [Build System Guide](BuildSystemDocumentationIndex.md) - MSBuild scripts and project configuration
 
 ---
 
 ## Next Steps
 
-✅ **Read Next**: [Build System Guide](BuildSystem.md) for MSBuild scripts and project structure  
+✅ **Read Next**: [Build System Guide](BuildSystemDocumentationIndex.md) for MSBuild scripts and project structure  
 ✅ **Setup**: Configure GitHub Secrets (NUGET_API_KEY and Discord webhooks)  
 ✅ **Test**: Manually trigger nightly workflow to verify configuration  
 ✅ **Monitor**: Watch first automated nightly build at midnight UTC  

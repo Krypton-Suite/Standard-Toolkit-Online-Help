@@ -226,7 +226,7 @@ c3 });
 ```
 
 The output will be as shown in Figure 2. If you need to create complex layouts
-then you recommended to read the documentation [Workspace Layout](../Workspace/Workspace%20Layout.md) and then apply it to the dockspace control.
+then you recommended to read the documentation [Workspace Layout](../Workspace/WorkspaceLayout.md) and then apply it to the dockspace control.
 
 ![](Images/DockD2.png)
 
