@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Bug Reporting Dialog | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Bug Reporting Dialog | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-bug-reporting-dialog">Krypton Bug Reporting Dialog</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonBugReportingDialog</code> is a comprehensive bug reporting tool that extends the <code>KryptonExceptionDialog</code> functionality, allowing users to report bugs directly to developers via email. It provides a user-friendly interface for collecting bug information, including exception details, descriptions, reproduction steps, and attachments (screenshots and files).</p>
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>Configurable Email Integration</strong>: Full SMTP support with configurable server settings</li>
+<li><strong>Exception Details Collection</strong>: Automatically captures and includes exception information</li>
+<li><strong>User Input Fields</strong>:
+<ul>
+<li>Email address (with validation)</li>
+<li>Bug description (pre-populated with exception details when available)</li>
+<li>Steps to reproduce</li>
+</ul>
+</li>
+<li><strong>Attachment Support</strong>:
+<ul>
+<li>Screenshot capture functionality</li>
+<li>File attachment support (multiple files)</li>
+<li><strong>Thumbnail Display</strong>: Visual thumbnails for screenshots and videos (128x128 pixels)</li>
+<li>Support for image files (JPG, PNG, GIF, BMP, TIFF, ICO, WEBP)</li>
+<li>Support for video files (MP4, AVI, MOV, WMV, FLV, MKV, WEBM, M4V, 3GP)</li>
+<li>File icons displayed for other file types</li>
+</ul>
+</li>
+<li><strong>Integration with Exception Dialog</strong>: Seamless integration with <code>KryptonExceptionDialog</code> via callback pattern</li>
+<li><strong>Localizable Strings</strong>: All UI strings can be customized through <code>KryptonBugReportingDialogStrings</code></li>
+<li><strong>Success/Error Handling</strong>: User-friendly acknowledgment dialogs</li>
+</ul>
+<h2 id="namespace">Namespace</h2>
+<p>All bug reporting components are located in the <code>Krypton.Utilities</code> namespace:</p>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+</code></pre>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="kryptonbugreportingdialog">KryptonBugReportingDialog</h3>
+<p>The main public API class for displaying the bug reporting dialog.</p>
+<h4 id="methods">Methods</h4>
+<h5 id="showexception-exception-bugreportemailconfig-emailconfig"><code>Show(Exception? exception, BugReportEmailConfig emailConfig)</code></h5>
+<p>Displays the bug reporting dialog with an optional exception.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>exception</code> (<code>Exception?</code>): Optional exception to include in the bug report. If provided, exception details will be pre-populated in the bug description field.</li>
+<li><code>emailConfig</code> (<code>BugReportEmailConfig</code>): Required email configuration for sending the bug report.</li>
+</ul>
+<p><strong>Returns:</strong> <code>DialogResult.OK</code> if the bug report was sent successfully; otherwise, <code>DialogResult.Cancel</code>.</p>
+<p><strong>Throws:</strong> <code>ArgumentNullException</code> if <code>emailConfig</code> is null.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var emailConfig = new BugReportEmailConfig
+{
+    SmtpServer = &quot;smtp.example.com&quot;,
+    SmtpPort = 587,
+    UseSsl = true,
+    FromEmail = &quot;app@example.com&quot;,
+    ToEmail = &quot;bugs@example.com&quot;
+};
+
+var result = KryptonBugReportingDialog.Show(exception, emailConfig);
+if (result == DialogResult.OK)
+{
+    // Bug report sent successfully
+}
+</code></pre>
+<h5 id="showbugreportemailconfig-emailconfig"><code>Show(BugReportEmailConfig emailConfig)</code></h5>
+<p>Displays the bug reporting dialog without an exception.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>emailConfig</code> (<code>BugReportEmailConfig</code>): Required email configuration for sending the bug report.</li>
+</ul>
+<p><strong>Returns:</strong> <code>DialogResult.OK</code> if the bug report was sent successfully; otherwise, <code>DialogResult.Cancel</code>.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var emailConfig = new BugReportEmailConfig { /* ... */ };
+KryptonBugReportingDialog.Show(emailConfig);
+</code></pre>
+<h3 id="bugreportemailconfig">BugReportEmailConfig</h3>
+<p>Configuration class for SMTP email settings.</p>
+<h4 id="properties">Properties</h4>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SmtpServer</code></td>
+<td><code>string</code></td>
+<td>SMTP server address (e.g., &quot;smtp.gmail.com&quot;)</td>
+<td><code>string.Empty</code></td>
+</tr>
+<tr>
+<td><code>SmtpPort</code></td>
+<td><code>int</code></td>
+<td>SMTP server port (commonly 25, 465, or 587)</td>
+<td><code>587</code></td>
+</tr>
+<tr>
+<td><code>UseSsl</code></td>
+<td><code>bool</code></td>
+<td>Whether to use SSL/TLS encryption</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>FromEmail</code></td>
+<td><code>string</code></td>
+<td>Sender email address</td>
+<td><code>string.Empty</code></td>
+</tr>
+<tr>
+<td><code>ToEmail</code></td>
+<td><code>string</code></td>
+<td>Recipient email address (where bug reports are sent)</td>
+<td><code>string.Empty</code></td>
+</tr>
+<tr>
+<td><code>Username</code></td>
+<td><code>string</code></td>
+<td>SMTP username for authentication (optional)</td>
+<td><code>string.Empty</code></td>
+</tr>
+<tr>
+<td><code>Password</code></td>
+<td><code>string</code></td>
+<td>SMTP password for authentication (optional)</td>
+<td><code>string.Empty</code></td>
+</tr>
+<tr>
+<td><code>RequiresAuthentication</code></td>
+<td><code>bool</code></td>
+<td>Read-only property indicating if authentication is required (true if Username is set)</td>
+<td>Computed</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example-configuration">Example Configuration</h4>
+<pre><code class="lang-csharp">var emailConfig = new BugReportEmailConfig
+{
+    SmtpServer = &quot;smtp.gmail.com&quot;,
+    SmtpPort = 587,
+    UseSsl = true,
+    FromEmail = &quot;myapp@gmail.com&quot;,
+    ToEmail = &quot;bugs@mycompany.com&quot;,
+    Username = &quot;myapp@gmail.com&quot;,
+    Password = &quot;your-app-password&quot;
+};
+</code></pre>
+<p><strong>Note:</strong> For Gmail and other providers, you may need to use an &quot;App Password&quot; instead of your regular password if two-factor authentication is enabled.</p>
+<h3 id="bugreportemailservice">BugReportEmailService</h3>
+<p>Service class for sending bug report emails. Typically used internally by the dialog, but can be used directly if needed.</p>
+<h4 id="methods-1">Methods</h4>
+<h5 id="sendbugreportbugreportemailconfig-config-string-subject-string-body-liststring-attachments--null"><code>SendBugReport(BugReportEmailConfig config, string subject, string body, List&lt;string&gt;? attachments = null)</code></h5>
+<p>Sends a bug report email.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>config</code> (<code>BugReportEmailConfig</code>): Email configuration</li>
+<li><code>subject</code> (<code>string</code>): Email subject line</li>
+<li><code>body</code> (<code>string</code>): Email body content</li>
+<li><code>attachments</code> (<code>List&lt;string&gt;?</code>): Optional list of file paths to attach</li>
+</ul>
+<p><strong>Returns:</strong> <code>true</code> if the email was sent successfully; otherwise, <code>false</code>.</p>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>ArgumentNullException</code> if <code>config</code> is null</li>
+<li><code>InvalidOperationException</code> if SMTP server or recipient email is not configured</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var service = new BugReportEmailService();
+var success = service.SendBugReport(
+    emailConfig,
+    &quot;Bug Report - Application Error&quot;,
+    &quot;Detailed bug description...&quot;,
+    new List&lt;string&gt; { @&quot;C:\screenshot.png&quot;, @&quot;C:\log.txt&quot; }
+);
+</code></pre>
+<h3 id="bugreportinghelper">BugReportingHelper</h3>
+<p>Helper class for integrating bug reporting with exception dialogs.</p>
+<h4 id="methods-2">Methods</h4>
+<h5 id="showexceptionwithbugreportingexception-exception-bugreportemailconfig-emailconfig-color-highlightcolor--null-bool-showcopybutton--null-bool-showsearchbox--null"><code>ShowExceptionWithBugReporting(Exception exception, BugReportEmailConfig emailConfig, Color? highlightColor = null, bool? showCopyButton = null, bool? showSearchBox = null)</code></h5>
+<p>Shows an exception dialog with integrated bug reporting capability.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>exception</code> (<code>Exception</code>): The exception to display</li>
+<li><code>emailConfig</code> (<code>BugReportEmailConfig</code>): Email configuration for bug reporting</li>
+<li><code>highlightColor</code> (<code>Color?</code>): Optional highlight color for the exception dialog</li>
+<li><code>showCopyButton</code> (<code>bool?</code>): Optional flag to show the copy button</li>
+<li><code>showSearchBox</code> (<code>bool?</code>): Optional flag to show the search box</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">try
+{
+    // Your application code
+}
+catch (Exception ex)
+{
+    BugReportingHelper.ShowExceptionWithBugReporting(ex, emailConfig);
+}
+</code></pre>
+<h3 id="kryptonbugreportingdialogstrings">KryptonBugReportingDialogStrings</h3>
+<p>Localizable string resources for the bug reporting dialog.</p>
+<h4 id="properties-1">Properties</h4>
+<p>All properties are localizable and can be customized:</p>
+<ul>
+<li><code>WindowTitle</code>: Dialog window title (default: &quot;Report Bug&quot;)</li>
+<li><code>EmailAddress</code>: Email address label (default: &quot;Email Address:&quot;)</li>
+<li><code>BugDescription</code>: Bug description label (default: &quot;Bug Description:&quot;)</li>
+<li><code>StepsToReproduce</code>: Steps to reproduce label (default: &quot;Steps to Reproduce:&quot;)</li>
+<li><code>Attachments</code>: Attachments label (default: &quot;Attachments:&quot;)</li>
+<li><code>AddScreenshot</code>: Add screenshot button text (default: &quot;Add Screenshot&quot;)</li>
+<li><code>AddFile</code>: Add file button text (default: &quot;Add File&quot;)</li>
+<li><code>Remove</code>: Remove button text (default: &quot;Remove&quot;)</li>
+<li><code>Send</code>: Send button text (default: &quot;Send Report&quot;)</li>
+<li><code>Cancel</code>: Cancel button text (default: &quot;Cancel&quot;)</li>
+<li><code>Sending</code>: Sending status text (default: &quot;Sending...&quot;)</li>
+<li><code>SuccessTitle</code>: Success dialog title (default: &quot;Report Sent&quot;)</li>
+<li><code>SuccessMessage</code>: Success dialog message (default: &quot;Your bug report has been sent successfully. Thank you for your feedback!&quot;)</li>
+<li><code>ErrorTitle</code>: Error dialog title (default: &quot;Error Sending Report&quot;)</li>
+<li><code>ErrorMessage</code>: Error dialog message (default: &quot;An error occurred while sending the bug report. Please try again later.&quot;)</li>
+<li><code>InvalidEmail</code>: Invalid email error message (default: &quot;Please enter a valid email address.&quot;)</li>
+<li><code>RequiredFields</code>: Required fields error message (default: &quot;Please fill in all required fields.&quot;)</li>
+</ul>
+<h2 id="integration-with-kryptonexceptiondialog">Integration with KryptonExceptionDialog</h2>
+<p>The bug reporting dialog can be integrated with <code>KryptonExceptionDialog</code> using a callback pattern.</p>
+<h3 id="method-1-using-bugreportinghelper-recommended">Method 1: Using BugReportingHelper (Recommended)</h3>
+<pre><code class="lang-csharp">try
+{
+    // Your application code
+}
+catch (Exception ex)
+{
+    var emailConfig = LoadEmailConfig(); // Load from config file
+    BugReportingHelper.ShowExceptionWithBugReporting(ex, emailConfig);
+}
+</code></pre>
+<h3 id="method-2-direct-integration">Method 2: Direct Integration</h3>
+<pre><code class="lang-csharp">try
+{
+    // Your application code
+}
+catch (Exception ex)
+{
+    var emailConfig = new BugReportEmailConfig { /* ... */ };
+    
+    Krypton.Toolkit.KryptonExceptionDialog.Show(
+        ex, 
+        highlightColor: null,
+        showCopyButton: true,
+        showSearchBox: true,
+        bugReportCallback: exception =&gt; 
+        {
+            KryptonBugReportingDialog.Show(exception, emailConfig);
+        }
+    );
+}
+</code></pre>
+<h3 id="method-3-standalone-bug-reporting">Method 3: Standalone Bug Reporting</h3>
+<pre><code class="lang-csharp">// Show bug reporting dialog without an exception
+var emailConfig = new BugReportEmailConfig { /* ... */ };
+KryptonBugReportingDialog.Show(emailConfig);
+
+// Or with an exception
+var exception = new InvalidOperationException(&quot;Something went wrong&quot;);
+KryptonBugReportingDialog.Show(exception, emailConfig);
+</code></pre>
+<h2 id="email-configuration">Email Configuration</h2>
+<h3 id="common-smtp-settings">Common SMTP Settings</h3>
+<h4 id="gmail">Gmail</h4>
+<pre><code class="lang-csharp">var emailConfig = new BugReportEmailConfig
+{
+    SmtpServer = &quot;smtp.gmail.com&quot;,
+    SmtpPort = 587,
+    UseSsl = true,
+    FromEmail = &quot;youremail@gmail.com&quot;,
+    ToEmail = &quot;bugs@yourcompany.com&quot;,
+    Username = &quot;youremail@gmail.com&quot;,
+    Password = &quot;your-app-password&quot; // Use App Password, not regular password
+};
+</code></pre>
+<h4 id="outlookhotmail">Outlook/Hotmail</h4>
+<pre><code class="lang-csharp">var emailConfig = new BugReportEmailConfig
+{
+    SmtpServer = &quot;smtp-mail.outlook.com&quot;,
+    SmtpPort = 587,
+    UseSsl = true,
+    FromEmail = &quot;youremail@outlook.com&quot;,
+    ToEmail = &quot;bugs@yourcompany.com&quot;,
+    Username = &quot;youremail@outlook.com&quot;,
+    Password = &quot;your-password&quot;
+};
+</code></pre>
+<h4 id="office-365">Office 365</h4>
+<pre><code class="lang-csharp">var emailConfig = new BugReportEmailConfig
+{
+    SmtpServer = &quot;smtp.office365.com&quot;,
+    SmtpPort = 587,
+    UseSsl = true,
+    FromEmail = &quot;youremail@yourcompany.com&quot;,
+    ToEmail = &quot;bugs@yourcompany.com&quot;,
+    Username = &quot;youremail@yourcompany.com&quot;,
+    Password = &quot;your-password&quot;
+};
+</code></pre>
+<h4 id="custom-smtp-server">Custom SMTP Server</h4>
+<pre><code class="lang-csharp">var emailConfig = new BugReportEmailConfig
+{
+    SmtpServer = &quot;mail.yourcompany.com&quot;,
+    SmtpPort = 25, // or 465 for SSL, 587 for TLS
+    UseSsl = false, // Set to true if using SSL/TLS
+    FromEmail = &quot;noreply@yourcompany.com&quot;,
+    ToEmail = &quot;bugs@yourcompany.com&quot;
+    // Username and Password only needed if authentication is required
+};
+</code></pre>
+<h3 id="loading-configuration-from-appconfig">Loading Configuration from App.config</h3>
+<pre><code class="lang-csharp">private static BugReportEmailConfig LoadEmailConfig()
+{
+    return new BugReportEmailConfig
+    {
+        SmtpServer = ConfigurationManager.AppSettings[&quot;BugReportSmtpServer&quot;] ?? &quot;smtp.example.com&quot;,
+        SmtpPort = int.Parse(ConfigurationManager.AppSettings[&quot;BugReportSmtpPort&quot;] ?? &quot;587&quot;),
+        UseSsl = bool.Parse(ConfigurationManager.AppSettings[&quot;BugReportUseSsl&quot;] ?? &quot;true&quot;),
+        FromEmail = ConfigurationManager.AppSettings[&quot;BugReportFromEmail&quot;] ?? string.Empty,
+        ToEmail = ConfigurationManager.AppSettings[&quot;BugReportToEmail&quot;] ?? string.Empty,
+        Username = ConfigurationManager.AppSettings[&quot;BugReportUsername&quot;] ?? string.Empty,
+        Password = ConfigurationManager.AppSettings[&quot;BugReportPassword&quot;] ?? string.Empty
+    };
+}
+</code></pre>
+<p><strong>App.config example:</strong></p>
+<pre><code class="lang-xml">&lt;appSettings&gt;
+  &lt;add key=&quot;BugReportSmtpServer&quot; value=&quot;smtp.example.com&quot; /&gt;
+  &lt;add key=&quot;BugReportSmtpPort&quot; value=&quot;587&quot; /&gt;
+  &lt;add key=&quot;BugReportUseSsl&quot; value=&quot;true&quot; /&gt;
+  &lt;add key=&quot;BugReportFromEmail&quot; value=&quot;app@example.com&quot; /&gt;
+  &lt;add key=&quot;BugReportToEmail&quot; value=&quot;bugs@example.com&quot; /&gt;
+  &lt;add key=&quot;BugReportUsername&quot; value=&quot;app@example.com&quot; /&gt;
+  &lt;add key=&quot;BugReportPassword&quot; value=&quot;your-password&quot; /&gt;
+&lt;/appSettings&gt;
+</code></pre>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-basic-exception-handling-with-bug-reporting">Example 1: Basic Exception Handling with Bug Reporting</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using Krypton.Toolkit;
+
+public class MyApplication
+{
+    private static BugReportEmailConfig _emailConfig;
+
+    static MyApplication()
+    {
+        _emailConfig = new BugReportEmailConfig
+        {
+            SmtpServer = &quot;smtp.example.com&quot;,
+            SmtpPort = 587,
+            UseSsl = true,
+            FromEmail = &quot;app@example.com&quot;,
+            ToEmail = &quot;bugs@example.com&quot;,
+            Username = &quot;app@example.com&quot;,
+            Password = &quot;password&quot;
+        };
+    }
+
+    [STAThread]
+    static void Main()
+    {
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+        Application.ThreadException += Application_ThreadException;
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+        Application.Run(new MainForm());
+    }
+
+    private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    {
+        BugReportingHelper.ShowExceptionWithBugReporting(e.Exception, _emailConfig);
+    }
+
+    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        if (e.ExceptionObject is Exception ex)
+        {
+            BugReportingHelper.ShowExceptionWithBugReporting(ex, _emailConfig);
+        }
+    }
+}
+</code></pre>
+<h3 id="example-2-try-catch-block-integration">Example 2: Try-Catch Block Integration</h3>
+<pre><code class="lang-csharp">public void ProcessData()
+{
+    try
+    {
+        // Your code that might throw an exception
+        ProcessFile(&quot;data.txt&quot;);
+    }
+    catch (Exception ex)
+    {
+        // Show exception dialog with bug reporting option
+        var emailConfig = GetEmailConfig();
+        BugReportingHelper.ShowExceptionWithBugReporting(
+            ex, 
+            emailConfig,
+            highlightColor: Color.Red,
+            showCopyButton: true,
+            showSearchBox: true
+        );
+    }
+}
+</code></pre>
+<h3 id="example-3-manual-bug-report-submission">Example 3: Manual Bug Report Submission</h3>
+<pre><code class="lang-csharp">private void ReportBugButton_Click(object sender, EventArgs e)
+{
+    var emailConfig = new BugReportEmailConfig
+    {
+        SmtpServer = &quot;smtp.example.com&quot;,
+        SmtpPort = 587,
+        UseSsl = true,
+        FromEmail = &quot;app@example.com&quot;,
+        ToEmail = &quot;bugs@example.com&quot;
+    };
+
+    var result = KryptonBugReportingDialog.Show(emailConfig);
+    if (result == DialogResult.OK)
+    {
+        MessageBox.Show(&quot;Thank you for reporting the bug!&quot;);
+    }
+}
+</code></pre>
+<h3 id="example-4-custom-email-body-formatting">Example 4: Custom Email Body Formatting</h3>
+<p>While the dialog automatically formats the email body, you can use <code>BugReportEmailService</code> directly for custom formatting:</p>
+<pre><code class="lang-csharp">var service = new BugReportEmailService();
+var emailConfig = GetEmailConfig();
+
+var subject = $&quot;Bug Report - {Application.ProductName} v{Application.ProductVersion}&quot;;
+var body = $@&quot;
+Application: {Application.ProductName}
+Version: {Application.ProductVersion}
+Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}
+User: {Environment.UserName}
+OS: {Environment.OSVersion}
+
+Bug Description:
+{userDescription}
+
+Steps to Reproduce:
+{stepsToReproduce}
+&quot;;
+
+var attachments = new List&lt;string&gt; { screenshotPath, logFilePath };
+var success = service.SendBugReport(emailConfig, subject, body, attachments);
+</code></pre>
+<h2 id="email-body-format">Email Body Format</h2>
+<p>The bug reporting dialog automatically formats the email body as follows:</p>
+<pre><code>Bug Report
+==========
+
+Reported by: user@example.com
+Date: 2025-01-15 14:30:00
+
+Bug Description:
+----------------
+[User-provided description]
+
+Steps to Reproduce:
+-------------------
+[User-provided steps]
+
+Exception Details:
+-----------------
+Exception Type: InvalidOperationException
+Message: [Exception message]
+Stack Trace:
+[Full stack trace]
+
+Inner Exception:
+[Inner exception details if present]
+
+Attachments:
+-----------
+screenshot.png
+log.txt
+</code></pre>
+<h2 id="attachment-handling">Attachment Handling</h2>
+<h3 id="screenshots">Screenshots</h3>
+<p>The dialog includes a &quot;Add Screenshot&quot; button that captures the entire primary screen. Screenshots are:</p>
+<ul>
+<li>Saved as PNG files in the system temp directory</li>
+<li>Automatically attached to the email</li>
+<li>Automatically cleaned up after the dialog is closed (if sending fails or is cancelled)</li>
+<li>Displayed as thumbnails in the attachments panel</li>
+</ul>
+<h3 id="file-attachments">File Attachments</h3>
+<p>Users can attach multiple files using the &quot;Add File&quot; button:</p>
+<ul>
+<li>Files are validated to ensure they exist before attachment</li>
+<li>Multiple files can be selected in a single operation</li>
+<li>Files are displayed as thumbnails in a visual grid layout</li>
+<li>Each attachment shows:
+<ul>
+<li>A 128x128 pixel thumbnail (for images and videos)</li>
+<li>The filename (truncated if too long)</li>
+<li>A remove button (×) overlay for easy deletion</li>
+</ul>
+</li>
+<li>Files can be removed from the list before sending</li>
+</ul>
+<h3 id="thumbnail-display">Thumbnail Display</h3>
+<p>The bug reporting dialog displays visual thumbnails for attachments:</p>
+<p><strong>Supported Image Formats:</strong></p>
+<ul>
+<li>JPG/JPEG, PNG, GIF, BMP, TIFF, ICO, WEBP</li>
+</ul>
+<p><strong>Supported Video Formats:</strong></p>
+<ul>
+<li>MP4, AVI, MOV, WMV, FLV, MKV, WEBM, M4V, 3GP</li>
+</ul>
+<p><strong>Other File Types:</strong></p>
+<ul>
+<li>Displays the Windows file icon as a thumbnail</li>
+</ul>
+<p><strong>Thumbnail Features:</strong></p>
+<ul>
+<li>Thumbnails are automatically generated when files are added</li>
+<li>Thumbnails are cached to improve performance</li>
+<li>Image thumbnails are scaled maintaining aspect ratio</li>
+<li>Video thumbnails show the file icon (actual video frame extraction requires additional COM interfaces)</li>
+<li>Thumbnails are displayed in a scrollable horizontal flow layout</li>
+<li>Each thumbnail panel includes hover effects for better user experience</li>
+</ul>
+<h3 id="attachment-limitations">Attachment Limitations</h3>
+<ul>
+<li>File size limits depend on your SMTP server configuration</li>
+<li>Large attachments may cause email sending to fail or timeout</li>
+<li>Consider compressing large files or using alternative delivery methods for very large attachments</li>
+</ul>
+<h2 id="error-handling">Error Handling</h2>
+<p>The bug reporting dialog handles various error scenarios:</p>
+<ol>
+<li><strong>Invalid Email Address</strong>: Validates email format before allowing submission</li>
+<li><strong>Missing Required Fields</strong>: Prompts user to fill in required fields</li>
+<li><strong>SMTP Configuration Errors</strong>: Shows error message if email configuration is invalid</li>
+<li><strong>Network Errors</strong>: Catches and displays network-related errors during email sending</li>
+<li><strong>Attachment Errors</strong>: Handles missing or inaccessible attachment files gracefully</li>
+</ol>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-store-configuration-securely">1. Store Configuration Securely</h3>
+<p>Avoid hardcoding email credentials. Use secure configuration storage:</p>
+<pre><code class="lang-csharp">// Use Windows Credential Manager or encrypted config
+var emailConfig = LoadEmailConfigFromSecureStorage();
+</code></pre>
+<h3 id="2-handle-email-failures-gracefully">2. Handle Email Failures Gracefully</h3>
+<pre><code class="lang-csharp">var result = KryptonBugReportingDialog.Show(exception, emailConfig);
+if (result == DialogResult.OK)
+{
+    // Success - user has been notified
+}
+else
+{
+    // User cancelled or error occurred
+    // Consider providing alternative reporting method (e.g., save to file)
+}
+</code></pre>
+<h3 id="3-provide-fallback-options">3. Provide Fallback Options</h3>
+<p>If email sending fails, consider providing alternative reporting methods:</p>
+<pre><code class="lang-csharp">try
+{
+    var result = KryptonBugReportingDialog.Show(exception, emailConfig);
+    if (result != DialogResult.OK)
+    {
+        // Offer to save bug report to file
+        SaveBugReportToFile(exception);
+    }
+}
+catch (Exception ex)
+{
+    // Log error and provide manual reporting instructions
+    LogError(ex);
+    ShowManualReportingInstructions();
+}
+</code></pre>
+<h3 id="4-localization">4. Localization</h3>
+<p>Customize strings for different languages:</p>
+<pre><code class="lang-csharp">// Strings are accessed through KryptonBugReportingDialogStrings
+// You can create localized versions by setting the properties
+// Note: Currently strings are static, but the structure supports future localization
+</code></pre>
+<h3 id="5-testing-email-configuration">5. Testing Email Configuration</h3>
+<p>Test your email configuration before deploying:</p>
+<pre><code class="lang-csharp">private bool TestEmailConfiguration(BugReportEmailConfig config)
+{
+    try
+    {
+        var service = new BugReportEmailService();
+        return service.SendBugReport(
+            config,
+            &quot;Test Email&quot;,
+            &quot;This is a test email to verify SMTP configuration.&quot;,
+            null
+        );
+    }
+    catch
+    {
+        return false;
+    }
+}
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="email-not-sending">Email Not Sending</h3>
+<ol>
+<li><strong>Check SMTP Settings</strong>: Verify server address, port, and SSL settings</li>
+<li><strong>Verify Credentials</strong>: Ensure username and password are correct</li>
+<li><strong>Check Firewall</strong>: Ensure SMTP port is not blocked</li>
+<li><strong>Test Connection</strong>: Use a simple SMTP test tool to verify connectivity</li>
+<li><strong>Check Logs</strong>: Review application logs for detailed error messages</li>
+</ol>
+<h3 id="common-smtp-ports">Common SMTP Ports</h3>
+<ul>
+<li><strong>25</strong>: Standard SMTP (often blocked by ISPs)</li>
+<li><strong>465</strong>: SMTP over SSL (legacy)</li>
+<li><strong>587</strong>: SMTP with STARTTLS (recommended)</li>
+</ul>
+<h3 id="gmail-specific-issues">Gmail-Specific Issues</h3>
+<ul>
+<li>Use an &quot;App Password&quot; instead of your regular password</li>
+<li>Enable &quot;Less secure app access&quot; (not recommended) or use OAuth2</li>
+<li>Ensure 2FA is properly configured</li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li><strong>.NET Framework</strong>: 4.7.2 or later</li>
+<li><strong>.NET</strong>: 8.0 or later</li>
+<li><strong>Dependencies</strong>:
+<ul>
+<li><code>Krypton.Toolkit</code> (referenced by <code>Krypton.Utilities</code>)</li>
+<li><code>System.Net.Mail</code> (included in .NET Framework/.NET)</li>
+</ul>
+</li>
+</ul>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="ExceptionDialog.md">KryptonExceptionDialog Documentation</a></li>
+<li><a href="../API/Krypton.Utilities.md">Krypton.Utilities Namespace Reference</a></li>
+<li><a href="EmailConfiguration.html">Email Configuration Best Practices</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

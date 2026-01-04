@@ -33,7 +33,7 @@ Now update your constructor in order to create the four instances in the followi
     }
 ```
 
-In our previous article [Using PaletteBase](Using%20PaletteBase.md), you could see how palette values were directly recovered from the *PaletteBase*. However, the renderer does not interact directly with *PaletteBase* but instead with a set of more specific interfaces such as *IPaletteBack*, *IPaletteBorder* and *IPaletteContent*. Code block (1) creates a helper object that exposes these specific interfaces and redirects the *IPaletteBack*, *IPaletteBorder*, *IPaletteContent* calls into *PaletteBase* requests.  
+In our previous article [Using PaletteBase](UsingPaletteBase.md), you could see how palette values were directly recovered from the *PaletteBase*. However, the renderer does not interact directly with *PaletteBase* but instead with a set of more specific interfaces such as *IPaletteBack*, *IPaletteBorder* and *IPaletteContent*. Code block (1) creates a helper object that exposes these specific interfaces and redirects the *IPaletteBack*, *IPaletteBorder*, *IPaletteContent* calls into *PaletteBase* requests.  
 
 We then use block (2) to create helper objects for each of the specific interfaces. These are the actual objects you will pass into the renderer requests. They each have a Style property that allows you to specify the drawing style you require and all calls into the helper object will automatically be passed on with the style requested. You can see how this works in the code below. The following code is the template you should use in your drawing code.
 

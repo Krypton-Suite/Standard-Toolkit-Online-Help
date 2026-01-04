@@ -79,7 +79,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Local package testing
 - Troubleshooting
 
-### 7. [GitHub Actions CI/CD Workflows](Build%20System/GitHubActionsWorkflows.md)
+### 7. [GitHub Actions CI/CD Workflows](../GitHubActionsWorkflows.md)
 **Automated continuous integration and deployment.**
 
 - `build.yml` - CI builds for PRs and branches
@@ -103,21 +103,8 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Project file detection
 - Troubleshooting ModernBuild
 
-### 9. [Local Development Workflow](Build%20System/LocalDevelopmentWorkflow.md)
-**Developer guide for daily development.**
 
-- Development environment setup
-- Daily development cycle
-- Building specific projects
-- Testing with TestForm and test harnesses
-- Debugging (Visual Studio, multiple frameworks)
-- Working with multiple target frameworks
-- Code style and guidelines
-- Making pull requests
-- Local package testing
-- Performance profiling
-
-### 10. [Troubleshooting Guide](Build%20System/Troubleshooting.md)
+### 9. [Troubleshooting Guide](Build%20System/Troubleshooting.md)
 **Solutions to common issues.**
 
 - Build system issues
@@ -133,8 +120,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 ### New to the Project?
 
 1. Start with [Build System Overview](Build%20System/BuildSystemOverview.md)
-2. Set up your environment using [Local Development Workflow](Build%20System/LocalDevelopmentWorkflow.md)
-3. Try building with [Build Scripts](Build%20System/BuildScripts.md)
+2. Try building with [Build Scripts](Build%20System/BuildScripts.md)
 
 ### Building the Toolkit?
 
@@ -150,7 +136,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 
 ### Setting up CI/CD?
 
-1. Study [GitHub Actions CI/CD Workflows](Build%20System/GitHubActionsWorkflows.md)
+1. Study [GitHub Actions CI/CD Workflows](../GitHubActionsWorkflows.md)
 2. Understand [Version Management](Build%20System/VersionManagement.md)
 3. Review [NuGet Package Creation and Publishing](Build%20System/NuGetPackaging.md)
 
@@ -167,7 +153,6 @@ This document contains comprehensive developer documentation for the Krypton Too
 dotnet build "Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln" -c Debug
 ```
 
-See: [Local Development Workflow](Build%20System/LocalDevelopmentWorkflow.md#building-specific-projects)
 
 ### Build Release
 ```cmd
@@ -206,7 +191,6 @@ See: [Build Scripts](Build%20System/BuildScripts.md#purge-cmd)
 dotnet run --project "Source/Krypton Components/TestForm/TestForm.csproj" -c Debug
 ```
 
-See: [Local Development Workflow](Build%20System/LocalDevelopment-Workflow.md#using-testform)
 
 ## Conventions
 
