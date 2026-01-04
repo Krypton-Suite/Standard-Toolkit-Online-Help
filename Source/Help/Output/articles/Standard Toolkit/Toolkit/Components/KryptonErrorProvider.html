@@ -70,14 +70,15 @@
 <h1 id="kryptonerrorprovider">KryptonErrorProvider</h1>
 
 <h2 id="overview">Overview</h2>
-<p><code>KryptonErrorProvider</code> is a Krypton-themed wrapper for the standard WinForms <code>ErrorProvider</code> component. It provides form validation error indication with full Krypton palette integration and Krypton-specific enums for blink style and icon alignment.</p>
+<p><code>KryptonErrorProvider</code> is a Krypton-themed wrapper for the standard WinForms <code>ErrorProvider</code> component. It provides form validation error indication with full Krypton palette integration, Krypton-specific enums for blink style and icon alignment, automatic border color changing for Krypton controls, and custom Krypton-themed tooltips.</p>
 <h2 id="key-features">Key Features</h2>
 <ul>
-<li><strong>Krypton Theming</strong>: Integrates with the Krypton palette system</li>
+<li><strong>Krypton Theming</strong>: Full integration with the Krypton palette system</li>
 <li><strong>Krypton-Specific Enums</strong>: <code>KryptonErrorBlinkStyle</code> and <code>KryptonErrorIconAlignment</code> for better type safety</li>
-<li><strong>Extender Provider</strong>: Implements <code>IExtenderProvider</code> to add error properties to controls</li>
-<li><strong>Icon Customization</strong>: Uses system error icon with palette integration</li>
+<li><strong>Extender Provider</strong>: Implements <code>IExtenderProvider</code> to add error properties to controls at design time</li>
+<li><strong>Icon Customization</strong>: Customizable icon size and icon selection with automatic resizing</li>
 <li><strong>Border Color Changing</strong>: Automatically changes Krypton control border colors based on icon type (error/warning/information)</li>
+<li><strong>Krypton Tooltips</strong>: Uses Krypton-themed tooltips instead of standard Windows tooltips for error messages</li>
 <li><strong>Standard ErrorProvider API</strong>: Maintains full compatibility with standard <code>ErrorProvider</code> functionality</li>
 </ul>
 <h2 id="namespace">Namespace</h2>
@@ -86,6 +87,28 @@
 <h2 id="class-declaration">Class Declaration</h2>
 <pre><code class="lang-csharp">public class KryptonErrorProvider : Component, IExtenderProvider
 </code></pre>
+<h2 id="constructors">Constructors</h2>
+<h3 id="kryptonerrorprovider-1"><code>KryptonErrorProvider()</code></h3>
+<pre><code class="lang-csharp">public KryptonErrorProvider()
+</code></pre>
+<p>Initializes a new instance of the <code>KryptonErrorProvider</code> class with default settings:</p>
+<ul>
+<li><code>BlinkStyle</code>: <code>KryptonErrorBlinkStyle.BlinkIfDifferentError</code></li>
+<li><code>IconAlignment</code>: <code>KryptonErrorIconAlignment.MiddleRight</code></li>
+<li><code>IconPadding</code>: <code>0</code></li>
+<li><code>IconSize</code>: <code>16x16</code> pixels</li>
+<li><code>PaletteMode</code>: <code>PaletteMode.Global</code></li>
+<li><code>ChangeBorderColor</code>: <code>true</code></li>
+<li>Default icon: <code>SystemIcons.Error</code></li>
+</ul>
+<h3 id="kryptonerrorprovidericontainer-container"><code>KryptonErrorProvider(IContainer container)</code></h3>
+<pre><code class="lang-csharp">public KryptonErrorProvider(IContainer container)
+</code></pre>
+<p>Initializes a new instance of the <code>KryptonErrorProvider</code> class and adds it to the specified container.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>container</code> - The <code>IContainer</code> that contains this component</li>
+</ul>
 <h2 id="properties">Properties</h2>
 <h3 id="palette-properties">Palette Properties</h3>
 <h4 id="palettemode"><code>PaletteMode</code></h4>
@@ -94,18 +117,18 @@
 [DefaultValue(PaletteMode.Global)]
 public PaletteMode PaletteMode { get; set; }
 </code></pre>
-<p>Gets or sets the palette mode. See <code>KryptonToolStripContainer</code> documentation for available palette modes.</p>
+<p>Gets or sets the palette mode. See <code>KryptonToolStripContainer</code> documentation for available palette modes. When changed, the icon and tooltip system are updated to reflect the new palette.</p>
 <h4 id="palette"><code>Palette</code></h4>
 <pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
 [Description(&quot;Sets the custom palette to be used.&quot;)]
 [DefaultValue(null)]
 public PaletteBase? Palette { get; set; }
 </code></pre>
-<p>Gets or sets a custom palette implementation.</p>
+<p>Gets or sets a custom palette implementation. Setting this property automatically sets <code>PaletteMode</code> to <code>PaletteMode.Custom</code>. Setting to <code>null</code> resets to <code>PaletteMode.Global</code>.</p>
 <h3 id="error-provider-properties">Error Provider Properties</h3>
 <h4 id="blinkstyle"><code>BlinkStyle</code></h4>
-<pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
-[Description(&quot;Determines when the error icon flashes.&quot;)]
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[Description(&quot;Indicates when the error icon blinks.&quot;)]
 [DefaultValue(KryptonErrorBlinkStyle.BlinkIfDifferentError)]
 public KryptonErrorBlinkStyle BlinkStyle { get; set; }
 </code></pre>
@@ -117,7 +140,7 @@ public KryptonErrorBlinkStyle BlinkStyle { get; set; }
 </ul>
 <h4 id="iconalignment"><code>IconAlignment</code></h4>
 <pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
-[Description(&quot;Gets or sets the location where the error icon is placed.&quot;)]
+[Description(&quot;Indicates the alignment of the error icon relative to the control.&quot;)]
 [DefaultValue(KryptonErrorIconAlignment.MiddleRight)]
 public KryptonErrorIconAlignment IconAlignment { get; set; }
 </code></pre>
@@ -130,27 +153,37 @@ public KryptonErrorIconAlignment IconAlignment { get; set; }
 <li><code>KryptonErrorIconAlignment.BottomLeft</code></li>
 <li><code>KryptonErrorIconAlignment.BottomRight</code></li>
 </ul>
+<p><strong>Note:</strong> This property sets the default alignment. Use <code>SetIconAlignment</code> to set alignment per control.</p>
 <h4 id="iconpadding"><code>IconPadding</code></h4>
 <pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
-[Description(&quot;Gets or sets the amount of extra space to leave between the specified control and the error icon.&quot;)]
+[Description(&quot;The amount of extra space to leave between the icon and the control.&quot;)]
 [DefaultValue(0)]
 public int IconPadding { get; set; }
 </code></pre>
 <p>Gets or sets the default amount of extra space (in pixels) to leave between the specified control and the error icon.</p>
+<p><strong>Note:</strong> This property sets the default padding. Use <code>SetIconPadding</code> to set padding per control.</p>
+<h4 id="iconsize"><code>IconSize</code></h4>
+<pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
+[Description(&quot;The size of the error icon in pixels (width and height).&quot;)]
+[DefaultValue(typeof(Size), &quot;16, 16&quot;)]
+public Size IconSize { get; set; }
+</code></pre>
+<p>Gets or sets the size of the error icon in pixels. The icon will be automatically resized to match this size. Default is <code>16x16</code> pixels.</p>
+<p><strong>Note:</strong> Changing this property will recreate the resized icon if an icon is currently set.</p>
 <h4 id="icon"><code>Icon</code></h4>
 <pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
-[Description(&quot;Gets or sets the Icon that is displayed next to a control when an error description string has been set.&quot;)]
+[Description(&quot;The Icon to display next to a control when an error description string has been set.&quot;)]
 [DefaultValue(null)]
 public Icon? Icon { get; set; }
 </code></pre>
-<p>Gets or sets the <code>Icon</code> that is displayed next to a control when an error description string has been set. If <code>null</code>, uses the system error icon.</p>
-<h4 id="containercontrol"><code>ContainerControl</code></h4>
-<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
-[Description(&quot;Gets or sets the parent control for this ErrorProvider.&quot;)]
-[DefaultValue(null)]
-public ContainerControl? ContainerControl { get; set; }
-</code></pre>
-<p>Gets or sets the parent control for this <code>ErrorProvider</code>. The error provider must be associated with a container control to function.</p>
+<p>Gets or sets the <code>Icon</code> that is displayed next to a control when an error description string has been set. If <code>null</code>, uses <code>SystemIcons.Error</code> by default.</p>
+<p>The icon will be automatically resized to match <code>IconSize</code> if it doesn't already match. The component properly handles <code>SystemIcons</code> shared instances and will not dispose them.</p>
+<p><strong>Supported Icon Types:</strong></p>
+<ul>
+<li>Error icons: <code>SystemIcons.Error</code>, <code>SystemIcons.Hand</code> → Red border color</li>
+<li>Warning icons: <code>SystemIcons.Warning</code>, <code>SystemIcons.Exclamation</code> → Yellow/Orange border color</li>
+<li>Information icons: <code>SystemIcons.Information</code>, <code>SystemIcons.Asterisk</code> → Blue border color</li>
+</ul>
 <h4 id="changebordercolor"><code>ChangeBorderColor</code></h4>
 <pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
 [Description(&quot;Indicates whether the border color of Krypton controls should be changed based on the icon type (red for error, yellow for warning, blue for information).&quot;)]
@@ -159,36 +192,50 @@ public bool ChangeBorderColor { get; set; }
 </code></pre>
 <p>Gets or sets a value indicating whether the border color of Krypton controls should be changed based on the icon type. When enabled, Krypton controls will have their border color automatically changed to:</p>
 <ul>
-<li>Red for error icons (<code>SystemIcons.Error</code> or <code>SystemIcons.Hand</code>)</li>
-<li>Yellow/Orange for warning icons (<code>SystemIcons.Warning</code> or <code>SystemIcons.Exclamation</code>)</li>
-<li>Blue for information icons (<code>SystemIcons.Information</code> or <code>SystemIcons.Asterisk</code>)</li>
+<li><strong>Red</strong> (<code>Color.FromArgb(220, 53, 69)</code>) for error icons (<code>SystemIcons.Error</code> or <code>SystemIcons.Hand</code>)</li>
+<li><strong>Yellow/Orange</strong> (<code>Color.FromArgb(255, 193, 7)</code>) for warning icons (<code>SystemIcons.Warning</code> or <code>SystemIcons.Exclamation</code>)</li>
+<li><strong>Blue</strong> (<code>Color.FromArgb(0, 123, 255)</code>) for information icons (<code>SystemIcons.Information</code> or <code>SystemIcons.Asterisk</code>)</li>
 </ul>
 <p>The border color is automatically cleared when the error is removed. This feature only works with Krypton controls that support the <code>StateCommon.Border.Color1</code> property.</p>
+<h4 id="containercontrol"><code>ContainerControl</code></h4>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[Description(&quot;The ContainerControl that this ErrorProvider is bound to.&quot;)]
+[DefaultValue(null)]
+public ContainerControl? ContainerControl { get; set; }
+</code></pre>
+<p>Gets or sets the parent control for this <code>ErrorProvider</code>. The error provider must be associated with a container control to function. This property also enables mouse tracking for Krypton tooltips.</p>
+<p><strong>Important:</strong> Setting this property hooks into the container's mouse events for tooltip display. The events are automatically unhooked when the property is changed or the component is disposed.</p>
+<h4 id="tooltipvalues"><code>ToolTipValues</code></h4>
+<pre><code class="lang-csharp">[Category(&quot;Appearance&quot;)]
+[Description(&quot;Tooltip appearance and behavior settings.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public ToolTipValues ToolTipValues { get; }
+</code></pre>
+<p>Gets the tooltip values that control the appearance and behavior of Krypton-themed tooltips displayed when hovering over error icons.</p>
+<p><strong>ToolTipValues Properties:</strong></p>
+<ul>
+<li><code>ShowIntervalDelay</code> (default: 500ms) - Delay before showing tooltip</li>
+<li><code>CloseIntervalDelay</code> (default: 5000ms) - Delay before auto-closing tooltip</li>
+<li><code>ToolTipStyle</code> (default: <code>LabelStyle.SuperTip</code>) - Visual style of the tooltip</li>
+<li><code>ToolTipShadow</code> (default: <code>true</code>) - Whether to show shadow on tooltip</li>
+<li><code>ToolTipPosition</code> - Position and orientation settings</li>
+<li><code>Heading</code> - Tooltip heading text (inherited from <code>HeaderValues</code>)</li>
+<li><code>Description</code> - Tooltip description text (inherited from <code>HeaderValues</code>)</li>
+<li><code>Image</code> - Tooltip image (inherited from <code>HeaderValues</code>)</li>
+</ul>
+<p><strong>Note:</strong> The error message text is automatically used as the tooltip content. The <code>Heading</code>, <code>Description</code>, and <code>Image</code> properties are not used for error tooltips.</p>
 <h3 id="access-to-underlying-component">Access to Underlying Component</h3>
 <h4 id="errorprovider"><code>ErrorProvider</code></h4>
 <pre><code class="lang-csharp">[Browsable(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 public ErrorProvider? ErrorProvider { get; }
 </code></pre>
-<p>Gets access to the underlying <code>ErrorProvider</code> component for advanced scenarios.</p>
-<h2 id="constructors">Constructors</h2>
-<h3 id="kryptonerrorprovider-1"><code>KryptonErrorProvider()</code></h3>
-<pre><code class="lang-csharp">public KryptonErrorProvider()
-</code></pre>
-<p>Initializes a new instance of the <code>KryptonErrorProvider</code> class with default settings.</p>
-<h3 id="kryptonerrorprovidericontainer-container"><code>KryptonErrorProvider(IContainer container)</code></h3>
-<pre><code class="lang-csharp">public KryptonErrorProvider(IContainer container)
-</code></pre>
-<p>Initializes a new instance of the <code>KryptonErrorProvider</code> class and adds it to the specified container.</p>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><code>container</code> - The <code>IContainer</code> that contains this component</li>
-</ul>
+<p>Gets access to the underlying <code>ErrorProvider</code> component for advanced scenarios. Note that the standard tooltip is disabled (set to a space character) to allow Krypton tooltips to be displayed instead.</p>
 <h2 id="methods">Methods</h2>
 <h3 id="seterror"><code>SetError</code></h3>
 <pre><code class="lang-csharp">public void SetError(Control control, string value)
 </code></pre>
-<p>Sets the error description string for the specified control. If <code>ChangeBorderColor</code> is enabled, this will also update the control's border color based on the icon type.</p>
+<p>Sets the error description string for the specified control. If <code>ChangeBorderColor</code> is enabled, this will also update the control's border color based on the icon type. The error message is stored separately and displayed in a Krypton tooltip when hovering over the error icon.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>control</code> - The control to set the error description string for</li>
@@ -211,16 +258,22 @@ public ErrorProvider? ErrorProvider { get; }
 <pre><code class="lang-csharp">errorProvider.SetError(textBox1, &quot;This field is required&quot;, KryptonErrorIconAlignment.TopRight);
 </code></pre>
 <h3 id="geterror"><code>GetError</code></h3>
-<pre><code class="lang-csharp">public string GetError(Control control)
+<pre><code class="lang-csharp">[ExtenderProvidedProperty]
+[Category(&quot;Validation&quot;)]
+[Description(&quot;Gets or sets the error description string for this control.&quot;)]
+[DefaultValue(&quot;&quot;)]
+[Localizable(true)]
+public string GetError(Control control)
 </code></pre>
-<p>Returns the current error description string for the specified control.</p>
+<p>Returns the current error description string for the specified control. This is an extender property that can be accessed at design time.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>control</code> - The control to get the error description string for</li>
 </ul>
 <p><strong>Returns:</strong> The error description string for the control, or an empty string if no error is set.</p>
+<p><strong>Note:</strong> This method returns the actual error message stored internally, not the tooltip text set on the underlying <code>ErrorProvider</code> (which is set to a space character to disable standard tooltips).</p>
 <h3 id="seticonalignment"><code>SetIconAlignment</code></h3>
-<pre><code class="lang-csharp">public void SetIconAlignment(Control control, KryptonErrorIconAlignment value)
+<pre><code class="lang-csharp">public void SetIconAlignment(Control control, KryptonErrorIconAlignment alignment)
 </code></pre>
 <p>Sets the location where the error icon is placed relative to the control.</p>
 <p><strong>Parameters:</strong></p>
@@ -236,15 +289,15 @@ public ErrorProvider? ErrorProvider { get; }
 <ul>
 <li><code>control</code> - The control to get the icon alignment for</li>
 </ul>
-<p><strong>Returns:</strong> One of the <code>KryptonErrorIconAlignment</code> values.</p>
+<p><strong>Returns:</strong> One of the <code>KryptonErrorIconAlignment</code> values. Returns <code>MiddleRight</code> if the underlying <code>ErrorProvider</code> is not available.</p>
 <h3 id="seticonpadding"><code>SetIconPadding</code></h3>
-<pre><code class="lang-csharp">public void SetIconPadding(Control control, int padding)
+<pre><code class="lang-csharp">public void SetIconPadding(Control control, int value)
 </code></pre>
 <p>Sets the amount of extra space to leave between the specified control and the error icon.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>control</code> - The control to set the icon padding for</li>
-<li><code>padding</code> - The number of pixels to add between the control and the error icon</li>
+<li><code>value</code> - The number of pixels to add between the control and the error icon</li>
 </ul>
 <h3 id="geticonpadding"><code>GetIconPadding</code></h3>
 <pre><code class="lang-csharp">public int GetIconPadding(Control control)
@@ -254,13 +307,13 @@ public ErrorProvider? ErrorProvider { get; }
 <ul>
 <li><code>control</code> - The control to get the icon padding for</li>
 </ul>
-<p><strong>Returns:</strong> The number of pixels between the control and the error icon.</p>
-<h3 id="clear"><code>Clear</code></h3>
-<pre><code class="lang-csharp">public void Clear()
-</code></pre>
-<p>Clears all errors associated with this component. If <code>ChangeBorderColor</code> is enabled, this will also clear all border color changes on controls within the <code>ContainerControl</code>.</p>
+<p><strong>Returns:</strong> The number of pixels between the control and the error icon. Returns <code>0</code> if the underlying <code>ErrorProvider</code> is not available.</p>
 <h3 id="getchangebordercoloronerror"><code>GetChangeBorderColorOnError</code></h3>
-<pre><code class="lang-csharp">public bool GetChangeBorderColorOnError(Control control)
+<pre><code class="lang-csharp">[ExtenderProvidedProperty]
+[Category(&quot;Validation&quot;)]
+[Description(&quot;Gets or sets a value indicating whether the border color of this control should be changed when an error is set.&quot;)]
+[DefaultValue(true)]
+public bool GetChangeBorderColorOnError(Control control)
 </code></pre>
 <p>Gets a value indicating whether the border color should be changed for the specified control when an error is set. This is an extender property that can be set per control.</p>
 <p><strong>Parameters:</strong></p>
@@ -281,6 +334,10 @@ public ErrorProvider? ErrorProvider { get; }
 <pre><code class="lang-csharp">// Disable border color changing for a specific control
 errorProvider.SetChangeBorderColorOnError(textBox1, false);
 </code></pre>
+<h3 id="clear"><code>Clear</code></h3>
+<pre><code class="lang-csharp">public void Clear()
+</code></pre>
+<p>Clears all errors associated with this component. If <code>ChangeBorderColor</code> is enabled, this will also clear all border color changes on controls within the <code>ContainerControl</code>. Also clears all control-specific border color settings and error messages.</p>
 <h3 id="canextend"><code>CanExtend</code></h3>
 <pre><code class="lang-csharp">public bool CanExtend(object extendee)
 </code></pre>
@@ -291,24 +348,68 @@ errorProvider.SetChangeBorderColorOnError(textBox1, false);
 </ul>
 <p><strong>Returns:</strong> <code>true</code> if this object can provide extender properties to the specified object; otherwise, <code>false</code>.</p>
 <h2 id="events">Events</h2>
-<p><code>KryptonErrorProvider</code> inherits standard <code>Component</code> events but does not define custom events. The error icon display is handled automatically by the underlying <code>ErrorProvider</code>.</p>
+<p><code>KryptonErrorProvider</code> inherits standard <code>Component</code> events but does not define custom events. The error icon display is handled automatically by the underlying <code>ErrorProvider</code>, and tooltips are managed internally through mouse tracking on the <code>ContainerControl</code>.</p>
 <h2 id="enumerations">Enumerations</h2>
 <h3 id="kryptonerrorblinkstyle"><code>KryptonErrorBlinkStyle</code></h3>
 <pre><code class="lang-csharp">public enum KryptonErrorBlinkStyle
 {
-    BlinkIfDifferentError,  // Blinks only when error string changes
-    AlwaysBlink,            // Always blinks when error is set
-    NeverBlink              // Never blinks
+    /// &lt;summary&gt;
+    /// Blink only if the error icon is already displayed, but a new
+    /// error string is set for the control.  If the icon did not blink
+    /// in this case, the user might not know that there is a new error.
+    /// &lt;/summary&gt;
+    BlinkIfDifferentError = ErrorBlinkStyle.BlinkIfDifferentError,
+    
+    /// &lt;summary&gt;
+    /// Blink the error icon when the error is first displayed, or when
+    /// a new error description string is set for the control and the
+    /// error icon is already displayed.
+    /// &lt;/summary&gt;
+    AlwaysBlink = ErrorBlinkStyle.AlwaysBlink,
+    
+    /// &lt;summary&gt;
+    /// Never blink the error icon.
+    /// &lt;/summary&gt;
+    NeverBlink = ErrorBlinkStyle.NeverBlink
 }
 </code></pre>
 <h3 id="kryptonerroriconalignment"><code>KryptonErrorIconAlignment</code></h3>
 <pre><code class="lang-csharp">public enum KryptonErrorIconAlignment
 {
+    /// &lt;summary&gt;
+    /// The icon appears aligned with the top of the control, and to the
+    /// left of the control.
+    /// &lt;/summary&gt;
     TopLeft,
+    
+    /// &lt;summary&gt;
+    /// The icon appears aligned with the top of the control, and to the
+    /// right of the control.
+    /// &lt;/summary&gt;
     TopRight,
+    
+    /// &lt;summary&gt;
+    /// The icon appears aligned with the middle of the control, and the
+    /// left of the control.
+    /// &lt;/summary&gt;
     MiddleLeft,
+    
+    /// &lt;summary&gt;
+    /// The icon appears aligned with the middle of the control, and the
+    /// right of the control.
+    /// &lt;/summary&gt;
     MiddleRight,
+    
+    /// &lt;summary&gt;
+    /// The icon appears aligned with the bottom of the control, and to the
+    /// left of the control.
+    /// &lt;/summary&gt;
     BottomLeft,
+    
+    /// &lt;summary&gt;
+    /// The icon appears aligned with the bottom of the control, and to the
+    /// right of the control.
+    /// &lt;/summary&gt;
     BottomRight
 }
 </code></pre>
@@ -327,7 +428,8 @@ errorProvider.SetChangeBorderColorOnError(textBox1, false);
         {
             ContainerControl = this,
             BlinkStyle = KryptonErrorBlinkStyle.BlinkIfDifferentError,
-            IconAlignment = KryptonErrorIconAlignment.MiddleRight
+            IconAlignment = KryptonErrorIconAlignment.MiddleRight,
+            IconSize = new Size(20, 20) // Larger icon
         };
     }
 
@@ -399,19 +501,19 @@ private void textBoxEmail_Validated(object sender, EventArgs e)
     }
 }
 </code></pre>
-<h3 id="custom-icon">Custom Icon</h3>
-<pre><code class="lang-csharp">// Use a custom icon instead of the system error icon
+<h3 id="custom-icon-and-icon-size">Custom Icon and Icon Size</h3>
+<pre><code class="lang-csharp">// Use a custom icon
 errorProvider.Icon = MyCustomErrorIcon;
-</code></pre>
-<h3 id="blink-style-configuration">Blink Style Configuration</h3>
-<pre><code class="lang-csharp">// Never blink (less distracting)
-errorProvider.BlinkStyle = KryptonErrorBlinkStyle.NeverBlink;
 
-// Always blink (more attention-grabbing)
-errorProvider.BlinkStyle = KryptonErrorBlinkStyle.AlwaysBlink;
+// Set custom icon size (will be automatically resized)
+errorProvider.IconSize = new Size(24, 24);
 
-// Blink only when error changes (default, balanced)
-errorProvider.BlinkStyle = KryptonErrorBlinkStyle.BlinkIfDifferentError;
+// Use different icon types for different border colors
+errorProvider.Icon = SystemIcons.Warning; // Yellow border
+errorProvider.SetError(textBox1, &quot;This is a warning&quot;);
+
+errorProvider.Icon = SystemIcons.Information; // Blue border
+errorProvider.SetError(textBox2, &quot;This is informational&quot;);
 </code></pre>
 <h3 id="border-color-changing">Border Color Changing</h3>
 <pre><code class="lang-csharp">// Enable border color changing (default)
@@ -430,9 +532,30 @@ errorProvider.SetError(textBox1, &quot;This is a warning&quot;);
 errorProvider.Icon = SystemIcons.Information; // Blue border
 errorProvider.SetError(textBox2, &quot;This is informational&quot;);
 </code></pre>
+<h3 id="blink-style-configuration">Blink Style Configuration</h3>
+<pre><code class="lang-csharp">// Never blink (less distracting)
+errorProvider.BlinkStyle = KryptonErrorBlinkStyle.NeverBlink;
+
+// Always blink (more attention-grabbing)
+errorProvider.BlinkStyle = KryptonErrorBlinkStyle.AlwaysBlink;
+
+// Blink only when error changes (default, balanced)
+errorProvider.BlinkStyle = KryptonErrorBlinkStyle.BlinkIfDifferentError;
+</code></pre>
+<h3 id="customizing-tooltips">Customizing Tooltips</h3>
+<pre><code class="lang-csharp">// Configure tooltip appearance
+errorProvider.ToolTipValues.ToolTipStyle = LabelStyle.SuperTip;
+errorProvider.ToolTipValues.ToolTipShadow = true;
+errorProvider.ToolTipValues.ShowIntervalDelay = 750; // Show after 750ms
+errorProvider.ToolTipValues.CloseIntervalDelay = 10000; // Auto-close after 10 seconds
+</code></pre>
+<h3 id="seterror-with-alignment-1">SetError with Alignment</h3>
+<pre><code class="lang-csharp">// Set error and alignment in one call
+errorProvider.SetError(textBox1, &quot;Invalid input&quot;, KryptonErrorIconAlignment.TopRight);
+</code></pre>
 <h2 id="best-practices">Best Practices</h2>
 <ol>
-<li><p><strong>Set ContainerControl</strong>: Always set the <code>ContainerControl</code> property to the form or container that contains the controls you want to validate.</p>
+<li><p><strong>Set ContainerControl</strong>: Always set the <code>ContainerControl</code> property to the form or container that contains the controls you want to validate. This is required for tooltip functionality.</p>
 </li>
 <li><p><strong>Clear Errors</strong>: Clear all errors before re-validating to avoid stale error messages.</p>
 </li>
@@ -444,9 +567,15 @@ errorProvider.SetError(textBox2, &quot;This is informational&quot;);
 </li>
 <li><p><strong>Icon Padding</strong>: Adjust icon padding if controls are close together or if you need more visual separation.</p>
 </li>
-<li><p><strong>Disposal</strong>: The component properly disposes of resources. Ensure it's disposed when the form is disposed.</p>
+<li><p><strong>Icon Size</strong>: Consider your application's DPI settings when setting icon size. The default 16x16 works well for standard DPI.</p>
 </li>
 <li><p><strong>Border Color Changing</strong>: The border color feature only works with Krypton controls. Standard WinForms controls will not have their borders changed. Use <code>ChangeBorderColorOnError</code> to disable this feature for specific controls if needed.</p>
+</li>
+<li><p><strong>Tooltip Configuration</strong>: Adjust <code>ShowIntervalDelay</code> and <code>CloseIntervalDelay</code> based on your application's needs. Longer delays may be better for users who need more time to read error messages.</p>
+</li>
+<li><p><strong>Disposal</strong>: The component properly disposes of resources, including icons, timers, and event handlers. Ensure it's disposed when the form is disposed.</p>
+</li>
+<li><p><strong>Icon Management</strong>: The component automatically handles icon resizing and disposal. Custom icons will be disposed when replaced or when the component is disposed. SystemIcons instances are never disposed.</p>
 </li>
 </ol>
 <h2 id="integration-with-data-binding">Integration with Data Binding</h2>
@@ -467,7 +596,14 @@ private void bindingSource_CurrentItemChanged(object sender, EventArgs e)
 <li><code>IconPaddingOnErrorProvider</code> - Icon padding for this control (via <code>GetIconPadding</code>/<code>SetIconPadding</code>)</li>
 </ul>
 <h3 id="icon-management">Icon Management</h3>
-<p>The control uses <code>SystemIcons.Error</code> by default, which provides a system-consistent error icon. The icon is managed internally and disposed when the component is disposed. The component properly handles <code>SystemIcons</code> shared instances and will not dispose them.</p>
+<p>The control uses <code>SystemIcons.Error</code> by default, which provides a system-consistent error icon. Icons are automatically resized to match <code>IconSize</code> if they don't already match. The component properly handles <code>SystemIcons</code> shared instances and will not dispose them. Custom icons are cloned when resized to ensure proper ownership.</p>
+<p><strong>Icon Resizing:</strong></p>
+<ul>
+<li>If the icon size matches <code>IconSize</code>, the original icon is used directly</li>
+<li>If the icon size differs, a resized version is created using <code>GraphicsExtensions.ScaleImage</code></li>
+<li>The resized icon is cloned to create an owned copy that can be safely disposed</li>
+<li>If resizing fails, the original icon is used as a fallback</li>
+</ul>
 <h3 id="border-color-management">Border Color Management</h3>
 <p>When <code>ChangeBorderColor</code> is enabled (default), the component automatically changes the border color of Krypton controls based on the icon type:</p>
 <ul>
@@ -477,14 +613,50 @@ private void bindingSource_CurrentItemChanged(object sender, EventArgs e)
 </ul>
 <p>Border colors are automatically cleared when errors are removed. This feature uses reflection to access the <code>StateCommon.Border.Color1</code> property on Krypton controls, so it only works with controls that support this property structure.</p>
 <p>You can control border color changing globally via the <code>ChangeBorderColor</code> property, or per-control via the <code>ChangeBorderColorOnError</code> extender property.</p>
-<h3 id="palette-integration">Palette Integration</h3>
-<p>While the error icon itself uses the system icon, the component integrates with the Krypton palette system for consistency. The component listens to global palette changes and updates accordingly when using <code>PaletteMode.Global</code>.</p>
-<h2 id="see-also">See Also</h2>
+<h3 id="tooltip-system">Tooltip System</h3>
+<p><code>KryptonErrorProvider</code> uses a custom tooltip system that displays Krypton-themed tooltips instead of standard Windows tooltips:</p>
+<ol>
+<li><strong>Standard Tooltip Disabled</strong>: The underlying <code>ErrorProvider</code>'s tooltip is set to a space character to disable standard tooltips</li>
+<li><strong>Error Message Storage</strong>: Error messages are stored separately in an internal dictionary (<code>_errorMessages</code>)</li>
+<li><strong>Mouse Tracking</strong>: The component hooks into <code>ContainerControl</code> mouse events to detect when the mouse hovers over error icons</li>
+<li><strong>Icon Bounds Calculation</strong>: Icon bounds are calculated based on control position, icon alignment, padding, and icon size</li>
+<li><strong>Tooltip Display</strong>: When hovering over an error icon, a Krypton tooltip is displayed after the <code>ShowIntervalDelay</code> period</li>
+<li><strong>Tooltip Styling</strong>: Tooltips use the <code>ToolTipValues</code> settings for appearance and behavior</li>
+</ol>
+<p><strong>Tooltip Features:</strong></p>
 <ul>
-<li><code>KryptonHelpProvider</code> - For providing help to controls</li>
-<li><code>KryptonToolTip</code> - For displaying tooltips</li>
-<li><code>IExtenderProvider</code> - Interface for extender providers</li>
-<li>Standard WinForms validation patterns</li>
+<li>Automatic positioning relative to error icon</li>
+<li>Krypton palette integration</li>
+<li>Configurable show/close delays</li>
+<li>Configurable visual style and shadow</li>
+<li>Automatic cleanup when mouse leaves</li>
+</ul>
+<h3 id="palette-integration">Palette Integration</h3>
+<p>The component integrates with the Krypton palette system for consistency:</p>
+<ul>
+<li>Listens to <code>KryptonManager.GlobalPaletteChanged</code> events</li>
+<li>Updates icon and tooltip system when palette changes (if using <code>PaletteMode.Global</code>)</li>
+<li>Supports custom palettes via <code>PaletteMode.Custom</code></li>
+<li>Tooltips use palette-based rendering for consistent theming</li>
+</ul>
+<h3 id="error-message-storage">Error Message Storage</h3>
+<p>Error messages are stored in an internal dictionary (<code>_errorMessages</code>) separate from the underlying <code>ErrorProvider</code>. This allows:</p>
+<ul>
+<li>Retrieval of actual error messages via <code>GetError</code></li>
+<li>Display in Krypton tooltips</li>
+<li>Proper cleanup when errors are cleared</li>
+<li>Border color management based on error presence</li>
+</ul>
+<p>The underlying <code>ErrorProvider</code> is set to a space character to disable standard tooltips while still displaying the error icon.</p>
+<h3 id="resource-management">Resource Management</h3>
+<p>The component properly manages resources:</p>
+<ul>
+<li>Icons are disposed when replaced or when the component is disposed</li>
+<li>SystemIcons instances are never disposed (checked via reference equality)</li>
+<li>Resized icons are properly cloned and disposed</li>
+<li>Timers are stopped and disposed</li>
+<li>Event handlers are unhooked</li>
+<li>Tooltip popups are disposed</li>
 </ul>
 
 </article>
