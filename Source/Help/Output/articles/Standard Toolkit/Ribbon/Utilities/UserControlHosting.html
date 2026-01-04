@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>UserControl Hosting Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="UserControl Hosting Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="usercontrol-hosting-guide">UserControl Hosting Guide</h1>
+
+<h2 id="overview">Overview</h2>
+<p>The <code>KryptonRibbon</code> control <strong>fully supports</strong> hosting on <code>UserControl</code> instances. This capability is essential for building plugin architectures where each plugin module can define its own ribbon interface independently, without requiring dummy forms or complex workarounds.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#why-usercontrol-hosting">Why UserControl Hosting?</a></li>
+<li><a href="#technical-foundation">Technical Foundation</a></li>
+<li><a href="#basic-implementation">Basic Implementation</a></li>
+<li><a href="#advanced-patterns">Advanced Patterns</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#architecture-considerations">Architecture Considerations</a></li>
+</ol>
+<h2 id="why-usercontrol-hosting">Why UserControl Hosting?</h2>
+<h3 id="the-problem">The Problem</h3>
+<p>In traditional plugin architectures, plugins need to contribute UI elements (like ribbon tabs) to the main application. Without UserControl hosting support, developers often resort to:</p>
+<ul>
+<li>Creating dummy forms just to expose ribbon controls</li>
+<li>Complex communication mechanisms between forms and UserControls</li>
+<li>Boilerplate code to facilitate form-to-control communication</li>
+<li>Difficult lifecycle management</li>
+</ul>
+<h3 id="the-solution">The Solution</h3>
+<p>With UserControl hosting, plugins can:</p>
+<ol>
+<li><strong>Define ribbons directly on UserControls</strong> - No dummy forms needed</li>
+<li><strong>Self-contained plugin modules</strong> - Each plugin manages its own ribbon UI</li>
+<li><strong>Simplified architecture</strong> - Direct property exposure for merging</li>
+<li><strong>Better lifecycle management</strong> - UserControl and ribbon share the same lifecycle</li>
+<li><strong>Cleaner code</strong> - Less boilerplate, more maintainable</li>
+</ol>
+<h2 id="technical-foundation">Technical Foundation</h2>
+<h3 id="inheritance-hierarchy">Inheritance Hierarchy</h3>
+<pre><code>Control (System.Windows.Forms)
+  └── VisualControlBase (Krypton.Toolkit)
+      └── VisualControl (Krypton.Toolkit)
+          └── VisualSimple (Krypton.Toolkit)
+              └── KryptonRibbon (Krypton.Ribbon)
+</code></pre>
+<p>Since <code>KryptonRibbon</code> ultimately inherits from <code>Control</code>, it can be added to any container control, including <code>UserControl</code>.</p>
+<h3 id="docking-behavior">Docking Behavior</h3>
+<p>The <code>KryptonRibbon</code> has the attribute <code>[Docking(DockingBehavior.Never)]</code>, which:</p>
+<ul>
+<li><strong>Prevents docking in the designer</strong> - This is a design-time restriction</li>
+<li><strong>Does NOT prevent hosting</strong> - The ribbon can still be added to UserControls programmatically</li>
+<li><strong>Allows manual docking</strong> - You can set <code>Dock = DockStyle.Top</code> in code</li>
+</ul>
+<h3 id="key-properties">Key Properties</h3>
+<pre><code class="lang-csharp">public class KryptonRibbon : VisualSimple
+{
+    public bool AutoSize { get; set; }
+    public AutoSizeMode AutoSizeMode { get; set; }
+    public DockStyle Dock { get; set; }  // Can be set to DockStyle.Top
+    public KryptonRibbonTabCollection RibbonTabs { get; }
+    public KryptonRibbonContextCollection RibbonContexts { get; }
+}
+</code></pre>
+<h2 id="basic-implementation">Basic Implementation</h2>
+<h3 id="step-1-create-the-usercontrol">Step 1: Create the UserControl</h3>
+<pre><code class="lang-csharp">using Krypton.Ribbon;
+using Krypton.Toolkit;
+
+namespace MyApplication.Plugins
+{
+    public partial class MyPluginUserControl : UserControl
+    {
+        private readonly KryptonRibbon ribbon;
+
+        public MyPluginUserControl()
+        {
+            InitializeComponent();
+            InitializeRibbon();
+        }
+
+        private void InitializeRibbon()
+        {
+            // Create ribbon instance
+            ribbon = new KryptonRibbon
+            {
+                Dock = DockStyle.Top,
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink
+            };
+
+            // Configure ribbon tabs and groups
+            ConfigureRibbonContent();
+
+            // Add ribbon to UserControl
+            Controls.Add(ribbon);
+        }
+
+        private void ConfigureRibbonContent()
+        {
+            // Create a tab
+            var tab = new KryptonRibbonTab { Text = &quot;Plugin Features&quot; };
+            
+            // Create a group
+            var group = new KryptonRibbonGroup { TextLine1 = &quot;Actions&quot; };
+            
+            // Add buttons to group
+            var button = new KryptonRibbonGroupButton
+            {
+                TextLine1 = &quot;Do Something&quot;
+            };
+            button.Click += (s, e) =&gt; OnDoSomething();
+            
+            var triple = new KryptonRibbonGroupTriple();
+            triple.Items.Add(button);
+            group.Items.Add(triple);
+            
+            // Add group to tab
+            tab.Groups.Add(group);
+            
+            // Add tab to ribbon
+            ribbon.RibbonTabs.Add(tab);
+        }
+
+        // Expose ribbon for merging
+        public KryptonRibbon Ribbon =&gt; ribbon;
+
+        private void OnDoSomething()
+        {
+            // Handle button click
+        }
+    }
+}
+</code></pre>
+<h3 id="step-2-use-in-main-application">Step 2: Use in Main Application</h3>
+<pre><code class="lang-csharp">public class MainForm : KryptonForm
+{
+    private readonly KryptonRibbon mainRibbon;
+    private MyPluginUserControl? pluginControl;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        
+        // Create main ribbon
+        mainRibbon = new KryptonRibbon
+        {
+            Dock = DockStyle.Top
+        };
+        Controls.Add(mainRibbon);
+    }
+
+    public void LoadPlugin()
+    {
+        // Create plugin UserControl
+        pluginControl = new MyPluginUserControl();
+        
+        // Hide ribbon on UserControl (it will be merged)
+        pluginControl.Ribbon.Visible = false;
+        
+        // Merge plugin ribbon into main ribbon
+        mainRibbon.Merge(pluginControl.Ribbon);
+        
+        // Add UserControl to form
+        pluginControl.Dock = DockStyle.Fill;
+        Controls.Add(pluginControl);
+    }
+
+    public void UnloadPlugin()
+    {
+        if (pluginControl != null)
+        {
+            // Unmerge ribbon
+            mainRibbon.Unmerge(pluginControl.Ribbon);
+            
+            // Remove and dispose
+            Controls.Remove(pluginControl);
+            pluginControl.Dispose();
+            pluginControl = null;
+        }
+    }
+}
+</code></pre>
+<h2 id="advanced-patterns">Advanced Patterns</h2>
+<h3 id="pattern-1-interface-based-plugin-architecture">Pattern 1: Interface-Based Plugin Architecture</h3>
+<p>Define an interface for plugins that expose ribbons:</p>
+<pre><code class="lang-csharp">public interface IPluginUserControl
+{
+    KryptonRibbon? Ribbon { get; }
+    string PluginName { get; }
+    void Initialize();
+    void Cleanup();
+}
+
+public class ImageEditorPlugin : UserControl, IPluginUserControl
+{
+    private readonly KryptonRibbon ribbon;
+
+    public ImageEditorPlugin()
+    {
+        InitializeComponent();
+        ribbon = CreateRibbon();
+        Controls.Add(ribbon);
+    }
+
+    public KryptonRibbon Ribbon =&gt; ribbon;
+    public string PluginName =&gt; &quot;Image Editor&quot;;
+
+    public void Initialize()
+    {
+        // Plugin initialization logic
+    }
+
+    public void Cleanup()
+    {
+        // Plugin cleanup logic
+    }
+
+    private KryptonRibbon CreateRibbon()
+    {
+        // Ribbon creation logic
+    }
+}
+</code></pre>
+<h3 id="pattern-2-plugin-manager">Pattern 2: Plugin Manager</h3>
+<p>Create a centralized plugin manager:</p>
+<pre><code class="lang-csharp">public class PluginManager
+{
+    private readonly KryptonRibbon mainRibbon;
+    private readonly Dictionary&lt;string, IPluginUserControl&gt; loadedPlugins = new();
+
+    public PluginManager(KryptonRibbon mainRibbon)
+    {
+        this.mainRibbon = mainRibbon;
+    }
+
+    public void LoadPlugin(IPluginUserControl plugin)
+    {
+        if (loadedPlugins.ContainsKey(plugin.PluginName))
+        {
+            throw new InvalidOperationException($&quot;Plugin '{plugin.PluginName}' is already loaded.&quot;);
+        }
+
+        plugin.Initialize();
+        plugin.Ribbon.Visible = false;
+        mainRibbon.Merge(plugin.Ribbon);
+        loadedPlugins[plugin.PluginName] = plugin;
+    }
+
+    public void UnloadPlugin(string pluginName)
+    {
+        if (!loadedPlugins.TryGetValue(pluginName, out var plugin))
+        {
+            return;
+        }
+
+        mainRibbon.Unmerge(plugin.Ribbon);
+        plugin.Cleanup();
+        loadedPlugins.Remove(pluginName);
+    }
+
+    public void UnloadAll()
+    {
+        var pluginNames = loadedPlugins.Keys.ToArray();
+        foreach (var name in pluginNames)
+        {
+            UnloadPlugin(name);
+        }
+    }
+}
+</code></pre>
+<h3 id="pattern-3-lazy-ribbon-creation">Pattern 3: Lazy Ribbon Creation</h3>
+<p>Create ribbon only when needed:</p>
+<pre><code class="lang-csharp">public class LazyPluginUserControl : UserControl
+{
+    private KryptonRibbon? ribbon;
+
+    public KryptonRibbon Ribbon
+    {
+        get
+        {
+            if (ribbon == null)
+            {
+                ribbon = CreateRibbon();
+                ribbon.Visible = false;
+                Controls.Add(ribbon);
+            }
+            return ribbon;
+        }
+    }
+
+    private KryptonRibbon CreateRibbon()
+    {
+        var ribbon = new KryptonRibbon
+        {
+            Dock = DockStyle.Top,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink
+        };
+        
+        // Configure ribbon...
+        return ribbon;
+    }
+}
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-ribbon-visibility-management">1. Ribbon Visibility Management</h3>
+<p><strong>Always hide the ribbon on the UserControl after merging:</strong></p>
+<pre><code class="lang-csharp">// ✅ Good
+pluginControl.Ribbon.Visible = false;
+mainRibbon.Merge(pluginControl.Ribbon);
+
+// ❌ Bad - Shows duplicate ribbon
+mainRibbon.Merge(pluginControl.Ribbon);
+</code></pre>
+<h3 id="2-lifecycle-management">2. Lifecycle Management</h3>
+<p><strong>Ensure proper cleanup:</strong></p>
+<pre><code class="lang-csharp">protected override void OnFormClosing(FormClosingEventArgs e)
+{
+    // Unmerge all plugins before closing
+    foreach (var plugin in loadedPlugins.Values)
+    {
+        mainRibbon.Unmerge(plugin.Ribbon);
+        plugin.Dispose();
+    }
+    base.OnFormClosing(e);
+}
+</code></pre>
+<h3 id="3-ribbon-configuration">3. Ribbon Configuration</h3>
+<p><strong>Set proper docking and sizing:</strong></p>
+<pre><code class="lang-csharp">ribbon = new KryptonRibbon
+{
+    Dock = DockStyle.Top,              // Dock at top
+    AutoSize = true,                   // Auto-size enabled
+    AutoSizeMode = AutoSizeMode.GrowAndShrink  // Grow and shrink as needed
+};
+</code></pre>
+<h3 id="4-content-organization">4. Content Organization</h3>
+<p><strong>Keep ribbon content separate from UserControl content:</strong></p>
+<pre><code class="lang-csharp">public class PluginUserControl : UserControl
+{
+    private readonly KryptonRibbon ribbon;
+    private readonly Panel contentPanel;
+
+    public PluginUserControl()
+    {
+        // Ribbon at top
+        ribbon = new KryptonRibbon { Dock = DockStyle.Top };
+        Controls.Add(ribbon);
+
+        // Content panel below ribbon
+        contentPanel = new Panel { Dock = DockStyle.Fill };
+        Controls.Add(contentPanel);
+    }
+}
+</code></pre>
+<h3 id="5-thread-safety">5. Thread Safety</h3>
+<p><strong>Always access UI controls on the UI thread:</strong></p>
+<pre><code class="lang-csharp">private void UpdateRibbonFromBackgroundThread()
+{
+    if (ribbon.InvokeRequired)
+    {
+        ribbon.Invoke(new Action(UpdateRibbonFromBackgroundThread));
+        return;
+    }
+    
+    // Update ribbon here
+}
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-ribbon-not-visible-after-merging">Issue: Ribbon Not Visible After Merging</h3>
+<p><strong>Symptoms:</strong> Ribbon tabs don't appear in main ribbon after merge.</p>
+<p><strong>Solutions:</strong></p>
+<ol>
+<li><p>Ensure ribbon has tabs before merging:</p>
+<pre><code class="lang-csharp">if (pluginRibbon.RibbonTabs.Count &gt; 0)
+{
+    mainRibbon.Merge(pluginRibbon);
+}
+</code></pre>
+</li>
+<li><p>Check that ribbon is not disposed:</p>
+<pre><code class="lang-csharp">if (!pluginRibbon.IsDisposed)
+{
+    mainRibbon.Merge(pluginRibbon);
+}
+</code></pre>
+</li>
+<li><p>Verify merge was successful:</p>
+<pre><code class="lang-csharp">mainRibbon.Merge(pluginRibbon);
+mainRibbon.PerformLayout();
+mainRibbon.Invalidate();
+</code></pre>
+</li>
+</ol>
+<h3 id="issue-duplicate-ribbons-visible">Issue: Duplicate Ribbons Visible</h3>
+<p><strong>Symptoms:</strong> Both UserControl ribbon and merged ribbon are visible.</p>
+<p><strong>Solution:</strong> Hide the UserControl ribbon after merging:</p>
+<pre><code class="lang-csharp">pluginRibbon.Visible = false;
+mainRibbon.Merge(pluginRibbon);
+</code></pre>
+<h3 id="issue-ribbon-not-docking-properly">Issue: Ribbon Not Docking Properly</h3>
+<p><strong>Symptoms:</strong> Ribbon doesn't dock correctly on UserControl.</p>
+<p><strong>Solution:</strong> Set docking properties explicitly:</p>
+<pre><code class="lang-csharp">ribbon.Dock = DockStyle.Top;
+ribbon.AutoSize = true;
+ribbon.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+</code></pre>
+<h3 id="issue-memory-leaks">Issue: Memory Leaks</h3>
+<p><strong>Symptoms:</strong> Memory usage increases when loading/unloading plugins.</p>
+<p><strong>Solution:</strong> Ensure proper disposal:</p>
+<pre><code class="lang-csharp">public void UnloadPlugin(IPluginUserControl plugin)
+{
+    mainRibbon.Unmerge(plugin.Ribbon);
+    
+    // Dispose the UserControl (which will dispose the ribbon)
+    if (plugin is IDisposable disposable)
+    {
+        disposable.Dispose();
+    }
+}
+</code></pre>
+<h2 id="architecture-considerations">Architecture Considerations</h2>
+<h3 id="separation-of-concerns">Separation of Concerns</h3>
+<ul>
+<li><strong>UserControl</strong>: Manages plugin UI and content</li>
+<li><strong>Ribbon</strong>: Manages plugin ribbon interface</li>
+<li><strong>Main Application</strong>: Manages ribbon merging and plugin lifecycle</li>
+</ul>
+<h3 id="plugin-isolation">Plugin Isolation</h3>
+<p>Each plugin should be:</p>
+<ul>
+<li><strong>Self-contained</strong>: All its UI elements in one UserControl</li>
+<li><strong>Independent</strong>: No dependencies on other plugins</li>
+<li><strong>Disposable</strong>: Properly clean up resources</li>
+</ul>
+<h3 id="performance">Performance</h3>
+<ul>
+<li><strong>Lazy Loading</strong>: Create ribbons only when plugins are loaded</li>
+<li><strong>Efficient Merging</strong>: Merge only when necessary</li>
+<li><strong>Resource Management</strong>: Dispose unused plugins promptly</li>
+</ul>
+<h3 id="extensibility">Extensibility</h3>
+<p>Design for:</p>
+<ul>
+<li><strong>Dynamic Loading</strong>: Plugins loaded at runtime</li>
+<li><strong>Hot Swapping</strong>: Plugins can be loaded/unloaded without restart</li>
+<li><strong>Versioning</strong>: Support different plugin versions</li>
+</ul>
+<h2 id="example-complete-plugin-architecture">Example: Complete Plugin Architecture</h2>
+<pre><code class="lang-csharp">// Plugin Interface
+public interface IPlugin
+{
+    string Name { get; }
+    string Version { get; }
+    UserControl CreateControl();
+    void Initialize();
+    void Shutdown();
+}
+
+// Plugin Base Class
+public abstract class PluginBase : IPlugin
+{
+    public abstract string Name { get; }
+    public abstract string Version { get; }
+    
+    public abstract UserControl CreateControl();
+    
+    public virtual void Initialize() { }
+    public virtual void Shutdown() { }
+}
+
+// Concrete Plugin Implementation
+public class ImageEditorPlugin : PluginBase
+{
+    public override string Name =&gt; &quot;Image Editor&quot;;
+    public override string Version =&gt; &quot;1.0.0&quot;;
+
+    public override UserControl CreateControl()
+    {
+        return new ImageEditorPluginControl();
+    }
+}
+
+// Plugin Control with Ribbon
+public class ImageEditorPluginControl : UserControl, IPluginUserControl
+{
+    private readonly KryptonRibbon ribbon;
+
+    public ImageEditorPluginControl()
+    {
+        InitializeComponent();
+        ribbon = CreateRibbon();
+        Controls.Add(ribbon);
+    }
+
+    public KryptonRibbon Ribbon =&gt; ribbon;
+
+    private KryptonRibbon CreateRibbon()
+    {
+        // Ribbon creation logic
+    }
+}
+
+// Main Application
+public class MainForm : KryptonForm
+{
+    private readonly KryptonRibbon mainRibbon;
+    private readonly PluginManager pluginManager;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        mainRibbon = new KryptonRibbon { Dock = DockStyle.Top };
+        Controls.Add(mainRibbon);
+        pluginManager = new PluginManager(mainRibbon);
+    }
+
+    public void LoadPlugin(IPlugin plugin)
+    {
+        var control = plugin.CreateControl();
+        if (control is IPluginUserControl pluginControl)
+        {
+            plugin.Initialize();
+            pluginManager.LoadPlugin(pluginControl);
+            // Add control to form...
+        }
+    }
+}
+</code></pre>
+<h2 id="summary">Summary</h2>
+<p>UserControl hosting enables clean, maintainable plugin architectures by allowing ribbons to be defined directly on UserControls. This eliminates the need for dummy forms and simplifies plugin development while maintaining full functionality of the KryptonRibbon control.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
