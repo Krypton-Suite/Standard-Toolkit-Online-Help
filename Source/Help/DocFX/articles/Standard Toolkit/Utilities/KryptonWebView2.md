@@ -113,7 +113,7 @@ Before using KryptonWebView2, ensure you have:
 
 - **Windows 10** version 1803 (build 17134) or later
 - **WebView2 Runtime** installed on target systems
-- **.NET Framework 4.7.2+** or **.NET 8+**
+- **.NET 8.0 or later** (this control is not available for .NET Framework)
 - **Visual Studio 2019+** for development
 - **Krypton Toolkit** installed and configured
 
@@ -137,11 +137,11 @@ Before using KryptonWebView2, ensure you have:
 
 ## Version Information
 
-This documentation covers KryptonWebView2 as part of the Krypton Toolkit Suite. The control is conditionally compiled and only available when `WEBVIEW2_AVAILABLE` is defined.
+This documentation covers KryptonWebView2 as part of the Krypton Toolkit Suite. The control is conditionally compiled and only available when `WEBVIEW2_AVAILABLE` is defined **and** the target framework is .NET 8.0 or greater (`NET8_0_OR_GREATER`).
 
 ### Compatibility Matrix
-| .NET Framework | .NET 8+ | WebView2 Runtime | Status |
-|----------------|---------|------------------|--------|
-| 4.7.2+         | ✅      | 1.0.3485.44+     | ✅ Supported |
-| 4.8+           | ✅      | 1.0.3485.44+     | ✅ Recommended |
-| 8.0+           | ✅      | 1.0.3485.44+     | ✅ Latest |
+| Framework | WebView2 Runtime | Status |
+|-----------|------------------|--------|
+| .NET 8.0+ | 1.0.3485.44+     | ✅ Supported |
+
+**Note:** This control is only available for .NET 8.0 and later. It is not available for .NET Framework versions.

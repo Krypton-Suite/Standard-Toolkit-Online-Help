@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Bug Reporting Dialog - Code Examples | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Bug Reporting Dialog - Code Examples | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-bug-reporting-dialog---code-examples">Krypton Bug Reporting Dialog - Code Examples</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#basic-usage">Basic Usage</a></li>
+<li><a href="#exception-handling">Exception Handling</a></li>
+<li><a href="#configuration-management">Configuration Management</a></li>
+<li><a href="#custom-integration">Custom Integration</a></li>
+<li><a href="#advanced-scenarios">Advanced Scenarios</a></li>
+</ol>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="example-1-simple-bug-report-dialog">Example 1: Simple Bug Report Dialog</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using System.Windows.Forms;
+
+public class BugReportExample
+{
+    public void ShowBugReport()
+    {
+        var emailConfig = new BugReportEmailConfig
+        {
+            SmtpServer = &quot;smtp.example.com&quot;,
+            SmtpPort = 587,
+            UseSsl = true,
+            FromEmail = &quot;app@example.com&quot;,
+            ToEmail = &quot;bugs@example.com&quot;
+        };
+
+        var result = KryptonBugReportingDialog.Show(emailConfig);
+        
+        if (result == DialogResult.OK)
+        {
+            MessageBox.Show(&quot;Thank you for your bug report!&quot;);
+        }
+    }
+}
+</code></pre>
+<h3 id="example-2-bug-report-with-exception">Example 2: Bug Report with Exception</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+
+public class ExceptionBugReport
+{
+    public void HandleException(Exception ex)
+    {
+        var emailConfig = GetEmailConfig();
+        
+        // Show bug reporting dialog with exception details pre-filled
+        KryptonBugReportingDialog.Show(ex, emailConfig);
+    }
+    
+    private BugReportEmailConfig GetEmailConfig()
+    {
+        return new BugReportEmailConfig
+        {
+            SmtpServer = &quot;smtp.example.com&quot;,
+            SmtpPort = 587,
+            UseSsl = true,
+            FromEmail = &quot;app@example.com&quot;,
+            ToEmail = &quot;bugs@example.com&quot;,
+            Username = &quot;app@example.com&quot;,
+            Password = &quot;password&quot;
+        };
+    }
+}
+</code></pre>
+<h2 id="exception-handling">Exception Handling</h2>
+<h3 id="example-3-global-exception-handler">Example 3: Global Exception Handler</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using System;
+using System.Threading;
+using System.Windows.Forms;
+
+public class ApplicationMain
+{
+    private static BugReportEmailConfig _emailConfig;
+
+    [STAThread]
+    static void Main()
+    {
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        
+        // Configure email settings
+        _emailConfig = LoadEmailConfig();
+        
+        // Set up global exception handlers
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+        Application.ThreadException += Application_ThreadException;
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        
+        Application.Run(new MainForm());
+    }
+    
+    private static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+    {
+        // Handle UI thread exceptions
+        BugReportingHelper.ShowExceptionWithBugReporting(e.Exception, _emailConfig);
+    }
+    
+    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        // Handle non-UI thread exceptions
+        if (e.ExceptionObject is Exception ex)
+        {
+            BugReportingHelper.ShowExceptionWithBugReporting(ex, _emailConfig);
+        }
+    }
+    
+    private static BugReportEmailConfig LoadEmailConfig()
+    {
+        // Load from configuration file or settings
+        return new BugReportEmailConfig
+        {
+            SmtpServer = Properties.Settings.Default.SmtpServer,
+            SmtpPort = Properties.Settings.Default.SmtpPort,
+            UseSsl = Properties.Settings.Default.UseSsl,
+            FromEmail = Properties.Settings.Default.FromEmail,
+            ToEmail = Properties.Settings.Default.ToEmail,
+            Username = Properties.Settings.Default.SmtpUsername,
+            Password = Properties.Settings.Default.SmtpPassword
+        };
+    }
+}
+</code></pre>
+<h3 id="example-4-try-catch-with-bug-reporting">Example 4: Try-Catch with Bug Reporting</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+
+public class DataProcessor
+{
+    private readonly BugReportEmailConfig _emailConfig;
+    
+    public DataProcessor(BugReportEmailConfig emailConfig)
+    {
+        _emailConfig = emailConfig;
+    }
+    
+    public void ProcessFile(string filePath)
+    {
+        try
+        {
+            // Your processing code
+            var data = File.ReadAllText(filePath);
+            ProcessData(data);
+        }
+        catch (FileNotFoundException ex)
+        {
+            // File not found - show error without bug reporting
+            MessageBox.Show($&quot;File not found: {filePath}&quot;, &quot;Error&quot;, 
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        catch (Exception ex)
+        {
+            // Unexpected error - show with bug reporting option
+            BugReportingHelper.ShowExceptionWithBugReporting(
+                ex, 
+                _emailConfig,
+                highlightColor: Color.Red,
+                showCopyButton: true,
+                showSearchBox: true
+            );
+        }
+    }
+    
+    private void ProcessData(string data)
+    {
+        // Process the data
+    }
+}
+</code></pre>
+<h3 id="example-5-async-exception-handling">Example 5: Async Exception Handling</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using System.Threading.Tasks;
+
+public class AsyncProcessor
+{
+    private readonly BugReportEmailConfig _emailConfig;
+    
+    public AsyncProcessor(BugReportEmailConfig emailConfig)
+    {
+        _emailConfig = emailConfig;
+    }
+    
+    public async Task ProcessAsync()
+    {
+        try
+        {
+            await DoWorkAsync();
+        }
+        catch (Exception ex)
+        {
+            // Switch back to UI thread for dialog
+            await Task.Run(() =&gt;
+            {
+                Application.Invoke(new Action(() =&gt;
+                {
+                    BugReportingHelper.ShowExceptionWithBugReporting(ex, _emailConfig);
+                }));
+            });
+        }
+    }
+    
+    private async Task DoWorkAsync()
+    {
+        await Task.Delay(1000);
+        throw new InvalidOperationException(&quot;Something went wrong&quot;);
+    }
+}
+</code></pre>
+<h2 id="configuration-management">Configuration Management</h2>
+<h3 id="example-6-configuration-from-appconfig">Example 6: Configuration from App.config</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using System.Configuration;
+
+public class ConfigManager
+{
+    public static BugReportEmailConfig LoadFromAppConfig()
+    {
+        return new BugReportEmailConfig
+        {
+            SmtpServer = ConfigurationManager.AppSettings[&quot;BugReport.SmtpServer&quot;] 
+                ?? &quot;smtp.example.com&quot;,
+            SmtpPort = int.Parse(
+                ConfigurationManager.AppSettings[&quot;BugReport.SmtpPort&quot;] ?? &quot;587&quot;),
+            UseSsl = bool.Parse(
+                ConfigurationManager.AppSettings[&quot;BugReport.UseSsl&quot;] ?? &quot;true&quot;),
+            FromEmail = ConfigurationManager.AppSettings[&quot;BugReport.FromEmail&quot;] 
+                ?? string.Empty,
+            ToEmail = ConfigurationManager.AppSettings[&quot;BugReport.ToEmail&quot;] 
+                ?? string.Empty,
+            Username = ConfigurationManager.AppSettings[&quot;BugReport.Username&quot;] 
+                ?? string.Empty,
+            Password = ConfigurationManager.AppSettings[&quot;BugReport.Password&quot;] 
+                ?? string.Empty
+        };
+    }
+}
+</code></pre>
+<p><strong>App.config:</strong></p>
+<pre><code class="lang-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;configuration&gt;
+  &lt;appSettings&gt;
+    &lt;add key=&quot;BugReport.SmtpServer&quot; value=&quot;smtp.example.com&quot; /&gt;
+    &lt;add key=&quot;BugReport.SmtpPort&quot; value=&quot;587&quot; /&gt;
+    &lt;add key=&quot;BugReport.UseSsl&quot; value=&quot;true&quot; /&gt;
+    &lt;add key=&quot;BugReport.FromEmail&quot; value=&quot;app@example.com&quot; /&gt;
+    &lt;add key=&quot;BugReport.ToEmail&quot; value=&quot;bugs@example.com&quot; /&gt;
+    &lt;add key=&quot;BugReport.Username&quot; value=&quot;app@example.com&quot; /&gt;
+    &lt;add key=&quot;BugReport.Password&quot; value=&quot;your-password&quot; /&gt;
+  &lt;/appSettings&gt;
+&lt;/configuration&gt;
+</code></pre>
+<h3 id="example-7-configuration-from-json-file">Example 7: Configuration from JSON File</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using System.IO;
+using System.Text.Json;
+
+public class JsonConfigManager
+{
+    public static BugReportEmailConfig LoadFromJson(string configPath)
+    {
+        if (!File.Exists(configPath))
+        {
+            throw new FileNotFoundException(&quot;Configuration file not found&quot;, configPath);
+        }
+        
+        var json = File.ReadAllText(configPath);
+        var config = JsonSerializer.Deserialize&lt;EmailConfigJson&gt;(json);
+        
+        return new BugReportEmailConfig
+        {
+            SmtpServer = config.SmtpServer,
+            SmtpPort = config.SmtpPort,
+            UseSsl = config.UseSsl,
+            FromEmail = config.FromEmail,
+            ToEmail = config.ToEmail,
+            Username = config.Username,
+            Password = config.Password
+        };
+    }
+    
+    private class EmailConfigJson
+    {
+        public string SmtpServer { get; set; }
+        public int SmtpPort { get; set; }
+        public bool UseSsl { get; set; }
+        public string FromEmail { get; set; }
+        public string ToEmail { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+}
+</code></pre>
+<p><strong>config.json:</strong></p>
+<pre><code class="lang-json">{
+  &quot;SmtpServer&quot;: &quot;smtp.example.com&quot;,
+  &quot;SmtpPort&quot;: 587,
+  &quot;UseSsl&quot;: true,
+  &quot;FromEmail&quot;: &quot;app@example.com&quot;,
+  &quot;ToEmail&quot;: &quot;bugs@example.com&quot;,
+  &quot;Username&quot;: &quot;app@example.com&quot;,
+  &quot;Password&quot;: &quot;your-password&quot;
+}
+</code></pre>
+<h3 id="example-8-secure-configuration-storage">Example 8: Secure Configuration Storage</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using System.Security.Cryptography;
+using System.Text;
+
+public class SecureConfigManager
+{
+    public static BugReportEmailConfig LoadSecureConfig()
+    {
+        // In production, use Windows Credential Manager or similar
+        var encryptedPassword = GetEncryptedPassword();
+        var decryptedPassword = DecryptPassword(encryptedPassword);
+        
+        return new BugReportEmailConfig
+        {
+            SmtpServer = Environment.GetEnvironmentVariable(&quot;BUG_REPORT_SMTP_SERVER&quot;) 
+                ?? &quot;smtp.example.com&quot;,
+            SmtpPort = int.Parse(
+                Environment.GetEnvironmentVariable(&quot;BUG_REPORT_SMTP_PORT&quot;) ?? &quot;587&quot;),
+            UseSsl = true,
+            FromEmail = Environment.GetEnvironmentVariable(&quot;BUG_REPORT_FROM_EMAIL&quot;) 
+                ?? string.Empty,
+            ToEmail = Environment.GetEnvironmentVariable(&quot;BUG_REPORT_TO_EMAIL&quot;) 
+                ?? string.Empty,
+            Username = Environment.GetEnvironmentVariable(&quot;BUG_REPORT_USERNAME&quot;) 
+                ?? string.Empty,
+            Password = decryptedPassword
+        };
+    }
+    
+    private static string GetEncryptedPassword()
+    {
+        // Retrieve from secure storage
+        return string.Empty;
+    }
+    
+    private static string DecryptPassword(string encrypted)
+    {
+        // Decrypt password
+        return string.Empty;
+    }
+}
+</code></pre>
+<h2 id="custom-integration">Custom Integration</h2>
+<h3 id="example-9-custom-exception-dialog-integration">Example 9: Custom Exception Dialog Integration</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using Krypton.Toolkit;
+
+public class CustomExceptionHandler
+{
+    private readonly BugReportEmailConfig _emailConfig;
+    
+    public CustomExceptionHandler(BugReportEmailConfig emailConfig)
+    {
+        _emailConfig = emailConfig;
+    }
+    
+    public void ShowException(Exception ex)
+    {
+        // Show exception dialog with custom bug reporting callback
+        KryptonExceptionDialog.Show(
+            ex,
+            highlightColor: Color.Orange,
+            showCopyButton: true,
+            showSearchBox: true,
+            bugReportCallback: exception =&gt;
+            {
+                // Custom logic before showing bug report
+                LogException(exception);
+                
+                // Show bug reporting dialog
+                var result = KryptonBugReportingDialog.Show(exception, _emailConfig);
+                
+                // Custom logic after bug report
+                if (result == DialogResult.OK)
+                {
+                    TrackBugReportSent(exception);
+                }
+            }
+        );
+    }
+    
+    private void LogException(Exception ex)
+    {
+        // Log to file or database
+    }
+    
+    private void TrackBugReportSent(Exception ex)
+    {
+        // Track analytics or metrics
+    }
+}
+</code></pre>
+<h3 id="example-10-conditional-bug-reporting">Example 10: Conditional Bug Reporting</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+
+public class ConditionalBugReporter
+{
+    private readonly BugReportEmailConfig _emailConfig;
+    private readonly bool _enableBugReporting;
+    
+    public ConditionalBugReporter(BugReportEmailConfig emailConfig, bool enableBugReporting)
+    {
+        _emailConfig = emailConfig;
+        _enableBugReporting = enableBugReporting;
+    }
+    
+    public void HandleException(Exception ex)
+    {
+        if (_enableBugReporting &amp;&amp; IsProductionEnvironment())
+        {
+            // Show with bug reporting in production
+            BugReportingHelper.ShowExceptionWithBugReporting(ex, _emailConfig);
+        }
+        else
+        {
+            // Show without bug reporting in development
+            Krypton.Toolkit.KryptonExceptionDialog.Show(ex);
+        }
+    }
+    
+    private bool IsProductionEnvironment()
+    {
+        #if DEBUG
+            return false;
+        #else
+            return true;
+        #endif
+    }
+}
+</code></pre>
+<h3 id="example-11-bug-report-with-additional-context">Example 11: Bug Report with Additional Context</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using System.Text;
+
+public class ContextualBugReporter
+{
+    private readonly BugReportEmailConfig _emailConfig;
+    
+    public void ReportBugWithContext(Exception ex, Dictionary&lt;string, string&gt; context)
+    {
+        // Build enhanced bug description with context
+        var enhancedDescription = BuildEnhancedDescription(ex, context);
+        
+        // Create a custom exception with enhanced message
+        var enhancedException = new Exception(enhancedDescription, ex);
+        
+        // Show bug reporting dialog
+        KryptonBugReportingDialog.Show(enhancedException, _emailConfig);
+    }
+    
+    private string BuildEnhancedDescription(Exception ex, Dictionary&lt;string, string&gt; context)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(&quot;Exception Details:&quot;);
+        sb.AppendLine($&quot;Type: {ex.GetType().Name}&quot;);
+        sb.AppendLine($&quot;Message: {ex.Message}&quot;);
+        sb.AppendLine();
+        sb.AppendLine(&quot;Additional Context:&quot;);
+        
+        foreach (var kvp in context)
+        {
+            sb.AppendLine($&quot;{kvp.Key}: {kvp.Value}&quot;);
+        }
+        
+        return sb.ToString();
+    }
+}
+</code></pre>
+<h2 id="advanced-scenarios">Advanced Scenarios</h2>
+<h3 id="example-12-programmatic-email-sending">Example 12: Programmatic Email Sending</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using System.Collections.Generic;
+
+public class ProgrammaticReporter
+{
+    private readonly BugReportEmailService _emailService;
+    private readonly BugReportEmailConfig _emailConfig;
+    
+    public ProgrammaticReporter(BugReportEmailConfig emailConfig)
+    {
+        _emailService = new BugReportEmailService();
+        _emailConfig = emailConfig;
+    }
+    
+    public bool SendBugReport(string description, string steps, List&lt;string&gt; attachments)
+    {
+        var subject = $&quot;Bug Report - {Application.ProductName} v{Application.ProductVersion}&quot;;
+        var body = BuildEmailBody(description, steps);
+        
+        return _emailService.SendBugReport(_emailConfig, subject, body, attachments);
+    }
+    
+    private string BuildEmailBody(string description, string steps)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(&quot;Bug Report&quot;);
+        sb.AppendLine(&quot;==========&quot;);
+        sb.AppendLine();
+        sb.AppendLine($&quot;Application: {Application.ProductName}&quot;);
+        sb.AppendLine($&quot;Version: {Application.ProductVersion}&quot;);
+        sb.AppendLine($&quot;Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}&quot;);
+        sb.AppendLine($&quot;User: {Environment.UserName}&quot;);
+        sb.AppendLine($&quot;OS: {Environment.OSVersion}&quot;);
+        sb.AppendLine();
+        sb.AppendLine(&quot;Bug Description:&quot;);
+        sb.AppendLine(&quot;----------------&quot;);
+        sb.AppendLine(description);
+        sb.AppendLine();
+        sb.AppendLine(&quot;Steps to Reproduce:&quot;);
+        sb.AppendLine(&quot;-------------------&quot;);
+        sb.AppendLine(steps);
+        
+        return sb.ToString();
+    }
+}
+</code></pre>
+<h3 id="example-13-fallback-to-file-save">Example 13: Fallback to File Save</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+using System.IO;
+using System.Text;
+
+public class FallbackReporter
+{
+    private readonly BugReportEmailConfig _emailConfig;
+    
+    public void ReportBug(Exception ex)
+    {
+        var result = KryptonBugReportingDialog.Show(ex, _emailConfig);
+        
+        if (result != DialogResult.OK)
+        {
+            // Email sending failed or was cancelled - save to file
+            var saveResult = SaveBugReportToFile(ex);
+            
+            if (saveResult == DialogResult.OK)
+            {
+                MessageBox.Show(
+                    &quot;Bug report saved to file. Please send it manually to bugs@example.com&quot;,
+                    &quot;Bug Report Saved&quot;,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+            }
+        }
+    }
+    
+    private DialogResult SaveBugReportToFile(Exception ex)
+    {
+        using var dialog = new SaveFileDialog
+        {
+            Filter = &quot;Text Files|*.txt|All Files|*.*&quot;,
+            FileName = $&quot;BugReport_{DateTime.Now:yyyyMMdd_HHmmss}.txt&quot;
+        };
+        
+        if (dialog.ShowDialog() == DialogResult.OK)
+        {
+            var content = FormatBugReport(ex);
+            File.WriteAllText(dialog.FileName, content);
+            return DialogResult.OK;
+        }
+        
+        return DialogResult.Cancel;
+    }
+    
+    private string FormatBugReport(Exception ex)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine(&quot;Bug Report&quot;);
+        sb.AppendLine(&quot;==========&quot;);
+        sb.AppendLine($&quot;Date: {DateTime.Now:yyyy-MM-dd HH:mm:ss}&quot;);
+        sb.AppendLine($&quot;Application: {Application.ProductName}&quot;);
+        sb.AppendLine($&quot;Version: {Application.ProductVersion}&quot;);
+        sb.AppendLine();
+        sb.AppendLine(&quot;Exception:&quot;);
+        sb.AppendLine($&quot;Type: {ex.GetType().Name}&quot;);
+        sb.AppendLine($&quot;Message: {ex.Message}&quot;);
+        sb.AppendLine($&quot;Stack Trace: {ex.StackTrace}&quot;);
+        
+        return sb.ToString();
+    }
+}
+</code></pre>
+<h3 id="example-14-testing-email-configuration">Example 14: Testing Email Configuration</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+
+public class EmailConfigTester
+{
+    public bool TestConfiguration(BugReportEmailConfig config)
+    {
+        try
+        {
+            var service = new BugReportEmailService();
+            var testSubject = &quot;Test Email - Bug Reporting Configuration&quot;;
+            var testBody = $&quot;This is a test email sent at {DateTime.Now:yyyy-MM-dd HH:mm:ss}&quot;;
+            
+            var result = service.SendBugReport(config, testSubject, testBody, null);
+            
+            if (result)
+            {
+                MessageBox.Show(
+                    &quot;Email configuration test successful!&quot;,
+                    &quot;Test Successful&quot;,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information
+                );
+            }
+            else
+            {
+                MessageBox.Show(
+                    &quot;Email configuration test failed. Please check your settings.&quot;,
+                    &quot;Test Failed&quot;,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error
+                );
+            }
+            
+            return result;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $&quot;Error testing email configuration:\n{ex.Message}&quot;,
+                &quot;Test Error&quot;,
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error
+            );
+            return false;
+        }
+    }
+}
+</code></pre>
+<h3 id="example-15-multi-environment-configuration">Example 15: Multi-Environment Configuration</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+
+public class EnvironmentConfigManager
+{
+    public static BugReportEmailConfig GetConfigForEnvironment()
+    {
+        var environment = Environment.GetEnvironmentVariable(&quot;APP_ENVIRONMENT&quot;) ?? &quot;Development&quot;;
+        
+        return environment switch
+        {
+            &quot;Production&quot; =&gt; new BugReportEmailConfig
+            {
+                SmtpServer = &quot;smtp.production.com&quot;,
+                SmtpPort = 587,
+                UseSsl = true,
+                FromEmail = &quot;app@production.com&quot;,
+                ToEmail = &quot;bugs@production.com&quot;,
+                Username = &quot;app@production.com&quot;,
+                Password = GetProductionPassword()
+            },
+            &quot;Staging&quot; =&gt; new BugReportEmailConfig
+            {
+                SmtpServer = &quot;smtp.staging.com&quot;,
+                SmtpPort = 587,
+                UseSsl = true,
+                FromEmail = &quot;app@staging.com&quot;,
+                ToEmail = &quot;bugs@staging.com&quot;,
+                Username = &quot;app@staging.com&quot;,
+                Password = GetStagingPassword()
+            },
+            _ =&gt; new BugReportEmailConfig
+            {
+                SmtpServer = &quot;smtp.dev.com&quot;,
+                SmtpPort = 587,
+                UseSsl = true,
+                FromEmail = &quot;app@dev.com&quot;,
+                ToEmail = &quot;dev-bugs@dev.com&quot;,
+                Username = &quot;app@dev.com&quot;,
+                Password = GetDevPassword()
+            }
+        };
+    }
+    
+    private static string GetProductionPassword() =&gt; &quot;prod-password&quot;;
+    private static string GetStagingPassword() =&gt; &quot;staging-password&quot;;
+    private static string GetDevPassword() =&gt; &quot;dev-password&quot;;
+}
+</code></pre>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="BugReportingDialog.html">Full Documentation</a></li>
+<li><a href="BugReportingDialog-API.md">API Reference</a></li>
+<li><a href="BugReportingDialog-QuickReference.md">Quick Reference</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
