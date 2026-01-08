@@ -35,14 +35,23 @@ KryptonManager.GlobalTouchscreenSupport = true;
 KryptonManager.GlobalTouchscreenScaleFactor = 1.5f;
 ```
 
-### Using the TouchscreenSettings API (Recommended)
+### Using the TouchscreenSettingValues API (Recommended)
 
 ```csharp
 // All touchscreen settings grouped together (designer-friendly)
-KryptonManager.TouchscreenSettings.Enabled = true;
-KryptonManager.TouchscreenSettings.ControlScaleFactor = 1.5f;
-KryptonManager.TouchscreenSettings.FontScalingEnabled = true;
-KryptonManager.TouchscreenSettings.FontScaleFactor = 1.25f;
+KryptonManager.TouchscreenSettingValues.Enabled = true;
+KryptonManager.TouchscreenSettingValues.ControlScaleFactor = 1.5f;
+KryptonManager.TouchscreenSettingValues.FontScalingEnabled = true;
+KryptonManager.TouchscreenSettingValues.FontScaleFactor = 1.25f;
+```
+
+### Automatic Touchscreen Detection
+
+```csharp
+// Enable automatic detection - touchscreen support will be enabled/disabled automatically
+KryptonManager.TouchscreenSettingValues.AutomaticallyDetectTouchscreen = true;
+// The system will automatically detect touchscreen availability and enable/disable support accordingly
+// Periodic polling detects hot-plug scenarios (touchscreen connected/disconnected)
 ```
 
 ### Disable Touchscreen Support
@@ -51,7 +60,7 @@ KryptonManager.TouchscreenSettings.FontScaleFactor = 1.25f;
 // Disable to return controls to normal size
 KryptonManager.GlobalTouchscreenSupport = false;
 // Or using the new API:
-KryptonManager.TouchscreenSettings.Enabled = false;
+KryptonManager.TouchscreenSettingValues.Enabled = false;
 ```
 
 ---
@@ -267,11 +276,11 @@ KryptonManager.GlobalTouchscreenFontScaleFactor = 1.3f;
 
 ---
 
-##### `TouchscreenSettings`
+##### `TouchscreenSettingValues`
 
 Gets the touchscreen settings object that groups all touchscreen-related properties.
 
-**Type:** `KryptonTouchscreenSettings`  
+**Type:** `KryptonTouchscreenSettingValues`  
 **Category:** `Visuals`
 
 ```csharp
@@ -280,7 +289,7 @@ Gets the touchscreen settings object that groups all touchscreen-related propert
 [MergableProperty(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
 [TypeConverter(typeof(ExpandableObjectConverter))]
-public KryptonTouchscreenSettings TouchscreenSettings { get; }
+public KryptonTouchscreenSettingValues TouchscreenSettingValues { get; }
 ```
 
 **Remarks:**
@@ -291,10 +300,10 @@ public KryptonTouchscreenSettings TouchscreenSettings { get; }
 **Example:**
 ```csharp
 // Configure all touchscreen settings via the grouped API
-KryptonManager.TouchscreenSettings.Enabled = true;
-KryptonManager.TouchscreenSettings.ControlScaleFactor = 1.5f;
-KryptonManager.TouchscreenSettings.FontScalingEnabled = true;
-KryptonManager.TouchscreenSettings.FontScaleFactor = 1.3f;
+KryptonManager.TouchscreenSettingValues.Enabled = true;
+KryptonManager.TouchscreenSettingValues.ControlScaleFactor = 1.5f;
+KryptonManager.TouchscreenSettingValues.FontScalingEnabled = true;
+KryptonManager.TouchscreenSettingValues.FontScaleFactor = 1.3f;
 ```
 
 ---
@@ -378,6 +387,114 @@ float currentFontScale = KryptonManager.TouchscreenFontScaleFactor;
 
 ---
 
+#### Static Properties (Detection)
+
+##### `AutomaticallyDetectTouchscreen` (static)
+
+Gets or sets a value indicating whether touchscreen support should be automatically detected and enabled.
+
+**Type:** `bool`  
+**Default:** `false`
+
+```csharp
+public static bool AutomaticallyDetectTouchscreen { get; set; }
+```
+
+**Remarks:**
+- When set to `true`, the system automatically checks for touchscreen capability and enables/disables touchscreen support accordingly
+- Periodic polling is enabled to detect hot-plug scenarios (touchscreen connected/disconnected)
+- When enabled, performs immediate detection and starts periodic polling at the configured interval
+- When disabled, stops periodic polling
+- The polling interval can be configured via `TouchscreenDetectionInterval` (default: 2000ms)
+
+**Example:**
+```csharp
+// Enable automatic detection
+KryptonManager.AutomaticallyDetectTouchscreen = true;
+// Touchscreen support will be automatically enabled if a touchscreen is detected
+```
+
+---
+
+##### `TouchscreenDetectionInterval` (static)
+
+Gets or sets the interval (in milliseconds) for periodic touchscreen detection polling.
+
+**Type:** `int`  
+**Default:** `2000` (2 seconds)  
+**Minimum:** `500` milliseconds
+
+```csharp
+public static int TouchscreenDetectionInterval { get; set; }
+```
+
+**Remarks:**
+- Used when `AutomaticallyDetectTouchscreen` is enabled to detect hot-plug scenarios
+- Timer restarts with the new interval when this value changes
+- Lower values provide faster detection but consume more CPU resources
+- Higher values reduce CPU usage but may delay detection of touchscreen connect/disconnect events
+
+**Throws:**
+- `ArgumentOutOfRangeException` if value is less than 500 milliseconds
+
+**Example:**
+```csharp
+// Set detection interval to 1 second
+KryptonManager.TouchscreenDetectionInterval = 1000;
+```
+
+---
+
+##### `IsTouchscreenAvailable()` (static method)
+
+Detects if the system has touchscreen capability.
+
+**Returns:** `bool` - `true` if a touchscreen is detected; otherwise `false`
+
+```csharp
+public static bool IsTouchscreenAvailable()
+```
+
+**Remarks:**
+- Uses `GetSystemMetrics(SM_DIGITIZER)` to check for digitizer input support
+- Detects system-wide touchscreen capability, not per-monitor
+- Returns `false` if the API is not available on older Windows versions
+- This method can be called independently of `AutomaticallyDetectTouchscreen`
+
+**Example:**
+```csharp
+bool hasTouchscreen = KryptonManager.IsTouchscreenAvailable();
+if (hasTouchscreen)
+{
+    Console.WriteLine("Touchscreen detected!");
+}
+```
+
+---
+
+##### `GetMaximumTouchContacts()` (static method)
+
+Gets the maximum number of simultaneous touch contacts supported by the system.
+
+**Returns:** `int` - Maximum number of touch contacts, or `0` if no touchscreen is available
+
+```csharp
+public static int GetMaximumTouchContacts()
+```
+
+**Remarks:**
+- Returns `0` if no touchscreen is available or the API is not supported
+- Uses `GetSystemMetrics(SM_MAXIMUMTOUCHES)` to retrieve the value
+- Useful for determining touchscreen capabilities
+
+**Example:**
+```csharp
+int maxContacts = KryptonManager.GetMaximumTouchContacts();
+Console.WriteLine($"Maximum touch contacts: {maxContacts}");
+```
+
+---
+
 #### Static Events
 
 ##### `GlobalTouchscreenSupportChanged`
@@ -412,9 +529,92 @@ KryptonManager.GlobalTouchscreenSupportChanged += (sender, e) =>
 
 ---
 
-### KryptonTouchscreenSettings Class
+##### `TouchscreenAvailabilityChanged`
 
-The `KryptonTouchscreenSettings` class provides a convenient way to access all touchscreen-related settings as a single expandable object in the Visual Studio designer.
+Occurs when touchscreen availability changes (detected or removed).
+
+**Type:** `EventHandler<TouchscreenAvailabilityChangedEventArgs>`  
+**Category:** `Property Changed`
+
+```csharp
+[Category(@"Property Changed")]
+[Description(@"Occurs when touchscreen availability changes (detected or removed).")]
+public static event EventHandler<TouchscreenAvailabilityChangedEventArgs>? TouchscreenAvailabilityChanged;
+```
+
+**Remarks:**
+- Fires when `AutomaticallyDetectTouchscreen` is enabled and the system detects that a touchscreen has been connected or disconnected
+- Provides information about the current availability state and maximum touch contacts
+- Useful for applications that need to respond to touchscreen hot-plug events
+- Event args include `IsAvailable` (current availability) and `MaximumTouchContacts` (capability info)
+
+**Example:**
+```csharp
+KryptonManager.TouchscreenAvailabilityChanged += (sender, e) =>
+{
+    Console.WriteLine($"Touchscreen availability changed:");
+    Console.WriteLine($"  Available: {e.IsAvailable}");
+    Console.WriteLine($"  Maximum contacts: {e.MaximumTouchContacts}");
+    
+    if (e.IsAvailable)
+    {
+        // Touchscreen was connected
+        ShowNotification("Touchscreen detected - controls will be scaled for touch interaction");
+    }
+    else
+    {
+        // Touchscreen was disconnected
+        ShowNotification("Touchscreen removed - controls will return to normal size");
+    }
+};
+```
+
+---
+
+### TouchscreenAvailabilityChangedEventArgs Class
+
+Provides data for the `TouchscreenAvailabilityChanged` event.
+
+#### Properties
+
+##### `IsAvailable`
+
+Gets a value indicating whether a touchscreen is currently available.
+
+**Type:** `bool`
+
+**Remarks:**
+- `true` if a touchscreen was just detected/connected
+- `false` if a touchscreen was just removed/disconnected
+
+---
+
+##### `MaximumTouchContacts`
+
+Gets the maximum number of simultaneous touch contacts supported by the system.
+
+**Type:** `int`
+
+**Remarks:**
+- Returns `0` if no touchscreen is available
+- Provides information about touchscreen capabilities
+
+**Example:**
+```csharp
+KryptonManager.TouchscreenAvailabilityChanged += (sender, e) =>
+{
+    if (e.IsAvailable)
+    {
+        Console.WriteLine($"Touchscreen connected with {e.MaximumTouchContacts} max contacts");
+    }
+};
+```
+
+---
+
+### KryptonTouchscreenSettingValues Class
+
+The `KryptonTouchscreenSettingValues` class provides a convenient way to access all touchscreen-related settings as a single expandable object in the Visual Studio designer.
 
 #### Properties
 
@@ -461,6 +661,53 @@ Gets or sets the scale factor applied to fonts when touchscreen support and font
 **Must be:** Greater than 0
 
 Maps to: `KryptonManager.TouchscreenFontScaleFactorValue`
+
+---
+
+##### `AutomaticallyDetectTouchscreen`
+
+Gets or sets a value indicating whether touchscreen support should be automatically detected and enabled.
+
+**Type:** `bool`  
+**Default:** `false`
+
+Maps to: `KryptonManager.AutomaticallyDetectTouchscreen`
+
+**Remarks:**
+- When enabled, automatically detects touchscreen availability and enables/disables touchscreen support accordingly
+- Enables periodic polling to detect hot-plug scenarios
+
+---
+
+##### `MaximumTouchContacts` (read-only)
+
+Gets the maximum number of simultaneous touch contacts supported by the system.
+
+**Type:** `int`  
+**Returns:** Maximum number of touch contacts, or `0` if no touchscreen is available
+
+Maps to: `KryptonManager.GetMaximumTouchContacts()`
+
+**Remarks:**
+- Read-only property that queries the system for touchscreen capabilities
+- Returns `0` if no touchscreen is available or the API is not supported
+
+---
+
+##### `DetectionInterval`
+
+Gets or sets the interval (in milliseconds) for periodic touchscreen detection polling.
+
+**Type:** `int`  
+**Default:** `2000` (2 seconds)  
+**Minimum:** `500` milliseconds
+
+Maps to: `KryptonManager.TouchscreenDetectionInterval`
+
+**Remarks:**
+- Used when `AutomaticallyDetectTouchscreen` is enabled
+- Lower values provide faster detection but consume more CPU resources
+- Higher values reduce CPU usage but may delay detection
 
 ---
 
@@ -542,7 +789,7 @@ public class TouchscreenApp
 
 ---
 
-### Example 3: Runtime Toggle (Using TouchscreenSettings API)
+### Example 3: Runtime Toggle (Using TouchscreenSettingValues API)
 
 ```csharp
 using Krypton.Toolkit;
@@ -559,11 +806,11 @@ public class SettingsForm : KryptonForm
     {
         InitializeComponent();
         
-        // Initialize UI from TouchscreenSettings
-        chkTouchscreenMode.Checked = KryptonManager.TouchscreenSettings.Enabled;
-        trackControlScale.Value = (int)(KryptonManager.TouchscreenSettings.ControlScaleFactor * 100);
-        chkFontScaling.Checked = KryptonManager.TouchscreenSettings.FontScalingEnabled;
-        trackFontScale.Value = (int)(KryptonManager.TouchscreenSettings.FontScaleFactor * 100);
+        // Initialize UI from TouchscreenSettingValues
+        chkTouchscreenMode.Checked = KryptonManager.TouchscreenSettingValues.Enabled;
+        trackControlScale.Value = (int)(KryptonManager.TouchscreenSettingValues.ControlScaleFactor * 100);
+        chkFontScaling.Checked = KryptonManager.TouchscreenSettingValues.FontScalingEnabled;
+        trackFontScale.Value = (int)(KryptonManager.TouchscreenSettingValues.FontScaleFactor * 100);
         trackFontScale.Enabled = chkFontScaling.Checked;
         
         // Wire up events
@@ -576,7 +823,7 @@ public class SettingsForm : KryptonForm
     private void ChkTouchscreenMode_CheckedChanged(object sender, EventArgs e)
     {
         // Toggle touchscreen support
-        KryptonManager.TouchscreenSettings.Enabled = chkTouchscreenMode.Checked;
+        KryptonManager.TouchscreenSettingValues.Enabled = chkTouchscreenMode.Checked;
         // Controls automatically refresh
     }
 
@@ -584,13 +831,13 @@ public class SettingsForm : KryptonForm
     {
         // Update control scale factor (convert from percentage to factor)
         float scaleFactor = 1.0f + (trackControlScale.Value / 100f);
-        KryptonManager.TouchscreenSettings.ControlScaleFactor = scaleFactor;
+        KryptonManager.TouchscreenSettingValues.ControlScaleFactor = scaleFactor;
         // Controls automatically refresh
     }
 
     private void ChkFontScaling_CheckedChanged(object sender, EventArgs e)
     {
-        KryptonManager.TouchscreenSettings.FontScalingEnabled = chkFontScaling.Checked;
+        KryptonManager.TouchscreenSettingValues.FontScalingEnabled = chkFontScaling.Checked;
         trackFontScale.Enabled = chkFontScaling.Checked;
         // Controls automatically refresh
     }
@@ -599,7 +846,7 @@ public class SettingsForm : KryptonForm
     {
         // Update font scale factor (convert from percentage to factor)
         float fontScaleFactor = 1.0f + (trackFontScale.Value / 100f);
-        KryptonManager.TouchscreenSettings.FontScaleFactor = fontScaleFactor;
+        KryptonManager.TouchscreenSettingValues.FontScaleFactor = fontScaleFactor;
         // Controls automatically refresh
     }
 }
@@ -611,7 +858,7 @@ public class SettingsForm : KryptonForm
 
 1. Add a `KryptonManager` component to your form from the toolbox
 2. Select the `KryptonManager` component
-3. In the Properties window, expand the `TouchscreenSettings` property
+3. In the Properties window, expand the `TouchscreenSettingValues` property
 4. Set the following sub-properties:
    - `Enabled` = `True`
    - `ControlScaleFactor` = `1.25` (or your desired value)
@@ -637,10 +884,12 @@ public class AppInitializer
 {
     public static void InitializeTouchscreenSupport()
     {
-        // Detect if running on a touchscreen device
-        bool hasTouchscreen = SystemInformation.TabletPC;
+        // Option 1: Use automatic detection (recommended)
+        KryptonManager.TouchscreenSettingValues.AutomaticallyDetectTouchscreen = true;
+        // System will automatically enable/disable based on detection
         
-        if (hasTouchscreen)
+        // Option 2: Manual detection check
+        if (KryptonManager.IsTouchscreenAvailable())
         {
             // Enable touchscreen support
             KryptonManager.GlobalTouchscreenSupport = true;
@@ -707,6 +956,99 @@ public class TouchscreenMonitor
     public void Dispose()
     {
         KryptonManager.GlobalTouchscreenSupportChanged -= OnTouchscreenSupportChanged;
+    }
+}
+```
+
+---
+
+### Example 7: Automatic Touchscreen Detection
+
+```csharp
+using Krypton.Toolkit;
+
+public class AutoDetectionApp
+{
+    public void Initialize()
+    {
+        // Enable automatic detection
+        KryptonManager.TouchscreenSettingValues.AutomaticallyDetectTouchscreen = true;
+        
+        // Configure detection interval (optional, default is 2000ms)
+        KryptonManager.TouchscreenSettingValues.DetectionInterval = 1500; // Check every 1.5 seconds
+        
+        // Subscribe to availability changes
+        KryptonManager.TouchscreenAvailabilityChanged += OnTouchscreenAvailabilityChanged;
+    }
+
+    private void OnTouchscreenAvailabilityChanged(object? sender, TouchscreenAvailabilityChangedEventArgs e)
+    {
+        if (e.IsAvailable)
+        {
+            Console.WriteLine($"Touchscreen connected!");
+            Console.WriteLine($"  Maximum touch contacts: {e.MaximumTouchContacts}");
+            Console.WriteLine($"  Touchscreen support automatically enabled");
+        }
+        else
+        {
+            Console.WriteLine("Touchscreen disconnected");
+            Console.WriteLine("  Touchscreen support automatically disabled");
+        }
+    }
+
+    public void Shutdown()
+    {
+        // Disable automatic detection
+        KryptonManager.TouchscreenSettingValues.AutomaticallyDetectTouchscreen = false;
+        
+        // Unsubscribe from events
+        KryptonManager.TouchscreenAvailabilityChanged -= OnTouchscreenAvailabilityChanged;
+    }
+}
+```
+
+---
+
+### Example 8: Manual Detection Check
+
+```csharp
+using Krypton.Toolkit;
+
+public class DetectionCheck
+{
+    public void CheckTouchscreenCapabilities()
+    {
+        // Check if touchscreen is available
+        bool isAvailable = KryptonManager.IsTouchscreenAvailable();
+        
+        if (isAvailable)
+        {
+            // Get touchscreen capabilities
+            int maxContacts = KryptonManager.GetMaximumTouchContacts();
+            
+            Console.WriteLine("Touchscreen detected:");
+            Console.WriteLine($"  Maximum simultaneous contacts: {maxContacts}");
+            
+            // Enable touchscreen support manually
+            KryptonManager.TouchscreenSettingValues.Enabled = true;
+            
+            // Adjust scale factor based on capabilities
+            if (maxContacts >= 10)
+            {
+                // Multi-touch capable - use standard scaling
+                KryptonManager.TouchscreenSettingValues.ControlScaleFactor = 1.25f;
+            }
+            else
+            {
+                // Single-touch or limited - use larger scaling
+                KryptonManager.TouchscreenSettingValues.ControlScaleFactor = 1.5f;
+            }
+        }
+        else
+        {
+            Console.WriteLine("No touchscreen detected");
+            KryptonManager.TouchscreenSettingValues.Enabled = false;
+        }
     }
 }
 ```
@@ -780,14 +1122,14 @@ If you're customizing the scale factors, set them before enabling touchscreen su
 
 ```csharp
 // Good: Set scale factors first, then enable
-KryptonManager.TouchscreenSettings.ControlScaleFactor = 1.5f;
-KryptonManager.TouchscreenSettings.FontScaleFactor = 1.3f;
-KryptonManager.TouchscreenSettings.Enabled = true; // Only one refresh
+KryptonManager.TouchscreenSettingValues.ControlScaleFactor = 1.5f;
+KryptonManager.TouchscreenSettingValues.FontScaleFactor = 1.3f;
+KryptonManager.TouchscreenSettingValues.Enabled = true; // Only one refresh
 
 // Less efficient: Enable first, then change scales
-KryptonManager.TouchscreenSettings.Enabled = true; // First refresh
-KryptonManager.TouchscreenSettings.ControlScaleFactor = 1.5f; // Second refresh
-KryptonManager.TouchscreenSettings.FontScaleFactor = 1.3f; // Third refresh
+KryptonManager.TouchscreenSettingValues.Enabled = true; // First refresh
+KryptonManager.TouchscreenSettingValues.ControlScaleFactor = 1.5f; // Second refresh
+KryptonManager.TouchscreenSettingValues.FontScaleFactor = 1.3f; // Third refresh
 ```
 
 ### 2. Independent Control and Font Scaling
@@ -799,12 +1141,12 @@ Control scaling and font scaling are independent. You can:
 
 ```csharp
 // Scale controls but not fonts
-KryptonManager.TouchscreenSettings.Enabled = true;
-KryptonManager.TouchscreenSettings.FontScalingEnabled = false;
+KryptonManager.TouchscreenSettingValues.Enabled = true;
+KryptonManager.TouchscreenSettingValues.FontScalingEnabled = false;
 
 // Different scale factors for controls and fonts
-KryptonManager.TouchscreenSettings.ControlScaleFactor = 1.5f; // 50% larger controls
-KryptonManager.TouchscreenSettings.FontScaleFactor = 1.2f; // 20% larger fonts
+KryptonManager.TouchscreenSettingValues.ControlScaleFactor = 1.5f; // 50% larger controls
+KryptonManager.TouchscreenSettingValues.FontScaleFactor = 1.2f; // 20% larger fonts
 ```
 
 ### 3. Use Appropriate Scale Factors
@@ -831,34 +1173,78 @@ Windows DPI scaling and touchscreen scaling are independent:
 
 Consider the combined effect when setting scale factors.
 
-### 6. Disable for Non-Touch Devices
+### 6. Use Automatic Detection for Hot-Plug Support
 
-If your application runs on both touch and non-touch devices, detect the device type and only enable touchscreen support when appropriate:
+For applications that need to support touchscreen hot-plug scenarios (e.g., docking stations, USB touchscreens), use automatic detection:
 
 ```csharp
-if (SystemInformation.TabletPC || HasTouchInput())
+// Enable automatic detection - handles connect/disconnect automatically
+KryptonManager.TouchscreenSettingValues.AutomaticallyDetectTouchscreen = true;
+
+// Optionally adjust detection interval (default is 2000ms)
+KryptonManager.TouchscreenSettingValues.DetectionInterval = 1000; // Check every second
+
+// Subscribe to availability changes for UI updates
+KryptonManager.TouchscreenAvailabilityChanged += (sender, e) =>
+{
+    if (e.IsAvailable)
+    {
+        ShowStatusMessage("Touchscreen detected - controls scaled for touch");
+    }
+    else
+    {
+        ShowStatusMessage("Touchscreen removed - controls returned to normal size");
+    }
+};
+```
+
+### 7. Disable for Non-Touch Devices
+
+If your application runs on both touch and non-touch devices, you can either:
+
+**Option A:** Use automatic detection (recommended):
+```csharp
+KryptonManager.TouchscreenSettingValues.AutomaticallyDetectTouchscreen = true;
+// System will automatically enable/disable based on detection
+```
+
+**Option B:** Manual detection check:
+```csharp
+if (KryptonManager.IsTouchscreenAvailable())
 {
     KryptonManager.GlobalTouchscreenSupport = true;
 }
+else
+{
+    KryptonManager.GlobalTouchscreenSupport = false;
+}
 ```
 
-### 7. User Preference Storage
+### 8. User Preference Storage
 
 Store the user's touchscreen preferences in application settings:
 
 ```csharp
 // Save
-Properties.Settings.Default.TouchscreenEnabled = KryptonManager.TouchscreenSettings.Enabled;
-Properties.Settings.Default.TouchscreenControlScale = KryptonManager.TouchscreenSettings.ControlScaleFactor;
-Properties.Settings.Default.TouchscreenFontScaling = KryptonManager.TouchscreenSettings.FontScalingEnabled;
-Properties.Settings.Default.TouchscreenFontScale = KryptonManager.TouchscreenSettings.FontScaleFactor;
+Properties.Settings.Default.TouchscreenEnabled = KryptonManager.TouchscreenSettingValues.Enabled;
+Properties.Settings.Default.TouchscreenControlScale = KryptonManager.TouchscreenSettingValues.ControlScaleFactor;
+Properties.Settings.Default.TouchscreenFontScaling = KryptonManager.TouchscreenSettingValues.FontScalingEnabled;
+Properties.Settings.Default.TouchscreenFontScale = KryptonManager.TouchscreenSettingValues.FontScaleFactor;
+Properties.Settings.Default.TouchscreenAutoDetect = KryptonManager.TouchscreenSettingValues.AutomaticallyDetectTouchscreen;
+Properties.Settings.Default.TouchscreenDetectionInterval = KryptonManager.TouchscreenSettingValues.DetectionInterval;
 Properties.Settings.Default.Save();
 
 // Load
-KryptonManager.TouchscreenSettings.ControlScaleFactor = Properties.Settings.Default.TouchscreenControlScale;
-KryptonManager.TouchscreenSettings.FontScaleFactor = Properties.Settings.Default.TouchscreenFontScale;
-KryptonManager.TouchscreenSettings.FontScalingEnabled = Properties.Settings.Default.TouchscreenFontScaling;
-KryptonManager.TouchscreenSettings.Enabled = Properties.Settings.Default.TouchscreenEnabled;
+KryptonManager.TouchscreenSettingValues.ControlScaleFactor = Properties.Settings.Default.TouchscreenControlScale;
+KryptonManager.TouchscreenSettingValues.FontScaleFactor = Properties.Settings.Default.TouchscreenFontScale;
+KryptonManager.TouchscreenSettingValues.FontScalingEnabled = Properties.Settings.Default.TouchscreenFontScaling;
+KryptonManager.TouchscreenSettingValues.DetectionInterval = Properties.Settings.Default.TouchscreenDetectionInterval;
+KryptonManager.TouchscreenSettingValues.AutomaticallyDetectTouchscreen = Properties.Settings.Default.TouchscreenAutoDetect;
+// Note: Enabled should be set last if auto-detect is false, otherwise auto-detect will override it
+if (!KryptonManager.TouchscreenSettingValues.AutomaticallyDetectTouchscreen)
+{
+    KryptonManager.TouchscreenSettingValues.Enabled = Properties.Settings.Default.TouchscreenEnabled;
+}
 ```
 
 ---
@@ -1077,10 +1463,28 @@ Images within controls are not automatically scaled. Only the control's overall 
     - Added `UseTouchscreenFontScaling` static property
     - Added `TouchscreenFontScaleFactorValue` static property
     - Added `TouchscreenFontScaleFactor` static read-only property
-  - Added `KryptonTouchscreenSettings` class
+  - Added `KryptonTouchscreenSettingValues` class
     - Groups all touchscreen settings into an expandable object
     - Provides `Enabled`, `ControlScaleFactor`, `FontScalingEnabled`, and `FontScaleFactor` properties
     - Designer-friendly with `ExpandableObjectConverter`
+
+- **Version 110+**: Enhanced with automatic detection and hot-plug support
+  - Added automatic touchscreen detection
+    - Added `AutomaticallyDetectTouchscreen` static property
+    - Added `AutomaticallyDetectTouchscreen` property to `KryptonTouchscreenSettingValues`
+    - Automatically enables/disables touchscreen support based on system detection
+  - Added periodic detection polling for hot-plug support
+    - Added `TouchscreenDetectionInterval` static property (default: 2000ms)
+    - Added `DetectionInterval` property to `KryptonTouchscreenSettingValues`
+    - Detects touchscreen connect/disconnect events at configurable intervals
+  - Added touchscreen availability changed event
+    - Added `TouchscreenAvailabilityChanged` static event
+    - Added `TouchscreenAvailabilityChangedEventArgs` class
+    - Provides `IsAvailable` and `MaximumTouchContacts` information
+  - Added touchscreen capability detection methods
+    - Added `IsTouchscreenAvailable()` static method
+    - Added `GetMaximumTouchContacts()` static method
+    - Added `MaximumTouchContacts` read-only property to `KryptonTouchscreenSettingValues`
 
 ---
 

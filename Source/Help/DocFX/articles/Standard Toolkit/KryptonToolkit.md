@@ -4,7 +4,8 @@
 Learn more about each of the individual controls and components that appear in
 the toolbox.
 
-**Controls**  
+## Controls
+
 * [KryptonBindingNavigator](Toolkit/Controls/KryptonBindingNavigator.md)
 * [KryptonBorderEdge](Toolkit/Controls/KryptonBorderEdge.md)  
 * [KryptonBreadCrumb](Toolkit/Controls/KryptonBreadCrumb.md)  
@@ -26,7 +27,8 @@ the toolbox.
 * [KryptonLinkLabel](Toolkit/Controls/KryptonLinkLabel.md)  
 * [KryptonListBox](Toolkit/Controls/KryptonListBox.md)
 * [KryptonListView](Toolkit/Controls/KryptonListView.md)
-* [KryptonMaskedTextBox](Toolkit/Controls/KryptonMaskedTextBox.md)  
+* [KryptonMaskedTextBox](Toolkit/Controls/KryptonMaskedTextBox.md) 
+* [KryptonMenuStrip](Toolkit/Controls/KryptonMenuStrip.md)
 * [KryptonMonthCalendar](Toolkit/Controls/KryptonMonthCalendar.md)  
 * [KryptonNumericUpDown](Toolkit/Controls/KryptonNumericUpDown.md)
 * [KryptonPanel](Toolkit/Controls/KryptonPanel.md)
@@ -38,6 +40,7 @@ the toolbox.
 * [KryptonScrollBar](Toolkit/Controls/KryptonScrollBar.md)
 * [KryptonSeparator](Toolkit/Controls/KryptonSeparator.md)  
 * [KryptonSplitContainer](Toolkit/Controls/KryptonSplitContainer.md)  
+* [KryptonSplitter](Toolkit/Controls/KryptonSplitter.md)
 * [KryptonStatusStrip](Toolkit/Controls/KryptonStatusStrip.md)
 * [KryptonTableLayoutPanel](Toolkit/Controls/KryptonTableLayoutPanel.md)
 * [KryptonTextBox](Toolkit/Controls/KryptonTextBox.md)  
@@ -51,7 +54,7 @@ the toolbox.
 * [KryptonWebView2](Toolkit/Controls/KryptonWebView2.md)
 * [KryptonWrapLabel](Toolkit/Controls/KryptonWrapLabel.md)
 
-**Components**  
+## Components  
 * [KryptonAboutBox](Toolkit/Components/KryptonAboutBox.md)
 * [KryptonCheckSet](Toolkit/Components/KryptonCheckSet.md)  
 * [KryptonCommand](Toolkit/Components/KryptonCommand.md)  
