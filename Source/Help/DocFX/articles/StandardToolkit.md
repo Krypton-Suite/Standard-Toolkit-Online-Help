@@ -62,6 +62,7 @@ This document provides links to the documentation provided, each will be split u
 * [Krypton Command](Standard%20Toolkit/Toolkit/Components/KryptonCommand.md)
 * [Krypton Context Menu](Standard%20Toolkit/Toolkit/Components/KryptonContextMenu.md)
 * [Krypton Custom Palette Base](Standard%20Toolkit/Toolkit/Components/KryptonCustomPaletteBase.md)
+* [Krypton Error Provider](Standard%20Toolkit/Toolkit/Components/KryptonErrorProvider.md)
 * [Krypton Exception Dialog](Standard%20Toolkit/Toolkit/Components/KryptonExceptionDialog.md)
 * [Krypton File System Watcher](Standard%20Toolkit/Toolkit/Components/KryptonFileSystemWatcher.md)
 * [Krypton Folder Browser Dialog](Standard%20Toolkit/Toolkit/Components/KryptonFolderBrowserDialog.md)
@@ -144,6 +145,7 @@ This document provides links to the documentation provided, each will be split u
 * [How Themes Work](Standard%20Toolkit/Toolkit/Themes/HowThemesWork.md)
 
 ### [Utilities](Standard%20Toolkit/Toolkit/Utilities.md)
+* [Krypton Exception Dialog](Standard%20Toolkit/Utilities/KryptonExceptionDialog.md)
 * [Exception Handler](Standard%20Toolkit/Toolkit/Utilities/ExceptionHandler.md)
 * [Icon Extraction](Standard%20Toolkit/Toolkit/Utilities/IconExtractionIndex.md)
 * [Localization](Standard%20Toolkit/Toolkit/Utilities/LocalizationIndex.md)

@@ -48,27 +48,72 @@ KryptonExceptionDialog (Public API)
 
 #### Methods
 
-##### Show Method
+##### Show Method Overloads
 
+The `Show` method has multiple overloads to accommodate different use cases:
+
+**Overload 1: Simple Display**
+```csharp
+public static void Show(Exception exception)
+```
+Displays an exception dialog with default settings (no copy button, no search box, default highlight color).
+
+**Overload 2: With Highlight Color**
+```csharp
+public static void Show(Exception exception, Color? highlightColor)
+```
+Displays an exception dialog with a custom highlight color for search matches.
+
+**Parameters:**
+- `exception` - The exception to display. Cannot be null.
+- `highlightColor` - Optional color used to highlight key information. If `null`, defaults to `Color.LightYellow`.
+
+**Overload 3: With Copy and Search Controls**
 ```csharp
 public static void Show(Exception exception, bool? showCopyButton, bool? showSearchBox)
 ```
-
-Displays an exception dialog with the specified exception details.
+Displays an exception dialog with optional copy button and search box controls.
 
 **Parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `exception` | `Exception` | The exception to display. Cannot be null. |
-| `showCopyButton` | `bool?` | Controls the visibility of the "Copy" button. If `null`, defaults to `true`. |
-| `showSearchBox` | `bool?` | Controls the visibility of the search functionality. If `null`, defaults to `true`. |
+| `showCopyButton` | `bool?` | Controls the visibility of the "Copy" button. If `null`, defaults to `false`. |
+| `showSearchBox` | `bool?` | Controls the visibility of the search functionality. If `null`, defaults to `false`. |
 
-**Behavior:**
+**Overload 4: With Highlight Color and Controls**
+```csharp
+public static void Show(Exception exception, Color? highlightColor, bool? showCopyButton, bool? showSearchBox)
+```
+Displays an exception dialog with custom highlight color and optional copy/search controls.
+
+**Parameters:**
+- `exception` - The exception to display. Cannot be null.
+- `highlightColor` - Optional color used to highlight key information. If `null`, defaults to `Color.LightYellow`.
+- `showCopyButton` - Controls the visibility of the "Copy" button. If `null`, defaults to `false`.
+- `showSearchBox` - Controls the visibility of the search functionality. If `null`, defaults to `false`.
+
+**Overload 5: Full Featured (with Bug Report)**
+```csharp
+public static void Show(Exception exception, Color? highlightColor, bool? showCopyButton, bool? showSearchBox, Action<Exception>? bugReportCallback)
+```
+Displays an exception dialog with all features including bug reporting capability.
+
+**Parameters:**
+- `exception` - The exception to display. Cannot be null.
+- `highlightColor` - Optional color used to highlight key information. If `null`, defaults to `Color.LightYellow`.
+- `showCopyButton` - Controls the visibility of the "Copy" button. If `null`, defaults to `false`.
+- `showSearchBox` - Controls the visibility of the search functionality. If `null`, defaults to `false`.
+- `bugReportCallback` - Optional callback that will be invoked when the user clicks the "Report Bug" button. If provided, a "Report Bug" button will be shown in the dialog.
+
+**Behavior (All Overloads):**
 - Displays a modal dialog showing the exception hierarchy
 - Automatically expands all tree nodes
 - Adjusts form dimensions based on screen resolution (900×650 for 1080p, 1108×687 for higher resolutions)
 - Dialog is always centered on screen
+- Default highlight color is `Color.LightYellow` when not specified
+- Default values for `showCopyButton` and `showSearchBox` are `false` (not `true`)
 
 ---
 
@@ -111,6 +156,9 @@ Captures and displays an exception with automatic caller context information.
 - When `useExceptionDialog` is `true` (default), displays the rich exception dialog
 - When `useExceptionDialog` is `false`, displays a traditional message box with caller information
 - Automatically captures caller file path, line number, and method name for debugging
+- When using the exception dialog, copy button and search box are hidden by default (`showExceptionDialogCopyButton` and `showExceptionDialogSearchBox` default to `false`)
+
+**Note:** The public `KryptonExceptionHandler.CaptureException` method does not expose parameters to control the copy button and search box visibility. To customize these, use `KryptonExceptionDialog.Show` directly instead.
 
 ##### PrintStackTrace Method
 
@@ -166,8 +214,64 @@ try
 }
 catch (Exception ex)
 {
-    // Display exception with full features
-    KryptonExceptionDialog.Show(ex, true, true);
+    // Display exception with default settings (no copy button, no search box)
+    KryptonExceptionDialog.Show(ex);
+}
+```
+
+### Example 1a: With Copy and Search Features
+
+```csharp
+try
+{
+    // Some operation that might throw
+    int result = 10 / int.Parse("0");
+}
+catch (Exception ex)
+{
+    // Display exception with copy button and search box enabled
+    KryptonExceptionDialog.Show(ex, showCopyButton: true, showSearchBox: true);
+}
+```
+
+### Example 1b: With Custom Highlight Color
+
+```csharp
+try
+{
+    // Some operation that might throw
+    int result = 10 / int.Parse("0");
+}
+catch (Exception ex)
+{
+    // Display exception with custom highlight color for search matches
+    KryptonExceptionDialog.Show(ex, Color.LightCyan, true, true);
+}
+```
+
+### Example 1c: With Bug Report Callback
+
+```csharp
+try
+{
+    // Some operation that might throw
+    int result = 10 / int.Parse("0");
+}
+catch (Exception ex)
+{
+    // Display exception with bug report button
+    KryptonExceptionDialog.Show(
+        ex, 
+        highlightColor: Color.LightYellow,
+        showCopyButton: true, 
+        showSearchBox: true,
+        bugReportCallback: (exception) => 
+        {
+            // Handle bug report - e.g., send to error tracking service
+            ErrorTrackingService.ReportError(exception);
+            MessageBox.Show("Thank you for reporting this issue!");
+        }
+    );
 }
 ```
 
@@ -181,7 +285,10 @@ try
 }
 catch (Exception ex)
 {
-    // Display exception without search box or copy button
+    // Display exception without search box or copy button (default behavior)
+    KryptonExceptionDialog.Show(ex);
+    
+    // Or explicitly disable them
     KryptonExceptionDialog.Show(ex, false, false);
 }
 ```
@@ -347,12 +454,34 @@ Please select another node to view more details.
 
 When visible (controlled by `showCopyButton` parameter):
 
+- **Default State**: Hidden by default (`showCopyButton` defaults to `false`)
 - **Enabled State**: Only enabled when exception details text is present
 - **Functionality**: Copies the entire formatted exception details to clipboard
 - **Use Cases**: 
   - Pasting into bug reports
   - Sharing exception details with support teams
   - Logging to external systems
+
+### Highlight Color
+
+The dialog supports custom highlight colors for search matches:
+
+- **Default Color**: `Color.LightYellow` when not specified
+- **Usage**: Set via `highlightColor` parameter in `Show` method overloads
+- **Applies To**: Search match highlighting in the exception tree view
+- **Example**: `KryptonExceptionDialog.Show(ex, Color.LightCyan, true, true);`
+
+### Bug Report Button
+
+When a `bugReportCallback` is provided:
+
+- **Visibility**: A "Report Bug" button appears in the dialog
+- **Functionality**: Invokes the provided callback with the exception when clicked
+- **Use Cases**:
+  - Integration with error tracking services (e.g., Sentry, Application Insights)
+  - Custom bug reporting workflows
+  - User feedback collection
+- **Example**: See Example 1c above
 
 ---
 
@@ -678,16 +807,19 @@ else
 ### Issue: Search not working
 
 **Possible Causes:**
-- `showSearchBox` parameter set to `false`
+- `showSearchBox` parameter set to `false` or not provided (defaults to `false`)
 - Search control not initialized properly
 
 **Solution:**
-Ensure `showSearchBox` is set to `true` or `null`:
+Ensure `showSearchBox` is explicitly set to `true`:
 ```csharp
 KryptonExceptionDialog.Show(ex, true, true);  // ✅ Search enabled
-KryptonExceptionDialog.Show(ex, true, null);  // ✅ Search enabled (default)
+KryptonExceptionDialog.Show(ex);              // ❌ Search disabled (default)
+KryptonExceptionDialog.Show(ex, null, null);  // ❌ Search disabled (default)
 KryptonExceptionDialog.Show(ex, true, false); // ❌ Search disabled
 ```
+
+**Note:** Unlike what might be expected, the default value for `showSearchBox` is `false`, not `true`. You must explicitly set it to `true` to enable search functionality.
 
 ### Issue: Copy button disabled
 

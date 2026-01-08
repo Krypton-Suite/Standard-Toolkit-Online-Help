@@ -86,13 +86,13 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 
 - [AdministratorSuffixFeatureforKryptonForm](Toolkit/Forms/AdministratorSuffixFeatureforKryptonForm.md)
 - [KryptonForm](Toolkit/Forms/KryptonForm.md)
-- [KryptonThemedSystemMenu](Toolkit/Forms/KryptonThemedSystemMenu.md)
+- [KryptonSystemMenu](Toolkit/Forms/KryptonSystemMenu.md)
 
 **Utilities**
 
 - [ExceptionHandler](Toolkit/Utilities/ExceptionHandler.md)
 - [GlobalStaticValuesReference](Toolkit/Utilities/GlobalStaticValuesReference.md)
-- [IconExtraction](Toolkit/IconExtraction.md)
+- [IconExtraction](Toolkit/Utilities/IconExtractionIndex.md)
 - [Localization](Toolkit/Utilities/LocalizationIndex.md)
 - [SystemIcons](Toolkit/Utilities/SystemIcons.md)
 
@@ -202,7 +202,7 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 - [How to Create a Pull Request](../Contributing/HowtoCreateaPullRequest.md)
 - [How to Create the API Reference](../Contributing/HowtoCreatetheAPIReference.md)
 - [How to Manage Using Statements](../Contributing/HowtoManageUsingStatements.md)
-- [Krypton RTL Audit Summary](../Contributing/KryptonRTLAuditSummary.md)
+- [Krypton RTL Audit Summary](../Contributing/Auditing/KryptonRTLAuditSummary.md)
 - [Using Custom Pre Processor Directives](../Contributing/UsingCustomPreProcessorDirectives.md)
 - [Using SLNX in Visual Studio](../Contributing/UsingSLNXinVisualStudio.md)
 - [Using File Scoped Namespaces.md](../Contributing/UsingFileScopedNamespaces.md)
@@ -239,7 +239,7 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 - [How to Create a Pull Request](../Contributing/HowtoCreateaPullRequest.md)
 - [How to Create the API Reference](../Contributing/HowtoCreatetheAPIReference.md)
 - [How to Manage Using Statements](../Contributing/HowtoManageUsingStatements.md)
-- [Krypton RTL Audit Summary](../Contributing/KryptonRTLAuditSummary.md)
+- [Krypton RTL Audit Summary](../Contributing/Auditing/KryptonRTLAuditSummary.md)
 - [Using Custom Pre Processor Directives](../Contributing/UsingCustomPreProcessorDirectives.md)
 - [Using SLNX in Visual Studio](../Contributing/UsingSLNXinVisualStudio.md)
 - [Using File Scoped Namespaces.md](../Contributing/UsingFileScopedNamespaces.md)
