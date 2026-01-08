@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonBindingNavigator | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonBindingNavigator | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonbindingnavigator">KryptonBindingNavigator</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#features">Features</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#integration-with-bindingsource">Integration with BindingSource</a></li>
+<li><a href="#customization">Customization</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonBindingNavigator</code> is a user control that provides a comprehensive user interface for navigating and manipulating data bound to a <code>BindingSource</code>. It offers a complete set of navigation controls including First, Previous, Next, Last buttons, a position textbox, count display, and Add/Delete functionality.</p>
+<h3 id="key-characteristics">Key Characteristics</h3>
+<ul>
+<li><strong>Inheritance</strong>: <code>UserControl</code></li>
+<li><strong>Namespace</strong>: <code>Krypton.Toolkit</code></li>
+<li><strong>Assembly</strong>: <code>Krypton.Toolkit</code></li>
+<li><strong>Designer Support</strong>: Full design-time support with Toolbox integration</li>
+<li><strong>Data Binding</strong>: Integrates seamlessly with <code>System.Windows.Forms.BindingSource</code></li>
+</ul>
+<h3 id="purpose">Purpose</h3>
+<p>The <code>KryptonBindingNavigator</code> control simplifies the implementation of data navigation interfaces by providing:</p>
+<ul>
+<li>Standard navigation controls (First, Previous, Next, Last)</li>
+<li>Direct position navigation via text input</li>
+<li>Visual feedback of current position and total count</li>
+<li>Add and Delete operations</li>
+<li>Automatic state management based on data source state</li>
+<li>Consistent Krypton-themed appearance</li>
+</ul>
+<hr>
+<h2 id="features">Features</h2>
+<h3 id="core-features">Core Features</h3>
+<ol>
+<li><p><strong>Navigation Controls</strong></p>
+<ul>
+<li>Move First (<code>|&lt;</code>) - Navigate to the first item</li>
+<li>Move Previous (<code>&lt;</code>) - Navigate to the previous item</li>
+<li>Move Next (<code>&gt;</code>) - Navigate to the next item</li>
+<li>Move Last (<code>&gt;|</code>) - Navigate to the last item</li>
+</ul>
+</li>
+<li><p><strong>Position Display</strong></p>
+<ul>
+<li>Textbox showing current 1-based position</li>
+<li>Direct position entry with Enter key validation</li>
+<li>Automatic validation on focus loss</li>
+<li>Count label displaying &quot;of N&quot; format</li>
+</ul>
+</li>
+<li><p><strong>Data Manipulation</strong></p>
+<ul>
+<li>Add New button (<code>+</code>) - Adds a new item to the data source</li>
+<li>Delete button (<code>×</code>) - Removes the current item</li>
+</ul>
+</li>
+<li><p><strong>Automatic State Management</strong></p>
+<ul>
+<li>Buttons automatically enable/disable based on position</li>
+<li>Position textbox updates on navigation</li>
+<li>Count label updates when data changes</li>
+<li>Handles empty lists, single items, and large datasets</li>
+</ul>
+</li>
+<li><p><strong>Event Integration</strong></p>
+<ul>
+<li>Subscribes to <code>BindingSource</code> events (PositionChanged, CurrentChanged, ListChanged)</li>
+<li>Raises <code>RefreshItems</code> event for custom handling</li>
+<li>Automatic refresh on data source changes</li>
+</ul>
+</li>
+</ol>
+<h3 id="visual-layout">Visual Layout</h3>
+<p>The control arranges elements horizontally in the following order:</p>
+<pre><code>[|&lt;] [&lt;] [Position] [of N] [&gt;] [&gt;|] [++] [×]
+</code></pre>
+<p>With appropriate spacing between groups:</p>
+<ul>
+<li>Navigation buttons grouped together</li>
+<li>Position display grouped together</li>
+<li>Add/Delete buttons grouped together</li>
+</ul>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="properties">Properties</h3>
+<h4 id="bindingsource">BindingSource</h4>
+<pre><code class="lang-csharp">public BindingSource? BindingSource { get; set; }
+</code></pre>
+<p><strong>Category</strong>: Data<br>
+<strong>Description</strong>: Gets or sets the <code>BindingSource</code> component that is the source of data.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>Setting this property automatically subscribes to <code>BindingSource</code> events</li>
+<li>When set to <code>null</code>, all navigation controls are disabled</li>
+<li>Changing the <code>BindingSource</code> automatically refreshes the control state</li>
+<li>The control listens to <code>PositionChanged</code>, <code>CurrentChanged</code>, and <code>ListChanged</code> events</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">var bindingSource = new BindingSource { DataSource = myList };
+kryptonBindingNavigator1.BindingSource = bindingSource;
+</code></pre>
+<hr>
+<h4 id="addnewitemenabled">AddNewItemEnabled</h4>
+<pre><code class="lang-csharp">public bool AddNewItemEnabled { get; set; }
+</code></pre>
+<p><strong>Category</strong>: Behavior<br>
+<strong>Default Value</strong>: <code>true</code><br>
+<strong>Description</strong>: Gets or sets a value indicating whether the Add New button is enabled.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>When <code>false</code>, the Add New button is disabled regardless of <code>BindingSource.AllowNew</code></li>
+<li>When <code>true</code>, the button state depends on <code>BindingSource.AllowNew</code> and data availability</li>
+<li>This provides an additional layer of control beyond the <code>BindingSource</code> settings</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">// Disable Add New functionality
+kryptonBindingNavigator1.AddNewItemEnabled = false;
+</code></pre>
+<hr>
+<h4 id="deleteitemenabled">DeleteItemEnabled</h4>
+<pre><code class="lang-csharp">public bool DeleteItemEnabled { get; set; }
+</code></pre>
+<p><strong>Category</strong>: Behavior<br>
+<strong>Default Value</strong>: <code>true</code><br>
+<strong>Description</strong>: Gets or sets a value indicating whether the Delete button is enabled.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>When <code>false</code>, the Delete button is disabled regardless of <code>BindingSource.AllowRemove</code></li>
+<li>When <code>true</code>, the button state depends on <code>BindingSource.AllowRemove</code> and data availability</li>
+<li>The button is also disabled when there are no items in the data source</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">// Disable Delete functionality
+kryptonBindingNavigator1.DeleteItemEnabled = false;
+</code></pre>
+<hr>
+<h4 id="movefirstitem">MoveFirstItem</h4>
+<pre><code class="lang-csharp">public KryptonButton? MoveFirstItem { get; }
+</code></pre>
+<p><strong>Category</strong>: N/A (Browsable: false)<br>
+<strong>Description</strong>: Gets the Move First button control.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>Returns <code>null</code> if the button hasn't been initialized</li>
+<li>Use this property to customize the button appearance or behavior</li>
+<li>The button text is set to <code>&quot;|&lt;&quot;</code> by default</li>
+<li>Button size is fixed at 30x25 pixels</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">if (kryptonBindingNavigator1.MoveFirstItem != null)
+{
+    kryptonBindingNavigator1.MoveFirstItem.Values.Text = &quot;First&quot;;
+    kryptonBindingNavigator1.MoveFirstItem.Values.Image = myIcon;
+}
+</code></pre>
+<hr>
+<h4 id="movepreviousitem">MovePreviousItem</h4>
+<pre><code class="lang-csharp">public KryptonButton? MovePreviousItem { get; }
+</code></pre>
+<p><strong>Category</strong>: N/A (Browsable: false)<br>
+<strong>Description</strong>: Gets the Move Previous button control.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>Returns <code>null</code> if the button hasn't been initialized</li>
+<li>Button text is set to <code>&quot;&lt;&quot;</code> by default</li>
+<li>Button size is fixed at 30x25 pixels</li>
+</ul>
+<hr>
+<h4 id="movenextitem">MoveNextItem</h4>
+<pre><code class="lang-csharp">public KryptonButton? MoveNextItem { get; }
+</code></pre>
+<p><strong>Category</strong>: N/A (Browsable: false)<br>
+<strong>Description</strong>: Gets the Move Next button control.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>Returns <code>null</code> if the button hasn't been initialized</li>
+<li>Button text is set to <code>&quot;&gt;&quot;</code> by default</li>
+<li>Button size is fixed at 30x25 pixels</li>
+</ul>
+<hr>
+<h4 id="movelastitem">MoveLastItem</h4>
+<pre><code class="lang-csharp">public KryptonButton? MoveLastItem { get; }
+</code></pre>
+<p><strong>Category</strong>: N/A (Browsable: false)<br>
+<strong>Description</strong>: Gets the Move Last button control.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>Returns <code>null</code> if the button hasn't been initialized</li>
+<li>Button text is set to <code>&quot;&gt;|&quot;</code> by default</li>
+<li>Button size is fixed at 30x25 pixels</li>
+</ul>
+<hr>
+<h4 id="addnewitem">AddNewItem</h4>
+<pre><code class="lang-csharp">public KryptonButton? AddNewItem { get; }
+</code></pre>
+<p><strong>Category</strong>: N/A (Browsable: false)<br>
+<strong>Description</strong>: Gets the Add New button control.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>Returns <code>null</code> if the button hasn't been initialized</li>
+<li>Button text is set to <code>&quot;+&quot;</code> by default</li>
+<li>Button size is fixed at 30x25 pixels</li>
+<li>Button state depends on <code>AddNewItemEnabled</code> and <code>BindingSource.AllowNew</code></li>
+</ul>
+<hr>
+<h4 id="deleteitem">DeleteItem</h4>
+<pre><code class="lang-csharp">public KryptonButton? DeleteItem { get; }
+</code></pre>
+<p><strong>Category</strong>: N/A (Browsable: false)<br>
+<strong>Description</strong>: Gets the Delete button control.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>Returns <code>null</code> if the button hasn't been initialized</li>
+<li>Button text is set to <code>&quot;×&quot;</code> by default</li>
+<li>Button size is fixed at 30x25 pixels</li>
+<li>Button state depends on <code>DeleteItemEnabled</code>, <code>BindingSource.AllowRemove</code>, and data availability</li>
+</ul>
+<hr>
+<h4 id="positionitem">PositionItem</h4>
+<pre><code class="lang-csharp">public KryptonTextBox? PositionItem { get; }
+</code></pre>
+<p><strong>Category</strong>: N/A (Browsable: false)<br>
+<strong>Description</strong>: Gets the position textbox control.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>Returns <code>null</code> if the textbox hasn't been initialized</li>
+<li>Width is fixed at 50 pixels, height matches button height (25 pixels)</li>
+<li>Displays 1-based position (user-friendly)</li>
+<li>Validates input on Enter key press and focus loss</li>
+<li>Automatically restores valid position if invalid input is entered</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">if (kryptonBindingNavigator1.PositionItem != null)
+{
+    kryptonBindingNavigator1.PositionItem.Width = 60;
+    kryptonBindingNavigator1.PositionItem.TextAlign = HorizontalAlignment.Center;
+}
+</code></pre>
+<hr>
+<h4 id="countitem">CountItem</h4>
+<pre><code class="lang-csharp">public KryptonLabel? CountItem { get; }
+</code></pre>
+<p><strong>Category</strong>: N/A (Browsable: false)<br>
+<strong>Description</strong>: Gets the count label control.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>Returns <code>null</code> if the label hasn't been initialized</li>
+<li>Displays text in format <code>&quot;of N&quot;</code> where N is the total count</li>
+<li>Uses <code>LabelStyle.NormalControl</code> by default</li>
+<li>AutoSize is enabled</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">if (kryptonBindingNavigator1.CountItem != null)
+{
+    kryptonBindingNavigator1.CountItem.Values.Text = $&quot;Total: {count}&quot;;
+}
+</code></pre>
+<hr>
+<h3 id="methods">Methods</h3>
+<h4 id="refreshitemsinternal">RefreshItemsInternal</h4>
+<pre><code class="lang-csharp">public void RefreshItemsInternal()
+</code></pre>
+<p><strong>Description</strong>: Refreshes the state of all navigator items to reflect the current state of the data.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>This method is called automatically when:
+<ul>
+<li>The <code>BindingSource</code> changes</li>
+<li>The position changes (<code>PositionChanged</code> event)</li>
+<li>The current item changes (<code>CurrentChanged</code> event)</li>
+<li>The list changes (<code>ListChanged</code> event)</li>
+</ul>
+</li>
+<li>Manually call this method when you need to force a refresh without changing the <code>BindingSource</code></li>
+<li>Raises the <code>RefreshItems</code> event before updating the UI</li>
+<li>Updates button states, position textbox, and count label</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">// Force a refresh after programmatic data changes
+myBindingSource.Add(newItem);
+kryptonBindingNavigator1.RefreshItemsInternal();
+</code></pre>
+<hr>
+<h3 id="events">Events</h3>
+<h4 id="refreshitems">RefreshItems</h4>
+<pre><code class="lang-csharp">public event EventHandler? RefreshItems;
+</code></pre>
+<p><strong>Category</strong>: Action<br>
+<strong>Description</strong>: Occurs when <code>RefreshItemsInternal()</code> is called to refresh the state of the items.</p>
+<p><strong>Remarks</strong>:</p>
+<ul>
+<li>Raised before the UI is updated</li>
+<li>Use this event to perform custom actions when the navigator refreshes</li>
+<li>The event is raised even when there's no <code>BindingSource</code> assigned</li>
+<li>Useful for updating related UI elements or performing validation</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">kryptonBindingNavigator1.RefreshItems += (sender, e) =&gt;
+{
+    // Update custom display
+    UpdateStatusLabel();
+    
+    // Perform validation
+    ValidateCurrentItem();
+};
+</code></pre>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<p>The simplest way to use <code>KryptonBindingNavigator</code> is to bind it to a <code>BindingSource</code>:</p>
+<pre><code class="lang-csharp">// Create data source
+var dataList = new List&lt;Person&gt;
+{
+    new Person { Id = 1, Name = &quot;John Doe&quot; },
+    new Person { Id = 2, Name = &quot;Jane Smith&quot; },
+    new Person { Id = 3, Name = &quot;Bob Johnson&quot; }
+};
+
+// Create BindingSource
+var bindingSource = new BindingSource
+{
+    DataSource = dataList,
+    AllowNew = true
+};
+
+// Bind to navigator
+kryptonBindingNavigator1.BindingSource = bindingSource;
+
+// Bind to DataGridView for display
+dataGridView1.DataSource = bindingSource;
+</code></pre>
+<hr>
+<h3 id="complete-example-with-detail-controls">Complete Example with Detail Controls</h3>
+<p>This example demonstrates a full data entry form with navigation:</p>
+<pre><code class="lang-csharp">public partial class PersonForm : KryptonForm
+{
+    private BindingSource _bindingSource = null!;
+    private List&lt;Person&gt; _dataList = null!;
+
+    public PersonForm()
+    {
+        InitializeComponent();
+        InitializeData();
+    }
+
+    private void InitializeData()
+    {
+        // Create sample data
+        _dataList = new List&lt;Person&gt;
+        {
+            new Person { Id = 1, FirstName = &quot;John&quot;, LastName = &quot;Doe&quot;, Email = &quot;john@example.com&quot; },
+            new Person { Id = 2, FirstName = &quot;Jane&quot;, LastName = &quot;Smith&quot;, Email = &quot;jane@example.com&quot; }
+        };
+
+        // Create BindingSource
+        _bindingSource = new BindingSource
+        {
+            DataSource = _dataList,
+            AllowNew = true
+        };
+
+        // Bind navigator
+        kryptonBindingNavigator1.BindingSource = _bindingSource;
+
+        // Bind detail controls
+        txtFirstName.DataBindings.Add(&quot;Text&quot;, _bindingSource, &quot;FirstName&quot;);
+        txtLastName.DataBindings.Add(&quot;Text&quot;, _bindingSource, &quot;LastName&quot;);
+        txtEmail.DataBindings.Add(&quot;Text&quot;, _bindingSource, &quot;Email&quot;);
+
+        // Subscribe to events
+        _bindingSource.CurrentChanged += BindingSource_CurrentChanged;
+        kryptonBindingNavigator1.RefreshItems += Navigator_RefreshItems;
+    }
+
+    private void BindingSource_CurrentChanged(object? sender, EventArgs e)
+    {
+        if (_bindingSource.Current is Person person)
+        {
+            lblStatus.Text = $&quot;Current: {person.FirstName} {person.LastName}&quot;;
+        }
+    }
+
+    private void Navigator_RefreshItems(object? sender, EventArgs e)
+    {
+        // Custom refresh logic
+        UpdateStatusDisplay();
+    }
+
+    private void UpdateStatusDisplay()
+    {
+        int count = _bindingSource?.Count ?? 0;
+        int position = _bindingSource?.Position + 1 ?? 0;
+        lblInfo.Text = $&quot;Item {position} of {count}&quot;;
+    }
+}
+</code></pre>
+<hr>
+<h3 id="customizing-button-appearance">Customizing Button Appearance</h3>
+<p>You can customize individual buttons through the exposed properties:</p>
+<pre><code class="lang-csharp">// Customize Move First button
+if (kryptonBindingNavigator1.MoveFirstItem != null)
+{
+    kryptonBindingNavigator1.MoveFirstItem.Values.Text = &quot;First&quot;;
+    kryptonBindingNavigator1.MoveFirstItem.Values.Image = Properties.Resources.FirstIcon;
+    kryptonBindingNavigator1.MoveFirstItem.ButtonStyle = ButtonStyle.Standalone;
+}
+
+// Customize Add New button
+if (kryptonBindingNavigator1.AddNewItem != null)
+{
+    kryptonBindingNavigator1.AddNewItem.Values.Text = &quot;Add&quot;;
+    kryptonBindingNavigator1.AddNewItem.Values.Image = Properties.Resources.AddIcon;
+}
+
+// Customize position textbox
+if (kryptonBindingNavigator1.PositionItem != null)
+{
+    kryptonBindingNavigator1.PositionItem.Width = 60;
+    kryptonBindingNavigator1.PositionItem.TextAlign = HorizontalAlignment.Center;
+    kryptonBindingNavigator1.PositionItem.PromptText = &quot;Position&quot;;
+}
+</code></pre>
+<hr>
+<h3 id="handling-empty-lists">Handling Empty Lists</h3>
+<p>The navigator automatically handles empty lists, but you may want to provide custom handling:</p>
+<pre><code class="lang-csharp">kryptonBindingNavigator1.RefreshItems += (sender, e) =&gt;
+{
+    if (_bindingSource?.Count == 0)
+    {
+        // Show message or disable related controls
+        lblMessage.Text = &quot;No items available. Click Add to create a new item.&quot;;
+        btnSave.Enabled = false;
+    }
+    else
+    {
+        lblMessage.Text = string.Empty;
+        btnSave.Enabled = true;
+    }
+};
+</code></pre>
+<hr>
+<h3 id="programmatic-navigation">Programmatic Navigation</h3>
+<p>You can programmatically navigate using the <code>BindingSource</code>:</p>
+<pre><code class="lang-csharp">// Navigate to first item
+_bindingSource.MoveFirst();
+
+// Navigate to last item
+_bindingSource.MoveLast();
+
+// Navigate to specific position (0-based)
+_bindingSource.Position = 5;
+
+// Navigate relative
+_bindingSource.MoveNext();
+_bindingSource.MovePrevious();
+
+// The navigator will automatically update
+</code></pre>
+<hr>
+<h3 id="conditional-enabledisable">Conditional Enable/Disable</h3>
+<p>Control when Add/Delete operations are allowed:</p>
+<pre><code class="lang-csharp">// Disable Add New in certain conditions
+if (IsReadOnlyMode)
+{
+    kryptonBindingNavigator1.AddNewItemEnabled = false;
+}
+
+// Disable Delete for specific items
+kryptonBindingNavigator1.RefreshItems += (sender, e) =&gt;
+{
+    if (_bindingSource?.Current is Person person &amp;&amp; person.IsProtected)
+    {
+        kryptonBindingNavigator1.DeleteItemEnabled = false;
+    }
+    else
+    {
+        kryptonBindingNavigator1.DeleteItemEnabled = true;
+    }
+};
+</code></pre>
+<hr>
+<h2 id="integration-with-bindingsource">Integration with BindingSource</h2>
+<h3 id="bindingsource-requirements">BindingSource Requirements</h3>
+<p><code>KryptonBindingNavigator</code> works with any <code>BindingSource</code> that:</p>
+<ol>
+<li>Has a <code>DataSource</code> assigned (can be <code>null</code> initially)</li>
+<li>Implements standard <code>BindingSource</code> functionality</li>
+<li>Supports <code>Position</code>, <code>Count</code>, <code>Current</code> properties</li>
+<li>Raises <code>PositionChanged</code>, <code>CurrentChanged</code>, and <code>ListChanged</code> events</li>
+</ol>
+<h3 id="supported-data-sources">Supported Data Sources</h3>
+<p>The navigator works with various data source types:</p>
+<ul>
+<li><p><strong>Generic Lists</strong> (<code>List&lt;T&gt;</code>)</p>
+<pre><code class="lang-csharp">var list = new List&lt;Person&gt;();
+bindingSource.DataSource = list;
+</code></pre>
+</li>
+<li><p><strong>Arrays</strong></p>
+<pre><code class="lang-csharp">var array = new Person[10];
+bindingSource.DataSource = array;
+</code></pre>
+</li>
+<li><p><strong>DataTables</strong></p>
+<pre><code class="lang-csharp">var table = new DataTable();
+bindingSource.DataSource = table;
+</code></pre>
+</li>
+<li><p><strong>Collections</strong></p>
+<pre><code class="lang-csharp">var collection = new BindingList&lt;Person&gt;();
+bindingSource.DataSource = collection;
+</code></pre>
+</li>
+</ul>
+<h3 id="bindingsource-properties">BindingSource Properties</h3>
+<h4 id="allownew">AllowNew</h4>
+<pre><code class="lang-csharp">bindingSource.AllowNew = true; // Enable Add New functionality
+</code></pre>
+<p><strong>Note</strong>: <code>AllowNew</code> is read-write and controls whether new items can be added. When <code>false</code>, the Add New button is disabled.</p>
+<h4 id="allowremove">AllowRemove</h4>
+<p><strong>Note</strong>: <code>AllowRemove</code> is read-only and depends on the underlying data source. For <code>List&lt;T&gt;</code>, it's automatically <code>true</code>. For read-only collections, it's <code>false</code>.</p>
+<h3 id="event-handling">Event Handling</h3>
+<p>The navigator automatically subscribes to these <code>BindingSource</code> events:</p>
+<ol>
+<li><strong>PositionChanged</strong>: Triggered when <code>BindingSource.Position</code> changes</li>
+<li><strong>CurrentChanged</strong>: Triggered when <code>BindingSource.Current</code> changes</li>
+<li><strong>ListChanged</strong>: Triggered when items are added, removed, or modified</li>
+</ol>
+<p>All these events cause <code>RefreshItemsInternal()</code> to be called, updating the UI.</p>
+<hr>
+<h2 id="customization">Customization</h2>
+<h3 id="layout-customization">Layout Customization</h3>
+<p>The control uses a custom layout algorithm in <code>OnLayout()</code>. To customize spacing or positioning, you can:</p>
+<ol>
+<li><p><strong>Adjust Padding</strong>: Modify the control's <code>Padding</code> property</p>
+<pre><code class="lang-csharp">kryptonBindingNavigator1.Padding = new Padding(10, 5, 10, 5);
+</code></pre>
+</li>
+<li><p><strong>Override OnLayout</strong>: Create a derived class and override <code>OnLayout()</code> (advanced)</p>
+</li>
+</ol>
+<h3 id="button-customization">Button Customization</h3>
+<p>All buttons are accessible through their respective properties:</p>
+<pre><code class="lang-csharp">// Change button text
+kryptonBindingNavigator1.MoveFirstItem!.Values.Text = &quot;First&quot;;
+
+// Change button style
+kryptonBindingNavigator1.MoveFirstItem!.ButtonStyle = ButtonStyle.Standalone;
+
+// Add images
+kryptonBindingNavigator1.MoveFirstItem!.Values.Image = myImage;
+
+// Change size (note: may affect layout)
+kryptonBindingNavigator1.MoveFirstItem!.Size = new Size(40, 30);
+</code></pre>
+<h3 id="position-textbox-customization">Position Textbox Customization</h3>
+<pre><code class="lang-csharp">var positionBox = kryptonBindingNavigator1.PositionItem;
+if (positionBox != null)
+{
+    positionBox.Width = 60;
+    positionBox.TextAlign = HorizontalAlignment.Center;
+    positionBox.PromptText = &quot;Go to&quot;;
+    positionBox.InputControlStyle = InputControlStyle.Standalone;
+}
+</code></pre>
+<h3 id="count-label-customization">Count Label Customization</h3>
+<pre><code class="lang-csharp">var countLabel = kryptonBindingNavigator1.CountItem;
+if (countLabel != null)
+{
+    countLabel.LabelStyle = LabelStyle.TitlePanel;
+    countLabel.Values.Font = new Font(&quot;Arial&quot;, 10, FontStyle.Bold);
+}
+</code></pre>
+<h3 id="theming">Theming</h3>
+<p>The control inherits theming from the Krypton palette system:</p>
+<pre><code class="lang-csharp">// Apply global theme
+kryptonManager1.GlobalPaletteMode = PaletteMode.Office2010Blue;
+
+// The navigator automatically uses the theme
+</code></pre>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-always-set-bindingsource">1. Always Set BindingSource</h3>
+<p>Always assign a <code>BindingSource</code> (even if initially empty) rather than leaving it <code>null</code>:</p>
+<pre><code class="lang-csharp">// Good
+var bindingSource = new BindingSource { DataSource = new List&lt;Person&gt;() };
+kryptonBindingNavigator1.BindingSource = bindingSource;
+
+// Avoid
+kryptonBindingNavigator1.BindingSource = null; // Disables all functionality
+</code></pre>
+<h3 id="2-handle-refreshitems-event">2. Handle RefreshItems Event</h3>
+<p>Use the <code>RefreshItems</code> event to keep related UI elements synchronized:</p>
+<pre><code class="lang-csharp">kryptonBindingNavigator1.RefreshItems += (sender, e) =&gt;
+{
+    UpdateRelatedControls();
+    ValidateCurrentItem();
+};
+</code></pre>
+<h3 id="3-use-bindingsource-for-data-operations">3. Use BindingSource for Data Operations</h3>
+<p>Perform data operations through the <code>BindingSource</code>, not directly on the data source:</p>
+<pre><code class="lang-csharp">// Good - Navigator updates automatically
+_bindingSource.AddNew();
+_bindingSource.RemoveCurrent();
+_bindingSource.MoveNext();
+
+// Avoid - Navigator won't update automatically
+_dataList.Add(newItem);
+_dataList.RemoveAt(index);
+</code></pre>
+<h3 id="4-validate-before-operations">4. Validate Before Operations</h3>
+<p>Add validation before allowing Add/Delete operations:</p>
+<pre><code class="lang-csharp">kryptonBindingNavigator1.RefreshItems += (sender, e) =&gt;
+{
+    if (_bindingSource?.Current != null)
+    {
+        bool canDelete = ValidateCanDelete(_bindingSource.Current);
+        kryptonBindingNavigator1.DeleteItemEnabled = canDelete;
+    }
+};
+</code></pre>
+<h3 id="5-handle-empty-states">5. Handle Empty States</h3>
+<p>Provide user feedback when the list is empty:</p>
+<pre><code class="lang-csharp">kryptonBindingNavigator1.RefreshItems += (sender, e) =&gt;
+{
+    if (_bindingSource?.Count == 0)
+    {
+        lblMessage.Text = &quot;No items. Click Add to create one.&quot;;
+        lblMessage.Visible = true;
+    }
+    else
+    {
+        lblMessage.Visible = false;
+    }
+};
+</code></pre>
+<h3 id="6-dispose-properly">6. Dispose Properly</h3>
+<p>The control automatically unsubscribes from events in <code>Dispose()</code>, but ensure proper cleanup:</p>
+<pre><code class="lang-csharp">protected override void Dispose(bool disposing)
+{
+    if (disposing)
+    {
+        // Navigator automatically cleans up BindingSource subscriptions
+        _bindingSource?.Dispose();
+    }
+    base.Dispose(disposing);
+}
+</code></pre>
+<h3 id="7-use-data-binding-for-detail-controls">7. Use Data Binding for Detail Controls</h3>
+<p>Bind detail controls to the same <code>BindingSource</code> for automatic synchronization:</p>
+<pre><code class="lang-csharp">// All controls stay synchronized automatically
+txtName.DataBindings.Add(&quot;Text&quot;, _bindingSource, &quot;Name&quot;);
+txtEmail.DataBindings.Add(&quot;Text&quot;, _bindingSource, &quot;Email&quot;);
+numericAge.DataBindings.Add(&quot;Value&quot;, _bindingSource, &quot;Age&quot;);
+</code></pre>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="buttons-are-disabled">Buttons Are Disabled</h4>
+<p><strong>Symptom</strong>: All navigation buttons are disabled.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li><code>BindingSource</code> is <code>null</code></li>
+<li><code>BindingSource.DataSource</code> is <code>null</code> or empty</li>
+<li><code>BindingSource.Count</code> is 0</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">// Check BindingSource
+if (kryptonBindingNavigator1.BindingSource == null)
+{
+    kryptonBindingNavigator1.BindingSource = myBindingSource;
+}
+
+// Check data source
+if (bindingSource.Count == 0)
+{
+    // Add items or inform user
+}
+</code></pre>
+<hr>
+<h4 id="add-new-button-doesnt-work">Add New Button Doesn't Work</h4>
+<p><strong>Symptom</strong>: Add New button is disabled or doesn't add items.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li><code>AddNewItemEnabled</code> is <code>false</code></li>
+<li><code>BindingSource.AllowNew</code> is <code>false</code></li>
+<li>Data source doesn't support adding items</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">// Enable AddNewItemEnabled
+kryptonBindingNavigator1.AddNewItemEnabled = true;
+
+// Enable BindingSource.AllowNew
+bindingSource.AllowNew = true;
+
+// Ensure data source supports adding
+// For List&lt;T&gt;, this works automatically
+</code></pre>
+<hr>
+<h4 id="delete-button-doesnt-work">Delete Button Doesn't Work</h4>
+<p><strong>Symptom</strong>: Delete button is disabled or doesn't remove items.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li><code>DeleteItemEnabled</code> is <code>false</code></li>
+<li><code>BindingSource.AllowRemove</code> is <code>false</code> (read-only)</li>
+<li>Data source doesn't support removal</li>
+<li>No items in the list</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">// Enable DeleteItemEnabled
+kryptonBindingNavigator1.DeleteItemEnabled = true;
+
+// Check if data source supports removal
+// For List&lt;T&gt;, AllowRemove is automatically true
+// For read-only collections, it's false
+
+// Ensure there are items to delete
+if (bindingSource.Count &gt; 0)
+{
+    // Delete should work
+}
+</code></pre>
+<hr>
+<h4 id="position-textbox-doesnt-update">Position Textbox Doesn't Update</h4>
+<p><strong>Symptom</strong>: Position textbox shows incorrect value or doesn't update.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li><code>BindingSource</code> events not firing</li>
+<li>Manual position changes not triggering refresh</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">// Manually refresh after programmatic changes
+bindingSource.Position = newPosition;
+kryptonBindingNavigator1.RefreshItemsInternal();
+</code></pre>
+<hr>
+<h4 id="count-label-shows-of-0">Count Label Shows &quot;of 0&quot;</h4>
+<p><strong>Symptom</strong>: Count label always shows &quot;of 0&quot; even when there are items.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li><code>BindingSource</code> is <code>null</code></li>
+<li><code>BindingSource.DataSource</code> is <code>null</code></li>
+<li><code>BindingSource.Count</code> is actually 0</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">// Verify BindingSource has data
+if (bindingSource?.Count &gt; 0)
+{
+    // Count should update automatically
+    // If not, manually refresh
+    kryptonBindingNavigator1.RefreshItemsInternal();
+}
+</code></pre>
+<hr>
+<h4 id="navigation-buttons-dont-respond">Navigation Buttons Don't Respond</h4>
+<p><strong>Symptom</strong>: Clicking navigation buttons doesn't change position.</p>
+<p><strong>Possible Causes</strong>:</p>
+<ol>
+<li><code>BindingSource</code> is <code>null</code></li>
+<li>Event handlers not connected</li>
+<li>Data source issues</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<pre><code class="lang-csharp">// Verify BindingSource is set
+if (kryptonBindingNavigator1.BindingSource == null)
+{
+    kryptonBindingNavigator1.BindingSource = myBindingSource;
+}
+
+// Verify data source
+if (bindingSource.Count == 0)
+{
+    // No items to navigate
+}
+</code></pre>
+<hr>
+<h3 id="performance-considerations">Performance Considerations</h3>
+<ol>
+<li><p><strong>Large Datasets</strong>: The navigator performs well with large datasets. Navigation is O(1) operation.</p>
+</li>
+<li><p><strong>Frequent Updates</strong>: If you're making many rapid changes, consider batching updates:</p>
+<pre><code class="lang-csharp">// Suspend updates temporarily
+bindingSource.SuspendBinding();
+// Make multiple changes
+// ...
+bindingSource.ResumeBinding();
+// Navigator updates automatically
+</code></pre>
+</li>
+<li><p><strong>Event Handling</strong>: The <code>RefreshItems</code> event fires frequently. Keep handlers lightweight:</p>
+<pre><code class="lang-csharp">// Good - lightweight handler
+kryptonBindingNavigator1.RefreshItems += (s, e) =&gt; UpdateLabel();
+
+// Avoid - heavy operations
+kryptonBindingNavigator1.RefreshItems += (s, e) =&gt; 
+{
+    // Don't do heavy database queries here
+};
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2 id="additional-resources">Additional Resources</h2>
+<ul>
+<li><strong>BindingSource Documentation</strong>: <a href="https://learn.microsoft.com/dotnet/api/system.windows.forms.bindingsource">MSDN BindingSource</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

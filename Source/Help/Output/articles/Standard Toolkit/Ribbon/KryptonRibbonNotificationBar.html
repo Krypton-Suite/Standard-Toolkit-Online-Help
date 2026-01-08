@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Ribbon Notification Bar | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Ribbon Notification Bar | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="ribbon-notification-bar">Ribbon Notification Bar</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#properties">Properties</a></li>
+<li><a href="#events">Events</a></li>
+<li><a href="#notification-types">Notification Types</a></li>
+<li><a href="#using-kryptoncommand">Using KryptonCommand</a></li>
+<li><a href="#advanced-features">Advanced Features</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#code-examples">Code Examples</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The <strong>Ribbon Notification Bar</strong> is a feature-rich component that displays contextual notifications, alerts, and messages directly within the Krypton Ribbon control. It provides a modern, Office-style notification system that can be customized with different types, colors, icons, and interactive buttons.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Multiple Notification Types</strong>: Information, Warning, Error, Success, and Custom</li>
+<li><strong>Flexible Content</strong>: Support for title, text, and custom icons</li>
+<li><strong>Interactive Buttons</strong>: Action buttons with text, images, or KryptonCommand objects</li>
+<li><strong>Auto-Dismiss</strong>: Configurable automatic dismissal timer</li>
+<li><strong>Custom Styling</strong>: Full control over colors, padding, and height</li>
+<li><strong>Event Handling</strong>: Comprehensive event system for button clicks</li>
+<li><strong>DPI Awareness</strong>: Automatic scaling for high-DPI displays</li>
+</ul>
+<h3 id="architecture">Architecture</h3>
+<p>The notification bar consists of three main components:</p>
+<ol>
+<li><strong><code>KryptonRibbonNotificationBarData</code></strong>: Data model that holds all notification properties</li>
+<li><strong><code>ViewDrawRibbonNotificationBar</code></strong>: View component responsible for rendering</li>
+<li><strong><code>KryptonRibbon</code></strong>: Main ribbon control that hosts the notification bar</li>
+</ol>
+<hr>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="basic-usage">Basic Usage</h3>
+<pre><code class="lang-csharp">using Krypton.Ribbon;
+using Krypton.Toolkit;
+
+// Access the notification bar through the ribbon
+kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Information;
+kryptonRibbon.NotificationBar.Text = &quot;This is an informational message.&quot;;
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<h3 id="with-action-buttons">With Action Buttons</h3>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Warning;
+kryptonRibbon.NotificationBar.Text = &quot;Updates are available.&quot;;
+kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;Update now&quot;, &quot;Later&quot; };
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<h3 id="handling-button-clicks">Handling Button Clicks</h3>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBarButtonClick += (sender, e) =&gt;
+{
+    if (e.ActionButtonIndex == -1)
+    {
+        // Close button was clicked
+        MessageBox.Show(&quot;Notification closed&quot;);
+    }
+    else
+    {
+        // Action button was clicked
+        string buttonText = kryptonRibbon.NotificationBar.ActionButtonTexts?[e.ActionButtonIndex] ?? &quot;Unknown&quot;;
+        MessageBox.Show($&quot;Button '{buttonText}' clicked&quot;);
+    }
+};
+</code></pre>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="kryptonribbonnotificationbar-property">KryptonRibbon.NotificationBar Property</h3>
+<p><strong>Type</strong>: <code>KryptonRibbonNotificationBarData</code><br>
+<strong>Access</strong>: Read-only<br>
+<strong>Description</strong>: Provides access to the notification bar data model.</p>
+<pre><code class="lang-csharp">public KryptonRibbonNotificationBarData NotificationBar { get; }
+</code></pre>
+<h3 id="kryptonribbonnotificationbarbuttonclick-event">KryptonRibbon.NotificationBarButtonClick Event</h3>
+<p><strong>Type</strong>: <code>EventHandler&lt;RibbonNotificationBarEventArgs&gt;</code><br>
+<strong>Description</strong>: Raised when any button (action or close) in the notification bar is clicked.</p>
+<pre><code class="lang-csharp">public event EventHandler&lt;RibbonNotificationBarEventArgs&gt;? NotificationBarButtonClick;
+</code></pre>
+<hr>
+<h2 id="properties">Properties</h2>
+<h3 id="kryptonribbonnotificationbardata-properties">KryptonRibbonNotificationBarData Properties</h3>
+<h4 id="visibility-and-type">Visibility and Type</h4>
+<h5 id="visible-bool"><code>Visible</code> (bool)</h5>
+<ul>
+<li><strong>Default</strong>: <code>false</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: Determines whether the notification bar is visible.</li>
+<li><strong>Usage</strong>: Set to <code>true</code> to show the notification bar.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<h5 id="type-ribbonnotificationbartype"><code>Type</code> (RibbonNotificationBarType)</h5>
+<ul>
+<li><strong>Default</strong>: <code>RibbonNotificationBarType.Information</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: The type of notification bar, which determines default colors.</li>
+<li><strong>Values</strong>: <code>Information</code>, <code>Warning</code>, <code>Error</code>, <code>Success</code>, <code>Custom</code></li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Warning;
+</code></pre>
+<h4 id="content-properties">Content Properties</h4>
+<h5 id="text-string"><code>Text</code> (string)</h5>
+<ul>
+<li><strong>Default</strong>: <code>&quot;&quot;</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Localizable</strong>: Yes</li>
+<li><strong>Description</strong>: The main text message displayed in the notification bar.</li>
+<li><strong>Usage</strong>: This is the primary message shown to the user.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Text = &quot;Your document has been saved successfully.&quot;;
+</code></pre>
+<h5 id="title-string"><code>Title</code> (string)</h5>
+<ul>
+<li><strong>Default</strong>: <code>&quot;&quot;</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Localizable</strong>: Yes</li>
+<li><strong>Description</strong>: The title text displayed before the main text (e.g., &quot;UPDATES AVAILABLE&quot;).</li>
+<li><strong>Usage</strong>: Optional title that appears before the main message text.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Title = &quot;UPDATES AVAILABLE&quot;;
+kryptonRibbon.NotificationBar.Text = &quot;Updates for Office are ready to be applied.&quot;;
+</code></pre>
+<h5 id="icon-image"><code>Icon</code> (Image?)</h5>
+<ul>
+<li><strong>Default</strong>: <code>null</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: The icon image displayed in the notification bar.</li>
+<li><strong>Usage</strong>: Custom icon image. If not set, default icons are used based on the notification type.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Icon = SystemIcons.Information.ToBitmap();
+</code></pre>
+<h5 id="showicon-bool"><code>ShowIcon</code> (bool)</h5>
+<ul>
+<li><strong>Default</strong>: <code>true</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: Determines whether to show the icon.</li>
+<li><strong>Usage</strong>: Set to <code>false</code> to hide the icon completely.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.ShowIcon = true;
+</code></pre>
+<h4 id="button-properties">Button Properties</h4>
+<h5 id="showclosebutton-bool"><code>ShowCloseButton</code> (bool)</h5>
+<ul>
+<li><strong>Default</strong>: <code>true</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: Determines whether to show the close button (X).</li>
+<li><strong>Usage</strong>: Set to <code>false</code> to hide the close button.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.ShowCloseButton = true;
+</code></pre>
+<h5 id="showactionbuttons-bool"><code>ShowActionButtons</code> (bool)</h5>
+<ul>
+<li><strong>Default</strong>: <code>true</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: Determines whether to show action buttons.</li>
+<li><strong>Usage</strong>: Set to <code>false</code> to hide all action buttons.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.ShowActionButtons = true;
+</code></pre>
+<h5 id="actionbuttontexts-string"><code>ActionButtonTexts</code> (string[])</h5>
+<ul>
+<li><strong>Default</strong>: <code>new[] { &quot;Update now&quot; }</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Localizable</strong>: Yes</li>
+<li><strong>Description</strong>: The array of action button texts.</li>
+<li><strong>Usage</strong>: Provides button text when not using <code>ActionButtonCommands</code>.</li>
+<li><strong>Note</strong>: Ignored if <code>ActionButtonCommands</code> is set.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;OK&quot;, &quot;Cancel&quot;, &quot;Retry&quot; };
+</code></pre>
+<h5 id="actionbuttonimages-image"><code>ActionButtonImages</code> (Image[]?)</h5>
+<ul>
+<li><strong>Default</strong>: <code>null</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: The array of action button images (optional).</li>
+<li><strong>Usage</strong>: Optional images for action buttons. Must match the length of <code>ActionButtonTexts</code>.</li>
+<li><strong>Note</strong>: Ignored if <code>ActionButtonCommands</code> is set.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.ActionButtonImages = new Image[] 
+{ 
+    SystemIcons.Question.ToBitmap(), 
+    SystemIcons.Error.ToBitmap() 
+};
+</code></pre>
+<h5 id="actionbuttoncommands-ikryptoncommand"><code>ActionButtonCommands</code> (IKryptonCommand[]?)</h5>
+<ul>
+<li><strong>Default</strong>: <code>null</code></li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Description</strong>: The array of KryptonCommand objects for action buttons. If provided, these will be used instead of <code>ActionButtonTexts</code>.</li>
+<li><strong>Usage</strong>: Provides full command support with Execute events, images, and enabled states.</li>
+<li><strong>Note</strong>: Takes precedence over <code>ActionButtonTexts</code> when set.</li>
+</ul>
+<pre><code class="lang-csharp">var command1 = new KryptonCommand { Text = &quot;OK&quot;, ImageSmall = myIcon };
+command1.Execute += (s, e) =&gt; { /* Handle click */ };
+kryptonRibbon.NotificationBar.ActionButtonCommands = new[] { command1 };
+</code></pre>
+<h4 id="custom-styling-properties">Custom Styling Properties</h4>
+<h5 id="custombackcolor-color"><code>CustomBackColor</code> (Color)</h5>
+<ul>
+<li><strong>Default</strong>: <code>Color.FromArgb(255, 242, 204)</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: The custom background color (used when Type is Custom).</li>
+<li><strong>Usage</strong>: Only applies when <code>Type</code> is set to <code>RibbonNotificationBarType.Custom</code>.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Custom;
+kryptonRibbon.NotificationBar.CustomBackColor = Color.FromArgb(240, 248, 255);
+</code></pre>
+<h5 id="customforecolor-color"><code>CustomForeColor</code> (Color)</h5>
+<ul>
+<li><strong>Default</strong>: <code>Color.Black</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: The custom foreground color (used when Type is Custom).</li>
+<li><strong>Usage</strong>: Only applies when <code>Type</code> is set to <code>RibbonNotificationBarType.Custom</code>.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.CustomForeColor = Color.FromArgb(25, 25, 112);
+</code></pre>
+<h5 id="custombordercolor-color"><code>CustomBorderColor</code> (Color)</h5>
+<ul>
+<li><strong>Default</strong>: <code>Color.FromArgb(255, 192, 0)</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: The custom border color (used when Type is Custom).</li>
+<li><strong>Usage</strong>: Only applies when <code>Type</code> is set to <code>RibbonNotificationBarType.Custom</code>.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.CustomBorderColor = Color.FromArgb(70, 130, 180);
+</code></pre>
+<h4 id="layout-properties">Layout Properties</h4>
+<h5 id="padding-padding"><code>Padding</code> (Padding)</h5>
+<ul>
+<li><strong>Default</strong>: <code>new Padding(12, 8, 12, 8)</code></li>
+<li><strong>Category</strong>: Layout</li>
+<li><strong>Description</strong>: The padding around the notification bar content.</li>
+<li><strong>Usage</strong>: Controls spacing around the notification bar content.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Padding = new Padding(16, 10, 16, 10);
+</code></pre>
+<h5 id="height-int"><code>Height</code> (int)</h5>
+<ul>
+<li><strong>Default</strong>: <code>0</code> (auto-calculate)</li>
+<li><strong>Category</strong>: Layout</li>
+<li><strong>Description</strong>: The height of the notification bar (0 = auto-calculate based on content).</li>
+<li><strong>Usage</strong>: Set to a specific pixel value to fix the height, or 0 for automatic sizing.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Height = 60; // Fixed height
+kryptonRibbon.NotificationBar.Height = 0;  // Auto-calculate
+</code></pre>
+<h4 id="behavior-properties">Behavior Properties</h4>
+<h5 id="autodismissseconds-int"><code>AutoDismissSeconds</code> (int)</h5>
+<ul>
+<li><strong>Default</strong>: <code>0</code> (never auto-dismiss)</li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Description</strong>: The number of seconds before the notification bar automatically dismisses (0 = never).</li>
+<li><strong>Usage</strong>: Set to a positive value to enable auto-dismiss functionality.</li>
+</ul>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.AutoDismissSeconds = 5; // Auto-dismiss after 5 seconds
+kryptonRibbon.NotificationBar.AutoDismissSeconds = 0;  // Never auto-dismiss
+</code></pre>
+<hr>
+<h2 id="events">Events</h2>
+<h3 id="notificationbarbuttonclick-event">NotificationBarButtonClick Event</h3>
+<p><strong>Type</strong>: <code>EventHandler&lt;RibbonNotificationBarEventArgs&gt;</code><br>
+<strong>Raised When</strong>: Any button (action or close) in the notification bar is clicked.</p>
+<h4 id="ribbonnotificationbareventargs">RibbonNotificationBarEventArgs</h4>
+<pre><code class="lang-csharp">public class RibbonNotificationBarEventArgs : EventArgs
+{
+    /// &lt;summary&gt;
+    /// Gets the index of the action button that was clicked, 
+    /// or -1 if the close button was clicked.
+    /// &lt;/summary&gt;
+    public int ActionButtonIndex { get; }
+}
+</code></pre>
+<h4 id="event-handler-example">Event Handler Example</h4>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBarButtonClick += OnNotificationBarButtonClick;
+
+private void OnNotificationBarButtonClick(object? sender, RibbonNotificationBarEventArgs e)
+{
+    if (e.ActionButtonIndex == -1)
+    {
+        // Close button was clicked
+        MessageBox.Show(&quot;Notification closed&quot;);
+    }
+    else
+    {
+        // Action button was clicked
+        // Check if using KryptonCommand or ActionButtonTexts
+        string buttonText;
+        if (kryptonRibbon.NotificationBar.ActionButtonCommands != null &amp;&amp; 
+            e.ActionButtonIndex &lt; kryptonRibbon.NotificationBar.ActionButtonCommands.Length)
+        {
+            var command = kryptonRibbon.NotificationBar.ActionButtonCommands[e.ActionButtonIndex];
+            buttonText = command?.Text ?? &quot;Unknown&quot;;
+        }
+        else
+        {
+            buttonText = kryptonRibbon.NotificationBar.ActionButtonTexts?[e.ActionButtonIndex] ?? &quot;Unknown&quot;;
+        }
+        
+        MessageBox.Show($&quot;Button '{buttonText}' (index {e.ActionButtonIndex}) was clicked.&quot;);
+    }
+}
+</code></pre>
+<h4 id="propertychanged-event">PropertyChanged Event</h4>
+<p>The <code>KryptonRibbonNotificationBarData</code> class implements <code>INotifyPropertyChanged</code>, so you can subscribe to property changes:</p>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.PropertyChanged += (sender, e) =&gt;
+{
+    if (e.PropertyName == nameof(KryptonRibbonNotificationBarData.Visible))
+    {
+        // Handle visibility change
+    }
+};
+</code></pre>
+<hr>
+<h2 id="notification-types">Notification Types</h2>
+<h3 id="ribbonnotificationbartype-enum">RibbonNotificationBarType Enum</h3>
+<pre><code class="lang-csharp">public enum RibbonNotificationBarType
+{
+    Information,  // Blue theme - for general information
+    Warning,      // Yellow/Orange theme - for warnings
+    Error,        // Red theme - for errors
+    Success,      // Green theme - for success messages
+    Custom        // Custom colors - use CustomBackColor, CustomForeColor, CustomBorderColor
+}
+</code></pre>
+<h3 id="default-colors">Default Colors</h3>
+<p>Each notification type has predefined colors:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Background Color</th>
+<th>Border Color</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Information</strong></td>
+<td><code>#D9ECFF</code> (217, 236, 255)</td>
+<td><code>#5B9BD5</code> (91, 155, 213)</td>
+</tr>
+<tr>
+<td><strong>Warning</strong></td>
+<td><code>#FFF2CC</code> (255, 242, 204)</td>
+<td><code>#FFC000</code> (255, 192, 0)</td>
+</tr>
+<tr>
+<td><strong>Error</strong></td>
+<td><code>#FFCCCC</code> (255, 204, 204)</td>
+<td><code>#C00000</code> (192, 0, 0)</td>
+</tr>
+<tr>
+<td><strong>Success</strong></td>
+<td><code>#CCFFCC</code> (204, 255, 204)</td>
+<td><code>#00C000</code> (0, 192, 0)</td>
+</tr>
+<tr>
+<td><strong>Custom</strong></td>
+<td>User-defined</td>
+<td>User-defined</td>
+</tr>
+</tbody>
+</table>
+<h3 id="usage-examples">Usage Examples</h3>
+<h4 id="information-notification">Information Notification</h4>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Information;
+kryptonRibbon.NotificationBar.Text = &quot;New features are available in this update.&quot;;
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<h4 id="warning-notification">Warning Notification</h4>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Warning;
+kryptonRibbon.NotificationBar.Title = &quot;UPDATES AVAILABLE&quot;;
+kryptonRibbon.NotificationBar.Text = &quot;Updates are ready but blocked by running applications.&quot;;
+kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;Update now&quot; };
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<h4 id="error-notification">Error Notification</h4>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Error;
+kryptonRibbon.NotificationBar.Text = &quot;Failed to save document. Please try again.&quot;;
+kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;Retry&quot;, &quot;Cancel&quot; };
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<h4 id="success-notification">Success Notification</h4>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Success;
+kryptonRibbon.NotificationBar.Text = &quot;Document saved successfully!&quot;;
+kryptonRibbon.NotificationBar.AutoDismissSeconds = 3;
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<h4 id="custom-notification">Custom Notification</h4>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Custom;
+kryptonRibbon.NotificationBar.CustomBackColor = Color.FromArgb(240, 248, 255); // Alice Blue
+kryptonRibbon.NotificationBar.CustomForeColor = Color.FromArgb(25, 25, 112);   // Midnight Blue
+kryptonRibbon.NotificationBar.CustomBorderColor = Color.FromArgb(70, 130, 180); // Steel Blue
+kryptonRibbon.NotificationBar.Text = &quot;Custom-styled notification with brand colors.&quot;;
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<hr>
+<h2 id="using-kryptoncommand">Using KryptonCommand</h2>
+<p>The notification bar supports using <code>KryptonCommand</code> objects for action buttons, providing enhanced functionality including Execute events, images, and enabled states.</p>
+<h3 id="benefits-of-kryptoncommand">Benefits of KryptonCommand</h3>
+<ul>
+<li><strong>Execute Events</strong>: Each command can have its own Execute event handler</li>
+<li><strong>Images</strong>: Commands support <code>ImageSmall</code> and <code>ImageLarge</code> properties</li>
+<li><strong>Enabled State</strong>: Commands can be dynamically enabled/disabled</li>
+<li><strong>Reusability</strong>: Commands can be shared across multiple UI elements</li>
+<li><strong>Command Pattern</strong>: Follows the standard Krypton command pattern</li>
+</ul>
+<h3 id="basic-usage-1">Basic Usage</h3>
+<pre><code class="lang-csharp">// Create commands
+var okCommand = new KryptonCommand
+{
+    Text = &quot;OK&quot;,
+    ImageSmall = SystemIcons.Information.ToBitmap()
+};
+okCommand.Execute += (s, e) =&gt;
+{
+    MessageBox.Show(&quot;OK button clicked!&quot;);
+    kryptonRibbon.NotificationBar.Visible = false;
+};
+
+var cancelCommand = new KryptonCommand
+{
+    Text = &quot;Cancel&quot;,
+    ImageSmall = SystemIcons.Error.ToBitmap()
+};
+cancelCommand.Execute += (s, e) =&gt;
+{
+    kryptonRibbon.NotificationBar.Visible = false;
+};
+
+// Assign commands to notification bar
+kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Information;
+kryptonRibbon.NotificationBar.Text = &quot;Please confirm your action.&quot;;
+kryptonRibbon.NotificationBar.ActionButtonCommands = new[] { okCommand, cancelCommand };
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<h3 id="advanced-usage-with-multiple-commands">Advanced Usage with Multiple Commands</h3>
+<pre><code class="lang-csharp">// Create commands with different behaviors
+var retryCommand = new KryptonCommand
+{
+    Text = &quot;Retry&quot;,
+    ImageSmall = SystemIcons.Shield.ToBitmap(),
+    Enabled = true
+};
+retryCommand.Execute += (s, e) =&gt;
+{
+    // Attempt to save again
+    if (SaveDocument())
+    {
+        kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Success;
+        kryptonRibbon.NotificationBar.Text = &quot;Document saved successfully!&quot;;
+        kryptonRibbon.NotificationBar.ActionButtonCommands = null;
+        kryptonRibbon.NotificationBar.AutoDismissSeconds = 3;
+    }
+};
+
+var saveAsCommand = new KryptonCommand
+{
+    Text = &quot;Save As&quot;,
+    ImageSmall = SystemIcons.Application.ToBitmap(),
+    Enabled = true
+};
+saveAsCommand.Execute += (s, e) =&gt;
+{
+    // Open save dialog
+    if (SaveDocumentAs())
+    {
+        kryptonRibbon.NotificationBar.Visible = false;
+    }
+};
+
+var discardCommand = new KryptonCommand
+{
+    Text = &quot;Discard&quot;,
+    ImageSmall = SystemIcons.Error.ToBitmap(),
+    Enabled = true
+};
+discardCommand.Execute += (s, e) =&gt;
+{
+    var result = MessageBox.Show(
+        &quot;Are you sure you want to discard changes?&quot;,
+        &quot;Confirm Discard&quot;,
+        MessageBoxButtons.YesNo,
+        MessageBoxIcon.Warning);
+    
+    if (result == DialogResult.Yes)
+    {
+        kryptonRibbon.NotificationBar.Visible = false;
+    }
+};
+
+// Show error notification with commands
+kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Error;
+kryptonRibbon.NotificationBar.Text = &quot;Failed to save document. What would you like to do?&quot;;
+kryptonRibbon.NotificationBar.ActionButtonCommands = new[] 
+{ 
+    retryCommand, 
+    saveAsCommand, 
+    discardCommand 
+};
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<h3 id="event-handling-with-kryptoncommand">Event Handling with KryptonCommand</h3>
+<p>When using <code>KryptonCommand</code>, both events fire:</p>
+<ol>
+<li><strong><code>KryptonCommand.Execute</code></strong>: Fires when the command's Execute event is triggered</li>
+<li><strong><code>NotificationBarButtonClick</code></strong>: Fires when any button is clicked</li>
+</ol>
+<pre><code class="lang-csharp">var command = new KryptonCommand { Text = &quot;OK&quot; };
+
+// Command Execute event
+command.Execute += (s, e) =&gt;
+{
+    MessageBox.Show(&quot;Command.Execute event fired&quot;);
+};
+
+// Notification bar button click event
+kryptonRibbon.NotificationBarButtonClick += (sender, e) =&gt;
+{
+    if (e.ActionButtonIndex == 0)
+    {
+        MessageBox.Show(&quot;NotificationBarButtonClick event fired&quot;);
+    }
+};
+
+kryptonRibbon.NotificationBar.ActionButtonCommands = new[] { command };
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<p><strong>Note</strong>: Both events fire when a button is clicked. The <code>KryptonCommand.Execute</code> event fires first, followed by <code>NotificationBarButtonClick</code>.</p>
+<h3 id="priority-actionbuttoncommands-vs-actionbuttontexts">Priority: ActionButtonCommands vs ActionButtonTexts</h3>
+<p>If <code>ActionButtonCommands</code> is set (not null and has elements), it takes precedence over <code>ActionButtonTexts</code>. The <code>ActionButtonTexts</code> property is ignored in this case.</p>
+<pre><code class="lang-csharp">// This will use ActionButtonCommands, ActionButtonTexts is ignored
+kryptonRibbon.NotificationBar.ActionButtonCommands = new[] { command1, command2 };
+kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;OK&quot;, &quot;Cancel&quot; }; // Ignored
+</code></pre>
+<hr>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="auto-dismiss-timer">Auto-Dismiss Timer</h3>
+<p>The notification bar supports automatic dismissal after a specified number of seconds.</p>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Success;
+kryptonRibbon.NotificationBar.Text = &quot;Operation completed successfully!&quot;;
+kryptonRibbon.NotificationBar.ShowActionButtons = false;
+kryptonRibbon.NotificationBar.AutoDismissSeconds = 5; // Auto-dismiss after 5 seconds
+kryptonRibbon.NotificationBar.Visible = true;
+</code></pre>
+<p><strong>Important Notes</strong>:</p>
+<ul>
+<li>The auto-dismiss timer stops if any button is clicked</li>
+<li>Setting <code>AutoDismissSeconds</code> to <code>0</code> disables auto-dismiss</li>
+<li>The timer is automatically cleaned up when the notification bar is hidden</li>
+</ul>
+<h3 id="dynamic-content-updates">Dynamic Content Updates</h3>
+<p>You can update the notification bar content while it's visible:</p>
+<pre><code class="lang-csharp">// Show initial notification
+kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Information;
+kryptonRibbon.NotificationBar.Text = &quot;Processing...&quot;;
+kryptonRibbon.NotificationBar.ShowActionButtons = false;
+kryptonRibbon.NotificationBar.Visible = true;
+
+// Update content dynamically
+var timer = new Timer { Interval = 1000 };
+int progress = 0;
+timer.Tick += (s, e) =&gt;
+{
+    progress += 10;
+    if (progress &lt;= 100)
+    {
+        kryptonRibbon.NotificationBar.Text = $&quot;Processing... {progress}%&quot;;
+    }
+    else
+    {
+        timer.Stop();
+        timer.Dispose();
+        kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Success;
+        kryptonRibbon.NotificationBar.Text = &quot;Processing complete!&quot;;
+        kryptonRibbon.NotificationBar.AutoDismissSeconds = 3;
+    }
+};
+timer.Start();
+</code></pre>
+<h3 id="notification-queue">Notification Queue</h3>
+<p>You can implement a notification queue system:</p>
+<pre><code class="lang-csharp">private Queue&lt;string&gt; _notificationQueue = new Queue&lt;string&gt;();
+
+private void ShowNextNotification()
+{
+    if (_notificationQueue.Count == 0)
+    {
+        return;
+    }
+
+    string message = _notificationQueue.Dequeue();
+    kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Information;
+    kryptonRibbon.NotificationBar.Text = message;
+    kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;Next&quot;, &quot;Dismiss&quot; };
+    kryptonRibbon.NotificationBar.Visible = true;
+}
+
+// Handle button clicks
+kryptonRibbon.NotificationBarButtonClick += (sender, e) =&gt;
+{
+    if (e.ActionButtonIndex == 0 &amp;&amp; 
+        kryptonRibbon.NotificationBar.ActionButtonTexts?[0] == &quot;Next&quot;)
+    {
+        ShowNextNotification();
+    }
+    else
+    {
+        _notificationQueue.Clear();
+    }
+};
+
+// Queue notifications
+_notificationQueue.Enqueue(&quot;First notification&quot;);
+_notificationQueue.Enqueue(&quot;Second notification&quot;);
+_notificationQueue.Enqueue(&quot;Third notification&quot;);
+ShowNextNotification();
+</code></pre>
+<h3 id="custom-height-and-padding">Custom Height and Padding</h3>
+<p>Control the notification bar's dimensions:</p>
+<pre><code class="lang-csharp">// Fixed height
+kryptonRibbon.NotificationBar.Height = 60;
+
+// Custom padding
+kryptonRibbon.NotificationBar.Padding = new Padding(20, 12, 20, 12);
+
+// Auto-calculate height
+kryptonRibbon.NotificationBar.Height = 0;
+</code></pre>
+<h3 id="hiding-icon-or-buttons">Hiding Icon or Buttons</h3>
+<pre><code class="lang-csharp">// Hide icon
+kryptonRibbon.NotificationBar.ShowIcon = false;
+
+// Hide close button
+kryptonRibbon.NotificationBar.ShowCloseButton = false;
+
+// Hide action buttons
+kryptonRibbon.NotificationBar.ShowActionButtons = false;
+
+// Notification without any buttons (auto-dismiss recommended)
+kryptonRibbon.NotificationBar.ShowActionButtons = false;
+kryptonRibbon.NotificationBar.ShowCloseButton = false;
+kryptonRibbon.NotificationBar.AutoDismissSeconds = 5;
+</code></pre>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-choose-appropriate-notification-types">1. Choose Appropriate Notification Types</h3>
+<ul>
+<li><strong>Information</strong>: General information, tips, non-critical updates</li>
+<li><strong>Warning</strong>: Important notices that require attention but aren't errors</li>
+<li><strong>Error</strong>: Critical errors that need immediate attention</li>
+<li><strong>Success</strong>: Confirmation of successful operations</li>
+<li><strong>Custom</strong>: Brand-specific styling or special use cases</li>
+</ul>
+<h3 id="2-keep-messages-concise">2. Keep Messages Concise</h3>
+<pre><code class="lang-csharp">// Good: Clear and concise
+kryptonRibbon.NotificationBar.Text = &quot;Document saved successfully.&quot;;
+
+// Bad: Too verbose
+kryptonRibbon.NotificationBar.Text = &quot;Your document has been saved successfully to the location you specified. The file is now available for future editing and sharing.&quot;;
+</code></pre>
+<h3 id="3-use-titles-for-important-notifications">3. Use Titles for Important Notifications</h3>
+<pre><code class="lang-csharp">// Good: Title provides context
+kryptonRibbon.NotificationBar.Title = &quot;UPDATES AVAILABLE&quot;;
+kryptonRibbon.NotificationBar.Text = &quot;Updates are ready to be applied.&quot;;
+
+// Less clear: No title
+kryptonRibbon.NotificationBar.Text = &quot;Updates are ready to be applied.&quot;;
+</code></pre>
+<h3 id="4-provide-action-buttons-for-user-decisions">4. Provide Action Buttons for User Decisions</h3>
+<pre><code class="lang-csharp">// Good: User can take action
+kryptonRibbon.NotificationBar.Text = &quot;Failed to save document.&quot;;
+kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;Retry&quot;, &quot;Cancel&quot; };
+
+// Less helpful: No action options
+kryptonRibbon.NotificationBar.Text = &quot;Failed to save document.&quot;;
+kryptonRibbon.NotificationBar.ShowActionButtons = false;
+</code></pre>
+<h3 id="5-use-auto-dismiss-for-non-critical-messages">5. Use Auto-Dismiss for Non-Critical Messages</h3>
+<pre><code class="lang-csharp">// Good: Success messages can auto-dismiss
+kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Success;
+kryptonRibbon.NotificationBar.Text = &quot;Operation completed.&quot;;
+kryptonRibbon.NotificationBar.AutoDismissSeconds = 3;
+
+// Important: Critical errors should not auto-dismiss
+kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Error;
+kryptonRibbon.NotificationBar.Text = &quot;Critical error occurred!&quot;;
+kryptonRibbon.NotificationBar.AutoDismissSeconds = 0; // Never auto-dismiss
+</code></pre>
+<h3 id="6-use-kryptoncommand-for-complex-interactions">6. Use KryptonCommand for Complex Interactions</h3>
+<pre><code class="lang-csharp">// Good: Commands provide better separation of concerns
+var command = new KryptonCommand { Text = &quot;Retry&quot; };
+command.Execute += HandleRetry;
+kryptonRibbon.NotificationBar.ActionButtonCommands = new[] { command };
+
+// Less flexible: Direct text-based buttons
+kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;Retry&quot; };
+kryptonRibbon.NotificationBarButtonClick += (s, e) =&gt; { /* Handle in one place */ };
+</code></pre>
+<h3 id="7-clean-up-resources">7. Clean Up Resources</h3>
+<pre><code class="lang-csharp">// Good: Unsubscribe from events when done
+private void Cleanup()
+{
+    kryptonRibbon.NotificationBarButtonClick -= OnNotificationBarButtonClick;
+    
+    // Dispose KryptonCommand objects if created
+    if (kryptonRibbon.NotificationBar.ActionButtonCommands != null)
+    {
+        foreach (var command in kryptonRibbon.NotificationBar.ActionButtonCommands)
+        {
+            if (command is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="8-handle-button-clicks-properly">8. Handle Button Clicks Properly</h3>
+<pre><code class="lang-csharp">kryptonRibbon.NotificationBarButtonClick += (sender, e) =&gt;
+{
+    if (e.ActionButtonIndex == -1)
+    {
+        // Close button - notification is already hidden
+        return;
+    }
+    
+    // Action button clicked
+    // Check which approach is being used
+    if (kryptonRibbon.NotificationBar.ActionButtonCommands != null)
+    {
+        // Using KryptonCommand - Execute event already fired
+        var command = kryptonRibbon.NotificationBar.ActionButtonCommands[e.ActionButtonIndex];
+        // Additional handling if needed
+    }
+    else
+    {
+        // Using ActionButtonTexts - handle here
+        string buttonText = kryptonRibbon.NotificationBar.ActionButtonTexts?[e.ActionButtonIndex] ?? &quot;Unknown&quot;;
+        HandleButtonClick(buttonText, e.ActionButtonIndex);
+    }
+};
+</code></pre>
+<h3 id="9-localize-all-user-facing-text">9. Localize All User-Facing Text</h3>
+<pre><code class="lang-csharp">// Good: Use localized strings
+kryptonRibbon.NotificationBar.Text = Resources.NotificationSaveSuccess;
+kryptonRibbon.NotificationBar.ActionButtonTexts = new[] 
+{ 
+    Resources.ButtonOK, 
+    Resources.ButtonCancel 
+};
+
+// Bad: Hard-coded strings
+kryptonRibbon.NotificationBar.Text = &quot;Document saved successfully.&quot;;
+kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;OK&quot;, &quot;Cancel&quot; };
+</code></pre>
+<h3 id="10-test-auto-dismiss-behavior">10. Test Auto-Dismiss Behavior</h3>
+<pre><code class="lang-csharp">// Test that auto-dismiss works correctly
+kryptonRibbon.NotificationBar.AutoDismissSeconds = 2;
+kryptonRibbon.NotificationBar.Visible = true;
+
+// Verify it dismisses after 2 seconds
+// Verify timer stops if button is clicked
+</code></pre>
+<hr>
+<h2 id="code-examples">Code Examples</h2>
+<h3 id="example-1-basic-information-notification">Example 1: Basic Information Notification</h3>
+<pre><code class="lang-csharp">private void ShowBasicInformation()
+{
+    kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Information;
+    kryptonRibbon.NotificationBar.Text = &quot;This is an informational notification.&quot;;
+    kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;OK&quot; };
+    kryptonRibbon.NotificationBar.Visible = true;
+}
+</code></pre>
+<h3 id="example-2-warning-with-title-and-actions">Example 2: Warning with Title and Actions</h3>
+<pre><code class="lang-csharp">private void ShowUpdateWarning()
+{
+    kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Warning;
+    kryptonRibbon.NotificationBar.Title = &quot;UPDATES AVAILABLE&quot;;
+    kryptonRibbon.NotificationBar.Text = &quot;Updates for Office are ready to be applied, but are blocked by one or more apps.&quot;;
+    kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;Update now&quot; };
+    kryptonRibbon.NotificationBar.Icon = SystemIcons.Warning.ToBitmap();
+    kryptonRibbon.NotificationBar.Visible = true;
+}
+</code></pre>
+<h3 id="example-3-error-with-multiple-actions">Example 3: Error with Multiple Actions</h3>
+<pre><code class="lang-csharp">private void ShowSaveError()
+{
+    kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Error;
+    kryptonRibbon.NotificationBar.Text = &quot;Failed to save document. What would you like to do?&quot;;
+    kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { &quot;Retry&quot;, &quot;Save As&quot;, &quot;Discard&quot; };
+    kryptonRibbon.NotificationBar.Icon = SystemIcons.Error.ToBitmap();
+    kryptonRibbon.NotificationBar.Visible = true;
+}
+
+private void HandleSaveErrorButtonClick(object? sender, RibbonNotificationBarEventArgs e)
+{
+    switch (e.ActionButtonIndex)
+    {
+        case 0: // Retry
+            RetrySave();
+            break;
+        case 1: // Save As
+            SaveDocumentAs();
+            break;
+        case 2: // Discard
+            DiscardChanges();
+            break;
+    }
+}
+</code></pre>
+<h3 id="example-4-success-with-auto-dismiss">Example 4: Success with Auto-Dismiss</h3>
+<pre><code class="lang-csharp">private void ShowSuccessMessage()
+{
+    kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Success;
+    kryptonRibbon.NotificationBar.Text = &quot;Document saved successfully!&quot;;
+    kryptonRibbon.NotificationBar.ShowActionButtons = false;
+    kryptonRibbon.NotificationBar.AutoDismissSeconds = 3;
+    kryptonRibbon.NotificationBar.Visible = true;
+}
+</code></pre>
+<h3 id="example-5-custom-styled-notification">Example 5: Custom Styled Notification</h3>
+<pre><code class="lang-csharp">private void ShowCustomNotification()
+{
+    kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Custom;
+    kryptonRibbon.NotificationBar.CustomBackColor = Color.FromArgb(240, 248, 255); // Alice Blue
+    kryptonRibbon.NotificationBar.CustomForeColor = Color.FromArgb(25, 25, 112);       // Midnight Blue
+    kryptonRibbon.NotificationBar.CustomBorderColor = Color.FromArgb(70, 130, 180);  // Steel Blue
+    kryptonRibbon.NotificationBar.Text = &quot;This is a custom-styled notification with brand colors.&quot;;
+    kryptonRibbon.NotificationBar.Visible = true;
+}
+</code></pre>
+<h3 id="example-6-using-kryptoncommand">Example 6: Using KryptonCommand</h3>
+<pre><code class="lang-csharp">private void ShowNotificationWithCommands()
+{
+    // Create commands
+    var learnMoreCommand = new KryptonCommand
+    {
+        Text = &quot;Learn more&quot;,
+        ImageSmall = SystemIcons.Question.ToBitmap()
+    };
+    learnMoreCommand.Execute += (s, e) =&gt;
+    {
+        MessageBox.Show(&quot;Learn more clicked!&quot;);
+        OpenHelpDocumentation();
+    };
+
+    var dismissCommand = new KryptonCommand
+    {
+        Text = &quot;Dismiss&quot;,
+        ImageSmall = SystemIcons.Application.ToBitmap()
+    };
+    dismissCommand.Execute += (s, e) =&gt;
+    {
+        kryptonRibbon.NotificationBar.Visible = false;
+    };
+
+    // Show notification
+    kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Information;
+    kryptonRibbon.NotificationBar.Title = &quot;NEW FEATURES&quot;;
+    kryptonRibbon.NotificationBar.Text = &quot;Check out the latest features in this update!&quot;;
+    kryptonRibbon.NotificationBar.ActionButtonCommands = new[] { learnMoreCommand, dismissCommand };
+    kryptonRibbon.NotificationBar.Visible = true;
+}
+</code></pre>
+<h3 id="example-7-progress-notification">Example 7: Progress Notification</h3>
+<pre><code class="lang-csharp">private void ShowProgressNotification()
+{
+    int progress = 0;
+    
+    kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Information;
+    kryptonRibbon.NotificationBar.Text = &quot;Processing... 0%&quot;;
+    kryptonRibbon.NotificationBar.ShowActionButtons = false;
+    kryptonRibbon.NotificationBar.AutoDismissSeconds = 0;
+    kryptonRibbon.NotificationBar.Visible = true;
+
+    var timer = new Timer { Interval = 200 };
+    timer.Tick += (s, e) =&gt;
+    {
+        progress += 5;
+        if (progress &lt;= 100)
+        {
+            kryptonRibbon.NotificationBar.Text = $&quot;Processing... {progress}%&quot;;
+        }
+        else
+        {
+            timer.Stop();
+            timer.Dispose();
+            kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Success;
+            kryptonRibbon.NotificationBar.Text = &quot;Processing complete!&quot;;
+            kryptonRibbon.NotificationBar.AutoDismissSeconds = 3;
+        }
+    };
+    timer.Start();
+}
+</code></pre>
+<h3 id="example-8-complete-event-handling">Example 8: Complete Event Handling</h3>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    public MainForm()
+    {
+        InitializeComponent();
+        SetupNotificationBar();
+    }
+
+    private void SetupNotificationBar()
+    {
+        // Subscribe to button click events
+        kryptonRibbon.NotificationBarButtonClick += OnNotificationBarButtonClick;
+        
+        // Subscribe to property changes
+        kryptonRibbon.NotificationBar.PropertyChanged += OnNotificationBarPropertyChanged;
+    }
+
+    private void OnNotificationBarButtonClick(object? sender, RibbonNotificationBarEventArgs e)
+    {
+        if (e.ActionButtonIndex == -1)
+        {
+            // Close button clicked
+            LogNotificationAction(&quot;Close button clicked&quot;);
+            return;
+        }
+
+        // Action button clicked
+        string buttonText = GetButtonText(e.ActionButtonIndex);
+        LogNotificationAction($&quot;Action button '{buttonText}' (index {e.ActionButtonIndex}) clicked&quot;);
+        
+        // Handle based on button index
+        HandleActionButtonClick(e.ActionButtonIndex);
+    }
+
+    private void OnNotificationBarPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(KryptonRibbonNotificationBarData.Visible):
+                if (kryptonRibbon.NotificationBar.Visible)
+                {
+                    LogNotificationAction(&quot;Notification bar shown&quot;);
+                }
+                else
+                {
+                    LogNotificationAction(&quot;Notification bar hidden&quot;);
+                }
+                break;
+        }
+    }
+
+    private string GetButtonText(int index)
+    {
+        if (kryptonRibbon.NotificationBar.ActionButtonCommands != null &amp;&amp; 
+            index &lt; kryptonRibbon.NotificationBar.ActionButtonCommands.Length)
+        {
+            return kryptonRibbon.NotificationBar.ActionButtonCommands[index]?.Text ?? &quot;Unknown&quot;;
+        }
+        
+        if (kryptonRibbon.NotificationBar.ActionButtonTexts != null &amp;&amp; 
+            index &lt; kryptonRibbon.NotificationBar.ActionButtonTexts.Length)
+        {
+            return kryptonRibbon.NotificationBar.ActionButtonTexts[index];
+        }
+        
+        return &quot;Unknown&quot;;
+    }
+
+    private void HandleActionButtonClick(int index)
+    {
+        // Implement your button click handling logic
+    }
+
+    private void LogNotificationAction(string message)
+    {
+        // Log notification actions for debugging
+        System.Diagnostics.Debug.WriteLine($&quot;[NotificationBar] {message}&quot;);
+    }
+}
+</code></pre>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-notification-bar-not-visible">Issue: Notification Bar Not Visible</h3>
+<p><strong>Problem</strong>: Setting <code>Visible = true</code> doesn't show the notification bar.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Ensure the <code>Text</code> property is not empty</li>
+<li>Check that the ribbon control is properly initialized</li>
+<li>Verify the ribbon is visible and has sufficient space</li>
+<li>Check for exceptions in the event handlers</li>
+</ol>
+<pre><code class="lang-csharp">// Debug visibility
+if (!kryptonRibbon.NotificationBar.Visible)
+{
+    Debug.WriteLine($&quot;Text: '{kryptonRibbon.NotificationBar.Text}'&quot;);
+    Debug.WriteLine($&quot;Type: {kryptonRibbon.NotificationBar.Type}&quot;);
+}
+</code></pre>
+<h3 id="issue-buttons-not-clickable">Issue: Buttons Not Clickable</h3>
+<p><strong>Problem</strong>: Action buttons or close button don't respond to clicks.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Ensure buttons are enabled (when using <code>KryptonCommand</code>, check <code>Enabled</code> property)</li>
+<li>Verify event handlers are properly subscribed</li>
+<li>Check for overlapping controls</li>
+<li>Ensure the notification bar is not behind other controls</li>
+</ol>
+<pre><code class="lang-csharp">// Debug button state
+if (kryptonRibbon.NotificationBar.ActionButtonCommands != null)
+{
+    foreach (var cmd in kryptonRibbon.NotificationBar.ActionButtonCommands)
+    {
+        Debug.WriteLine($&quot;Command '{cmd.Text}' Enabled: {cmd.Enabled}&quot;);
+    }
+}
+</code></pre>
+<h3 id="issue-auto-dismiss-not-working">Issue: Auto-Dismiss Not Working</h3>
+<p><strong>Problem</strong>: Notification bar doesn't auto-dismiss after specified seconds.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Verify <code>AutoDismissSeconds</code> is set to a positive value</li>
+<li>Check that the timer isn't being stopped prematurely</li>
+<li>Ensure the notification bar remains visible (not hidden by other code)</li>
+<li>Check for exceptions in event handlers that might prevent dismissal</li>
+</ol>
+<pre><code class="lang-csharp">// Debug auto-dismiss
+Debug.WriteLine($&quot;AutoDismissSeconds: {kryptonRibbon.NotificationBar.AutoDismissSeconds}&quot;);
+</code></pre>
+<h3 id="issue-kryptoncommand-execute-event-not-firing">Issue: KryptonCommand Execute Event Not Firing</h3>
+<p><strong>Problem</strong>: <code>KryptonCommand.Execute</code> event doesn't fire when button is clicked.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Verify <code>ActionButtonCommands</code> is set (not null)</li>
+<li>Ensure <code>ActionButtonTexts</code> is not set (it takes precedence)</li>
+<li>Check that the command's <code>Enabled</code> property is <code>true</code></li>
+<li>Verify the event handler is properly subscribed</li>
+</ol>
+<pre><code class="lang-csharp">// Debug command setup
+var command = new KryptonCommand { Text = &quot;Test&quot;, Enabled = true };
+command.Execute += (s, e) =&gt; { Debug.WriteLine(&quot;Execute fired!&quot;); };
+kryptonRibbon.NotificationBar.ActionButtonCommands = new[] { command };
+kryptonRibbon.NotificationBar.ActionButtonTexts = null; // Important!
+</code></pre>
+<h3 id="issue-custom-colors-not-applied">Issue: Custom Colors Not Applied</h3>
+<p><strong>Problem</strong>: Custom colors don't appear when using <code>Custom</code> type.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Ensure <code>Type</code> is set to <code>RibbonNotificationBarType.Custom</code></li>
+<li>Verify custom color properties are set after setting the type</li>
+<li>Check that colors are valid (not <code>Color.Empty</code>)</li>
+</ol>
+<pre><code class="lang-csharp">// Correct order
+kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Custom;
+kryptonRibbon.NotificationBar.CustomBackColor = Color.FromArgb(240, 248, 255);
+kryptonRibbon.NotificationBar.CustomForeColor = Color.FromArgb(25, 25, 112);
+kryptonRibbon.NotificationBar.CustomBorderColor = Color.FromArgb(70, 130, 180);
+</code></pre>
+<h3 id="issue-text-not-displaying">Issue: Text Not Displaying</h3>
+<p><strong>Problem</strong>: Notification bar is visible but text doesn't appear.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Verify <code>Text</code> property is not empty or null</li>
+<li>Check that foreground color contrasts with background</li>
+<li>Ensure text is not being clipped (check <code>Padding</code> and <code>Height</code>)</li>
+<li>Verify the notification bar has sufficient width</li>
+</ol>
+<pre><code class="lang-csharp">// Debug text display
+Debug.WriteLine($&quot;Text: '{kryptonRibbon.NotificationBar.Text}'&quot;);
+Debug.WriteLine($&quot;Title: '{kryptonRibbon.NotificationBar.Title}'&quot;);
+Debug.WriteLine($&quot;ShowIcon: {kryptonRibbon.NotificationBar.ShowIcon}&quot;);
+</code></pre>
+<h3 id="issue-memory-leaks-with-kryptoncommand">Issue: Memory Leaks with KryptonCommand</h3>
+<p><strong>Problem</strong>: Memory leaks when using <code>KryptonCommand</code> objects.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Unsubscribe from <code>Execute</code> events when done</li>
+<li>Dispose <code>KryptonCommand</code> objects if they implement <code>IDisposable</code></li>
+<li>Clear <code>ActionButtonCommands</code> when hiding notification</li>
+<li>Avoid keeping references to commands longer than needed</li>
+</ol>
+<pre><code class="lang-csharp">// Clean up commands
+private void CleanupCommands()
+{
+    if (kryptonRibbon.NotificationBar.ActionButtonCommands != null)
+    {
+        foreach (var command in kryptonRibbon.NotificationBar.ActionButtonCommands)
+        {
+            // Unsubscribe from events
+            command.Execute -= OnCommandExecute;
+            
+            // Dispose if needed
+            if (command is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
+        kryptonRibbon.NotificationBar.ActionButtonCommands = null;
+    }
+}
+</code></pre>
+<hr>
+<h2 id="summary">Summary</h2>
+<p>The Ribbon Notification Bar is a powerful and flexible component for displaying contextual notifications in Krypton Ribbon applications. Key takeaways:</p>
+<ul>
+<li><strong>Easy to Use</strong>: Simple API with intuitive properties</li>
+<li><strong>Highly Customizable</strong>: Support for custom colors, icons, and layouts</li>
+<li><strong>Event-Driven</strong>: Comprehensive event system for user interactions</li>
+<li><strong>Command Support</strong>: Full integration with <code>KryptonCommand</code> pattern</li>
+<li><strong>Auto-Dismiss</strong>: Built-in timer support for automatic dismissal</li>
+<li><strong>DPI Aware</strong>: Automatic scaling for high-DPI displays</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

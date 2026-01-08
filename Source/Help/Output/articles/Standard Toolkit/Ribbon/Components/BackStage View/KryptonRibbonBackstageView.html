@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Ribbon Backstage View | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Ribbon Backstage View | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../../index.html">
+                <img id="logo" class="svg" src="../../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="ribbon-backstage-view">Ribbon Backstage View</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#key-goals">Key Goals</a></li>
+<li><a href="#behavior-and-fallback-rules">Behavior and Fallback Rules</a></li>
+<li><a href="#public-api-reference">Public API Reference</a>
+<ul>
+<li><a href="#ribbon-configuration-ribbonfileapptab">Ribbon configuration (<code>RibbonFileAppTab</code>)</a></li>
+<li><a href="#backstage-view-control-kryptonbackstageview">Backstage view control (<code>KryptonBackstageView</code>)</a></li>
+<li><a href="#backstage-page-kryptonbackstagepage">Backstage page (<code>KryptonBackstagePage</code>)</a></li>
+<li><a href="#backstage-command-kryptonbackstagecommand">Backstage command (<code>KryptonBackstageCommand</code>)</a></li>
+<li><a href="#ribbon-lifecycle-events-kryptonribbon">Ribbon lifecycle events (<code>KryptonRibbon</code>)</a></li>
+<li><a href="#programmatic-close-kryptonribbonclosebackstageview">Programmatic close (<code>KryptonRibbon.CloseBackstageView()</code>)</a></li>
+</ul>
+</li>
+<li><a href="#how-to-manage-backstage-items-pages-and-commands">How To: Manage Backstage Items (Pages and Commands)</a>
+<ul>
+<li><a href="#runtime-management">Runtime management</a></li>
+<li><a href="#designer-management-recommended">Designer management (recommended)</a></li>
+</ul>
+</li>
+<li><a href="#designer-support">Designer Support</a>
+<ul>
+<li><a href="#designer-verbs">Designer verbs</a></li>
+<li><a href="#collection-editor">Collection editor</a></li>
+<li><a href="#design-time-page-editing">Design-time page editing</a></li>
+</ul>
+</li>
+<li><a href="#usage-examples">Usage Examples</a>
+<ul>
+<li><a href="#basic-setup-runtime">Basic setup (runtime)</a></li>
+<li><a href="#designer-first-setup-recommended">Designer-first setup (recommended)</a></li>
+<li><a href="#handling-openclose-events">Handling open/close events</a></li>
+<li><a href="#using-navigation-images-and-item-sizes">Using navigation images and item sizes</a></li>
+<li><a href="#using-command-items">Using command items</a></li>
+<li><a href="#configuring-overlay-coverage">Configuring overlay coverage</a></li>
+</ul>
+</li>
+<li><a href="#creating-backstage-pages">Creating Backstage Pages</a>
+<ul>
+<li>[See also: <a href="Ribbon-BackstageView-CreatingPages.md">Creating Backstage Pages - In-Depth Guide</a>](#see-also-creating-backstage-pages---in-depth-guide)</li>
+</ul>
+</li>
+<li><a href="#new-features">New Features</a></li>
+<li><a href="#implementation-notes-for-contributors">Implementation Notes (for contributors)</a></li>
+<li><a href="#known-limitations-and-future-enhancements">Known Limitations and Future Enhancements</a></li>
+<li><a href="#files-and-key-types">Files and Key Types</a></li>
+</ul>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>This feature adds an optional <strong>Office 2010-style Backstage View</strong> to <code>KryptonRibbon</code> when using the <strong>File tab</strong> (Office 2010+ ribbon shapes).</p>
+<p>It is designed to:</p>
+<ul>
+<li>Behave like Office: <strong>selecting/clicking “File” shows a full-screen-ish Backstage surface</strong></li>
+<li>Provide a <strong>designer-friendly “items” model</strong>: pages can be added/removed/reordered in the Visual Studio designer</li>
+<li>Preserve backwards compatibility and expected behavior by keeping the <strong>existing app menu popup</strong> as the default fallback</li>
+</ul>
+<hr>
+<h2 id="key-goals">Key Goals</h2>
+<ul>
+<li><strong>Default fallback remains the app menu popup</strong>
+<ul>
+<li>No app code changes required unless you opt in.</li>
+</ul>
+</li>
+<li><strong>First-class Backstage model</strong>
+<ul>
+<li><code>KryptonBackstageView</code> + <code>KryptonBackstagePage</code> + <code>Pages</code> collection.</li>
+</ul>
+</li>
+<li><strong>Visual Studio designer support</strong>
+<ul>
+<li>Add/remove/clear pages via designer verbs, edit page contents via designer.</li>
+</ul>
+</li>
+<li><strong>Low-level escape hatch remains</strong>
+<ul>
+<li>Backstage still hosts a <code>Control</code> (via <code>BackstageContent</code>) so advanced apps can provide custom content if needed.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="behavior-and-fallback-rules">Behavior and Fallback Rules</h2>
+<h3 id="behavior-matrix">Behavior matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Ribbon shape</th>
+<th style="text-align: right;">User action</th>
+<th style="text-align: right;">Backstage enabled &amp; configured?</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Office2007</code></td>
+<td style="text-align: right;">Click orb</td>
+<td style="text-align: right;">N/A</td>
+<td>App menu <strong>popup</strong> (existing behavior)</td>
+</tr>
+<tr>
+<td><code>Office2010+</code></td>
+<td style="text-align: right;">Click File tab</td>
+<td style="text-align: right;">Yes (see below)</td>
+<td>Backstage <strong>overlay</strong></td>
+</tr>
+<tr>
+<td><code>Office2010+</code></td>
+<td style="text-align: right;">Click File tab</td>
+<td style="text-align: right;">No</td>
+<td>App menu <strong>popup</strong> (fallback/default)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="enabled--configured-definition">“Enabled &amp; configured” definition</h3>
+<p>Backstage is only used when:</p>
+<ul>
+<li><code>kryptonRibbon.RibbonShape != PaletteRibbonShape.Office2007</code></li>
+<li><code>kryptonRibbon.RibbonFileAppTab.UseBackstageView == true</code></li>
+<li>and either of the following supplies content:
+<ul>
+<li><code>kryptonRibbon.RibbonFileAppTab.BackstageView != null</code> (<strong>recommended</strong>)</li>
+<li>or <code>kryptonRibbon.RibbonFileAppTab.BackstageContent != null</code> (advanced)</li>
+</ul>
+</li>
+</ul>
+<p>If any requirement is not met, Krypton falls back to the existing <code>VisualPopupAppMenu</code>.</p>
+<h3 id="toggle-behavior">Toggle behavior</h3>
+<ul>
+<li>Clicking File <strong>opens</strong> Backstage.</li>
+<li>Clicking File again <strong>closes</strong> Backstage.</li>
+<li>Pressing <strong>ESC</strong> inside Backstage requests close.</li>
+</ul>
+<hr>
+<h2 id="public-api-reference">Public API Reference</h2>
+<h3 id="ribbon-configuration-ribbonfileapptab">Ribbon configuration (<code>RibbonFileAppTab</code>)</h3>
+<h4 id="bool-usebackstageview"><code>bool UseBackstageView</code></h4>
+<ul>
+<li><strong>Default</strong>: <code>false</code></li>
+<li><strong>Meaning</strong>: opt-in switch; if enabled and content is provided, File tab toggles Backstage instead of the popup.</li>
+</ul>
+<h4 id="control-backstagecontent"><code>Control? BackstageContent</code></h4>
+<ul>
+<li><strong>Default</strong>: <code>null</code></li>
+<li><strong>Meaning</strong>: advanced “host any control” entry point.</li>
+<li><strong>Notes</strong>:
+<ul>
+<li>The control is temporarily re-parented into the overlay while Backstage is open.</li>
+<li>This property is not designer-serialized by default.</li>
+</ul>
+</li>
+</ul>
+<h4 id="kryptonbackstageview-backstageview"><code>KryptonBackstageView? BackstageView</code></h4>
+<ul>
+<li><strong>Default</strong>: <code>null</code></li>
+<li><strong>Meaning</strong>: designer-friendly wrapper around <code>BackstageContent</code>.</li>
+<li><strong>Recommended</strong>: use this for long-term maintainability + consistent UX + designer support.</li>
+</ul>
+<hr>
+<h3 id="backstage-view-control-kryptonbackstageview">Backstage view control (<code>KryptonBackstageView</code>)</h3>
+<p><code>KryptonBackstageView</code> is a composite control providing:</p>
+<ul>
+<li><strong>Left navigation</strong> (custom-drawn list) listing pages, commands, and the Close button</li>
+<li><strong>Right content host</strong> showing the selected page</li>
+<li><strong>Office-like styling</strong> with support for images and large/small item sizes</li>
+</ul>
+<p>Key API:</p>
+<h4 id="kryptonbackstagepagecollection-pages"><code>KryptonBackstagePageCollection Pages</code></h4>
+<ul>
+<li>Collection of pages (your &quot;items&quot;).</li>
+<li>Supports add/remove/reorder and is designer-serialized.</li>
+</ul>
+<h4 id="kryptonbackstagecommandcollection-commands"><code>KryptonBackstageCommandCollection Commands</code></h4>
+<ul>
+<li>Collection of command-only items (no associated page).</li>
+<li>Commands execute actions when clicked without showing a page.</li>
+<li>Supports add/remove/reorder.</li>
+</ul>
+<h4 id="kryptonbackstagepage-selectedpage"><code>KryptonBackstagePage? SelectedPage</code></h4>
+<ul>
+<li>Currently selected/visible page.</li>
+</ul>
+<h4 id="int-navigationwidth"><code>int NavigationWidth</code></h4>
+<ul>
+<li>Width of the left navigation panel.</li>
+</ul>
+<h4 id="backstageoverlaymode-overlaymode"><code>BackstageOverlayMode OverlayMode</code></h4>
+<ul>
+<li>Determines overlay coverage area.</li>
+<li><strong>Values</strong>:
+<ul>
+<li><code>FullClient</code>: Overlay covers the entire form client area (default)</li>
+<li><code>BelowRibbon</code>: Overlay covers only the area below the ribbon</li>
+</ul>
+</li>
+<li><strong>Default</strong>: <code>FullClient</code></li>
+</ul>
+<h4 id="event-eventhandler-selectedpagechanged"><code>event EventHandler SelectedPageChanged</code></h4>
+<ul>
+<li>Fired when selection changes.</li>
+</ul>
+<h4 id="event-canceleventhandler-closerequested"><code>event CancelEventHandler CloseRequested</code></h4>
+<ul>
+<li>Occurs when the Close button in the navigation list is clicked.</li>
+<li>Allows developers to cancel the application close or perform custom actions (e.g., save data, show confirmation dialog).</li>
+<li>Set <code>e.Cancel = true</code> to prevent the application from closing.</li>
+</ul>
+<h4 id="backstagecolors-colors"><code>BackstageColors Colors</code></h4>
+<ul>
+<li>Expandable property group for customizing Backstage View colors.</li>
+<li><strong>Properties</strong>:
+<ul>
+<li><code>Color? NavigationBackgroundColor</code>: Custom background color for the left navigation panel. If <code>null</code>, defaults to the theme's <code>PanelAlternate</code> color.</li>
+<li><code>Color? ContentBackgroundColor</code>: Custom background color for the right content area. If <code>null</code>, defaults to the theme's <code>PanelClient</code> color.</li>
+<li><code>Color? SelectedItemHighlightColor</code>: Custom highlight color for selected navigation items. If <code>null</code>, defaults to the theme's tracking color (retrieved via <code>SchemeTrackingColors.MenuItemSelectedBegin</code>), which automatically adapts to Office 2010, Office 2013, Microsoft 365, and other themes.</li>
+</ul>
+</li>
+<li><strong>Usage</strong>: Expand the <code>Colors</code> property in the designer to customize individual colors, or set them to <code>null</code> to use theme defaults.</li>
+</ul>
+<hr>
+<h3 id="backstage-page-kryptonbackstagepage">Backstage page (<code>KryptonBackstagePage</code>)</h3>
+<p><code>KryptonBackstagePage</code> is a <code>KryptonPanel</code> used as a page container. Since it inherits from <code>KryptonPanel</code>, it supports all standard panel properties and can host any Windows Forms controls.</p>
+<p>Key API:</p>
+<h4 id="string-text"><code>string Text</code></h4>
+<ul>
+<li>Display text shown in the navigation list for this page.</li>
+<li>Inherited from <code>Control.Text</code>.</li>
+</ul>
+<h4 id="image-image"><code>Image? Image</code></h4>
+<ul>
+<li>Image shown in the navigation list alongside the text.</li>
+<li>Images are automatically scaled to fit (16px for Small items, 32px for Large items).</li>
+<li>Optional; can be set to provide visual identification in the navigation list.</li>
+</ul>
+<h4 id="backstageitemsize-itemsize"><code>BackstageItemSize ItemSize</code></h4>
+<ul>
+<li>Size of this item in the navigation list.</li>
+<li><strong>Values</strong>:
+<ul>
+<li><code>Small</code>: Compact display (40px height, 16px image)</li>
+<li><code>Large</code>: Office-like prominent display (60px height, 32px image, larger font)</li>
+</ul>
+</li>
+<li><strong>Default</strong>: <code>Small</code></li>
+</ul>
+<h4 id="bool-visibleinnavigation"><code>bool VisibleInNavigation</code></h4>
+<ul>
+<li>If <code>false</code>, the page remains in the collection but is not listed in the navigation.</li>
+<li>Useful for programmatically accessible pages that shouldn't appear in the navigation list.</li>
+<li>Default: <code>true</code></li>
+</ul>
+<h4 id="event-eventhandler-navigationpropertychanged"><code>event EventHandler NavigationPropertyChanged</code></h4>
+<ul>
+<li>Raised when <code>Text</code>, <code>Image</code>, <code>ItemSize</code>, or <code>VisibleInNavigation</code> changes (used to refresh navigation).</li>
+</ul>
+<h4 id="inherited-from-kryptonpanel">Inherited from <code>KryptonPanel</code></h4>
+<p>Since <code>KryptonBackstagePage</code> inherits from <code>KryptonPanel</code>, you have access to all panel properties:</p>
+<ul>
+<li><code>PanelBackStyle</code>: Control the background style of the page</li>
+<li><code>Dock</code>: Page docking (automatically set to <code>Fill</code> by the view)</li>
+<li><code>Padding</code>, <code>Margin</code>: Control spacing</li>
+<li>All standard <code>Control</code> properties: <code>BackColor</code>, <code>ForeColor</code>, <code>Font</code>, <code>Enabled</code>, <code>Visible</code>, etc.</li>
+</ul>
+<p><strong>See also</strong>: <a href="KryptonRibbonBackstageViewCreatingPages.html">Creating Backstage Pages - In-Depth Guide</a> for comprehensive examples and best practices.</p>
+<hr>
+<h3 id="backstage-command-kryptonbackstagecommand">Backstage command (<code>KryptonBackstageCommand</code>)</h3>
+<p><code>KryptonBackstageCommand</code> represents a command-only item in the navigation list that executes an action when clicked, without showing a page.</p>
+<p>Key API:</p>
+<h4 id="string-text-1"><code>string Text</code></h4>
+<ul>
+<li>Display text shown in the navigation list for this command.</li>
+</ul>
+<h4 id="image-image-1"><code>Image? Image</code></h4>
+<ul>
+<li>Image shown in the navigation list alongside the text.</li>
+<li>Images are automatically scaled to fit (16px for Small items, 32px for Large items).</li>
+<li>Optional; can be set to provide visual identification.</li>
+</ul>
+<h4 id="backstageitemsize-itemsize-1"><code>BackstageItemSize ItemSize</code></h4>
+<ul>
+<li>Size of this item in the navigation list.</li>
+<li><strong>Values</strong>:
+<ul>
+<li><code>Small</code>: Compact display (40px height, 16px image)</li>
+<li><code>Large</code>: Office-like prominent display (60px height, 32px image, larger font)</li>
+</ul>
+</li>
+<li><strong>Default</strong>: <code>Small</code></li>
+</ul>
+<h4 id="bool-visibleinnavigation-1"><code>bool VisibleInNavigation</code></h4>
+<ul>
+<li>If <code>false</code>, the command remains in the collection but is not listed in the navigation.</li>
+<li>Default: <code>true</code></li>
+</ul>
+<h4 id="event-eventhandler-click"><code>event EventHandler Click</code></h4>
+<ul>
+<li>Occurs when the command is clicked.</li>
+<li>Use this event to execute the command's action.</li>
+</ul>
+<h4 id="event-eventhandler-navigationpropertychanged-1"><code>event EventHandler NavigationPropertyChanged</code></h4>
+<ul>
+<li>Raised when <code>Text</code>, <code>Image</code>, <code>ItemSize</code>, or <code>VisibleInNavigation</code> changes (used to refresh navigation).</li>
+</ul>
+<h4 id="void-performclick"><code>void PerformClick()</code></h4>
+<ul>
+<li>Programmatically triggers the command's <code>Click</code> event.</li>
+</ul>
+<p><strong>Usage Example</strong>:</p>
+<pre><code class="lang-csharp">var exitCommand = new KryptonBackstageCommand(&quot;Exit&quot;)
+{
+    Image = Properties.Resources.ExitIcon,
+    ItemSize = BackstageItemSize.Small
+};
+exitCommand.Click += (s, e) =&gt; Application.Exit();
+backstage.Commands.Add(exitCommand);
+</code></pre>
+<hr>
+<h3 id="ribbon-lifecycle-events-kryptonribbon">Ribbon lifecycle events (<code>KryptonRibbon</code>)</h3>
+<p>Backstage overlay lifecycle events:</p>
+<ul>
+<li><code>CancelEventHandler BackstageOpening</code></li>
+<li><code>EventHandler BackstageOpened</code></li>
+<li><code>CancelEventHandler BackstageClosing</code></li>
+<li><code>EventHandler BackstageClosed</code></li>
+</ul>
+<p>Use these to:</p>
+<ul>
+<li>prevent opening/closing (<code>CancelEventArgs.Cancel = true</code>)</li>
+<li>coordinate app state, telemetry, and focus</li>
+</ul>
+<hr>
+<h3 id="programmatic-close-kryptonribbonclosebackstageview">Programmatic close (<code>KryptonRibbon.CloseBackstageView()</code>)</h3>
+<p><code>CloseBackstageView()</code> closes the overlay if open (no-op if not open). Closing can be canceled via <code>BackstageClosing</code>.</p>
+<hr>
+<h2 id="how-to-manage-backstage-items-pages-and-commands">How To: Manage Backstage Items (Pages and Commands)</h2>
+<p>The Backstage View supports two types of navigation items:</p>
+<ol>
+<li><strong>Pages</strong> (<code>KryptonBackstagePage</code>): Navigate to a page with content</li>
+<li><strong>Commands</strong> (<code>KryptonBackstageCommand</code>): Execute an action without showing a page</li>
+</ol>
+<h3 id="runtime-management">Runtime management</h3>
+<h4 id="managing-pages">Managing Pages</h4>
+<pre><code class="lang-csharp">var backstage = new KryptonBackstageView();
+
+var page = new KryptonBackstagePage 
+{ 
+    Text = &quot;Save&quot;,
+    Image = Properties.Resources.SaveIcon,
+    ItemSize = BackstageItemSize.Large
+};
+backstage.Pages.Add(page);
+
+backstage.Pages.Remove(page);
+</code></pre>
+<h4 id="managing-commands">Managing Commands</h4>
+<pre><code class="lang-csharp">var command = new KryptonBackstageCommand(&quot;Exit&quot;)
+{
+    Image = Properties.Resources.ExitIcon,
+    ItemSize = BackstageItemSize.Small
+};
+command.Click += (s, e) =&gt; Application.Exit();
+backstage.Commands.Add(command);
+
+backstage.Commands.Remove(command);
+</code></pre>
+<h3 id="designer-management-recommended">Designer management (recommended)</h3>
+<ol>
+<li>Drag a <code>KryptonBackstageView</code> onto your form.</li>
+<li>Right-click it and use verbs:
+<ul>
+<li><strong>Add Page</strong></li>
+<li><strong>Remove Page</strong></li>
+<li><strong>Clear Pages</strong></li>
+</ul>
+</li>
+<li>Select a page in the designer and design its contents like a normal panel.</li>
+<li>Assign it to the ribbon:
+<ul>
+<li><code>kryptonRibbon.RibbonFileAppTab.UseBackstageView = true</code></li>
+<li><code>kryptonRibbon.RibbonFileAppTab.BackstageView = kryptonBackstageView1</code></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="designer-support">Designer Support</h2>
+<h3 id="designer-verbs">Designer verbs</h3>
+<p>The <code>KryptonBackstageView</code> designer provides verbs similar to <code>KryptonNavigator</code>:</p>
+<ul>
+<li><strong>Add Page</strong>: creates and inserts a new <code>KryptonBackstagePage</code></li>
+<li><strong>Remove Page</strong>: removes the selected page</li>
+<li><strong>Clear Pages</strong>: removes all pages</li>
+</ul>
+<h3 id="collection-editor">Collection editor</h3>
+<p>The <code>Pages</code> property is marked with a collection editor, enabling:</p>
+<ul>
+<li>Add/remove pages</li>
+<li>Reorder pages</li>
+<li>Edit page properties</li>
+</ul>
+<h3 id="design-time-page-editing">Design-time page editing</h3>
+<p>Pages are exposed as designable child controls; you can:</p>
+<ul>
+<li>select a <code>KryptonBackstagePage</code> in the Document Outline</li>
+<li>add controls to it using the normal designer</li>
+<li>keep page docking/visibility managed by the view at runtime</li>
+</ul>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-setup-runtime">Basic setup (runtime)</h3>
+<pre><code class="lang-csharp">var backstage = new KryptonBackstageView { Dock = DockStyle.Fill };
+
+// Add pages with images and sizes
+backstage.Pages.Add(new KryptonBackstagePage 
+{ 
+    Text = &quot;Info&quot;,
+    Image = Properties.Resources.InfoIcon,
+    ItemSize = BackstageItemSize.Large
+});
+backstage.Pages.Add(new KryptonBackstagePage 
+{ 
+    Text = &quot;Save&quot;,
+    Image = Properties.Resources.SaveIcon,
+    ItemSize = BackstageItemSize.Small
+});
+
+// Add commands
+var exitCommand = new KryptonBackstageCommand(&quot;Exit&quot;)
+{
+    Image = Properties.Resources.ExitIcon,
+    ItemSize = BackstageItemSize.Small
+};
+exitCommand.Click += (s, e) =&gt; Application.Exit();
+backstage.Commands.Add(exitCommand);
+
+// Configure overlay mode
+backstage.OverlayMode = BackstageOverlayMode.FullClient;
+
+kryptonRibbon.RibbonFileAppTab.UseBackstageView = true;
+kryptonRibbon.RibbonFileAppTab.BackstageView = backstage;
+</code></pre>
+<h3 id="designer-first-setup-recommended">Designer-first setup (recommended)</h3>
+<pre><code class="lang-csharp">// kryptonBackstageView1 created in designer, pages added via designer verbs
+kryptonRibbon.RibbonFileAppTab.UseBackstageView = true;
+kryptonRibbon.RibbonFileAppTab.BackstageView = kryptonBackstageView1;
+</code></pre>
+<h3 id="handling-openclose-events">Handling open/close events</h3>
+<pre><code class="lang-csharp">kryptonRibbon.BackstageOpening += (_, e) =&gt;
+{
+    // e.Cancel = true; // optionally block opening
+};
+
+kryptonRibbon.BackstageClosing += (_, e) =&gt;
+{
+    // e.Cancel = true; // optionally block closing
+};
+</code></pre>
+<h3 id="customizing-colors">Customizing colors</h3>
+<pre><code class="lang-csharp">// Customize navigation and content background colors
+backstage.Colors.NavigationBackgroundColor = Color.FromArgb(45, 45, 48);
+backstage.Colors.ContentBackgroundColor = Color.White;
+
+// Customize selected item highlight color
+backstage.Colors.SelectedItemHighlightColor = Color.FromArgb(68, 114, 196);
+
+// Reset to theme defaults (set to null)
+backstage.Colors.NavigationBackgroundColor = null;
+backstage.Colors.ContentBackgroundColor = null;
+backstage.Colors.SelectedItemHighlightColor = null;
+</code></pre>
+<p><strong>Note</strong>: When color properties are <code>null</code>, the Backstage View automatically uses theme-appropriate defaults:</p>
+<ul>
+<li>Navigation background: <code>PanelAlternate</code> palette color</li>
+<li>Content background: <code>PanelClient</code> palette color</li>
+<li>Selected item highlight: Theme's tracking color (<code>SchemeTrackingColors.MenuItemSelectedBegin</code>), which automatically adapts to Office 2010, Office 2013, Microsoft 365, and other themes</li>
+</ul>
+<h3 id="handling-close-button-click">Handling Close button click</h3>
+<p>The Backstage View includes a permanent &quot;Close&quot; button at the bottom of the navigation list that closes the application. You can intercept this action using the <code>CloseRequested</code> event:</p>
+<pre><code class="lang-csharp">backstage.CloseRequested += (sender, e) =&gt;
+{
+    // Show a confirmation dialog
+    var result = MessageBox.Show(
+        &quot;Are you sure you want to exit?&quot;,
+        &quot;Confirm Exit&quot;,
+        MessageBoxButtons.YesNo,
+        MessageBoxIcon.Question);
+
+    if (result == DialogResult.No)
+    {
+        // Cancel the close
+        e.Cancel = true;
+    }
+    else
+    {
+        // Allow the close to proceed
+        // Optionally save data here before the application closes
+        SaveUserData();
+    }
+};
+</code></pre>
+<p><strong>Note</strong>: If <code>e.Cancel</code> is set to <code>true</code>, the application will not close and the Backstage View will remain open. The Close button selection will be cleared and the previously selected page will be restored.</p>
+<h3 id="using-navigation-images-and-item-sizes">Using navigation images and item sizes</h3>
+<p>Pages and commands support images and can be displayed in Small or Large size:</p>
+<pre><code class="lang-csharp">// Create a page with image and large size
+var infoPage = new KryptonBackstagePage
+{
+    Text = &quot;Information&quot;,
+    Image = Properties.Resources.InfoIcon,
+    ItemSize = BackstageItemSize.Large  // More prominent display
+};
+backstage.Pages.Add(infoPage);
+
+// Create a small command with image
+var optionsCommand = new KryptonBackstageCommand(&quot;Options&quot;)
+{
+    Image = Properties.Resources.OptionsIcon,
+    ItemSize = BackstageItemSize.Small  // Compact display
+};
+optionsCommand.Click += (s, e) =&gt; ShowOptionsDialog();
+backstage.Commands.Add(optionsCommand);
+</code></pre>
+<p><strong>Item Size Details</strong>:</p>
+<ul>
+<li><strong>Small</strong>: 40px height, 16px image, standard font size (default)</li>
+<li><strong>Large</strong>: 60px height, 32px image, 10% larger font size</li>
+</ul>
+<h3 id="using-command-items">Using command items</h3>
+<p>Command items allow you to add actions to the navigation list without creating pages:</p>
+<pre><code class="lang-csharp">// Add an Exit command
+var exitCommand = new KryptonBackstageCommand(&quot;Exit&quot;)
+{
+    Image = Properties.Resources.ExitIcon,
+    ItemSize = BackstageItemSize.Small
+};
+exitCommand.Click += (s, e) =&gt;
+{
+    if (MessageBox.Show(&quot;Exit application?&quot;, &quot;Confirm&quot;, MessageBoxButtons.YesNo) == DialogResult.Yes)
+    {
+        Application.Exit();
+    }
+};
+backstage.Commands.Add(exitCommand);
+
+// Add a Print command
+var printCommand = new KryptonBackstageCommand(&quot;Print&quot;)
+{
+    Image = Properties.Resources.PrintIcon,
+    ItemSize = BackstageItemSize.Large  // Make it prominent
+};
+printCommand.Click += (s, e) =&gt; PrintDocument();
+backstage.Commands.Add(printCommand);
+</code></pre>
+<p><strong>Note</strong>: Commands appear in the navigation list between pages and the Close button. When clicked, they execute their <code>Click</code> event handler and do not change the selected page.</p>
+<h3 id="configuring-overlay-coverage">Configuring overlay coverage</h3>
+<p>You can control whether the Backstage overlay covers the entire form or only the area below the ribbon:</p>
+<pre><code class="lang-csharp">// Full client area (default)
+backstage.OverlayMode = BackstageOverlayMode.FullClient;
+
+// Below ribbon only
+backstage.OverlayMode = BackstageOverlayMode.BelowRibbon;
+</code></pre>
+<p><strong>Overlay Modes</strong>:</p>
+<ul>
+<li><strong>FullClient</strong>: The overlay covers the entire form's client area (default behavior)</li>
+<li><strong>BelowRibbon</strong>: The overlay covers only the area below the ribbon, leaving the ribbon visible</li>
+</ul>
+<p><strong>Use Cases</strong>:</p>
+<ul>
+<li><code>FullClient</code>: Traditional Office-style Backstage that covers everything</li>
+<li><code>BelowRibbon</code>: When you want users to still see and access the ribbon while in Backstage</li>
+</ul>
+<hr>
+<h2 id="creating-backstage-pages">Creating Backstage Pages</h2>
+<p>For comprehensive guidance on creating and designing Backstage pages, see the <a href="KryptonRibbonBackstageViewCreatingPages.html">Creating Backstage Pages - In-Depth Guide</a>.</p>
+<p>This guide covers:</p>
+<ul>
+<li>Understanding <code>KryptonBackstagePage</code> as a <code>KryptonPanel</code></li>
+<li>Designing pages in the Visual Studio designer</li>
+<li>Common page layouts and patterns</li>
+<li>Adding controls and organizing content</li>
+<li>Using Krypton controls within pages</li>
+<li>Best practices and examples</li>
+</ul>
+<hr>
+<h2 id="implementation-notes-for-contributors">Implementation Notes (for contributors)</h2>
+<p>High-level architecture:</p>
+<ul>
+<li>File tab click path is intercepted to call <code>KryptonRibbon.TryToggleBackstageView()</code>.</li>
+<li>If it returns <code>false</code>, code falls back to <code>VisualPopupAppMenu</code>.</li>
+<li>The overlay is implemented by <code>BackstageOverlayForm</code> (a <code>KryptonForm</code> configured as a borderless overlay).</li>
+<li>The overlay hosts a single <code>Control</code> (typically <code>KryptonBackstageView</code>) via temporary re-parenting and restores it on close.</li>
+</ul>
+<p>Important design patterns reused from <code>Krypton.Navigator</code>:</p>
+<ul>
+<li><code>TypedCollection&lt;T&gt;</code> pattern for <code>Pages</code></li>
+<li>Designer verbs pattern (Add/Remove/Clear)</li>
+<li>Collection editor pattern</li>
+</ul>
+<hr>
+<h2 id="new-features">New Features</h2>
+<p>The Backstage View now includes three major enhancements:</p>
+<h3 id="1-navigation-visuals-with-images-and-office-like-styling">1. Navigation Visuals with Images and Office-like Styling</h3>
+<ul>
+<li><strong>Image Support</strong>: Pages and commands can display images in the navigation list</li>
+<li><strong>Item Sizes</strong>: Support for Small (40px) and Large (60px) item sizes</li>
+<li><strong>Automatic Scaling</strong>: Images are automatically scaled to fit (16px for Small, 32px for Large)</li>
+<li><strong>Enhanced Typography</strong>: Large items use a 10% larger font size for better visibility</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">var page = new KryptonBackstagePage
+{
+    Text = &quot;Information&quot;,
+    Image = Properties.Resources.InfoIcon,
+    ItemSize = BackstageItemSize.Large  // Prominent display
+};
+</code></pre>
+<h3 id="2-command-items">2. Command Items</h3>
+<ul>
+<li><strong>Action-Only Items</strong>: Commands execute actions without showing a page</li>
+<li><strong>Click Events</strong>: Handle command execution via the <code>Click</code> event</li>
+<li><strong>Full Feature Parity</strong>: Commands support images, item sizes, and visibility control just like pages</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">var exitCommand = new KryptonBackstageCommand(&quot;Exit&quot;)
+{
+    Image = Properties.Resources.ExitIcon,
+    ItemSize = BackstageItemSize.Small
+};
+exitCommand.Click += (s, e) =&gt; Application.Exit();
+backstage.Commands.Add(exitCommand);
+</code></pre>
+<h3 id="3-overlay-coverage-modes">3. Overlay Coverage Modes</h3>
+<ul>
+<li><strong>FullClient Mode</strong>: Overlay covers the entire form client area (default, traditional Office-style)</li>
+<li><strong>BelowRibbon Mode</strong>: Overlay covers only the area below the ribbon, keeping the ribbon visible</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">// Traditional full-screen overlay
+backstage.OverlayMode = BackstageOverlayMode.FullClient;
+
+// Keep ribbon visible
+backstage.OverlayMode = BackstageOverlayMode.BelowRibbon;
+</code></pre>
+<hr>
+<h2 id="known-limitations-and-future-enhancements">Known Limitations and Future Enhancements</h2>
+<p>All previously planned enhancements have been implemented:</p>
+<ul>
+<li>✅ <strong>Navigation visuals</strong>: Owner-draw navigation with image support and Office-like styling (large/small item sizes)</li>
+<li>✅ <strong>Command items</strong>: Command-only items (no page) for actions like Exit/Options</li>
+<li>✅ <strong>Overlay coverage</strong>: Support for both full client area and &quot;below ribbon only&quot; overlay modes</li>
+</ul>
+<p><strong>Current Status</strong>: The Backstage View feature is feature-complete with all planned enhancements implemented.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../../styles/main.js"></script>
+  </body>
+</html>

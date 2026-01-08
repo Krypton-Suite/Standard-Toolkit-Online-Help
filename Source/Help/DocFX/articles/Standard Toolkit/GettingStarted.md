@@ -111,6 +111,8 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 - [Control Events](Ribbon/ControlEvents.md)
 - [Item Events](Ribbon/ItemEvents.md)
 - [KryptonGallery](Ribbon/KryptonGallery.md)
+- [Backstage View](Ribbon/Components/BackStage%20View/KryptonRibbonBackstageView.md)
+- [Notification Bar](Ribbon/KryptonRibbonNotificationBar.md)
 
 ### Docking
 

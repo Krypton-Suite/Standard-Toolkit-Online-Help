@@ -5,6 +5,7 @@ Learn more about each of the individual controls and components that appear in
 the toolbox.
 
 **Controls**  
+* [KryptonBindingNavigator](Toolkit/Controls/KryptonBindingNavigator.md)
 * [KryptonBorderEdge](Toolkit/Controls/KryptonBorderEdge.md)  
 * [KryptonBreadCrumb](Toolkit/Controls/KryptonBreadCrumb.md)  
 * [KryptonButton](Toolkit/Controls/KryptonButton.md)  
@@ -57,18 +58,22 @@ the toolbox.
 * [KryptonContextMenu](Toolkit/Components/KryptonContextMenu.md)  
 * [KryptonCustomPaletteBase](Toolkit/Components/KryptonCustomPaletteBase.md) 
 * [KryptonColorDialog](Toolkit/Components/KryptonColorDialog.md)
+* [KryptonFileSystemWatcher](Toolkit/Components/KryptonFileSystemWatcher.md)
 * [KryptonFolderBrowserDialog](Toolkit/Components/KryptonFolderBrowserDialog.md)
 * [KryptonFontDialog](Toolkit/Components/KryptonFontDialog.md)
+* [KryptonHelpProvider](Toolkit/Components/KryptonHelpProvider.md)
 * [KryptonInputBox](Toolkit/Components/KryptonInputBox.md)  
 * [KryptonIntegratedToolBarManager](Toolkit/Components/KryptonIntegratedToolBarManager.md)
 * [KryptonManager](Toolkit/Components/KryptonManager.md)  
     * [Touchscreen Support](Toolkit/Components/TouchscreenSupport.md)
 * [KryptonMessageBox](Toolkit/Components/KryptonMessageBox.md)  
+* [KryptonNotifyIcon](Toolkit/Components/KryptonNotifyIcon.md)
 * [KryptonOpenFileDialog](Toolkit/Components/KryptonOpenFileDialog.md)
 * [KryptonPrintDialog](Toolkit/Components/KryptonPrintDialog.md)
 * [KryptonSaveFileDialog](Toolkit/Components/KryptonSaveFileDialog.md)
 * [KryptonTaskDialog](Toolkit/Components/KryptonTaskDialog.md)
 * [KryptonThemeBrowser](Toolkit/Components/KryptonThemeBrowser.md)
+* [KryptonTimer](Toolkit/Components/KryptonTimer.md)
 * [KryptonToastNotification](Toolkit/Components/KryptonToastNotification.md)
     
 **Forms**  

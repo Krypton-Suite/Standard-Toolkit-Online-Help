@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonFileSystemWatcher | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonFileSystemWatcher | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonfilesystemwatcher">KryptonFileSystemWatcher</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonFileSystemWatcher</code> is a Krypton-themed wrapper around the standard <code>System.IO.FileSystemWatcher</code> component. It provides all the functionality of the native FileSystemWatcher while integrating seamlessly with the Krypton palette system for consistent theming across your application.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Full FileSystemWatcher Compatibility</strong>: Drop-in replacement with identical API</li>
+<li><strong>Krypton Palette Integration</strong>: Supports all Krypton palette modes (Global, Professional, Office, etc.)</li>
+<li><strong>Design-Time Support</strong>: Available in Visual Studio toolbox</li>
+<li><strong>Event Forwarding</strong>: All standard FileSystemWatcher events are properly forwarded</li>
+<li><strong>Resource Management</strong>: Proper disposal of underlying resources</li>
+</ul>
+<h2 id="namespace">Namespace</h2>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+</code></pre>
+<h2 id="class-declaration">Class Declaration</h2>
+<pre><code class="lang-csharp">[ToolboxItem(true)]
+[ToolboxBitmap(typeof(FileSystemWatcher))]
+[DefaultEvent(nameof(Created))]
+[DefaultProperty(nameof(Path))]
+[DesignerCategory(@&quot;code&quot;)]
+[Description(@&quot;Listens to the file system change notifications and raises events when a directory, or file in a directory, changes.&quot;)]
+public class KryptonFileSystemWatcher : Component
+</code></pre>
+<h2 id="constructors">Constructors</h2>
+<h3 id="kryptonfilesystemwatcher-1">KryptonFileSystemWatcher()</h3>
+<p>Creates a new instance of <code>KryptonFileSystemWatcher</code> with default settings.</p>
+<pre><code class="lang-csharp">var watcher = new KryptonFileSystemWatcher();
+</code></pre>
+<p><strong>Initial Values:</strong></p>
+<ul>
+<li><code>Path</code>: Empty string</li>
+<li><code>Filter</code>: &quot;<em>.</em>&quot;</li>
+<li><code>EnableRaisingEvents</code>: <code>false</code></li>
+<li><code>IncludeSubdirectories</code>: <code>false</code></li>
+<li><code>NotifyFilter</code>: <code>FileName | DirectoryName | LastWrite</code></li>
+<li><code>InternalBufferSize</code>: 8192 bytes</li>
+<li><code>PaletteMode</code>: <code>PaletteMode.Global</code></li>
+</ul>
+<h3 id="kryptonfilesystemwatchericontainer-container">KryptonFileSystemWatcher(IContainer container)</h3>
+<p>Creates a new instance and adds it to the specified container.</p>
+<pre><code class="lang-csharp">var watcher = new KryptonFileSystemWatcher(components);
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>container</code> (IContainer): The container that will contain this component</li>
+</ul>
+<h3 id="kryptonfilesystemwatcherstring-path">KryptonFileSystemWatcher(string path)</h3>
+<p>Creates a new instance monitoring the specified directory path.</p>
+<pre><code class="lang-csharp">var watcher = new KryptonFileSystemWatcher(@&quot;C:\MyFolder&quot;);
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>path</code> (string): The directory to monitor (standard or UNC notation)</li>
+</ul>
+<h3 id="kryptonfilesystemwatcherstring-path-string-filter">KryptonFileSystemWatcher(string path, string filter)</h3>
+<p>Creates a new instance monitoring the specified directory with a file filter.</p>
+<pre><code class="lang-csharp">var watcher = new KryptonFileSystemWatcher(@&quot;C:\MyFolder&quot;, &quot;*.txt&quot;);
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>path</code> (string): The directory to monitor</li>
+<li><code>filter</code> (string): File filter pattern (e.g., &quot;<em>.txt&quot;, &quot;</em>.log&quot;)</li>
+</ul>
+<h2 id="properties">Properties</h2>
+<h3 id="path">Path</h3>
+<p>Gets or sets the path of the directory to watch.</p>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;The path of the directory to watch.&quot;)]
+[DefaultValue(&quot;&quot;)]
+[Editor(typeof(System.Windows.Forms.Design.FolderNameEditor), typeof(System.Drawing.Design.UITypeEditor))]
+public string Path { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.Path = @&quot;C:\MyDocuments&quot;;
+watcher.Path = @&quot;\\Server\SharedFolder&quot;;
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Supports standard paths and UNC notation</li>
+<li>Use the folder name editor in the property grid for easy selection</li>
+<li>Must be set before enabling the watcher</li>
+</ul>
+<h3 id="filter">Filter</h3>
+<p>Gets or sets the filter string used to determine what files are monitored.</p>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;The filter string used to determine what files are monitored in a directory.&quot;)]
+[DefaultValue(&quot;*.*&quot;)]
+public string Filter { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.Filter = &quot;*.txt&quot;;        // Only text files
+watcher.Filter = &quot;*.log&quot;;        // Only log files
+watcher.Filter = &quot;*.xml&quot;;        // Only XML files
+watcher.Filter = &quot;*.*&quot;;          // All files (default)
+watcher.Filter = &quot;MyFile.*&quot;;     // Files named &quot;MyFile&quot; with any extension
+</code></pre>
+<p><strong>Common Patterns:</strong></p>
+<ul>
+<li><code>&quot;*.txt&quot;</code> - All text files</li>
+<li><code>&quot;*.log&quot;</code> - All log files</li>
+<li><code>&quot;*.xml&quot;</code> - All XML files</li>
+<li><code>&quot;*.cs&quot;</code> - All C# source files</li>
+<li><code>&quot;*.*&quot;</code> - All files (default)</li>
+</ul>
+<h3 id="notifyfilter">NotifyFilter</h3>
+<p>Gets or sets the type of changes to watch for.</p>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;The type of changes to watch for.&quot;)]
+[DefaultValue(NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.LastWrite)]
+public NotifyFilters NotifyFilter { get; set; }
+</code></pre>
+<p><strong>NotifyFilters Enum Values:</strong></p>
+<ul>
+<li><code>FileName</code> - Changes to file names</li>
+<li><code>DirectoryName</code> - Changes to directory names</li>
+<li><code>Attributes</code> - Changes to file or folder attributes</li>
+<li><code>Size</code> - Changes to file size</li>
+<li><code>LastWrite</code> - Changes to last write time</li>
+<li><code>LastAccess</code> - Changes to last access time</li>
+<li><code>CreationTime</code> - Changes to creation time</li>
+<li><code>Security</code> - Changes to security settings</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Watch for file name changes and writes
+watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
+
+// Watch for all changes
+watcher.NotifyFilter = NotifyFilters.All;
+
+// Watch only for file creation
+watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.CreationTime;
+</code></pre>
+<h3 id="enableraisingevents">EnableRaisingEvents</h3>
+<p>Gets or sets a value indicating whether the component is enabled and raising events.</p>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;Indicates whether the component is enabled.&quot;)]
+[DefaultValue(false)]
+public bool EnableRaisingEvents { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.Path = @&quot;C:\MyFolder&quot;;
+watcher.Filter = &quot;*.txt&quot;;
+watcher.EnableRaisingEvents = true;  // Start watching
+</code></pre>
+<p><strong>Important:</strong></p>
+<ul>
+<li>Set <code>Path</code> before enabling</li>
+<li>Set to <code>false</code> to stop watching</li>
+<li>Must be set to <code>true</code> to receive events</li>
+</ul>
+<h3 id="includesubdirectories">IncludeSubdirectories</h3>
+<p>Gets or sets a value indicating whether subdirectories should be monitored.</p>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;Indicates whether subdirectories within the specified path should be monitored.&quot;)]
+[DefaultValue(false)]
+public bool IncludeSubdirectories { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.Path = @&quot;C:\MyDocuments&quot;;
+watcher.IncludeSubdirectories = true;  // Monitor all subdirectories
+</code></pre>
+<p><strong>Performance Note:</strong></p>
+<ul>
+<li>Enabling subdirectory monitoring increases resource usage</li>
+<li>Use with caution on large directory trees</li>
+</ul>
+<h3 id="internalbuffersize">InternalBufferSize</h3>
+<p>Gets or sets the size (in bytes) of the internal buffer.</p>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;The size (in bytes) of the internal buffer.&quot;)]
+[DefaultValue(8192)]
+public int InternalBufferSize { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.InternalBufferSize = 16384;  // 16KB buffer
+</code></pre>
+<p><strong>Recommendations:</strong></p>
+<ul>
+<li>Default: 8192 bytes (8KB)</li>
+<li>Increase for high-frequency file operations</li>
+<li>Must be a multiple of 4096</li>
+<li>Larger buffers reduce missed events but use more memory</li>
+</ul>
+<h3 id="synchronizingobject">SynchronizingObject</h3>
+<p>Gets or sets the object used to marshal event handler calls.</p>
+<pre><code class="lang-csharp">[Category(@&quot;Behavior&quot;)]
+[Description(@&quot;The object used to marshal the event handler calls that are issued as a result of a directory change.&quot;)]
+[DefaultValue(null)]
+[Browsable(false)]
+public ISynchronizeInvoke? SynchronizingObject { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.SynchronizingObject = this;  // Marshal to UI thread
+</code></pre>
+<p><strong>Usage:</strong></p>
+<ul>
+<li>Set to a form or control to marshal events to the UI thread</li>
+<li>Prevents cross-thread exceptions</li>
+<li>Typically set to the form containing the watcher</li>
+</ul>
+<h3 id="palettemode">PaletteMode</h3>
+<p>Gets or sets the palette mode for Krypton integration.</p>
+<pre><code class="lang-csharp">[Category(@&quot;Visuals&quot;)]
+[Description(@&quot;Sets the palette mode.&quot;)]
+[DefaultValue(PaletteMode.Global)]
+[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public PaletteMode PaletteMode { get; set; }
+</code></pre>
+<p><strong>PaletteMode Values:</strong></p>
+<ul>
+<li><code>Global</code> - Uses the global Krypton palette (default)</li>
+<li><code>ProfessionalSystem</code> - Professional system theme</li>
+<li><code>ProfessionalOffice2003</code> - Office 2003 theme</li>
+<li><code>ProfessionalOffice2007</code> - Office 2007 theme</li>
+<li><code>ProfessionalOffice2010</code> - Office 2010 theme</li>
+<li><code>ProfessionalOffice2013</code> - Office 2013 theme</li>
+<li><code>SparkleBlue</code> - Sparkle Blue theme</li>
+<li><code>SparkleOrange</code> - Sparkle Orange theme</li>
+<li><code>SparklePurple</code> - Sparkle Purple theme</li>
+<li><code>Custom</code> - Use custom palette (requires <code>Palette</code> property)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.PaletteMode = PaletteMode.ProfessionalOffice2010;
+</code></pre>
+<h3 id="palette">Palette</h3>
+<p>Gets or sets the custom palette (only used when <code>PaletteMode</code> is <code>Custom</code>).</p>
+<pre><code class="lang-csharp">[Category(@&quot;Visuals&quot;)]
+[Description(@&quot;Sets the custom palette to be used.&quot;)]
+[DefaultValue(null)]
+[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public PaletteBase? Palette { get; set; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var customPalette = new KryptonPalette();
+// Configure custom palette...
+watcher.PaletteMode = PaletteMode.Custom;
+watcher.Palette = customPalette;
+</code></pre>
+<h3 id="filesystemwatcher">FileSystemWatcher</h3>
+<p>Gets access to the underlying <code>FileSystemWatcher</code> component.</p>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public FileSystemWatcher? FileSystemWatcher { get; }
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var underlyingWatcher = watcher.FileSystemWatcher;
+// Direct access to underlying component if needed
+</code></pre>
+<h2 id="events">Events</h2>
+<h3 id="created">Created</h3>
+<p>Occurs when a file or directory in the specified <code>Path</code> is created.</p>
+<pre><code class="lang-csharp">[Category(@&quot;File System&quot;)]
+[Description(@&quot;Occurs when a file or directory in the specified Path is created.&quot;)]
+public event FileSystemEventHandler? Created;
+</code></pre>
+<p><strong>Event Handler Signature:</strong></p>
+<pre><code class="lang-csharp">void OnFileCreated(object sender, FileSystemEventArgs e)
+</code></pre>
+<p><strong>FileSystemEventArgs Properties:</strong></p>
+<ul>
+<li><code>FullPath</code> (string): Full path of the created file/directory</li>
+<li><code>Name</code> (string): Name of the file/directory</li>
+<li><code>ChangeType</code> (WatcherChangeTypes): Type of change (<code>Created</code>)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.Created += (sender, e) =&gt;
+{
+    Console.WriteLine($&quot;File created: {e.FullPath}&quot;);
+    Console.WriteLine($&quot;Name: {e.Name}&quot;);
+    Console.WriteLine($&quot;Change type: {e.ChangeType}&quot;);
+};
+</code></pre>
+<h3 id="changed">Changed</h3>
+<p>Occurs when a file or directory in the specified <code>Path</code> is changed.</p>
+<pre><code class="lang-csharp">[Category(@&quot;File System&quot;)]
+[Description(@&quot;Occurs when a file or directory in the specified Path is changed.&quot;)]
+public event FileSystemEventHandler? Changed;
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.Changed += (sender, e) =&gt;
+{
+    Console.WriteLine($&quot;File changed: {e.FullPath}&quot;);
+    
+    // Check what changed
+    if (e.ChangeType == WatcherChangeTypes.Changed)
+    {
+        // File was modified
+    }
+};
+</code></pre>
+<p><strong>Note:</strong> The <code>Changed</code> event can fire multiple times for a single file operation. Consider debouncing if needed.</p>
+<h3 id="deleted">Deleted</h3>
+<p>Occurs when a file or directory in the specified <code>Path</code> is deleted.</p>
+<pre><code class="lang-csharp">[Category(@&quot;File System&quot;)]
+[Description(@&quot;Occurs when a file or directory in the specified Path is deleted.&quot;)]
+public event FileSystemEventHandler? Deleted;
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.Deleted += (sender, e) =&gt;
+{
+    Console.WriteLine($&quot;File deleted: {e.FullPath}&quot;);
+    // Clean up references, update UI, etc.
+};
+</code></pre>
+<h3 id="renamed">Renamed</h3>
+<p>Occurs when a file or directory in the specified <code>Path</code> is renamed.</p>
+<pre><code class="lang-csharp">[Category(@&quot;File System&quot;)]
+[Description(@&quot;Occurs when a file or directory in the specified Path is renamed.&quot;)]
+public event RenamedEventHandler? Renamed;
+</code></pre>
+<p><strong>Event Handler Signature:</strong></p>
+<pre><code class="lang-csharp">void OnFileRenamed(object sender, RenamedEventArgs e)
+</code></pre>
+<p><strong>RenamedEventArgs Properties:</strong></p>
+<ul>
+<li><code>FullPath</code> (string): Full path of the renamed file/directory</li>
+<li><code>Name</code> (string): New name</li>
+<li><code>OldFullPath</code> (string): Previous full path</li>
+<li><code>OldName</code> (string): Previous name</li>
+<li><code>ChangeType</code> (WatcherChangeTypes): Type of change (<code>Renamed</code>)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.Renamed += (sender, e) =&gt;
+{
+    Console.WriteLine($&quot;File renamed:&quot;);
+    Console.WriteLine($&quot;  Old: {e.OldFullPath}&quot;);
+    Console.WriteLine($&quot;  New: {e.FullPath}&quot;);
+};
+</code></pre>
+<h3 id="error">Error</h3>
+<p>Occurs when the internal buffer overflows.</p>
+<pre><code class="lang-csharp">[Category(@&quot;File System&quot;)]
+[Description(@&quot;Occurs when the internal buffer overflows.&quot;)]
+public event ErrorEventHandler? Error;
+</code></pre>
+<p><strong>Event Handler Signature:</strong></p>
+<pre><code class="lang-csharp">void OnError(object sender, ErrorEventArgs e)
+</code></pre>
+<p><strong>ErrorEventArgs Properties:</strong></p>
+<ul>
+<li><code>GetException()</code> (Exception): The exception that occurred</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.Error += (sender, e) =&gt;
+{
+    var ex = e.GetException();
+    Console.WriteLine($&quot;FileSystemWatcher error: {ex.Message}&quot;);
+    
+    // Increase buffer size or handle error
+    watcher.InternalBufferSize *= 2;
+};
+</code></pre>
+<p><strong>Common Causes:</strong></p>
+<ul>
+<li>Too many rapid file changes</li>
+<li>Buffer size too small</li>
+<li>Network latency (for UNC paths)</li>
+</ul>
+<h2 id="methods">Methods</h2>
+<h3 id="begininit">BeginInit()</h3>
+<p>Begins the initialization of the FileSystemWatcher. Used for design-time support.</p>
+<pre><code class="lang-csharp">public void BeginInit()
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">watcher.BeginInit();
+watcher.Path = @&quot;C:\MyFolder&quot;;
+watcher.Filter = &quot;*.txt&quot;;
+watcher.EndInit();
+</code></pre>
+<h3 id="endinit">EndInit()</h3>
+<p>Ends the initialization of the FileSystemWatcher. Used for design-time support.</p>
+<pre><code class="lang-csharp">public void EndInit()
+</code></pre>
+<p><strong>Example:</strong>
+See <code>BeginInit()</code> example above.</p>
+<h3 id="waitforchangedwatcherchangetypes-changetype">WaitForChanged(WatcherChangeTypes changeType)</h3>
+<p>Synchronously waits for a specific type of change to occur.</p>
+<pre><code class="lang-csharp">public WaitForChangedResult WaitForChanged(WatcherChangeTypes changeType)
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>changeType</code> (WatcherChangeTypes): Type of change to wait for (<code>Created</code>, <code>Deleted</code>, <code>Changed</code>, <code>Renamed</code>, <code>All</code>)</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>WaitForChangedResult</code>: Structure containing information about the change</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var result = watcher.WaitForChanged(WatcherChangeTypes.Created);
+Console.WriteLine($&quot;File created: {result.Name}&quot;);
+</code></pre>
+<p><strong>Note:</strong> This method blocks the calling thread until a change occurs.</p>
+<h3 id="waitforchangedwatcherchangetypes-changetype-int-timeout">WaitForChanged(WatcherChangeTypes changeType, int timeout)</h3>
+<p>Synchronously waits for a specific type of change with a timeout.</p>
+<pre><code class="lang-csharp">public WaitForChangedResult WaitForChanged(WatcherChangeTypes changeType, int timeout)
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>changeType</code> (WatcherChangeTypes): Type of change to wait for</li>
+<li><code>timeout</code> (int): Timeout in milliseconds</li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>WaitForChangedResult</code>: Structure containing information about the change, or default if timeout</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var result = watcher.WaitForChanged(WatcherChangeTypes.Created, 5000);
+if (result.TimedOut)
+{
+    Console.WriteLine(&quot;Timeout waiting for file creation&quot;);
+}
+else
+{
+    Console.WriteLine($&quot;File created: {result.Name}&quot;);
+}
+</code></pre>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-file-monitoring">Basic File Monitoring</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+using System.IO;
+
+public class FileMonitor
+{
+    private KryptonFileSystemWatcher _watcher;
+
+    public void StartMonitoring(string folderPath)
+    {
+        _watcher = new KryptonFileSystemWatcher(folderPath)
+        {
+            Filter = &quot;*.txt&quot;,
+            NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
+            IncludeSubdirectories = false
+        };
+
+        _watcher.Created += OnFileCreated;
+        _watcher.Changed += OnFileChanged;
+        _watcher.Deleted += OnFileDeleted;
+        _watcher.Renamed += OnFileRenamed;
+        _watcher.Error += OnError;
+
+        _watcher.EnableRaisingEvents = true;
+    }
+
+    private void OnFileCreated(object sender, FileSystemEventArgs e)
+    {
+        Console.WriteLine($&quot;Created: {e.FullPath}&quot;);
+    }
+
+    private void OnFileChanged(object sender, FileSystemEventArgs e)
+    {
+        Console.WriteLine($&quot;Changed: {e.FullPath}&quot;);
+    }
+
+    private void OnFileDeleted(object sender, FileSystemEventArgs e)
+    {
+        Console.WriteLine($&quot;Deleted: {e.FullPath}&quot;);
+    }
+
+    private void OnFileRenamed(object sender, RenamedEventArgs e)
+    {
+        Console.WriteLine($&quot;Renamed: {e.OldFullPath} -&gt; {e.FullPath}&quot;);
+    }
+
+    private void OnError(object sender, ErrorEventArgs e)
+    {
+        Console.WriteLine($&quot;Error: {e.GetException().Message}&quot;);
+    }
+
+    public void StopMonitoring()
+    {
+        if (_watcher != null)
+        {
+            _watcher.EnableRaisingEvents = false;
+            _watcher.Dispose();
+        }
+    }
+}
+</code></pre>
+<h3 id="monitoring-with-ui-thread-marshaling">Monitoring with UI Thread Marshaling</h3>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    private KryptonFileSystemWatcher _watcher;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        SetupFileWatcher();
+    }
+
+    private void SetupFileWatcher()
+    {
+        _watcher = new KryptonFileSystemWatcher(@&quot;C:\MyFolder&quot;)
+        {
+            Filter = &quot;*.log&quot;,
+            SynchronizingObject = this  // Marshal events to UI thread
+        };
+
+        _watcher.Created += OnFileCreated;
+        _watcher.Changed += OnFileChanged;
+        _watcher.EnableRaisingEvents = true;
+    }
+
+    private void OnFileCreated(object sender, FileSystemEventArgs e)
+    {
+        // Safe to update UI directly - already on UI thread
+        listBoxFiles.Items.Add($&quot;Created: {e.Name}&quot;);
+    }
+
+    private void OnFileChanged(object sender, FileSystemEventArgs e)
+    {
+        // Safe to update UI directly
+        listBoxFiles.Items.Add($&quot;Changed: {e.Name}&quot;);
+    }
+
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        _watcher?.Dispose();
+        base.OnFormClosing(e);
+    }
+}
+</code></pre>
+<h3 id="monitoring-with-debouncing">Monitoring with Debouncing</h3>
+<pre><code class="lang-csharp">public class DebouncedFileWatcher
+{
+    private KryptonFileSystemWatcher _watcher;
+    private System.Windows.Forms.Timer _debounceTimer;
+    private readonly Dictionary&lt;string, DateTime&gt; _pendingChanges = new();
+
+    public DebouncedFileWatcher(string folderPath)
+    {
+        _watcher = new KryptonFileSystemWatcher(folderPath)
+        {
+            Filter = &quot;*.*&quot;,
+            NotifyFilter = NotifyFilters.LastWrite
+        };
+
+        _watcher.Changed += OnFileChanged;
+        _watcher.EnableRaisingEvents = true;
+
+        _debounceTimer = new System.Windows.Forms.Timer { Interval = 1000 };
+        _debounceTimer.Tick += OnDebounceTimerTick;
+    }
+
+    private void OnFileChanged(object sender, FileSystemEventArgs e)
+    {
+        _pendingChanges[e.FullPath] = DateTime.Now;
+        _debounceTimer.Stop();
+        _debounceTimer.Start();
+    }
+
+    private void OnDebounceTimerTick(object sender, EventArgs e)
+    {
+        _debounceTimer.Stop();
+        
+        foreach (var change in _pendingChanges)
+        {
+            ProcessFileChange(change.Key);
+        }
+        
+        _pendingChanges.Clear();
+    }
+
+    private void ProcessFileChange(string filePath)
+    {
+        Console.WriteLine($&quot;File change processed: {filePath}&quot;);
+        // Your processing logic here
+    }
+}
+</code></pre>
+<h3 id="monitoring-network-shares">Monitoring Network Shares</h3>
+<pre><code class="lang-csharp">public void MonitorNetworkShare()
+{
+    var watcher = new KryptonFileSystemWatcher(@&quot;\\Server\SharedFolder&quot;)
+    {
+        Filter = &quot;*.xlsx&quot;,
+        NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
+        InternalBufferSize = 16384  // Larger buffer for network
+    };
+
+    watcher.Created += (s, e) =&gt; Console.WriteLine($&quot;Network file created: {e.FullPath}&quot;);
+    watcher.Changed += (s, e) =&gt; Console.WriteLine($&quot;Network file changed: {e.FullPath}&quot;);
+    watcher.Error += (s, e) =&gt; Console.WriteLine($&quot;Network error: {e.GetException().Message}&quot;);
+
+    watcher.EnableRaisingEvents = true;
+}
+</code></pre>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-always-dispose">1. Always Dispose</h3>
+<p>Always dispose of the watcher when done:</p>
+<pre><code class="lang-csharp">using (var watcher = new KryptonFileSystemWatcher())
+{
+    // Use watcher
+}
+// Automatically disposed
+</code></pre>
+<p>Or in a form:</p>
+<pre><code class="lang-csharp">protected override void OnFormClosing(FormClosingEventArgs e)
+{
+    _watcher?.Dispose();
+    base.OnFormClosing(e);
+}
+</code></pre>
+<h3 id="2-set-path-before-enabling">2. Set Path Before Enabling</h3>
+<p>Always set the <code>Path</code> property before setting <code>EnableRaisingEvents</code> to <code>true</code>:</p>
+<pre><code class="lang-csharp">watcher.Path = @&quot;C:\MyFolder&quot;;  // Set path first
+watcher.Filter = &quot;*.txt&quot;;
+watcher.EnableRaisingEvents = true;  // Then enable
+</code></pre>
+<h3 id="3-handle-errors">3. Handle Errors</h3>
+<p>Always handle the <code>Error</code> event:</p>
+<pre><code class="lang-csharp">watcher.Error += (sender, e) =&gt;
+{
+    var ex = e.GetException();
+    // Log error, increase buffer, or handle appropriately
+};
+</code></pre>
+<h3 id="4-use-synchronizingobject-for-ui-updates">4. Use SynchronizingObject for UI Updates</h3>
+<p>When updating UI from events, set <code>SynchronizingObject</code>:</p>
+<pre><code class="lang-csharp">watcher.SynchronizingObject = this;  // Form or control
+</code></pre>
+<h3 id="5-adjust-buffer-size-for-high-frequency-operations">5. Adjust Buffer Size for High-Frequency Operations</h3>
+<p>Increase <code>InternalBufferSize</code> for directories with many rapid changes:</p>
+<pre><code class="lang-csharp">watcher.InternalBufferSize = 16384;  // 16KB instead of default 8KB
+</code></pre>
+<h3 id="6-be-selective-with-notifyfilter">6. Be Selective with NotifyFilter</h3>
+<p>Only watch for changes you actually need:</p>
+<pre><code class="lang-csharp">// Only watch for file name changes and writes
+watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
+</code></pre>
+<h3 id="7-consider-debouncing-for-changed-events">7. Consider Debouncing for Changed Events</h3>
+<p>The <code>Changed</code> event can fire multiple times. Consider debouncing:</p>
+<pre><code class="lang-csharp">// See debouncing example above
+</code></pre>
+<h2 id="threading-considerations">Threading Considerations</h2>
+<h3 id="events-are-raised-on-background-threads">Events Are Raised on Background Threads</h3>
+<p>By default, events are raised on background threads. Use <code>SynchronizingObject</code> to marshal to UI thread:</p>
+<pre><code class="lang-csharp">watcher.SynchronizingObject = this;  // Marshal to form's thread
+</code></pre>
+<h3 id="manual-thread-marshaling">Manual Thread Marshaling</h3>
+<p>If not using <code>SynchronizingObject</code>, manually marshal:</p>
+<pre><code class="lang-csharp">watcher.Created += (sender, e) =&gt;
+{
+    if (InvokeRequired)
+    {
+        Invoke(new Action(() =&gt; UpdateUI(e)));
+    }
+    else
+    {
+        UpdateUI(e);
+    }
+};
+</code></pre>
+<h2 id="integration-with-krypton-palette-system">Integration with Krypton Palette System</h2>
+<h3 id="using-global-palette">Using Global Palette</h3>
+<pre><code class="lang-csharp">var watcher = new KryptonFileSystemWatcher();
+// Uses global palette automatically
+</code></pre>
+<h3 id="using-specific-theme">Using Specific Theme</h3>
+<pre><code class="lang-csharp">watcher.PaletteMode = PaletteMode.ProfessionalOffice2010;
+</code></pre>
+<h3 id="using-custom-palette">Using Custom Palette</h3>
+<pre><code class="lang-csharp">var customPalette = new KryptonPalette();
+// Configure palette...
+watcher.PaletteMode = PaletteMode.Custom;
+watcher.Palette = customPalette;
+</code></pre>
+<h2 id="limitations-and-considerations">Limitations and Considerations</h2>
+<ol>
+<li><strong>Network Paths</strong>: May have delays or missed events on network shares</li>
+<li><strong>Buffer Overflow</strong>: Can occur with very high-frequency changes</li>
+<li><strong>Multiple Events</strong>: <code>Changed</code> event can fire multiple times for single operation</li>
+<li><strong>Security</strong>: Requires appropriate file system permissions</li>
+<li><strong>Performance</strong>: Monitoring large directory trees can impact performance</li>
+</ol>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="events-not-firing">Events Not Firing</h3>
+<ul>
+<li>Ensure <code>Path</code> is set before <code>EnableRaisingEvents = true</code></li>
+<li>Check file system permissions</li>
+<li>Verify the path exists and is accessible</li>
+<li>Check <code>Filter</code> pattern matches files</li>
+</ul>
+<h3 id="missing-events">Missing Events</h3>
+<ul>
+<li>Increase <code>InternalBufferSize</code></li>
+<li>Reduce monitoring scope (disable <code>IncludeSubdirectories</code>)</li>
+<li>Check for buffer overflow in <code>Error</code> event</li>
+</ul>
+<h3 id="cross-thread-exceptions">Cross-Thread Exceptions</h3>
+<ul>
+<li>Set <code>SynchronizingObject</code> property</li>
+<li>Or manually marshal to UI thread using <code>Invoke</code></li>
+</ul>
+<h2 id="related-components">Related Components</h2>
+<ul>
+<li><code>KryptonSplitter</code> - For resizing docked controls</li>
+<li><code>KryptonTimer</code> - For timed operations</li>
+<li><code>KryptonManager</code> - For global palette management</li>
+</ul>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="https://docs.microsoft.com/dotnet/api/system.io.filesystemwatcher">System.IO.FileSystemWatcher Documentation</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonHelpProvider | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonHelpProvider | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonhelpprovider">KryptonHelpProvider</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#features">Features</a></li>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#tooltip-functionality">Tooltip Functionality</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonHelpProvider</code> is a Krypton-themed wrapper around the standard Windows Forms <code>HelpProvider</code> component that provides enhanced help functionality for controls in your application. It extends the standard help provider with:</p>
+<ul>
+<li><strong>Krypton-styled tooltips</strong> - Display help strings as beautifully styled tooltips when hovering over controls</li>
+<li><strong>Palette support</strong> - Integrates with the Krypton palette system for consistent theming</li>
+<li><strong>Dual help modes</strong> - Supports both pop-up help strings and HTML help files</li>
+<li><strong>Event handling</strong> - Customizable help request handling</li>
+</ul>
+<h3 id="key-benefits">Key Benefits</h3>
+<ul>
+<li><strong>Consistent UI</strong> - Help tooltips match your application's Krypton theme</li>
+<li><strong>Better UX</strong> - Users can see help text on hover without pressing F1</li>
+<li><strong>Flexible</strong> - Works with both simple help strings and complex HTML help systems</li>
+<li><strong>Easy Integration</strong> - Drop-in replacement for standard <code>HelpProvider</code></li>
+</ul>
+<hr>
+<h2 id="features">Features</h2>
+<h3 id="core-features">Core Features</h3>
+<ol>
+<li><p><strong>Help String Management</strong></p>
+<ul>
+<li>Set and retrieve help strings for individual controls</li>
+<li>Enable/disable help for specific controls</li>
+<li>Support for both pop-up help and HTML help files</li>
+</ul>
+</li>
+<li><p><strong>Krypton Tooltips</strong></p>
+<ul>
+<li>Styled tooltips that match your application theme</li>
+<li>Configurable appearance (style, shadow, delays)</li>
+<li>Automatic display on mouse hover</li>
+<li>Respects palette changes at runtime</li>
+</ul>
+</li>
+<li><p><strong>HTML Help Support</strong></p>
+<ul>
+<li>Support for compiled HTML help files (.chm)</li>
+<li>Help keywords and navigation types</li>
+<li>Table of contents, index, and find navigation</li>
+</ul>
+</li>
+<li><p><strong>Palette Integration</strong></p>
+<ul>
+<li>Supports all Krypton palette modes</li>
+<li>Custom palette support</li>
+<li>Automatic theme updates</li>
+</ul>
+</li>
+<li><p><strong>Event Handling</strong></p>
+<ul>
+<li><code>HelpRequested</code> event for custom help handling</li>
+<li>Can override default help behavior</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="basic-setup">Basic Setup</h3>
+<ol>
+<li><p><strong>Add to Form</strong></p>
+<pre><code class="lang-csharp">// Drag KryptonHelpProvider from toolbox onto your form
+// Or create programmatically:
+var helpProvider = new KryptonHelpProvider();
+</code></pre>
+</li>
+<li><p><strong>Set Container Control</strong> (Required for tooltips)</p>
+<pre><code class="lang-csharp">helpProvider.ContainerControl = this; // 'this' is your form
+</code></pre>
+</li>
+<li><p><strong>Enable Tooltips</strong></p>
+<pre><code class="lang-csharp">helpProvider.ToolTipValues.EnableToolTips = true;
+</code></pre>
+</li>
+<li><p><strong>Configure Help for Controls</strong></p>
+<pre><code class="lang-csharp">helpProvider.SetShowHelp(myTextBox, true);
+helpProvider.SetHelpString(myTextBox, &quot;Enter your name here&quot;);
+</code></pre>
+</li>
+</ol>
+<h3 id="complete-example">Complete Example</h3>
+<pre><code class="lang-csharp">public partial class MyForm : KryptonForm
+{
+    private KryptonHelpProvider helpProvider;
+    
+    public MyForm()
+    {
+        InitializeComponent();
+        InitializeHelp();
+    }
+    
+    private void InitializeHelp()
+    {
+        // Create help provider
+        helpProvider = new KryptonHelpProvider();
+        
+        // Set container control for tooltip functionality
+        helpProvider.ContainerControl = this;
+        
+        // Configure tooltip appearance
+        helpProvider.ToolTipValues.EnableToolTips = true;
+        helpProvider.ToolTipValues.ToolTipStyle = LabelStyle.ToolTip;
+        helpProvider.ToolTipValues.ToolTipShadow = true;
+        helpProvider.ToolTipValues.ShowIntervalDelay = 500;
+        helpProvider.ToolTipValues.CloseIntervalDelay = 5000;
+        
+        // Set help strings for controls
+        helpProvider.SetShowHelp(textBoxName, true);
+        helpProvider.SetHelpString(textBoxName, &quot;Enter your full name&quot;);
+        
+        helpProvider.SetShowHelp(textBoxEmail, true);
+        helpProvider.SetHelpString(textBoxEmail, &quot;Enter a valid email address&quot;);
+        
+        // Optional: Handle help requests
+        helpProvider.HelpRequested += HelpProvider_HelpRequested;
+    }
+    
+    private void HelpProvider_HelpRequested(object? sender, HelpEventArgs e)
+    {
+        // Custom help handling
+        Control? control = ActiveControl;
+        if (control != null)
+        {
+            string? helpString = helpProvider.GetHelpString(control);
+            if (!string.IsNullOrEmpty(helpString))
+            {
+                KryptonMessageBox.Show(this, helpString, &quot;Help&quot;, 
+                    KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information);
+                e.Handled = true;
+            }
+        }
+    }
+}
+</code></pre>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="properties">Properties</h3>
+<h4 id="palettemode"><code>PaletteMode</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>PaletteMode</code></li>
+<li><strong>Default</strong>: <code>PaletteMode.Global</code></li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Description</strong>: Gets or sets the palette mode used for tooltip rendering.</li>
+</ul>
+<pre><code class="lang-csharp">helpProvider.PaletteMode = PaletteMode.Office2010Blue;
+</code></pre>
+<p><strong>Available Modes</strong>:</p>
+<ul>
+<li><code>Global</code> - Uses the global palette from <code>KryptonManager</code></li>
+<li><code>ProfessionalSystem</code> - System-based professional appearance</li>
+<li><code>ProfessionalOffice2003</code> - Office 2003 style</li>
+<li><code>Office2007Blue</code>, <code>Office2007Silver</code>, <code>Office2007White</code>, <code>Office2007Black</code> - Office 2007 variants</li>
+<li><code>Office2010Blue</code>, <code>Office2010Silver</code>, <code>Office2010White</code>, <code>Office2010Black</code> - Office 2010 variants</li>
+<li><code>Office2013White</code> - Office 2013 style</li>
+<li><code>SparkleBlue</code>, <code>SparkleOrange</code>, <code>SparklePurple</code> - Sparkle variants</li>
+<li><code>Microsoft365Blue</code>, <code>Microsoft365Silver</code>, <code>Microsoft365White</code>, <code>Microsoft365Black</code> - Microsoft 365 variants</li>
+<li><code>Custom</code> - Use a custom palette</li>
+</ul>
+<h4 id="palette"><code>Palette</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>PaletteBase?</code></li>
+<li><strong>Default</strong>: <code>null</code></li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Description</strong>: Gets or sets a custom palette. Only available when <code>PaletteMode</code> is set to <code>Custom</code>.</li>
+</ul>
+<pre><code class="lang-csharp">helpProvider.PaletteMode = PaletteMode.Custom;
+helpProvider.Palette = myCustomPalette;
+</code></pre>
+<h4 id="helpnamespace"><code>HelpNamespace</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>string</code></li>
+<li><strong>Default</strong>: <code>&quot;&quot;</code> (empty string)</li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Description</strong>: Gets or sets the name of the Help file associated with this object. When empty, pop-up help strings are used. When set to a file path (e.g., <code>.chm</code> file), HTML help is used.</li>
+</ul>
+<pre><code class="lang-csharp">// Use pop-up help strings
+helpProvider.HelpNamespace = string.Empty;
+
+// Use HTML help file
+helpProvider.HelpNamespace = @&quot;C:\Help\MyApp.chm&quot;;
+</code></pre>
+<h4 id="containercontrol"><code>ContainerControl</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>ContainerControl?</code></li>
+<li><strong>Default</strong>: <code>null</code></li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Description</strong>: Gets or sets the container control that this HelpProvider is attached to. <strong>Required for tooltip functionality</strong>. Typically set to your form instance.</li>
+</ul>
+<pre><code class="lang-csharp">helpProvider.ContainerControl = this; // 'this' is your form
+</code></pre>
+<h4 id="tooltipvalues"><code>ToolTipValues</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>ToolTipValues</code></li>
+<li><strong>Category</strong>: Appearance</li>
+<li><strong>Description</strong>: Gets the tooltip values object for customizing tooltip appearance and behavior.</li>
+</ul>
+<p><strong>ToolTipValues Properties</strong>:</p>
+<ul>
+<li><code>EnableToolTips</code> (bool) - Enable or disable tooltip display</li>
+<li><code>ToolTipStyle</code> (LabelStyle) - Style of the tooltip (e.g., <code>LabelStyle.ToolTip</code>, <code>LabelStyle.SuperTip</code>)</li>
+<li><code>ToolTipShadow</code> (bool) - Whether to show shadow on tooltip</li>
+<li><code>ShowIntervalDelay</code> (int) - Milliseconds to wait before showing tooltip (default: 500)</li>
+<li><code>CloseIntervalDelay</code> (int) - Milliseconds before auto-closing tooltip (default: 5000)</li>
+<li><code>ToolTipPosition</code> (PopupPositionValues) - Position and orientation settings</li>
+</ul>
+<pre><code class="lang-csharp">helpProvider.ToolTipValues.EnableToolTips = true;
+helpProvider.ToolTipValues.ToolTipStyle = LabelStyle.SuperTip;
+helpProvider.ToolTipValues.ToolTipShadow = true;
+helpProvider.ToolTipValues.ShowIntervalDelay = 750;
+helpProvider.ToolTipValues.CloseIntervalDelay = 10000;
+</code></pre>
+<h4 id="helpprovider"><code>HelpProvider</code></h4>
+<ul>
+<li><strong>Type</strong>: <code>HelpProvider?</code></li>
+<li><strong>Browsable</strong>: <code>false</code></li>
+<li><strong>Description</strong>: Gets the underlying Windows Forms <code>HelpProvider</code> instance. Useful for advanced scenarios requiring direct access to the base provider.</li>
+</ul>
+<hr>
+<h3 id="methods">Methods</h3>
+<h4 id="setshowhelpcontrol-ctl-bool-value"><code>SetShowHelp(Control ctl, bool value)</code></h4>
+<p>Specifies whether Help is displayed for the specified control.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>ctl</code> (Control) - The control for which Help is turned on or off</li>
+<li><code>value</code> (bool) - <code>true</code> to enable help, <code>false</code> to disable</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">helpProvider.SetShowHelp(textBox1, true);
+</code></pre>
+<h4 id="getshowhelpcontrol-ctl"><code>GetShowHelp(Control ctl)</code></h4>
+<p>Returns a value indicating whether Help is displayed for the specified control.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>ctl</code> (Control) - The control to check</li>
+</ul>
+<p><strong>Returns</strong>: <code>true</code> if help is enabled, otherwise <code>false</code></p>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">bool hasHelp = helpProvider.GetShowHelp(textBox1);
+</code></pre>
+<h4 id="sethelpstringcontrol-ctl-string-helpstring"><code>SetHelpString(Control ctl, string? helpString)</code></h4>
+<p>Specifies the Help string associated with the specified control. This string is displayed as a tooltip when hovering over the control (if tooltips are enabled) and when F1 is pressed.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>ctl</code> (Control) - The control to associate the help string with</li>
+<li><code>helpString</code> (string?) - The help string to display. Use <code>null</code> or empty string to remove help.</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">helpProvider.SetHelpString(textBox1, &quot;Enter your name in this field&quot;);
+helpProvider.SetHelpString(textBox1, null); // Remove help
+</code></pre>
+<h4 id="gethelpstringcontrol-ctl"><code>GetHelpString(Control ctl)</code></h4>
+<p>Returns the Help string for the specified control.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>ctl</code> (Control) - The control to retrieve the help string from</li>
+</ul>
+<p><strong>Returns</strong>: The help string, or <code>null</code> if not set</p>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">string? helpText = helpProvider.GetHelpString(textBox1);
+</code></pre>
+<h4 id="sethelpkeywordcontrol-ctl-string-keyword"><code>SetHelpKeyword(Control ctl, string? keyword)</code></h4>
+<p>Specifies a Help keyword for the specified control. Used with HTML help files to navigate to specific topics.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>ctl</code> (Control) - The control to associate the keyword with</li>
+<li><code>keyword</code> (string?) - The help keyword (topic ID) in the HTML help file</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">helpProvider.HelpNamespace = @&quot;C:\Help\MyApp.chm&quot;;
+helpProvider.SetHelpKeyword(button1, &quot;button_help_topic&quot;);
+</code></pre>
+<h4 id="gethelpkeywordcontrol-ctl"><code>GetHelpKeyword(Control ctl)</code></h4>
+<p>Returns the current Help keyword for the specified control.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>ctl</code> (Control) - The control to retrieve the keyword from</li>
+</ul>
+<p><strong>Returns</strong>: The help keyword, or <code>null</code> if not set</p>
+<h4 id="sethelpnavigatorcontrol-ctl-helpnavigator-navigator"><code>SetHelpNavigator(Control ctl, HelpNavigator navigator)</code></h4>
+<p>Specifies the Help command to use when the user invokes Help for the specified control.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>ctl</code> (Control) - The control for which to set the help command</li>
+<li><code>navigator</code> (HelpNavigator) - One of the <code>HelpNavigator</code> values</li>
+</ul>
+<p><strong>HelpNavigator Values</strong>:</p>
+<ul>
+<li><code>TableOfContents</code> - Show table of contents</li>
+<li><code>Index</code> - Show index</li>
+<li><code>Find</code> - Show find dialog</li>
+<li><code>Topic</code> - Show specific topic (requires keyword)</li>
+<li><code>KeywordIndex</code> - Show keyword index</li>
+<li><code>AssociateIndex</code> - Show associate index</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">helpProvider.SetHelpNavigator(button1, HelpNavigator.Topic);
+</code></pre>
+<h4 id="gethelpnavigatorcontrol-ctl"><code>GetHelpNavigator(Control ctl)</code></h4>
+<p>Returns the current Help navigation type for the specified control.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>ctl</code> (Control) - The control to retrieve the navigator from</li>
+</ul>
+<p><strong>Returns</strong>: The <code>HelpNavigator</code> value (default: <code>TableOfContents</code>)</p>
+<hr>
+<h3 id="events">Events</h3>
+<h4 id="helprequested"><code>HelpRequested</code></h4>
+<p>Occurs when the user requests help for a control (typically by pressing F1).</p>
+<p><strong>Event Handler Signature</strong>:</p>
+<pre><code class="lang-csharp">void HelpRequested(object? sender, HelpEventArgs e)
+</code></pre>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>sender</code> - The <code>KryptonHelpProvider</code> instance</li>
+<li><code>e</code> - <code>HelpEventArgs</code> containing event data</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">helpProvider.HelpRequested += (sender, e) =&gt;
+{
+    Control? control = ActiveControl;
+    if (control != null)
+    {
+        string? helpString = helpProvider.GetHelpString(control);
+        if (!string.IsNullOrEmpty(helpString))
+        {
+            // Show custom help dialog
+            KryptonMessageBox.Show(this, helpString, &quot;Help&quot;, 
+                KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information);
+            
+            // Mark as handled to prevent default behavior
+            e.Handled = true;
+        }
+    }
+};
+</code></pre>
+<p><strong>Note</strong>: Set <code>e.Handled = true</code> to prevent the default help behavior.</p>
+<hr>
+<h2 id="tooltip-functionality">Tooltip Functionality</h2>
+<h3 id="overview-1">Overview</h3>
+<p><code>KryptonHelpProvider</code> can display help strings as styled tooltips when users hover over controls. This provides immediate context-sensitive help without requiring the F1 key.</p>
+<h3 id="requirements">Requirements</h3>
+<ol>
+<li><strong>ContainerControl must be set</strong> - The tooltip system requires a container control to track mouse movement</li>
+<li><strong>EnableToolTips must be true</strong> - Tooltips are disabled by default</li>
+<li><strong>Help must be enabled for the control</strong> - Use <code>SetShowHelp(control, true)</code></li>
+<li><strong>Help string must be set</strong> - Use <code>SetHelpString(control, &quot;help text&quot;)</code></li>
+</ol>
+<h3 id="how-it-works">How It Works</h3>
+<ol>
+<li><strong>Mouse Tracking</strong>: The component tracks mouse movement over the container control</li>
+<li><strong>Control Detection</strong>: When the mouse hovers over a control, it checks if help is enabled</li>
+<li><strong>Timer Delay</strong>: After a configurable delay (<code>ShowIntervalDelay</code>), the tooltip appears</li>
+<li><strong>Display</strong>: A styled Krypton tooltip is shown at the mouse location</li>
+<li><strong>Auto-Hide</strong>: The tooltip hides when the mouse leaves the control or after <code>CloseIntervalDelay</code></li>
+</ol>
+<h3 id="tooltip-configuration">Tooltip Configuration</h3>
+<pre><code class="lang-csharp">// Enable tooltips
+helpProvider.ToolTipValues.EnableToolTips = true;
+
+// Set tooltip style
+helpProvider.ToolTipValues.ToolTipStyle = LabelStyle.ToolTip; // or LabelStyle.SuperTip
+
+// Enable shadow
+helpProvider.ToolTipValues.ToolTipShadow = true;
+
+// Configure delays (in milliseconds)
+helpProvider.ToolTipValues.ShowIntervalDelay = 500;    // Wait 500ms before showing
+helpProvider.ToolTipValues.CloseIntervalDelay = 5000;  // Auto-close after 5 seconds
+
+// Configure position (optional)
+helpProvider.ToolTipValues.ToolTipPosition.PlacementMode = PlacementMode.Bottom;
+helpProvider.ToolTipValues.ToolTipPosition.HorizontalOffset = 10;
+helpProvider.ToolTipValues.ToolTipPosition.VerticalOffset = 10;
+</code></pre>
+<h3 id="tooltip-vs-f1-help">Tooltip vs F1 Help</h3>
+<ul>
+<li><strong>Tooltips</strong>: Display automatically on hover (if enabled)</li>
+<li><strong>F1 Help</strong>: Displays when F1 is pressed or Help button is clicked</li>
+<li><strong>Both can work together</strong>: Tooltips provide quick reference, F1 provides detailed help</li>
+</ul>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-basic-help-strings">Example 1: Basic Help Strings</h3>
+<pre><code class="lang-csharp">public partial class LoginForm : KryptonForm
+{
+    private KryptonHelpProvider helpProvider;
+    
+    public LoginForm()
+    {
+        InitializeComponent();
+        
+        helpProvider = new KryptonHelpProvider();
+        helpProvider.ContainerControl = this;
+        helpProvider.ToolTipValues.EnableToolTips = true;
+        
+        // Set help for username field
+        helpProvider.SetShowHelp(textBoxUsername, true);
+        helpProvider.SetHelpString(textBoxUsername, 
+            &quot;Enter your username or email address&quot;);
+        
+        // Set help for password field
+        helpProvider.SetShowHelp(textBoxPassword, true);
+        helpProvider.SetHelpString(textBoxPassword, 
+            &quot;Enter your password. Passwords are case-sensitive.&quot;);
+        
+        // Set help for remember me checkbox
+        helpProvider.SetShowHelp(checkBoxRememberMe, true);
+        helpProvider.SetHelpString(checkBoxRememberMe, 
+            &quot;Check this box to save your login credentials&quot;);
+    }
+}
+</code></pre>
+<h3 id="example-2-html-help-file-integration">Example 2: HTML Help File Integration</h3>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    private KryptonHelpProvider helpProvider;
+    
+    public MainForm()
+    {
+        InitializeComponent();
+        
+        helpProvider = new KryptonHelpProvider();
+        
+        // Set HTML help file
+        string helpFile = Path.Combine(Application.StartupPath, &quot;Help&quot;, &quot;MyApp.chm&quot;);
+        if (File.Exists(helpFile))
+        {
+            helpProvider.HelpNamespace = helpFile;
+        }
+        
+        // Set help keywords for controls
+        helpProvider.SetShowHelp(buttonSave, true);
+        helpProvider.SetHelpKeyword(buttonSave, &quot;save_file&quot;);
+        helpProvider.SetHelpNavigator(buttonSave, HelpNavigator.Topic);
+        
+        helpProvider.SetShowHelp(buttonPrint, true);
+        helpProvider.SetHelpKeyword(buttonPrint, &quot;print_document&quot;);
+        helpProvider.SetHelpNavigator(buttonPrint, HelpNavigator.Topic);
+        
+        // Set up table of contents button
+        helpProvider.SetShowHelp(buttonHelp, true);
+        helpProvider.SetHelpNavigator(buttonHelp, HelpNavigator.TableOfContents);
+    }
+}
+</code></pre>
+<h3 id="example-3-custom-help-handling">Example 3: Custom Help Handling</h3>
+<pre><code class="lang-csharp">public partial class DataEntryForm : KryptonForm
+{
+    private KryptonHelpProvider helpProvider;
+    
+    public DataEntryForm()
+    {
+        InitializeComponent();
+        
+        helpProvider = new KryptonHelpProvider();
+        helpProvider.ContainerControl = this;
+        helpProvider.ToolTipValues.EnableToolTips = true;
+        
+        // Set help strings
+        helpProvider.SetShowHelp(textBoxEmail, true);
+        helpProvider.SetHelpString(textBoxEmail, &quot;Enter a valid email address&quot;);
+        
+        // Handle help requests with custom logic
+        helpProvider.HelpRequested += HelpProvider_HelpRequested;
+    }
+    
+    private void HelpProvider_HelpRequested(object? sender, HelpEventArgs e)
+    {
+        Control? control = ActiveControl;
+        
+        if (control == textBoxEmail)
+        {
+            // Show enhanced help for email field
+            string helpText = &quot;Email Address Requirements:\n\n&quot; +
+                            &quot;• Must contain @ symbol\n&quot; +
+                            &quot;• Must have valid domain\n&quot; +
+                            &quot;• Example: user@example.com&quot;;
+            
+            KryptonMessageBox.Show(this, helpText, &quot;Email Help&quot;, 
+                KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information);
+            
+            e.Handled = true; // Prevent default behavior
+        }
+        else if (control != null)
+        {
+            // Use default help string for other controls
+            string? helpString = helpProvider.GetHelpString(control);
+            if (!string.IsNullOrEmpty(helpString))
+            {
+                KryptonMessageBox.Show(this, helpString, $&quot;Help: {control.Name}&quot;, 
+                    KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information);
+                e.Handled = true;
+            }
+        }
+    }
+}
+</code></pre>
+<h3 id="example-4-dynamic-help-updates">Example 4: Dynamic Help Updates</h3>
+<pre><code class="lang-csharp">public partial class DynamicForm : KryptonForm
+{
+    private KryptonHelpProvider helpProvider;
+    
+    public DynamicForm()
+    {
+        InitializeComponent();
+        
+        helpProvider = new KryptonHelpProvider();
+        helpProvider.ContainerControl = this;
+        helpProvider.ToolTipValues.EnableToolTips = true;
+        
+        // Update help based on control state
+        textBoxAge.Validating += TextBoxAge_Validating;
+    }
+    
+    private void TextBoxAge_Validating(object? sender, CancelEventArgs e)
+    {
+        if (int.TryParse(textBoxAge.Text, out int age))
+        {
+            if (age &lt; 18)
+            {
+                helpProvider.SetHelpString(textBoxAge, 
+                    &quot;You must be at least 18 years old to register&quot;);
+            }
+            else if (age &gt; 120)
+            {
+                helpProvider.SetHelpString(textBoxAge, 
+                    &quot;Please enter a valid age&quot;);
+            }
+            else
+            {
+                helpProvider.SetHelpString(textBoxAge, 
+                    &quot;Enter your age (must be between 18 and 120)&quot;);
+            }
+        }
+        else
+        {
+            helpProvider.SetHelpString(textBoxAge, 
+                &quot;Please enter a valid number for your age&quot;);
+        }
+    }
+}
+</code></pre>
+<h3 id="example-5-palette-customization">Example 5: Palette Customization</h3>
+<pre><code class="lang-csharp">public partial class ThemedForm : KryptonForm
+{
+    private KryptonHelpProvider helpProvider;
+    
+    public ThemedForm()
+    {
+        InitializeComponent();
+        
+        helpProvider = new KryptonHelpProvider();
+        helpProvider.ContainerControl = this;
+        helpProvider.ToolTipValues.EnableToolTips = true;
+        
+        // Use Office 2010 Blue theme
+        helpProvider.PaletteMode = PaletteMode.Office2010Blue;
+        
+        // Or use a custom palette
+        // helpProvider.PaletteMode = PaletteMode.Custom;
+        // helpProvider.Palette = myCustomPalette;
+        
+        // Set help strings
+        helpProvider.SetShowHelp(textBox1, true);
+        helpProvider.SetHelpString(textBox1, &quot;This tooltip will use the selected theme&quot;);
+    }
+    
+    // Change theme at runtime
+    private void ChangeTheme(PaletteMode mode)
+    {
+        helpProvider.PaletteMode = mode;
+        // Tooltips will automatically update to use the new theme
+    }
+}
+</code></pre>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-always-set-containercontrol">1. Always Set ContainerControl</h3>
+<p>For tooltip functionality to work, you <strong>must</strong> set the <code>ContainerControl</code> property:</p>
+<pre><code class="lang-csharp">// ✅ Good
+helpProvider.ContainerControl = this;
+
+// ❌ Bad - tooltips won't work
+// helpProvider.ContainerControl is null
+</code></pre>
+<h3 id="2-enable-tooltips-explicitly">2. Enable Tooltips Explicitly</h3>
+<p>Tooltips are disabled by default. Always enable them if you want hover help:</p>
+<pre><code class="lang-csharp">helpProvider.ToolTipValues.EnableToolTips = true;
+</code></pre>
+<h3 id="3-use-descriptive-help-strings">3. Use Descriptive Help Strings</h3>
+<p>Write clear, concise help text that explains what the control does:</p>
+<pre><code class="lang-csharp">// ✅ Good
+helpProvider.SetHelpString(textBoxEmail, 
+    &quot;Enter your email address. This will be used for account verification.&quot;);
+
+// ❌ Bad - too vague
+helpProvider.SetHelpString(textBoxEmail, &quot;Email&quot;);
+</code></pre>
+<h3 id="4-set-help-before-setting-containercontrol">4. Set Help Before Setting ContainerControl</h3>
+<p>If you're setting help strings programmatically, set them before setting <code>ContainerControl</code> to avoid unnecessary tooltip system updates:</p>
+<pre><code class="lang-csharp">// ✅ Good
+helpProvider.SetShowHelp(textBox1, true);
+helpProvider.SetHelpString(textBox1, &quot;Help text&quot;);
+helpProvider.ContainerControl = this; // Set last
+
+// Less efficient
+helpProvider.ContainerControl = this;
+helpProvider.SetHelpString(textBox1, &quot;Help text&quot;); // Triggers update
+</code></pre>
+<h3 id="5-handle-helprequested-for-custom-behavior">5. Handle HelpRequested for Custom Behavior</h3>
+<p>Use the <code>HelpRequested</code> event for custom help dialogs or enhanced help:</p>
+<pre><code class="lang-csharp">helpProvider.HelpRequested += (sender, e) =&gt;
+{
+    // Custom help logic
+    e.Handled = true; // Don't forget to mark as handled!
+};
+</code></pre>
+<h3 id="6-clean-up-resources">6. Clean Up Resources</h3>
+<p>If creating <code>KryptonHelpProvider</code> programmatically, ensure proper disposal:</p>
+<pre><code class="lang-csharp">private KryptonHelpProvider? helpProvider;
+
+protected override void Dispose(bool disposing)
+{
+    if (disposing)
+    {
+        helpProvider?.Dispose();
+    }
+    base.Dispose(disposing);
+}
+</code></pre>
+<h3 id="7-use-appropriate-tooltip-delays">7. Use Appropriate Tooltip Delays</h3>
+<p>Adjust delays based on your application's needs:</p>
+<pre><code class="lang-csharp">// Quick response for expert users
+helpProvider.ToolTipValues.ShowIntervalDelay = 300;
+
+// Slower for beginners (more forgiving)
+helpProvider.ToolTipValues.ShowIntervalDelay = 1000;
+</code></pre>
+<h3 id="8-consider-help-file-vs-help-strings">8. Consider Help File vs Help Strings</h3>
+<ul>
+<li><strong>Help Strings</strong>: Best for simple, contextual help</li>
+<li><strong>HTML Help Files</strong>: Best for comprehensive documentation with multiple topics</li>
+</ul>
+<pre><code class="lang-csharp">// Simple help - use strings
+helpProvider.HelpNamespace = string.Empty;
+helpProvider.SetHelpString(control, &quot;Simple help text&quot;);
+
+// Complex help - use HTML file
+helpProvider.HelpNamespace = @&quot;C:\Help\MyApp.chm&quot;;
+helpProvider.SetHelpKeyword(control, &quot;topic_id&quot;);
+</code></pre>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="tooltips-not-showing">Tooltips Not Showing</h3>
+<p><strong>Problem</strong>: Tooltips don't appear when hovering over controls.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p>Check that <code>ContainerControl</code> is set:</p>
+<pre><code class="lang-csharp">if (helpProvider.ContainerControl == null)
+{
+    helpProvider.ContainerControl = this;
+}
+</code></pre>
+</li>
+<li><p>Verify tooltips are enabled:</p>
+<pre><code class="lang-csharp">if (!helpProvider.ToolTipValues.EnableToolTips)
+{
+    helpProvider.ToolTipValues.EnableToolTips = true;
+}
+</code></pre>
+</li>
+<li><p>Ensure help is enabled for the control:</p>
+<pre><code class="lang-csharp">if (!helpProvider.GetShowHelp(control))
+{
+    helpProvider.SetShowHelp(control, true);
+}
+</code></pre>
+</li>
+<li><p>Verify help string is set:</p>
+<pre><code class="lang-csharp">string? helpString = helpProvider.GetHelpString(control);
+if (string.IsNullOrEmpty(helpString))
+{
+    helpProvider.SetHelpString(control, &quot;Help text here&quot;);
+}
+</code></pre>
+</li>
+</ol>
+<h3 id="tooltips-show-wrong-theme">Tooltips Show Wrong Theme</h3>
+<p><strong>Problem</strong>: Tooltips don't match the application theme.</p>
+<p><strong>Solution</strong>: Ensure <code>PaletteMode</code> matches your form's palette:</p>
+<pre><code class="lang-csharp">// Match form's palette mode
+helpProvider.PaletteMode = kryptonManager1.GlobalPaletteMode;
+</code></pre>
+<h3 id="f1-help-not-working">F1 Help Not Working</h3>
+<p><strong>Problem</strong>: Pressing F1 doesn't show help.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p>Ensure help is enabled for the control:</p>
+<pre><code class="lang-csharp">helpProvider.SetShowHelp(control, true);
+</code></pre>
+</li>
+<li><p>Set a help string or keyword:</p>
+<pre><code class="lang-csharp">helpProvider.SetHelpString(control, &quot;Help text&quot;);
+// OR for HTML help:
+helpProvider.SetHelpKeyword(control, &quot;topic_id&quot;);
+</code></pre>
+</li>
+<li><p>Check if <code>HelpRequested</code> event is handling it:</p>
+<pre><code class="lang-csharp">// If e.Handled = true, default behavior is prevented
+helpProvider.HelpRequested += (sender, e) =&gt;
+{
+    // Your custom logic
+    // e.Handled = true; // Remove this if you want default behavior
+};
+</code></pre>
+</li>
+</ol>
+<h3 id="html-help-file-not-opening">HTML Help File Not Opening</h3>
+<p><strong>Problem</strong>: HTML help file doesn't open when F1 is pressed.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p>Verify file path is correct:</p>
+<pre><code class="lang-csharp">if (File.Exists(helpProvider.HelpNamespace))
+{
+    // File exists
+}
+</code></pre>
+</li>
+<li><p>Ensure <code>HelpNamespace</code> is set:</p>
+<pre><code class="lang-csharp">helpProvider.HelpNamespace = @&quot;C:\Help\MyApp.chm&quot;;
+</code></pre>
+</li>
+<li><p>Check help keyword is set (if using Topic navigation):</p>
+<pre><code class="lang-csharp">helpProvider.SetHelpKeyword(control, &quot;valid_topic_id&quot;);
+helpProvider.SetHelpNavigator(control, HelpNavigator.Topic);
+</code></pre>
+</li>
+</ol>
+<h3 id="performance-issues">Performance Issues</h3>
+<p><strong>Problem</strong>: Application feels sluggish when tooltips are enabled.</p>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li><p>Increase <code>ShowIntervalDelay</code> to reduce tooltip frequency:</p>
+<pre><code class="lang-csharp">helpProvider.ToolTipValues.ShowIntervalDelay = 1000; // Wait 1 second
+</code></pre>
+</li>
+<li><p>Disable tooltips for controls that don't need them:</p>
+<pre><code class="lang-csharp">helpProvider.SetShowHelp(control, false);
+</code></pre>
+</li>
+<li><p>Only set <code>ContainerControl</code> when needed:</p>
+<pre><code class="lang-csharp">// Don't set if tooltips aren't needed
+if (enableTooltips)
+{
+    helpProvider.ContainerControl = this;
+}
+</code></pre>
+</li>
+</ol>
+<hr>
+<h2 id="advanced-topics">Advanced Topics</h2>
+<h3 id="custom-tooltip-content">Custom Tooltip Content</h3>
+<p>While <code>KryptonHelpProvider</code> uses help strings for tooltips, you can extend functionality by handling the <code>HelpRequested</code> event and creating custom tooltip content:</p>
+<pre><code class="lang-csharp">helpProvider.HelpRequested += (sender, e) =&gt;
+{
+    Control? control = ActiveControl;
+    if (control != null)
+    {
+        // Create custom tooltip with additional information
+        var customTooltip = new VisualPopupToolTip(
+            redirector,
+            customContent, // Your custom IContentValues
+            renderer,
+            PaletteBackStyle.ControlToolTip,
+            PaletteBorderStyle.ControlToolTip,
+            contentStyle,
+            true);
+        
+        customTooltip.ShowCalculatingSize(control.PointToScreen(Point.Empty));
+        e.Handled = true;
+    }
+};
+</code></pre>
+<h3 id="multiple-help-providers">Multiple Help Providers</h3>
+<p>You can use multiple <code>KryptonHelpProvider</code> instances for different purposes:</p>
+<pre><code class="lang-csharp">// Quick help provider (tooltips only)
+var quickHelp = new KryptonHelpProvider();
+quickHelp.ContainerControl = this;
+quickHelp.ToolTipValues.EnableToolTips = true;
+quickHelp.SetHelpString(control, &quot;Quick tip&quot;);
+
+// Detailed help provider (HTML help)
+var detailedHelp = new KryptonHelpProvider();
+detailedHelp.HelpNamespace = @&quot;C:\Help\Detailed.chm&quot;;
+detailedHelp.SetHelpKeyword(control, &quot;detailed_topic&quot;);
+</code></pre>
+<h3 id="integration-with-validation">Integration with Validation</h3>
+<p>Combine with <code>KryptonErrorProvider</code> for comprehensive user assistance:</p>
+<pre><code class="lang-csharp">private KryptonHelpProvider helpProvider;
+private KryptonErrorProvider errorProvider;
+
+private void InitializeProviders()
+{
+    helpProvider = new KryptonHelpProvider();
+    helpProvider.ContainerControl = this;
+    helpProvider.ToolTipValues.EnableToolTips = true;
+    
+    errorProvider = new KryptonErrorProvider();
+    errorProvider.ContainerControl = this;
+    
+    // Set help for validation
+    helpProvider.SetShowHelp(textBoxEmail, true);
+    helpProvider.SetHelpString(textBoxEmail, 
+        &quot;Enter a valid email address. Example: user@example.com&quot;);
+}
+
+private void ValidateEmail()
+{
+    if (!IsValidEmail(textBoxEmail.Text))
+    {
+        errorProvider.SetError(textBoxEmail, &quot;Invalid email format&quot;);
+        // Help string provides guidance, error provides feedback
+    }
+    else
+    {
+        errorProvider.SetError(textBoxEmail, string.Empty);
+    }
+}
+</code></pre>
+<hr>
+<h2 id="summary">Summary</h2>
+<p><code>KryptonHelpProvider</code> provides a powerful, theme-aware help system for your Krypton applications. Key takeaways:</p>
+<ul>
+<li><strong>Easy to use</strong>: Simple API for setting help strings</li>
+<li><strong>Theme integration</strong>: Tooltips match your application's Krypton theme</li>
+<li><strong>Flexible</strong>: Supports both simple help strings and HTML help files</li>
+<li><strong>User-friendly</strong>: Tooltips provide immediate help on hover</li>
+<li><strong>Customizable</strong>: Full control over appearance and behavior</li>
+</ul>
+<p>For more information, see the <a href="https://krypton-suite.github.io/Standard-Toolkit-Online-Help/">Krypton Toolkit Online Help</a>.</p>
+<hr>
+<h2 id="related-components">Related Components</h2>
+<ul>
+<li><code>KryptonErrorProvider</code> - Provides error indication with styled tooltips</li>
+<li><code>KryptonToolTip</code> - Standalone tooltip component</li>
+<li><code>KryptonMessageBox</code> - For displaying help dialogs</li>
+</ul>
+<hr>
+<p><strong>Version</strong>: 1.0<br>
+<strong>Last Updated</strong>: 2026<br>
+<strong>Krypton Toolkit Version</strong>: 100.00+</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Creating Backstage Pages - In-Depth Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Creating Backstage Pages - In-Depth Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../../index.html">
+                <img id="logo" class="svg" src="../../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="creating-backstage-pages---in-depth-guide">Creating Backstage Pages - In-Depth Guide</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#understanding-kryptonbackstagepage">Understanding KryptonBackstagePage</a></li>
+<li><a href="#creating-pages-in-the-designer">Creating Pages in the Designer</a></li>
+<li><a href="#creating-pages-at-runtime">Creating Pages at Runtime</a></li>
+<li><a href="#page-properties">Page Properties</a></li>
+<li><a href="#designing-page-content">Designing Page Content</a>
+<ul>
+<li><a href="#basic-layout">Basic Layout</a></li>
+<li><a href="#using-layout-containers">Using Layout Containers</a></li>
+<li><a href="#common-page-patterns">Common Page Patterns</a></li>
+</ul>
+</li>
+<li><a href="#using-krypton-controls-in-pages">Using Krypton Controls in Pages</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#complete-examples">Complete Examples</a></li>
+</ul>
+<hr>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonBackstagePage</code> is the building block of the Backstage View. Each page represents a distinct section or view that users can navigate to from the left navigation panel. This guide provides comprehensive information on creating, designing, and implementing Backstage pages.</p>
+<hr>
+<h2 id="understanding-kryptonbackstagepage">Understanding KryptonBackstagePage</h2>
+<h3 id="what-is-kryptonbackstagepage">What is KryptonBackstagePage?</h3>
+<p><code>KryptonBackstagePage</code> inherits from <code>KryptonPanel</code>, which means:</p>
+<ul>
+<li><strong>It's a container control</strong>: You can add any Windows Forms controls to it</li>
+<li><strong>It supports all panel properties</strong>: Background styles, padding, margins, etc.</li>
+<li><strong>It's fully designable</strong>: Works seamlessly with the Visual Studio designer</li>
+<li><strong>It's theme-aware</strong>: Automatically adapts to the active Krypton theme</li>
+</ul>
+<h3 id="key-characteristics">Key Characteristics</h3>
+<ul>
+<li><strong>Docking</strong>: Pages are automatically docked to <code>Fill</code> by the <code>KryptonBackstageView</code></li>
+<li><strong>Visibility</strong>: Pages are hidden by default and shown when selected</li>
+<li><strong>Navigation</strong>: Pages appear in the left navigation list (unless <code>VisibleInNavigation = false</code>)</li>
+<li><strong>Lifecycle</strong>: Pages are created once and reused as users navigate</li>
+</ul>
+<hr>
+<h2 id="creating-pages-in-the-designer">Creating Pages in the Designer</h2>
+<h3 id="step-by-step-adding-your-first-page">Step-by-Step: Adding Your First Page</h3>
+<ol>
+<li><p><strong>Add a KryptonBackstageView to your form</strong></p>
+<ul>
+<li>Drag <code>KryptonBackstageView</code> from the toolbox onto your form</li>
+<li>It will appear in the component tray (not visible on the form)</li>
+</ul>
+</li>
+<li><p><strong>Add a page using designer verbs</strong></p>
+<ul>
+<li>Right-click the <code>KryptonBackstageView</code> in the component tray</li>
+<li>Select <strong>&quot;Add Page&quot;</strong> from the context menu</li>
+<li>A new <code>KryptonBackstagePage</code> will be created</li>
+</ul>
+</li>
+<li><p><strong>Configure the page</strong></p>
+<ul>
+<li>Select the page in the <strong>Document Outline</strong> window (View → Other Windows → Document Outline)</li>
+<li>In the Properties window, set:
+<ul>
+<li><code>Text</code>: The display name (e.g., &quot;Info&quot;, &quot;Save&quot;, &quot;Options&quot;)</li>
+<li><code>Image</code>: Optional icon/image for navigation</li>
+<li><code>VisibleInNavigation</code>: Whether to show in the navigation list</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>Design the page content</strong></p>
+<ul>
+<li>With the page selected, you can now add controls to it</li>
+<li>Use the toolbox to drag controls onto the page</li>
+<li>Arrange and configure controls as needed</li>
+</ul>
+</li>
+<li><p><strong>Link to the ribbon</strong></p>
+<pre><code class="lang-csharp">kryptonRibbon.RibbonFileAppTab.UseBackstageView = true;
+kryptonRibbon.RibbonFileAppTab.BackstageView = kryptonBackstageView1;
+</code></pre>
+</li>
+</ol>
+<h3 id="using-the-collection-editor">Using the Collection Editor</h3>
+<p>Alternatively, you can use the collection editor:</p>
+<ol>
+<li>Select the <code>KryptonBackstageView</code> in the designer</li>
+<li>In the Properties window, find the <code>Pages</code> property</li>
+<li>Click the <strong>&quot;...&quot;</strong> button to open the collection editor</li>
+<li>Click <strong>&quot;Add&quot;</strong> to create new pages</li>
+<li>Configure each page's properties in the editor</li>
+<li>Use <strong>&quot;Remove&quot;</strong> and arrow buttons to reorder pages</li>
+</ol>
+<h3 id="designer-tips">Designer Tips</h3>
+<ul>
+<li><strong>Document Outline</strong>: Use the Document Outline window to easily select pages and their child controls</li>
+<li><strong>Page Selection</strong>: Pages are easier to select from Document Outline than from the designer surface</li>
+<li><strong>Nested Controls</strong>: You can add any control hierarchy - panels, layout containers, user controls, etc.</li>
+<li><strong>Docking</strong>: Child controls can use docking (<code>Dock = Fill</code>, <code>Dock = Top</code>, etc.) for flexible layouts</li>
+</ul>
+<hr>
+<h2 id="creating-pages-at-runtime">Creating Pages at Runtime</h2>
+<h3 id="basic-page-creation">Basic Page Creation</h3>
+<pre><code class="lang-csharp">// Create a new page
+var infoPage = new KryptonBackstagePage
+{
+    Text = &quot;Info&quot;,
+    VisibleInNavigation = true
+};
+
+// Add it to the backstage view
+backstage.Pages.Add(infoPage);
+</code></pre>
+<h3 id="creating-pages-with-content">Creating Pages with Content</h3>
+<pre><code class="lang-csharp">// Create a page
+var savePage = new KryptonBackstagePage
+{
+    Text = &quot;Save&quot;,
+    Dock = DockStyle.Fill  // Will be set automatically, but good practice
+};
+
+// Add controls to the page
+var label = new KryptonLabel
+{
+    Text = &quot;Save your work&quot;,
+    Location = new Point(20, 20),
+    AutoSize = true
+};
+savePage.Controls.Add(label);
+
+var button = new KryptonButton
+{
+    Text = &quot;Save Now&quot;,
+    Location = new Point(20, 60),
+    Size = new Size(120, 35)
+};
+button.Click += (s, e) =&gt; SaveDocument();
+savePage.Controls.Add(button);
+
+// Add the page to the backstage view
+backstage.Pages.Add(savePage);
+</code></pre>
+<h3 id="programmatic-page-management">Programmatic Page Management</h3>
+<pre><code class="lang-csharp">// Find a page by name
+var page = backstage.Pages[&quot;Info&quot;];
+
+// Remove a page
+if (page != null)
+{
+    backstage.Pages.Remove(page);
+}
+
+// Reorder pages
+var firstPage = backstage.Pages[0];
+backstage.Pages.Remove(firstPage);
+backstage.Pages.Add(firstPage); // Moves to end
+
+// Clear all pages
+backstage.Pages.Clear();
+</code></pre>
+<hr>
+<h2 id="page-properties">Page Properties</h2>
+<h3 id="navigation-properties">Navigation Properties</h3>
+<h4 id="string-text"><code>string Text</code></h4>
+<ul>
+<li><strong>Purpose</strong>: Display text in the navigation list</li>
+<li><strong>Default</strong>: Empty string</li>
+<li><strong>Example</strong>: <code>page.Text = &quot;Information&quot;</code></li>
+</ul>
+<h4 id="image-image"><code>Image? Image</code></h4>
+<ul>
+<li><strong>Purpose</strong>: Optional image/icon for navigation (future enhancement)</li>
+<li><strong>Default</strong>: <code>null</code></li>
+<li><strong>Example</strong>: <code>page.Image = Properties.Resources.InfoIcon</code></li>
+</ul>
+<h4 id="bool-visibleinnavigation"><code>bool VisibleInNavigation</code></h4>
+<ul>
+<li><strong>Purpose</strong>: Control whether the page appears in the navigation list</li>
+<li><strong>Default</strong>: <code>true</code></li>
+<li><strong>Use Case</strong>: Hide pages that should be accessible programmatically but not via navigation</li>
+<li><strong>Example</strong>: <code>page.VisibleInNavigation = false</code></li>
+</ul>
+<h3 id="inherited-panel-properties">Inherited Panel Properties</h3>
+<p>Since <code>KryptonBackstagePage</code> inherits from <code>KryptonPanel</code>, you have access to:</p>
+<h4 id="palettebackstyle-panelbackstyle"><code>PaletteBackStyle PanelBackStyle</code></h4>
+<ul>
+<li>Control the background style of the page</li>
+<li><strong>Example</strong>: <code>page.PanelBackStyle = PaletteBackStyle.PanelClient</code></li>
+</ul>
+<h4 id="padding-padding"><code>Padding Padding</code></h4>
+<ul>
+<li>Internal spacing for the page content</li>
+<li><strong>Example</strong>: <code>page.Padding = new Padding(20)</code></li>
+</ul>
+<h4 id="standard-control-properties">Standard Control Properties</h4>
+<ul>
+<li><code>BackColor</code>, <code>ForeColor</code>, <code>Font</code>, <code>Enabled</code>, <code>Visible</code>, <code>Dock</code>, <code>Anchor</code>, etc.</li>
+</ul>
+<hr>
+<h2 id="designing-page-content">Designing Page Content</h2>
+<h3 id="basic-layout">Basic Layout</h3>
+<h4 id="simple-centered-content">Simple Centered Content</h4>
+<pre><code class="lang-csharp">var page = new KryptonBackstagePage { Text = &quot;Welcome&quot; };
+
+var label = new KryptonLabel
+{
+    Text = &quot;Welcome to the Backstage View&quot;,
+    AutoSize = true,
+    Location = new Point(50, 50)
+};
+page.Controls.Add(label);
+</code></pre>
+<h4 id="using-padding-for-spacing">Using Padding for Spacing</h4>
+<pre><code class="lang-csharp">var page = new KryptonBackstagePage
+{
+    Text = &quot;Settings&quot;,
+    Padding = new Padding(30) // 30 pixels on all sides
+};
+
+var label = new KryptonLabel
+{
+    Text = &quot;Application Settings&quot;,
+    AutoSize = true,
+    Location = new Point(0, 0) // Will respect padding
+};
+page.Controls.Add(label);
+</code></pre>
+<h3 id="using-layout-containers">Using Layout Containers</h3>
+<h4 id="tablelayoutpanel-for-structured-layouts">TableLayoutPanel for Structured Layouts</h4>
+<pre><code class="lang-csharp">var page = new KryptonBackstagePage { Text = &quot;Options&quot; };
+
+var tableLayout = new TableLayoutPanel
+{
+    Dock = DockStyle.Fill,
+    ColumnCount = 2,
+    RowCount = 3,
+    Padding = new Padding(20)
+};
+
+// Configure columns
+tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+
+// Add controls
+tableLayout.Controls.Add(new KryptonLabel { Text = &quot;Theme:&quot; }, 0, 0);
+var themeCombo = new KryptonComboBox { Dock = DockStyle.Fill };
+tableLayout.Controls.Add(themeCombo, 1, 0);
+
+tableLayout.Controls.Add(new KryptonLabel { Text = &quot;Language:&quot; }, 0, 1);
+var langCombo = new KryptonComboBox { Dock = DockStyle.Fill };
+tableLayout.Controls.Add(langCombo, 1, 1);
+
+page.Controls.Add(tableLayout);
+</code></pre>
+<h4 id="flowlayoutpanel-for-dynamic-content">FlowLayoutPanel for Dynamic Content</h4>
+<pre><code class="lang-csharp">var page = new KryptonBackstagePage { Text = &quot;Recent Files&quot; };
+
+var flowLayout = new FlowLayoutPanel
+{
+    Dock = DockStyle.Fill,
+    FlowDirection = FlowDirection.TopDown,
+    WrapContents = false,
+    Padding = new Padding(20)
+};
+
+// Add recent file buttons
+foreach (var file in recentFiles)
+{
+    var button = new KryptonButton
+    {
+        Text = file.Name,
+        Width = 300,
+        Height = 40,
+        Margin = new Padding(0, 5, 0, 5)
+    };
+    button.Click += (s, e) =&gt; OpenFile(file);
+    flowLayout.Controls.Add(button);
+}
+
+page.Controls.Add(flowLayout);
+</code></pre>
+<h4 id="splitcontainer-for-two-pane-layouts">SplitContainer for Two-Pane Layouts</h4>
+<pre><code class="lang-csharp">var page = new KryptonBackstagePage { Text = &quot;Export&quot; };
+
+var splitContainer = new SplitContainer
+{
+    Dock = DockStyle.Fill,
+    Orientation = Orientation.Horizontal,
+    SplitterDistance = 200
+};
+
+// Left/top pane: Options
+var optionsPanel = new KryptonPanel
+{
+    Dock = DockStyle.Fill,
+    Padding = new Padding(20)
+};
+// Add option controls here
+splitContainer.Panel1.Controls.Add(optionsPanel);
+
+// Right/bottom pane: Preview
+var previewPanel = new KryptonPanel
+{
+    Dock = DockStyle.Fill,
+    Padding = new Padding(20)
+};
+// Add preview controls here
+splitContainer.Panel2.Controls.Add(previewPanel);
+
+page.Controls.Add(splitContainer);
+</code></pre>
+<h3 id="common-page-patterns">Common Page Patterns</h3>
+<h4 id="information-page">Information Page</h4>
+<pre><code class="lang-csharp">var infoPage = new KryptonBackstagePage
+{
+    Text = &quot;Info&quot;,
+    Padding = new Padding(40)
+};
+
+var titleLabel = new KryptonLabel
+{
+    Text = &quot;Application Information&quot;,
+    LabelStyle = LabelStyle.TitlePanel,
+    AutoSize = true,
+    Location = new Point(0, 0)
+};
+infoPage.Controls.Add(titleLabel);
+
+var versionLabel = new KryptonLabel
+{
+    Text = $&quot;Version: {Application.ProductVersion}&quot;,
+    AutoSize = true,
+    Location = new Point(0, 40)
+};
+infoPage.Controls.Add(versionLabel);
+
+var copyrightLabel = new KryptonLabel
+{
+    Text = &quot;© 2025 Your Company&quot;,
+    AutoSize = true,
+    Location = new Point(0, 70)
+};
+infoPage.Controls.Add(copyrightLabel);
+</code></pre>
+<h4 id="settingsoptions-page">Settings/Options Page</h4>
+<pre><code class="lang-csharp">var optionsPage = new KryptonBackstagePage
+{
+    Text = &quot;Options&quot;,
+    Padding = new Padding(30)
+};
+
+var tableLayout = new TableLayoutPanel
+{
+    Dock = DockStyle.Fill,
+    ColumnCount = 2,
+    RowCount = 4,
+    AutoSize = true
+};
+
+tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+
+// Theme setting
+tableLayout.Controls.Add(new KryptonLabel { Text = &quot;Theme:&quot;, AutoSize = true }, 0, 0);
+var themeCombo = new KryptonComboBox { Dock = DockStyle.Fill };
+themeCombo.Items.AddRange(new[] { &quot;Office 2010&quot;, &quot;Office 2013&quot;, &quot;Microsoft 365&quot; });
+tableLayout.Controls.Add(themeCombo, 1, 0);
+
+// Language setting
+tableLayout.Controls.Add(new KryptonLabel { Text = &quot;Language:&quot;, AutoSize = true }, 0, 1);
+var langCombo = new KryptonComboBox { Dock = DockStyle.Fill };
+langCombo.Items.AddRange(new[] { &quot;English&quot;, &quot;French&quot;, &quot;German&quot; });
+tableLayout.Controls.Add(langCombo, 1, 1);
+
+// Checkbox settings
+var autoSaveCheck = new KryptonCheckBox { Text = &quot;Auto-save documents&quot;, AutoSize = true };
+tableLayout.Controls.Add(autoSaveCheck, 0, 2);
+tableLayout.SetColumnSpan(autoSaveCheck, 2);
+
+optionsPage.Controls.Add(tableLayout);
+</code></pre>
+<h4 id="recent-filesitems-page">Recent Files/Items Page</h4>
+<pre><code class="lang-csharp">var recentPage = new KryptonBackstagePage
+{
+    Text = &quot;Recent&quot;,
+    Padding = new Padding(20)
+};
+
+var scrollPanel = new KryptonPanel
+{
+    Dock = DockStyle.Fill,
+    AutoScroll = true
+};
+
+var flowLayout = new FlowLayoutPanel
+{
+    AutoSize = true,
+    FlowDirection = FlowDirection.TopDown,
+    WrapContents = false,
+    Dock = DockStyle.Top
+};
+
+foreach (var file in GetRecentFiles())
+{
+    var fileButton = new KryptonButton
+    {
+        Text = file.Name,
+        Width = 400,
+        Height = 50,
+        Margin = new Padding(0, 5, 0, 5),
+        TextAlign = ContentAlignment.MiddleLeft
+    };
+    fileButton.Click += (s, e) =&gt; OpenFile(file);
+    flowLayout.Controls.Add(fileButton);
+}
+
+scrollPanel.Controls.Add(flowLayout);
+recentPage.Controls.Add(scrollPanel);
+</code></pre>
+<hr>
+<h2 id="using-krypton-controls-in-pages">Using Krypton Controls in Pages</h2>
+<h3 id="recommended-krypton-controls">Recommended Krypton Controls</h3>
+<p>Since <code>KryptonBackstagePage</code> is part of the Krypton Toolkit, you can use any Krypton controls for a consistent, theme-aware UI:</p>
+<h4 id="labels-and-text">Labels and Text</h4>
+<pre><code class="lang-csharp">// Title label
+var title = new KryptonLabel
+{
+    Text = &quot;Page Title&quot;,
+    LabelStyle = LabelStyle.TitlePanel,
+    AutoSize = true
+};
+
+// Body text
+var body = new KryptonLabel
+{
+    Text = &quot;This is body text&quot;,
+    LabelStyle = LabelStyle.NormalControl,
+    AutoSize = true
+};
+</code></pre>
+<h4 id="buttons">Buttons</h4>
+<pre><code class="lang-csharp">var saveButton = new KryptonButton
+{
+    Text = &quot;Save&quot;,
+    ButtonStyle = ButtonStyle.Standalone,
+    Size = new Size(120, 35)
+};
+saveButton.Click += (s, e) =&gt; SaveDocument();
+</code></pre>
+<h4 id="input-controls">Input Controls</h4>
+<pre><code class="lang-csharp">// Text box
+var nameTextBox = new KryptonTextBox
+{
+    Width = 200,
+    Height = 25
+};
+
+// Combo box
+var themeCombo = new KryptonComboBox
+{
+    Width = 200,
+    DropDownStyle = ComboBoxStyle.DropDownList
+};
+themeCombo.Items.AddRange(new[] { &quot;Office 2010&quot;, &quot;Office 2013&quot;, &quot;Microsoft 365&quot; });
+
+// Check box
+var autoSaveCheck = new KryptonCheckBox
+{
+    Text = &quot;Enable auto-save&quot;,
+    AutoSize = true
+};
+</code></pre>
+<h4 id="data-grid">Data Grid</h4>
+<pre><code class="lang-csharp">var dataGrid = new KryptonDataGridView
+{
+    Dock = DockStyle.Fill,
+    AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+};
+dataGrid.Columns.Add(&quot;Name&quot;, &quot;Name&quot;);
+dataGrid.Columns.Add(&quot;Value&quot;, &quot;Value&quot;);
+</code></pre>
+<h3 id="theme-integration">Theme Integration</h3>
+<p>All Krypton controls automatically:</p>
+<ul>
+<li>Adapt to the active theme</li>
+<li>Use consistent colors and styles</li>
+<li>Support theme switching at runtime</li>
+<li>Provide a cohesive user experience</li>
+</ul>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-page-organization">1. Page Organization</h3>
+<ul>
+<li><strong>Logical grouping</strong>: Group related functionality into pages</li>
+<li><strong>Clear naming</strong>: Use descriptive <code>Text</code> properties (e.g., &quot;Save &amp; Export&quot; not &quot;Page1&quot;)</li>
+<li><strong>Reasonable page count</strong>: Too many pages can overwhelm users (aim for 3-7 pages)</li>
+</ul>
+<h3 id="2-layout-design">2. Layout Design</h3>
+<ul>
+<li><strong>Consistent spacing</strong>: Use <code>Padding</code> and <code>Margin</code> consistently</li>
+<li><strong>Responsive layouts</strong>: Use docking and anchoring for flexible layouts</li>
+<li><strong>Readable content</strong>: Ensure text is readable with appropriate font sizes</li>
+<li><strong>Visual hierarchy</strong>: Use different label styles to create visual hierarchy</li>
+</ul>
+<h3 id="3-performance">3. Performance</h3>
+<ul>
+<li><strong>Lazy loading</strong>: Load heavy content only when the page is first accessed</li>
+<li><strong>Efficient controls</strong>: Use virtualized controls (like <code>KryptonDataGridView</code>) for large datasets</li>
+<li><strong>Event handling</strong>: Unsubscribe from events when pages are removed to prevent memory leaks</li>
+</ul>
+<h3 id="4-user-experience">4. User Experience</h3>
+<ul>
+<li><strong>Clear navigation</strong>: Ensure page <code>Text</code> clearly indicates the page's purpose</li>
+<li><strong>Immediate feedback</strong>: Provide visual feedback for user actions</li>
+<li><strong>Error handling</strong>: Handle errors gracefully and inform users</li>
+<li><strong>Accessibility</strong>: Use appropriate control labels and tooltips</li>
+</ul>
+<h3 id="5-code-organization">5. Code Organization</h3>
+<pre><code class="lang-csharp">// Good: Separate page creation into methods
+private void InitializeBackstagePages()
+{
+    CreateInfoPage();
+    CreateOptionsPage();
+    CreateRecentPage();
+}
+
+private void CreateInfoPage()
+{
+    var page = new KryptonBackstagePage { Text = &quot;Info&quot; };
+    // ... configure page
+    backstage.Pages.Add(page);
+}
+</code></pre>
+<hr>
+<h2 id="complete-examples">Complete Examples</h2>
+<h3 id="example-1-simple-information-page">Example 1: Simple Information Page</h3>
+<pre><code class="lang-csharp">private KryptonBackstagePage CreateInfoPage()
+{
+    var page = new KryptonBackstagePage
+    {
+        Text = &quot;Information&quot;,
+        Padding = new Padding(40)
+    };
+
+    var title = new KryptonLabel
+    {
+        Text = Application.ProductName,
+        LabelStyle = LabelStyle.TitlePanel,
+        AutoSize = true,
+        Location = new Point(0, 0)
+    };
+    page.Controls.Add(title);
+
+    var version = new KryptonLabel
+    {
+        Text = $&quot;Version {Application.ProductVersion}&quot;,
+        AutoSize = true,
+        Location = new Point(0, 40)
+    };
+    page.Controls.Add(version);
+
+    var copyright = new KryptonLabel
+    {
+        Text = &quot;© 2025 Your Company. All rights reserved.&quot;,
+        AutoSize = true,
+        Location = new Point(0, 70)
+    };
+    page.Controls.Add(copyright);
+
+    return page;
+}
+</code></pre>
+<h3 id="example-2-options-page-with-settings">Example 2: Options Page with Settings</h3>
+<pre><code class="lang-csharp">private KryptonBackstagePage CreateOptionsPage()
+{
+    var page = new KryptonBackstagePage
+    {
+        Text = &quot;Options&quot;,
+        Padding = new Padding(30)
+    };
+
+    var tableLayout = new TableLayoutPanel
+    {
+        Dock = DockStyle.Fill,
+        ColumnCount = 2,
+        RowCount = 3,
+        AutoSize = true
+    };
+
+    tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+    tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+
+    // Theme selection
+    tableLayout.Controls.Add(new KryptonLabel { Text = &quot;Theme:&quot;, AutoSize = true }, 0, 0);
+    var themeCombo = new KryptonComboBox
+    {
+        Dock = DockStyle.Fill,
+        DropDownStyle = ComboBoxStyle.DropDownList
+    };
+    themeCombo.Items.AddRange(new[] { &quot;Office 2010&quot;, &quot;Office 2013&quot;, &quot;Microsoft 365&quot; });
+    themeCombo.SelectedIndexChanged += (s, e) =&gt; ChangeTheme(themeCombo.SelectedItem.ToString());
+    tableLayout.Controls.Add(themeCombo, 1, 0);
+
+    // Auto-save option
+    var autoSaveCheck = new KryptonCheckBox
+    {
+        Text = &quot;Enable auto-save&quot;,
+        AutoSize = true
+    };
+    autoSaveCheck.CheckedChanged += (s, e) =&gt; EnableAutoSave(autoSaveCheck.Checked);
+    tableLayout.Controls.Add(autoSaveCheck, 0, 1);
+    tableLayout.SetColumnSpan(autoSaveCheck, 2);
+
+    page.Controls.Add(tableLayout);
+    return page;
+}
+</code></pre>
+<h3 id="example-3-recent-files-page">Example 3: Recent Files Page</h3>
+<pre><code class="lang-csharp">private KryptonBackstagePage CreateRecentFilesPage()
+{
+    var page = new KryptonBackstagePage
+    {
+        Text = &quot;Recent Files&quot;,
+        Padding = new Padding(20)
+    };
+
+    var scrollPanel = new KryptonPanel
+    {
+        Dock = DockStyle.Fill,
+        AutoScroll = true
+    };
+
+    var flowLayout = new FlowLayoutPanel
+    {
+        AutoSize = true,
+        FlowDirection = FlowDirection.TopDown,
+        WrapContents = false,
+        Dock = DockStyle.Top,
+        Padding = new Padding(10)
+    };
+
+    var recentFiles = GetRecentFiles();
+    foreach (var file in recentFiles)
+    {
+        var fileButton = new KryptonButton
+        {
+            Text = $&quot;{file.Name}\n{file.Path}&quot;,
+            Width = 450,
+            Height = 60,
+            Margin = new Padding(0, 5, 0, 5),
+            TextAlign = ContentAlignment.MiddleLeft,
+            ButtonStyle = ButtonStyle.Standalone
+        };
+        fileButton.Click += (s, e) =&gt; OpenFile(file);
+        flowLayout.Controls.Add(fileButton);
+    }
+
+    scrollPanel.Controls.Add(flowLayout);
+    page.Controls.Add(scrollPanel);
+
+    return page;
+}
+</code></pre>
+<hr>
+<h2 id="summary">Summary</h2>
+<ul>
+<li><code>KryptonBackstagePage</code> inherits from <code>KryptonPanel</code>, giving you full control over page design</li>
+<li>Pages can be created in the designer or at runtime</li>
+<li>Use layout containers (<code>TableLayoutPanel</code>, <code>FlowLayoutPanel</code>, <code>SplitContainer</code>) for structured layouts</li>
+<li>Leverage Krypton controls for theme-aware, consistent UI</li>
+<li>Follow best practices for organization, performance, and user experience</li>
+</ul>
+<p>For more information, see the main <a href="Ribbon-BackstageView.md">Ribbon Backstage View</a> documentation.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../../styles/main.js"></script>
+  </body>
+</html>
