@@ -4,7 +4,7 @@ This directory contains comprehensive documentation for the Krypton Toolkit exce
 
 ## Documentation Files
 
-### 1. [KryptonExceptionDialog.md](KryptonExceptionDialog.md)
+### 1. [KryptonExceptionDialog](KryptonExceptionDialog.md)
 **Full API Reference Documentation** - Comprehensive, in-depth documentation covering:
 - Complete API reference for all classes and methods
 - Detailed feature descriptions
@@ -23,7 +23,7 @@ This directory contains comprehensive documentation for the Krypton Toolkit exce
 - Architecture reviews
 - Reference during development
 
-### 2. [KryptonExceptionDialog QuickStart.md](KryptonExceptionDialogQuickStart.md)
+### 2. [KryptonExceptionDialog QuickStart](KryptonExceptionDialogQuickStart.md)
 **Quick Start Guide** - Get up and running in 5 minutes:
 - Basic usage examples
 - Common patterns
@@ -128,12 +128,8 @@ catch (Exception ex)
 
 ## Navigation
 
-- **[Start Here: Quick Start Guide →](KryptonExceptionDialog-QuickStart.md)**
+- **[Start Here: Quick Start Guide →](KryptonExceptionDialogQuickStart.md)**
 - **[Full API Reference →](KryptonExceptionDialog.md)**
-
-## Version
-
-Introduced in **Krypton Toolkit v100** (2024-2025)
 
 ## Support
 
