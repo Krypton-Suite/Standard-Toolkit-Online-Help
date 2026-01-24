@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Detachable Ribbons - Code Examples | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Detachable Ribbons - Code Examples | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="detachable-ribbons---code-examples">Detachable Ribbons - Code Examples</h1>
+
+<p>This document provides practical code examples for common scenarios when working with detachable ribbons.</p>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#basic-examples">Basic Examples</a></li>
+<li><a href="#event-handling">Event Handling</a></li>
+<li><a href="#user-preferences">User Preferences</a></li>
+<li><a href="#ui-integration">UI Integration</a></li>
+<li><a href="#advanced-scenarios">Advanced Scenarios</a></li>
+</ol>
+<hr>
+<h2 id="basic-examples">Basic Examples</h2>
+<h3 id="example-1-simple-enable-and-detach">Example 1: Simple Enable and Detach</h3>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    private KryptonRibbon _ribbon;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        
+        _ribbon = new KryptonRibbon
+        {
+            Dock = DockStyle.Top,
+            AllowDetach = true  // Enable feature
+        };
+        
+        InitializeRibbonContent();
+        Controls.Add(_ribbon);
+    }
+
+    private void DetachButton_Click(object sender, EventArgs e)
+    {
+        _ribbon.Detach();
+    }
+
+    private void ReattachButton_Click(object sender, EventArgs e)
+    {
+        _ribbon.Reattach();
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-2-conditional-detach-based-on-state">Example 2: Conditional Detach Based on State</h3>
+<pre><code class="lang-csharp">private void ToggleRibbonDetach()
+{
+    if (_ribbon.IsDetached)
+    {
+        _ribbon.Reattach();
+    }
+    else
+    {
+        _ribbon.Detach();
+    }
+}
+
+private void UpdateToggleButton()
+{
+    toggleButton.Text = _ribbon.IsDetached 
+        ? &quot;Reattach Ribbon&quot; 
+        : &quot;Detach Ribbon&quot;;
+    toggleButton.Enabled = _ribbon.AllowDetach;
+}
+</code></pre>
+<hr>
+<h2 id="event-handling">Event Handling</h2>
+<h3 id="example-3-update-ui-on-state-change">Example 3: Update UI on State Change</h3>
+<pre><code class="lang-csharp">public MainForm()
+{
+    InitializeComponent();
+    InitializeRibbon();
+    HookRibbonEvents();
+}
+
+private void HookRibbonEvents()
+{
+    _ribbon.RibbonDetached += OnRibbonDetached;
+    _ribbon.RibbonReattached += OnRibbonReattached;
+}
+
+private void OnRibbonDetached(object? sender, EventArgs e)
+{
+    // Update menu items
+    detachMenuItem.Enabled = false;
+    reattachMenuItem.Enabled = true;
+    
+    // Update status bar
+    statusLabel.Text = &quot;Ribbon is detached&quot;;
+    
+    // Update toolbar buttons
+    detachToolbarButton.Enabled = false;
+    reattachToolbarButton.Enabled = true;
+    
+    // Adjust form layout
+    PerformLayout();
+}
+
+private void OnRibbonReattached(object? sender, EventArgs e)
+{
+    // Update menu items
+    detachMenuItem.Enabled = true;
+    reattachMenuItem.Enabled = false;
+    
+    // Update status bar
+    statusLabel.Text = &quot;Ribbon is attached&quot;;
+    
+    // Update toolbar buttons
+    detachToolbarButton.Enabled = true;
+    reattachToolbarButton.Enabled = false;
+    
+    // Adjust form layout
+    PerformLayout();
+}
+</code></pre>
+<hr>
+<h3 id="example-4-logging-state-changes">Example 4: Logging State Changes</h3>
+<pre><code class="lang-csharp">private void HookRibbonEvents()
+{
+    _ribbon.RibbonDetached += (s, e) =&gt;
+    {
+        Logger.Info(&quot;Ribbon detached by user&quot;);
+        Analytics.TrackEvent(&quot;RibbonDetached&quot;);
+    };
+
+    _ribbon.RibbonReattached += (s, e) =&gt;
+    {
+        Logger.Info(&quot;Ribbon reattached by user&quot;);
+        Analytics.TrackEvent(&quot;RibbonReattached&quot;);
+    };
+}
+</code></pre>
+<hr>
+<h2 id="user-preferences">User Preferences</h2>
+<h3 id="example-5-save-and-restore-detach-state-with-position-persistence">Example 5: Save and Restore Detach State with Position Persistence</h3>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    private KryptonRibbon _ribbon;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        InitializeRibbon();
+        HookPreferenceEvents();
+        LoadUserPreferences();
+    }
+
+    private void HookPreferenceEvents()
+    {
+        // Use the new DetachPreferencesChanged event for automatic saving
+        _ribbon.DetachPreferencesChanged += OnDetachPreferencesChanged;
+    }
+
+    private void OnDetachPreferencesChanged(object? sender, DetachPreferencesEventArgs e)
+    {
+        // Save detached state
+        Properties.Settings.Default.RibbonDetached = e.IsDetached;
+        
+        // Save window position if available
+        if (e.FloatingWindowPosition.HasValue)
+        {
+            Properties.Settings.Default.RibbonFloatingX = e.FloatingWindowPosition.Value.X;
+            Properties.Settings.Default.RibbonFloatingY = e.FloatingWindowPosition.Value.Y;
+        }
+        else
+        {
+            // Clear position if not available
+            Properties.Settings.Default.RibbonFloatingX = 0;
+            Properties.Settings.Default.RibbonFloatingY = 0;
+        }
+        
+        Properties.Settings.Default.Save();
+    }
+
+    private void LoadUserPreferences()
+    {
+        _ribbon.AllowDetach = true;
+        
+        // Load saved preferences
+        bool wasDetached = Properties.Settings.Default.RibbonDetached;
+        Point? savedPosition = null;
+        
+        // Load saved position if available
+        if (Properties.Settings.Default.RibbonFloatingX != 0 || 
+            Properties.Settings.Default.RibbonFloatingY != 0)
+        {
+            savedPosition = new Point(
+                Properties.Settings.Default.RibbonFloatingX,
+                Properties.Settings.Default.RibbonFloatingY);
+        }
+        
+        // Restore state using the new LoadDetachPreferences method
+        _ribbon.LoadDetachPreferences(wasDetached, savedPosition);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-6-registry-based-preferences">Example 6: Registry-Based Preferences</h3>
+<pre><code class="lang-csharp">using Microsoft.Win32;
+
+private void SavePreferenceToRegistry(bool isDetached)
+{
+    using (var key = Registry.CurrentUser.CreateSubKey(@&quot;Software\YourApp\Ribbon&quot;))
+    {
+        key?.SetValue(&quot;Detached&quot;, isDetached);
+    }
+}
+
+private bool LoadPreferenceFromRegistry()
+{
+    using (var key = Registry.CurrentUser.OpenSubKey(@&quot;Software\YourApp\Ribbon&quot;))
+    {
+        return (bool)(key?.GetValue(&quot;Detached&quot;) ?? false);
+    }
+}
+
+private void HookRegistryEvents()
+{
+    _ribbon.RibbonDetached += (s, e) =&gt; SavePreferenceToRegistry(true);
+    _ribbon.RibbonReattached += (s, e) =&gt; SavePreferenceToRegistry(false);
+}
+</code></pre>
+<hr>
+<h2 id="ui-integration">UI Integration</h2>
+<h3 id="example-7-context-menu-integration">Example 7: Context Menu Integration</h3>
+<pre><code class="lang-csharp">private void CreateRibbonContextMenu()
+{
+    var contextMenu = new ContextMenuStrip();
+    
+    var detachItem = new ToolStripMenuItem(&quot;Detach Ribbon&quot;)
+    {
+        Enabled = !_ribbon.IsDetached &amp;&amp; _ribbon.AllowDetach
+    };
+    detachItem.Click += (s, e) =&gt; _ribbon.Detach();
+    
+    var reattachItem = new ToolStripMenuItem(&quot;Reattach Ribbon&quot;)
+    {
+        Enabled = _ribbon.IsDetached
+    };
+    reattachItem.Click += (s, e) =&gt; _ribbon.Reattach();
+    
+    contextMenu.Items.Add(detachItem);
+    contextMenu.Items.Add(reattachItem);
+    contextMenu.Items.Add(new ToolStripSeparator());
+    
+    var allowDetachItem = new ToolStripMenuItem(&quot;Allow Detach&quot;)
+    {
+        Checked = _ribbon.AllowDetach
+    };
+    allowDetachItem.Click += (s, e) =&gt;
+    {
+        _ribbon.AllowDetach = !_ribbon.AllowDetach;
+        allowDetachItem.Checked = _ribbon.AllowDetach;
+        UpdateContextMenuItems();
+    };
+    contextMenu.Items.Add(allowDetachItem);
+    
+    _ribbon.ContextMenuStrip = contextMenu;
+    
+    // Update menu when state changes
+    _ribbon.RibbonDetached += (s, e) =&gt; UpdateContextMenuItems();
+    _ribbon.RibbonReattached += (s, e) =&gt; UpdateContextMenuItems();
+}
+
+private void UpdateContextMenuItems()
+{
+    if (_ribbon.ContextMenuStrip != null)
+    {
+        var items = _ribbon.ContextMenuStrip.Items;
+        if (items.Count &gt;= 2)
+        {
+            items[0].Enabled = !_ribbon.IsDetached &amp;&amp; _ribbon.AllowDetach;
+            items[1].Enabled = _ribbon.IsDetached;
+        }
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-8-toolbar-button-integration">Example 8: Toolbar Button Integration</h3>
+<pre><code class="lang-csharp">private void CreateToolbar()
+{
+    var toolbar = new ToolStrip();
+    
+    var detachButton = new ToolStripButton(&quot;Detach&quot;)
+    {
+        Image = Properties.Resources.DetachIcon,
+        Enabled = !_ribbon.IsDetached &amp;&amp; _ribbon.AllowDetach
+    };
+    detachButton.Click += (s, e) =&gt; _ribbon.Detach();
+    
+    var reattachButton = new ToolStripButton(&quot;Reattach&quot;)
+    {
+        Image = Properties.Resources.ReattachIcon,
+        Enabled = _ribbon.IsDetached
+    };
+    reattachButton.Click += (s, e) =&gt; _ribbon.Reattach();
+    
+    toolbar.Items.Add(detachButton);
+    toolbar.Items.Add(reattachButton);
+    
+    Controls.Add(toolbar);
+    
+    // Update buttons when state changes
+    _ribbon.RibbonDetached += (s, e) =&gt;
+    {
+        detachButton.Enabled = false;
+        reattachButton.Enabled = true;
+    };
+    
+    _ribbon.RibbonReattached += (s, e) =&gt;
+    {
+        detachButton.Enabled = true;
+        reattachButton.Enabled = false;
+    };
+}
+</code></pre>
+<hr>
+<h3 id="example-9-status-bar-integration">Example 9: Status Bar Integration</h3>
+<pre><code class="lang-csharp">private void UpdateStatusBar()
+{
+    statusBarLabel.Text = _ribbon.IsDetached
+        ? &quot;Ribbon: Detached (Floating Window)&quot;
+        : &quot;Ribbon: Attached&quot;;
+    
+    statusBarLabel.ForeColor = _ribbon.IsDetached
+        ? Color.Orange
+        : Color.Black;
+}
+
+private void HookStatusBarUpdates()
+{
+    _ribbon.RibbonDetached += (s, e) =&gt; UpdateStatusBar();
+    _ribbon.RibbonReattached += (s, e) =&gt; UpdateStatusBar();
+}
+</code></pre>
+<hr>
+<h2 id="advanced-scenarios">Advanced Scenarios</h2>
+<h3 id="example-10-multi-monitor-support-with-position-persistence-simplified">Example 10: Multi-Monitor Support with Position Persistence (Simplified)</h3>
+<pre><code class="lang-csharp">public class RibbonDetachManager
+{
+    private KryptonRibbon _ribbon;
+
+    public RibbonDetachManager(KryptonRibbon ribbon)
+    {
+        _ribbon = ribbon;
+        _ribbon.AllowDetach = true;
+        HookEvents();
+        LoadPreferences();
+    }
+
+    private void HookEvents()
+    {
+        // Use the built-in preference persistence system
+        _ribbon.DetachPreferencesChanged += OnDetachPreferencesChanged;
+    }
+
+    private void OnDetachPreferencesChanged(object? sender, DetachPreferencesEventArgs e)
+    {
+        // Save preferences (position is automatically validated for multi-monitor support)
+        Properties.Settings.Default.RibbonDetached = e.IsDetached;
+        if (e.FloatingWindowPosition.HasValue)
+        {
+            Properties.Settings.Default.RibbonFloatingX = e.FloatingWindowPosition.Value.X;
+            Properties.Settings.Default.RibbonFloatingY = e.FloatingWindowPosition.Value.Y;
+        }
+        Properties.Settings.Default.Save();
+    }
+
+    private void LoadPreferences()
+    {
+        // Load saved preferences
+        bool wasDetached = Properties.Settings.Default.RibbonDetached;
+        Point? savedPosition = null;
+        
+        if (Properties.Settings.Default.RibbonFloatingX != 0 || 
+            Properties.Settings.Default.RibbonFloatingY != 0)
+        {
+            savedPosition = new Point(
+                Properties.Settings.Default.RibbonFloatingX,
+                Properties.Settings.Default.RibbonFloatingY);
+        }
+        
+        // LoadDetachPreferences automatically handles multi-monitor position validation
+        _ribbon.LoadDetachPreferences(wasDetached, savedPosition);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-11-screen-size-based-auto-detach">Example 11: Screen Size-Based Auto-Detach</h3>
+<pre><code class="lang-csharp">public class AdaptiveRibbonManager
+{
+    private KryptonRibbon _ribbon;
+    private const int MIN_SCREEN_HEIGHT = 768;
+
+    public AdaptiveRibbonManager(KryptonRibbon ribbon)
+    {
+        _ribbon = ribbon;
+        _ribbon.AllowDetach = true;
+        CheckScreenSize();
+    }
+
+    private void CheckScreenSize()
+    {
+        var primaryScreen = Screen.PrimaryScreen;
+        var workingArea = primaryScreen.WorkingArea;
+        
+        if (workingArea.Height &lt; MIN_SCREEN_HEIGHT)
+        {
+            // Suggest detaching ribbon for small screens
+            var result = MessageBox.Show(
+                $&quot;Your screen height ({workingArea.Height}px) is limited.\n\n&quot; +
+                &quot;Would you like to detach the ribbon to save vertical space?&quot;,
+                &quot;Optimize Layout&quot;,
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+            
+            if (result == DialogResult.Yes)
+            {
+                _ribbon.Detach();
+            }
+        }
+    }
+
+    public void HandleScreenChanged()
+    {
+        // Called when screen configuration changes
+        if (!_ribbon.IsDetached)
+        {
+            CheckScreenSize();
+        }
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-12-command-pattern-for-undoredo">Example 12: Command Pattern for Undo/Redo</h3>
+<pre><code class="lang-csharp">public interface IRibbonCommand
+{
+    void Execute();
+    void Undo();
+}
+
+public class DetachRibbonCommand : IRibbonCommand
+{
+    private KryptonRibbon _ribbon;
+    private bool _wasDetached;
+
+    public DetachRibbonCommand(KryptonRibbon ribbon)
+    {
+        _ribbon = ribbon;
+        _wasDetached = ribbon.IsDetached;
+    }
+
+    public void Execute()
+    {
+        if (!_wasDetached)
+        {
+            _ribbon.Detach();
+        }
+    }
+
+    public void Undo()
+    {
+        if (!_wasDetached &amp;&amp; _ribbon.IsDetached)
+        {
+            _ribbon.Reattach();
+        }
+    }
+}
+
+public class RibbonCommandManager
+{
+    private Stack&lt;IRibbonCommand&gt; _undoStack = new();
+    private Stack&lt;IRibbonCommand&gt; _redoStack = new();
+
+    public void ExecuteCommand(IRibbonCommand command)
+    {
+        command.Execute();
+        _undoStack.Push(command);
+        _redoStack.Clear();
+    }
+
+    public void Undo()
+    {
+        if (_undoStack.Count &gt; 0)
+        {
+            var command = _undoStack.Pop();
+            command.Undo();
+            _redoStack.Push(command);
+        }
+    }
+
+    public void Redo()
+    {
+        if (_redoStack.Count &gt; 0)
+        {
+            var command = _redoStack.Pop();
+            command.Execute();
+            _undoStack.Push(command);
+        }
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-13-mvvm-pattern-integration">Example 13: MVVM Pattern Integration</h3>
+<pre><code class="lang-csharp">public class RibbonViewModel : INotifyPropertyChanged
+{
+    private KryptonRibbon _ribbon;
+    private bool _isDetached;
+    private bool _allowDetach;
+
+    public RibbonViewModel(KryptonRibbon ribbon)
+    {
+        _ribbon = ribbon;
+        _allowDetach = ribbon.AllowDetach;
+        _isDetached = ribbon.IsDetached;
+        
+        HookEvents();
+    }
+
+    public bool IsDetached
+    {
+        get =&gt; _isDetached;
+        private set
+        {
+            if (_isDetached != value)
+            {
+                _isDetached = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CanDetach));
+                OnPropertyChanged(nameof(CanReattach));
+            }
+        }
+    }
+
+    public bool AllowDetach
+    {
+        get =&gt; _allowDetach;
+        set
+        {
+            if (_allowDetach != value)
+            {
+                _allowDetach = value;
+                _ribbon.AllowDetach = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CanDetach));
+            }
+        }
+    }
+
+    public bool CanDetach =&gt; AllowDetach &amp;&amp; !IsDetached;
+    public bool CanReattach =&gt; IsDetached;
+
+    public ICommand DetachCommand { get; }
+    public ICommand ReattachCommand { get; }
+
+    private void HookEvents()
+    {
+        _ribbon.RibbonDetached += (s, e) =&gt; IsDetached = true;
+        _ribbon.RibbonReattached += (s, e) =&gt; IsDetached = false;
+        
+        DetachCommand = new RelayCommand(
+            () =&gt; _ribbon.Detach(),
+            () =&gt; CanDetach);
+        
+        ReattachCommand = new RelayCommand(
+            () =&gt; _ribbon.Reattach(),
+            () =&gt; CanReattach);
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+    
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-14-async-operations-with-progress">Example 14: Async Operations with Progress</h3>
+<pre><code class="lang-csharp">public async Task&lt;bool&gt; DetachRibbonAsync(IProgress&lt;string&gt;? progress = null)
+{
+    progress?.Report(&quot;Preparing to detach ribbon...&quot;);
+    
+    await Task.Delay(50); // Small delay for UI responsiveness
+    
+    if (!_ribbon.AllowDetach)
+    {
+        progress?.Report(&quot;Detach is not enabled&quot;);
+        return false;
+    }
+    
+    progress?.Report(&quot;Detaching ribbon...&quot;);
+    
+    var result = await Task.Run(() =&gt; _ribbon.Detach());
+    
+    if (result)
+    {
+        progress?.Report(&quot;Ribbon detached successfully&quot;);
+    }
+    else
+    {
+        progress?.Report(&quot;Failed to detach ribbon&quot;);
+    }
+    
+    return result;
+}
+</code></pre>
+<hr>
+<h3 id="example-15-validation-before-detach">Example 15: Validation Before Detach</h3>
+<pre><code class="lang-csharp">public class RibbonDetachValidator
+{
+    private KryptonRibbon _ribbon;
+
+    public RibbonDetachValidator(KryptonRibbon ribbon)
+    {
+        _ribbon = ribbon;
+    }
+
+    public ValidationResult ValidateDetach()
+    {
+        var result = new ValidationResult();
+
+        if (!_ribbon.AllowDetach)
+        {
+            result.AddError(&quot;Detach functionality is not enabled&quot;);
+        }
+
+        if (_ribbon.IsDetached)
+        {
+            result.AddError(&quot;Ribbon is already detached&quot;);
+        }
+
+        if (_ribbon.Parent == null)
+        {
+            result.AddError(&quot;Ribbon has no parent control&quot;);
+        }
+
+        if (_ribbon.FindForm() == null)
+        {
+            result.AddError(&quot;Ribbon is not contained within a form&quot;);
+        }
+
+        // Check if ribbon has unsaved changes (example)
+        if (HasUnsavedChanges())
+        {
+            result.AddWarning(&quot;There are unsaved changes. Detaching may affect workflow.&quot;);
+        }
+
+        return result;
+    }
+
+    private bool HasUnsavedChanges()
+    {
+        // Implement your logic here
+        return false;
+    }
+}
+
+public class ValidationResult
+{
+    private List&lt;string&gt; _errors = new();
+    private List&lt;string&gt; _warnings = new();
+
+    public bool IsValid =&gt; _errors.Count == 0;
+    public IEnumerable&lt;string&gt; Errors =&gt; _errors;
+    public IEnumerable&lt;string&gt; Warnings =&gt; _warnings;
+
+    public void AddError(string message) =&gt; _errors.Add(message);
+    public void AddWarning(string message) =&gt; _warnings.Add(message);
+}
+</code></pre>
+<hr>
+<h2 id="testing-examples">Testing Examples</h2>
+<h3 id="example-16-unit-test-structure">Example 16: Unit Test Structure</h3>
+<pre><code class="lang-csharp">[TestClass]
+public class DetachableRibbonTests
+{
+    [TestMethod]
+    public void Detach_WhenAllowDetachIsFalse_ReturnsFalse()
+    {
+        // Arrange
+        var ribbon = new KryptonRibbon { AllowDetach = false };
+        var form = new KryptonForm();
+        form.Controls.Add(ribbon);
+
+        // Act
+        var result = ribbon.Detach();
+
+        // Assert
+        Assert.IsFalse(result);
+        Assert.IsFalse(ribbon.IsDetached);
+    }
+
+    [TestMethod]
+    public void Detach_WhenAllowDetachIsTrue_ReturnsTrue()
+    {
+        // Arrange
+        var ribbon = new KryptonRibbon { AllowDetach = true };
+        var form = new KryptonForm();
+        form.Controls.Add(ribbon);
+
+        // Act
+        var result = ribbon.Detach();
+
+        // Assert
+        Assert.IsTrue(result);
+        Assert.IsTrue(ribbon.IsDetached);
+    }
+
+    [TestMethod]
+    public void Reattach_WhenDetached_ReturnsTrue()
+    {
+        // Arrange
+        var ribbon = new KryptonRibbon { AllowDetach = true };
+        var form = new KryptonForm();
+        form.Controls.Add(ribbon);
+        ribbon.Detach();
+
+        // Act
+        var result = ribbon.Reattach();
+
+        // Assert
+        Assert.IsTrue(result);
+        Assert.IsFalse(ribbon.IsDetached);
+    }
+}
+</code></pre>
+<hr>
+<h2 id="adding-custom-buttons-to-ribbon">Adding Custom Buttons to Ribbon</h2>
+<h3 id="example-17-detachreattach-buttons-in-ribbon">Example 17: Detach/Reattach Buttons in Ribbon</h3>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    private KryptonRibbon _ribbon;
+    private ButtonSpecAny? _detachButton;
+    private ButtonSpecAny? _reattachButton;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        InitializeRibbon();
+        AddRibbonButtons();
+    }
+
+    private void AddRibbonButtons()
+    {
+        // Detach button - appears when ribbon is attached
+        _detachButton = new ButtonSpecAny
+        {
+            Text = &quot;Detach&quot;,
+            ToolTipTitle = &quot;Detach Ribbon&quot;,
+            ToolTipBody = &quot;Move the ribbon into a floating window&quot;,
+            UniqueName = &quot;DetachButton&quot;,
+            Edge = PaletteRelativeEdgeAlign.Far  // Right side, next to minimize/expand
+        };
+        _detachButton.Click += (s, e) =&gt; _ribbon.Detach();
+        _ribbon.ButtonSpecs.Add(_detachButton);
+
+        // Reattach button - appears when ribbon is detached
+        _reattachButton = new ButtonSpecAny
+        {
+            Text = &quot;Reattach&quot;,
+            ToolTipTitle = &quot;Reattach Ribbon&quot;,
+            ToolTipBody = &quot;Move the ribbon back to the form&quot;,
+            UniqueName = &quot;ReattachButton&quot;,
+            Edge = PaletteRelativeEdgeAlign.Far,
+            Visible = false  // Initially hidden
+        };
+        _reattachButton.Click += (s, e) =&gt; _ribbon.Reattach();
+        _ribbon.ButtonSpecs.Add(_reattachButton);
+
+        // Update button visibility when state changes
+        _ribbon.RibbonDetached += (s, e) =&gt; UpdateRibbonButtons();
+        _ribbon.RibbonReattached += (s, e) =&gt; UpdateRibbonButtons();
+    }
+
+    private void UpdateRibbonButtons()
+    {
+        if (_detachButton != null)
+            _detachButton.Visible = !_ribbon.IsDetached;
+        if (_reattachButton != null)
+            _reattachButton.Visible = _ribbon.IsDetached;
+        _ribbon.PerformNeedPaint(true);
+    }
+}
+</code></pre>
+<hr>
+<h3 id="example-18-custom-button-with-image">Example 18: Custom Button with Image</h3>
+<pre><code class="lang-csharp">private void AddCustomHelpButton()
+{
+    var helpButton = new ButtonSpecAny
+    {
+        Text = &quot;Help&quot;,
+        ToolTipTitle = &quot;Help&quot;,
+        ToolTipBody = &quot;Open help documentation&quot;,
+        UniqueName = &quot;HelpButton&quot;,
+        Edge = PaletteRelativeEdgeAlign.Far,
+        // ImageSmall = yourImage16x16,  // Optional: 16x16 image
+        // ImageLarge = yourImage32x32    // Optional: 32x32 image
+    };
+    helpButton.Click += (s, e) =&gt; ShowHelp();
+    _ribbon.ButtonSpecs.Add(helpButton);
+}
+</code></pre>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="KryptonDetachableRibbon.html">Full Documentation</a> - Comprehensive feature documentation</li>
+<li><a href="KryptonDetachableRibbonsAPIReference.md">API Reference</a> - Quick API reference</li>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/595">Issue #595</a> - Original feature request</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

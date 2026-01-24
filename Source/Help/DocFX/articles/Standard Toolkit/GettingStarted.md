@@ -44,7 +44,7 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 - [KryptonPropertyGrid](Toolkit/Controls/KryptonPropertyGrid.md)
 - [KryptonRadioButton](Toolkit/Controls/KryptonRadioButton.md)
 - [KryptonRichTextBox](Toolkit/Controls/KryptonRichTextBox.md)
-- [KryptonScrollBar](Toolkit/Controls/KryptonScrollBar.md)
+- [KryptonScrollBars](Toolkit/Controls/KryptonScrollBars.md)
 - [KryptonSeparator](Toolkit/Controls/KryptonSeparator.md)
 - [KryptonSplitContainer](Toolkit/Controls/KryptonSplitContainer.md)
 - [KryptonStatusStrip](Toolkit/Controls/KryptonStatusStrip.md)
@@ -93,12 +93,16 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 - [ExceptionHandler](Toolkit/Utilities/ExceptionHandler.md)
 - [GlobalStaticValuesReference](Toolkit/Utilities/GlobalStaticValuesReference.md)
 - [IconExtraction](Toolkit/Utilities/IconExtractionIndex.md)
+- [KryptonJumpList](Toolkit/Utilities/KryptonJumpList.md)
 - [Localization](Toolkit/Utilities/LocalizationIndex.md)
 - [SystemIcons](Toolkit/Utilities/SystemIcons.md)
+- [TaskbarThumbnailButtons](Toolkit/Utilities/TaskbarThumbnailButtons.md)
+- [UIAProviders](Toolkit/Utilities/UIAProviders.md)
 
 ### Ribbon
 
 - [Overview](Ribbon/KryptonRibbonOverview.md)
+- [Krypton Detachable Ribbon](Ribbon/KryptonDetachableRibbon.md)
 - [Tabs](Ribbon/KryptonRibbonTabs.md)
 - [Groups](Ribbon/KryptonRibbonGroups.md)
 - [Group Containers](Ribbon/KryptonRibbonGroupContainers.md)

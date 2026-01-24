@@ -37,7 +37,7 @@ the toolbox.
 * [KryptonPropertyGrid](Toolkit/Controls/KryptonPropertyGrid.md)
 * [KryptonRadioButton](Toolkit/Controls/KryptonRadioButton.md)  
 * [KryptonRichTextBox](Toolkit/Controls/KryptonRichTextBox.md)  
-* [KryptonScrollBar](Toolkit/Controls/KryptonScrollBar.md)
+* [KryptonScrollBars](Toolkit/Controls/KryptonScrollBars.md)
 * [KryptonSeparator](Toolkit/Controls/KryptonSeparator.md)  
 * [KryptonSplitContainer](Toolkit/Controls/KryptonSplitContainer.md)  
 * [KryptonSplitter](Toolkit/Controls/KryptonSplitter.md)

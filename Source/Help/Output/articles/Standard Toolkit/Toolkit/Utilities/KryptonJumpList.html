@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonJumpList | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonJumpList | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonjumplist">KryptonJumpList</h1>
+
+<p>This document describes the implementation of Windows taskbar jump list functionality for the Krypton Toolkit, allowing applications to customize the right-click menu on their taskbar icon.</p>
+<h2 id="overview">Overview</h2>
+<p>The jump list feature enables VisualForm-based applications (including KryptonForm) to add custom tasks, recent files, frequent files, and custom categories to the Windows taskbar jump list. This provides users with quick access to common actions and recently used files directly from the taskbar.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>User Tasks</strong>: Always-visible items that appear at the top of the jump list</li>
+<li><strong>Recent Files</strong>: Automatically tracked recent files (Windows-managed)</li>
+<li><strong>Frequent Files</strong>: Automatically tracked frequently used files (Windows-managed)</li>
+<li><strong>Custom Categories</strong>: Application-defined categories with custom items</li>
+<li><strong>Designer Support</strong>: Full Visual Studio designer integration for configuring jump list items</li>
+<li><strong>Runtime Configuration</strong>: Programmatic access to modify jump lists at runtime</li>
+</ul>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="new-classes">New Classes</h3>
+<h4 id="kryptonjumplist-1"><code>KryptonJumpList</code></h4>
+<ul>
+<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonJumpList.cs</code></li>
+<li><strong>Purpose</strong>: Manages the jump list and handles COM interop with Windows Shell APIs</li>
+<li><strong>Note</strong>: Works with <code>VisualForm</code> instances (including <code>KryptonForm</code> which inherits from <code>VisualForm</code>)</li>
+<li><strong>Key Methods</strong>:
+<ul>
+<li><code>Refresh()</code>: Updates the jump list with current items</li>
+<li><code>Clear()</code>: Removes all items from the jump list</li>
+<li><code>AddCustomCategory()</code>: Adds a custom category with items</li>
+<li><code>RemoveCustomCategory()</code>: Removes a custom category</li>
+</ul>
+</li>
+</ul>
+<h4 id="kryptonjumplistitem"><code>KryptonJumpListItem</code></h4>
+<ul>
+<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonJumpListItem.cs</code></li>
+<li><strong>Purpose</strong>: Represents a single jump list item</li>
+<li><strong>Properties</strong>:
+<ul>
+<li><code>Title</code>: Display title</li>
+<li><code>Path</code>: Path to executable or file</li>
+<li><code>Arguments</code>: Command-line arguments</li>
+<li><code>WorkingDirectory</code>: Working directory for the application</li>
+<li><code>IconPath</code>: Path to icon file</li>
+<li><code>IconIndex</code>: Icon index within the icon file</li>
+<li><code>Description</code>: Tooltip/description text</li>
+</ul>
+</li>
+</ul>
+<h4 id="kryptonjumplistitems"><code>KryptonJumpListItems</code></h4>
+<ul>
+<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonJumpListItems.cs</code></li>
+<li><strong>Purpose</strong>: Collection of jump list items with designer support</li>
+</ul>
+<h4 id="jumplistvalues"><code>JumpListValues</code></h4>
+<ul>
+<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/Values/JumpListValues.cs</code></li>
+<li><strong>Purpose</strong>: Storage for jump list configuration values</li>
+<li><strong>Properties</strong>:
+<ul>
+<li><code>Enabled</code>: Enable/disable the jump list</li>
+<li><code>AppId</code>: Application user model ID</li>
+<li><code>ShowFrequentCategory</code>: Show Windows-managed frequent files</li>
+<li><code>ShowRecentCategory</code>: Show Windows-managed recent files</li>
+<li><code>UserTasks</code>: Collection of user tasks</li>
+</ul>
+</li>
+</ul>
+<h3 id="enhanced-apis">Enhanced APIs</h3>
+<h4 id="platforminvokecs">PlatformInvoke.cs</h4>
+<p>Added COM interop declarations for jump list functionality:</p>
+<ul>
+<li><code>ICustomDestinationList</code>: Interface for managing jump lists</li>
+<li><code>IShellLinkW</code>: Interface for creating shell links (shortcuts)</li>
+<li><code>IObjectCollection</code>: Interface for collections of COM objects</li>
+<li><code>IObjectArray</code>: Base interface for object arrays</li>
+<li>Related GUIDs, enums, and structures</li>
+</ul>
+<h3 id="integration-with-visualform">Integration with VisualForm</h3>
+<h4 id="new-properties">New Properties</h4>
+<ul>
+<li><code>JumpListValues</code>: Access to jump list configuration</li>
+<li><code>JumpList</code>: Direct access to the jump list instance (runtime only)</li>
+</ul>
+<h4 id="automatic-integration">Automatic Integration</h4>
+<ul>
+<li>Jump list is automatically created when a <code>VisualForm</code> (or <code>KryptonForm</code>) is instantiated</li>
+<li>Jump list is refreshed when the form handle is created (if enabled)</li>
+<li>Changes to <code>JumpListValues</code> automatically refresh the jump list</li>
+<li><strong>Note</strong>: Jump list functionality is available on <code>VisualForm</code>, making it accessible to all forms that inherit from it (including <code>KryptonForm</code>)</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<h3 id="designer-usage">Designer Usage</h3>
+<ol>
+<li>Select a <code>KryptonForm</code> (or any <code>VisualForm</code>) in the designer</li>
+<li>In the Properties window, expand <code>JumpListValues</code></li>
+<li>Set <code>Enabled</code> to <code>true</code></li>
+<li>Optionally set <code>AppId</code> (recommended for proper Windows integration)</li>
+<li>Configure <code>ShowFrequentCategory</code> and <code>ShowRecentCategory</code> as needed</li>
+<li>Expand <code>UserTasks</code> and click the ellipsis (...) button to open the collection editor</li>
+<li>Add jump list items:
+<ul>
+<li>Click &quot;Add&quot; in the collection editor</li>
+<li>Set <code>Title</code> (e.g., &quot;New Document&quot;)</li>
+<li>Set <code>Path</code> to the executable or file path</li>
+<li>Optionally set <code>Arguments</code>, <code>WorkingDirectory</code>, <code>IconPath</code>, etc.</li>
+</ul>
+</li>
+</ol>
+<h3 id="programmatic-usage">Programmatic Usage</h3>
+<pre><code class="lang-csharp">// Enable jump list
+form.JumpListValues.Enabled = true;
+form.JumpListValues.AppId = &quot;MyCompany.MyApp&quot;;
+
+// Add user tasks
+var newDocTask = new KryptonJumpListItem(&quot;New Document&quot;, 
+    Application.ExecutablePath, 
+    &quot;/new&quot;);
+form.JumpListValues.UserTasks.Add(newDocTask);
+
+var openTask = new KryptonJumpListItem(&quot;Open&quot;, 
+    Application.ExecutablePath, 
+    &quot;/open&quot;);
+form.JumpListValues.UserTasks.Add(openTask);
+
+// Add custom category
+var recentFiles = new KryptonJumpListItems();
+recentFiles.Add(new KryptonJumpListItem(&quot;Document1.txt&quot;, 
+    @&quot;C:\Documents\Document1.txt&quot;));
+recentFiles.Add(new KryptonJumpListItem(&quot;Document2.txt&quot;, 
+    @&quot;C:\Documents\Document2.txt&quot;));
+
+form.JumpList?.AddCustomCategory(&quot;Recent Documents&quot;, recentFiles);
+
+// Refresh the jump list
+form.JumpList?.Refresh();
+</code></pre>
+<h3 id="handling-jump-list-item-clicks">Handling Jump List Item Clicks</h3>
+<p>When a user clicks a jump list item, Windows launches the application with the specified path and arguments. Handle this in your application's startup code:</p>
+<pre><code class="lang-csharp">static void Main()
+{
+    Application.EnableVisualStyles();
+    Application.SetCompatibleTextRenderingDefault(false);
+
+    // Check for jump list arguments
+    string[] args = Environment.GetCommandLineArgs();
+    if (args.Length &gt; 1)
+    {
+        string argument = args[1];
+        // Handle jump list item click
+        if (argument == &quot;/new&quot;)
+        {
+            // Create new document
+        }
+        else if (argument == &quot;/open&quot;)
+        {
+            // Open file dialog
+        }
+        else if (File.Exists(argument))
+        {
+            // Open the file
+        }
+    }
+
+    Application.Run(new MainForm());
+}
+</code></pre>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li><strong>Windows Version</strong>: Windows 7 or later</li>
+<li><strong>.NET Framework</strong>: 4.7.2 or later</li>
+<li><strong>.NET</strong>: 8.0-windows or later</li>
+</ul>
+<h2 id="technical-notes">Technical Notes</h2>
+<ul>
+<li>Jump lists are only created at runtime (not in design mode)</li>
+<li>The implementation gracefully handles cases where jump lists are not supported</li>
+<li>COM objects are properly released to prevent memory leaks</li>
+<li>The jump list is automatically refreshed when the form handle is created (if enabled)</li>
+<li>Changes to <code>JumpListValues</code> properties automatically trigger a refresh</li>
+<li>Jump list functionality is implemented in <code>VisualForm</code>, following the same pattern as <code>TaskbarOverlayIcon</code></li>
+<li>Available to all forms inheriting from <code>VisualForm</code> (including <code>KryptonForm</code>)</li>
+</ul>
+<h2 id="benefits">Benefits</h2>
+<ol>
+<li><strong>Enhanced User Experience</strong>: Quick access to common tasks and recent files</li>
+<li><strong>Windows Integration</strong>: Native Windows 7+ taskbar integration</li>
+<li><strong>Designer Support</strong>: Easy configuration through Visual Studio designer</li>
+<li><strong>Flexible Configuration</strong>: Support for tasks, categories, and Windows-managed lists</li>
+<li><strong>Runtime Management</strong>: Programmatic control over jump list contents</li>
+</ol>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
