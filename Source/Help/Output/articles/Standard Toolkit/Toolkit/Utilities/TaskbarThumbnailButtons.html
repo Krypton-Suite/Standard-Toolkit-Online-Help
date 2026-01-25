@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Taskbar Thumbnail Toolbar Buttons | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Taskbar Thumbnail Toolbar Buttons | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="taskbar-thumbnail-toolbar-buttons">Taskbar Thumbnail Toolbar Buttons</h1>
+
+<p>This document describes the <strong>Taskbar Thumbnail Toolbar Buttons</strong> feature in the Krypton Toolkit: how to add interactive buttons (e.g. Play, Pause, Next) to the Windows 7+ taskbar thumbnail preview that appears when the user hovers over your application’s taskbar button. It covers APIs, usage patterns, icon requirements, limitations, and integration with <code>KryptonForm</code> / <code>VisualForm</code>.</p>
+<hr>
+<h2 id="1-overview">1. Overview</h2>
+<h3 id="what-it-is">What It Is</h3>
+<p>Windows 7 and later expose <strong>thumbnail toolbars</strong> via the <code>ITaskbarList3</code> COM interface. A thumbnail toolbar is a strip of small buttons shown <strong>below</strong> the live thumbnail preview when the user hovers over a taskbar button. Applications like Windows Media Player use them for play, pause, next, and similar quick actions.</p>
+<p>The Krypton Toolkit wraps this functionality so you can:</p>
+<ul>
+<li>Define up to <strong>7 buttons</strong> per form (icon, tooltip, enabled/disabled/hidden).</li>
+<li>Add, update, or clear buttons at runtime.</li>
+<li>Handle <strong>clicks</strong> via a <code>ThumbnailButtonClick</code> event that receives the button ID.</li>
+</ul>
+<p>Buttons are <strong>per-window</strong>: each top-level <code>KryptonForm</code> (or other <code>VisualForm</code>-based form) that appears in the taskbar can have its own set of thumbnail toolbar buttons.</p>
+<h3 id="use-cases">Use Cases</h3>
+<ul>
+<li><strong>Media players</strong>: Play, Pause, Next, Previous, Stop.</li>
+<li><strong>Download/transfer</strong>: Pause, Cancel, Open folder.</li>
+<li><strong>Communications</strong>: Mute, Hold, End call.</li>
+<li><strong>Editors</strong>: Quick actions (e.g. Save, Undo) without switching to the window.</li>
+</ul>
+<hr>
+<h2 id="2-requirements">2. Requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Operating system</strong></td>
+<td>Windows 7 or later (6.1+). The feature is no-op on older OS versions.</td>
+</tr>
+<tr>
+<td><strong>Form type</strong></td>
+<td><code>KryptonForm</code> or any form derived from <code>VisualForm</code> (e.g. <code>KryptonForm</code>).</td>
+</tr>
+<tr>
+<td><strong>Taskbar visibility</strong></td>
+<td>The form’s <code>ShowInTaskbar</code> must be <code>true</code>. Thumbnail buttons are not applied when <code>ShowInTaskbar</code> is <code>false</code>.</td>
+</tr>
+<tr>
+<td><strong>TaskbarButtonCreated</strong></td>
+<td>The implementation <strong>registers and handles</strong> the <code>&quot;TaskbarButtonCreated&quot;</code> window message before calling <code>ITaskbarList3</code>. You do not need to do this yourself; it is done inside <code>VisualForm</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>The toolkit defers applying thumbnail buttons until <strong>after</strong> the taskbar has created the button for the window and sent <code>TaskbarButtonCreated</code>. Button updates (e.g. from <code>Apply()</code> or <code>Add</code>/<code>Remove</code>/<code>Clear</code>) are applied once that message has been received.</p>
+<hr>
+<h2 id="3-api-reference">3. API Reference</h2>
+<h3 id="31-thumbnailbuttonitem">3.1. <code>ThumbnailButtonItem</code></h3>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit</code></p>
+<p>Represents a single button in the thumbnail toolbar.</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td><code>uint</code></td>
+<td>Application-defined button ID. Must be <strong>unique</strong> within the toolbar. This value is passed to <code>ThumbnailButtonClick</code> when the button is clicked. <strong>Note:</strong> Uses <code>uint</code> for native API compatibility; non–CLS-compliant.</td>
+</tr>
+<tr>
+<td><code>Icon</code></td>
+<td><code>Icon?</code></td>
+<td>Icon displayed on the button. Should be <strong>32-bit</strong> (e.g. <code>Format32bppArgb</code>) and <strong>SM_CXICON × SM_CYICON</strong> size (typically <strong>32×32</strong>). See <a href="#5-icon-requirements">Icon requirements</a>.</td>
+</tr>
+<tr>
+<td><code>Tooltip</code></td>
+<td><code>string</code></td>
+<td>Tooltip shown when the user hovers over the button. Maximum <strong>259 characters</strong>; longer strings are truncated.</td>
+</tr>
+<tr>
+<td><code>Enabled</code></td>
+<td><code>bool</code></td>
+<td>Whether the button is enabled. Default <code>true</code>.</td>
+</tr>
+<tr>
+<td><code>Hidden</code></td>
+<td><code>bool</code></td>
+<td>Whether the button is hidden. Default <code>false</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var btn = new ThumbnailButtonItem
+{
+    Id = 1,
+    Icon = myIcon,
+    Tooltip = &quot;Play&quot;,
+    Enabled = true,
+    Hidden = false
+};
+</code></pre>
+<hr>
+<h3 id="32-taskbarthumbnailbuttonvalues">3.2. <code>TaskbarThumbnailButtonValues</code></h3>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit</code></p>
+<p>Storage for thumbnail toolbar button definitions. Holds a list of <code>ThumbnailButtonItem</code> and notifies the form to update the taskbar when the list changes.</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Buttons</code></td>
+<td><code>List&lt;ThumbnailButtonItem&gt;</code></td>
+<td>The list of buttons. Maximum <strong>7</strong>. Edit this list, then call <code>Apply()</code> to push changes to the taskbar.</td>
+</tr>
+<tr>
+<td><code>Add(ThumbnailButtonItem item)</code></td>
+<td><code>void</code></td>
+<td>Appends a button. No-op if already at 7 buttons. Triggers an update.</td>
+</tr>
+<tr>
+<td><code>Remove(uint id)</code></td>
+<td><code>void</code></td>
+<td>Removes the button with the given <code>Id</code>. No-op if not found. Triggers an update. <strong>Note:</strong> Non–CLS-compliant due to <code>uint</code>.</td>
+</tr>
+<tr>
+<td><code>Clear()</code></td>
+<td><code>void</code></td>
+<td>Removes all buttons and updates the taskbar.</td>
+</tr>
+<tr>
+<td><code>Apply()</code></td>
+<td><code>void</code></td>
+<td>Notifies that button definitions have changed (e.g. after editing <code>Buttons</code> directly). Call after batch changes to refresh the taskbar once.</td>
+</tr>
+<tr>
+<td><code>ResetButtons()</code></td>
+<td><code>void</code></td>
+<td>Same as <code>Clear()</code>.</td>
+</tr>
+<tr>
+<td><code>CopyFrom(TaskbarThumbnailButtonValues source)</code></td>
+<td><code>void</code></td>
+<td>Replaces this instance’s buttons with copies of <code>source</code>’s buttons.</td>
+</tr>
+<tr>
+<td><code>IsDefault</code></td>
+<td><code>bool</code></td>
+<td><code>true</code> when there are no buttons.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Designer:</strong> <code>TaskbarThumbnailButtonValues</code> is <code>ExpandableObjectConverter</code>; <code>Buttons</code> is serialized as content.</p>
+<hr>
+<h3 id="33-thumbnailbuttonclickeventargs">3.3. <code>ThumbnailButtonClickEventArgs</code></h3>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit</code></p>
+<p>Event data for thumbnail toolbar button clicks.</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ButtonId</code></td>
+<td><code>uint</code></td>
+<td>The <code>Id</code> of the button that was clicked. <strong>Note:</strong> Non–CLS-compliant.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="34-form-level-api-visualform--kryptonform">3.4. Form-Level API (<code>VisualForm</code> / <code>KryptonForm</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ShellValues</code></td>
+<td><code>WindowsShellValues</code></td>
+<td>Shell-related values (overlay icon, <strong>thumbnail buttons</strong>, jump list, etc.).</td>
+</tr>
+<tr>
+<td><code>ShellValues.ThumbnailButtonValues</code></td>
+<td><code>TaskbarThumbnailButtonValues</code></td>
+<td>The thumbnail toolbar button storage for this form.</td>
+</tr>
+<tr>
+<td><code>ThumbnailButtonClick</code></td>
+<td><code>event EventHandler&lt;ThumbnailButtonClickEventArgs&gt;</code></td>
+<td>Raised when the user clicks a thumbnail toolbar button.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Access storage
+var tbv = ShellValues.ThumbnailButtonValues;
+
+// Subscribe to clicks
+ThumbnailButtonClick += (s, e) =&gt;
+{
+    switch (e.ButtonId)
+    {
+        case 1: DoPlay(); break;
+        case 2: DoPause(); break;
+        // ...
+    }
+};
+</code></pre>
+<hr>
+<h3 id="35-windowsshellvalues">3.5. <code>WindowsShellValues</code></h3>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit</code></p>
+<p>Aggregates overlay icon, thumbnail buttons, and related shell settings. Exposed as <code>ShellValues</code> on <code>VisualForm</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ThumbnailButtonValues</code></td>
+<td><code>TaskbarThumbnailButtonValues</code></td>
+<td>Thumbnail toolbar buttons.</td>
+</tr>
+<tr>
+<td><code>OverlayIconValues</code></td>
+<td><code>TaskbarOverlayIconValues</code></td>
+<td>Taskbar overlay icon (separate feature).</td>
+</tr>
+<tr>
+<td><code>ResetThumbnailButtonValues()</code></td>
+<td><code>void</code></td>
+<td>Resets thumbnail buttons to default (empty).</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="4-features-and-behaviour">4. Features and Behaviour</h2>
+<h3 id="41-adding-buttons">4.1. Adding Buttons</h3>
+<ul>
+<li>Use <code>Add(item)</code> for single additions, or add to <code>Buttons</code> and then call <code>Apply()</code> for batch updates.</li>
+<li><strong>Important:</strong> The Windows API allows <strong>one</strong> <code>ThumbBarAddButtons</code> call per window. Subsequent changes use <code>ThumbBarUpdateButtons</code>. The toolkit manages this internally. To avoid multiple “first add” attempts, <strong>batch</strong> your buttons: fill <code>Buttons</code>, then call <code>Apply()</code> once.</li>
+</ul>
+<p><strong>Recommended pattern:</strong></p>
+<pre><code class="lang-csharp">var tbv = ShellValues.ThumbnailButtonValues;
+tbv.Clear();
+tbv.Buttons.Add(new ThumbnailButtonItem { Id = 1, Icon = icon1, Tooltip = &quot;Play&quot;, Enabled = true });
+tbv.Buttons.Add(new ThumbnailButtonItem { Id = 2, Icon = icon2, Tooltip = &quot;Pause&quot;, Enabled = true });
+// ... up to 7 total
+tbv.Apply();
+</code></pre>
+<h3 id="42-updating-buttons">4.2. Updating Buttons</h3>
+<ul>
+<li>Change an existing <code>ThumbnailButtonItem</code>’s <code>Icon</code>, <code>Tooltip</code>, <code>Enabled</code>, or <code>Hidden</code>, then call <code>Apply()</code>.</li>
+<li>The toolkit uses <code>ThumbBarUpdateButtons</code> for updates. You cannot remove a button at the native level; you can only <strong>hide</strong> it (<code>Hidden = true</code>) or <strong>disable</strong> it (<code>Enabled = false</code>).</li>
+</ul>
+<h3 id="43-clearing-buttons">4.3. Clearing Buttons</h3>
+<ul>
+<li>Call <code>Clear()</code>. The managed list is cleared and the taskbar is updated. The native toolbar may still show previously added buttons as hidden; the toolkit reflects “no buttons” by not sending further updates for that set.</li>
+</ul>
+<h3 id="44-button-limit-and-order">4.4. Button Limit and Order</h3>
+<ul>
+<li><strong>Maximum 7 buttons</strong> per window. <code>Add</code> ignores new items when the list is full.</li>
+<li>Buttons are shown in <strong>list order</strong> (index 0 = leftmost).</li>
+</ul>
+<h3 id="45-tooltip-length">4.5. Tooltip Length</h3>
+<ul>
+<li>Tooltips are truncated to <strong>259 characters</strong> before being sent to the native API.</li>
+</ul>
+<hr>
+<h2 id="5-icon-requirements">5. Icon Requirements</h2>
+<p>The Windows thumbnail toolbar expects <strong>32-bit</strong> icons at <strong>SM_CXICON × SM_CYICON</strong> (typically <strong>32×32</strong> on standard DPI). Otherwise, buttons may not appear or may look wrong.</p>
+<p><strong>Recommendations:</strong></p>
+<ol>
+<li>Use <strong>32×32</strong> pixel icons (or <code>GetSystemMetrics(SM_CXICON)</code> / <code>SM_CYICON</code> if you need DPI-aware sizing).</li>
+<li>Use <strong><code>PixelFormat.Format32bppArgb</code></strong> when creating bitmaps, then create an <code>Icon</code> (e.g. via <code>Icon.FromHandle(bitmap.GetHicon())</code>). Keep the <code>Icon</code> (or underlying bitmap) alive for the lifetime of the button.</li>
+<li>Prefer <strong>simple, high-contrast</strong> shapes so buttons remain readable at small size.</li>
+</ol>
+<p><strong>Example: creating a suitable icon</strong></p>
+<pre><code class="lang-csharp">using System.Drawing.Imaging;
+
+const int size = 32;
+var bmp = new Bitmap(size, size, PixelFormat.Format32bppArgb);
+using (var g = Graphics.FromImage(bmp))
+{
+    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+    using (var brush = new SolidBrush(Color.DodgerBlue))
+    {
+        // e.g. play triangle
+        var pts = new[] { new Point(10, 8), new Point(10, 24), new Point(24, 16) };
+        g.FillPolygon(brush, pts);
+    }
+}
+Icon icon = Icon.FromHandle(bmp.GetHicon());
+// Keep 'icon' (or 'bmp') alive while the button is in use.
+</code></pre>
+<p>You can also use <strong>system icons</strong> (e.g. <code>SystemIcons.Application</code>, <code>SystemIcons.Information</code>) for quick tests, as long as they meet the size/format expectations.</p>
+<hr>
+<h2 id="6-code-examples">6. Code Examples</h2>
+<h3 id="61-minimal-setup-load">6.1. Minimal Setup (Load)</h3>
+<pre><code class="lang-csharp">public partial class MyForm : KryptonForm
+{
+    private const uint IdPlay = 1, IdPause = 2;
+
+    private void MyForm_Load(object sender, EventArgs e)
+    {
+        ShowInTaskbar = true;
+        Icon = SystemIcons.Application;
+
+        var tbv = ShellValues.ThumbnailButtonValues;
+        tbv.Clear();
+        tbv.Buttons.Add(new ThumbnailButtonItem
+        {
+            Id = IdPlay,
+            Icon = CreatePlayIcon(),
+            Tooltip = &quot;Play&quot;,
+            Enabled = true
+        });
+        tbv.Buttons.Add(new ThumbnailButtonItem
+        {
+            Id = IdPause,
+            Icon = CreatePauseIcon(),
+            Tooltip = &quot;Pause&quot;,
+            Enabled = false
+        });
+        tbv.Apply();
+
+        ThumbnailButtonClick += OnThumbnailButtonClick;
+    }
+
+    private void OnThumbnailButtonClick(object? s, ThumbnailButtonClickEventArgs e)
+    {
+        if (e.ButtonId == IdPlay) { Play(); return; }
+        if (e.ButtonId == IdPause) { Pause(); return; }
+    }
+}
+</code></pre>
+<h3 id="62-updating-state-eg-play--pause">6.2. Updating State (e.g. Play ↔ Pause)</h3>
+<pre><code class="lang-csharp">private void UpdateThumbnailState(bool isPlaying)
+{
+    var tbv = ShellValues.ThumbnailButtonValues;
+    var play = tbv.Buttons.FirstOrDefault(b =&gt; b.Id == IdPlay);
+    var pause = tbv.Buttons.FirstOrDefault(b =&gt; b.Id == IdPause);
+    if (play != null) play.Enabled = !isPlaying;
+    if (pause != null) pause.Enabled = isPlaying;
+    tbv.Apply();
+}
+</code></pre>
+<h3 id="63-clearing-buttons">6.3. Clearing Buttons</h3>
+<pre><code class="lang-csharp">ShellValues.ThumbnailButtonValues.Clear();
+</code></pre>
+<hr>
+<h2 id="7-limitations-and-pitfalls">7. Limitations and Pitfalls</h2>
+<table>
+<thead>
+<tr>
+<th>Limitation</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Windows 7+</strong></td>
+<td>No effect on Windows Vista or earlier.</td>
+</tr>
+<tr>
+<td><strong>ShowInTaskbar</strong></td>
+<td>Buttons are only applied when <code>ShowInTaskbar</code> is <code>true</code>.</td>
+</tr>
+<tr>
+<td><strong>No real “remove”</strong></td>
+<td>The native API does not support removing buttons. Use <code>Hidden = true</code> or <code>Clear()</code>; the toolkit clears its list, but the shell may keep reserved space.</td>
+</tr>
+<tr>
+<td><strong>7 buttons max</strong></td>
+<td>More than 7 buttons are ignored.</td>
+</tr>
+<tr>
+<td><strong>Icon size/format</strong></td>
+<td>Wrong size or format can prevent buttons from showing. Prefer 32×32, 32bpp.</td>
+</tr>
+<tr>
+<td><strong>Per-window</strong></td>
+<td>Each taskbar-represented window has its own toolbar. Child/owned windows typically do not.</td>
+</tr>
+<tr>
+<td><strong>Grouped taskbar</strong></td>
+<td>When multiple app windows are grouped, each thumbnail has its own toolbar. Ensure you configure buttons on the correct form.</td>
+</tr>
+<tr>
+<td><strong>Design mode</strong></td>
+<td>Thumbnail logic is skipped in design mode.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-internal-behaviour-summary">8. Internal Behaviour (Summary)</h2>
+<ul>
+<li><strong>TaskbarButtonCreated:</strong> The form registers <code>&quot;TaskbarButtonCreated&quot;</code> and handles it in <code>WndProc</code>. Thumbnail updates are deferred until this message is received.</li>
+<li><strong>ThumbBarAddButtons / ThumbBarUpdateButtons:</strong> The first update uses <code>ThumbBarAddButtons</code>; later updates use <code>ThumbBarUpdateButtons</code>. The toolkit uses manual marshalling for <code>THUMBBUTTON</code> arrays to avoid COM typelib/SAFEARRAY issues.</li>
+<li><strong>WM_COMMAND + THBN_CLICKED:</strong> Button clicks arrive as <code>WM_COMMAND</code> with <code>HIWORD(wParam) == THBN_CLICKED</code>; <code>LOWORD(wParam)</code> is the button ID. The toolkit raises <code>ThumbnailButtonClick</code> with that ID.</li>
+<li><strong>Handle lifecycle:</strong> On handle destroy, internal state (<code>_thumbButtonsAdded</code>, <code>_taskbarButtonCreated</code>) is reset so that a recreated handle gets correct behaviour.</li>
+</ul>
+<hr>
+<h2 id="9-related-features">9. Related Features</h2>
+<ul>
+<li><strong>Overlay icon:</strong> <code>ShellValues.OverlayIconValues</code> — small overlay on the taskbar icon (e.g. notification badge).</li>
+<li><strong>Jump list:</strong> <code>ShellValues.JumpList</code> — custom jump list items and categories.</li>
+<li><strong>Progress / state:</strong> Other <code>ITaskbarList3</code> features (e.g. progress bar, overlay) can be used alongside thumbnail buttons; they are separate configurations.</li>
+</ul>
+<hr>
+<h2 id="10-demo-and-references">10. Demo and References</h2>
+<ul>
+<li><strong>Windows docs:</strong> <a href="https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-thumbbaraddbuttons">ITaskbarList3::ThumbBarAddButtons</a>, <a href="https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-thumbbarupdatebuttons">ITaskbarList3::ThumbBarUpdateButtons</a>, <a href="https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/ns-shobjidl_core-thumbbutton">THUMBBUTTON</a>.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

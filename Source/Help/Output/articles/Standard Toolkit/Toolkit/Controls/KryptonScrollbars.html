@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Scrollbars | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Scrollbars | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-scrollbars">Krypton Scrollbars</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#integration-guide">Integration Guide</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The Krypton Scrollbars feature provides a unified solution for replacing native Windows scrollbars with Krypton-themed scrollbars across all scrollable controls in the Krypton Toolkit. This feature ensures visual consistency with the Krypton design system while maintaining full functionality of native scrolling.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Unified Theming</strong>: All scrollbars match the current Krypton palette and theme</li>
+<li><strong>Multiple Integration Modes</strong>: Supports different control types with appropriate integration strategies</li>
+<li><strong>Global Configuration</strong>: Centralized control via <code>KryptonManager</code> for application-wide settings</li>
+<li><strong>Per-Control Override</strong>: Individual controls can override global settings when needed</li>
+<li><strong>Automatic Management</strong>: Handles scrollbar creation, positioning, and synchronization automatically</li>
+<li><strong>Native Scrollbar Hiding</strong>: Automatically hides native scrollbars when Krypton scrollbars are enabled</li>
+</ul>
+<h3 id="supported-controls">Supported Controls</h3>
+<p>The following controls support Krypton scrollbars:</p>
+<ul>
+<li><code>KryptonTextBox</code> - Text input with native scrollbars</li>
+<li><code>KryptonRichTextBox</code> - Rich text editing with native scrollbars</li>
+<li><code>KryptonPropertyGrid</code> - Property browser with native scrollbars</li>
+<li><code>KryptonListBox</code> - List selection with native scrollbars</li>
+<li><code>KryptonListView</code> - List view with native scrollbars</li>
+<li><code>KryptonTreeView</code> - Tree view with native scrollbars</li>
+<li><code>KryptonPanel</code> - Container with AutoScroll support</li>
+<li><code>KryptonGroup</code> - Group container with AutoScroll support</li>
+<li><code>KryptonGroupBox</code> - Group box container with AutoScroll support</li>
+<li><code>KryptonHeaderGroup</code> - Header group container with AutoScroll support</li>
+</ul>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<h3 id="core-components">Core Components</h3>
+<h4 id="kryptonscrollbarmanager">KryptonScrollbarManager</h4>
+<p>The <code>KryptonScrollbarManager</code> class is the central component that manages Krypton scrollbars for individual controls. It handles:</p>
+<ul>
+<li>Scrollbar creation and lifecycle management</li>
+<li>Positioning and sizing of scrollbars</li>
+<li>Synchronization with native scroll positions</li>
+<li>Event handling and scroll position updates</li>
+<li>Native scrollbar hiding</li>
+</ul>
+<p><strong>Location</strong>: <code>Krypton.Toolkit.KryptonScrollbarManager</code></p>
+<h4 id="integration-modes">Integration Modes</h4>
+<p>The manager supports three distinct integration modes:</p>
+<h5 id="1-container-mode-scrollbarmanagermodecontainer">1. Container Mode (<code>ScrollbarManagerMode.Container</code>)</h5>
+<p>Used for container controls like <code>Panel</code>, <code>GroupBox</code>, and <code>HeaderGroup</code> that use <code>AutoScroll</code>.</p>
+<p><strong>Characteristics</strong>:</p>
+<ul>
+<li>Manages scrolling of child controls within the container</li>
+<li>Tracks child control positions and calculates scroll extents</li>
+<li>Disables native <code>AutoScroll</code> and provides manual scrolling</li>
+<li>Stores original child control positions for scroll offset calculation</li>
+</ul>
+<p><strong>Use Cases</strong>:</p>
+<ul>
+<li><code>KryptonPanel</code> with multiple child controls</li>
+<li><code>KryptonGroup</code> with scrollable content</li>
+<li><code>KryptonGroupBox</code> with overflow content</li>
+</ul>
+<h5 id="2-native-wrapper-mode-scrollbarmanagermodenativewrapper">2. Native Wrapper Mode (<code>ScrollbarManagerMode.NativeWrapper</code>)</h5>
+<p>Used for controls with native scrollbars like <code>TextBox</code>, <code>RichTextBox</code>, <code>ListBox</code>, etc.</p>
+<p><strong>Characteristics</strong>:</p>
+<ul>
+<li>Wraps native scrollbar functionality</li>
+<li>Hides native scrollbars via window styles or control properties</li>
+<li>Synchronizes with native scroll positions using Win32 API</li>
+<li>Provides periodic synchronization via timer (50ms interval)</li>
+<li>Maintains scroll position parity with native control</li>
+</ul>
+<p><strong>Use Cases</strong>:</p>
+<ul>
+<li><code>KryptonTextBox</code> with <code>ScrollBars</code> property</li>
+<li><code>KryptonRichTextBox</code> with <code>ScrollBars</code> property</li>
+<li><code>KryptonListBox</code>, <code>KryptonListView</code>, <code>KryptonTreeView</code></li>
+<li><code>KryptonPropertyGrid</code></li>
+</ul>
+<h5 id="3-custom-mode-scrollbarmanagermodecustom">3. Custom Mode (<code>ScrollbarManagerMode.Custom</code>)</h5>
+<p>Reserved for future use or custom implementations where the control manages its own scrolling logic.</p>
+<p><strong>Characteristics</strong>:</p>
+<ul>
+<li>No automatic scrollbar management</li>
+<li>Control is responsible for scrollbar creation and management</li>
+<li>Useful for specialized scrolling requirements</li>
+</ul>
+<h3 id="global-configuration">Global Configuration</h3>
+<p>The <code>KryptonManager</code> class provides global settings that affect all controls:</p>
+<pre><code class="lang-csharp">// Global static property
+KryptonManager.UseKryptonScrollbars = true;
+
+// Instance property (for designer support)
+kryptonManager1.GlobalUseKryptonScrollbars = true;
+</code></pre>
+<p><strong>Behavior</strong>:</p>
+<ul>
+<li>When set globally, all supported controls use Krypton scrollbars by default</li>
+<li>Individual controls can override the global setting</li>
+<li>Controls that haven't explicitly set the property inherit the global value</li>
+<li>Changing the global value affects all controls using the default</li>
+</ul>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="kryptonscrollbarmanager-class">KryptonScrollbarManager Class</h3>
+<h4 id="constructors">Constructors</h4>
+<pre><code class="lang-csharp">// Default constructor
+public KryptonScrollbarManager()
+
+// Constructor with target control
+public KryptonScrollbarManager(Control targetControl, ScrollbarManagerMode mode = ScrollbarManagerMode.Container)
+</code></pre>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>targetControl</code>: The control to attach scrollbars to</li>
+<li><code>mode</code>: The integration mode (Container, NativeWrapper, or Custom)</li>
+</ul>
+<h4 id="properties">Properties</h4>
+<h5 id="enabled">Enabled</h5>
+<pre><code class="lang-csharp">public bool Enabled { get; set; }
+</code></pre>
+<p>Gets or sets whether the scrollbar manager is enabled. When disabled, scrollbars are hidden but not disposed.</p>
+<p><strong>Default</strong>: <code>true</code></p>
+<h5 id="horizontalscrollbar">HorizontalScrollBar</h5>
+<pre><code class="lang-csharp">public KryptonHScrollBar? HorizontalScrollBar { get; }
+</code></pre>
+<p>Gets the horizontal scrollbar instance, if created. Returns <code>null</code> if no horizontal scrollbar exists.</p>
+<h5 id="verticalscrollbar">VerticalScrollBar</h5>
+<pre><code class="lang-csharp">public KryptonVScrollBar? VerticalScrollBar { get; }
+</code></pre>
+<p>Gets the vertical scrollbar instance, if created. Returns <code>null</code> if no vertical scrollbar exists.</p>
+<h5 id="mode">Mode</h5>
+<pre><code class="lang-csharp">public ScrollbarManagerMode Mode { get; set; }
+</code></pre>
+<p>Gets or sets the integration mode. Changing the mode will detach and reattach with the new mode.</p>
+<p><strong>Default</strong>: <code>ScrollbarManagerMode.Container</code></p>
+<h5 id="targetcontrol">TargetControl</h5>
+<pre><code class="lang-csharp">public Control? TargetControl { get; }
+</code></pre>
+<p>Gets the target control this manager is attached to. Returns <code>null</code> if not attached.</p>
+<h4 id="methods">Methods</h4>
+<h5 id="attach">Attach</h5>
+<pre><code class="lang-csharp">public void Attach(Control targetControl, ScrollbarManagerMode mode = ScrollbarManagerMode.Container)
+</code></pre>
+<p>Attaches the manager to a control. If already attached to a different control, detaches first.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>targetControl</code>: The control to attach to (must not be null)</li>
+<li><code>mode</code>: The integration mode to use</li>
+</ul>
+<p><strong>Exceptions</strong>:</p>
+<ul>
+<li><code>ArgumentNullException</code>: Thrown if <code>targetControl</code> is null</li>
+</ul>
+<h5 id="detach">Detach</h5>
+<pre><code class="lang-csharp">public void Detach()
+</code></pre>
+<p>Detaches the manager from the current control. Restores original scrollbar settings and disposes scrollbars.</p>
+<h5 id="updatescrollbars">UpdateScrollbars</h5>
+<pre><code class="lang-csharp">public void UpdateScrollbars()
+</code></pre>
+<p>Forces an update of scrollbars based on current content and visibility requirements. Called automatically on resize and layout events.</p>
+<h4 id="events">Events</h4>
+<h5 id="scrollbarschanged">ScrollbarsChanged</h5>
+<pre><code class="lang-csharp">public event EventHandler? ScrollbarsChanged;
+</code></pre>
+<p>Occurs when scrollbars are created, removed, or visibility changes. Useful for UI updates or logging.</p>
+<h4 id="idisposable">IDisposable</h4>
+<p>The manager implements <code>IDisposable</code> and should be disposed when no longer needed:</p>
+<pre><code class="lang-csharp">public void Dispose()
+</code></pre>
+<h3 id="scrollbarmanagermode-enumeration">ScrollbarManagerMode Enumeration</h3>
+<pre><code class="lang-csharp">public enum ScrollbarManagerMode
+{
+    Container,      // For controls with AutoScroll (Panel, GroupBox, etc.)
+    NativeWrapper,  // For controls with native scrollbars (TextBox, ListBox, etc.)
+    Custom          // For custom scrolling implementations
+}
+</code></pre>
+<h3 id="control-integration-properties">Control Integration Properties</h3>
+<p>Each supported control exposes the following properties:</p>
+<h4 id="usekryptonscrollbars">UseKryptonScrollbars</h4>
+<pre><code class="lang-csharp">public bool UseKryptonScrollbars { get; set; }
+</code></pre>
+<p>Gets or sets whether to use Krypton-themed scrollbars. If not explicitly set, uses the global value from <code>KryptonManager.UseKryptonScrollbars</code>.</p>
+<p><strong>Default</strong>: Inherits from <code>KryptonManager.UseKryptonScrollbars</code> (default: <code>false</code>)</p>
+<p><strong>Designer Support</strong>:</p>
+<ul>
+<li><code>ShouldSerializeUseKryptonScrollbars()</code>: Returns <code>true</code> only if explicitly set</li>
+<li><code>ResetUseKryptonScrollbars()</code>: Resets to use global value</li>
+</ul>
+<h4 id="scrollbarmanager">ScrollbarManager</h4>
+<pre><code class="lang-csharp">public KryptonScrollbarManager? ScrollbarManager { get; }
+</code></pre>
+<p>Gets access to the scrollbar manager when <code>UseKryptonScrollbars</code> is enabled. Returns <code>null</code> if not enabled or manager not created.</p>
+<p><strong>Note</strong>: This property is <code>Browsable(false)</code> and not shown in the designer.</p>
+<h3 id="kryptonmanager-global-properties">KryptonManager Global Properties</h3>
+<h4 id="usekryptonscrollbars-static">UseKryptonScrollbars (Static)</h4>
+<pre><code class="lang-csharp">public static bool UseKryptonScrollbars { get; set; }
+</code></pre>
+<p>Gets or sets the global flag that decides if scrollable controls should use Krypton-themed scrollbars instead of native scrollbars.</p>
+<p><strong>Default</strong>: <code>false</code></p>
+<h4 id="globalusekryptonscrollbars-instance">GlobalUseKryptonScrollbars (Instance)</h4>
+<pre><code class="lang-csharp">public bool GlobalUseKryptonScrollbars { get; set; }
+</code></pre>
+<p>Instance property wrapper for designer support. Maps to the static <code>UseKryptonScrollbars</code> property.</p>
+<hr>
+<h2 id="integration-guide">Integration Guide</h2>
+<h3 id="enabling-krypton-scrollbars-globally">Enabling Krypton Scrollbars Globally</h3>
+<p>To enable Krypton scrollbars for all supported controls in your application:</p>
+<pre><code class="lang-csharp">// In your application startup code
+KryptonManager.UseKryptonScrollbars = true;
+</code></pre>
+<p>Or via the designer:</p>
+<ol>
+<li>Add a <code>KryptonManager</code> component to your form</li>
+<li>Set <code>GlobalUseKryptonScrollbars</code> to <code>true</code> in the Properties window</li>
+</ol>
+<h3 id="enabling-for-individual-controls">Enabling for Individual Controls</h3>
+<p>To enable Krypton scrollbars for a specific control:</p>
+<pre><code class="lang-csharp">// For a TextBox
+kryptonTextBox1.UseKryptonScrollbars = true;
+
+// For a Panel
+kryptonPanel1.UseKryptonScrollbars = true;
+</code></pre>
+<h3 id="programmatic-control">Programmatic Control</h3>
+<p>For advanced scenarios, you can access the scrollbar manager directly:</p>
+<pre><code class="lang-csharp">if (kryptonTextBox1.UseKryptonScrollbars)
+{
+    var manager = kryptonTextBox1.ScrollbarManager;
+    if (manager != null)
+    {
+        // Access scrollbars
+        var hScroll = manager.HorizontalScrollBar;
+        var vScroll = manager.VerticalScrollBar;
+        
+        // Subscribe to changes
+        manager.ScrollbarsChanged += (s, e) =&gt; 
+        {
+            // Handle scrollbar visibility changes
+        };
+        
+        // Update manually if needed
+        manager.UpdateScrollbars();
+    }
+}
+</code></pre>
+<h3 id="manual-manager-creation">Manual Manager Creation</h3>
+<p>For custom scenarios, you can create and manage a <code>KryptonScrollbarManager</code> manually:</p>
+<pre><code class="lang-csharp">// Create manager
+var manager = new KryptonScrollbarManager(myControl, ScrollbarManagerMode.Container)
+{
+    Enabled = true
+};
+
+// Attach to control (if not done in constructor)
+manager.Attach(myControl, ScrollbarManagerMode.Container);
+
+// Later, detach and dispose
+manager.Detach();
+manager.Dispose();
+</code></pre>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-basic-textbox-with-krypton-scrollbars">Example 1: Basic TextBox with Krypton Scrollbars</h3>
+<pre><code class="lang-csharp">// Create TextBox
+var textBox = new KryptonTextBox
+{
+    Multiline = true,
+    WordWrap = false,
+    ScrollBars = ScrollBars.Both,
+    UseKryptonScrollbars = true  // Enable Krypton scrollbars
+};
+
+// Add to form
+this.Controls.Add(textBox);
+</code></pre>
+<h3 id="example-2-panel-with-scrollable-content">Example 2: Panel with Scrollable Content</h3>
+<pre><code class="lang-csharp">// Create Panel
+var panel = new KryptonPanel
+{
+    AutoScroll = true,  // Will be disabled by manager
+    UseKryptonScrollbars = true
+};
+
+// Add scrollable content
+for (int i = 0; i &lt; 20; i++)
+{
+    var label = new KryptonLabel
+    {
+        Text = $&quot;Item {i}&quot;,
+        Location = new Point(10, i * 30 + 10),
+        Size = new Size(200, 25)
+    };
+    panel.Controls.Add(label);
+}
+
+this.Controls.Add(panel);
+</code></pre>
+<h3 id="example-3-global-enable-with-per-control-override">Example 3: Global Enable with Per-Control Override</h3>
+<pre><code class="lang-csharp">// Enable globally
+KryptonManager.UseKryptonScrollbars = true;
+
+// Most controls will use Krypton scrollbars
+var textBox1 = new KryptonTextBox { Multiline = true };
+var textBox2 = new KryptonTextBox { Multiline = true };
+
+// Override for specific control
+textBox2.UseKryptonScrollbars = false;  // Uses native scrollbars
+
+// Reset to global
+textBox2.ResetUseKryptonScrollbars();  // Now uses Krypton scrollbars again
+</code></pre>
+<h3 id="example-4-monitoring-scrollbar-changes">Example 4: Monitoring Scrollbar Changes</h3>
+<pre><code class="lang-csharp">var textBox = new KryptonTextBox
+{
+    Multiline = true,
+    UseKryptonScrollbars = true
+};
+
+// Subscribe to scrollbar changes
+if (textBox.ScrollbarManager != null)
+{
+    textBox.ScrollbarManager.ScrollbarsChanged += (s, e) =&gt;
+    {
+        var manager = (KryptonScrollbarManager)s;
+        bool hasHScroll = manager.HorizontalScrollBar?.Visible ?? false;
+        bool hasVScroll = manager.VerticalScrollBar?.Visible ?? false;
+        
+        Console.WriteLine($&quot;H-Scroll: {hasHScroll}, V-Scroll: {hasVScroll}&quot;);
+    };
+}
+</code></pre>
+<h3 id="example-5-dynamic-content-updates">Example 5: Dynamic Content Updates</h3>
+<pre><code class="lang-csharp">var panel = new KryptonPanel
+{
+    UseKryptonScrollbars = true
+};
+
+// Add content dynamically
+void AddContent()
+{
+    var label = new KryptonLabel
+    {
+        Text = $&quot;New Item {panel.Controls.Count}&quot;,
+        Location = new Point(10, panel.Controls.Count * 30 + 10)
+    };
+    panel.Controls.Add(label);
+    
+    // Update scrollbars after content change
+    panel.ScrollbarManager?.UpdateScrollbars();
+}
+</code></pre>
+<hr>
+<h2 id="configuration">Configuration</h2>
+<h3 id="default-behavior">Default Behavior</h3>
+<ul>
+<li><strong>Global Setting</strong>: <code>KryptonManager.UseKryptonScrollbars = false</code></li>
+<li><strong>Per-Control</strong>: Inherits global value unless explicitly set</li>
+<li><strong>Integration Mode</strong>:
+<ul>
+<li>Container controls: <code>Container</code> mode</li>
+<li>Native scrollbar controls: <code>NativeWrapper</code> mode</li>
+</ul>
+</li>
+</ul>
+<h3 id="synchronization-settings">Synchronization Settings</h3>
+<p>For <code>NativeWrapper</code> mode, the manager uses:</p>
+<ul>
+<li><strong>Sync Timer Interval</strong>: 50ms (hardcoded, not configurable)</li>
+<li><strong>Scroll Position Sync</strong>: Automatic via Win32 API calls</li>
+<li><strong>Native Scrollbar Hiding</strong>: Automatic based on control type</li>
+</ul>
+<h3 id="scrollbar-sizing">Scrollbar Sizing</h3>
+<p>Scrollbars use system metrics:</p>
+<ul>
+<li><strong>Vertical Scrollbar Width</strong>: <code>SystemInformation.VerticalScrollBarWidth</code></li>
+<li><strong>Horizontal Scrollbar Height</strong>: <code>SystemInformation.HorizontalScrollBarHeight</code></li>
+</ul>
+<p>These values are automatically used for positioning and sizing.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-native-scrollbars-still-visible">Issue: Native Scrollbars Still Visible</h3>
+<p><strong>Symptoms</strong>: Both native and Krypton scrollbars are visible simultaneously.</p>
+<p><strong>Causes</strong>:</p>
+<ol>
+<li><code>HideNativeScrollbars()</code> method not working for the control type</li>
+<li>Control doesn't support scrollbar hiding via properties</li>
+<li>Handle not created when hiding is attempted</li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Ensure the control's handle is created before enabling scrollbars</li>
+<li>For <code>RichTextBox</code>, ensure <code>ScrollBars</code> property is set correctly</li>
+<li>For <code>TextBox</code>, ensure <code>ScrollBars</code> property is set correctly</li>
+<li>Check if the control type is supported in <code>HideNativeScrollbars()</code></li>
+</ul>
+<h3 id="issue-scrollbars-not-appearing">Issue: Scrollbars Not Appearing</h3>
+<p><strong>Symptoms</strong>: Krypton scrollbars don't appear even when enabled.</p>
+<p><strong>Causes</strong>:</p>
+<ol>
+<li>Content doesn't require scrolling</li>
+<li>Manager not properly initialized</li>
+<li>Control handle not created</li>
+<li>Manager disabled</li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Verify content extends beyond control bounds</li>
+<li>Check <code>ScrollbarManager</code> property is not null</li>
+<li>Ensure control handle is created (check <code>IsHandleCreated</code>)</li>
+<li>Verify <code>Enabled</code> property is <code>true</code> on the manager</li>
+<li>Call <code>UpdateScrollbars()</code> manually if needed</li>
+</ul>
+<h3 id="issue-scrollbars-clipped-or-positioned-incorrectly">Issue: Scrollbars Clipped or Positioned Incorrectly</h3>
+<p><strong>Symptoms</strong>: Scrollbars are cut off or positioned outside visible area.</p>
+<p><strong>Causes</strong>:</p>
+<ol>
+<li>Client area calculation issues</li>
+<li>Padding/borders not accounted for</li>
+<li>Anchor styles conflicting with manual positioning</li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>The <code>PositionScrollbars()</code> method includes bounds checking</li>
+<li>For native wrapper mode, anchors are not used (manual positioning)</li>
+<li>For container mode, anchors are used for automatic resizing</li>
+<li>Check control's <code>ClientRectangle</code> vs <code>ClientSize</code></li>
+</ul>
+<h3 id="issue-scroll-position-not-syncing">Issue: Scroll Position Not Syncing</h3>
+<p><strong>Symptoms</strong>: Krypton scrollbar position doesn't match native scroll position.</p>
+<p><strong>Causes</strong>:</p>
+<ol>
+<li>Sync timer not running</li>
+<li>Native scroll position changed externally</li>
+<li><code>_suppressScrollEvents</code> flag preventing updates</li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Verify manager is in <code>NativeWrapper</code> mode</li>
+<li>Check sync timer is started (automatic in <code>NativeWrapper</code> mode)</li>
+<li>Ensure <code>UpdateNativeWrapperScrollbars()</code> is being called</li>
+<li>Check for exceptions in scroll position sync code</li>
+</ul>
+<h3 id="issue-performance-problems">Issue: Performance Problems</h3>
+<p><strong>Symptoms</strong>: UI lag or high CPU usage with scrollbars enabled.</p>
+<p><strong>Causes</strong>:</p>
+<ol>
+<li>Sync timer running too frequently</li>
+<li>Too many layout updates</li>
+<li>Scrollbar updates on every resize/layout</li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Sync timer interval is 50ms (fixed)</li>
+<li>Layout updates are throttled with <code>_isUpdating</code> flag</li>
+<li>Consider disabling scrollbars for controls with frequent updates</li>
+<li>Profile to identify specific bottleneck</li>
+</ul>
+<h3 id="issue-scrollbars-not-themed-correctly">Issue: Scrollbars Not Themed Correctly</h3>
+<p><strong>Symptoms</strong>: Scrollbars don't match current Krypton theme.</p>
+<p><strong>Causes</strong>:</p>
+<ol>
+<li>Scrollbars use default Krypton styling</li>
+<li>Theme changed after scrollbars created</li>
+<li>Palette not applied correctly</li>
+</ol>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Scrollbars automatically use current global palette</li>
+<li>Recreate scrollbars after theme change (detach/reattach)</li>
+<li>Verify <code>KryptonManager.GlobalPaletteMode</code> is set correctly</li>
+</ul>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-enable-globally-override-locally">1. Enable Globally, Override Locally</h3>
+<pre><code class="lang-csharp">// Best: Enable globally for consistency
+KryptonManager.UseKryptonScrollbars = true;
+
+// Override only when necessary
+specificControl.UseKryptonScrollbars = false;
+</code></pre>
+<h3 id="2-initialize-before-adding-content">2. Initialize Before Adding Content</h3>
+<pre><code class="lang-csharp">// Good: Set property before adding content
+panel.UseKryptonScrollbars = true;
+panel.Controls.Add(content);
+
+// Better: Set before control is shown
+panel.UseKryptonScrollbars = true;
+// ... add content ...
+this.Controls.Add(panel);
+</code></pre>
+<h3 id="3-handle-lifecycle-properly">3. Handle Lifecycle Properly</h3>
+<pre><code class="lang-csharp">// The manager is automatically disposed when:
+// 1. Control is disposed
+// 2. UseKryptonScrollbars is set to false
+// 3. Manager.Detach() is called
+
+// Manual cleanup only needed for manually created managers
+var manager = new KryptonScrollbarManager(control);
+// ... use manager ...
+manager.Dispose();  // Required for manual creation
+</code></pre>
+<h3 id="4-update-after-dynamic-content-changes">4. Update After Dynamic Content Changes</h3>
+<pre><code class="lang-csharp">// When adding/removing content dynamically
+panel.Controls.Add(newControl);
+
+// Update scrollbars to reflect new content
+panel.ScrollbarManager?.UpdateScrollbars();
+</code></pre>
+<h3 id="5-check-manager-availability">5. Check Manager Availability</h3>
+<pre><code class="lang-csharp">// Always check if manager exists before accessing
+if (control.UseKryptonScrollbars &amp;&amp; control.ScrollbarManager != null)
+{
+    var scrollbar = control.ScrollbarManager.HorizontalScrollBar;
+    // Use scrollbar safely
+}
+</code></pre>
+<h3 id="6-use-appropriate-mode">6. Use Appropriate Mode</h3>
+<pre><code class="lang-csharp">// Container controls should use Container mode
+var manager = new KryptonScrollbarManager(panel, ScrollbarManagerMode.Container);
+
+// Native scrollbar controls should use NativeWrapper mode
+var manager = new KryptonScrollbarManager(textBox, ScrollbarManagerMode.NativeWrapper);
+</code></pre>
+<h3 id="7-monitor-for-changes">7. Monitor for Changes</h3>
+<pre><code class="lang-csharp">// Subscribe to scrollbar changes for UI updates
+manager.ScrollbarsChanged += (s, e) =&gt;
+{
+    // Update UI based on scrollbar visibility
+    UpdateLayout();
+};
+</code></pre>
+<h3 id="8-test-with-different-content-sizes">8. Test with Different Content Sizes</h3>
+<pre><code class="lang-csharp">// Test with:
+// - Content smaller than control (no scrollbars)
+// - Content requiring horizontal scrollbar only
+// - Content requiring vertical scrollbar only
+// - Content requiring both scrollbars
+// - Very large content (stress test)
+</code></pre>
+<hr>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="scrollbar-positioning-algorithm">Scrollbar Positioning Algorithm</h3>
+<p>The <code>PositionScrollbars()</code> method ensures scrollbars are positioned within bounds:</p>
+<pre><code class="lang-csharp">// Horizontal scrollbar
+int hScrollY = clientRect.Bottom - scrollbarHeight;
+int hScrollWidth = clientRect.Width - (verticalScrollbarVisible ? scrollbarWidth : 0);
+hScrollY = Math.Max(clientRect.Top, Math.Min(hScrollY, clientRect.Bottom - 1));
+hScrollWidth = Math.Max(0, Math.Min(hScrollWidth, clientRect.Width));
+
+// Vertical scrollbar
+int vScrollX = clientRect.Right - scrollbarWidth;
+int vScrollHeight = clientRect.Height - (horizontalScrollbarVisible ? scrollbarHeight : 0);
+vScrollX = Math.Max(clientRect.Left, Math.Min(vScrollX, clientRect.Right - 1));
+vScrollHeight = Math.Max(0, Math.Min(vScrollHeight, clientRect.Height));
+</code></pre>
+<h3 id="native-scrollbar-hiding">Native Scrollbar Hiding</h3>
+<p>Different strategies for different control types:</p>
+<pre><code class="lang-csharp">// RichTextBox: Use ScrollBars property
+richTextBox.ScrollBars = RichTextBoxScrollBars.None;
+
+// TextBox: Use ScrollBars property
+textBox.ScrollBars = ScrollBars.None;
+
+// Other controls: Use window styles
+uint style = PI.GetWindowLong(handle, PI.GWL_.STYLE);
+style &amp;= ~(uint)PI.WS_.HSCROLL;
+style &amp;= ~(uint)PI.WS_.VSCROLL;
+PI.SetWindowLong(handle, PI.GWL_.STYLE, style);
+</code></pre>
+<h3 id="scroll-position-synchronization">Scroll Position Synchronization</h3>
+<p>For <code>NativeWrapper</code> mode, positions are synchronized using Win32 API:</p>
+<pre><code class="lang-csharp">// Get native scroll position
+PI.GetScrollInfo(handle, PI.SB_.HORZ, ref hScrollInfo);
+PI.GetScrollInfo(handle, PI.SB_.VERT, ref vScrollInfo);
+
+// Set Krypton scrollbar position
+horizontalScrollBar.Value = hScrollInfo.nPos;
+verticalScrollBar.Value = vScrollInfo.nPos;
+
+// Sync back when user scrolls Krypton scrollbar
+PI.SetScrollPos(handle, scrollBar, value, true);
+PI.SendMessage(handle, WM_.HSCROLL, ...);
+</code></pre>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

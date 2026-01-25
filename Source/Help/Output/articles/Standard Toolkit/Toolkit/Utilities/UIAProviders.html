@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>UIA Provider Implementation | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="UIA Provider Implementation | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="uia-provider-implementation">UIA Provider Implementation</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#problem-statement">Problem Statement</a></li>
+<li><a href="#architecture--design">Architecture &amp; Design</a></li>
+<li><a href="#implementation-details">Implementation Details</a></li>
+<li><a href="#code-patterns--examples">Code Patterns &amp; Examples</a></li>
+<li><a href="#framework-compatibility">Framework Compatibility</a></li>
+<li><a href="#extending-the-implementation">Extending the Implementation</a></li>
+<li><a href="#testing--validation">Testing &amp; Validation</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>This document provides comprehensive technical documentation for the UIA (UI Automation) Provider implementation in Krypton Toolkit. The implementation ensures that Krypton controls that wrap standard Windows Forms controls properly expose accessibility information to assistive technologies.</p>
+<h3 id="what-is-ui-automation">What is UI Automation?</h3>
+<p>UI Automation is Microsoft's accessibility framework that enables assistive technologies (screen readers, automation tools, etc.) to interact with applications. It provides a standardized way to:</p>
+<ul>
+<li>Discover UI elements</li>
+<li>Read element properties (name, role, state, value)</li>
+<li>Navigate between elements</li>
+<li>Interact with controls programmatically</li>
+</ul>
+<h3 id="why-this-matters">Why This Matters</h3>
+<p>When Krypton wraps standard Windows Forms controls (e.g., <code>KryptonTextBox</code> wraps a <code>TextBox</code>), the internal control's accessibility information may not be properly exposed through the wrapper. This causes:</p>
+<ul>
+<li>Screen readers (Narrator, NVDA, JAWS) to fail or provide incorrect information</li>
+<li>UI Automation tools to not discover controls</li>
+<li>Accessibility compliance issues</li>
+</ul>
+<hr>
+<h2 id="problem-statement">Problem Statement</h2>
+<h3 id="the-wrapping-problem">The Wrapping Problem</h3>
+<p>Krypton controls often wrap standard Windows Forms controls to provide custom styling while maintaining functionality:</p>
+<pre><code class="lang-csharp">public class KryptonTextBox : VisualControlBase
+{
+    private InternalTextBox _textBox;  // Internal TextBox control
+    
+    public TextBox TextBox =&gt; _textBox;  // Exposed for advanced scenarios
+}
+</code></pre>
+<h3 id="net-6-uia-providers">.NET 6+ UIA Providers</h3>
+<p>Starting with .NET 6, Microsoft added built-in UIA providers for standard Windows Forms controls. These providers:</p>
+<ul>
+<li>Automatically expose accessibility information</li>
+<li>Support modern accessibility standards</li>
+<li>Work seamlessly with assistive technologies</li>
+</ul>
+<p>However, when a control is wrapped:</p>
+<ol>
+<li>The wrapper control (<code>KryptonTextBox</code>) becomes the accessible object</li>
+<li>The internal control's (<code>TextBox</code>) accessibility information is &quot;hidden&quot;</li>
+<li>Assistive technologies see the wrapper, not the internal control</li>
+<li>Accessibility information is lost or incorrect</li>
+</ol>
+<h3 id="example-scenario">Example Scenario</h3>
+<p><strong>Before Implementation:</strong></p>
+<pre><code>Narrator: &quot;Edit, no name specified&quot;
+</code></pre>
+<p><strong>After Implementation:</strong></p>
+<pre><code>Narrator: &quot;Test TextBox, edit, type in text&quot;
+</code></pre>
+<hr>
+<h2 id="architecture--design">Architecture &amp; Design</h2>
+<h3 id="design-principles">Design Principles</h3>
+<ol>
+<li><strong>Delegation Pattern</strong>: Delegate accessibility calls to the internal control's accessibility object</li>
+<li><strong>Null Safety</strong>: Handle cases where internal control might be null</li>
+<li><strong>Framework Compatibility</strong>: Work on both modern (.NET 8+) and legacy (.NET Framework) TFMs</li>
+<li><strong>Minimal Overhead</strong>: Efficient delegation with minimal performance impact</li>
+<li><strong>Fallback Support</strong>: Provide sensible defaults when internal control information is unavailable</li>
+</ol>
+<h3 id="architecture-diagram">Architecture Diagram</h3>
+<pre><code>┌─────────────────────────────────────────────────────────┐
+│                    KryptonTextBox                       │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  CreateAccessibilityInstance()                    │  │
+│  │  Returns: KryptonTextBoxAccessibleObject         │  │
+│  └───────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+                        │
+                        │ delegates to
+                        ▼
+┌─────────────────────────────────────────────────────────┐
+│         KryptonTextBoxAccessibleObject                   │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  Name, Role, State, Value, etc.                  │  │
+│  │  ─────────────────────────────────────────────   │  │
+│  │  _owner.TextBox.AccessibilityObject.Name         │  │
+│  │  _owner.TextBox.AccessibilityObject.Role         │  │
+│  │  _owner.TextBox.AccessibilityObject.State        │  │
+│  └───────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+                        │
+                        │ forwards to
+                        ▼
+┌─────────────────────────────────────────────────────────┐
+│              Internal TextBox.AccessibilityObject         │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │  .NET 6+ UIA Provider (modern TFMs)              │  │
+│  │  OR                                                │  │
+│  │  Basic AccessibilityObject (legacy TFMs)         │  │
+│  └───────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="class-hierarchy">Class Hierarchy</h3>
+<pre><code>Control.ControlAccessibleObject (base class)
+    │
+    ├── KryptonTextBoxAccessibleObject
+    ├── KryptonRichTextBoxAccessibleObject
+    ├── KryptonComboBoxAccessibleObject
+    ├── KryptonListBoxAccessibleObject
+    ├── KryptonCheckedListBoxAccessibleObject
+    ├── KryptonMaskedTextBoxAccessibleObject
+    ├── KryptonNumericUpDownAccessibleObject
+    ├── KryptonDomainUpDownAccessibleObject
+    └── KryptonLinkWrapLabelAccessibleObject
+</code></pre>
+<hr>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="core-components">Core Components</h3>
+<h4 id="1-accessibleobject-classes">1. AccessibleObject Classes</h4>
+<p>Each Krypton control has a corresponding <code>AccessibleObject</code> class located in:</p>
+<pre><code>Source/Krypton Components/Krypton.Toolkit/Utilities/Accessibility/
+</code></pre>
+<p><strong>Structure:</strong></p>
+<pre><code class="lang-csharp">internal class KryptonTextBoxAccessibleObject : Control.ControlAccessibleObject
+{
+    private readonly KryptonTextBox _owner;
+    
+    public KryptonTextBoxAccessibleObject(KryptonTextBox owner)
+        : base(owner)
+    {
+        _owner = owner;
+    }
+    
+    // Override accessibility properties and methods
+    public override string? Name { get { ... } }
+    public override AccessibleRole Role { get { ... } }
+    // ... etc
+}
+</code></pre>
+<h4 id="2-control-integration">2. Control Integration</h4>
+<p>Each Krypton control overrides <code>CreateAccessibilityInstance()</code>:</p>
+<pre><code class="lang-csharp">protected override AccessibleObject CreateAccessibilityInstance()
+{
+    return new KryptonTextBoxAccessibleObject(this);
+}
+</code></pre>
+<h3 id="property-delegation-pattern">Property Delegation Pattern</h3>
+<p>All accessibility properties follow this pattern:</p>
+<pre><code class="lang-csharp">public override string? Name
+{
+    get
+    {
+        // 1. Try to get from internal control first
+        var internalAccessible = _owner.TextBox?.AccessibilityObject;
+        if (internalAccessible?.Name != null)
+        {
+            return internalAccessible.Name;
+        }
+        
+        // 2. Fall back to base implementation
+        return base.Name ?? _owner.Name;
+    }
+}
+</code></pre>
+<h3 id="role-fallback-strategy">Role Fallback Strategy</h3>
+<p>For legacy TFMs, we provide explicit role fallbacks:</p>
+<pre><code class="lang-csharp">public override AccessibleRole Role
+{
+    get
+    {
+        // Delegate to internal control's role
+        var internalAccessible = _owner.TextBox?.AccessibilityObject;
+        if (internalAccessible != null)
+        {
+            var role = internalAccessible.Role;
+            // Ensure we have a valid role (legacy TFMs might return Default)
+            if (role != AccessibleRole.Default &amp;&amp; role != AccessibleRole.None)
+            {
+                return role;
+            }
+        }
+        
+        // Fall back to appropriate role for this control type
+        return AccessibleRole.Text;  // For TextBox controls
+    }
+}
+</code></pre>
+<h3 id="method-delegation-pattern">Method Delegation Pattern</h3>
+<p>Methods follow a similar delegation pattern:</p>
+<pre><code class="lang-csharp">public override void DoDefaultAction()
+{
+    // Delegate to internal control's default action
+    var internalAccessible = _owner.TextBox?.AccessibilityObject;
+    if (internalAccessible != null)
+    {
+        internalAccessible.DoDefaultAction();
+    }
+    else
+    {
+        base.DoDefaultAction();
+    }
+}
+</code></pre>
+<hr>
+<h2 id="code-patterns--examples">Code Patterns &amp; Examples</h2>
+<h3 id="complete-example-kryptontextboxaccessibleobject">Complete Example: KryptonTextBoxAccessibleObject</h3>
+<pre><code class="lang-csharp">#region BSD License
+/*
+ * Original BSD 3-Clause License
+ * New BSD 3-Clause License
+ * Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), 
+ * Giduac &amp; Ahmed Abdelhameed et al. 2026 - 2026. All rights reserved.
+ */
+#endregion
+
+namespace Krypton.Toolkit;
+
+/// &lt;summary&gt;
+/// Provides accessibility information for KryptonTextBox control.
+/// Delegates to the internal TextBox's accessibility object to ensure 
+/// proper UIA provider support.
+/// &lt;/summary&gt;
+internal class KryptonTextBoxAccessibleObject : Control.ControlAccessibleObject
+{
+    #region Instance Fields
+    private readonly KryptonTextBox _owner;
+    #endregion
+
+    #region Identity
+    /// &lt;summary&gt;
+    /// Initialize a new instance of the KryptonTextBoxAccessibleObject class.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;owner&quot;&gt;The KryptonTextBox control that owns this accessible object.&lt;/param&gt;
+    public KryptonTextBoxAccessibleObject(KryptonTextBox owner)
+        : base(owner)
+    {
+        _owner = owner;
+    }
+    #endregion
+
+    #region Public Overrides
+    
+    /// &lt;summary&gt;
+    /// Gets the accessible name of the control.
+    /// &lt;/summary&gt;
+    public override string? Name
+    {
+        get
+        {
+            // Try to get name from internal TextBox first
+            var internalAccessible = _owner.TextBox?.AccessibilityObject;
+            if (internalAccessible?.Name != null)
+            {
+                return internalAccessible.Name;
+            }
+
+            // Fall back to base implementation
+            return base.Name ?? _owner.Name;
+        }
+    }
+
+    /// &lt;summary&gt;
+    /// Gets the accessible description of the control.
+    /// &lt;/summary&gt;
+    public override string? Description
+    {
+        get
+        {
+            // Try to get description from internal TextBox first
+            var internalAccessible = _owner.TextBox?.AccessibilityObject;
+            if (internalAccessible?.Description != null)
+            {
+                return internalAccessible.Description;
+            }
+
+            // Fall back to base implementation
+            return base.Description;
+        }
+    }
+
+    /// &lt;summary&gt;
+    /// Gets the accessible role of the control.
+    /// &lt;/summary&gt;
+    public override AccessibleRole Role
+    {
+        get
+        {
+            // Delegate to internal TextBox's role
+            var internalAccessible = _owner.TextBox?.AccessibilityObject;
+            if (internalAccessible != null)
+            {
+                var role = internalAccessible.Role;
+                // Ensure we have a valid role (legacy TFMs might return Default)
+                if (role != AccessibleRole.Default &amp;&amp; role != AccessibleRole.None)
+                {
+                    return role;
+                }
+            }
+
+            // Fall back to Text role for TextBox controls
+            return AccessibleRole.Text;
+        }
+    }
+
+    /// &lt;summary&gt;
+    /// Gets the state of this accessible object.
+    /// &lt;/summary&gt;
+    public override AccessibleStates State
+    {
+        get
+        {
+            // Delegate to internal TextBox's state
+            var internalAccessible = _owner.TextBox?.AccessibilityObject;
+            if (internalAccessible != null)
+            {
+                return internalAccessible.State;
+            }
+
+            // Fall back to base implementation
+            return base.State;
+        }
+    }
+
+    /// &lt;summary&gt;
+    /// Gets the value of the accessible object.
+    /// &lt;/summary&gt;
+    public override string? Value
+    {
+        get
+        {
+            // Delegate to internal TextBox's value (which contains the text)
+            var internalAccessible = _owner.TextBox?.AccessibilityObject;
+            if (internalAccessible?.Value != null)
+            {
+                return internalAccessible.Value;
+            }
+
+            // Fall back to control's text
+            return _owner.Text;
+        }
+    }
+
+    /// &lt;summary&gt;
+    /// Performs the default action associated with this accessible object.
+    /// &lt;/summary&gt;
+    public override void DoDefaultAction()
+    {
+        // Delegate to internal TextBox's default action
+        var internalAccessible = _owner.TextBox?.AccessibilityObject;
+        if (internalAccessible != null)
+        {
+            internalAccessible.DoDefaultAction();
+        }
+        else
+        {
+            base.DoDefaultAction();
+        }
+    }
+
+    /// &lt;summary&gt;
+    /// Retrieves the child accessible object corresponding to the specified index.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;index&quot;&gt;The zero-based index of the child accessible object.&lt;/param&gt;
+    /// &lt;returns&gt;An AccessibleObject that represents the child accessible object.&lt;/returns&gt;
+    public override AccessibleObject? GetChild(int index)
+    {
+        // Delegate to internal TextBox's children
+        var internalAccessible = _owner.TextBox?.AccessibilityObject;
+        if (internalAccessible != null)
+        {
+            return internalAccessible.GetChild(index);
+        }
+
+        return base.GetChild(index);
+    }
+
+    /// &lt;summary&gt;
+    /// Retrieves the number of children belonging to an accessible object.
+    /// &lt;/summary&gt;
+    /// &lt;returns&gt;The number of children belonging to an accessible object.&lt;/returns&gt;
+    public override int GetChildCount()
+    {
+        // Delegate to internal TextBox's child count
+        var internalAccessible = _owner.TextBox?.AccessibilityObject;
+        if (internalAccessible != null)
+        {
+            return internalAccessible.GetChildCount();
+        }
+
+        return base.GetChildCount();
+    }
+
+    /// &lt;summary&gt;
+    /// Navigates to another accessible object.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;direction&quot;&gt;One of the NavigateDirection values.&lt;/param&gt;
+    /// &lt;returns&gt;An AccessibleObject representing one of the NavigateDirection values.&lt;/returns&gt;
+    public override AccessibleObject? Navigate(AccessibleNavigation direction)
+    {
+        // Delegate to internal TextBox's navigation
+        var internalAccessible = _owner.TextBox?.AccessibilityObject;
+        if (internalAccessible != null)
+        {
+            return internalAccessible.Navigate(direction);
+        }
+
+        return base.Navigate(direction);
+    }
+
+    /// &lt;summary&gt;
+    /// Selects this accessible object.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;flags&quot;&gt;One of the AccessibleSelection values.&lt;/param&gt;
+    public override void Select(AccessibleSelection flags)
+    {
+        // Delegate to internal TextBox's selection
+        var internalAccessible = _owner.TextBox?.AccessibilityObject;
+        if (internalAccessible != null)
+        {
+            internalAccessible.Select(flags);
+        }
+        else
+        {
+            base.Select(flags);
+        }
+    }
+    #endregion
+}
+</code></pre>
+<h3 id="control-integration-example">Control Integration Example</h3>
+<pre><code class="lang-csharp">// In KryptonTextBox.cs, in the Protected Overrides region:
+
+/// &lt;summary&gt;
+/// Creates the accessibility object for the KryptonTextBox control.
+/// &lt;/summary&gt;
+/// &lt;returns&gt;A new KryptonTextBoxAccessibleObject instance for the control.&lt;/returns&gt;
+protected override AccessibleObject CreateAccessibilityInstance() 
+    =&gt; new KryptonTextBoxAccessibleObject(this);
+</code></pre>
+<h3 id="special-cases">Special Cases</h3>
+<h4 id="kryptonlinkwraplabel">KryptonLinkWrapLabel</h4>
+<p>Since <code>KryptonLinkWrapLabel</code> inherits directly from <code>LinkLabel</code>, the implementation is slightly different:</p>
+<pre><code class="lang-csharp">public override string? Name
+{
+    get
+    {
+        // Since KryptonLinkWrapLabel inherits from LinkLabel, 
+        // cast to LinkLabel to access its accessibility object
+        var linkLabelAccessible = ((LinkLabel)_owner).AccessibilityObject;
+        if (linkLabelAccessible?.Name != null)
+        {
+            return linkLabelAccessible.Name;
+        }
+
+        return base.Name ?? _owner.Name;
+    }
+}
+</code></pre>
+<h4 id="kryptoncheckedlistbox">KryptonCheckedListBox</h4>
+<p>Since <code>CheckedListBox</code> inherits from <code>ListBox</code>, we access it through the <code>ListBox</code> property:</p>
+<pre><code class="lang-csharp">public override string? Name
+{
+    get
+    {
+        // Try to get name from internal ListBox (CheckedListBox inherits from ListBox)
+        var internalAccessible = _owner.ListBox?.AccessibilityObject;
+        if (internalAccessible?.Name != null)
+        {
+            return internalAccessible.Name;
+        }
+
+        return base.Name ?? _owner.Name;
+    }
+}
+</code></pre>
+<hr>
+<h2 id="framework-compatibility">Framework Compatibility</h2>
+<h3 id="modern-tfms-net80-windows-net90-windows-net100-windows">Modern TFMs (net8.0-windows, net9.0-windows, net10.0-windows)</h3>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Built-in UIA providers for standard controls</li>
+<li>Rich accessibility information</li>
+<li>Full UIA pattern support</li>
+</ul>
+<p><strong>Implementation:</strong></p>
+<ul>
+<li>Directly delegates to internal control's UIA providers</li>
+<li>Leverages all .NET 6+ accessibility enhancements</li>
+<li>No additional work required</li>
+</ul>
+<h3 id="legacy-tfms-net472-net48-net481">Legacy TFMs (net472, net48, net481)</h3>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>No built-in UIA providers</li>
+<li>Basic <code>AccessibilityObject</code> instances only</li>
+<li>Limited accessibility information</li>
+</ul>
+<p><strong>Implementation:</strong></p>
+<ul>
+<li>Delegates to internal control's basic <code>AccessibilityObject</code></li>
+<li>Provides explicit <code>AccessibleRole</code> fallbacks</li>
+<li>Ensures consistent behavior across TFMs</li>
+</ul>
+<h3 id="role-fallback-mapping">Role Fallback Mapping</h3>
+<table>
+<thead>
+<tr>
+<th>Control Type</th>
+<th>Fallback Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TextBox</td>
+<td><code>AccessibleRole.Text</code></td>
+</tr>
+<tr>
+<td>RichTextBox</td>
+<td><code>AccessibleRole.Text</code></td>
+</tr>
+<tr>
+<td>ComboBox</td>
+<td><code>AccessibleRole.ComboBox</code></td>
+</tr>
+<tr>
+<td>ListBox</td>
+<td><code>AccessibleRole.List</code></td>
+</tr>
+<tr>
+<td>CheckedListBox</td>
+<td><code>AccessibleRole.List</code></td>
+</tr>
+<tr>
+<td>MaskedTextBox</td>
+<td><code>AccessibleRole.Text</code></td>
+</tr>
+<tr>
+<td>NumericUpDown</td>
+<td><code>AccessibleRole.Text</code></td>
+</tr>
+<tr>
+<td>DomainUpDown</td>
+<td><code>AccessibleRole.Text</code></td>
+</tr>
+<tr>
+<td>LinkWrapLabel</td>
+<td><code>AccessibleRole.Link</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="runtime-vs-compile-time">Runtime vs Compile-Time</h3>
+<p>We use <strong>runtime checks</strong> rather than conditional compilation:</p>
+<pre><code class="lang-csharp">// ✅ Good: Runtime check
+var role = internalAccessible.Role;
+if (role != AccessibleRole.Default &amp;&amp; role != AccessibleRole.None)
+{
+    return role;
+}
+return AccessibleRole.Text;  // Fallback
+
+// ❌ Avoid: Conditional compilation (harder to maintain)
+#if NET48_OR_GREATER
+    return internalAccessible.Role;
+#else
+    return AccessibleRole.Text;
+#endif
+</code></pre>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Single codebase for all TFMs</li>
+<li>Easier maintenance</li>
+<li>Consistent behavior</li>
+<li>Better testability</li>
+</ul>
+<hr>
+<h2 id="extending-the-implementation">Extending the Implementation</h2>
+<h3 id="adding-support-for-a-new-control">Adding Support for a New Control</h3>
+<p>If you need to add UIA provider support for a new Krypton control that wraps a standard control:</p>
+<h4 id="step-1-create-the-accessibleobject-class">Step 1: Create the AccessibleObject Class</h4>
+<ol>
+<li><p>Create a new file in <code>Utilities/Accessibility/</code>:</p>
+<pre><code>Krypton[ControlName]AccessibleObject.cs
+</code></pre>
+</li>
+<li><p>Use the template from <code>KryptonTextBoxAccessibleObject.cs</code> as a starting point</p>
+</li>
+<li><p>Update the class name and <code>_owner</code> field type</p>
+</li>
+<li><p>Update property accessors to use the correct internal control property</p>
+</li>
+</ol>
+<h4 id="step-2-integrate-with-the-control">Step 2: Integrate with the Control</h4>
+<ol>
+<li><p>Open the Krypton control file (e.g., <code>Krypton[ControlName].cs</code>)</p>
+</li>
+<li><p>Find the <code>#region Protected Overrides</code> section</p>
+</li>
+<li><p>Add:</p>
+<pre><code class="lang-csharp">/// &lt;summary&gt;
+/// Creates the accessibility object for the Krypton[ControlName] control.
+/// &lt;/summary&gt;
+/// &lt;returns&gt;A new Krypton[ControlName]AccessibleObject instance.&lt;/returns&gt;
+protected override AccessibleObject CreateAccessibilityInstance() 
+    =&gt; new Krypton[ControlName]AccessibleObject(this);
+</code></pre>
+</li>
+</ol>
+<h4 id="step-3-determine-the-internal-control-property">Step 3: Determine the Internal Control Property</h4>
+<p>Identify how the control exposes its internal standard control:</p>
+<ul>
+<li><code>KryptonTextBox</code> → <code>_owner.TextBox</code></li>
+<li><code>KryptonComboBox</code> → <code>_owner.ComboBox</code></li>
+<li><code>KryptonCheckedListBox</code> → <code>_owner.ListBox</code> (CheckedListBox inherits from ListBox)</li>
+<li><code>KryptonLinkWrapLabel</code> → Cast to <code>LinkLabel</code> (inherits from LinkLabel)</li>
+</ul>
+<h4 id="step-4-determine-the-fallback-role">Step 4: Determine the Fallback Role</h4>
+<p>Choose the appropriate <code>AccessibleRole</code> for the control type:</p>
+<pre><code class="lang-csharp">// Text input controls
+return AccessibleRole.Text;
+
+// Selection controls
+return AccessibleRole.ComboBox;  // or List, etc.
+
+// Navigation controls
+return AccessibleRole.Link;
+</code></pre>
+<h4 id="step-5-test">Step 5: Test</h4>
+<ol>
+<li>Add the control to <code>AccessibilityTest.cs</code> in the TestForm project</li>
+<li>Run the accessibility test</li>
+<li>Test with Narrator</li>
+<li>Test with UI Automation tools</li>
+</ol>
+<h3 id="example-adding-kryptondatetimepicker">Example: Adding KryptonDateTimePicker</h3>
+<pre><code class="lang-csharp">// Step 1: Create KryptonDateTimePickerAccessibleObject.cs
+internal class KryptonDateTimePickerAccessibleObject : Control.ControlAccessibleObject
+{
+    private readonly KryptonDateTimePicker _owner;
+    
+    public KryptonDateTimePickerAccessibleObject(KryptonDateTimePicker owner)
+        : base(owner)
+    {
+        _owner = owner;
+    }
+    
+    public override AccessibleRole Role
+    {
+        get
+        {
+            var internalAccessible = _owner.DateTimePicker?.AccessibilityObject;
+            if (internalAccessible != null)
+            {
+                var role = internalAccessible.Role;
+                if (role != AccessibleRole.Default &amp;&amp; role != AccessibleRole.None)
+                {
+                    return role;
+                }
+            }
+            return AccessibleRole.Text;  // Appropriate for DateTimePicker
+        }
+    }
+    
+    // ... implement other properties and methods
+}
+
+// Step 2: In KryptonDateTimePicker.cs
+protected override AccessibleObject CreateAccessibilityInstance() 
+    =&gt; new KryptonDateTimePickerAccessibleObject(this);
+</code></pre>
+<hr>
+<h2 id="testing--validation">Testing &amp; Validation</h2>
+<h3 id="automated-testing">Automated Testing</h3>
+<p>The <code>AccessibilityTest</code> form in the TestForm project provides automated property validation:</p>
+<p><strong>Location:</strong> <code>Source/Krypton Components/TestForm/AccessibilityTest.cs</code></p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Tests all 9 implemented controls</li>
+<li>Validates Name, Description, Role, State, Value</li>
+<li>Checks navigation capabilities</li>
+<li>Displays comprehensive test results</li>
+</ul>
+<p><strong>Usage:</strong></p>
+<ol>
+<li>Run TestForm application</li>
+<li>Select &quot;Accessibility Test (UIA Providers)&quot;</li>
+<li>Click &quot;Test Accessibility Properties&quot;</li>
+<li>Review results in the results panel</li>
+</ol>
+<h3 id="manual-testing-with-narrator">Manual Testing with Narrator</h3>
+<p><strong>Windows Narrator:</strong></p>
+<ol>
+<li>Enable Narrator: <code>Win + Ctrl + Enter</code></li>
+<li>Navigate to the test form</li>
+<li>Use <code>Tab</code> to navigate between controls</li>
+<li>Listen to what Narrator announces</li>
+<li>Verify:
+<ul>
+<li>Control name is announced</li>
+<li>Control role is announced</li>
+<li>Control value is announced (if applicable)</li>
+<li>Control is interactive</li>
+</ul>
+</li>
+</ol>
+<p><strong>Expected Output:</strong></p>
+<pre><code>&quot;Test TextBox, edit, type in text&quot;
+&quot;Test ComboBox, combo box, Option 1, collapsed&quot;
+&quot;Test ListBox, list, Item 1, 1 of 5&quot;
+</code></pre>
+<h3 id="manual-testing-with-ui-automation-tools">Manual Testing with UI Automation Tools</h3>
+<h4 id="inspectexe-windows-sdk">Inspect.exe (Windows SDK)</h4>
+<ol>
+<li>Launch Inspect.exe</li>
+<li>Point to a Krypton control</li>
+<li>Verify:
+<ul>
+<li>Control is discoverable</li>
+<li>Properties are correct (Name, Role, etc.)</li>
+<li>Patterns are available (if applicable)</li>
+</ul>
+</li>
+</ol>
+<h4 id="accessibility-insights">Accessibility Insights</h4>
+<ol>
+<li>Launch Accessibility Insights for Windows</li>
+<li>Run FastPass scan</li>
+<li>Verify no accessibility issues</li>
+<li>Check control properties</li>
+</ol>
+<h3 id="testing-checklist">Testing Checklist</h3>
+<p>For each control:</p>
+<ul>
+<li>[ ] <code>AccessibleObject</code> is created (not null)</li>
+<li>[ ] <code>Name</code> property returns correct value</li>
+<li>[ ] <code>Description</code> property returns correct value</li>
+<li>[ ] <code>Role</code> property returns appropriate role</li>
+<li>[ ] <code>State</code> property reflects control state</li>
+<li>[ ] <code>Value</code> property returns current value (if applicable)</li>
+<li>[ ] <code>GetChildCount()</code> returns correct count</li>
+<li>[ ] <code>Navigate()</code> works correctly</li>
+<li>[ ] <code>DoDefaultAction()</code> performs expected action</li>
+<li>[ ] Narrator can identify and interact with control</li>
+<li>[ ] UI Automation tools can discover control</li>
+<li>[ ] Works on all target frameworks</li>
+</ul>
+<h3 id="framework-specific-testing">Framework-Specific Testing</h3>
+<p>Test on each TFM:</p>
+<ul>
+<li>net472</li>
+<li>net48</li>
+<li>net481</li>
+<li>net8.0-windows</li>
+<li>net9.0-windows</li>
+<li>net10.0-windows</li>
+</ul>
+<p><strong>Key Differences to Verify:</strong></p>
+<ul>
+<li>Role fallbacks work on legacy TFMs</li>
+<li>UIA providers work on modern TFMs</li>
+<li>No regressions in functionality</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="issue-accessibleobject-is-null">Issue: AccessibleObject is null</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>AccessibilityObject</code> returns null</li>
+<li>Tests fail with null reference exceptions</li>
+</ul>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Internal control not initialized</li>
+<li>Control not added to a form</li>
+<li>Control handle not created</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<pre><code class="lang-csharp">// Ensure internal control exists
+if (_owner.TextBox == null)
+{
+    return base.Name;  // Fallback
+}
+
+// Ensure control is on a form and has a handle
+if (!_owner.IsHandleCreated)
+{
+    _owner.CreateControl();
+}
+</code></pre>
+<h4 id="issue-role-returns-default-or-none">Issue: Role returns Default or None</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>Role</code> property returns <code>AccessibleRole.Default</code> or <code>AccessibleRole.None</code></li>
+<li>Screen readers don't announce control type correctly</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>This is expected on legacy TFMs</li>
+<li>Our implementation provides fallback roles</li>
+<li>Verify fallback logic is working:
+<pre><code class="lang-csharp">if (role != AccessibleRole.Default &amp;&amp; role != AccessibleRole.None)
+{
+    return role;
+}
+return AccessibleRole.Text;  // Fallback
+</code></pre>
+</li>
+</ul>
+<h4 id="issue-name-property-returns-null">Issue: Name property returns null</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Screen readers don't announce control name</li>
+<li><code>Name</code> property returns null</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Set <code>AccessibleName</code> on the control:
+<pre><code class="lang-csharp">kryptonTextBox1.AccessibleName = &quot;User Name Input&quot;;
+</code></pre>
+</li>
+<li>Or set <code>Name</code> property:
+<pre><code class="lang-csharp">kryptonTextBox1.Name = &quot;txtUserName&quot;;
+</code></pre>
+</li>
+<li>Verify fallback logic:
+<pre><code class="lang-csharp">return base.Name ?? _owner.Name;
+</code></pre>
+</li>
+</ul>
+<h4 id="issue-navigation-doesnt-work">Issue: Navigation doesn't work</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Screen reader navigation skips controls</li>
+<li><code>Navigate()</code> returns null</li>
+</ul>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Ensure controls are properly parented</li>
+<li>Verify <code>GetChild()</code> and <code>GetChildCount()</code> work correctly</li>
+<li>Check that controls are in the tab order</li>
+</ul>
+<h3 id="debugging-tips">Debugging Tips</h3>
+<h4 id="enable-accessibility-debugging">Enable Accessibility Debugging</h4>
+<pre><code class="lang-csharp">// Add debug output to verify delegation
+public override string? Name
+{
+    get
+    {
+        var internalAccessible = _owner.TextBox?.AccessibilityObject;
+        System.Diagnostics.Debug.WriteLine(
+            $&quot;KryptonTextBox Name: Internal={internalAccessible?.Name}, &quot; +
+            $&quot;Base={base.Name}, Owner={_owner.Name}&quot;);
+        
+        if (internalAccessible?.Name != null)
+        {
+            return internalAccessible.Name;
+        }
+        
+        return base.Name ?? _owner.Name;
+    }
+}
+</code></pre>
+<h4 id="verify-internal-control-access">Verify Internal Control Access</h4>
+<pre><code class="lang-csharp">// Add validation
+if (_owner.TextBox == null)
+{
+    throw new InvalidOperationException(
+        &quot;Internal TextBox is null. Control may not be initialized.&quot;);
+}
+</code></pre>
+<h4 id="test-with-ui-automation-spy">Test with UI Automation Spy</h4>
+<p>Use UI Automation Spy to inspect the accessibility tree:</p>
+<ol>
+<li>Launch UI Automation Spy</li>
+<li>Point to control</li>
+<li>Inspect properties</li>
+<li>Compare with expected values</li>
+</ol>
+<hr>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="overhead-analysis">Overhead Analysis</h3>
+<p><strong>Delegation Pattern:</strong></p>
+<ul>
+<li>Property access: ~1-2 property lookups + null checks</li>
+<li>Method calls: ~1 method call + null check</li>
+<li><strong>Estimated overhead: &lt; 1 microsecond per call</strong></li>
+</ul>
+<p><strong>Memory:</strong></p>
+<ul>
+<li>One <code>AccessibleObject</code> instance per control</li>
+<li>Minimal memory footprint (~100 bytes per instance)</li>
+</ul>
+<h3 id="optimization-strategies">Optimization Strategies</h3>
+<h4 id="1-cache-internal-accessibility-object">1. Cache Internal Accessibility Object</h4>
+<p><strong>Current Implementation:</strong></p>
+<pre><code class="lang-csharp">public override string? Name
+{
+    get
+    {
+        var internalAccessible = _owner.TextBox?.AccessibilityObject;
+        // ... access properties
+    }
+}
+</code></pre>
+<p><strong>Optimized (if needed):</strong></p>
+<pre><code class="lang-csharp">private AccessibleObject? _cachedInternalAccessible;
+
+private AccessibleObject? InternalAccessible
+{
+    get
+    {
+        if (_cachedInternalAccessible == null)
+        {
+            _cachedInternalAccessible = _owner.TextBox?.AccessibilityObject;
+        }
+        return _cachedInternalAccessible;
+    }
+}
+</code></pre>
+<p><strong>Note:</strong> Current implementation is already efficient. Caching is only needed if profiling shows performance issues.</p>
+<h4 id="2-lazy-initialization">2. Lazy Initialization</h4>
+<p>Accessibility objects are created on-demand when first accessed:</p>
+<pre><code class="lang-csharp">// Created when AccessibilityObject property is first accessed
+var accessible = control.AccessibilityObject;
+</code></pre>
+<p>This is already handled by the framework - no changes needed.</p>
+<h3 id="performance-best-practices">Performance Best Practices</h3>
+<ol>
+<li><p><strong>Avoid unnecessary property access</strong></p>
+<pre><code class="lang-csharp">// ❌ Bad: Multiple property accesses
+if (_owner.TextBox != null &amp;&amp; _owner.TextBox.AccessibilityObject != null)
+{
+    return _owner.TextBox.AccessibilityObject.Name;
+}
+
+// ✅ Good: Single access with null-conditional
+var internalAccessible = _owner.TextBox?.AccessibilityObject;
+if (internalAccessible?.Name != null)
+{
+    return internalAccessible.Name;
+}
+</code></pre>
+</li>
+<li><p><strong>Use null-conditional operators</strong></p>
+<pre><code class="lang-csharp">// ✅ Efficient and safe
+return _owner.TextBox?.AccessibilityObject?.Name ?? base.Name;
+</code></pre>
+</li>
+<li><p><strong>Minimize allocations</strong></p>
+<ul>
+<li>Reuse variables where possible</li>
+<li>Avoid creating temporary objects in hot paths</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="code-organization">Code Organization</h3>
+<ol>
+<li><p><strong>File Location</strong></p>
+<ul>
+<li>Place all <code>AccessibleObject</code> classes in <code>Utilities/Accessibility/</code></li>
+<li>Follow naming convention: <code>Krypton[ControlName]AccessibleObject.cs</code></li>
+</ul>
+</li>
+<li><p><strong>Namespace</strong></p>
+<ul>
+<li>Use <code>Krypton.Toolkit</code> namespace</li>
+<li>Keep classes <code>internal</code> (not public API)</li>
+</ul>
+</li>
+<li><p><strong>Region Organization</strong></p>
+<pre><code class="lang-csharp">#region Instance Fields
+#endregion
+
+#region Identity
+#endregion
+
+#region Public Overrides
+#endregion
+</code></pre>
+</li>
+</ol>
+<h3 id="implementation-guidelines">Implementation Guidelines</h3>
+<ol>
+<li><p><strong>Always Provide Fallbacks</strong></p>
+<pre><code class="lang-csharp">// ✅ Good: Always has a fallback
+return internalAccessible?.Name ?? base.Name ?? _owner.Name;
+
+// ❌ Bad: Can return null unexpectedly
+return internalAccessible?.Name;
+</code></pre>
+</li>
+<li><p><strong>Handle Null Cases</strong></p>
+<pre><code class="lang-csharp">// ✅ Good: Null-safe
+var internalAccessible = _owner.TextBox?.AccessibilityObject;
+if (internalAccessible != null)
+{
+    // Use it
+}
+
+// ❌ Bad: Can throw NullReferenceException
+return _owner.TextBox.AccessibilityObject.Name;
+</code></pre>
+</li>
+<li><p><strong>Use Appropriate Roles</strong></p>
+<ul>
+<li>Match the control's semantic meaning</li>
+<li>Use standard <code>AccessibleRole</code> values</li>
+<li>Don't use <code>Default</code> or <code>None</code> as fallbacks</li>
+</ul>
+</li>
+<li><p><strong>Document Special Cases</strong></p>
+<pre><code class="lang-csharp">/// &lt;summary&gt;
+/// Gets the accessible role of the control.
+/// Note: On legacy TFMs, provides explicit fallback to Text role
+/// when internal control returns Default or None.
+/// &lt;/summary&gt;
+</code></pre>
+</li>
+</ol>
+<h3 id="testing-guidelines">Testing Guidelines</h3>
+<ol>
+<li><p><strong>Test on All TFMs</strong></p>
+<ul>
+<li>Don't assume behavior is the same</li>
+<li>Verify fallbacks work correctly</li>
+</ul>
+</li>
+<li><p><strong>Test with Real Tools</strong></p>
+<ul>
+<li>Don't rely only on automated tests</li>
+<li>Test with Narrator, NVDA, JAWS</li>
+<li>Test with UI Automation tools</li>
+</ul>
+</li>
+<li><p><strong>Test Edge Cases</strong></p>
+<ul>
+<li>Null internal controls</li>
+<li>Disabled controls</li>
+<li>Hidden controls</li>
+<li>Controls not in tab order</li>
+</ul>
+</li>
+</ol>
+<h3 id="maintenance">Maintenance</h3>
+<ol>
+<li><p><strong>Keep in Sync</strong></p>
+<ul>
+<li>When internal control changes, update <code>AccessibleObject</code></li>
+<li>When new properties are added, consider accessibility implications</li>
+</ul>
+</li>
+<li><p><strong>Review Regularly</strong></p>
+<ul>
+<li>Check for new .NET accessibility features</li>
+<li>Update fallback roles if needed</li>
+<li>Verify compatibility with new TFMs</li>
+</ul>
+</li>
+<li><p><strong>Document Changes</strong></p>
+<ul>
+<li>Update this documentation</li>
+<li>Update implementation plan document</li>
+<li>Note any breaking changes</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="additional-resources">Additional Resources</h2>
+<h3 id="microsoft-documentation">Microsoft Documentation</h3>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/dotnet/framework/ui-automation/ui-automation-overview">UI Automation Overview</a></li>
+<li><a href="https://learn.microsoft.com/en-us/dotnet/desktop/winforms/advanced/accessibility-in-windows-forms-controls">Accessibility in Windows Forms</a></li>
+<li><a href="https://devblogs.microsoft.com/dotnet/whats-new-in-windows-forms-in-net-6-0/">.NET 6 WinForms Accessibility Improvements</a></li>
+</ul>
+<h3 id="tools">Tools</h3>
+<ul>
+<li><strong>Inspect.exe</strong>: Windows SDK tool for inspecting accessibility properties</li>
+<li><strong>Accessibility Insights</strong>: Microsoft's accessibility testing tool</li>
+<li><strong>UI Automation Spy</strong>: Inspect UI Automation tree</li>
+<li><strong>Narrator</strong>: Windows built-in screen reader</li>
+</ul>
+<hr>
+<h2 id="conclusion">Conclusion</h2>
+<p>This implementation provides comprehensive UIA provider support for Krypton controls that wrap standard Windows Forms controls. By using a delegation pattern with proper fallbacks, we ensure:</p>
+<ul>
+<li>✅ Accessibility information is properly exposed</li>
+<li>✅ Works on both modern and legacy TFMs</li>
+<li>✅ Minimal performance overhead</li>
+<li>✅ Easy to extend and maintain</li>
+</ul>
+<p>For questions or issues, refer to the troubleshooting section or create an issue in the repository.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
