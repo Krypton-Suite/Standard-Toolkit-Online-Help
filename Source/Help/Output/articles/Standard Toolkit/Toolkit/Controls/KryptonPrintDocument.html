@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonPrintDocument | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonPrintDocument | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonprintdocument">KryptonPrintDocument</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonPrintDocument</code> extends the standard .NET <code>PrintDocument</code> class to provide full integration with the Krypton Toolkit theming system. It enables printing with palette-based colors, fonts, and styles, ensuring that printed output matches the visual appearance of your Krypton-themed application.</p>
+<p>This class provides:</p>
+<ul>
+<li>Palette-aware color retrieval for text, backgrounds, and borders</li>
+<li>Themed font support</li>
+<li>Helper methods for drawing themed content</li>
+<li>Automatic palette change handling</li>
+<li>Integration with the global Krypton palette system</li>
+</ul>
+<h2 id="namespace">Namespace</h2>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+</code></pre>
+<h2 id="class-hierarchy">Class Hierarchy</h2>
+<pre><code>PrintDocument
+└── KryptonPrintDocument
+</code></pre>
+<h2 id="features">Features</h2>
+<h3 id="core-features">Core Features</h3>
+<ul>
+<li><strong>Palette Integration</strong>: Full integration with Krypton palette system</li>
+<li><strong>Themed Colors</strong>: Retrieve text, background, and border colors from the current palette</li>
+<li><strong>Themed Fonts</strong>: Access fonts defined in the palette</li>
+<li><strong>Helper Methods</strong>: Convenient methods for drawing themed content</li>
+<li><strong>Global Palette Support</strong>: Automatically responds to global palette changes</li>
+<li><strong>Custom Palette Support</strong>: Can use custom palettes or specific palette modes</li>
+</ul>
+<h3 id="printing-features">Printing Features</h3>
+<ul>
+<li><strong>Standard PrintDocument</strong>: Inherits all standard <code>PrintDocument</code> functionality</li>
+<li><strong>PrintPage Event</strong>: Supports standard <code>PrintPage</code> event handling</li>
+<li><strong>Document Properties</strong>: Standard document name, printer settings, etc.</li>
+<li><strong>Themed Drawing</strong>: Helper methods for drawing with palette colors</li>
+</ul>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="constructors">Constructors</h3>
+<h4 id="kryptonprintdocument-1"><code>KryptonPrintDocument()</code></h4>
+<p>Initializes a new instance of the <code>KryptonPrintDocument</code> class.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var document = new KryptonPrintDocument();
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Automatically subscribes to global palette changes</li>
+<li>Sets palette to global default (<code>PaletteMode.Global</code>)</li>
+<li>Initializes with default text and background styles</li>
+</ul>
+<hr>
+<h3 id="properties">Properties</h3>
+<h4 id="palettemode-palettemode"><code>PaletteMode</code> (PaletteMode)</h4>
+<p>Gets or sets the palette mode to be applied.</p>
+<ul>
+<li><strong>Type</strong>: <code>PaletteMode</code></li>
+<li><strong>Default Value</strong>: <code>PaletteMode.Global</code></li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Description</strong>: Palette applied to printing.</li>
+</ul>
+<p><strong>Valid Values:</strong></p>
+<ul>
+<li><code>PaletteMode.Global</code>: Uses the current global palette</li>
+<li><code>PaletteMode.ProfessionalSystem</code>: Professional system palette</li>
+<li><code>PaletteMode.ProfessionalOffice2003</code>: Office 2003 palette</li>
+<li><code>PaletteMode.Office2007Blue</code>: Office 2007 Blue palette</li>
+<li><code>PaletteMode.Office2007Silver</code>: Office 2007 Silver palette</li>
+<li><code>PaletteMode.Office2007White</code>: Office 2007 White palette</li>
+<li><code>PaletteMode.Office2007Black</code>: Office 2007 Black palette</li>
+<li><code>PaletteMode.Office2010Blue</code>: Office 2010 Blue palette</li>
+<li><code>PaletteMode.Office2010Silver</code>: Office 2010 Silver palette</li>
+<li><code>PaletteMode.Office2010White</code>: Office 2010 White palette</li>
+<li><code>PaletteMode.Office2010Black</code>: Office 2010 Black palette</li>
+<li><code>PaletteMode.Office2013White</code>: Office 2013 White palette</li>
+<li><code>PaletteMode.Office2013LightGray</code>: Office 2013 Light Gray palette</li>
+<li><code>PaletteMode.Office2013DarkGray</code>: Office 2013 Dark Gray palette</li>
+<li><code>PaletteMode.Microsoft365DarkGray</code>: Microsoft 365 Dark Gray palette</li>
+<li><code>PaletteMode.Microsoft365Black</code>: Microsoft 365 Black palette</li>
+<li><code>PaletteMode.Microsoft365Blue</code>: Microsoft 365 Blue palette</li>
+<li><code>PaletteMode.Microsoft365White</code>: Microsoft 365 White palette</li>
+<li><code>PaletteMode.SparkleBlue</code>: Sparkle Blue palette</li>
+<li><code>PaletteMode.SparkleOrange</code>: Sparkle Orange palette</li>
+<li><code>PaletteMode.SparklePurple</code>: Sparkle Purple palette</li>
+<li><code>PaletteMode.Custom</code>: Uses a custom palette (set via <code>Palette</code> property)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">document.PaletteMode = PaletteMode.Office365Blue;
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Setting to <code>PaletteMode.Custom</code> requires setting the <code>Palette</code> property</li>
+<li>Changing this property raises the <code>PaletteChanged</code> event</li>
+<li>Resets <code>Palette</code> to <code>null</code> when changed from <code>Custom</code></li>
+</ul>
+<hr>
+<h4 id="palette-palettebase"><code>Palette</code> (PaletteBase?)</h4>
+<p>Gets and sets the custom palette implementation.</p>
+<ul>
+<li><strong>Type</strong>: <code>PaletteBase?</code></li>
+<li><strong>Default Value</strong>: <code>null</code></li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Description</strong>: Custom palette applied to printing.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var customPalette = new PaletteCustom();
+document.Palette = customPalette;
+document.PaletteMode = PaletteMode.Custom;
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Setting a custom palette automatically sets <code>PaletteMode</code> to <code>Custom</code></li>
+<li>Setting to <code>null</code> reverts to <code>PaletteMode.Global</code></li>
+<li>Changing this property raises the <code>PaletteChanged</code> event</li>
+</ul>
+<hr>
+<h4 id="usepalettecolors-bool"><code>UsePaletteColors</code> (bool)</h4>
+<p>Gets or sets a value indicating whether to use palette colors when printing.</p>
+<ul>
+<li><strong>Type</strong>: <code>bool</code></li>
+<li><strong>Default Value</strong>: <code>true</code></li>
+<li><strong>Category</strong>: Behavior</li>
+<li><strong>Description</strong>: Indicates whether to use palette colors when printing.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">document.UsePaletteColors = true; // Use themed colors
+document.UsePaletteColors = false; // Use default colors (Black/White)
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>When <code>false</code>, color methods return default colors (Black for text, White for background)</li>
+<li>Useful for printing documents that should always use standard colors</li>
+<li>Does not affect standard <code>PrintDocument</code> functionality</li>
+</ul>
+<hr>
+<h4 id="textstyle-palettecontentstyle"><code>TextStyle</code> (PaletteContentStyle)</h4>
+<p>Gets or sets the text style used for retrieving text colors from the palette.</p>
+<ul>
+<li><strong>Type</strong>: <code>PaletteContentStyle</code></li>
+<li><strong>Default Value</strong>: <code>PaletteContentStyle.LabelNormalPanel</code></li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Description</strong>: Text style used for retrieving text colors from the palette.</li>
+</ul>
+<p><strong>Common Values:</strong></p>
+<ul>
+<li><code>PaletteContentStyle.LabelNormalPanel</code></li>
+<li><code>PaletteContentStyle.LabelBoldPanel</code></li>
+<li><code>PaletteContentStyle.LabelItalicPanel</code></li>
+<li><code>PaletteContentStyle.LabelTitlePanel</code></li>
+<li><code>PaletteContentStyle.LabelSecondaryPanel</code></li>
+<li>And many more...</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">document.TextStyle = PaletteContentStyle.LabelBoldPanel;
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Affects the color and font returned by <code>GetTextColor()</code> and <code>GetFont()</code></li>
+<li>Choose a style that matches your document's text appearance needs</li>
+</ul>
+<hr>
+<h4 id="backgroundstyle-palettebackstyle"><code>BackgroundStyle</code> (PaletteBackStyle)</h4>
+<p>Gets or sets the background style used for retrieving background colors from the palette.</p>
+<ul>
+<li><strong>Type</strong>: <code>PaletteBackStyle</code></li>
+<li><strong>Default Value</strong>: <code>PaletteBackStyle.PanelClient</code></li>
+<li><strong>Category</strong>: Visuals</li>
+<li><strong>Description</strong>: Background style used for retrieving background colors from the palette.</li>
+</ul>
+<p><strong>Common Values:</strong></p>
+<ul>
+<li><code>PaletteBackStyle.PanelClient</code></li>
+<li><code>PaletteBackStyle.PanelAlternate</code></li>
+<li><code>PaletteBackStyle.PanelCustom1</code></li>
+<li><code>PaletteBackStyle.PanelCustom2</code></li>
+<li><code>PaletteBackStyle.PanelCustom3</code></li>
+<li>And many more...</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">document.BackgroundStyle = PaletteBackStyle.PanelAlternate;
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Affects the color returned by <code>GetBackgroundColor()</code></li>
+<li>Choose a style that matches your document's background appearance needs</li>
+</ul>
+<h3 id="events">Events</h3>
+<h4 id="palettechanged"><code>PaletteChanged</code></h4>
+<p>Occurs when the palette changes.</p>
+<ul>
+<li><strong>Type</strong>: <code>EventHandler?</code></li>
+<li><strong>Category</strong>: Property Changed</li>
+<li><strong>Description</strong>: Occurs when the value of the Palette property is changed.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">document.PaletteChanged += (sender, e) =&gt;
+{
+    // Palette has changed, update print preview if needed
+    RefreshPreview();
+};
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Raised when <code>PaletteMode</code> or <code>Palette</code> property changes</li>
+<li>Also raised when global palette changes (if using <code>PaletteMode.Global</code>)</li>
+</ul>
+<h3 id="themed-printing-helper-methods">Themed Printing Helper Methods</h3>
+<h4 id="gettextcolorpalettestate-state--palettestatenormal"><code>GetTextColor(PaletteState state = PaletteState.Normal)</code></h4>
+<p>Gets the text color from the current palette.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code> (<code>PaletteState</code>): The palette state to use. Default: <code>PaletteState.Normal</code></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Color</code>: The text color from the palette, or <code>Color.Black</code> if palette is not available or <code>UsePaletteColors</code> is <code>false</code>.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var textColor = document.GetTextColor();
+var disabledColor = document.GetTextColor(PaletteState.Disabled);
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Returns <code>Color.Black</code> if <code>UsePaletteColors</code> is <code>false</code></li>
+<li>Returns <code>Color.Black</code> if palette is <code>null</code></li>
+<li>Uses <code>TextStyle</code> property to determine which color to retrieve</li>
+</ul>
+<hr>
+<h4 id="getbackgroundcolorpalettestate-state--palettestatenormal"><code>GetBackgroundColor(PaletteState state = PaletteState.Normal)</code></h4>
+<p>Gets the background color from the current palette.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code> (<code>PaletteState</code>): The palette state to use. Default: <code>PaletteState.Normal</code></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Color</code>: The background color from the palette, or <code>Color.White</code> if palette is not available or <code>UsePaletteColors</code> is <code>false</code>.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var backColor = document.GetBackgroundColor();
+var pressedColor = document.GetBackgroundColor(PaletteState.Pressed);
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Returns <code>Color.White</code> if <code>UsePaletteColors</code> is <code>false</code></li>
+<li>Returns <code>Color.White</code> if palette is <code>null</code></li>
+<li>Uses <code>BackgroundStyle</code> property to determine which color to retrieve</li>
+</ul>
+<hr>
+<h4 id="getbordercolorpalettestate-state--palettestatenormal"><code>GetBorderColor(PaletteState state = PaletteState.Normal)</code></h4>
+<p>Gets the border color from the current palette.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code> (<code>PaletteState</code>): The palette state to use. Default: <code>PaletteState.Normal</code></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Color</code>: The border color from the palette, or <code>Color.Black</code> if palette is not available or <code>UsePaletteColors</code> is <code>false</code>.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var borderColor = document.GetBorderColor();
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Returns <code>Color.Black</code> if <code>UsePaletteColors</code> is <code>false</code></li>
+<li>Returns <code>Color.Black</code> if palette is <code>null</code></li>
+<li>Uses <code>PaletteBorderStyle.ControlClient</code> for border style</li>
+</ul>
+<hr>
+<h4 id="getfontpalettestate-state--palettestatenormal"><code>GetFont(PaletteState state = PaletteState.Normal)</code></h4>
+<p>Gets the font from the current palette.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code> (<code>PaletteState</code>): The palette state to use. Default: <code>PaletteState.Normal</code></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Font</code>: The font from the palette, or a default font (<code>Arial</code>, 12pt) if palette is not available or <code>UsePaletteColors</code> is <code>false</code>.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var font = document.GetFont();
+var boldFont = new Font(document.GetFont(), FontStyle.Bold);
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Returns <code>new Font(&quot;Arial&quot;, 12)</code> if <code>UsePaletteColors</code> is <code>false</code></li>
+<li>Returns <code>new Font(&quot;Arial&quot;, 12)</code> if palette is <code>null</code></li>
+<li>Uses <code>TextStyle</code> property to determine which font to retrieve</li>
+<li>Caller is responsible for disposing the returned font if needed</li>
+</ul>
+<hr>
+<h4 id="drawthemedtextgraphics-graphics-string-text-font-font-rectangle-bounds-stringformat-format--null-palettestate-state--palettestatenormal"><code>DrawThemedText(Graphics graphics, string text, Font? font, Rectangle bounds, StringFormat? format = null, PaletteState state = PaletteState.Normal)</code></h4>
+<p>Draws text using palette colors.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>graphics</code> (<code>Graphics</code>): The Graphics object to draw on</li>
+<li><code>text</code> (<code>string</code>): The text to draw</li>
+<li><code>font</code> (<code>Font?</code>): The font to use (if <code>null</code>, uses palette font)</li>
+<li><code>bounds</code> (<code>Rectangle</code>): The bounding rectangle for the text</li>
+<li><code>format</code> (<code>StringFormat?</code>): The StringFormat to use. Default: <code>StringFormat.GenericDefault</code></li>
+<li><code>state</code> (<code>PaletteState</code>): The palette state to use. Default: <code>PaletteState.Normal</code></li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">document.DrawThemedText(e.Graphics, &quot;Hello, World!&quot;, null, 
+    new Rectangle(100, 100, 200, 50));
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Does nothing if <code>graphics</code> is <code>null</code> or <code>text</code> is null/empty</li>
+<li>Uses palette font if <code>font</code> parameter is <code>null</code></li>
+<li>Creates and disposes a <code>SolidBrush</code> internally</li>
+</ul>
+<hr>
+<h4 id="drawthemedrectanglegraphics-graphics-rectangle-bounds-palettestate-state--palettestatenormal"><code>DrawThemedRectangle(Graphics graphics, Rectangle bounds, PaletteState state = PaletteState.Normal)</code></h4>
+<p>Draws a rectangle with themed background and border.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>graphics</code> (<code>Graphics</code>): The Graphics object to draw on</li>
+<li><code>bounds</code> (<code>Rectangle</code>): The bounding rectangle</li>
+<li><code>state</code> (<code>PaletteState</code>): The palette state to use. Default: <code>PaletteState.Normal</code></li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">document.DrawThemedRectangle(e.Graphics, 
+    new Rectangle(50, 50, 500, 700));
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Does nothing if <code>graphics</code> is <code>null</code></li>
+<li>Fills the rectangle with background color, then draws border</li>
+<li>Creates and disposes brushes/pens internally</li>
+</ul>
+<hr>
+<h4 id="drawthemedlinegraphics-graphics-int-x1-int-y1-int-x2-int-y2-palettestate-state--palettestatenormal"><code>DrawThemedLine(Graphics graphics, int x1, int y1, int x2, int y2, PaletteState state = PaletteState.Normal)</code></h4>
+<p>Draws a line using the border color from the palette.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>graphics</code> (<code>Graphics</code>): The Graphics object to draw on</li>
+<li><code>x1</code> (<code>int</code>): The x-coordinate of the first point</li>
+<li><code>y1</code> (<code>int</code>): The y-coordinate of the first point</li>
+<li><code>x2</code> (<code>int</code>): The x-coordinate of the second point</li>
+<li><code>y2</code> (<code>int</code>): The y-coordinate of the second point</li>
+<li><code>state</code> (<code>PaletteState</code>): The palette state to use. Default: <code>PaletteState.Normal</code></li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">document.DrawThemedLine(e.Graphics, 100, 200, 500, 200);
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>Does nothing if <code>graphics</code> is <code>null</code></li>
+<li>Creates and disposes a <code>Pen</code> internally</li>
+</ul>
+<hr>
+<h4 id="gettextbrushpalettestate-state--palettestatenormal"><code>GetTextBrush(PaletteState state = PaletteState.Normal)</code></h4>
+<p>Gets a <code>SolidBrush</code> with the text color from the palette.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code> (<code>PaletteState</code>): The palette state to use. Default: <code>PaletteState.Normal</code></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Brush</code>: A <code>SolidBrush</code> with the palette text color.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">using (var brush = document.GetTextBrush())
+{
+    e.Graphics.DrawString(&quot;Text&quot;, font, brush, point);
+}
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li><strong>Important</strong>: Caller is responsible for disposing the returned brush</li>
+<li>Use within a <code>using</code> statement for proper resource management</li>
+</ul>
+<hr>
+<h4 id="getbackgroundbrushpalettestate-state--palettestatenormal"><code>GetBackgroundBrush(PaletteState state = PaletteState.Normal)</code></h4>
+<p>Gets a <code>SolidBrush</code> with the background color from the palette.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code> (<code>PaletteState</code>): The palette state to use. Default: <code>PaletteState.Normal</code></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Brush</code>: A <code>SolidBrush</code> with the palette background color.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">using (var brush = document.GetBackgroundBrush())
+{
+    e.Graphics.FillRectangle(brush, bounds);
+}
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li><strong>Important</strong>: Caller is responsible for disposing the returned brush</li>
+<li>Use within a <code>using</code> statement for proper resource management</li>
+</ul>
+<hr>
+<h4 id="getborderpenpalettestate-state--palettestatenormal-float-width--10f"><code>GetBorderPen(PaletteState state = PaletteState.Normal, float width = 1.0f)</code></h4>
+<p>Gets a <code>Pen</code> with the border color from the palette.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code> (<code>PaletteState</code>): The palette state to use. Default: <code>PaletteState.Normal</code></li>
+<li><code>width</code> (<code>float</code>): The pen width. Default: <code>1.0f</code></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ul>
+<li><code>Pen</code>: A <code>Pen</code> with the palette border color.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">using (var pen = document.GetBorderPen(state: PaletteState.Normal, width: 2.0f))
+{
+    e.Graphics.DrawRectangle(pen, bounds);
+}
+</code></pre>
+<p><strong>Notes:</strong></p>
+<ul>
+<li><strong>Important</strong>: Caller is responsible for disposing the returned pen</li>
+<li>Use within a <code>using</code> statement for proper resource management</li>
+</ul>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="basic-themed-printing">Basic Themed Printing</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+using System.Drawing;
+using System.Drawing.Printing;
+
+var document = new KryptonPrintDocument
+{
+    DocumentName = &quot;Themed Report&quot;,
+    PaletteMode = PaletteMode.Office365Blue
+};
+
+document.PrintPage += (sender, e) =&gt;
+{
+    var doc = (KryptonPrintDocument)sender;
+    
+    // Get themed colors
+    var textColor = doc.GetTextColor();
+    var backColor = doc.GetBackgroundColor();
+    var font = doc.GetFont();
+    
+    // Fill background
+    using (var brush = new SolidBrush(backColor))
+    {
+        e.Graphics.FillRectangle(brush, e.MarginBounds);
+    }
+    
+    // Draw text
+    using (var brush = new SolidBrush(textColor))
+    {
+        e.Graphics.DrawString(&quot;Themed Document&quot;, font, brush, 
+            e.MarginBounds.X, e.MarginBounds.Y);
+    }
+    
+    e.HasMorePages = false;
+};
+
+document.Print();
+</code></pre>
+<h3 id="using-helper-methods">Using Helper Methods</h3>
+<pre><code class="lang-csharp">document.PrintPage += (sender, e) =&gt;
+{
+    var doc = (KryptonPrintDocument)sender;
+    
+    // Draw themed rectangle (background + border)
+    doc.DrawThemedRectangle(e.Graphics, e.MarginBounds);
+    
+    // Draw themed text
+    var textBounds = new Rectangle(
+        e.MarginBounds.X + 50,
+        e.MarginBounds.Y + 50,
+        e.MarginBounds.Width - 100,
+        100);
+    
+    doc.DrawThemedText(e.Graphics, &quot;Document Title&quot;, 
+        new Font(&quot;Arial&quot;, 18, FontStyle.Bold), 
+        textBounds);
+    
+    // Draw themed line separator
+    doc.DrawThemedLine(e.Graphics,
+        e.MarginBounds.X,
+        e.MarginBounds.Y + 150,
+        e.MarginBounds.Right,
+        e.MarginBounds.Y + 150);
+    
+    e.HasMorePages = false;
+};
+</code></pre>
+<h3 id="custom-palette-usage">Custom Palette Usage</h3>
+<pre><code class="lang-csharp">// Create custom palette
+var customPalette = new PaletteCustom();
+
+// Configure document with custom palette
+var document = new KryptonPrintDocument
+{
+    Palette = customPalette,
+    PaletteMode = PaletteMode.Custom,
+    TextStyle = PaletteContentStyle.LabelBoldPanel,
+    BackgroundStyle = PaletteBackStyle.PanelAlternate
+};
+
+document.PrintPage += (sender, e) =&gt;
+{
+    // Use themed colors from custom palette
+    var doc = (KryptonPrintDocument)sender;
+    // ... printing logic
+};
+</code></pre>
+<h3 id="responding-to-palette-changes">Responding to Palette Changes</h3>
+<pre><code class="lang-csharp">var document = new KryptonPrintDocument();
+
+document.PaletteChanged += (sender, e) =&gt;
+{
+    // Update preview or refresh document when palette changes
+    if (previewControl != null)
+    {
+        previewControl.Invalidate();
+    }
+};
+
+// Later, when user changes theme
+KryptonManager.GlobalPaletteMode = PaletteMode.Office2013DarkGray;
+// PaletteChanged event will fire automatically
+</code></pre>
+<h3 id="multi-page-document-with-themed-colors">Multi-Page Document with Themed Colors</h3>
+<pre><code class="lang-csharp">int currentPage = 0;
+const int totalPages = 5;
+
+var document = new KryptonPrintDocument
+{
+    DocumentName = &quot;Multi-Page Report&quot;,
+    PaletteMode = PaletteMode.Microsoft365Blue
+};
+
+document.PrintPage += (sender, e) =&gt;
+{
+    var doc = (KryptonPrintDocument)sender;
+    
+    // Fill page background
+    using (var brush = doc.GetBackgroundBrush())
+    {
+        e.Graphics.FillRectangle(brush, e.MarginBounds);
+    }
+    
+    // Draw page header
+    using (var brush = doc.GetTextBrush())
+    using (var font = new Font(doc.GetFont(), FontStyle.Bold))
+    {
+        e.Graphics.DrawString($&quot;Page {currentPage + 1} of {totalPages}&quot;, 
+            font, brush, e.MarginBounds.X, e.MarginBounds.Y);
+    }
+    
+    // Draw page content
+    var contentY = e.MarginBounds.Y + 50;
+    using (var brush = doc.GetTextBrush())
+    {
+        e.Graphics.DrawString($&quot;This is page {currentPage + 1}&quot;, 
+            doc.GetFont(), brush, 
+            e.MarginBounds.X, contentY);
+    }
+    
+    currentPage++;
+    e.HasMorePages = currentPage &lt; totalPages;
+};
+
+document.Print();
+</code></pre>
+<h3 id="disabling-palette-colors">Disabling Palette Colors</h3>
+<pre><code class="lang-csharp">// Print with standard colors regardless of palette
+var document = new KryptonPrintDocument
+{
+    UsePaletteColors = false  // Always use Black/White
+};
+
+document.PrintPage += (sender, e) =&gt;
+{
+    // GetTextColor() will return Color.Black
+    // GetBackgroundColor() will return Color.White
+    var textColor = document.GetTextColor(); // Always Black
+    // ... printing logic
+};
+</code></pre>
+<h2 id="integration-with-krypton-toolkit">Integration with Krypton Toolkit</h2>
+<h3 id="global-palette-integration">Global Palette Integration</h3>
+<p><code>KryptonPrintDocument</code> automatically integrates with the global Krypton palette:</p>
+<ul>
+<li><strong>Default Behavior</strong>: Uses <code>PaletteMode.Global</code> by default</li>
+<li><strong>Automatic Updates</strong>: Subscribes to <code>KryptonManager.GlobalPaletteChanged</code> event</li>
+<li><strong>Dynamic Theming</strong>: Changes when global palette changes (if using <code>PaletteMode.Global</code>)</li>
+</ul>
+<h3 id="related-components">Related Components</h3>
+<ul>
+<li><strong><code>KryptonPrintPreviewDialog</code></strong>: Uses <code>KryptonPrintDocument</code> for preview</li>
+<li><strong><code>KryptonPrintPreviewControl</code></strong>: Displays <code>KryptonPrintDocument</code> in preview</li>
+<li><strong><code>KryptonPrintDialog</code></strong>: Standard print dialog that works with <code>KryptonPrintDocument</code></li>
+</ul>
+<h2 id="design-time-support">Design-Time Support</h2>
+<h3 id="toolbox-integration">Toolbox Integration</h3>
+<ul>
+<li><strong>Toolbox Item</strong>: <code>true</code></li>
+<li><strong>Toolbox Bitmap</strong>: <code>ToolboxBitmaps.KryptonPrintDocument.bmp</code></li>
+<li><strong>Default Property</strong>: <code>DocumentName</code></li>
+<li><strong>Designer Category</strong>: Code</li>
+</ul>
+<h3 id="property-grid-support">Property Grid Support</h3>
+<p>All properties are visible in the Visual Studio property grid with appropriate categories:</p>
+<ul>
+<li><strong>Behavior</strong>: <code>UsePaletteColors</code></li>
+<li><strong>Visuals</strong>: <code>PaletteMode</code>, <code>Palette</code>, <code>TextStyle</code>, <code>BackgroundStyle</code></li>
+</ul>
+<h2 id="thread-safety">Thread Safety</h2>
+<p>This class is <strong>not thread-safe</strong>. All operations should be performed on the UI thread, especially when handling the <code>PrintPage</code> event.</p>
+<h2 id="disposal-pattern">Disposal Pattern</h2>
+<p>The class properly unsubscribes from global palette changes:</p>
+<pre><code class="lang-csharp">protected override void Dispose(bool disposing)
+{
+    if (disposing)
+    {
+        KryptonManager.GlobalPaletteChanged -= OnGlobalPaletteChanged;
+    }
+    base.Dispose(disposing);
+}
+</code></pre>
+<p><strong>Best Practice</strong>: Always dispose the document when finished:</p>
+<pre><code class="lang-csharp">using (var document = new KryptonPrintDocument())
+{
+    // Use document
+    document.Print();
+}
+</code></pre>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<ul>
+<li><strong>Color Retrieval</strong>: Palette color retrieval is fast but involves method calls</li>
+<li><strong>Font Creation</strong>: <code>GetFont()</code> creates a new <code>Font</code> instance each time (consider caching)</li>
+<li><strong>Brush/Pen Creation</strong>: Helper methods create new brushes/pens; dispose them properly</li>
+<li><strong>Global Palette Subscription</strong>: Minimal overhead; unsubscribes on disposal</li>
+</ul>
+<h2 id="best-practices">Best Practices</h2>
+<ol>
+<li><strong>Dispose Resources</strong>: Always dispose brushes, pens, and fonts returned by helper methods</li>
+<li><strong>Cache Fonts</strong>: If using the same font multiple times, cache the result of <code>GetFont()</code></li>
+<li><strong>Use Helper Methods</strong>: Prefer <code>DrawThemedText()</code> and <code>DrawThemedRectangle()</code> for simpler code</li>
+<li><strong>Handle Palette Changes</strong>: Subscribe to <code>PaletteChanged</code> if you need to refresh previews</li>
+<li><strong>Choose Appropriate Styles</strong>: Select <code>TextStyle</code> and <code>BackgroundStyle</code> that match your document design</li>
+</ol>
+<h2 id="limitations">Limitations</h2>
+<ol>
+<li><strong>Font Disposal</strong>: <code>GetFont()</code> returns a new font each time; caller must dispose if needed</li>
+<li><strong>Brush/Pen Disposal</strong>: <code>GetTextBrush()</code>, <code>GetBackgroundBrush()</code>, and <code>GetBorderPen()</code> require disposal</li>
+<li><strong>State Support</strong>: Some palette states may not be fully supported for printing scenarios</li>
+<li><strong>Color Fallbacks</strong>: Always falls back to default colors if palette is unavailable</li>
+</ol>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="../Components/KryptonPrintPreviewDialog.html"><code>KryptonPrintPreviewDialog</code></a> - Preview dialog component</li>
+<li><a href="KryptonPrintPreviewControl.html"><code>KryptonPrintPreviewControl</code></a> - Preview control component</li>
+<li><a href="../Components/KryptonPrintDialog.html"><code>KryptonPrintDialog</code></a> - Print dialog component</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
