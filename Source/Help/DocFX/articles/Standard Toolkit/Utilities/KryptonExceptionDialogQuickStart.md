@@ -322,6 +322,8 @@ All strings are customizable via `KryptonManager.Strings.ExceptionDialogStrings`
 KryptonManager.Strings.ExceptionDialogStrings.WindowTitle = "Error Details";
 KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = "Type to search...";
 KryptonManager.Strings.ExceptionDialogStrings.StackTrace = "Call Stack";
+KryptonManager.Strings.ExceptionDialogStrings.CopyDetailsButtonText = "Copy";
+KryptonManager.Strings.ExceptionDialogStrings.ReportBugButtonText = "Report Bug";
 // ... etc
 ```
 

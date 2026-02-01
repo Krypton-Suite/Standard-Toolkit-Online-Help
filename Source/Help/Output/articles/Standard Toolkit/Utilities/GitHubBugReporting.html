@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>GitHub Bug Reporting Feature (Public API) | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="GitHub Bug Reporting Feature (Public API) | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="github-bug-reporting-feature-public-api">GitHub Bug Reporting Feature (Public API)</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#key-features">Key Features</a></li>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#developer-workflow">Developer Workflow</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#classes">Classes</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#security-considerations">Security Considerations</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#see-also">See Also</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The GitHub Bug Reporting feature in Krypton.Utilities allows your application to let users create bug reports directly on your GitHub repository's issue tracker. The configuration (repository details and authentication) is stored in an AES-256–encrypted file that you create during development and ship with your application. End users never see or configure GitHub settings—they only see a simple form with Title and Description fields.</p>
+<h3 id="architecture">Architecture</h3>
+<ul>
+<li><strong>Configuration</strong>: Developer creates an encrypted config file containing Owner, RepositoryName, and Personal Access Token (PAT)</li>
+<li><strong>Runtime</strong>: Application loads config from the encrypted file using a secret key (stored securely, e.g. environment variable)</li>
+<li><strong>User Experience</strong>: Dialog shows only Title and Description; creates a generic GitHub issue (no repository-specific template)</li>
+</ul>
+<h3 id="use-cases">Use Cases</h3>
+<ul>
+<li><strong>Desktop Applications</strong>: Integrate &quot;Report a Bug&quot; into Help menus or About dialogs</li>
+<li><strong>Internal Tools</strong>: Allow team members to submit issues directly from the app</li>
+<li><strong>Customer Support</strong>: Streamline bug reporting without users needing GitHub accounts</li>
+<li><strong>Beta/Alpha Software</strong>: Collect feedback and issues from testers</li>
+</ul>
+<hr>
+<h2 id="key-features">Key Features</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Encrypted Configuration</strong></td>
+<td>AES-256-CBC encryption for config file; SHA-256 key derivation</td>
+</tr>
+<tr>
+<td><strong>Zero User Configuration</strong></td>
+<td>End users never see Owner, Repository, or PAT fields</td>
+</tr>
+<tr>
+<td><strong>Simple Issue Format</strong></td>
+<td>Generic title + body; no repository-specific template</td>
+</tr>
+<tr>
+<td><strong>Programmatic API</strong></td>
+<td>Use the dialog, or call <code>BugReportGitHubService</code> directly</td>
+</tr>
+<tr>
+<td><strong>Configurable Repository</strong></td>
+<td>Target any GitHub repository (owner/repo) you choose</td>
+</tr>
+<tr>
+<td><strong>Post-Submission Behavior</strong></td>
+<td>Opens the newly created issue in the user's browser</td>
+</tr>
+<tr>
+<td><strong>Error Handling</strong></td>
+<td>Clear messages for missing config, wrong key, or API failures</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li><strong>Target Framework</strong>: .NET Framework 4.7.2+ or .NET 5+</li>
+<li><strong>Dependencies</strong>: Krypton.Toolkit, Krypton.Utilities</li>
+<li><strong>GitHub</strong>: A GitHub Personal Access Token with <code>repo</code> or <code>public_repo</code> scope</li>
+<li><strong>Network</strong>: Outbound HTTPS to <code>api.github.com</code></li>
+</ul>
+<hr>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="1-create-the-encrypted-config-file-development-one-time">1. Create the Encrypted Config File (Development, One-Time)</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+
+var config = new BugReportGitHubConfig
+{
+    Owner = &quot;YourOrg&quot;,
+    RepositoryName = &quot;YourRepo&quot;,
+    PersonalAccessToken = &quot;ghp_your_token_here&quot;
+};
+
+BugReportGitHubConfigEncryption.SaveEncryptedConfig(
+    config,
+    @&quot;C:\MyApp\github-issue-config.enc&quot;,
+    &quot;your-secret-key&quot;
+);
+</code></pre>
+<h3 id="2-ship-the-enc-file-with-your-application">2. Ship the <code>.enc</code> File with Your Application</h3>
+<p>Include <code>github-issue-config.enc</code> in your build output (e.g. copy to output directory).</p>
+<h3 id="3-show-the-dialog-at-runtime">3. Show the Dialog at Runtime</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+
+// Load secret key from environment or secure storage
+var secretKey = Environment.GetEnvironmentVariable(&quot;MY_APP_GITHUB_KEY&quot;) ?? &quot;your-secret-key&quot;;
+
+var result = KryptonGitHubIssueReportDialog.Show(this, secretKey);
+
+if (result == DialogResult.OK)
+{
+    // Issue was created; browser was opened automatically
+}
+</code></pre>
+<hr>
+<h2 id="developer-workflow">Developer Workflow</h2>
+<h3 id="step-1-create-a-github-personal-access-token">Step 1: Create a GitHub Personal Access Token</h3>
+<ol>
+<li>Go to GitHub → Settings → Developer settings → Personal access tokens</li>
+<li>Generate a new token with scope <code>repo</code> (or <code>public_repo</code> for public repos only)</li>
+<li>Copy the token and keep it secure</li>
+</ol>
+<h3 id="step-2-create-the-encrypted-config-file">Step 2: Create the Encrypted Config File</h3>
+<p>Use <code>BugReportGitHubConfigEncryption.SaveEncryptedConfig</code> with your config, output path, and a secret key. The secret key must be the same at runtime when decrypting. <strong>Never commit the secret key to source control.</strong></p>
+<h3 id="step-3-ship-the-config-file">Step 3: Ship the Config File</h3>
+<ul>
+<li>Add the <code>.enc</code> file to your project</li>
+<li>Set &quot;Copy to Output Directory&quot; to &quot;Copy if newer&quot; or &quot;Copy always&quot;</li>
+<li>Ensure it is deployed with your application (e.g. alongside the executable)</li>
+</ul>
+<h3 id="step-4-provide-the-secret-key-at-runtime">Step 4: Provide the Secret Key at Runtime</h3>
+<ul>
+<li><strong>Environment variable</strong> (recommended): <code>Environment.GetEnvironmentVariable(&quot;MY_APP_GITHUB_KEY&quot;)</code></li>
+<li><strong>Secure storage</strong>: Windows Credential Manager, Azure Key Vault, etc.</li>
+<li><strong>Build-time injection</strong>: Inject only in CI/CD; never hardcode</li>
+</ul>
+<h3 id="step-5-call-the-dialog-or-service">Step 5: Call the Dialog or Service</h3>
+<ul>
+<li><strong>Dialog</strong>: <code>KryptonGitHubIssueReportDialog.Show(owner, secretKey)</code> for user-facing reporting</li>
+<li><strong>Service</strong>: <code>BugReportGitHubService.CreateIssue(config, title, body)</code> for programmatic creation</li>
+</ul>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="namespace">Namespace</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+</code></pre>
+<h3 id="assembly">Assembly</h3>
+<ul>
+<li><strong>Krypton.Utilities</strong> (references Krypton.Toolkit)</li>
+</ul>
+<hr>
+<h2 id="classes">Classes</h2>
+<h3 id="bugreportgithubconfig">BugReportGitHubConfig</h3>
+<p>Configuration for the target GitHub repository and authentication.</p>
+<p><strong>Location</strong>: <code>Krypton.Utilities</code> → <code>Components/KryptonBugReportingDialog/General/BugReportGitHubConfig.cs</code></p>
+<h4 id="properties">Properties</h4>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Owner</code></td>
+<td><code>string</code></td>
+<td>GitHub repository owner (e.g. <code>&quot;Krypton-Suite&quot;</code>)</td>
+</tr>
+<tr>
+<td><code>RepositoryName</code></td>
+<td><code>string</code></td>
+<td>Repository name (e.g. <code>&quot;Standard-Toolkit&quot;</code>)</td>
+</tr>
+<tr>
+<td><code>PersonalAccessToken</code></td>
+<td><code>string</code></td>
+<td>GitHub PAT with <code>repo</code> or <code>public_repo</code> scope</td>
+</tr>
+<tr>
+<td><code>IsValid</code></td>
+<td><code>bool</code></td>
+<td><code>true</code> if Owner, RepositoryName, and PersonalAccessToken are all non-null and non-whitespace</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example">Example</h4>
+<pre><code class="lang-csharp">var config = new BugReportGitHubConfig
+{
+    Owner = &quot;MyCompany&quot;,
+    RepositoryName = &quot;MyProduct&quot;,
+    PersonalAccessToken = &quot;ghp_xxxxxxxxxxxx&quot;
+};
+
+if (config.IsValid)
+{
+    // Ready for use
+}
+</code></pre>
+<hr>
+<h3 id="bugreportgithubconfigencryption">BugReportGitHubConfigEncryption</h3>
+<p>Static class for encrypting and decrypting the config file. Uses AES-256-CBC with PKCS7 padding; key derived via SHA-256.</p>
+<p><strong>Location</strong>: <code>Krypton.Utilities</code> → <code>Components/KryptonBugReportingDialog/General/BugReportGitHubConfigEncryption.cs</code></p>
+<h4 id="methods">Methods</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SaveEncryptedConfig(config, filePath, secretKey)</code></td>
+<td>Encrypts config and writes to file</td>
+</tr>
+<tr>
+<td><code>LoadEncryptedConfig(filePath, secretKey)</code></td>
+<td>Loads and decrypts; throws on failure</td>
+</tr>
+<tr>
+<td><code>TryLoadEncryptedConfig(filePath, secretKey, out config)</code></td>
+<td>Safe load; returns <code>true</code> on success</td>
+</tr>
+<tr>
+<td><code>GetDefaultConfigFilePath()</code></td>
+<td>Returns <code>{AppBaseDirectory}\github-issue-config.enc</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="exceptions">Exceptions</h4>
+<ul>
+<li><code>ArgumentNullException</code>: Null or empty parameter</li>
+<li><code>InvalidOperationException</code>: Config not valid (for Save)</li>
+<li><code>FileNotFoundException</code>: Config file not found (for Load)</li>
+<li><code>CryptographicException</code>: Wrong key or corrupted file (for Load)</li>
+</ul>
+<h4 id="example-1">Example</h4>
+<pre><code class="lang-csharp">// Save (development)
+BugReportGitHubConfigEncryption.SaveEncryptedConfig(config, outputPath, secretKey);
+
+// Load (runtime)
+if (BugReportGitHubConfigEncryption.TryLoadEncryptedConfig(filePath, secretKey, out var config))
+{
+    // Use config
+}
+
+// Default path
+var defaultPath = BugReportGitHubConfigEncryption.GetDefaultConfigFilePath();
+</code></pre>
+<hr>
+<h3 id="kryptongithubissuereportdialog">KryptonGitHubIssueReportDialog</h3>
+<p>Static class providing the user-facing bug report dialog. Loads config from the encrypted file (or accepts config directly) and shows a form with Title and Description fields. Overloads that accept <code>initialDescription</code> pre-fill the description (e.g. exception details from <code>KryptonExceptionDialog</code>).</p>
+<p><strong>Location</strong>: <code>Krypton.Utilities</code> → <code>Components/KryptonBugReportingDialog/Controls Toolkit/KryptonGitHubIssueReportDialog.cs</code></p>
+<h4 id="methods-1">Methods</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Show(owner, secretKey)</code></td>
+<td>Loads from default config file; shows dialog</td>
+</tr>
+<tr>
+<td><code>Show(owner, secretKey, configFilePath)</code></td>
+<td>Loads from specified config file; shows dialog</td>
+</tr>
+<tr>
+<td><code>Show(owner, secretKey, configFilePath, initialDescription)</code></td>
+<td>Loads from file; shows dialog with optional pre-filled description</td>
+</tr>
+<tr>
+<td><code>Show(owner, config)</code></td>
+<td>Uses provided config directly (no file)</td>
+</tr>
+<tr>
+<td><code>Show(owner, config, initialDescription)</code></td>
+<td>Uses provided config; shows dialog with optional pre-filled description</td>
+</tr>
+</tbody>
+</table>
+<h4 id="parameters">Parameters</h4>
+<ul>
+<li><code>owner</code>: <code>IWin32Window?</code> — Parent window (e.g. your form); can be <code>null</code></li>
+<li><code>secretKey</code>: <code>string</code> — Key for decrypting the config file</li>
+<li><code>configFilePath</code>: <code>string?</code> — Path to <code>.enc</code> file; <code>null</code> = default path</li>
+<li><code>initialDescription</code>: <code>string?</code> — Optional pre-filled text for the issue description (e.g. exception details)</li>
+<li><code>config</code>: <code>BugReportGitHubConfig</code> — Pre-loaded configuration</li>
+</ul>
+<h4 id="returns">Returns</h4>
+<ul>
+<li><code>DialogResult.OK</code> — Issue created successfully; browser opened to the new issue</li>
+<li><code>DialogResult.Cancel</code> — User cancelled, or config load failed, or API error</li>
+</ul>
+<h4 id="exceptions-1">Exceptions</h4>
+<ul>
+<li><code>ArgumentNullException</code> — <code>secretKey</code> is null or empty; or <code>config</code> is null (when using config overloads)</li>
+<li><code>InvalidOperationException</code> — <code>config</code> is not valid (when using config overloads)</li>
+</ul>
+<h4 id="behavior-on-config-load-failure">Behavior on Config Load Failure</h4>
+<p>If the encrypted config cannot be loaded (missing file, wrong key, corrupted data), a <code>KryptonMessageBox</code> is shown with an error message and <code>DialogResult.Cancel</code> is returned. The dialog is not shown.</p>
+<h4 id="example-2">Example</h4>
+<pre><code class="lang-csharp">// From encrypted file (default path)
+var result = KryptonGitHubIssueReportDialog.Show(this, secretKey);
+
+// From encrypted file (custom path)
+var result = KryptonGitHubIssueReportDialog.Show(this, secretKey, @&quot;C:\App\config.enc&quot;);
+
+// With pre-filled description (e.g. from exception dialog)
+var result = KryptonGitHubIssueReportDialog.Show(this, secretKey, null, exceptionDetails);
+
+// With explicit config (no file)
+var config = BugReportGitHubConfigEncryption.LoadEncryptedConfig(path, secretKey);
+var result = KryptonGitHubIssueReportDialog.Show(this, config);
+
+// With config and pre-filled description
+var result = KryptonGitHubIssueReportDialog.Show(this, config, exceptionDetails);
+</code></pre>
+<hr>
+<h3 id="bugreportgithubservice">BugReportGitHubService</h3>
+<p>Service for creating GitHub issues programmatically (without showing the dialog). Supports both synchronous and asynchronous methods.</p>
+<p><strong>Location</strong>: <code>Krypton.Utilities</code> → <code>Components/KryptonBugReportingDialog/General/BugReportGitHubService.cs</code></p>
+<h4 id="methods-public-api--title--body">Methods (Public API – Title + Body)</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CreateIssue(config, title, body)</code></td>
+<td>Creates a generic issue (sync)</td>
+</tr>
+<tr>
+<td><code>CreateIssueAsync(config, title, body)</code></td>
+<td>Creates a generic issue (async)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="parameters-1">Parameters</h4>
+<ul>
+<li><code>config</code>: <code>BugReportGitHubConfig</code> — Valid configuration</li>
+<li><code>title</code>: <code>string</code> — Issue title</li>
+<li><code>body</code>: <code>string</code> — Issue body (markdown supported)</li>
+</ul>
+<h4 id="returns-1">Returns</h4>
+<ul>
+<li><code>BugReportGitHubResult</code> — Struct with <code>Success</code>, <code>IssueUrl</code>, <code>ErrorMessage</code></li>
+</ul>
+<h4 id="example-3">Example</h4>
+<pre><code class="lang-csharp">var service = new BugReportGitHubService();
+var result = service.CreateIssue(config, &quot;Bug: Login fails&quot;, &quot;Description here...&quot;);
+
+if (result.Success)
+{
+    Process.Start(new ProcessStartInfo { FileName = result.IssueUrl!, UseShellExecute = true });
+}
+else
+{
+    MessageBox.Show(result.ErrorMessage);
+}
+</code></pre>
+<hr>
+<h3 id="bugreportgithubresult">BugReportGitHubResult</h3>
+<p>Read-only struct representing the outcome of an issue creation attempt.</p>
+<p><strong>Location</strong>: <code>Krypton.Utilities</code> → <code>Components/KryptonBugReportingDialog/General/BugReportGitHubResult.cs</code></p>
+<h4 id="properties-1">Properties</h4>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Success</code></td>
+<td><code>bool</code></td>
+<td><code>true</code> if the issue was created</td>
+</tr>
+<tr>
+<td><code>IssueUrl</code></td>
+<td><code>string?</code></td>
+<td>URL of the created issue (when successful)</td>
+</tr>
+<tr>
+<td><code>ErrorMessage</code></td>
+<td><code>string?</code></td>
+<td>Error message (when failed)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="static-factory-methods">Static Factory Methods</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SuccessResult(issueUrl)</code></td>
+<td>Creates a successful result</td>
+</tr>
+<tr>
+<td><code>FailureResult(errorMessage)</code></td>
+<td>Creates a failed result</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="example-1-help-menu-integration">Example 1: Help Menu Integration</h3>
+<pre><code class="lang-csharp">private void helpReportBugToolStripMenuItem_Click(object sender, EventArgs e)
+{
+    var secretKey = GetSecretKey(); // From env, config, etc.
+    if (string.IsNullOrEmpty(secretKey))
+    {
+        MessageBox.Show(&quot;Bug reporting is not configured.&quot;);
+        return;
+    }
+
+    KryptonGitHubIssueReportDialog.Show(this, secretKey);
+}
+</code></pre>
+<h3 id="example-2-custom-config-path">Example 2: Custom Config Path</h3>
+<pre><code class="lang-csharp">var configPath = Path.Combine(
+    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+    &quot;MyApp&quot;,
+    &quot;github-issue-config.enc&quot;
+);
+
+var result = KryptonGitHubIssueReportDialog.Show(this, secretKey, configPath);
+</code></pre>
+<h3 id="example-3-programmatic-issue-creation">Example 3: Programmatic Issue Creation</h3>
+<pre><code class="lang-csharp">public async Task ReportBugAsync(string title, string body)
+{
+    if (!BugReportGitHubConfigEncryption.TryLoadEncryptedConfig(
+        BugReportGitHubConfigEncryption.GetDefaultConfigFilePath(),
+        _secretKey,
+        out var config) || config == null)
+    {
+        throw new InvalidOperationException(&quot;GitHub config not available.&quot;);
+    }
+
+    var service = new BugReportGitHubService();
+    var result = await service.CreateIssueAsync(config, title, body);
+
+    if (result.Success)
+    {
+        return result.IssueUrl;
+    }
+
+    throw new InvalidOperationException(result.ErrorMessage);
+}
+</code></pre>
+<h3 id="example-4-about-dialog-with-report-bug-button">Example 4: About Dialog with Report Bug Button</h3>
+<pre><code class="lang-csharp">public partial class AboutForm : KryptonForm
+{
+    private readonly string _secretKey;
+
+    public AboutForm(string secretKey)
+    {
+        InitializeComponent();
+        _secretKey = secretKey;
+        kbtnReportBug.Click += KbtnReportBug_Click;
+    }
+
+    private void KbtnReportBug_Click(object? sender, EventArgs e)
+    {
+        KryptonGitHubIssueReportDialog.Show(this, _secretKey);
+    }
+}
+</code></pre>
+<h3 id="example-5-unhandled-exception-handler">Example 5: Unhandled Exception Handler</h3>
+<pre><code class="lang-csharp">Application.ThreadException += (sender, e) =&gt;
+{
+    var ex = e.Exception;
+    var title = $&quot;Unhandled Exception: {ex.GetType().Name}&quot;;
+    var body = $@&quot;**Message**
+{ex.Message}
+
+**Stack Trace**
+</code></pre>
+<p>{ex.StackTrace}</p>
+<pre><code class="lang-&quot;;">
+    if (TryLoadConfig(out var config))
+    {
+        var service = new BugReportGitHubService();
+        var result = service.CreateIssue(config, title, body);
+        if (result.Success)
+        {
+            MessageBox.Show($&quot;Issue created: {result.IssueUrl}&quot;);
+        }
+    }
+};
+</code></pre>
+<h3 id="example-6-build-time-config-generation-cicd">Example 6: Build-Time Config Generation (CI/CD)</h3>
+<pre><code class="lang-csharp">// Run during build or release pipeline; output .enc file
+[TestMethod]
+public void GenerateEncryptedConfig()
+{
+    var config = new BugReportGitHubConfig
+    {
+        Owner = Environment.GetEnvironmentVariable(&quot;GITHUB_OWNER&quot;)!,
+        RepositoryName = Environment.GetEnvironmentVariable(&quot;GITHUB_REPO&quot;)!,
+        PersonalAccessToken = Environment.GetEnvironmentVariable(&quot;GITHUB_PAT&quot;)!
+    };
+
+    var outputPath = Path.Combine(OutputDir, &quot;github-issue-config.enc&quot;);
+    var secretKey = Environment.GetEnvironmentVariable(&quot;GITHUB_CONFIG_KEY&quot;)!;
+
+    BugReportGitHubConfigEncryption.SaveEncryptedConfig(config, outputPath, secretKey);
+}
+</code></pre>
+<hr>
+<h2 id="security-considerations">Security Considerations</h2>
+<h3 id="secret-key-storage">Secret Key Storage</h3>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Security</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hardcoded in source</td>
+<td>Very low</td>
+<td>Never use</td>
+</tr>
+<tr>
+<td>App.config / appsettings.json</td>
+<td>Low</td>
+<td>Avoid for production</td>
+</tr>
+<tr>
+<td>Environment variable</td>
+<td>Medium</td>
+<td>Acceptable for many scenarios</td>
+</tr>
+<tr>
+<td>Windows Credential Manager</td>
+<td>Higher</td>
+<td>Good for desktop apps</td>
+</tr>
+<tr>
+<td>Azure Key Vault / similar</td>
+<td>High</td>
+<td>Prefer for enterprise</td>
+</tr>
+</tbody>
+</table>
+<h3 id="personal-access-token-pat">Personal Access Token (PAT)</h3>
+<ul>
+<li>Use a token with the minimum required scope (<code>public_repo</code> for public repos, <code>repo</code> for private)</li>
+<li>Prefer fine-grained PATs when GitHub supports them</li>
+<li>Rotate tokens periodically</li>
+<li>Never log or display the PAT</li>
+</ul>
+<h3 id="encrypted-config-file">Encrypted Config File</h3>
+<ul>
+<li>The <code>.enc</code> file is encrypted with AES-256-CBC</li>
+<li>A new random IV is used for each save</li>
+<li>Without the secret key, the file contents are not recoverable</li>
+<li>Store the secret key separately from the config file</li>
+</ul>
+<h3 id="network">Network</h3>
+<ul>
+<li>All communication uses HTTPS to <code>api.github.com</code></li>
+<li>Ensure your environment allows outbound HTTPS</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="failed-to-load-github-configuration">&quot;Failed to load GitHub configuration&quot;</h3>
+<p><strong>Causes</strong>: Config file missing, wrong path, wrong secret key, or corrupted file.</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Verify the <code>.enc</code> file exists at the expected path</li>
+<li>Use <code>GetDefaultConfigFilePath()</code> to check the default path</li>
+<li>Ensure the secret key matches the one used when saving</li>
+<li>Regenerate the config file if corruption is suspected</li>
+</ul>
+<h3 id="create-issue-failed-with-401-unauthorized">&quot;Create Issue Failed&quot; with 401 Unauthorized</h3>
+<p><strong>Causes</strong>: Invalid or expired PAT, or insufficient scope.</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Regenerate the PAT in GitHub</li>
+<li>Ensure scope includes <code>repo</code> or <code>public_repo</code></li>
+<li>Update the config file with the new PAT</li>
+</ul>
+<h3 id="create-issue-failed-with-404-not-found">&quot;Create Issue Failed&quot; with 404 Not Found</h3>
+<p><strong>Causes</strong>: Invalid Owner or RepositoryName, or no access to the repository.</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Verify Owner and RepositoryName are correct (case-sensitive)</li>
+<li>Ensure the PAT has access to the repository</li>
+</ul>
+<h3 id="dialog-does-not-open">Dialog Does Not Open</h3>
+<p><strong>Causes</strong>: Config load failed before the dialog could be shown.</p>
+<p><strong>Solutions</strong>:</p>
+<ul>
+<li>Check that <code>TryLoadEncryptedConfig</code> would succeed before calling <code>Show</code></li>
+<li>Handle <code>DialogResult.Cancel</code> and inspect any message box that was shown</li>
+</ul>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><strong><a href="KryptonExceptionDialog.html">KryptonExceptionDialog</a></strong> — The Exception Dialog has an overload (in <code>Krypton.Utilities</code>) that accepts <code>githubSecretKey</code> and <code>githubConfigPath</code>. When provided, the &quot;Report Bug&quot; button opens this GitHub issue dialog with the exception details pre-filled in the description.</li>
+<li><a href="https://docs.github.com/en/rest/issues/issues#create-an-issue">GitHub REST API – Create an Issue</a></li>
+<li><a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token">GitHub Personal Access Tokens</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
