@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Developer Guide: License Header via EditorConfig | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Developer Guide: License Header via EditorConfig | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="developer-guide-license-header-via-editorconfig">Developer Guide: License Header via EditorConfig</h1>
+
+<p>This document describes how the Krypton Standard Toolkit project configures and applies the BSD 3-Clause license header to C# source files using EditorConfig and Visual Studio’s built-in file header support. It is intended for contributors and maintainers who add or edit source files and need to ensure consistent license headers.</p>
+<hr>
+<h2 id="1-overview">1. Overview</h2>
+<ul>
+<li><strong>What:</strong> A single, repository-wide license header template is defined in EditorConfig. IDEs (notably Visual Studio) use this template when you add or fix file headers so that every <code>.cs</code> file can have the same BSD license block at the top.</li>
+<li><strong>Where:</strong> The template is set in <code>Source/.editorconfig</code> under the <code>[*.cs]</code> section via the <code>file_header_template</code> property.</li>
+<li><strong>Why:</strong> Keeping the header in one place (EditorConfig) avoids duplicating the exact text across many files or tools and aligns with the project’s use of EditorConfig for code style (see <code>Source/.editorconfig</code> and <code>AGENTS.md</code>).</li>
+</ul>
+<p>The header text matches the <strong>New BSD 3-Clause License</strong> notice used by this project (see repository <code>LICENSE</code> and <code>Documents/License/License.md</code>).</p>
+<hr>
+<h2 id="2-where-it-is-configured">2. Where It Is Configured</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EditorConfig file</td>
+<td><code>Source/.editorconfig</code></td>
+</tr>
+<tr>
+<td>Section</td>
+<td><code>[*.cs]</code></td>
+</tr>
+<tr>
+<td>Property</td>
+<td><code>file_header_template</code></td>
+</tr>
+</tbody>
+</table>
+<p>The solution links this file (e.g. in <code>Krypton Toolkit Suite 2022 - VS2022.sln</code> / <code>.slnx</code>), so all C# projects under <code>Source/Krypton Components</code> inherit the setting.</p>
+<hr>
+<h2 id="3-canonical-license-header-text">3. Canonical License Header Text</h2>
+<p>When rendered in a C# file, the header should look exactly like this (including blank lines and spacing):</p>
+<pre><code class="lang-csharp">#region BSD License
+/*
+ *
+ *  New BSD 3-Clause License (https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/LICENSE)
+ *  Modifications by Peter Wagner(aka Wagnerp), Simon Coghlan(aka Smurf-IV), Giduac, tobitege, Lesandro, KamaniAR, et al. 2026 - 2026. All rights reserved.
+ *
+ */
+#endregion
+</code></pre>
+<ul>
+<li><strong>One blank line</strong> after <code>#region BSD License</code> and after <code>/*</code>.</li>
+<li><strong>One blank line</strong> before <code>*/</code> and before <code>#endregion</code>.</li>
+<li><strong>Two spaces</strong> before “New BSD”, “Modifications”, and “All rights reserved.”</li>
+<li>The <strong>year range</strong> (e.g. <code>2025 - 2026</code>) must be updated manually when the calendar year changes (see <a href="#7-maintaining-the-year-range">Section 7</a>).</li>
+</ul>
+<p>The <code>file_header_template</code> value in <code>.editorconfig</code> encodes this as a <strong>single line</strong> with newlines represented as <code>\n</code> (see <a href="#5-editorconfig-format">Section 5</a>).</p>
+<hr>
+<h2 id="4-how-to-apply-the-header">4. How to Apply the Header</h2>
+<h3 id="41-single-file-visual-studio">4.1 Single file (Visual Studio)</h3>
+<ol>
+<li>Open the <code>.cs</code> file.</li>
+<li>Place the caret on the <strong>first line</strong> of the file (or where the header should be inserted).</li>
+<li>Press <strong>Ctrl+.</strong> (Quick Actions and Refactorings).</li>
+<li>Choose <strong>“Add file header”</strong> (or “Add banner” depending on VS version).</li>
+<li>The IDE inserts the header from <code>file_header_template</code> at the top of the file.</li>
+</ol>
+<p>If a header already exists but does not match the template, the same light bulb / Quick Actions may offer to <strong>fix the file header</strong> so it matches.</p>
+<h3 id="42-project-or-solution-visual-studio">4.2 Project or solution (Visual Studio)</h3>
+<ol>
+<li>Use <strong>“Add file header”</strong> (or fix file header) as above on any file that triggers the suggestion.</li>
+<li>In the <strong>“Fix all occurrences in:”</strong> list, select <strong>Project</strong> or <strong>Solution</strong>.</li>
+<li>In the <strong>“Fix all occurrences”</strong> preview dialog, review the changes.</li>
+<li>Click <strong>Apply</strong> to add or update headers across the selected scope.</li>
+</ol>
+<p>Use <strong>Project</strong> to limit changes to one project; use <strong>Solution</strong> to update all C# files in the solution that are missing or mismatched headers.</p>
+<h3 id="43-other-editors">4.3 Other editors</h3>
+<ul>
+<li>EditorConfig is a standard format; support for <code>file_header_template</code> is <strong>IDE-dependent</strong>. Visual Studio and VS-based products use it for “Add file header” and file header fixes.</li>
+<li>Other editors (e.g. VS Code, Rider) may or may not honor <code>file_header_template</code>; refer to their documentation. If they do not, maintain the header manually using the canonical text in <a href="#3-canonical-license-header-text">Section 3</a>.</li>
+</ul>
+<hr>
+<h2 id="5-editorconfig-format">5. EditorConfig Format</h2>
+<ul>
+<li>The property must live under a section that matches C# files, e.g. <code>[*.cs]</code>.</li>
+<li>EditorConfig values cannot contain real newlines. All line breaks in the header are encoded as the two-character escape <strong><code>\n</code></strong> (backslash + letter n).</li>
+<li>The value is a single line; the IDE interprets <code>\n</code> and inserts actual newlines when applying the header.</li>
+</ul>
+<p>Example (conceptually; the real line in <code>Source/.editorconfig</code> is one long line):</p>
+<pre><code class="lang-ini">[*.cs]
+file_header_template = #region BSD License\n/*\n *\n *  New BSD 3-Clause License (...)\n *  Modifications by ...\n *\n */\n#endregion
+</code></pre>
+<ul>
+<li>To <strong>change the header text</strong>, edit <code>Source/.editorconfig</code>, update the <code>file_header_template</code> value, and keep newlines as <code>\n</code>. After saving, re-apply “Add file header” or “Fix all” where needed.</li>
+</ul>
+<hr>
+<h2 id="6-supported-placeholders">6. Supported Placeholders</h2>
+<ul>
+<li><strong><code>{fileName}</code></strong> — Replaced with the current file name (e.g. <code>MyClass.cs</code>). The project’s template does not use it, so the same text is used for every file.</li>
+<li><strong>Year / date placeholders</strong> — <strong>Not supported.</strong> The .NET/EditorConfig file header support does not define placeholders such as <code>{currentYear}</code> or <code>{yearRange}</code>. A feature request exists (<a href="https://github.com/dotnet/roslyn/issues/44329">dotnet/roslyn#44329</a>) but is not implemented. Therefore the year range in the header is <strong>fixed text</strong> and must be updated manually (see <a href="#7-maintaining-the-year-range">Section 7</a>).</li>
+</ul>
+<hr>
+<h2 id="7-maintaining-the-year-range">7. Maintaining the Year Range</h2>
+<p>The canonical header includes a year range (e.g. <strong>2025 - 2026</strong>). Because there is no year placeholder:</p>
+<ol>
+<li><strong>When the calendar year changes</strong> (e.g. from 2026 to 2027), a maintainer should update the year range in <strong>one place</strong>: the <code>file_header_template</code> value in <code>Source/.editorconfig</code>.</li>
+<li>Update the range to reflect your policy (e.g. “2026 - 2027” for a range, or “2027 - 2027” for a single year).</li>
+<li>A short comment in <code>.editorconfig</code> next to <code>file_header_template</code> reminds maintainers to update the year when needed.</li>
+<li>Optionally, run “Fix all in Solution” for the file header to refresh existing files; otherwise new files and manual “Add file header” uses will get the new range.</li>
+</ol>
+<hr>
+<h2 id="8-relationship-to-licenseheader-files">8. Relationship to <code>.licenseheader</code> Files</h2>
+<p>Some projects under <code>Source/Krypton Components</code> still contain <strong><code>.licenseheader</code></strong> files (e.g. <code>Krypton.Toolkit.licenseheader</code>, <code>Krypton.Docking.licenseheader</code>). Those are used by <strong>third-party extensions</strong> (e.g. “License Header Manager” or similar) that run inside Visual Studio or the build.</p>
+<ul>
+<li><strong>EditorConfig</strong> (<code>file_header_template</code>) is the <strong>primary</strong>, repository-defined source for the license text and is used by Visual Studio’s built-in “Add file header” and file header fix.</li>
+<li>If you use an extension that reads <code>.licenseheader</code> files, keep the text in those files <strong>in sync</strong> with the canonical header in this document and with <code>file_header_template</code> (including the year range) to avoid conflicting headers.</li>
+<li>New development can rely solely on EditorConfig and “Add file header”; the <code>.licenseheader</code> files can be phased out or kept for teams that depend on that tooling.</li>
+</ul>
+<hr>
+<h2 id="9-build-time-and-analyzer-ide0073">9. Build-Time and Analyzer (IDE0073)</h2>
+<ul>
+<li><strong>IDE0073</strong> (“Require file header”) is a .NET analyzer rule that can warn when a file’s header does not match the configured template. The project does <strong>not</strong> currently enable IDE0073 as an error in <code>Source/.editorconfig</code>; file headers are applied and maintained via EditorConfig and IDE actions rather than enforced at build time.</li>
+<li>If you want to <strong>enforce</strong> the header at build time, you can add under <code>[*.cs]</code> something like:
+<ul>
+<li><code>dotnet_diagnostic.IDE0073.severity = warning</code></li>
+<li>or <code>= error</code>
+and ensure <code>file_header_template</code> is set as desired. Be aware: because the year is not a placeholder, any change to the year in the template may require re-running “Fix all” so existing files match and the build stays clean.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="10-troubleshooting">10. Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>What to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“Add file header” doesn’t appear</td>
+<td>Caret must be near the top of the file (e.g. first line). Try <strong>Ctrl+.</strong> and look for “Add file header” or “Add banner”.</td>
+</tr>
+<tr>
+<td>Header doesn’t match project standard</td>
+<td>Ensure <code>Source/.editorconfig</code> is linked from the solution and that the <code>[*.cs]</code> section contains the correct <code>file_header_template</code> (including <code>\n</code> for newlines).</td>
+</tr>
+<tr>
+<td>Wrong or old year in header</td>
+<td>Update the year range in <code>file_header_template</code> in <code>Source/.editorconfig</code>, then use “Fix file header” / “Fix all in Solution” to refresh files, or add the header manually with the correct text.</td>
+</tr>
+<tr>
+<td>Different header in one project</td>
+<td>EditorConfig is inherited from <code>Source/.editorconfig</code>. If a project has its own <code>.editorconfig</code>, a nested <code>[*.cs]</code> section could override <code>file_header_template</code>; adjust or remove the override.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="11-references">11. References</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/visualstudio/ide/reference/add-file-header">Add file header (Visual Studio)</a></li>
+<li><a href="https://editorconfig.org/">EditorConfig</a> and <a href="https://learn.microsoft.com/en-us/visualstudio/ide/create-portable-custom-editor-options">Create portable custom editor options (Visual Studio)</a></li>
+<li><a href="https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0073">IDE0073: Require file header</a></li>
+<li>Roslyn feature request for a year placeholder: <a href="https://github.com/dotnet/roslyn/issues/44329">dotnet/roslyn#44329</a></li>
+<li>Repository: <code>Source/.editorconfig</code>, <code>AGENTS.md</code>, <code>Documents/License/License.md</code>, root <code>LICENSE</code></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

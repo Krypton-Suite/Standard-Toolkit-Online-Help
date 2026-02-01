@@ -3,6 +3,7 @@
 If you are wanting to contribute to the toolkit, the articles below will guide you through the process.
 
 * [Allowing for Longer Path and File Names](Contributing/AllowingforLongerPathandFileNames.md)
+* [Applying Licence Headers](Contributing/ApplyingLicenceHeaders.md)
 * [Build System](Contributing/BuildSystemDocumentationIndex.md)
 * [Build Workflows](Contributing/BuildWorkflowIndex.md)
 * [Contributing Guidelines](Contributing/ContributingGuidelines.md)
