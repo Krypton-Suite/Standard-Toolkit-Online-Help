@@ -543,9 +543,7 @@ Stack Trace:
 Inner Exception:
 [Inner exception message or &quot;None&quot;]
 </code></pre>
-<p>When clicking on &quot;Stack Trace&quot; or &quot;Inner Exception&quot; parent nodes, the details panel shows:</p>
-<pre><code>Please select another node to view more details.
-</code></pre>
+<p>When clicking on &quot;Stack Trace&quot; or &quot;Inner Exception&quot; parent nodes, the details panel shows the text from <code>KryptonManager.Strings.ExceptionDialogStrings.MoreDetails</code> (default: &quot;Please select another node to view more details.&quot;).</p>
 <h3 id="copy-button">Copy Button</h3>
 <p>When visible (controlled by <code>showCopyButton</code> parameter):</p>
 <ul>
@@ -591,7 +589,7 @@ Inner Exception:
     public string WindowTitle { get; set; }                    // Default: &quot;Exception Caught&quot;
     public string ExceptionDetailsHeader { get; set; }         // Default: &quot;Exception Details&quot;
     public string ExceptionOutlineHeader { get; set; }         // Default: &quot;Exception Outline&quot;
-    public string MoreDetails { get; set; }                    // Default: &quot;Please select another node...&quot;
+    public string MoreDetails { get; set; }                    // Default: &quot;Please select another node to view more details.&quot;
     public string Type { get; set; }                           // Default: &quot;Type&quot;
     public string InnerException { get; set; }                 // Default: &quot;Inner Exception&quot;
     public string Message { get; set; }                        // Default: &quot;Message&quot;
@@ -606,6 +604,9 @@ Inner Exception:
     public string ResultsFoundAppendage { get; set; }          // Default: &quot;found&quot;
     public string NoMatchesFound { get; set; }                 // Default: &quot;No matches found.&quot;
     public string TypeToSearch { get; set; }                   // Default: &quot;Type to search...&quot;
+    public string ReportBugButtonText { get; set; }             // Default: &quot;Report Bug&quot;
+    public string ReportBugOnGitHubButtonText { get; set; }    // Default: &quot;Report Bug on GitHub&quot;
+    public string CopyDetailsButtonText { get; set; }          // Default: &quot;Copy Details&quot;
 }
 </code></pre>
 <h3 id="localization-example">Localization Example</h3>
@@ -719,12 +720,12 @@ else
 <hr>
 <h2 id="technical-details">Technical Details</h2>
 <h3 id="dialog-dimensions">Dialog Dimensions</h3>
-<p>The dialog automatically adjusts its size based on screen resolution:</p>
+<p>The dialog automatically adjusts its size based on the value returned by <code>GeneralToolkitUtilities.GetCurrentScreenSize()</code>:</p>
 <ul>
-<li><strong>1080p (1920×1080)</strong>: 900×650 pixels</li>
-<li><strong>Higher resolutions</strong>: 1108×687 pixels</li>
+<li><strong>When <code>GetCurrentScreenSize()</code> returns (1080, 720)</strong>: 900×650 pixels</li>
+<li><strong>Otherwise</strong>: 1108×687 pixels</li>
 </ul>
-<p>This is handled automatically by <code>GeneralToolkitUtilities.GetCurrentScreenSize()</code> and <code>GeneralToolkitUtilities.AdjustFormDimensions()</code>.</p>
+<p>Sizing is applied by <code>GeneralToolkitUtilities.AdjustFormDimensions()</code>.</p>
 <h3 id="form-properties">Form Properties</h3>
 <ul>
 <li><strong>StartPosition</strong>: <code>CenterScreen</code> - Always centered on the screen</li>
@@ -975,6 +976,7 @@ KryptonManager.Strings.ExceptionDialogStrings.WindowTitle = &quot;Your Title&quo
 <li><code>KryptonForm</code></li>
 <li><code>KryptonTreeView</code></li>
 </ul>
+<p><strong>Krypton.Utilities:</strong> The <code>Krypton.Utilities</code> assembly exposes a public <code>KryptonExceptionDialog</code> with an additional overload that supports GitHub issue reporting (<code>githubSecretKey</code>, <code>githubConfigPath</code>). Use that overload when integrating with the encrypted GitHub bug-report config.</p>
 <h3 id="related-patterns">Related Patterns</h3>
 <ul>
 <li>Exception Handling Best Practices</li>

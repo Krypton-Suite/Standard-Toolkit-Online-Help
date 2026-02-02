@@ -445,10 +445,7 @@ Inner Exception:
 [Inner exception message or "None"]
 ```
 
-When clicking on "Stack Trace" or "Inner Exception" parent nodes, the details panel shows:
-```
-Please select another node to view more details.
-```
+When clicking on "Stack Trace" or "Inner Exception" parent nodes, the details panel shows the text from `KryptonManager.Strings.ExceptionDialogStrings.MoreDetails` (default: "Please select another node to view more details.").
 
 ### Copy Button
 
@@ -497,7 +494,7 @@ public class KryptonExceptionDialogStrings : GlobalId
     public string WindowTitle { get; set; }                    // Default: "Exception Caught"
     public string ExceptionDetailsHeader { get; set; }         // Default: "Exception Details"
     public string ExceptionOutlineHeader { get; set; }         // Default: "Exception Outline"
-    public string MoreDetails { get; set; }                    // Default: "Please select another node..."
+    public string MoreDetails { get; set; }                    // Default: "Please select another node to view more details."
     public string Type { get; set; }                           // Default: "Type"
     public string InnerException { get; set; }                 // Default: "Inner Exception"
     public string Message { get; set; }                        // Default: "Message"
@@ -512,6 +509,9 @@ public class KryptonExceptionDialogStrings : GlobalId
     public string ResultsFoundAppendage { get; set; }          // Default: "found"
     public string NoMatchesFound { get; set; }                 // Default: "No matches found."
     public string TypeToSearch { get; set; }                   // Default: "Type to search..."
+    public string ReportBugButtonText { get; set; }             // Default: "Report Bug"
+    public string ReportBugOnGitHubButtonText { get; set; }    // Default: "Report Bug on GitHub"
+    public string CopyDetailsButtonText { get; set; }          // Default: "Copy Details"
 }
 ```
 
@@ -637,12 +637,12 @@ KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = "Buscar...";
 
 ### Dialog Dimensions
 
-The dialog automatically adjusts its size based on screen resolution:
+The dialog automatically adjusts its size based on the value returned by `GeneralToolkitUtilities.GetCurrentScreenSize()`:
 
-- **1080p (1920×1080)**: 900×650 pixels
-- **Higher resolutions**: 1108×687 pixels
+- **When `GetCurrentScreenSize()` returns (1080, 720)**: 900×650 pixels
+- **Otherwise**: 1108×687 pixels
 
-This is handled automatically by `GeneralToolkitUtilities.GetCurrentScreenSize()` and `GeneralToolkitUtilities.AdjustFormDimensions()`.
+Sizing is applied by `GeneralToolkitUtilities.AdjustFormDimensions()`.
 
 ### Form Properties
 
@@ -862,6 +862,8 @@ This component was introduced in **Krypton Toolkit v100** (2024-2025) as part of
 - `KryptonMessageBox`
 - `KryptonForm`
 - `KryptonTreeView`
+
+**Krypton.Utilities:** The `Krypton.Utilities` assembly exposes a public `KryptonExceptionDialog` with an additional overload that supports GitHub issue reporting (`githubSecretKey`, `githubConfigPath`). Use that overload when integrating with the encrypted GitHub bug-report config.
 
 ### Related Patterns
 - Exception Handling Best Practices
