@@ -79,7 +79,11 @@
 <li><a href="#setup">Setup</a></li>
 <li><a href="#workflow-logic-step-by-step">Workflow Logic (Step by Step)</a></li>
 <li><a href="#auto-merge">Auto-Merge</a></li>
-<li><a href="#separate-repository-backup-dated-directories">Separate Repository Backup (Dated Directories)</a></li>
+<li><a href="#separate-repository-backup-dated-directories">Separate Repository Backup (Dated Directories)</a>
+<ul>
+<li><a href="#setting-up-backup_repo_token">Setting up BACKUP_REPO_TOKEN</a></li>
+</ul>
+</li>
 <li><a href="#discord-notifications">Discord Notifications</a></li>
 <li><a href="#security-and-permissions">Security and Permissions</a></li>
 <li><a href="#edge-cases-and-behaviour">Edge Cases and Behaviour</a></li>
@@ -212,7 +216,7 @@
 <ol>
 <li>Create a backup repository (e.g. <code>Krypton-Suite/Standard-Toolkit-Backup</code>).</li>
 <li><strong>Variables</strong>: Add <code>BACKUP_REPO</code> with value <code>owner/repo</code> (e.g. <code>Krypton-Suite/Standard-Toolkit-Backup</code>).</li>
-<li><strong>Secrets</strong>: Add <code>BACKUP_REPO_TOKEN</code> (PAT with <code>repo</code> scope and push access to the backup repo).</li>
+<li><strong>Secrets</strong>: Add <code>BACKUP_REPO_TOKEN</code> — see <a href="#setting-up-backup_repo_token">Setting up BACKUP_REPO_TOKEN</a> below.</li>
 <li>Optional variables:
 <ul>
 <li><code>BACKUP_DIR_PREFIX</code>: Directory name prefix (default: <code>Standard Toolkit Backup</code>).</li>
@@ -280,6 +284,38 @@
 <hr>
 <h2 id="separate-repository-backup-dated-directories">Separate Repository Backup (Dated Directories)</h2>
 <p>When <code>BACKUP_REPO</code> and <code>BACKUP_REPO_TOKEN</code> are configured, the workflow pushes a full snapshot of <code>alpha</code> into the backup repo.</p>
+<h3 id="setting-up-backup_repo_token">Setting up BACKUP_REPO_TOKEN</h3>
+<p>The token must have push access to the backup repository. You can use a <strong>classic PAT</strong> or a <strong>fine-grained PAT</strong>; both work. Fine-grained PATs are recommended for tighter scoping.</p>
+<h4 id="option-a-fine-grained-pat-recommended">Option A: Fine-grained PAT (recommended)</h4>
+<ol>
+<li><strong>Settings</strong> → <strong>Developer settings</strong> → <strong>Personal access tokens</strong> → <strong>Fine-grained tokens</strong>.</li>
+<li><strong>Generate new token</strong>.</li>
+<li><strong>Token name:</strong> e.g. <code>Alpha Backup Sync</code>.</li>
+<li><strong>Expiration:</strong> choose a duration.</li>
+<li><strong>Resource owner:</strong> select the org (e.g. <code>Krypton-Suite</code>) or your user.</li>
+<li><strong>Repository access:</strong> <strong>Only select repositories</strong> → add the backup repo.</li>
+<li><strong>Permissions</strong> → <strong>Repository permissions:</strong>
+<ul>
+<li><strong>Contents:</strong> Read and write</li>
+<li><strong>Metadata:</strong> Read-only (auto-selected)</li>
+</ul>
+</li>
+<li><strong>Generate token</strong> and copy it (starts with <code>github_pat_</code>).</li>
+<li>In the <strong>source</strong> repo: <strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong> → <strong>Secrets</strong> → <strong>New repository secret</strong>.</li>
+<li><strong>Name:</strong> <code>BACKUP_REPO_TOKEN</code> | <strong>Value:</strong> paste the token.</li>
+</ol>
+<h4 id="option-b-classic-pat">Option B: Classic PAT</h4>
+<ol>
+<li><strong>Settings</strong> → <strong>Developer settings</strong> → <strong>Personal access tokens</strong> → <strong>Tokens (classic)</strong>.</li>
+<li><strong>Generate new token (classic)</strong>.</li>
+<li><strong>Note:</strong> e.g. <code>Alpha Backup Sync</code>.</li>
+<li><strong>Expiration:</strong> choose a duration.</li>
+<li><strong>Scopes:</strong> enable <strong><code>repo</code></strong> (or <code>public_repo</code> if the backup repo is public).</li>
+<li><strong>Generate token</strong> and copy it (starts with <code>ghp_</code>).</li>
+<li>Add as repository secret <code>BACKUP_REPO_TOKEN</code> in the source repo (same as step 9–10 above).</li>
+</ol>
+<h4 id="org--multi-repo-access">Org / multi-repo access</h4>
+<p>PATs are created from a user account. A PAT from a user who is an org member (or has push access to the backup repo) works for org repositories. There is no separate &quot;org PAT&quot; — the token just needs push access to the backup repo. Fine-grained PATs can be scoped to specific org repos for least privilege.</p>
 <h3 id="directory-structure">Directory structure</h3>
 <p>Each run creates a new dated directory at the root of the backup repo:</p>
 <pre><code>Standard-Toolkit-Backup/

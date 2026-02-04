@@ -11,6 +11,7 @@
 7. [Workflow Logic (Step by Step)](#workflow-logic-step-by-step)
 8. [Auto-Merge](#auto-merge)
 9. [Separate Repository Backup (Dated Directories)](#separate-repository-backup-dated-directories)
+   - [Setting up BACKUP_REPO_TOKEN](#setting-up-backup_repo_token)
 10. [Discord Notifications](#discord-notifications)
 11. [Security and Permissions](#security-and-permissions)
 12. [Edge Cases and Behaviour](#edge-cases-and-behaviour)
@@ -109,7 +110,7 @@ The workflow is defined in:
 
 1. Create a backup repository (e.g. `Krypton-Suite/Standard-Toolkit-Backup`).
 2. **Variables**: Add `BACKUP_REPO` with value `owner/repo` (e.g. `Krypton-Suite/Standard-Toolkit-Backup`).
-3. **Secrets**: Add `BACKUP_REPO_TOKEN` (PAT with `repo` scope and push access to the backup repo).
+3. **Secrets**: Add `BACKUP_REPO_TOKEN` — see [Setting up BACKUP_REPO_TOKEN](#setting-up-backup_repo_token) below.
 4. Optional variables:
    - `BACKUP_DIR_PREFIX`: Directory name prefix (default: `Standard Toolkit Backup`).
    - `BACKUP_BRANCH`: Branch to push to (default: `main`).
@@ -181,6 +182,39 @@ Merge method is `MERGE` (merge commit). If "Allow auto-merge" is not enabled on 
 ## Separate Repository Backup (Dated Directories)
 
 When `BACKUP_REPO` and `BACKUP_REPO_TOKEN` are configured, the workflow pushes a full snapshot of `alpha` into the backup repo.
+
+### Setting up BACKUP_REPO_TOKEN
+
+The token must have push access to the backup repository. You can use a **classic PAT** or a **fine-grained PAT**; both work. Fine-grained PATs are recommended for tighter scoping.
+
+#### Option A: Fine-grained PAT (recommended)
+
+1. **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained tokens**.
+2. **Generate new token**.
+3. **Token name:** e.g. `Alpha Backup Sync`.
+4. **Expiration:** choose a duration.
+5. **Resource owner:** select the org (e.g. `Krypton-Suite`) or your user.
+6. **Repository access:** **Only select repositories** → add the backup repo.
+7. **Permissions** → **Repository permissions:**
+   - **Contents:** Read and write
+   - **Metadata:** Read-only (auto-selected)
+8. **Generate token** and copy it (starts with `github_pat_`).
+9. In the **source** repo: **Settings** → **Secrets and variables** → **Actions** → **Secrets** → **New repository secret**.
+10. **Name:** `BACKUP_REPO_TOKEN` | **Value:** paste the token.
+
+#### Option B: Classic PAT
+
+1. **Settings** → **Developer settings** → **Personal access tokens** → **Tokens (classic)**.
+2. **Generate new token (classic)**.
+3. **Note:** e.g. `Alpha Backup Sync`.
+4. **Expiration:** choose a duration.
+5. **Scopes:** enable **`repo`** (or `public_repo` if the backup repo is public).
+6. **Generate token** and copy it (starts with `ghp_`).
+7. Add as repository secret `BACKUP_REPO_TOKEN` in the source repo (same as step 9–10 above).
+
+#### Org / multi-repo access
+
+PATs are created from a user account. A PAT from a user who is an org member (or has push access to the backup repo) works for org repositories. There is no separate "org PAT" — the token just needs push access to the backup repo. Fine-grained PATs can be scoped to specific org repos for least privilege.
 
 ### Directory structure
 
