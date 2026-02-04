@@ -6,51 +6,48 @@
 2. [Key Features](#key-features)
 3. [Requirements](#requirements)
 4. [Triggers](#triggers)
-5. [Setup](#setup)
-6. [Workflow Logic (Step by Step)](#workflow-logic-step-by-step)
-7. [Discord Notifications](#discord-notifications)
-8. [Automating the Merge (Auto-Merge)](#automating-the-merge-auto-merge)
-9. [Security and Permissions](#security-and-permissions)
-10. [Edge Cases and Behaviour](#edge-cases-and-behaviour)
-11. [Troubleshooting](#troubleshooting)
-12. [See Also](#see-also)
+5. [Kill Switch](#kill-switch)
+6. [Setup](#setup)
+7. [Workflow Logic (Step by Step)](#workflow-logic-step-by-step)
+8. [Auto-Merge](#auto-merge)
+9. [Separate Repository Backup (Dated Directories)](#separate-repository-backup-dated-directories)
+10. [Discord Notifications](#discord-notifications)
+11. [Security and Permissions](#security-and-permissions)
+12. [Edge Cases and Behaviour](#edge-cases-and-behaviour)
+13. [Troubleshooting](#troubleshooting)
+14. [See Also](#see-also)
 
 ---
 
 ## Overview
 
-The **Alpha to Alpha-Backup Sync** workflow is a GitHub Actions automation that keeps a backup of the `alpha` branch by creating a pull request from `alpha` into `alpha-backup` whenever `alpha` has received commits in the last 24 hours. It runs at midnight UTC (or on manual trigger) and, when appropriate, ensures the `alpha-backup` branch exists, opens or reuses a PR from `alpha` to `alpha-backup`, and optionally sends a Discord notification.
+The **Alpha to Alpha-Backup Sync** workflow is a GitHub Actions automation that keeps a backup of the `alpha` branch when it has commits in the last 24 hours. It runs at midnight UTC (or on manual trigger) and:
+
+1. **Same-repo backup**: Creates or updates the `alpha-backup` branch via a PR from `alpha`, with optional auto-merge when approved.
+2. **Separate-repo backup** (optional): Pushes a full snapshot of `alpha` into a dated directory in another repository (e.g. `Standard Toolkit Backup - 2025-02-03`).
+3. **Discord** (optional): Sends a notification summarizing the run.
 
 ### Purpose
 
-- **Backup**: Maintain a separate branch (`alpha-backup`) that can be updated via a PR, giving visibility and optional review before the backup is updated.
-- **Automation**: No manual copying of `alpha`; the workflow detects recent activity and proposes the sync via a PR.
-- **Visibility**: Optional Discord notifications when a sync run detects changes and creates or finds an open PR.
-
-### Architecture (High Level)
-
-1. **Trigger**: Schedule (midnight UTC) or manual.
-2. **Check**: Count commits on `alpha` in the last 24 hours.
-3. **If no recent commits**: Workflow exits without creating branches or PRs.
-4. **If recent commits exist**:
-   - Ensure `alpha-backup` exists (create it from `alpha` if it does not).
-   - Compare `alpha-backup` with `alpha`; if `alpha` is ahead, create an open PR from `alpha` into `alpha-backup` (or reuse an existing one).
-   - Optionally send a Discord notification with branch/PR and run details.
-
-The actual “copy” of `alpha` onto `alpha-backup` happens when that PR is merged (manually or via auto-merge).
+- **Backup**: Maintain `alpha-backup` in the same repo and/or dated snapshots in a separate backup repo.
+- **Automation**: No manual copying; the workflow detects recent activity and proposes the sync via a PR, and optionally pushes to a backup repo.
+- **Visibility**: Optional Discord notifications when changes are detected.
 
 ---
 
 ## Key Features
 
 | Feature | Description |
-|--------|-------------|
+|---------|-------------|
 | **24-hour window** | Only acts when `alpha` has at least one commit in the last 24 hours. |
 | **Branch creation** | Creates `alpha-backup` from current `alpha` if the branch does not exist. |
-| **PR-based sync** | Sync is proposed via a PR (base: `alpha-backup`, head: `alpha`), not a direct push. |
+| **PR-based sync** | Sync is proposed via a PR (base: `alpha-backup`, head: `alpha`). |
+| **Auto-merge** | Enables auto-merge on the PR so it merges when requirements (e.g. approval) are met. |
 | **No duplicate PRs** | Reuses an existing open PR from `alpha` → `alpha-backup` instead of opening another. |
 | **No no-op PRs** | Does not open a PR when `alpha-backup` is already up to date with `alpha`. |
-| **Discord (optional)** | Can post a summary to Discord when changes are detected; requires a webhook secret. |
+| **Dated backup dirs** | Optional push to a separate repo into directories like `Standard Toolkit Backup - YYYY-MM-DD`. |
+| **Kill switch** | Can be disabled via repository variable without changing code. |
+| **Discord (optional)** | Sends a summary when changes are detected. |
 | **Manual run** | Can be triggered from the Actions tab via **Run workflow**. |
 
 ---
@@ -58,19 +55,31 @@ The actual “copy” of `alpha` onto `alpha-backup` happens when that PR is mer
 ## Requirements
 
 - **Repository**: GitHub repository containing an `alpha` branch.
-- **Permissions**: Workflow needs `contents: write` and `pull-requests: write` (see [Security and Permissions](#security-and-permissions)).
-- **Discord (optional)**: A Discord webhook URL stored as a repository secret if you want notifications.
+- **Permissions**: Workflow needs `contents: write` and `pull-requests: write`.
+- **Discord (optional)**: Webhook URL stored as `DISCORD_WEBHOOK_ALPHA_BACKUP`.
+- **Backup repo (optional)**: Variable `BACKUP_REPO`, secret `BACKUP_REPO_TOKEN` (PAT with push access).
 
 ---
 
 ## Triggers
 
 | Trigger | When |
-|--------|------|
+|---------|------|
 | **Schedule** | Daily at **00:00 UTC** (`cron: '0 0 * * *'`). |
 | **Manual** | **Actions** → **Alpha to Alpha-Backup Sync** → **Run workflow** → **Run workflow**. |
 
-Scheduled runs are subject to [GitHub Actions schedule limits](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule); if the repository is inactive, scheduled workflows may not run every day.
+---
+
+## Kill Switch
+
+The workflow can be disabled without changing code:
+
+- **Variable**: `ALPHA_BACKUP_SYNC_DISABLED`
+- **Location**: Repository **Settings** → **Secrets and variables** → **Actions** → **Variables** tab
+- **To disable**: Set value to `true`
+- **To re-enable**: Set value to `false` or delete the variable
+
+When disabled, the workflow still runs (triggered by schedule or manual) but exits immediately after the kill switch check with a warning. No checkout, branch creation, PR creation, backup push, or Discord notification occurs.
 
 ---
 
@@ -84,91 +93,127 @@ The workflow is defined in:
 .github/workflows/alpha-backup-sync.yml
 ```
 
-No code changes are required for basic operation once the file is in the default branch and the repo has Actions enabled.
+### 2. Auto-merge (for same-repo PR sync)
 
-### 2. Branch protection (optional)
-
-If `alpha-backup` is protected:
-
-- The workflow uses `GITHUB_TOKEN`, which respects branch protection. Ensure the token can push to `alpha-backup` (e.g. allow Actions to bypass or use a PAT with appropriate permissions if you switch to a different token).
-- If you use **Require a pull request before merging**, the workflow’s PR can be merged after review or via auto-merge.
+- **Settings** → **General** → **Pull Requests** → enable **Allow auto-merge**.
+- The workflow enables auto-merge on each sync PR; the PR will merge when branch protection requirements (e.g. approvals) are satisfied.
 
 ### 3. Discord (optional)
 
-To enable Discord notifications:
-
 1. In your Discord server, create an **Incoming Webhook** (Channel → Integrations → Webhooks).
 2. Copy the webhook URL.
-3. In the repo: **Settings** → **Secrets and variables** → **Actions** → **Secrets**.
-4. Add a new repository secret:
-   - **Name**: `DISCORD_WEBHOOK_ALPHA_BACKUP`
-   - **Value**: the Discord webhook URL
+3. **Settings** → **Secrets and variables** → **Actions** → **Secrets**.
+4. Add secret: **Name** `DISCORD_WEBHOOK_ALPHA_BACKUP`, **Value** the webhook URL.
 
-If this secret is not set, the workflow still runs but skips the Discord step without failing.
+### 4. Separate repository backup (optional)
+
+1. Create a backup repository (e.g. `Krypton-Suite/Standard-Toolkit-Backup`).
+2. **Variables**: Add `BACKUP_REPO` with value `owner/repo` (e.g. `Krypton-Suite/Standard-Toolkit-Backup`).
+3. **Secrets**: Add `BACKUP_REPO_TOKEN` (PAT with `repo` scope and push access to the backup repo).
+4. Optional variables:
+   - `BACKUP_DIR_PREFIX`: Directory name prefix (default: `Standard Toolkit Backup`).
+   - `BACKUP_BRANCH`: Branch to push to (default: `main`).
 
 ---
 
 ## Workflow Logic (Step by Step)
 
-### Step 1: Checkout
+### Step 1: Kill switch check
 
-- **Action**: `actions/checkout@v6`
-- **Ref**: `alpha`
-- **fetch-depth**: `0` (full history for `git rev-list --since`).
+- Checks `vars.ALPHA_BACKUP_SYNC_DISABLED`.
+- If `true`, sets `enabled=false` and all subsequent steps are skipped.
+- Otherwise sets `enabled=true`.
 
-The job runs on `ubuntu-latest` and has full clone of `alpha`.
+### Step 2: Checkout
 
-### Step 2: Check for changes on alpha in last 24 hours
+- Checks out `alpha` with `fetch-depth: 0` (full history).
 
-- **Id**: `check_changes`
-- **Logic**:
-  - Computes a timestamp for “24 hours ago” in UTC.
-  - Runs: `git rev-list --count --since="<timestamp>" alpha`.
-  - If count &gt; 0: sets output `has_changes=true`; otherwise `has_changes=false`.
+### Step 3: Check for changes on alpha in last 24 hours
 
-All subsequent steps that create the branch, create/find the PR, or send Discord run only when `has_changes == 'true'`.
+- Computes timestamp for 24 hours ago (UTC).
+- Runs `git rev-list --count --since="<timestamp>" alpha`.
+- If count > 0: `has_changes=true`; otherwise `has_changes=false`.
+- All sync steps run only when `has_changes == 'true'`.
 
-### Step 3: Ensure alpha-backup exists
+### Step 4: Ensure alpha-backup exists
 
-- **Id**: `ensure_backup`
-- **Runs when**: `steps.check_changes.outputs.has_changes == 'true'`
-- **Tool**: `actions/github-script@v8` (GitHub REST/API).
-- **Logic**:
-  1. Call `repos.getBranch` for `alpha-backup`.
-  2. If the branch exists: log and return `'exists'`.
-  3. If the branch does not exist (404):
-     - Get the SHA of `refs/heads/alpha` via `git.getRef`.
-     - Create `refs/heads/alpha-backup` pointing at that SHA via `git.createRef`.
-     - Log and return `'created'`.
-- **Output**: `steps.ensure_backup.outputs.result` is either `'exists'` or `'created'`.
+- Uses GitHub API to check if `alpha-backup` exists.
+- If not, creates it from current `alpha` SHA.
+- Returns `'exists'` or `'created'`.
 
-This guarantees `alpha-backup` exists before the PR step. On first run, `alpha-backup` is created as a copy of `alpha` at that moment.
+### Step 5: Create PR from alpha to alpha-backup
 
-### Step 4: Create PR from alpha to alpha-backup
+- Compares `alpha-backup...alpha`.
+- If `ahead_by === 0`: no PR created.
+- If an open PR from `alpha` → `alpha-backup` exists: reuses it.
+- Otherwise: creates a new PR and returns `pr_number`, `pr_url`, `pr_node_id`.
 
-- **Id**: `create_pr`
-- **Runs when**: `steps.check_changes.outputs.has_changes == 'true'`
-- **Tool**: `actions/github-script@v8`.
-- **Logic**:
-  1. **Compare**: `repos.compareCommitsWithBasehead` with `basehead: 'alpha-backup...alpha'` (commits in `alpha` not in `alpha-backup`).
-  2. If `ahead_by === 0`: log “no PR needed”, return `{ pr_created: false, pr_number: '', pr_url: '' }`.
-  3. **Existing PR**: `pulls.list` with `state: 'open'`, `head: '<owner>:alpha'`, `base: 'alpha-backup'`. If any open PR exists: use its number and `html_url`, return them in the result object (no new PR).
-  4. **New PR**: `pulls.create` with base `alpha-backup`, head `alpha`, fixed title/body. Return `{ pr_created: true, pr_number, pr_url }`.
-- **Output**: `steps.create_pr.outputs.result` is a JSON object with `pr_created`, `pr_number`, and `pr_url` (used by Discord).
+### Step 6: Enable auto-merge on PR
 
-So: a PR is only created when `alpha` is ahead of `alpha-backup` and there is no open PR from `alpha` → `alpha-backup` already.
+- When a PR exists (has `pr_node_id`), calls GraphQL `enablePullRequestAutoMerge` with merge method `MERGE`.
+- If the repo does not have "Allow auto-merge" enabled, logs a warning and continues.
 
-### Step 5: Discord notification
+### Step 7: Push alpha to backup repository (dated directory)
 
-- **Runs when**: `steps.check_changes.outputs.has_changes == 'true'`
-- **Behaviour**:
-  - If `DISCORD_WEBHOOK_ALPHA_BACKUP` is not set: log and exit 0 (no failure).
-  - Otherwise: build a Discord embed payload with:
-    - Title: “Alpha → Alpha-Backup Sync”
-    - Description: states that alpha had commits in the last 24 hours; whether `alpha-backup` was created or already existed; link to the PR (if any); link to the workflow run.
-  - POST the payload to the webhook with `curl`.
+- Runs only when `BACKUP_REPO` and `BACKUP_REPO_TOKEN` are set.
+- Clones the backup repo.
+- Creates directory `{BACKUP_DIR_PREFIX} - YYYY-MM-DD` (e.g. `Standard Toolkit Backup - 2025-02-03`).
+- Copies full alpha contents (excluding `.git`) into that directory.
+- Commits and pushes to `BACKUP_BRANCH` (default `main`).
 
-Branch-created vs already-existed is derived from `steps.ensure_backup.outputs.result == 'created'`. PR link comes from parsing `steps.create_pr.outputs.result` (e.g. with `jq`) for `pr_url` and `pr_number`.
+### Step 8: Discord notification
+
+- When `DISCORD_WEBHOOK_ALPHA_BACKUP` is set, sends an embed with branch status, PR link (if any), backup repo info (if pushed), and workflow run link.
+
+---
+
+## Auto-Merge
+
+The workflow enables auto-merge on each sync PR via the GitHub GraphQL API. The PR will merge automatically when:
+
+- **Settings** → **General** → **Pull Requests** → **Allow auto-merge** is enabled.
+- Branch protection requirements (e.g. required approvals, status checks) are satisfied.
+
+Merge method is `MERGE` (merge commit). If "Allow auto-merge" is not enabled on the repo, the step logs a warning and continues without failing.
+
+---
+
+## Separate Repository Backup (Dated Directories)
+
+When `BACKUP_REPO` and `BACKUP_REPO_TOKEN` are configured, the workflow pushes a full snapshot of `alpha` into the backup repo.
+
+### Directory structure
+
+Each run creates a new dated directory at the root of the backup repo:
+
+```
+Standard-Toolkit-Backup/
+├── Standard Toolkit Backup - 2025-02-01/
+│   ├── Source/
+│   ├── Documents/
+│   ├── .github/
+│   └── ... (full alpha contents, excluding .git)
+├── Standard Toolkit Backup - 2025-02-02/
+│   └── ...
+├── Standard Toolkit Backup - 2025-02-03/
+│   └── ...
+```
+
+### Configuration
+
+| Variable / Secret | Required | Default | Description |
+|-------------------|----------|---------|-------------|
+| `BACKUP_REPO` | Yes (for backup) | — | Full repo name, e.g. `Krypton-Suite/Standard-Toolkit-Backup` |
+| `BACKUP_REPO_TOKEN` | Yes (for backup) | — | PAT with push access to the backup repo |
+| `BACKUP_DIR_PREFIX` | No | `Standard Toolkit Backup` | Prefix for the directory name |
+| `BACKUP_BRANCH` | No | `main` | Branch in the backup repo to push to |
+
+### Behaviour
+
+- Date is UTC (`YYYY-MM-DD`).
+- Contents are copied with `rsync` (excluding `.git`).
+- Each run adds a new directory; previous backups remain.
+- If the backup repo is empty, the workflow creates the initial commit on the configured branch.
 
 ---
 
@@ -176,36 +221,15 @@ Branch-created vs already-existed is derived from `steps.ensure_backup.outputs.r
 
 ### When a notification is sent
 
-- Only when **alpha had at least one commit in the last 24 hours** (`has_changes == 'true'`).
-- Only if the repository secret **`DISCORD_WEBHOOK_ALPHA_BACKUP`** is set.
+- Only when alpha had at least one commit in the last 24 hours.
+- Only if `DISCORD_WEBHOOK_ALPHA_BACKUP` is set.
 
-### What the message contains
+### Message contents
 
-- **Title**: “Alpha → Alpha-Backup Sync”
-- **Description** (summary):
-  - That alpha had commits in the last 24 hours.
-  - Whether `alpha-backup` was created (did not exist) or already existed.
-  - A link to the PR (if one exists or was just created).
-  - A link to the workflow run.
-- **Footer**: “Alpha Backup Sync”
-- **Colour**: Blue (3447003).
-
-### Using the same channel as Nightly
-
-You can reuse the same Discord channel as the nightly workflow by pointing `DISCORD_WEBHOOK_ALPHA_BACKUP` to the same webhook URL as `DISCORD_WEBHOOK_NIGHTLY`, or use a different webhook for a different channel.
-
----
-
-## Automating the Merge (Auto-Merge)
-
-The workflow only **opens** (or finds) the PR; it does not merge it. To make the backup update automatically:
-
-1. In the repo: **Settings** → **General** → **Pull Requests** → enable **Allow auto-merge**.
-2. When the workflow opens a PR “chore: sync alpha → alpha-backup (automated)”:
-   - Open the PR.
-   - Click **Enable auto-merge** and choose merge method (merge commit, squash, rebase) and conditions (e.g. “Merge when branch is up to date” or when checks pass, if you add required status checks).
-
-After that, each time the workflow opens a sync PR, it can be merged automatically so `alpha-backup` stays in sync with `alpha` without manual merge clicks.
+- Title: "Alpha → Alpha-Backup Sync"
+- Description: Branch status, PR link (if any), backup repo and directory (if pushed), workflow run link
+- Footer: "Alpha Backup Sync"
+- Colour: Blue
 
 ---
 
@@ -213,26 +237,13 @@ After that, each time the workflow opens a sync PR, it can be merged automatical
 
 ### Workflow permissions
 
-The workflow declares:
+- `contents: write`: Create/update refs (e.g. create `alpha-backup`).
+- `pull-requests: write`: Create and read PRs, enable auto-merge.
 
-```yaml
-permissions:
-  contents: write   # Create/update refs (e.g. create alpha-backup)
-  pull-requests: write   # Create and read PRs
-```
+### Tokens
 
-- **contents: write**: Needed to create the `alpha-backup` branch via the Git/Refs API when it does not exist.
-- **pull-requests: write**: Needed to list and create pull requests.
-
-### Token
-
-The job uses the default **`GITHUB_TOKEN`** provided by the Actions runner. It is scoped to the repository and respects branch protection and repo rules. No Personal Access Token or other secrets are required for core behaviour.
-
-### What the workflow does not do
-
-- It does not push directly to `alpha` or any other branch except by creating the ref for `alpha-backup` when missing.
-- It does not delete branches or force-push.
-- It does not merge the PR; merging is done by a user or by auto-merge.
+- **Same-repo operations**: `GITHUB_TOKEN` (provided by Actions).
+- **Backup repo push**: `BACKUP_REPO_TOKEN` (PAT with `repo` scope and push access to the backup repo).
 
 ---
 
@@ -240,48 +251,64 @@ The job uses the default **`GITHUB_TOKEN`** provided by the Actions runner. It i
 
 | Scenario | Behaviour |
 |----------|-----------|
-| **alpha-backup does not exist** | Branch is created from current `alpha` SHA. No PR is created (alpha and alpha-backup are identical). Discord (if configured) reports that the branch was created. |
-| **alpha-backup exists, alpha is ahead** | An open PR from `alpha` → `alpha-backup` is created (or reused if one already exists). Discord can include the PR link. |
-| **alpha-backup exists and is up to date with alpha** | No PR is created. Discord still runs (if webhook set) and reports that alpha had recent commits; PR link may be empty if no open PR. |
-| **Open PR already exists** | No second PR; the existing PR’s number and URL are used in the script output and can appear in Discord. |
-| **No commits on alpha in last 24 hours** | All steps after “Check for changes” are skipped. No branch creation, no PR, no Discord. |
-| **Manual run with no recent commits** | Same as above: no branch/PR/Discord. |
-| **Scheduled run skipped by GitHub** | If the repo is inactive, GitHub may skip scheduled runs; use manual run to test. |
+| **alpha-backup does not exist** | Branch created from current `alpha`. No PR (identical). Discord reports branch created. |
+| **alpha-backup exists, alpha is ahead** | PR created or reused. Auto-merge enabled. Discord includes PR link. |
+| **alpha-backup already up to date** | No PR. Discord still sent if webhook set. |
+| **Open PR already exists** | No second PR; auto-merge enabled on existing PR. |
+| **No commits on alpha in last 24h** | All sync steps skipped. |
+| **Kill switch enabled** | All steps after kill switch check skipped. |
+| **Backup repo not configured** | Backup push step skipped (exits 0). |
+| **Backup repo empty** | Initial commit created on configured branch. |
 
 ---
 
 ## Troubleshooting
 
+### Workflow is disabled / does nothing
+
+- Check **Settings** → **Secrets and variables** → **Actions** → **Variables** for `ALPHA_BACKUP_SYNC_DISABLED` = `true`. Set to `false` or delete to re-enable.
+
 ### Workflow does not run at midnight
 
-- Confirm the workflow file is on the default branch and that Actions are enabled.
-- Check **Actions** → **Alpha to Alpha-Backup Sync** for run history. GitHub can skip scheduled runs for inactive repos; trigger manually to verify.
+- Confirm the workflow file is on the default branch and Actions are enabled.
+- GitHub may skip scheduled runs for inactive repos; use manual run to verify.
 
 ### alpha-backup was not created
 
-- Ensure the job has **contents: write** and that branch protection or rules do not block creation of `alpha-backup` by the `GITHUB_TOKEN`.
-- Check the “Ensure alpha-backup exists” step log for API errors (e.g. 403).
+- Ensure the job has `contents: write` and branch protection does not block creation.
+- Check the "Ensure alpha-backup exists" step log for API errors.
 
-### No PR is created even though alpha has new commits
+### No PR is created
 
-- Verify “Check for changes” reports `has_changes=true` and “Create PR” step runs.
-- In “Create PR”, check the compare result: if `ahead_by === 0`, no PR is opened (e.g. first run after creating `alpha-backup` from `alpha`).
-- If an open PR from `alpha` → `alpha-backup` already exists, the workflow reuses it and does not open a second one.
+- Verify "Check for changes" shows `has_changes=true`.
+- If `ahead_by === 0`, no PR is opened (e.g. first run after creating `alpha-backup`).
+- If an open PR already exists, the workflow reuses it.
+
+### Auto-merge not working
+
+- Enable **Allow auto-merge** in **Settings** → **General** → **Pull Requests**.
+- Check branch protection rules on `alpha-backup` (approvals, status checks).
+
+### Backup repo push fails
+
+- Verify `BACKUP_REPO_TOKEN` has push access to the backup repo.
+- Ensure `BACKUP_REPO` is correct (`owner/repo`).
+- Check that `BACKUP_BRANCH` matches the default branch if the repo is empty.
 
 ### Discord notification not received
 
-- Confirm the repository secret **`DISCORD_WEBHOOK_ALPHA_BACKUP`** is set and that the workflow run had `has_changes == 'true'`.
-- Check the “Discord notification” step log for “DISCORD_WEBHOOK_ALPHA_BACKUP not set” or HTTP errors from the webhook.
+- Confirm `DISCORD_WEBHOOK_ALPHA_BACKUP` is set and the run had `has_changes == 'true'`.
+- Check the "Discord notification" step log for errors.
 
 ### How to test without waiting for midnight
 
-Use **Actions** → **Alpha to Alpha-Backup Sync** → **Run workflow** → **Run workflow**. Ensure `alpha` has at least one commit in the last 24 hours if you want to test branch creation, PR creation, and Discord.
+Use **Actions** → **Alpha to Alpha-Backup Sync** → **Run workflow**. Ensure `alpha` has at least one commit in the last 24 hours.
 
 ---
 
 ## See Also
 
 - **Workflow file**: [.github/workflows/alpha-backup-sync.yml](../.github/workflows/alpha-backup-sync.yml)
-- **Nightly workflow** (also uses 24-hour change check and Discord): [.github/workflows/nightly.yml](../.github/workflows/nightly.yml)
+- **Nightly workflow**: [.github/workflows/nightly.yml](../.github/workflows/nightly.yml)
 - [GitHub: Events that trigger workflows – schedule](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule)
 - [GitHub: Using the GITHUB_TOKEN](https://docs.github.com/en/actions/security-guides/automatic-token-authentication)
