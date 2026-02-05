@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Alpha to Alpha-Backup Sync (GitHub Actions) | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Alpha to Alpha-Backup Sync (GitHub Actions) | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="alpha-to-alpha-backup-sync-github-actions">Alpha to Alpha-Backup Sync (GitHub Actions)</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#key-features">Key Features</a></li>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#triggers">Triggers</a></li>
+<li><a href="#kill-switch">Kill Switch</a></li>
+<li><a href="#setup">Setup</a></li>
+<li><a href="#workflow-logic-step-by-step">Workflow Logic (Step by Step)</a></li>
+<li><a href="#auto-merge">Auto-Merge</a></li>
+<li><a href="#separate-repository-backup-dated-directories">Separate Repository Backup (Dated Directories)</a>
+<ul>
+<li><a href="#setting-up-backup_repo_token">Setting up BACKUP_REPO_TOKEN</a></li>
+</ul>
+</li>
+<li><a href="#discord-notifications">Discord Notifications</a></li>
+<li><a href="#security-and-permissions">Security and Permissions</a></li>
+<li><a href="#edge-cases-and-behaviour">Edge Cases and Behaviour</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#see-also">See Also</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The <strong>Alpha to Alpha-Backup Sync</strong> workflow is a GitHub Actions automation that keeps a backup of the <code>alpha</code> branch when it has commits in the last 24 hours. It runs at midnight UTC (or on manual trigger) and:</p>
+<ol>
+<li><strong>Same-repo backup</strong>: Creates or updates the <code>alpha-backup</code> branch via a PR from <code>alpha</code>, with optional auto-merge when approved.</li>
+<li><strong>Separate-repo backup</strong> (optional): Pushes a full snapshot of <code>alpha</code> into a dated directory in another repository (e.g. <code>Standard Toolkit Backup - 2025-02-03</code>).</li>
+<li><strong>Discord</strong> (optional): Sends a notification summarizing the run.</li>
+</ol>
+<h3 id="purpose">Purpose</h3>
+<ul>
+<li><strong>Backup</strong>: Maintain <code>alpha-backup</code> in the same repo and/or dated snapshots in a separate backup repo.</li>
+<li><strong>Automation</strong>: No manual copying; the workflow detects recent activity and proposes the sync via a PR, and optionally pushes to a backup repo.</li>
+<li><strong>Visibility</strong>: Optional Discord notifications when changes are detected.</li>
+</ul>
+<hr>
+<h2 id="key-features">Key Features</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>24-hour window</strong></td>
+<td>Only acts when <code>alpha</code> has at least one commit in the last 24 hours.</td>
+</tr>
+<tr>
+<td><strong>Branch creation</strong></td>
+<td>Creates <code>alpha-backup</code> from current <code>alpha</code> if the branch does not exist.</td>
+</tr>
+<tr>
+<td><strong>PR-based sync</strong></td>
+<td>Sync is proposed via a PR (base: <code>alpha-backup</code>, head: <code>alpha</code>).</td>
+</tr>
+<tr>
+<td><strong>Auto-merge</strong></td>
+<td>Enables auto-merge on the PR so it merges when requirements (e.g. approval) are met.</td>
+</tr>
+<tr>
+<td><strong>No duplicate PRs</strong></td>
+<td>Reuses an existing open PR from <code>alpha</code> → <code>alpha-backup</code> instead of opening another.</td>
+</tr>
+<tr>
+<td><strong>No no-op PRs</strong></td>
+<td>Does not open a PR when <code>alpha-backup</code> is already up to date with <code>alpha</code>.</td>
+</tr>
+<tr>
+<td><strong>Dated backup dirs</strong></td>
+<td>Optional push to a separate repo into directories like <code>Standard Toolkit Backup - YYYY-MM-DD</code>.</td>
+</tr>
+<tr>
+<td><strong>Kill switch</strong></td>
+<td>Can be disabled via repository variable without changing code.</td>
+</tr>
+<tr>
+<td><strong>Discord (optional)</strong></td>
+<td>Sends a summary when changes are detected.</td>
+</tr>
+<tr>
+<td><strong>Manual run</strong></td>
+<td>Can be triggered from the Actions tab via <strong>Run workflow</strong>.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li><strong>Repository</strong>: GitHub repository containing an <code>alpha</code> branch.</li>
+<li><strong>Permissions</strong>: Workflow needs <code>contents: write</code> and <code>pull-requests: write</code>.</li>
+<li><strong>Discord (optional)</strong>: Webhook URL stored as <code>DISCORD_WEBHOOK_ALPHA_BACKUP</code>.</li>
+<li><strong>Backup repo (optional)</strong>: Variable <code>BACKUP_REPO</code>, secret <code>BACKUP_REPO_TOKEN</code> (PAT with push access).</li>
+</ul>
+<hr>
+<h2 id="triggers">Triggers</h2>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Schedule</strong></td>
+<td>Daily at <strong>00:00 UTC</strong> (<code>cron: '0 0 * * *'</code>).</td>
+</tr>
+<tr>
+<td><strong>Manual</strong></td>
+<td><strong>Actions</strong> → <strong>Alpha to Alpha-Backup Sync</strong> → <strong>Run workflow</strong> → <strong>Run workflow</strong>.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="kill-switch">Kill Switch</h2>
+<p>The workflow can be disabled without changing code:</p>
+<ul>
+<li><strong>Variable</strong>: <code>ALPHA_BACKUP_SYNC_DISABLED</code></li>
+<li><strong>Location</strong>: Repository <strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong> → <strong>Variables</strong> tab</li>
+<li><strong>To disable</strong>: Set value to <code>true</code></li>
+<li><strong>To re-enable</strong>: Set value to <code>false</code> or delete the variable</li>
+</ul>
+<p>When disabled, the workflow still runs (triggered by schedule or manual) but exits immediately after the kill switch check with a warning. No checkout, branch creation, PR creation, backup push, or Discord notification occurs.</p>
+<hr>
+<h2 id="setup">Setup</h2>
+<h3 id="1-workflow-file">1. Workflow file</h3>
+<p>The workflow is defined in:</p>
+<pre><code>.github/workflows/alpha-backup-sync.yml
+</code></pre>
+<h3 id="2-auto-merge-for-same-repo-pr-sync">2. Auto-merge (for same-repo PR sync)</h3>
+<ul>
+<li><strong>Settings</strong> → <strong>General</strong> → <strong>Pull Requests</strong> → enable <strong>Allow auto-merge</strong>.</li>
+<li>The workflow enables auto-merge on each sync PR; the PR will merge when branch protection requirements (e.g. approvals) are satisfied.</li>
+</ul>
+<h3 id="3-discord-optional">3. Discord (optional)</h3>
+<ol>
+<li>In your Discord server, create an <strong>Incoming Webhook</strong> (Channel → Integrations → Webhooks).</li>
+<li>Copy the webhook URL.</li>
+<li><strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong> → <strong>Secrets</strong>.</li>
+<li>Add secret: <strong>Name</strong> <code>DISCORD_WEBHOOK_ALPHA_BACKUP</code>, <strong>Value</strong> the webhook URL.</li>
+</ol>
+<h3 id="4-separate-repository-backup-optional">4. Separate repository backup (optional)</h3>
+<ol>
+<li>Create a backup repository (e.g. <code>Krypton-Suite/Standard-Toolkit-Backup</code>).</li>
+<li><strong>Variables</strong>: Add <code>BACKUP_REPO</code> with value <code>owner/repo</code> (e.g. <code>Krypton-Suite/Standard-Toolkit-Backup</code>).</li>
+<li><strong>Secrets</strong>: Add <code>BACKUP_REPO_TOKEN</code> — see <a href="#setting-up-backup_repo_token">Setting up BACKUP_REPO_TOKEN</a> below.</li>
+<li>Optional variables:
+<ul>
+<li><code>BACKUP_DIR_PREFIX</code>: Directory name prefix (default: <code>Standard Toolkit Backup</code>).</li>
+<li><code>BACKUP_BRANCH</code>: Branch to push to (default: <code>main</code>).</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="workflow-logic-step-by-step">Workflow Logic (Step by Step)</h2>
+<h3 id="step-1-kill-switch-check">Step 1: Kill switch check</h3>
+<ul>
+<li>Checks <code>vars.ALPHA_BACKUP_SYNC_DISABLED</code>.</li>
+<li>If <code>true</code>, sets <code>enabled=false</code> and all subsequent steps are skipped.</li>
+<li>Otherwise sets <code>enabled=true</code>.</li>
+</ul>
+<h3 id="step-2-checkout">Step 2: Checkout</h3>
+<ul>
+<li>Checks out <code>alpha</code> with <code>fetch-depth: 0</code> (full history).</li>
+</ul>
+<h3 id="step-3-check-for-changes-on-alpha-in-last-24-hours">Step 3: Check for changes on alpha in last 24 hours</h3>
+<ul>
+<li>Computes timestamp for 24 hours ago (UTC).</li>
+<li>Runs <code>git rev-list --count --since=&quot;&lt;timestamp&gt;&quot; alpha</code>.</li>
+<li>If count &gt; 0: <code>has_changes=true</code>; otherwise <code>has_changes=false</code>.</li>
+<li>All sync steps run only when <code>has_changes == 'true'</code>.</li>
+</ul>
+<h3 id="step-4-ensure-alpha-backup-exists">Step 4: Ensure alpha-backup exists</h3>
+<ul>
+<li>Uses GitHub API to check if <code>alpha-backup</code> exists.</li>
+<li>If not, creates it from current <code>alpha</code> SHA.</li>
+<li>Returns <code>'exists'</code> or <code>'created'</code>.</li>
+</ul>
+<h3 id="step-5-create-pr-from-alpha-to-alpha-backup">Step 5: Create PR from alpha to alpha-backup</h3>
+<ul>
+<li>Compares <code>alpha-backup...alpha</code>.</li>
+<li>If <code>ahead_by === 0</code>: no PR created.</li>
+<li>If an open PR from <code>alpha</code> → <code>alpha-backup</code> exists: reuses it.</li>
+<li>Otherwise: creates a new PR and returns <code>pr_number</code>, <code>pr_url</code>, <code>pr_node_id</code>.</li>
+</ul>
+<h3 id="step-6-enable-auto-merge-on-pr">Step 6: Enable auto-merge on PR</h3>
+<ul>
+<li>When a PR exists (has <code>pr_node_id</code>), calls GraphQL <code>enablePullRequestAutoMerge</code> with merge method <code>MERGE</code>.</li>
+<li>If the repo does not have &quot;Allow auto-merge&quot; enabled, logs a warning and continues.</li>
+</ul>
+<h3 id="step-7-push-alpha-to-backup-repository-dated-directory">Step 7: Push alpha to backup repository (dated directory)</h3>
+<ul>
+<li>Runs only when <code>BACKUP_REPO</code> and <code>BACKUP_REPO_TOKEN</code> are set.</li>
+<li>Clones the backup repo.</li>
+<li>Creates directory <code>{BACKUP_DIR_PREFIX} - YYYY-MM-DD</code> (e.g. <code>Standard Toolkit Backup - 2025-02-03</code>).</li>
+<li>Copies full alpha contents (excluding <code>.git</code>) into that directory.</li>
+<li>Commits and pushes to <code>BACKUP_BRANCH</code> (default <code>main</code>).</li>
+</ul>
+<h3 id="step-8-discord-notification">Step 8: Discord notification</h3>
+<ul>
+<li>When <code>DISCORD_WEBHOOK_ALPHA_BACKUP</code> is set, sends an embed with branch status, PR link (if any), backup repo info (if pushed), and workflow run link.</li>
+</ul>
+<hr>
+<h2 id="auto-merge">Auto-Merge</h2>
+<p>The workflow enables auto-merge on each sync PR via the GitHub GraphQL API. The PR will merge automatically when:</p>
+<ul>
+<li><strong>Settings</strong> → <strong>General</strong> → <strong>Pull Requests</strong> → <strong>Allow auto-merge</strong> is enabled.</li>
+<li>Branch protection requirements (e.g. required approvals, status checks) are satisfied.</li>
+</ul>
+<p>Merge method is <code>MERGE</code> (merge commit). If &quot;Allow auto-merge&quot; is not enabled on the repo, the step logs a warning and continues without failing.</p>
+<hr>
+<h2 id="separate-repository-backup-dated-directories">Separate Repository Backup (Dated Directories)</h2>
+<p>When <code>BACKUP_REPO</code> and <code>BACKUP_REPO_TOKEN</code> are configured, the workflow pushes a full snapshot of <code>alpha</code> into the backup repo.</p>
+<h3 id="setting-up-backup_repo_token">Setting up BACKUP_REPO_TOKEN</h3>
+<p>The token must have push access to the backup repository. You can use a <strong>classic PAT</strong> or a <strong>fine-grained PAT</strong>; both work. Fine-grained PATs are recommended for tighter scoping.</p>
+<h4 id="option-a-fine-grained-pat-recommended">Option A: Fine-grained PAT (recommended)</h4>
+<ol>
+<li><strong>Settings</strong> → <strong>Developer settings</strong> → <strong>Personal access tokens</strong> → <strong>Fine-grained tokens</strong>.</li>
+<li><strong>Generate new token</strong>.</li>
+<li><strong>Token name:</strong> e.g. <code>Alpha Backup Sync</code>.</li>
+<li><strong>Expiration:</strong> choose a duration.</li>
+<li><strong>Resource owner:</strong> select the org (e.g. <code>Krypton-Suite</code>) or your user.</li>
+<li><strong>Repository access:</strong> <strong>Only select repositories</strong> → add the backup repo.</li>
+<li><strong>Permissions</strong> → <strong>Repository permissions:</strong>
+<ul>
+<li><strong>Contents:</strong> Read and write</li>
+<li><strong>Metadata:</strong> Read-only (auto-selected)</li>
+</ul>
+</li>
+<li><strong>Generate token</strong> and copy it (starts with <code>github_pat_</code>).</li>
+<li>In the <strong>source</strong> repo: <strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong> → <strong>Secrets</strong> → <strong>New repository secret</strong>.</li>
+<li><strong>Name:</strong> <code>BACKUP_REPO_TOKEN</code> | <strong>Value:</strong> paste the token.</li>
+</ol>
+<h4 id="option-b-classic-pat">Option B: Classic PAT</h4>
+<ol>
+<li><strong>Settings</strong> → <strong>Developer settings</strong> → <strong>Personal access tokens</strong> → <strong>Tokens (classic)</strong>.</li>
+<li><strong>Generate new token (classic)</strong>.</li>
+<li><strong>Note:</strong> e.g. <code>Alpha Backup Sync</code>.</li>
+<li><strong>Expiration:</strong> choose a duration.</li>
+<li><strong>Scopes:</strong> enable <strong><code>repo</code></strong> (or <code>public_repo</code> if the backup repo is public).</li>
+<li><strong>Generate token</strong> and copy it (starts with <code>ghp_</code>).</li>
+<li>Add as repository secret <code>BACKUP_REPO_TOKEN</code> in the source repo (same as step 9–10 above).</li>
+</ol>
+<h4 id="org--multi-repo-access">Org / multi-repo access</h4>
+<p>PATs are created from a user account. A PAT from a user who is an org member (or has push access to the backup repo) works for org repositories. There is no separate &quot;org PAT&quot; — the token just needs push access to the backup repo. Fine-grained PATs can be scoped to specific org repos for least privilege.</p>
+<h3 id="directory-structure">Directory structure</h3>
+<p>Each run creates a new dated directory at the root of the backup repo:</p>
+<pre><code>Standard-Toolkit-Backup/
+├── Standard Toolkit Backup - 2025-02-01/
+│   ├── Source/
+│   ├── Documents/
+│   ├── .github/
+│   └── ... (full alpha contents, excluding .git)
+├── Standard Toolkit Backup - 2025-02-02/
+│   └── ...
+├── Standard Toolkit Backup - 2025-02-03/
+│   └── ...
+</code></pre>
+<h3 id="configuration">Configuration</h3>
+<table>
+<thead>
+<tr>
+<th>Variable / Secret</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BACKUP_REPO</code></td>
+<td>Yes (for backup)</td>
+<td>—</td>
+<td>Full repo name, e.g. <code>Krypton-Suite/Standard-Toolkit-Backup</code></td>
+</tr>
+<tr>
+<td><code>BACKUP_REPO_TOKEN</code></td>
+<td>Yes (for backup)</td>
+<td>—</td>
+<td>PAT with push access to the backup repo</td>
+</tr>
+<tr>
+<td><code>BACKUP_DIR_PREFIX</code></td>
+<td>No</td>
+<td><code>Standard Toolkit Backup</code></td>
+<td>Prefix for the directory name</td>
+</tr>
+<tr>
+<td><code>BACKUP_BRANCH</code></td>
+<td>No</td>
+<td><code>main</code></td>
+<td>Branch in the backup repo to push to</td>
+</tr>
+</tbody>
+</table>
+<h3 id="behaviour">Behaviour</h3>
+<ul>
+<li>Date is UTC (<code>YYYY-MM-DD</code>).</li>
+<li>Contents are copied with <code>rsync</code> (excluding <code>.git</code>).</li>
+<li>Each run adds a new directory; previous backups remain.</li>
+<li>If the backup repo is empty, the workflow creates the initial commit on the configured branch.</li>
+</ul>
+<hr>
+<h2 id="discord-notifications">Discord Notifications</h2>
+<h3 id="when-a-notification-is-sent">When a notification is sent</h3>
+<ul>
+<li>Only when alpha had at least one commit in the last 24 hours.</li>
+<li>Only if <code>DISCORD_WEBHOOK_ALPHA_BACKUP</code> is set.</li>
+</ul>
+<h3 id="message-contents">Message contents</h3>
+<ul>
+<li>Title: &quot;Alpha → Alpha-Backup Sync&quot;</li>
+<li>Description: Branch status, PR link (if any), backup repo and directory (if pushed), workflow run link</li>
+<li>Footer: &quot;Alpha Backup Sync&quot;</li>
+<li>Colour: Blue</li>
+</ul>
+<hr>
+<h2 id="security-and-permissions">Security and Permissions</h2>
+<h3 id="workflow-permissions">Workflow permissions</h3>
+<ul>
+<li><code>contents: write</code>: Create/update refs (e.g. create <code>alpha-backup</code>).</li>
+<li><code>pull-requests: write</code>: Create and read PRs, enable auto-merge.</li>
+</ul>
+<h3 id="tokens">Tokens</h3>
+<ul>
+<li><strong>Same-repo operations</strong>: <code>GITHUB_TOKEN</code> (provided by Actions).</li>
+<li><strong>Backup repo push</strong>: <code>BACKUP_REPO_TOKEN</code> (PAT with <code>repo</code> scope and push access to the backup repo).</li>
+</ul>
+<hr>
+<h2 id="edge-cases-and-behaviour">Edge Cases and Behaviour</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>alpha-backup does not exist</strong></td>
+<td>Branch created from current <code>alpha</code>. No PR (identical). Discord reports branch created.</td>
+</tr>
+<tr>
+<td><strong>alpha-backup exists, alpha is ahead</strong></td>
+<td>PR created or reused. Auto-merge enabled. Discord includes PR link.</td>
+</tr>
+<tr>
+<td><strong>alpha-backup already up to date</strong></td>
+<td>No PR. Discord still sent if webhook set.</td>
+</tr>
+<tr>
+<td><strong>Open PR already exists</strong></td>
+<td>No second PR; auto-merge enabled on existing PR.</td>
+</tr>
+<tr>
+<td><strong>No commits on alpha in last 24h</strong></td>
+<td>All sync steps skipped.</td>
+</tr>
+<tr>
+<td><strong>Kill switch enabled</strong></td>
+<td>All steps after kill switch check skipped.</td>
+</tr>
+<tr>
+<td><strong>Backup repo not configured</strong></td>
+<td>Backup push step skipped (exits 0).</td>
+</tr>
+<tr>
+<td><strong>Backup repo empty</strong></td>
+<td>Initial commit created on configured branch.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="workflow-is-disabled--does-nothing">Workflow is disabled / does nothing</h3>
+<ul>
+<li>Check <strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong> → <strong>Variables</strong> for <code>ALPHA_BACKUP_SYNC_DISABLED</code> = <code>true</code>. Set to <code>false</code> or delete to re-enable.</li>
+</ul>
+<h3 id="workflow-does-not-run-at-midnight">Workflow does not run at midnight</h3>
+<ul>
+<li>Confirm the workflow file is on the default branch and Actions are enabled.</li>
+<li>GitHub may skip scheduled runs for inactive repos; use manual run to verify.</li>
+</ul>
+<h3 id="alpha-backup-was-not-created">alpha-backup was not created</h3>
+<ul>
+<li>Ensure the job has <code>contents: write</code> and branch protection does not block creation.</li>
+<li>Check the &quot;Ensure alpha-backup exists&quot; step log for API errors.</li>
+</ul>
+<h3 id="no-pr-is-created">No PR is created</h3>
+<ul>
+<li>Verify &quot;Check for changes&quot; shows <code>has_changes=true</code>.</li>
+<li>If <code>ahead_by === 0</code>, no PR is opened (e.g. first run after creating <code>alpha-backup</code>).</li>
+<li>If an open PR already exists, the workflow reuses it.</li>
+</ul>
+<h3 id="auto-merge-not-working">Auto-merge not working</h3>
+<ul>
+<li>Enable <strong>Allow auto-merge</strong> in <strong>Settings</strong> → <strong>General</strong> → <strong>Pull Requests</strong>.</li>
+<li>Check branch protection rules on <code>alpha-backup</code> (approvals, status checks).</li>
+</ul>
+<h3 id="backup-repo-push-fails">Backup repo push fails</h3>
+<ul>
+<li>Verify <code>BACKUP_REPO_TOKEN</code> has push access to the backup repo.</li>
+<li>Ensure <code>BACKUP_REPO</code> is correct (<code>owner/repo</code>).</li>
+<li>Check that <code>BACKUP_BRANCH</code> matches the default branch if the repo is empty.</li>
+</ul>
+<h3 id="discord-notification-not-received">Discord notification not received</h3>
+<ul>
+<li>Confirm <code>DISCORD_WEBHOOK_ALPHA_BACKUP</code> is set and the run had <code>has_changes == 'true'</code>.</li>
+<li>Check the &quot;Discord notification&quot; step log for errors.</li>
+</ul>
+<h3 id="how-to-test-without-waiting-for-midnight">How to test without waiting for midnight</h3>
+<p>Use <strong>Actions</strong> → <strong>Alpha to Alpha-Backup Sync</strong> → <strong>Run workflow</strong>. Ensure <code>alpha</code> has at least one commit in the last 24 hours.</p>
+<hr>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><strong>Workflow file</strong>: <a href="../.github/workflows/alpha-backup-sync.yml">.github/workflows/alpha-backup-sync.yml</a></li>
+<li><strong>Nightly workflow</strong>: <a href="../.github/workflows/nightly.yml">.github/workflows/nightly.yml</a></li>
+<li><a href="https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule">GitHub: Events that trigger workflows – schedule</a></li>
+<li><a href="https://docs.github.com/en/actions/security-guides/automatic-token-authentication">GitHub: Using the GITHUB_TOKEN</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite 2024
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
