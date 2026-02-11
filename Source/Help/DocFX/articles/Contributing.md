@@ -16,6 +16,7 @@ If you are wanting to contribute to the toolkit, the articles below will guide y
 * [How to Create a Pull Request](Contributing/HowtoCreateaPullRequest.md)
 * [How to Create the API Reference](Contributing/HowtoCreatetheAPIReference.md)
 * [How to Manage 'Using' Statements](Contributing/HowtoManageUsingStatements.md)
+* [Installing .NET SDK Preview Versions](Contributing/InstallingNETSDKPreviewVersions.md)
 * [Target Framework Management](Contributing/TargetFrameworkManagement.md)
 * [Kill Switches](Contributing/Build%20System/KillSwitches.md)
 * [Krypton RTL Audit Summary](Contributing/Auditing/KryptonRTLAuditSummary.md)
