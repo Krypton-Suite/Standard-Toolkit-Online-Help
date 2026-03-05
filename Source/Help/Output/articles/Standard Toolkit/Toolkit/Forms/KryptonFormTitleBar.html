@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonFormTitleBar | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonFormTitleBar | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonformtitlebar">KryptonFormTitleBar</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#architecture--design">Architecture &amp; Design</a></li>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#api-reference--kryptonformtitlebar">API Reference — KryptonFormTitleBar</a></li>
+<li><a href="#api-reference--kryptonformtitlebar-1">API Reference — KryptonForm.TitleBar</a></li>
+<li><a href="#api-reference--buttonspecany">API Reference — ButtonSpecAny</a></li>
+<li><a href="#design-time-usage">Design-Time Usage</a></li>
+<li><a href="#runtime-usage">Runtime Usage</a></li>
+<li><a href="#buttonspec-properties-in-depth">ButtonSpec Properties In Depth</a></li>
+<li><a href="#kryptoncommand-integration">KryptonCommand Integration</a></li>
+<li><a href="#rtl-right-to-left-support">RTL (Right-to-Left) Support</a></li>
+<li><a href="#theming--palette-integration">Theming &amp; Palette Integration</a></li>
+<li><a href="#interaction-with-kryptonribbon">Interaction with KryptonRibbon</a></li>
+<li><a href="#lifecycle--resource-management">Lifecycle &amp; Resource Management</a></li>
+<li><a href="#internal-architecture">Internal Architecture</a></li>
+<li><a href="#limitations--known-constraints">Limitations &amp; Known Constraints</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#related-components">Related Components</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonFormTitleBar</code> is a non-visual <code>Component</code> that embeds a toolbar of <code>ButtonSpecAny</code> items directly inside the <code>KryptonForm</code> title bar (caption area), to the left of the form title text. It provides a DevExpress ToolbarForm-style experience where quick-action buttons, toggles, or drop-down triggers live in the chrome itself rather than consuming client area space.</p>
+<h3 id="what-it-looks-like">What it looks like</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────────────┐
+│ [Icon]        My Application    [⬡][★][⚙][File▼][Edit▼]  [─][□][✕] │  ← title bar
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│                    Form client area                                 │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+                             ↑ ButtonSpecs live here (right of icon and title)
+</code></pre>
+<p>In <strong>LTR</strong> layout the button specs appear to the right of the form icon and title text, before the min/max/close buttons.<br>
+In <strong>RTL</strong> layout they mirror to the left of the title text — identical to how the Ribbon QAT behaves.</p>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>Zero client area impact</strong> — buttons live in the non-client caption area</li>
+<li><strong>Full <code>ButtonSpecAny</code> feature set</strong> — icons, text, tooltips, checked states, drop-downs, <code>KryptonCommand</code> binding, context menus</li>
+<li><strong>Full palette/theme integration</strong> — rendering inherits the active Krypton palette automatically; no manual colour management needed</li>
+<li><strong>RTL support</strong> — Left/Right docking flips automatically when <code>RightToLeftLayout</code> is enabled</li>
+<li><strong>Designer support</strong> — drag-and-drop onto a form in Visual Studio, full property grid, smart-tag support, and &quot;Insert Standard Items&quot; (MenuStrip-style)</li>
+<li><strong>Safe lifecycle</strong> — attach/detach at any time; disposing either the component or the form cleans up correctly</li>
+</ul>
+<h3 id="class-hierarchy">Class Hierarchy</h3>
+<pre><code>System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── Krypton.Toolkit.KryptonFormTitleBar
+</code></pre>
+<h3 id="location">Location</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Namespace / Assembly</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonFormTitleBar</code></td>
+<td><code>Krypton.Toolkit</code> / <code>Krypton.Toolkit.dll</code></td>
+</tr>
+<tr>
+<td><code>KryptonForm.TitleBar</code> property</td>
+<td><code>Krypton.Toolkit</code> / <code>Krypton.Toolkit.dll</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="architecture--design">Architecture &amp; Design</h2>
+<h3 id="injection-mechanism">Injection Mechanism</h3>
+<p><code>KryptonFormTitleBar</code> uses the same view-injection mechanism that <code>KryptonRibbon</code> uses to integrate its Quick Access Toolbar and application button into the form chrome.</p>
+<p><code>KryptonForm</code> owns a private <code>ViewDrawDocker</code> called <code>_drawHeading</code> that represents the entire caption area. When a <code>KryptonFormTitleBar</code> is assigned to <code>KryptonForm.TitleBar</code>, the form:</p>
+<ol>
+<li>Creates a <code>ViewDrawDocker</code> (<code>_titleBarDocker</code>) styled with the active header palette.</li>
+<li>Creates a <code>ButtonSpecManagerDraw</code> (<code>_titleBarButtonManager</code>) that manages the <code>ButtonSpecAny</code> items from <code>KryptonFormTitleBar.ButtonSpecs</code> inside that docker.</li>
+<li>Calls <code>InjectViewElement(_titleBarDocker, ViewDockStyle.Right)</code>, adding the docker to the <strong>right</strong> docking edge of <code>_drawHeading</code> — so the menu/buttons appear to the right of the form icon and title.</li>
+</ol>
+<p>This means all rendering, hit-testing, mouse tracking, tooltip display, and palette change propagation work through exactly the same infrastructure as the rest of the form chrome.</p>
+<h3 id="caption-layout-order-ltr">Caption Layout Order (LTR)</h3>
+<pre><code>_drawHeading (ViewDrawDocker)
+  ├─ [Fill]  _drawContent (form icon + title text)
+  ├─ [Right] _titleBarDocker  ← injected by KryptonFormTitleBar (to the right of the icon)
+  │             └─ ButtonSpecAny buttons (managed by _titleBarButtonManager)
+  └─ [Right] min / max / close buttons (managed by _buttonManager)
+</code></pre>
+<h3 id="hit-testing">Hit-Testing</h3>
+<p>Because <code>_titleBarDocker</code> is a child of <code>_drawHeading</code>, the existing <code>WindowChromeHitTest</code> logic handles it correctly:</p>
+<ul>
+<li>A click on a button spec view returns a <code>ButtonController</code>-driven response through <code>WindowChromeLeftMouseDown</code> → <code>ViewManager.Root.ViewFromPoint</code>.</li>
+<li>A click on empty title space falls through to <code>mouseView == _drawHeading</code> and returns <code>HT_CAPTION</code>, keeping the window draggable.</li>
+<li>The min/max/close button rectangles are checked first and are never obscured.</li>
+</ul>
+<p>No custom <code>CustomCaptionArea</code> rectangle is needed or set.</p>
+<hr>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="design-time">Design Time</h3>
+<ol>
+<li>Open a <code>KryptonForm</code> in the Visual Studio designer.</li>
+<li>Open the Toolbox. Under <strong>Krypton Toolkit</strong>, locate <strong>KryptonFormTitleBar</strong> and drag it onto the form. It appears in the component tray.</li>
+<li>Select the form itself. In the <strong>Properties</strong> window, find the <strong>TitleBar</strong> property (under <strong>Visuals</strong>) and select the <code>KryptonFormTitleBar</code> component from the drop-down.</li>
+<li>Select the <code>KryptonFormTitleBar</code> component in the tray. In <strong>Properties</strong>, click the <code>...</code> button on <strong>ButtonSpecs</strong> to open the collection editor.</li>
+<li>Add one or more <code>ButtonSpecAny</code> items. Set <code>Image</code>, <code>ToolTipTitle</code>, and <code>Type = Generic</code> for each.</li>
+<li>Run the project — the buttons appear in the title bar.</li>
+</ol>
+<h3 id="runtime-c">Runtime (C#)</h3>
+<pre><code class="lang-csharp">var titleBar = new KryptonFormTitleBar();
+
+// Home button
+var homeSpec = new ButtonSpecAny
+{
+    Image           = Properties.Resources.HomeIcon16,
+    ToolTipTitle    = &quot;Home&quot;,
+    ToolTipBody     = &quot;Navigate to the start page&quot;,
+    Type            = PaletteButtonSpecStyle.Generic,
+    Enabled         = ButtonEnabled.True
+};
+homeSpec.Click += (s, e) =&gt; NavigateHome();
+
+// Settings button (toggle/checked)
+var settingsSpec = new ButtonSpecAny
+{
+    Image   = Properties.Resources.SettingsIcon16,
+    ToolTipTitle = &quot;Settings&quot;,
+    Type    = PaletteButtonSpecStyle.Generic,
+    Checked = ButtonCheckState.Unchecked   // makes it a toggle
+};
+settingsSpec.Click += (s, e) =&gt; ToggleSettingsPanel();
+
+titleBar.ButtonSpecs.AddRange([homeSpec, settingsSpec]);
+
+// Attach to the form — this is all that is needed
+this.TitleBar = titleBar;
+</code></pre>
+<h3 id="runtime-vbnet">Runtime (VB.NET)</h3>
+<pre><code class="lang-vb">Dim titleBar As New KryptonFormTitleBar()
+
+Dim homeSpec As New ButtonSpecAny With {
+    .Image        = My.Resources.HomeIcon16,
+    .ToolTipTitle = &quot;Home&quot;,
+    .Type         = PaletteButtonSpecStyle.Generic
+}
+AddHandler homeSpec.Click, AddressOf OnHomClicked
+
+titleBar.ButtonSpecs.Add(homeSpec)
+Me.TitleBar = titleBar
+</code></pre>
+<hr>
+<h2 id="api-reference--kryptonformtitlebar">API Reference — KryptonFormTitleBar</h2>
+<h3 id="class-declaration">Class Declaration</h3>
+<pre><code class="lang-csharp">[ToolboxItem(true)]
+[ToolboxBitmap(typeof(KryptonFormTitleBar), &quot;ToolboxBitmaps.KryptonFormTitleBar.bmp&quot;)]
+[DefaultEvent(nameof(ButtonSpecs))]
+[DefaultProperty(nameof(ButtonSpecs))]
+[Designer(typeof(KryptonFormTitleBarDesigner))]
+[DesignerCategory(&quot;code&quot;)]
+[Description(&quot;Hosts button-spec items inside the KryptonForm title bar.&quot;)]
+public class KryptonFormTitleBar : Component
+</code></pre>
+<h3 id="properties">Properties</h3>
+<h4 id="buttonspecs"><code>ButtonSpecs</code></h4>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Collection of button specifications shown in the title bar.&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public FormTitleBarButtonSpecCollection ButtonSpecs { get; }
+</code></pre>
+<p>The ordered collection of <code>ButtonSpecAny</code> items to render in the title bar. Items are rendered <strong>left-to-right</strong> in the order they appear in the collection (LTR layout). The collection is read-only as a property (you cannot replace it), but items can be added, removed, and reordered freely at any time.</p>
+<p>Mutations to this collection at runtime trigger an immediate repaint and re-layout of the title bar. There is no need to call any refresh method manually.</p>
+<p><strong>Type:</strong> <code>KryptonFormTitleBar.FormTitleBarButtonSpecCollection</code> (a <code>ButtonSpecCollection&lt;ButtonSpecAny&gt;</code>)</p>
+<hr>
+<h4 id="ownerform"><code>OwnerForm</code></h4>
+<pre><code class="lang-csharp">[Browsable(false)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public KryptonForm? OwnerForm { get; }
+</code></pre>
+<p>Returns the <code>KryptonForm</code> that this component is currently attached to, or <code>null</code> if not attached. This property is set automatically by <code>KryptonForm</code> when the <code>TitleBar</code> property is assigned; do not set it directly.</p>
+<hr>
+<h3 id="methods">Methods</h3>
+<h4 id="insertstandarditems"><code>InsertStandardItems()</code></h4>
+<pre><code class="lang-csharp">public void InsertStandardItems()
+</code></pre>
+<p>Inserts a standard set of button specifications into the title bar, similar to the WinForms MenuStrip <strong>Insert Standard Items</strong> option. Adds:</p>
+<p><strong>Top-level menu dropdowns</strong> (File, Edit, Tools, Help) — text buttons with drop-down arrows; each opens a <code>KryptonContextMenu</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>Sub-items</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>File</strong></td>
+<td>New, Open, Save, Save As, Save All, —, Print, Print Preview, —, Exit</td>
+</tr>
+<tr>
+<td><strong>Edit</strong></td>
+<td>Undo, Redo, —, Cut, Copy, Paste, —, Select All</td>
+</tr>
+<tr>
+<td><strong>Tools</strong></td>
+<td>Customize, Options</td>
+</tr>
+<tr>
+<td><strong>Help</strong></td>
+<td>Contents, Index, —, About</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Flat icon buttons</strong> — quick-access toolbar buttons using palette images: New, Open, Save, Save As, Save All, Cut, Copy, Paste, Undo, Redo, Page Setup, Print Preview, Print, Quick Print.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// At runtime
+myTitleBar.InsertStandardItems();
+
+// Wire up actions — e.g. on menu items
+var fileMenu = (KryptonContextMenu)myTitleBar.ButtonSpecs[0].KryptonContextMenu!;
+// ... locate menu items and subscribe to Click
+</code></pre>
+<p>At design time, use the <strong>Insert Standard Items</strong> verb (right-click on the component) or the smart-tag action to insert the same set.</p>
+<hr>
+<h3 id="nested-types">Nested Types</h3>
+<h4 id="formtitlebarbuttonspeccollection"><code>FormTitleBarButtonSpecCollection</code></h4>
+<pre><code class="lang-csharp">public class FormTitleBarButtonSpecCollection : ButtonSpecCollection&lt;ButtonSpecAny&gt;
+</code></pre>
+<p>Strongly-typed collection of <code>ButtonSpecAny</code> items. Inherits all standard collection behaviour from <code>ButtonSpecCollection&lt;T&gt;</code>, including:</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Add(ButtonSpecAny)</code></td>
+<td>Appends a button spec. Triggers title bar refresh.</td>
+</tr>
+<tr>
+<td><code>AddRange(IEnumerable&lt;ButtonSpecAny&gt;)</code></td>
+<td>Appends multiple specs. Each triggers a refresh.</td>
+</tr>
+<tr>
+<td><code>Insert(int, ButtonSpecAny)</code></td>
+<td>Inserts at a specific index.</td>
+</tr>
+<tr>
+<td><code>Remove(ButtonSpecAny)</code></td>
+<td>Removes the specified spec.</td>
+</tr>
+<tr>
+<td><code>RemoveAt(int)</code></td>
+<td>Removes by index.</td>
+</tr>
+<tr>
+<td><code>Clear()</code></td>
+<td>Removes all specs.</td>
+</tr>
+<tr>
+<td><code>Count</code></td>
+<td>Number of specs in the collection.</td>
+</tr>
+<tr>
+<td><code>this[int]</code></td>
+<td>Gets a spec by index.</td>
+</tr>
+<tr>
+<td><code>this[string]</code></td>
+<td>Gets a spec by <code>UniqueName</code> or <code>Text</code>.</td>
+</tr>
+<tr>
+<td><code>Inserted</code> event</td>
+<td>Fires after a spec is added.</td>
+</tr>
+<tr>
+<td><code>Removed</code> event</td>
+<td>Fires after a spec is removed.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="methods-1">Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>InsertStandardItems()</code></td>
+<td>Adds top-level menus (File, Edit, Tools, Help) and flat icon buttons (New, Open, Save, etc.). See <a href="#insert-standard-items">Insert Standard Items</a> above.</td>
+</tr>
+<tr>
+<td><code>Dispose()</code></td>
+<td><em>(inherited)</em> Disposes the component, detaching it from any owning form first.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dispose-behaviour">Dispose Behaviour</h3>
+<p>When <code>Dispose()</code> is called on a <code>KryptonFormTitleBar</code> that is attached to a form, the form's <code>TitleBar</code> property is automatically set to <code>null</code>, which triggers <code>DetachTitleBar</code> and cleans up the injected view elements. This means you do not need to detach the component manually before disposing it.</p>
+<hr>
+<h2 id="api-reference--kryptonformtitlebar-1">API Reference — KryptonForm.TitleBar</h2>
+<h3 id="property">Property</h3>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[Description(&quot;Title bar component that hosts button-spec items in the form caption area.&quot;)]
+[DefaultValue(null)]
+public KryptonFormTitleBar? TitleBar { get; set; }
+</code></pre>
+<p>Gets or sets the <code>KryptonFormTitleBar</code> component that injects button-spec items into the form's caption area.</p>
+<p><strong>Setting a new value:</strong></p>
+<ol>
+<li>If a previous <code>KryptonFormTitleBar</code> was assigned, <code>DetachTitleBar</code> is called on it first.</li>
+<li>The new component is stored.</li>
+<li><code>AttachTitleBar</code> is called on the new component, injecting the view and constructing the button manager.</li>
+</ol>
+<p><strong>Setting to <code>null</code>:</strong><br>
+Detaches and cleans up the current title bar component (if any). The form reverts to its standard caption layout.</p>
+<p><strong>Changing the component at runtime</strong> (replacing one with another) is fully supported. Detach and attach happen atomically in the setter.</p>
+<hr>
+<h2 id="api-reference--buttonspecany">API Reference — ButtonSpecAny</h2>
+<p>Each item in <code>KryptonFormTitleBar.ButtonSpecs</code> is a <code>ButtonSpecAny</code>. All properties can be set at design time via the collection editor, or at runtime.</p>
+<h3 id="visual-properties">Visual Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Image</code></td>
+<td><code>Image?</code></td>
+<td><code>null</code></td>
+<td>The icon shown on the button. 16×16 px recommended for title bar sizing.</td>
+</tr>
+<tr>
+<td><code>Text</code></td>
+<td><code>string</code></td>
+<td><code>&quot;&quot;</code></td>
+<td>Text label shown alongside or instead of the image.</td>
+</tr>
+<tr>
+<td><code>ExtraText</code></td>
+<td><code>string</code></td>
+<td><code>&quot;&quot;</code></td>
+<td>Secondary text shown below the main text.</td>
+</tr>
+<tr>
+<td><code>ImageTransparentColor</code></td>
+<td><code>Color</code></td>
+<td><code>Empty</code></td>
+<td>Pixels of this colour in <code>Image</code> are rendered transparent.</td>
+</tr>
+<tr>
+<td><code>Style</code></td>
+<td><code>PaletteButtonStyle</code></td>
+<td><code>Inherit</code></td>
+<td>Overrides the palette button style (e.g. <code>Standalone</code>, <code>ButtonSpec</code>, <code>Inherit</code>).</td>
+</tr>
+<tr>
+<td><code>Orientation</code></td>
+<td><code>PaletteButtonOrientation</code></td>
+<td><code>Inherit</code></td>
+<td>Rotates the button content.</td>
+</tr>
+<tr>
+<td><code>ColorMap</code></td>
+<td><code>Color</code></td>
+<td><code>Empty</code></td>
+<td>Remaps a single source colour in the image to match a palette colour.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="behaviour-properties">Behaviour Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Type</code></td>
+<td><code>PaletteButtonSpecStyle</code></td>
+<td><code>Generic</code></td>
+<td>Determines whether the palette supplies a default image/style. <code>Generic</code> means the spec is fully custom. Other values (<code>Close</code>, <code>Pin</code>, <code>FormMin</code>, etc.) inherit defaults from the palette.</td>
+</tr>
+<tr>
+<td><code>Visible</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>When <code>false</code> the button is hidden and takes no space.</td>
+</tr>
+<tr>
+<td><code>Enabled</code></td>
+<td><code>ButtonEnabled</code></td>
+<td><code>Container</code></td>
+<td><code>True</code> forces enabled; <code>False</code> forces disabled; <code>Container</code> follows the form's enabled state.</td>
+</tr>
+<tr>
+<td><code>Checked</code></td>
+<td><code>ButtonCheckState</code></td>
+<td><code>NotCheckButton</code></td>
+<td><code>NotCheckButton</code> = normal push button. <code>Unchecked</code> / <code>Checked</code> = toggle button. Clicking a toggle button automatically inverts <code>Checked</code>.</td>
+</tr>
+<tr>
+<td><code>ShowDrop</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Shows a drop-down arrow glyph on the button. Use with <code>ContextMenuStrip</code> or <code>KryptonContextMenu</code>.</td>
+</tr>
+<tr>
+<td><code>Edge</code></td>
+<td><code>PaletteRelativeEdgeAlign</code></td>
+<td><code>Inherit</code></td>
+<td>Which edge the button docks to within the title bar docker.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="context-menu-properties">Context Menu Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ContextMenuStrip</code></td>
+<td><code>ContextMenuStrip?</code></td>
+<td><code>null</code></td>
+<td>Standard WinForms context menu shown on click when <code>ShowDrop = true</code>.</td>
+</tr>
+<tr>
+<td><code>KryptonContextMenu</code></td>
+<td><code>KryptonContextMenu?</code></td>
+<td><code>null</code></td>
+<td>Krypton-styled context menu shown on click. Takes precedence over <code>ContextMenuStrip</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tooltip-properties">Tooltip Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ToolTipTitle</code></td>
+<td><code>string</code></td>
+<td><code>&quot;&quot;</code></td>
+<td>Bold heading text in the tooltip.</td>
+</tr>
+<tr>
+<td><code>ToolTipBody</code></td>
+<td><code>string</code></td>
+<td><code>&quot;&quot;</code></td>
+<td>Body text in the tooltip.</td>
+</tr>
+<tr>
+<td><code>ToolTipImage</code></td>
+<td><code>Image?</code></td>
+<td><code>null</code></td>
+<td>Image shown inside the tooltip.</td>
+</tr>
+<tr>
+<td><code>ToolTipStyle</code></td>
+<td><code>LabelStyle</code></td>
+<td><code>ToolTip</code></td>
+<td>Visual style of the tooltip popup.</td>
+</tr>
+<tr>
+<td><code>ToolTipImageTransparentColor</code></td>
+<td><code>Color</code></td>
+<td><code>Empty</code></td>
+<td>Transparent colour for the tooltip image.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="image-state-properties">Image State Properties</h3>
+<p>The <code>ImageStates</code> property (<code>CheckButtonImageStates</code>) provides separate images for each visual state:</p>
+<table>
+<thead>
+<tr>
+<th>Sub-property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ImageNormal</code></td>
+<td>Image when the button is in its default state.</td>
+</tr>
+<tr>
+<td><code>ImageDisabled</code></td>
+<td>Image when the button is disabled.</td>
+</tr>
+<tr>
+<td><code>ImageTracking</code></td>
+<td>Image when the mouse is hovering over the button.</td>
+</tr>
+<tr>
+<td><code>ImagePressed</code></td>
+<td>Image when the button is being clicked.</td>
+</tr>
+<tr>
+<td><code>ImageCheckedNormal</code></td>
+<td>Image when the button is checked (toggle mode).</td>
+</tr>
+<tr>
+<td><code>ImageCheckedTracking</code></td>
+<td>Image when checked and mouse is hovering.</td>
+</tr>
+<tr>
+<td><code>ImageCheckedPressed</code></td>
+<td>Image when checked and being clicked.</td>
+</tr>
+</tbody>
+</table>
+<p>If per-state images are not set, the single <code>Image</code> property is used for all states.</p>
+<h3 id="events">Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Signature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Click</code></td>
+<td><code>EventHandler?</code></td>
+<td>Fires when the button is clicked. The sender is the <code>ButtonSpecAny</code> instance.</td>
+</tr>
+<tr>
+<td><code>ButtonSpecPropertyChanged</code></td>
+<td><code>PropertyChangedEventHandler?</code></td>
+<td>Fires when any property of the spec changes.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="unique-name">Unique Name</h3>
+<pre><code class="lang-csharp">public string UniqueName { get; set; }
+</code></pre>
+<p>A string identifier assigned automatically at construction (using an internal counter). You can override it to provide a stable identity for serialisation or lookup via <code>ButtonSpecs[&quot;myName&quot;]</code>.</p>
+<hr>
+<h2 id="design-time-usage">Design-Time Usage</h2>
+<h3 id="adding-kryptonformtitlebar-to-a-form">Adding KryptonFormTitleBar to a Form</h3>
+<ol>
+<li>Drag <strong>KryptonFormTitleBar</strong> from the Toolbox onto the form. The component appears in the component tray (below the form surface).</li>
+<li>Select the <strong>form</strong> and find the <code>TitleBar</code> property in the <strong>Properties</strong> window (under <strong>Visuals</strong>). Set it to the <code>KryptonFormTitleBar</code> you just added.</li>
+<li>Select the <strong>KryptonFormTitleBar</strong> in the tray and expand <code>ButtonSpecs</code> in <strong>Properties</strong>, or click the smart-tag (▶) and choose <strong>Button Specs</strong>.</li>
+<li>The <strong>Collection Editor</strong> opens. Click <strong>Add</strong> to add a <code>ButtonSpecAny</code>. Configure its properties on the right.</li>
+</ol>
+<h3 id="insert-standard-items">Insert Standard Items</h3>
+<p>Like the WinForms MenuStrip, <code>KryptonFormTitleBar</code> supports <strong>Insert Standard Items</strong> to quickly populate the title bar with preconfigured buttons:</p>
+<p><strong>From the designer:</strong></p>
+<ul>
+<li><strong>Right-click</strong> the <code>KryptonFormTitleBar</code> in the component tray → <strong>Insert Standard Items</strong></li>
+<li>Or click the <strong>smart-tag</strong> (▶) → <strong>Insert Standard Items</strong> (under Actions)</li>
+</ul>
+<p>This adds the full standard set: four top-level menu dropdowns (File, Edit, Tools, Help) and fourteen flat icon buttons (New, Open, Save, Cut, Copy, Paste, etc.). You can then remove or reconfigure any items as needed, and wire <code>Click</code> events on individual specs or on the menu items within each dropdown.</p>
+<h3 id="smart-tag--action-list">Smart-Tag (▶ Action List)</h3>
+<p>Clicking the smart-tag arrow on <code>KryptonFormTitleBar</code> in the component tray opens a panel with:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Insert Standard Items</strong></td>
+<td>Adds File, Edit, Tools, Help (menus) plus New, Open, Save, Cut, Copy, Paste, Print, etc. (icons).</td>
+</tr>
+<tr>
+<td><strong>Button Specs</strong></td>
+<td>Opens the Collection Editor for <code>ButtonSpecs</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="serialisation">Serialisation</h3>
+<p>The <code>ButtonSpecs</code> collection is marked <code>DesignerSerializationVisibility.Content</code>, so Visual Studio serialises each <code>ButtonSpecAny</code> it contains into <code>InitializeComponent()</code>. The <code>KryptonFormTitleBar</code> component itself is serialised as a field (e.g. <code>this.kryptonFormTitleBar1</code>), and the form's <code>TitleBar</code> assignment is emitted as a property assignment.</p>
+<h3 id="designer-cleanup">Designer Cleanup</h3>
+<p>When you delete a <code>KryptonFormTitleBar</code> from the component tray, <code>KryptonFormTitleBarDesigner.OnComponentRemoving</code> automatically removes and destroys all child <code>ButtonSpecAny</code> components from the designer container, preventing orphan components in <code>InitializeComponent()</code>.</p>
+<hr>
+<h2 id="runtime-usage">Runtime Usage</h2>
+<h3 id="insert-standard-items-at-runtime">Insert Standard Items at Runtime</h3>
+<pre><code class="lang-csharp">// Add the full standard set (menus + toolbar icons)
+this.TitleBar!.InsertStandardItems();
+</code></pre>
+<p>This is equivalent to the designer's Insert Standard Items verb. After insertion, wire <code>Click</code> events on the specs or on the <code>KryptonContextMenuItem</code> instances within each dropdown's <code>KryptonContextMenu</code>.</p>
+<h3 id="adding-and-removing-buttons-dynamically">Adding and Removing Buttons Dynamically</h3>
+<pre><code class="lang-csharp">// Add a button
+var spec = new ButtonSpecAny { Image = MyIcons.Save, ToolTipTitle = &quot;Save&quot;, Type = PaletteButtonSpecStyle.Generic };
+spec.Click += OnSaveClicked;
+this.TitleBar!.ButtonSpecs.Add(spec);
+
+// Remove by reference
+this.TitleBar!.ButtonSpecs.Remove(spec);
+
+// Remove by index
+this.TitleBar!.ButtonSpecs.RemoveAt(0);
+
+// Clear all
+this.TitleBar!.ButtonSpecs.Clear();
+</code></pre>
+<p>Each mutation triggers an immediate title bar repaint. No additional calls are needed.</p>
+<h3 id="toggling-button-visibility">Toggling Button Visibility</h3>
+<pre><code class="lang-csharp">// Hide a button without removing it
+myButtonSpec.Visible = false;
+
+// Show it again
+myButtonSpec.Visible = true;
+</code></pre>
+<h3 id="enabling--disabling-buttons">Enabling / Disabling Buttons</h3>
+<pre><code class="lang-csharp">// Force disabled regardless of form state
+myButtonSpec.Enabled = ButtonEnabled.False;
+
+// Force enabled
+myButtonSpec.Enabled = ButtonEnabled.True;
+
+// Follow the form's enabled state (default)
+myButtonSpec.Enabled = ButtonEnabled.Container;
+</code></pre>
+<h3 id="toggle-buttons-checked-state">Toggle Buttons (Checked State)</h3>
+<pre><code class="lang-csharp">// Make it a toggle button
+myButtonSpec.Checked = ButtonCheckState.Unchecked;
+
+// Listen for state changes
+myButtonSpec.Click += (s, e) =&gt;
+{
+    var spec = (ButtonSpecAny)s!;
+    bool isNowChecked = spec.Checked == ButtonCheckState.Checked;
+    UpdateFeatureState(isNowChecked);
+};
+</code></pre>
+<h3 id="drop-down-buttons">Drop-Down Buttons</h3>
+<pre><code class="lang-csharp">var menuSpec = new ButtonSpecAny
+{
+    Image    = MyIcons.Menu,
+    ShowDrop = true,
+    Type     = PaletteButtonSpecStyle.Generic
+};
+
+// Attach a KryptonContextMenu
+var ctxMenu = new KryptonContextMenu();
+ctxMenu.Items.Add(new KryptonContextMenuItems
+{
+    Items = { new KryptonContextMenuItem(&quot;Option 1&quot;), new KryptonContextMenuItem(&quot;Option 2&quot;) }
+});
+menuSpec.KryptonContextMenu = ctxMenu;
+
+this.TitleBar!.ButtonSpecs.Add(menuSpec);
+</code></pre>
+<h3 id="attaching-and-detaching-at-runtime">Attaching and Detaching at Runtime</h3>
+<pre><code class="lang-csharp">// Attach
+this.TitleBar = myTitleBar;
+
+// Detach (revert to standard caption)
+this.TitleBar = null;
+
+// Replace with a different title bar
+this.TitleBar = anotherTitleBar;
+</code></pre>
+<h3 id="checking-whether-a-titlebar-is-active">Checking Whether a TitleBar Is Active</h3>
+<pre><code class="lang-csharp">if (this.TitleBar != null)
+{
+    // A title bar component is currently active
+}
+
+// Or through the component itself:
+bool isAttached = myTitleBar.OwnerForm != null;
+</code></pre>
+<hr>
+<h2 id="buttonspec-properties-in-depth">ButtonSpec Properties In Depth</h2>
+<h3 id="type--palettebuttonspecstyle"><code>Type</code> — <code>PaletteButtonSpecStyle</code></h3>
+<p>The <code>Type</code> property determines where the button spec's <strong>default image and style</strong> come from. When <code>Type = Generic</code> (the default), the spec is entirely custom and the <code>Image</code> property must be set explicitly.</p>
+<p>Other useful values for title bar buttons:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Palette default behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Generic</code></td>
+<td>No palette defaults. You control everything. <strong>Recommended for title bar use.</strong></td>
+</tr>
+<tr>
+<td><code>Close</code></td>
+<td>Palette supplies a close-glyph image.</td>
+</tr>
+<tr>
+<td><code>FormMin</code></td>
+<td>Palette supplies a minimise-glyph image.</td>
+</tr>
+<tr>
+<td><code>FormMax</code></td>
+<td>Palette supplies a maximise-glyph image.</td>
+</tr>
+<tr>
+<td><code>FormRestore</code></td>
+<td>Palette supplies a restore-glyph image.</td>
+</tr>
+<tr>
+<td><code>Pin</code></td>
+<td>Palette supplies a pin/unpin image.</td>
+</tr>
+<tr>
+<td><code>PinVertical</code></td>
+<td>Palette supplies a vertical pin image.</td>
+</tr>
+<tr>
+<td><code>RibbonMinimize</code></td>
+<td>Palette supplies a ribbon-minimise image.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="edge--paletterelativeedgealign"><code>Edge</code> — <code>PaletteRelativeEdgeAlign</code></h3>
+<p>Controls which edge of the title bar docker each button is anchored to.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Inherit</code></td>
+<td>Uses the palette default (typically <code>Near</code> = left in LTR).</td>
+</tr>
+<tr>
+<td><code>Near</code></td>
+<td>Left side of the docker (after form icon in LTR).</td>
+</tr>
+<tr>
+<td><code>Far</code></td>
+<td>Right side of the docker (just before title text in LTR).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="style--palettebuttonstyle"><code>Style</code> — <code>PaletteButtonStyle</code></h3>
+<p>Controls the visual rendering style.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Inherit</code></td>
+<td>Inherits from the palette (default, recommended).</td>
+</tr>
+<tr>
+<td><code>Standalone</code></td>
+<td>Rendered as a standalone button with full border/background.</td>
+</tr>
+<tr>
+<td><code>ButtonSpec</code></td>
+<td>Rendered in the ButtonSpec style (flat, minimal chrome). Most appropriate for title bar use.</td>
+</tr>
+<tr>
+<td><code>Low</code></td>
+<td>Low-profile rendering.</td>
+</tr>
+<tr>
+<td><code>Custom1/2/3</code></td>
+<td>Custom palette-defined styles.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="kryptoncommand-integration">KryptonCommand Integration</h2>
+<p><code>ButtonSpecAny.KryptonCommand</code> allows a button spec to be driven by a <code>KryptonCommand</code>, which provides a single source of truth for the button's <code>Image</code>, <code>Text</code>, <code>Enabled</code> state, and <code>Checked</code> state.</p>
+<pre><code class="lang-csharp">var saveCommand = new KryptonCommand
+{
+    Text       = &quot;Save&quot;,
+    ImageSmall = Properties.Resources.SaveIcon16,
+    Enabled    = true
+};
+saveCommand.Execute += (s, e) =&gt; SaveDocument();
+
+var saveSpec = new ButtonSpecAny
+{
+    Type           = PaletteButtonSpecStyle.Generic,
+    KryptonCommand = saveCommand
+};
+
+this.TitleBar!.ButtonSpecs.Add(saveSpec);
+
+// Later: disable via the command — spec updates automatically
+saveCommand.Enabled = false;
+</code></pre>
+<p><strong>Synchronisation behaviour:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Command property change</th>
+<th>Effect on ButtonSpec</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Enabled = false</code></td>
+<td><code>ButtonSpecAny.Enabled</code> → <code>ButtonEnabled.False</code></td>
+</tr>
+<tr>
+<td><code>Enabled = true</code></td>
+<td><code>ButtonSpecAny.Enabled</code> → <code>ButtonEnabled.True</code></td>
+</tr>
+<tr>
+<td><code>Checked = true</code></td>
+<td><code>ButtonSpecAny.Checked</code> → <code>ButtonCheckState.Checked</code></td>
+</tr>
+<tr>
+<td><code>Checked = false</code></td>
+<td><code>ButtonSpecAny.Checked</code> → <code>ButtonCheckState.Unchecked</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>ImageSmall</code>, <code>Text</code>, and <code>ExtraText</code> are read from the command when the button is painted.</p>
+<hr>
+<h2 id="rtl-right-to-left-support">RTL (Right-to-Left) Support</h2>
+<h3 id="automatic-behaviour">Automatic Behaviour</h3>
+<p>RTL support is entirely automatic. When <code>KryptonForm.RightToLeft = RightToLeft.Yes</code> and <code>KryptonForm.RightToLeftLayout = true</code>:</p>
+<ol>
+<li><code>ViewDrawDocker.CalculateDock()</code> flips all <code>ViewDockStyle.Left</code> → <code>ViewDockStyle.Right</code> at layout time. The title bar docker physically moves to the right side of the caption.</li>
+<li>The <code>ButtonSpecManagerDraw</code> managing the button specs inside the docker also respects RTL, so button order within the docker is mirrored.</li>
+<li>When <code>RightToLeftLayout</code> changes at runtime, <code>KryptonForm.OnRightToLeftLayoutChanged</code> calls <code>_titleBarButtonManager.RecreateButtons()</code> in addition to the standard <code>_buttonManager.RecreateButtons()</code>, ensuring the title bar buttons reposition correctly.</li>
+</ol>
+<h3 id="caption-layout--rtl">Caption Layout — RTL</h3>
+<pre><code>_drawHeading (LTR):  [Icon][Title text fill][TitleBarButtons][Min][Max][Close]
+_drawHeading (RTL):  [Close][Max][Min][TitleBarButtons][Title text fill][Icon]
+</code></pre>
+<p>No developer action is required to support RTL.</p>
+<h3 id="righttoleft-vs-righttoleftlayout"><code>RightToLeft</code> vs <code>RightToLeftLayout</code></h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Affects</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RightToLeft = Yes</code></td>
+<td>Text direction (bidi), child control layout</td>
+<td>Does <strong>not</strong> mirror the caption chrome</td>
+</tr>
+<tr>
+<td><code>RightToLeftLayout = true</code></td>
+<td>Caption chrome mirroring, button order</td>
+<td>This is what controls title bar button placement</td>
+</tr>
+</tbody>
+</table>
+<p>Both properties must match for full RTL UX. Setting <code>RightToLeftLayout = true</code> without <code>RightToLeft = Yes</code> mirrors the chrome but leaves text LTR (unusual but valid for certain locales).</p>
+<hr>
+<h2 id="theming--palette-integration">Theming &amp; Palette Integration</h2>
+<h3 id="automatic-palette-inheritance">Automatic Palette Inheritance</h3>
+<p>The <code>ViewDrawDocker</code> created by <code>AttachTitleBar</code> is constructed with:</p>
+<pre><code class="lang-csharp">new ViewDrawDocker(
+    StateActive.Header.Back,
+    StateActive.Header.Border,
+    StateActive.Header,
+    PaletteMetricBool.None,
+    PaletteMetricPadding.None,
+    VisualOrientation.Top)
+</code></pre>
+<p>This means:</p>
+<ul>
+<li>The docker's <strong>background</strong> uses <code>StateActive.Header.Back</code> — the same back palette as the title bar heading itself.</li>
+<li>The docker's <strong>border</strong> uses <code>StateActive.Header.Border</code>.</li>
+<li>Button specs inside it use <code>StateCommon.Header</code> as their metric provider.</li>
+<li>Spacing metrics (<code>HeaderButtonEdgeInsetForm</code>, <code>HeaderButtonPaddingForm</code>) match the existing form button specs.</li>
+</ul>
+<p>The result: title bar buttons <strong>automatically match</strong> the rest of the form chrome across all built-in palettes (Office 2007–2019, Microsoft 365, SparkleBlue, Material, Visual Studio, etc.) without any additional configuration.</p>
+<h3 id="active-vs-inactive-state">Active vs Inactive State</h3>
+<p>When the form loses focus, <code>VisualForm.OnWM_NCACTIVATE</code> updates the <code>WindowActive</code> flag, which causes a repaint using <code>StateInactive.Header</code> palette settings. The title bar buttons reflect the inactive style automatically because they participate in the same paint pass.</p>
+<h3 id="changing-the-palette-at-runtime">Changing the Palette at Runtime</h3>
+<pre><code class="lang-csharp">// Switch the global palette — title bar buttons update instantly
+KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Black;
+
+// Or change the form-level palette
+this.PaletteMode = PaletteMode.SparkleBlue;
+</code></pre>
+<p>No additional action is needed.</p>
+<hr>
+<h2 id="interaction-with-kryptonribbon">Interaction with KryptonRibbon</h2>
+<p>A <code>KryptonRibbon</code> at <code>Location = Point.Empty</code> on a <code>KryptonForm</code> also injects view elements into the caption via <code>InjectViewElement</code>. The title bar toolbar and the ribbon can coexist, but <strong>not simultaneously</strong>. The ribbon's injection takes over the <code>ViewDockStyle.Fill</code> slot (replacing the title text with ribbon context tabs), while the title bar toolbar occupies <code>ViewDockStyle.Right</code> (to the right of the form icon and title).</p>
+<p>In practice, a form with both a <code>KryptonRibbon</code> and a <code>KryptonFormTitleBar</code> will show:</p>
+<pre><code>[Icon] [TitleBarButtons] [Ribbon QAT][AppButton][Context tabs] [Min][Max][Close]
+</code></pre>
+<p>This is valid and tested. The button specs from both the ribbon QAT and the title bar toolbar are independent.</p>
+<p><strong>Do not</strong> attach a <code>KryptonFormTitleBar</code> to a form that uses <code>KryptonRibbon</code> if the ribbon is in integrated mode, as the <code>ViewDockStyle.Left</code> slots will stack and may produce unexpected spacing. In that scenario, use the ribbon's own QAT (<code>ribbon.QuickAccessToolbarButtons</code>) instead.</p>
+<hr>
+<h2 id="lifecycle--resource-management">Lifecycle &amp; Resource Management</h2>
+<h3 id="attachment">Attachment</h3>
+<p><code>KryptonForm.TitleBar = myTitleBar</code> triggers:</p>
+<ol>
+<li><code>titleBar.SetOwnerForm(this)</code> — stores back-reference.</li>
+<li><code>_titleBarDocker</code> (<code>ViewDrawDocker</code>) created and configured.</li>
+<li><code>_titleBarButtonManager</code> (<code>ButtonSpecManagerDraw</code>) created; manages button specs inside <code>_titleBarDocker</code>.</li>
+<li><code>_titleBarButtonManager.ToolTipManager</code> set to the form's shared <code>ToolTipManager</code>.</li>
+<li><code>InjectViewElement(_titleBarDocker, ViewDockStyle.Right)</code> — docker added to <code>_drawHeading</code> (right of icon and title).</li>
+<li>Event subscriptions: <code>ButtonSpecInserted</code>, <code>ButtonSpecRemoved</code> on <code>titleBar</code>.</li>
+<li><code>RecreateMinMaxCloseButtons()</code> + <code>PerformNeedPaint(true)</code>.</li>
+</ol>
+<h3 id="detachment">Detachment</h3>
+<p><code>KryptonForm.TitleBar = null</code> (or assigning a different component) triggers:</p>
+<ol>
+<li>Event unsubscriptions.</li>
+<li><code>RevokeViewElement(_titleBarDocker, ViewDockStyle.Left)</code> — docker removed from <code>_drawHeading</code>.</li>
+<li><code>_titleBarButtonManager.Destruct()</code> — all button views removed and disposed.</li>
+<li><code>_titleBarDocker.Dispose()</code>.</li>
+<li><code>titleBar.SetOwnerForm(null)</code> — clears back-reference.</li>
+<li><code>RecreateMinMaxCloseButtons()</code> + <code>PerformNeedPaint(true)</code>.</li>
+</ol>
+<h3 id="form-disposal">Form Disposal</h3>
+<p>When the <code>KryptonForm</code> is disposed:</p>
+<ol>
+<li><code>_titleBarButtonManager?.Destruct()</code> is called.</li>
+<li><code>_titleBarDocker?.Dispose()</code> is called.</li>
+<li>The <code>KryptonFormTitleBar</code> component itself is <strong>not</strong> disposed by the form — it is a separate component and follows its own designer lifetime.</li>
+</ol>
+<h3 id="component-disposal">Component Disposal</h3>
+<p>When <code>KryptonFormTitleBar.Dispose()</code> is called:</p>
+<ol>
+<li>If <code>_ownerForm != null</code>, <code>_ownerForm.TitleBar = null</code> is called, which triggers the full detach sequence above.</li>
+<li>Base <code>Component.Dispose()</code> runs.</li>
+</ol>
+<h3 id="summary-matrix">Summary Matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Form disposed</td>
+<td>Docker and button manager cleaned up. TitleBar component itself survives.</td>
+</tr>
+<tr>
+<td><code>TitleBar = null</code></td>
+<td>Full detach. Form reverts to standard caption.</td>
+</tr>
+<tr>
+<td><code>TitleBar = newComponent</code></td>
+<td>Old component detached, new component attached atomically.</td>
+</tr>
+<tr>
+<td>Component <code>.Dispose()</code> called</td>
+<td>Auto-detaches from form, then disposes.</td>
+</tr>
+<tr>
+<td>Component removed in designer</td>
+<td>Designer cleans up all child <code>ButtonSpecAny</code> components.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="internal-architecture">Internal Architecture</h2>
+<p>This section is for contributors and maintainers.</p>
+<h3 id="key-private-members-on-kryptonform">Key Private Members on KryptonForm</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_titleBar</code></td>
+<td><code>KryptonFormTitleBar?</code></td>
+<td>The currently assigned title bar component.</td>
+</tr>
+<tr>
+<td><code>_titleBarDocker</code></td>
+<td><code>ViewDrawDocker?</code></td>
+<td>The view element injected into <code>_drawHeading</code>.</td>
+</tr>
+<tr>
+<td><code>_titleBarButtonManager</code></td>
+<td><code>ButtonSpecManagerDraw?</code></td>
+<td>Manages the <code>ButtonSpecAny</code> items inside <code>_titleBarDocker</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="attachtitlebar-private"><code>AttachTitleBar</code> (private)</h3>
+<pre><code class="lang-csharp">private void AttachTitleBar(KryptonFormTitleBar titleBar)
+</code></pre>
+<p>Creates <code>_titleBarDocker</code> and <code>_titleBarButtonManager</code>, injects the docker, hooks events.</p>
+<h3 id="detachtitlebar-private"><code>DetachTitleBar</code> (private)</h3>
+<pre><code class="lang-csharp">private void DetachTitleBar(KryptonFormTitleBar titleBar)
+</code></pre>
+<p>Unhooks events, revokes the docker, destructs and nulls the button manager and docker.</p>
+<h3 id="ontitlebarbuttonspecchanged-private"><code>OnTitleBarButtonSpecChanged</code> (private)</h3>
+<pre><code class="lang-csharp">private void OnTitleBarButtonSpecChanged(object? sender, ButtonSpecEventArgs e)
+</code></pre>
+<p>Called when a spec is added or removed from <code>ButtonSpecs</code>. Refreshes the button manager and triggers a repaint.</p>
+<h3 id="onrighttoleftlayoutchanged-override"><code>OnRightToLeftLayoutChanged</code> (override)</h3>
+<pre><code class="lang-csharp">protected override void OnRightToLeftLayoutChanged(EventArgs e)
+</code></pre>
+<p>Extended to call <code>_titleBarButtonManager?.RecreateButtons()</code> alongside the existing <code>_buttonManager?.RecreateButtons()</code> call.</p>
+<h3 id="internal-events-on-kryptonformtitlebar">Internal Events on KryptonFormTitleBar</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Visibility</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ButtonSpecInserted</code></td>
+<td><code>internal</code></td>
+<td>Forwarded from <code>ButtonSpecs.Inserted</code>. Consumed by <code>KryptonForm</code>.</td>
+</tr>
+<tr>
+<td><code>ButtonSpecRemoved</code></td>
+<td><code>internal</code></td>
+<td>Forwarded from <code>ButtonSpecs.Removed</code>. Consumed by <code>KryptonForm</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>These are <code>internal</code> to prevent external consumers from depending on implementation details.</p>
+<h3 id="setownerform-internal"><code>SetOwnerForm</code> (internal)</h3>
+<pre><code class="lang-csharp">internal void SetOwnerForm(KryptonForm? form)
+</code></pre>
+<p>Set by <code>KryptonForm.AttachTitleBar</code> and <code>DetachTitleBar</code>. Not intended for external use.</p>
+<hr>
+<h2 id="limitations--known-constraints">Limitations &amp; Known Constraints</h2>
+<h3 id="no-arbitrary-control-hosting">No Arbitrary Control Hosting</h3>
+<p><code>KryptonFormTitleBar</code> supports <code>ButtonSpecAny</code> items only. It does <strong>not</strong> support embedding arbitrary WinForms controls (e.g. a <code>KryptonComboBox</code> or <code>KryptonTextBox</code>) in the title bar. This is because all caption rendering is done in the non-client area via custom chrome — standard WinForms controls (which are child <code>HWND</code> windows) cannot be parented to a non-client region.</p>
+<p>If a combo box or text input in the title bar is required, the standard approach is to use <code>FormBorderStyle.None</code> and build a custom &quot;fake&quot; title bar as a panel inside the client area (as referenced in the original feature request).</p>
+<h3 id="title-bar-height-is-fixed-by-the-active-palette">Title Bar Height is Fixed by the Active Palette</h3>
+<p>The height of the title bar is governed by <code>RealWindowBorders.Top</code>, which is calculated from the active palette's border metrics. The button spec images scale within whatever height the palette provides. If the buttons appear clipped, switch to a palette with a taller caption (e.g. Material at 44 px) or use smaller images (16×16 is safe for all palettes).</p>
+<h3 id="buttonspec-collection-mutations-are-not-batched">ButtonSpec Collection Mutations are Not Batched</h3>
+<p>Each <code>Add</code> or <code>Remove</code> call on <code>ButtonSpecs</code> immediately triggers a full <code>RecreateMinMaxCloseButtons()</code> + <code>PerformNeedPaint(true)</code>. If adding many specs at startup, prefer <code>AddRange(...)</code> over individual <code>Add</code> calls to minimise redundant repaints (though <code>AddRange</code> still fires one event per item internally).</p>
+<h3 id="one-titlebar-per-form">One TitleBar Per Form</h3>
+<p>A <code>KryptonFormTitleBar</code> instance can only be attached to one <code>KryptonForm</code> at a time. Assigning the same instance to a second form without detaching from the first will silently replace the first form's attachment (because the second assignment calls <code>DetachTitleBar</code> only if <code>_titleBar == value</code> is false).</p>
+<h3 id="designer-limitation--no-live-preview">Designer Limitation — No Live Preview</h3>
+<p>Due to the non-client area rendering, button spec changes made in the designer collection editor are not visually previewed in the designer surface. Run the project to see the result.</p>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<p><strong>Use 16×16 images.</strong> The title bar height across all palettes safely accommodates 16×16 icons. Larger images may be clipped on palettes with narrow captions.</p>
+<p><strong>Set <code>ToolTipTitle</code> on every spec.</strong> Users hovering over title bar buttons benefit significantly from tooltips, as there may not be room for text labels.</p>
+<p><strong>Use <code>KryptonCommand</code> for menu-driven actions.</strong> If the same action appears in both the title bar and a menu/toolbar, binding both to a <code>KryptonCommand</code> ensures consistent enabled/checked state without manual synchronisation.</p>
+<p><strong>Keep <code>Type = Generic</code>.</strong> Using predefined types (e.g. <code>Close</code>, <code>FormMin</code>) inherits palette images that may not match your intent. <code>Generic</code> gives full control.</p>
+<p><strong>Do not set <code>CustomCaptionArea</code> manually when using <code>KryptonFormTitleBar</code>.</strong> The <code>CustomCaptionArea</code> property is intended for the Ribbon integration. Setting it while a <code>KryptonFormTitleBar</code> is active may interfere with hit-testing.</p>
+<p><strong>Handle disposal explicitly in long-lived applications.</strong> If <code>KryptonFormTitleBar</code> is created at runtime (not via the designer), call <code>titleBar.Dispose()</code> when the form closes, or ensure it is added to a <code>Container</code> so it is disposed automatically.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="buttons-do-not-appear">Buttons do not appear</h3>
+<ul>
+<li>Ensure <code>KryptonForm.TitleBar</code> is assigned (not <code>null</code>).</li>
+<li>Ensure at least one <code>ButtonSpecAny</code> is in <code>KryptonFormTitleBar.ButtonSpecs</code> and <code>Visible = true</code>.</li>
+<li>Ensure <code>AllowFormChrome = true</code> on the <code>KryptonForm</code> (default). If <code>false</code>, the custom chrome is disabled and the non-client area is OS-rendered.</li>
+<li>Ensure the form is not using <code>FormBorderStyle.None</code> (no caption area exists).</li>
+</ul>
+<h3 id="buttons-are-clipped-or-overlapping-the-form-icon">Buttons are clipped or overlapping the form icon</h3>
+<ul>
+<li>The active palette's caption height may be too small for the image size. Use 16×16 images, or switch to a palette with a taller caption (e.g. <code>PaletteMode.MaterialDark</code>).</li>
+<li>If the form icon is unexpectedly large, check <code>KryptonForm.ShowIcon</code> and <code>AllowIconDisplay</code>.</li>
+</ul>
+<h3 id="click-events-are-not-firing">Click events are not firing</h3>
+<ul>
+<li>Ensure <code>Enabled</code> is not <code>ButtonEnabled.False</code> and the form is not disabled.</li>
+<li>Ensure the button spec is not obscured by another view element (check for z-order issues if using both <code>KryptonRibbon</code> and <code>KryptonFormTitleBar</code>).</li>
+</ul>
+<h3 id="rtl-buttons-are-in-the-wrong-position">RTL buttons are in the wrong position</h3>
+<ul>
+<li>Confirm <strong>both</strong> <code>RightToLeft = RightToLeft.Yes</code> and <code>RightToLeftLayout = true</code> are set on the form.</li>
+<li><code>RightToLeft</code> alone does not mirror the chrome layout.</li>
+</ul>
+<h3 id="tooltip-does-not-appear">Tooltip does not appear</h3>
+<ul>
+<li>Ensure <code>ToolTipTitle</code> (or <code>ToolTipBody</code>) is non-empty.</li>
+<li>Ensure <code>AllowButtonSpecToolTips = true</code> on the <code>KryptonForm</code>.</li>
+</ul>
+<h3 id="designer-removing-kryptonformtitlebar-leaves-orphan-buttonspecany-components">Designer: Removing KryptonFormTitleBar leaves orphan ButtonSpecAny components</h3>
+<ul>
+<li>This should not happen in normal use because <code>KryptonFormTitleBarDesigner</code> handles component removal. If it does occur, open <code>InitializeComponent()</code> manually and remove any stray <code>ButtonSpecAny</code> instantiations.</li>
+</ul>
+<h3 id="memory-leak-warning-after-hot-reload">Memory leak warning after hot-reload</h3>
+<ul>
+<li>Hot-reload in .NET may reinitialise <code>InitializeComponent()</code> without disposing the previous title bar. If this is a concern, explicitly null <code>this.TitleBar</code> before hot-reload and re-assign after.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
