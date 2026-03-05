@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Ribbon QAT ButtonSpec Styles | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Ribbon QAT ButtonSpec Styles | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="ribbon-qat-buttonspec-styles">Ribbon QAT ButtonSpec Styles</h1>
+
+<p>This document provides comprehensive technical documentation for the Ribbon Quick Access Toolbar (QAT) ButtonSpec styles feature, including API reference, usage patterns, and implementation details.</p>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#palettebuttonspecstyle-enum">PaletteButtonSpecStyle Enum</a></li>
+<li><a href="#insert-standard-items">Insert Standard Items</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#custom-implementers">Custom Implementers</a></li>
+<li><a href="#backward-compatibility">Backward Compatibility</a></li>
+<li><a href="#internal-implementation">Internal Implementation</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>Ribbon QAT buttons can now use the same themed ButtonSpec styles as form title bars and integrated toolbars. Instead of always providing a custom <code>Image</code>, you can assign a semantic <code>Type</code> (e.g. <code>New</code>, <code>Open</code>, <code>Save</code>) so the palette supplies:</p>
+<ul>
+<li><strong>Icons</strong> — theme-appropriate images for each style</li>
+<li><strong>Color mapping</strong> — icons adapt to the ribbon foreground color</li>
+<li><strong>Tooltips</strong> — default tooltip titles from the palette when not overridden</li>
+</ul>
+<p>This aligns QAT behavior with <code>KryptonFormTitleBar</code> ButtonSpecs and the integrated toolbar.</p>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│  KryptonRibbon.QATButtons (KryptonRibbonQATButtonCollection)    │
+│  ┌─────────────────────────────────────────────────────────────┐│
+│  │  KryptonRibbonQATButton                                     ││
+│  │  - Type: PaletteButtonSpecStyle (Generic | New | Open | …)  ││
+│  │  - Image, Text, ToolTipTitle (optional overrides)           ││
+│  └─────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  ViewDrawRibbonQATButton (IContentValues)                       │
+│  - If Type != Generic: palette.GetButtonSpecImage(type, state)  │
+│  - If Type == Generic: QATButton.GetImage()                     │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  QATButtonToContent (IPaletteContent)                           │
+│  - GetContentImageColorMap: palette color map when typed        │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  QATButtonToolTipToContent                                      │
+│  - GetShortText: palette tooltip title when typed &amp; not set     │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="kryptonribbonqatbutton">KryptonRibbonQATButton</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Type</strong></td>
+<td><code>PaletteButtonSpecStyle</code></td>
+<td>Button spec style for themed icons. Default: <code>Generic</code>. When non-Generic, palette provides icon, color map, and default tooltip.</td>
+</tr>
+<tr>
+<td><strong>Image</strong></td>
+<td><code>Image?</code></td>
+<td>Custom image. Used only when <code>Type == Generic</code>. Must be 16×16 or smaller.</td>
+</tr>
+<tr>
+<td><strong>Text</strong></td>
+<td><code>string</code></td>
+<td>Display text (used in customize menu, key tips). Default: <code>&quot;QAT Button&quot;</code>.</td>
+</tr>
+<tr>
+<td><strong>ToolTipTitle</strong></td>
+<td><code>string</code></td>
+<td>Tooltip title. When <code>Type != Generic</code> and empty, palette tooltip title is used.</td>
+</tr>
+<tr>
+<td><strong>ToolTipBody</strong></td>
+<td><code>string</code></td>
+<td>Tooltip body text.</td>
+</tr>
+<tr>
+<td><strong>Visible</strong></td>
+<td><code>bool</code></td>
+<td>Whether the button is visible. Default: <code>true</code>.</td>
+</tr>
+<tr>
+<td><strong>Enabled</strong></td>
+<td><code>bool</code></td>
+<td>Whether the button is enabled. Default: <code>true</code>.</td>
+</tr>
+<tr>
+<td><strong>ShortcutKeys</strong></td>
+<td><code>Keys</code></td>
+<td>Keyboard shortcut. Default: <code>Keys.None</code>.</td>
+</tr>
+<tr>
+<td><strong>KryptonCommand</strong></td>
+<td><code>KryptonCommand?</code></td>
+<td>Optional command; overrides Text, ImageSmall, Enabled when set.</td>
+</tr>
+<tr>
+<td><strong>Click</strong></td>
+<td><code>event EventHandler?</code></td>
+<td>Raised when the button is clicked.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Designer serialization:</strong></p>
+<ul>
+<li><code>Type</code> is serialized only when not <code>Generic</code> (<code>ShouldSerializeType()</code>).</li>
+<li><code>ResetType()</code> resets to <code>Generic</code>.</li>
+</ul>
+<hr>
+<h3 id="iquickaccesstoolbarbutton">IQuickAccessToolbarButton</h3>
+<p>All QAT button sources must implement this interface. The following member was added for ButtonSpec styles:</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Return Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GetButtonSpecType()</strong></td>
+<td><code>PaletteButtonSpecStyle</code></td>
+<td>Returns the button spec style. <code>Generic</code> means use custom image/tooltip.</td>
+</tr>
+</tbody>
+</table>
+<p>Existing members remain: <code>GetImage()</code>, <code>GetText()</code>, <code>GetEnabled()</code>, <code>GetVisible()</code>, <code>GetToolTipTitle()</code>, <code>GetToolTipBody()</code>, <code>GetShortcutKeys()</code>, etc.</p>
+<hr>
+<h3 id="kryptonribbon">KryptonRibbon</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>QATButtons</strong></td>
+<td><code>KryptonRibbonQATButtonCollection</code></td>
+<td>Collection of QAT buttons.</td>
+</tr>
+<tr>
+<td><strong>InsertStandardQATItems()</strong></td>
+<td><code>void</code></td>
+<td>Clears <code>QATButtons</code> and adds a standard set (New, Open, Save, Cut, Copy, Paste, etc.).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Internal (designer use):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Return Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CreateStandardQATButtons()</strong></td>
+<td><code>KryptonRibbonQATButton[]</code></td>
+<td>Creates template buttons for the standard set. Uses <code>KryptonManager.Strings.ToolBarStrings</code> for text.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="kryptonribbondesigner">KryptonRibbonDesigner</h3>
+<table>
+<thead>
+<tr>
+<th>Verb</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Insert Standard Items</strong></td>
+<td>Clears existing QAT buttons and inserts the standard set. Wrapped in a designer transaction for undo/redo.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="palettebuttonspecstyle-enum">PaletteButtonSpecStyle Enum</h2>
+<p>Defined in <code>Krypton.Toolkit</code> (<code>PaletteDefinitions.cs</code>). Styles suitable for QAT toolbar buttons:</p>
+<h3 id="file-operations">File operations</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>New</code></td>
+<td>New document/file</td>
+</tr>
+<tr>
+<td><code>Open</code></td>
+<td>Open file</td>
+</tr>
+<tr>
+<td><code>Save</code></td>
+<td>Save</td>
+</tr>
+<tr>
+<td><code>SaveAs</code></td>
+<td>Save as</td>
+</tr>
+<tr>
+<td><code>SaveAll</code></td>
+<td>Save all documents</td>
+</tr>
+</tbody>
+</table>
+<h3 id="edit-operations">Edit operations</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Cut</code></td>
+<td>Cut</td>
+</tr>
+<tr>
+<td><code>Copy</code></td>
+<td>Copy</td>
+</tr>
+<tr>
+<td><code>Paste</code></td>
+<td>Paste</td>
+</tr>
+<tr>
+<td><code>Undo</code></td>
+<td>Undo</td>
+</tr>
+<tr>
+<td><code>Redo</code></td>
+<td>Redo</td>
+</tr>
+<tr>
+<td><code>SelectAll</code></td>
+<td>Select all</td>
+</tr>
+<tr>
+<td><code>SelectNone</code></td>
+<td>Select none</td>
+</tr>
+</tbody>
+</table>
+<h3 id="print-operations">Print operations</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PageSetup</code></td>
+<td>Page setup</td>
+</tr>
+<tr>
+<td><code>PrintPreview</code></td>
+<td>Print preview</td>
+</tr>
+<tr>
+<td><code>Print</code></td>
+<td>Print</td>
+</tr>
+<tr>
+<td><code>QuickPrint</code></td>
+<td>Quick print</td>
+</tr>
+</tbody>
+</table>
+<h3 id="navigation--ui">Navigation / UI</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Previous</code></td>
+<td>Previous</td>
+</tr>
+<tr>
+<td><code>Next</code></td>
+<td>Next</td>
+</tr>
+<tr>
+<td><code>ArrowLeft</code></td>
+<td>Left arrow</td>
+</tr>
+<tr>
+<td><code>ArrowRight</code></td>
+<td>Right arrow</td>
+</tr>
+<tr>
+<td><code>ArrowUp</code></td>
+<td>Up arrow</td>
+</tr>
+<tr>
+<td><code>ArrowDown</code></td>
+<td>Down arrow</td>
+</tr>
+<tr>
+<td><code>DropDown</code></td>
+<td>Drop-down indicator</td>
+</tr>
+<tr>
+<td><code>Close</code></td>
+<td>Close</td>
+</tr>
+<tr>
+<td><code>Context</code></td>
+<td>Context menu</td>
+</tr>
+</tbody>
+</table>
+<h3 id="form--ribbon">Form / ribbon</h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FormClose</code></td>
+<td>Form close</td>
+</tr>
+<tr>
+<td><code>FormMin</code></td>
+<td>Form minimize</td>
+</tr>
+<tr>
+<td><code>FormMax</code></td>
+<td>Form maximize</td>
+</tr>
+<tr>
+<td><code>FormRestore</code></td>
+<td>Form restore</td>
+</tr>
+<tr>
+<td><code>FormHelp</code></td>
+<td>Form help</td>
+</tr>
+<tr>
+<td><code>RibbonMinimize</code></td>
+<td>Ribbon minimize</td>
+</tr>
+<tr>
+<td><code>RibbonExpand</code></td>
+<td>Ribbon expand</td>
+</tr>
+<tr>
+<td><code>Generic</code></td>
+<td>Generic; use custom <code>Image</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>Generic</code> is the default for <code>KryptonRibbonQATButton.Type</code>. All other values use palette-provided icons and tooltips unless overridden.</p>
+<hr>
+<h2 id="insert-standard-items">Insert Standard Items</h2>
+<h3 id="designer">Designer</h3>
+<ol>
+<li>Select the <code>KryptonRibbon</code> in the designer.</li>
+<li>Open the designer actions (smart tag) or right-click context menu.</li>
+<li>Choose <strong>Insert Standard Items</strong>.</li>
+</ol>
+<p>This replaces all QAT buttons with the standard set: New, Open, Save, Save As, Save All, Cut, Copy, Paste, Undo, Redo, Page Setup, Print Preview, Print, Quick Print. Each button has <code>Type</code> and <code>Text</code> set from <code>KryptonManager.Strings.ToolBarStrings</code>.</p>
+<h3 id="runtime">Runtime</h3>
+<pre><code class="lang-csharp">kryptonRibbon.InsertStandardQATItems();
+</code></pre>
+<p>Same result as the designer verb: clears <code>QATButtons</code> and adds the standard set.</p>
+<hr>
+<h2 id="usage-examples">Usage Examples</h2>
+<h3 id="typed-qat-button-code">Typed QAT button (code)</h3>
+<pre><code class="lang-csharp">var saveButton = new KryptonRibbonQATButton
+{
+    Type = PaletteButtonSpecStyle.Save,
+    Text = &quot;Save&quot;
+};
+saveButton.Click += (s, e) =&gt; SaveDocument();
+kryptonRibbon.QATButtons.Add(saveButton);
+</code></pre>
+<h3 id="typed-qat-button-designer">Typed QAT button (designer)</h3>
+<p>Set <code>Type</code> to <code>Save</code> (or another style) in the Properties window. The palette supplies icon and default tooltip.</p>
+<h3 id="custom-image-with-generic">Custom image with Generic</h3>
+<pre><code class="lang-csharp">var customButton = new KryptonRibbonQATButton
+{
+    Type = PaletteButtonSpecStyle.Generic,
+    Image = my16x16Icon,
+    Text = &quot;Custom Action&quot;
+};
+kryptonRibbon.QATButtons.Add(customButton);
+</code></pre>
+<h3 id="override-tooltip-for-typed-button">Override tooltip for typed button</h3>
+<pre><code class="lang-csharp">var saveButton = new KryptonRibbonQATButton
+{
+    Type = PaletteButtonSpecStyle.Save,
+    Text = &quot;Save&quot;,
+    ToolTipTitle = &quot;Save the current document (Ctrl+S)&quot;
+};
+</code></pre>
+<h3 id="use-kryptoncommand">Use KryptonCommand</h3>
+<pre><code class="lang-csharp">var saveCommand = new KryptonCommand
+{
+    Text = &quot;Save&quot;,
+    ImageSmall = myIcon,
+    ShortcutKeys = Keys.Control | Keys.S
+};
+var saveButton = new KryptonRibbonQATButton
+{
+    Type = PaletteButtonSpecStyle.Save,
+    KryptonCommand = saveCommand
+};
+</code></pre>
+<p>When <code>KryptonCommand</code> is set, <code>Text</code> and <code>ImageSmall</code> from the command are used. With <code>Type != Generic</code>, the palette still provides the main icon unless you explicitly set a custom image.</p>
+<hr>
+<h2 id="custom-implementers">Custom Implementers</h2>
+<p>If you implement <code>IQuickAccessToolbarButton</code> yourself:</p>
+<ol>
+<li>Implement <code>GetButtonSpecType()</code> and return the appropriate <code>PaletteButtonSpecStyle</code>.</li>
+<li>For backward compatibility, return <code>PaletteButtonSpecStyle.Generic</code> if you do not support typed styles.</li>
+<li>When <code>GetButtonSpecType() != Generic</code>, <code>GetImage()</code> is only used as a fallback if the palette returns <code>null</code>.</li>
+</ol>
+<p>Example:</p>
+<pre><code class="lang-csharp">public PaletteButtonSpecStyle GetButtonSpecType() =&gt; PaletteButtonSpecStyle.Generic;
+</code></pre>
+<hr>
+<h2 id="backward-compatibility">Backward Compatibility</h2>
+<ul>
+<li><strong>Existing QAT buttons:</strong> Default <code>Type</code> is <code>Generic</code>. Behavior matches pre-feature: custom or default image, explicit tooltips.</li>
+<li><strong>Binary compatibility:</strong> Adding <code>GetButtonSpecType()</code> to <code>IQuickAccessToolbarButton</code> is a breaking change for custom implementers. They must add the method (e.g. returning <code>Generic</code>).</li>
+</ul>
+<hr>
+<h2 id="internal-implementation">Internal Implementation</h2>
+<h3 id="image-resolution">Image resolution</h3>
+<p>In <code>ViewDrawRibbonQATButton.GetImage(PaletteState state)</code>:</p>
+<ul>
+<li><code>Type != Generic</code>: <code>_ribbon.GetRedirector().GetButtonSpecImage(type, state)</code></li>
+<li><code>Type == Generic</code>: <code>QATButton.GetImage()</code> (custom image or default)</li>
+</ul>
+<h3 id="color-mapping">Color mapping</h3>
+<ul>
+<li><code>QATButtonToContent.GetContentImageColorMap()</code> returns <code>GetButtonSpecColorMap(type)</code> when <code>Type != Generic</code>.</li>
+<li><code>ViewDrawRibbonQATButton.GetImageTransparentColor()</code> returns <code>GetButtonSpecImageTransparentColor(type)</code> when typed.</li>
+</ul>
+<h3 id="tooltip">Tooltip</h3>
+<ul>
+<li><code>QATButtonToolTipToContent.GetShortText()</code>: if <code>Type != Generic</code> and <code>GetToolTipTitle()</code> is empty, uses <code>GetButtonSpecToolTipTitle(type)</code> from the palette.</li>
+</ul>
+<h3 id="cache-invalidation">Cache invalidation</h3>
+<ul>
+<li><code>ViewDrawRibbonQATButton</code> subscribes to <code>QATButton.PropertyChanged</code> and clears the cached image when any property changes.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

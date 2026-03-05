@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>External Themes: Bundled Display Names | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="External Themes: Bundled Display Names | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="external-themes-bundled-display-names">External Themes: Bundled Display Names</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#quick-reference">Quick reference</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#api-reference">API reference</a></li>
+<li><a href="#persistence-format-xml-and-binary">Persistence format (XML and binary)</a></li>
+<li><a href="#import-and-export-behaviour">Import and export behaviour</a></li>
+<li><a href="#displaying-the-current-theme-name">Displaying the current theme name</a></li>
+<li><a href="#usage-for-theme-authors">Usage for theme authors</a></li>
+<li><a href="#usage-for-application-developers">Usage for application developers</a></li>
+<li><a href="#backward-compatibility">Backward compatibility</a></li>
+<li><a href="#implementation-details">Implementation details</a></li>
+<li><a href="#edge-cases-and-behaviour">Edge cases and behaviour</a></li>
+<li><a href="#testing-and-verification">Testing and verification</a></li>
+<li><a href="#related-types-and-components">Related types and components</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>External (custom) themes in the Krypton Toolkit are represented by <strong>KryptonCustomPaletteBase</strong> instances that can be saved to and loaded from XML files or byte arrays. Previously, these themes had no way to carry a human-readable display name: after load, the only identifier was the file path (when loading from file) or nothing (when loading from stream/bytes), and UI such as KManager could only show a generic label like &quot;Custom&quot;.</p>
+<p>This feature adds <strong>bundled display names</strong> for external themes:</p>
+<ul>
+<li><strong>Export:</strong> When a palette has a display name set (<code>PaletteName</code>), that name is written into the exported XML (and therefore into any binary export, which is the same XML serialized to bytes).</li>
+<li><strong>Import:</strong> When loading from XML (file, stream, or byte array), an optional <code>Name</code> attribute on the root element is read and applied as the palette’s display name.</li>
+<li><strong>Display:</strong> When the global theme is Custom and the custom palette has a non-empty name, <code>ThemeManager.ReturnPaletteModeAsString(KryptonManager)</code> returns that name so KManager and other UI can show it correctly.</li>
+</ul>
+<p>This applies to both <strong>XML</strong> and <strong>binary</strong> (byte-array) formats, because “binary” export is simply the same XML document written to a byte stream.</p>
+<h3 id="goals">Goals</h3>
+<ul>
+<li>Allow theme authors to ship a friendly name (e.g. &quot;Corporate Blue&quot;, &quot;Dark Mode v2&quot;) with their theme file.</li>
+<li>Ensure that name is restored on import and used when displaying the current theme (e.g. in KManager, theme combo boxes, or status text).</li>
+<li>Remain fully backward compatible with existing theme files that do not contain a <code>Name</code> attribute.</li>
+</ul>
+<h3 id="related">Related</h3>
+<ul>
+<li>Implements <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/922">GitHub Issue #922</a>: <em>Can external themes have names bundled with them, both with binary &amp; XML, so that they're displayed correctly in KManager.</em></li>
+</ul>
+<hr>
+<h2 id="quick-reference">Quick reference</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Set display name before export</td>
+<td><code>palette.SetPaletteName(&quot;My Theme Name&quot;);</code></td>
+</tr>
+<tr>
+<td>Get display name after load</td>
+<td><code>string name = palette.GetPaletteName();</code></td>
+</tr>
+<tr>
+<td>Get current theme name for UI (including custom)</td>
+<td><code>string name = ThemeManager.ReturnPaletteModeAsString(kryptonManager);</code></td>
+</tr>
+<tr>
+<td>Export to file (name included if set)</td>
+<td><code>palette.Export(path, ignoreDefaults);</code></td>
+</tr>
+<tr>
+<td>Export to bytes (name included if set)</td>
+<td><code>byte[] bytes = palette.Export(ignoreDefaults);</code></td>
+</tr>
+<tr>
+<td>Import from file (name restored from XML if present)</td>
+<td><code>palette.Import(path, silent);</code></td>
+</tr>
+<tr>
+<td>Import from stream/bytes (name from XML only)</td>
+<td><code>palette.Import(stream, silent);</code> or <code>palette.Import(byteArray, silent);</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<h3 id="data-flow">Data flow</h3>
+<ol>
+<li><p><strong>Author sets name</strong><br>
+<code>KryptonCustomPaletteBase.SetPaletteName(&quot;Display Name&quot;)</code> sets the instance property <code>PaletteName</code>.</p>
+</li>
+<li><p><strong>Export</strong><br>
+<code>ExportToXmlDocument()</code> (used by all export paths) writes the root element <code>KryptonPalette</code> with attributes <code>Version</code>, <code>Generated</code>, and optionally <code>Name</code> (when <code>PaletteName</code> is non-empty). File export and byte-array export both use this same XML; bytes are just the UTF-8 (or configured) encoding of that document.</p>
+</li>
+<li><p><strong>Import</strong><br>
+<code>ImportFromXmlDocument()</code> parses the root, validates <code>Version</code>, then reads the optional <code>Name</code> attribute and calls <code>SetPaletteName(root.GetAttribute(&quot;Name&quot;))</code>. All import entry points (file, stream, byte array) eventually call <code>ImportFromXmlDocument</code>, so the name is restored regardless of source.</p>
+</li>
+<li><p><strong>File import fallback</strong><br>
+For <code>Import(string filename, bool silent)</code> only, after the document is loaded, if the palette still has no name (<code>string.IsNullOrWhiteSpace(GetPaletteName())</code>), the name is set to the file name: <code>SetPaletteName(Path.GetFileName(ret))</code>. So older files without <code>Name</code> still get a reasonable label when loaded from disk.</p>
+</li>
+<li><p><strong>Display</strong><br>
+Callers that need the “current theme name” (e.g. KManager) use <code>ThemeManager.ReturnPaletteModeAsString(KryptonManager manager)</code>. That method checks: if the manager’s mode is <code>Custom</code> and <code>GlobalCustomPalette</code> is a <code>KryptonCustomPaletteBase</code> with a non-empty <code>GetPaletteName()</code>, it returns that name; otherwise it returns the string form of the palette mode (e.g. &quot;Custom&quot;, &quot;Microsoft365Blue&quot;).</p>
+</li>
+</ol>
+<h3 id="components-involved">Components involved</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>KryptonCustomPaletteBase</strong></td>
+<td>Holds <code>PaletteName</code>; exposes <code>SetPaletteName</code> / <code>GetPaletteName</code>; reads and writes the <code>Name</code> attribute in XML during import/export.</td>
+</tr>
+<tr>
+<td><strong>ThemeManager</strong></td>
+<td><code>ReturnPaletteModeAsString(KryptonManager)</code> returns the custom palette’s name when applicable.</td>
+</tr>
+<tr>
+<td><strong>KryptonManager</strong></td>
+<td>Holds <code>GlobalCustomPalette</code> and <code>GlobalPaletteMode</code>; no direct awareness of “display name” (name is resolved via ThemeManager).</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="api-reference">API reference</h2>
+<h3 id="kryptoncustompalettebase-kryptontoolkit">KryptonCustomPaletteBase (Krypton.Toolkit)</h3>
+<h4 id="property">Property</h4>
+<ul>
+<li><strong><code>PaletteName</code></strong> (string, get only from public API)<br>
+The display name of the palette. Set via <code>SetPaletteName</code>. Written to XML as the root <code>Name</code> attribute when non-empty; read from XML on import.</li>
+</ul>
+<h4 id="methods">Methods</h4>
+<ul>
+<li><p><strong><code>void SetPaletteName(string value)</code></strong><br>
+Sets the palette display name. Call before export to bundle the name; after import the name is set from XML (or from filename when importing from file and no <code>Name</code> is present).</p>
+</li>
+<li><p><strong><code>string GetPaletteName()</code></strong><br>
+Returns the current <code>PaletteName</code>. Use after import to get the restored or fallback name.</p>
+</li>
+</ul>
+<h4 id="import-overloads-name-handling">Import overloads (name handling)</h4>
+<ul>
+<li><p><strong><code>string Import(string filename)</code></strong><br>
+Imports from file. Name is set from root <code>Name</code> attribute if present; otherwise from <code>Path.GetFileName(filename)</code>.</p>
+</li>
+<li><p><strong><code>string Import(string filename, bool silent)</code></strong><br>
+Same as above; <code>silent</code> controls whether success/failure messages are shown.</p>
+</li>
+<li><p><strong><code>void Import(Stream stream)</code></strong><br>
+Imports from stream. Name comes only from the XML <code>Name</code> attribute (no filename fallback).</p>
+</li>
+<li><p><strong><code>void Import(Stream stream, bool silent)</code></strong><br>
+Same as above.</p>
+</li>
+<li><p><strong><code>void Import(byte[] byteArray)</code></strong><br>
+Imports from byte array (XML in memory). Name comes only from the XML <code>Name</code> attribute.</p>
+</li>
+<li><p><strong><code>void Import(byte[] byteArray, bool silent)</code></strong><br>
+Same as above.</p>
+</li>
+</ul>
+<h4 id="export-name-inclusion">Export (name inclusion)</h4>
+<ul>
+<li>All export paths use <code>ExportToXmlDocument()</code>, which writes <code>PaletteName</code> as the root <code>Name</code> attribute when non-empty. This applies to:
+<ul>
+<li><code>Export()</code>, <code>Export(string filename, ...)</code>, <code>Export(Stream stream, ...)</code>, <code>Export(bool ignoreDefaults)</code> (byte array).</li>
+</ul>
+</li>
+</ul>
+<h3 id="thememanager-kryptontoolkit">ThemeManager (Krypton.Toolkit)</h3>
+<ul>
+<li><p><strong><code>static string ReturnPaletteModeAsString(KryptonManager manager)</code></strong><br>
+Returns the theme name to display for the given manager.</p>
+<ul>
+<li>If <code>manager.GlobalPaletteMode == PaletteMode.Custom</code> and <code>manager.GlobalCustomPalette</code> is a <code>KryptonCustomPaletteBase</code> with a non-empty <code>GetPaletteName()</code>, returns that name.</li>
+<li>Otherwise returns the string form of the current palette mode (e.g. &quot;Custom&quot;, &quot;Microsoft365Blue&quot;).</li>
+</ul>
+</li>
+<li><p><strong><code>static string ReturnPaletteModeAsString(PaletteMode paletteMode)</code></strong><br>
+Returns the standard string for the given mode (e.g. for built-in themes). Used as fallback when no custom name is available.</p>
+</li>
+</ul>
+<hr>
+<h2 id="persistence-format-xml-and-binary">Persistence format (XML and binary)</h2>
+<h3 id="xml-structure-root-element">XML structure (root element)</h3>
+<p>The exported document has a root element <code>KryptonPalette</code> with required and optional attributes:</p>
+<pre><code class="lang-xml">&lt;KryptonPalette Version=&quot;...&quot; Generated=&quot;...&quot; Name=&quot;...&quot;&gt;
+  &lt;Properties&gt;...&lt;/Properties&gt;
+  &lt;Images&gt;...&lt;/Images&gt;
+&lt;/KryptonPalette&gt;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Version</strong></td>
+<td>Yes</td>
+<td>Palette format version (integer). Must be ≥ current supported version to import.</td>
+</tr>
+<tr>
+<td><strong>Generated</strong></td>
+<td>Yes</td>
+<td>Creation timestamp (informational).</td>
+</tr>
+<tr>
+<td><strong>Name</strong></td>
+<td>No</td>
+<td>Display name of the theme. Omitted when <code>PaletteName</code> is null or whitespace.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Name</strong> is written only when <code>!string.IsNullOrWhiteSpace(PaletteName)</code> during export.</li>
+<li><strong>Name</strong> is read in <code>ImportFromXmlDocument()</code> with <code>root.HasAttribute(&quot;Name&quot;)</code> and <code>root.GetAttribute(&quot;Name&quot;)</code>; the value is applied via <code>SetPaletteName(...)</code>.</li>
+</ul>
+<h3 id="binary-format">Binary format</h3>
+<p>“Binary” export is the same XML document serialized to a byte array (e.g. UTF-8). There is no separate binary schema; the <code>Name</code> attribute is present or absent in that XML in the same way as in a file. Import from bytes deserializes to XML and then runs the same <code>ImportFromXmlDocument()</code> logic, so the name is restored when present.</p>
+<hr>
+<h2 id="import-and-export-behaviour">Import and export behaviour</h2>
+<h3 id="export">Export</h3>
+<ul>
+<li><p><strong>File:</strong> <code>Export(string filename, bool ignoreDefaults [, bool silent])</code><br>
+Builds the XML document (including root <code>Name</code> when <code>PaletteName</code> is set) and writes it to the file.</p>
+</li>
+<li><p><strong>Stream:</strong> <code>Export(Stream stream, bool ignoreDefaults [, bool silent])</code><br>
+Same XML is written to the stream.</p>
+</li>
+<li><p><strong>Byte array:</strong> <code>Export(bool ignoreDefaults [, bool silent])</code><br>
+Same XML is written to a <code>MemoryStream</code>, then the buffer is returned as <code>byte[]</code>.</p>
+</li>
+</ul>
+<p>In all cases, the root <code>Name</code> attribute is written only when <code>PaletteName</code> is non-empty.</p>
+<h3 id="import">Import</h3>
+<ul>
+<li><p><strong>From file:</strong><br>
+XML is loaded from the file; <code>ImportFromXmlDocument()</code> runs and sets the name from the <code>Name</code> attribute if present. Then, in the public <code>Import(string filename, bool silent)</code> method, if <code>GetPaletteName()</code> is still empty, <code>SetPaletteName(Path.GetFileName(ret))</code> is called so legacy files get a filename-based name.</p>
+</li>
+<li><p><strong>From stream or byte array:</strong><br>
+XML is loaded from the stream or from a <code>MemoryStream(byteArray)</code>; <code>ImportFromXmlDocument()</code> runs and sets the name from the <code>Name</code> attribute if present. There is no filename, so no fallback; if the XML has no <code>Name</code>, the palette name remains whatever it was before (often empty).</p>
+</li>
+</ul>
+<h3 id="precedence">Precedence</h3>
+<ul>
+<li>When loading from <strong>file</strong>: bundled <code>Name</code> in XML takes precedence; if absent, the filename (without path) is used.</li>
+<li>When loading from <strong>stream/bytes</strong>: only the bundled <code>Name</code> in XML is used; there is no other source for the name.</li>
+</ul>
+<hr>
+<h2 id="displaying-the-current-theme-name">Displaying the current theme name</h2>
+<p>To show the “current theme” label (e.g. in KManager, a theme selector, or status bar):</p>
+<pre><code class="lang-csharp">string displayName = ThemeManager.ReturnPaletteModeAsString(kryptonManager);
+// For built-in themes: e.g. &quot;Microsoft365Blue&quot;, &quot;SparklePurple&quot;.
+// For custom theme with bundled name: e.g. &quot;Corporate Blue&quot;.
+// For custom theme with no name: &quot;Custom&quot;.
+</code></pre>
+<p>Do <strong>not</strong> rely only on <code>manager.GlobalPaletteMode</code> and convert it to string yourself for Custom mode; that would always show &quot;Custom&quot;. Use <code>ThemeManager.ReturnPaletteModeAsString(manager)</code> so that custom palettes with a set name show that name.</p>
+<hr>
+<h2 id="usage-for-theme-authors">Usage for theme authors</h2>
+<ol>
+<li><p><strong>Create or load your palette</strong><br>
+Use a <code>KryptonCustomPaletteBase</code> (e.g. <code>KryptonPalette</code>) and configure colours, fonts, etc.</p>
+</li>
+<li><p><strong>Set the display name before export</strong></p>
+<pre><code class="lang-csharp">palette.SetPaletteName(&quot;My Company Dark Theme&quot;);
+</code></pre>
+</li>
+<li><p><strong>Export to file or bytes</strong></p>
+<ul>
+<li>File: <code>palette.Export(@&quot;C:\Themes\MyTheme.xml&quot;, ignoreDefaults: true);</code></li>
+<li>Bytes: <code>byte[] data = palette.Export(ignoreDefaults: true);</code><br>
+The name is stored in the root <code>Name</code> attribute.</li>
+</ul>
+</li>
+<li><p><strong>Distribute the file or embed the bytes</strong><br>
+When users (or your app) load this theme, the name &quot;My Company Dark Theme&quot; will be restored and shown wherever the app uses <code>ThemeManager.ReturnPaletteModeAsString(manager)</code>.</p>
+</li>
+</ol>
+<p>If you do not set a name before export, the XML will not contain a <code>Name</code> attribute. When loaded from file, the loader will fall back to the filename; when loaded from stream/bytes, the palette name will remain empty and UI will show &quot;Custom&quot;.</p>
+<hr>
+<h2 id="usage-for-application-developers">Usage for application developers</h2>
+<h3 id="loading-an-external-theme-and-applying-it">Loading an external theme and applying it</h3>
+<pre><code class="lang-csharp">// From file
+var palette = new KryptonCustomPaletteBase();
+palette.Import(themePath, silent: true);
+ThemeManager.ApplyTheme(palette, kryptonManager);
+
+// Optional: show the theme name in UI
+string name = palette.GetPaletteName();        // e.g. &quot;Corporate Blue&quot;
+// or use the global “current theme” name:
+string currentName = ThemeManager.ReturnPaletteModeAsString(kryptonManager);
+</code></pre>
+<h3 id="loading-from-bytes-eg-embedded-resource-or-network">Loading from bytes (e.g. embedded resource or network)</h3>
+<pre><code class="lang-csharp">byte[] themeBytes = ...; // from resource, API, etc.
+var palette = new KryptonCustomPaletteBase();
+palette.Import(themeBytes, silent: true);
+ThemeManager.ApplyTheme(palette, kryptonManager);
+// Display name is whatever was bundled in the XML (no filename fallback).
+string name = ThemeManager.ReturnPaletteModeAsString(kryptonManager);
+</code></pre>
+<h3 id="showing-the-current-theme-in-a-list-or-status-bar">Showing the current theme in a list or status bar</h3>
+<p>Always use ThemeManager for the display string so custom themes show their name:</p>
+<pre><code class="lang-csharp">labelCurrentTheme.Text = ThemeManager.ReturnPaletteModeAsString(kryptonManager);
+</code></pre>
+<hr>
+<h2 id="backward-compatibility">Backward compatibility</h2>
+<ul>
+<li><strong>Existing theme files</strong> that do not have a root <code>Name</code> attribute continue to load. When loaded from file, the name is set to the file name (without path) so UI still gets a reasonable label.</li>
+<li><strong>Existing theme files</strong> that already have a root <code>Name</code> attribute (e.g. hand-edited or from a future version) will have that name applied on import.</li>
+<li><strong>Stream and byte-array import</strong> do not change behaviour for old payloads: if there is no <code>Name</code>, the palette name is simply not set from the import (and may remain empty).</li>
+<li><strong>Export</strong> only adds the <code>Name</code> attribute when the palette has a non-empty name; existing code that does not set <code>PaletteName</code> produces XML identical to before (no <code>Name</code> attribute).</li>
+<li><strong>ThemeManager.ReturnPaletteModeAsString(manager)</strong> falls back to the previous behaviour when the custom palette has no name: it returns the string form of the mode (&quot;Custom&quot;).</li>
+</ul>
+<p>No breaking API or file-format changes were introduced.</p>
+<hr>
+<h2 id="implementation-details">Implementation details</h2>
+<h3 id="where-the-name-is-stored-xml">Where the name is stored (XML)</h3>
+<ul>
+<li><p><strong>Export:</strong> In <code>KryptonCustomPaletteBase.ExportToXmlDocument()</code>, after creating the root element and setting <code>Version</code> and <code>Generated</code>, the code checks <code>!string.IsNullOrWhiteSpace(PaletteName)</code> and, if true, calls <code>root.SetAttribute(&quot;Name&quot;, PaletteName)</code>.</p>
+</li>
+<li><p><strong>Import:</strong> In <code>ImportFromXmlDocument()</code>, after validating the root element and version, the code checks <code>root.HasAttribute(&quot;Name&quot;)</code> and, if true, calls <code>SetPaletteName(root.GetAttribute(&quot;Name&quot;))</code>. This runs before the rest of the palette tree is imported, so the name is available for the rest of the load and for any UI that reads it immediately after import.</p>
+</li>
+</ul>
+<h3 id="file-import-fallback">File import fallback</h3>
+<p>In <code>Import(string filename, bool silent)</code>, after <code>ImportFromFile</code> (which calls <code>ImportFromXmlDocument</code>) returns, the code sets the file path and then:</p>
+<pre><code class="lang-csharp">if (string.IsNullOrWhiteSpace(GetPaletteName()))
+{
+    SetPaletteName(Path.GetFileName(ret));
+}
+</code></pre>
+<p>So the bundled name always wins when present; the filename is used only as a fallback for older or name-less files.</p>
+<h3 id="thememanager-logic">ThemeManager logic</h3>
+<p><code>ReturnPaletteModeAsString(KryptonManager manager)</code>:</p>
+<ol>
+<li>If <code>manager.GlobalPaletteMode != PaletteMode.Custom</code>, or <code>manager.GlobalCustomPalette</code> is not a <code>KryptonCustomPaletteBase</code>, or <code>GetPaletteName()</code> is null or whitespace, the method returns <code>ReturnPaletteModeAsString(manager.GlobalPaletteMode)</code> (the standard mode string, e.g. &quot;Custom&quot;).</li>
+<li>Otherwise it returns <code>customPalette.GetPaletteName()</code>.</li>
+</ol>
+<p>So any UI that uses this method will show the bundled name for custom palettes when available.</p>
+<hr>
+<h2 id="edge-cases-and-behaviour">Edge cases and behaviour</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Export with <code>PaletteName == null</code> or whitespace</td>
+<td>No <code>Name</code> attribute written.</td>
+</tr>
+<tr>
+<td>Export with <code>PaletteName == &quot; &quot;</code></td>
+<td>Treated as whitespace; no <code>Name</code> attribute (consistent with <code>string.IsNullOrWhiteSpace</code>).</td>
+</tr>
+<tr>
+<td>Import XML with no <code>Name</code> from file</td>
+<td>Name set to filename (without path).</td>
+</tr>
+<tr>
+<td>Import XML with no <code>Name</code> from stream/bytes</td>
+<td>Palette name unchanged (often empty).</td>
+</tr>
+<tr>
+<td>Import XML with empty <code>Name=&quot;&quot;</code></td>
+<td><code>SetPaletteName(&quot;&quot;)</code> is called; name is empty.</td>
+</tr>
+<tr>
+<td>Import XML with <code>Name=&quot;My Theme&quot;</code></td>
+<td><code>SetPaletteName(&quot;My Theme&quot;)</code> is called.</td>
+</tr>
+<tr>
+<td>Custom palette applied but <code>GetPaletteName()</code> empty</td>
+<td><code>ReturnPaletteModeAsString(manager)</code> returns &quot;Custom&quot;.</td>
+</tr>
+<tr>
+<td>Manager in Custom mode but <code>GlobalCustomPalette</code> is null</td>
+<td>Treated as no custom palette; returns &quot;Custom&quot; from mode.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="testing-and-verification">Testing and verification</h2>
+<ol>
+<li><p><strong>Export with name</strong><br>
+Set <code>SetPaletteName(&quot;Test Theme&quot;)</code>, export to a file, open the file and confirm the root element has <code>Name=&quot;Test Theme&quot;</code>.</p>
+</li>
+<li><p><strong>Import from file (with Name)</strong><br>
+Import the file from step 1; confirm <code>GetPaletteName()</code> returns <code>&quot;Test Theme&quot;</code>.</p>
+</li>
+<li><p><strong>Import from file (without Name)</strong><br>
+Use an older XML file (no <code>Name</code> attribute) or remove the attribute; import from file and confirm the name is the filename (e.g. <code>MyTheme.xml</code> → &quot;MyTheme.xml&quot;).</p>
+</li>
+<li><p><strong>Import from stream/bytes</strong><br>
+Import the same XML via <code>Import(stream)</code> or <code>Import(byteArray)</code>; confirm the name is restored when <code>Name</code> is present, and unchanged/empty when absent.</p>
+</li>
+<li><p><strong>Display in UI</strong><br>
+Apply the custom palette to a <code>KryptonManager</code>, then call <code>ThemeManager.ReturnPaletteModeAsString(manager)</code> and confirm the returned string is the bundled name (e.g. &quot;Test Theme&quot;) rather than &quot;Custom&quot;.</p>
+</li>
+<li><p><strong>Backward compatibility</strong><br>
+Load an old theme file (no <code>Name</code>); ensure it still loads and that file-based import still assigns the filename as the name.</p>
+</li>
+</ol>
+<hr>
+<h2 id="related-types-and-components">Related types and components</h2>
+<ul>
+<li><strong>KryptonManager</strong> — Holds <code>GlobalPaletteMode</code> and <code>GlobalCustomPalette</code>. Does not expose the display name directly; use <code>ThemeManager.ReturnPaletteModeAsString(manager)</code>.</li>
+<li><strong>PaletteBase / ThemeName</strong> — Built-in palettes use <code>ThemeName</code> (e.g. &quot;PaletteOffice2013White&quot;). Custom palettes use <code>PaletteName</code> for the bundled display name; <code>KryptonCustomPaletteBase</code> delegates <code>ThemeName</code> to the base palette and does not persist it in the custom palette XML.</li>
+<li><strong>CommonHelperThemeSelectors</strong> — Theme selector controls use theme names; when the selected item is Custom, they rely on the manager’s custom palette. Display of the current theme in those controls should use <code>ThemeManager.ReturnPaletteModeAsString(manager)</code> so the bundled name appears when set.</li>
+<li><strong>KryptonThemeComboBox, KryptonThemeListBox, KryptonRibbonGroupThemeComboBox</strong> — List built-in theme names and optionally Custom; for the “current” label when Custom is selected, use the return value of <code>ReturnPaletteModeAsString(manager)</code>.</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p><strong>Theme still shows &quot;Custom&quot; after loading a file that has a name.</strong></p>
+<ul>
+<li>Ensure the XML root has a <code>Name</code> attribute (e.g. <code>&lt;KryptonPalette Version=&quot;...&quot; Name=&quot;My Theme&quot;&gt;</code>).</li>
+<li>Ensure you are using <code>ThemeManager.ReturnPaletteModeAsString(kryptonManager)</code> for the display string, not a hard-coded &quot;Custom&quot; or only the mode enum.</li>
+</ul>
+<p><strong>Name is the full file path instead of a friendly name.</strong></p>
+<ul>
+<li>You are loading from file and the file does not contain a <code>Name</code> attribute (e.g. old format). Set the name before export with <code>SetPaletteName(&quot;...&quot;)</code> and re-export, or set it after load with <code>SetPaletteName(&quot;...&quot;)</code> if you do not control the file.</li>
+</ul>
+<p><strong>After loading from stream/bytes, GetPaletteName() is empty.</strong></p>
+<ul>
+<li>Stream and byte-array import do not have a filename fallback. The XML must include a root <code>Name</code> attribute for the palette to get a name. Re-export the theme with <code>SetPaletteName(&quot;...&quot;)</code> called before export so the attribute is written.</li>
+</ul>
+<p><strong>Export does not write a Name attribute.</strong></p>
+<ul>
+<li>Only a non-empty <code>PaletteName</code> is written. Call <code>SetPaletteName(&quot;Your Name&quot;)</code> before calling <code>Export(...)</code>.</li>
+</ul>
+<p><strong>Old theme files fail to load.</strong></p>
+<ul>
+<li>The feature does not change version requirements or required elements. Ensure the file has the required <code>KryptonPalette</code> root with <code>Version</code> and the <code>Properties</code> and <code>Images</code> elements. The <code>Name</code> attribute is optional and can be added or omitted without affecting load.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
