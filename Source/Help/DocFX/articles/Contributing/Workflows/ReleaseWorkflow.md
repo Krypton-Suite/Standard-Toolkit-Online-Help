@@ -111,6 +111,7 @@ All jobs follow a similar pattern:
 
 **Note**: Uses same webhook as master but different changelog location.
 
+<a id="job-3-release-v85-lts"></a>
 ### Job 3: `release-v85-lts`
 
 **Condition**: `github.ref == 'refs/heads/V85-LTS' && github.event_name == 'push'`
@@ -406,6 +407,13 @@ Each job uses a different project file:
 **Issue**: Job uses incorrect project file
 
 **Solution**: Verify job condition matches intended branch and update project file reference if needed
+
+<a id="usage-examples"></a>
+## Usage Examples
+
+- **Create a Stable Release**: Push to `master`; the release-master job builds, packs, and publishes to NuGet.
+- **Create an LTS Release**: Push to `V85-LTS` or `V105-LTS`; the corresponding job publishes LTS or stable packages.
+- **Create a Canary Pre-Release**: Push to `canary`; the release-canary job publishes Canary packages.
 
 ## Related Workflows
 

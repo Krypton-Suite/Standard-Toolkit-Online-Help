@@ -1,6 +1,6 @@
-﻿<!-- Start Document Outline -->
+<!-- Start Document Outline -->
 
-* [Extended Dialogs](#ExtendedControls)
+* [Extended Dialogs](#extendeddialogs)
 	* [Things of note in the picture](#things-of-note-in-the-picture)
 	* [Usage](#usage)
 * [ToDo](#todo)

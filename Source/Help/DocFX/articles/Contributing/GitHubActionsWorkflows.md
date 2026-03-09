@@ -31,7 +31,7 @@ The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple rele
 
 ## Workflow Architecture
 
-```
+```text
 ┌───────────────────────────────────────────────────────────────┐
 │                   GITHUB ACTIONS WORKFLOWS                    │
 ├───────────────────────────────────────────────────────────────┤

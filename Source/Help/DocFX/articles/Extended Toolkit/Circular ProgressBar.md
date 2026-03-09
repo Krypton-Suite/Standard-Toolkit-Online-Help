@@ -1,6 +1,6 @@
-﻿<!-- Start Document Outline -->
+<!-- Start Document Outline -->
 
-* [CircularProgressBar](#circularprogressbar)
+* [CircularProgressBar](#circularprogessbar)
 	* [Things of note in the pictures](#things-of-note-in-the-pictures)
 	* [Usage](#usage)
 * [ToDo](#todo)

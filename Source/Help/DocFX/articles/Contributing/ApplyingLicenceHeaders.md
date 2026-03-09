@@ -17,7 +17,7 @@ The header text matches the **New BSD 3-Clause License** notice used by this pro
 ## 2. Where It Is Configured
 
 | Item | Location |
-|------|----------|
+| --- | --- |
 | EditorConfig file | `Source/.editorconfig` |
 | Section | `[*.cs]` |
 | Property | `file_header_template` |
@@ -35,7 +35,7 @@ When rendered in a C# file, the header should look exactly like this (including 
 /*
  *
  *  New BSD 3-Clause License (https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/LICENSE)
- *  Modifications by Peter Wagner(aka Wagnerp), Simon Coghlan(aka Smurf-IV), Giduac, tobitege, Lesandro, KamaniAR, et al. 2026 - 2026. All rights reserved.
+ *  Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, tobitege, Lesandro, KamaniAR, Jorge A. Avilés (aka mcpbcs), et al. 2026 - 2026. All rights reserved.
  *
  */
 #endregion
@@ -136,7 +136,7 @@ Some projects under `Source/Krypton Components` still contain **`.licenseheader`
 ## 10. Troubleshooting
 
 | Issue | What to check |
-|-------|----------------|
+| --- | --- |
 | “Add file header” doesn’t appear | Caret must be near the top of the file (e.g. first line). Try **Ctrl+.** and look for “Add file header” or “Add banner”. |
 | Header doesn’t match project standard | Ensure `Source/.editorconfig` is linked from the solution and that the `[*.cs]` section contains the correct `file_header_template` (including `\n` for newlines). |
 | Wrong or old year in header | Update the year range in `file_header_template` in `Source/.editorconfig`, then use “Fix file header” / “Fix all in Solution” to refresh files, or add the header manually with the correct text. |

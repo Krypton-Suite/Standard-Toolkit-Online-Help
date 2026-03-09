@@ -1,6 +1,6 @@
-﻿<!-- Start Document Outline -->
+<!-- Start Document Outline -->
 
-* [Floating Toolbars](#FloatingToolbars)
+* [Floating Toolbars](#floatingtoolbars)
 	* [Things of note in the picture](#things-of-note-in-the-picture)
 	* [Usage](#usage)
 * [ToDo](#todo)

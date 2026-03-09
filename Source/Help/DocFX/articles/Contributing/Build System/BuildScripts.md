@@ -6,6 +6,7 @@ The Krypton Toolkit provides Windows Command Prompt (`.cmd`) batch scripts for c
 
 ## Core Build Scripts
 
+<a id="build-stable-cmd"></a>
 ### build-stable.cmd
 
 **Purpose**: Builds stable/release packages interactively
@@ -136,6 +137,7 @@ buildsolution.cmd          # Interactive build
 buildsolution.cmd Rebuild  # Interactive rebuild
 ```
 
+<a id="purge-cmd"></a>
 ### purge.cmd
 
 **Purpose**: Cleans build artifacts and intermediate files

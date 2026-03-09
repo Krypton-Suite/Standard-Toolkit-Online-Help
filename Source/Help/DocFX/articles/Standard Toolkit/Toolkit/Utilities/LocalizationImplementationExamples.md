@@ -7,11 +7,9 @@ This document provides complete, ready-to-use implementation examples for locali
 ## Table of Contents
 
 1. [Complete Application Example](#complete-application-example)
-2. [Multi-Form Application](#multi-form-application)
-3. [Settings Dialog with Language Selector](#settings-dialog-with-language-selector)
-4. [Localized Message Box Wrapper](#localized-message-box-wrapper)
-5. [Plugin-Based Localization System](#plugin-based-localization-system)
-6. [Database-Driven Localization](#database-driven-localization)
+2. [Settings Dialog with Language Selector](#settings-dialog-with-language-selector)
+3. [Localized Message Box Wrapper](#localized-message-box-wrapper)
+4. [Database-Driven Localization](#database-driven-localization)
 
 ---
 

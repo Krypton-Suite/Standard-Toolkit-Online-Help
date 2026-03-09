@@ -11,7 +11,7 @@ This directory contains comprehensive documentation for all GitHub Actions workf
 ### Workflow Documentation
 
 | Workflow | File | Purpose | Documentation |
-|----------|------|---------|---------------|
+| --- | --- | --- | --- |
 | **Build** | `build.yml` | CI/CD validation and releases | [Build Workflow](Workflows/BuildWorkflow.md) |
 | **Release** | `release.yml` | Multi-channel production releases | [Release Workflow](Workflows/ReleaseWorkflow.md) |
 | **Nightly** | `nightly.yml` | Scheduled nightly builds | [Nightly Workflow](Workflows/NightlyWorkflow.md) |
@@ -21,11 +21,13 @@ This directory contains comprehensive documentation for all GitHub Actions workf
 ## Workflow Summary
 
 ### [Build Workflow](Workflows/BuildWorkflow.md)
+
 **File**: `.github/workflows/build.yml`
 
 Primary CI/CD workflow for validating code quality and creating releases.
 
 **Key Features**:
+
 - ✅ Validates all pull requests
 - ✅ Multi-framework builds (.NET Framework 4.7.2 - 4.8.1, .NET 8 - 10)
 - ✅ Automated GitHub releases for master branch
@@ -33,11 +35,13 @@ Primary CI/CD workflow for validating code quality and creating releases.
 - ✅ Fork protection
 
 **Triggers**:
+
 - Pull requests to any branch
 - Push to protected branches (master, alpha, canary, gold, V85-LTS)
 - Manual: workflow_dispatch
 
 **Jobs**:
+
 1. **build** - Compiles and validates code
 2. **release** - Creates GitHub releases (master only)
 
@@ -46,11 +50,13 @@ Primary CI/CD workflow for validating code quality and creating releases.
 ---
 
 ### [Release Workflow](Workflows/ReleaseWorkflow.md)
+
 **File**: `.github/workflows/release.yml`
 
 Handles production releases across four different release channels.
 
 **Key Features**:
+
 - ✅ Four independent release channels (Master, LTS, Canary, Alpha)
 - ✅ Automatic NuGet package publishing
 - ✅ GitHub release creation with artifacts (master only)
@@ -59,19 +65,21 @@ Handles production releases across four different release channels.
 - ✅ Intelligent duplicate detection
 
 **Triggers**:
+
 - Push to: master, alpha, canary, V105-LTS, V85-LTS
 - Manual: workflow_dispatch
 
 **Release Channels**:
 
 | Channel | Branch | Package Suffix | Tag Format | Discord Color |
-|---------|--------|----------------|------------|---------------|
+| --- | --- | --- | --- | --- |
 | **Stable** | master | - | `v{ver}` | Blue 🔵 |
 | **LTS** | V85-LTS | `.LTS` | `v{ver}-lts` | Orange 🟠 |
 | **Canary** | canary | - | `v{ver}-canary` | Yellow 🟡 |
 | **Alpha** | alpha | - | `v{ver}-nightly` | Purple 🟣 |
 
 **Jobs**:
+
 1. **release-master** - Stable production releases
 2. **release-v85-lts** - Long-term support releases
 3. **release-canary** - Pre-release builds
@@ -82,11 +90,13 @@ Handles production releases across four different release channels.
 ---
 
 ### [Nightly Workflow](Workflows/NightlyWorkflow.md)
+
 **File**: `.github/workflows/nightly.yml`
 
 Automated nightly builds with intelligent change detection.
 
 **Key Features**:
+
 - ⏰ Scheduled execution (00:00 UTC daily)
 - 🔍 Change detection (checks for commits in last 24 hours)
 - 💰 Resource efficient (skips build when no changes)
@@ -95,10 +105,12 @@ Automated nightly builds with intelligent change detection.
 - 🔧 Manual triggering support
 
 **Triggers**:
+
 - Scheduled: Daily at midnight UTC (`0 0 * * *`)
 - Manual: workflow_dispatch
 
 **Workflow Behavior**:
+
 - **With Changes**: Builds, packs, publishes to NuGet, sends Discord notification
 - **No Changes**: Skips all build steps, completes in ~2 minutes
 
@@ -113,23 +125,27 @@ Automated nightly builds with intelligent change detection.
 ### For Contributors
 
 **First Time Setup**:
+
 1. Read [Build Workflow](Workflows/BuildWorkflow.md) to understand CI/CD process
 2. Review [Release Workflow](Workflows/ReleaseWorkflow.md) for release channels
 3. Familiarize yourself with [Nightly Workflow](Workflows/NightlyWorkflow.md) for daily builds
 
 **Common Tasks**:
+
 - **Submit a Pull Request**: See [Build Workflow Usage Examples](Workflows/BuildWorkflow.md#usage-examples)
 - **Create a Release**: See [Release Workflow Usage Examples](Workflows/ReleaseWorkflow.md#usage-examples)
 
 ### For Maintainers
 
 **Workflow Management**:
+
 - **Update .NET SDKs**: Review all workflows for SDK version references
 - **Rotate Secrets**: Check [Configuration](#configuration--secrets) section in each workflow
 - **Monitor Builds**: Review workflow run history in GitHub Actions tab
 - **Troubleshoot Issues**: Use troubleshooting sections in each workflow doc
 
 **Best Practices**:
+
 - Document any workflow modifications
 - Keep all four workflow docs in sync
 - Update version numbers in documentation when workflows change
@@ -143,7 +159,7 @@ Automated nightly builds with intelligent change detection.
 All secrets are configured at repository level (Settings → Secrets and variables → Actions).
 
 | Secret | Required By | Purpose |
-|--------|-------------|---------|
+| --- | --- | --- |
 | `NUGET_API_KEY` | All release workflows | Publish packages to nuget.org |
 | `GITHUB_TOKEN` | Build, Release (master) | Create GitHub releases (automatic) |
 | `DISCORD_WEBHOOK_MASTER` | Release (master) | Stable release announcements |
@@ -156,7 +172,7 @@ All secrets are configured at repository level (Settings → Secrets and variabl
 ### Build Scripts
 
 | Script | Used By | Configuration | Purpose |
-|--------|---------|---------------|---------|
+| --- | --- | --- | --- |
 | `Scripts/build.proj` | Build, Release (master) | Release | Stable production builds |
 | `Scripts/longtermstable.proj` | Release (V85-LTS) | Release | LTS builds |
 | `Scripts/canary.proj` | Release (canary) | Canary | Pre-release builds |
@@ -168,7 +184,7 @@ All secrets are configured at repository level (Settings → Secrets and variabl
 
 ### Which Workflow Runs When?
 
-```
+```plaintext
 Event: Pull Request
 ├─ Any Branch → Build Workflow → Validation Only
 └─ Result: Status check on PR
@@ -201,7 +217,7 @@ Event: Manual Trigger
 ### By Workflow/Channel
 
 | Framework | Build | Release (Master) | Release (LTS) | Release (Canary) | Release (Alpha) | Nightly |
-|-----------|-------|------------------|---------------|------------------|-----------------|---------|
+| --- | --- | --- | --- | --- | --- | --- |
 | .NET 4.6.2 | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
 | .NET 4.7.x | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
 | .NET 4.7.2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -212,7 +228,7 @@ Event: Manual Trigger
 | .NET 8 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | .NET 9 | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | .NET 10 | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-<!-- | .NET 11 | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | -->
+| .NET 11 | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -221,7 +237,9 @@ Event: Manual Trigger
 ### How Do I...?
 
 #### Validate My Pull Request
+
 **Workflow**: [Build Workflow](Workflows/BuildWorkflow.md)
+
 1. Create feature branch
 2. Push changes
 3. Open pull request
@@ -229,33 +247,41 @@ Event: Manual Trigger
 5. Fix any failures before merging
 
 #### Create a Stable Release
+
 **Workflow**: [Release Workflow - Master](Workflows/ReleaseWorkflow.md#job-1-release-master)
+
 1. Update version in project files
 2. Commit to master branch
 3. Push to master
 4. Workflow creates NuGet packages, GitHub release, and Discord notification
 
 #### Create an LTS Release
-**Workflow**: [Release Workflow - LTS](Workflows/ReleaseWorkflow.md#job-2-release-v85-lts)
+
+**Workflow**: [Release Workflow - LTS](Workflows/ReleaseWorkflow.md#job-3-release-v85-lts)
+
 1. Cherry-pick changes to V85-LTS branch
 2. Update LTS version
 3. Push to V85-LTS
 4. Workflow creates LTS NuGet packages
 
 #### Test a Workflow Change
-2. Push to alpha branch
-3. Manually trigger test workflow
-4. Review results
-5. Migrate changes to production if successful
+
+1. Push to alpha branch
+2. Manually trigger test workflow
+3. Review results
+4. Migrate changes to production if successful
 
 #### Force a Nightly Build
+
 **Workflow**: [Nightly Workflow](Workflows/NightlyWorkflow.md)
+
 1. Go to Actions → Nightly Release
 2. Click "Run workflow"
 3. Select alpha branch
 4. Click "Run workflow" button
 
 #### Check Workflow Status
+
 1. Navigate to repository
 2. Click "Actions" tab
 3. Select workflow from left sidebar
@@ -268,7 +294,7 @@ Event: Manual Trigger
 ### Quick Troubleshooting Guide
 
 | Issue | Likely Workflow | Solution Link |
-|-------|-----------------|---------------|
+| --- | --- | --- |
 | PR build fails | Build | [Build Troubleshooting](Workflows/BuildWorkflow.md#troubleshooting) |
 | NuGet push fails | Any release | [Release Troubleshooting](Workflows/ReleaseWorkflow.md#troubleshooting) |
 | Discord notification not sent | Release/Nightly | [Nightly Troubleshooting](Workflows/NightlyWorkflow.md#troubleshooting) |
@@ -278,22 +304,27 @@ Event: Manual Trigger
 ### Common Issues Across Workflows
 
 #### Multi-Targeting Build Failures
+
 **Symptom**: `error NETSDK1045: The current .NET SDK does not support targeting .NET X.X`
 
 **Solution**:
+
 1. Check SDK setup steps in workflow logs
 2. Verify `continue-on-error` is set for optional SDKs
 3. Review global.json generation logic
 
 #### NuGet Package Already Exists
+
 **Symptom**: `Package already exists - skipped`
 
 **Expected**: This is normal; increment version to publish new package
 
 #### Workflow Not Triggering
+
 **Symptom**: Workflow doesn't run at expected time
 
 **Common Causes**:
+
 - Workflow file not on correct branch
 - GitHub Actions disabled in settings
 - Branch protection preventing push
@@ -339,31 +370,27 @@ Event: Manual Trigger
 ## Additional Resources
 
 ### GitHub Actions Documentation
+
 - [GitHub Actions Overview](https://docs.github.com/actions)
 - [Workflow Syntax](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions)
 - [Actions Marketplace](https://github.com/marketplace?type=actions)
 
 ### .NET Documentation
+
 - [.NET SDK Download](https://dotnet.microsoft.com/download)
 - [MSBuild Reference](https://learn.microsoft.com/visualstudio/msbuild)
 - [Multi-Targeting](https://learn.microsoft.com/dotnet/standard/frameworks)
 
 ### NuGet Documentation
+
 - [NuGet Package Publishing](https://learn.microsoft.com/nuget/nuget-org/publish-a-package)
 - [NuGet API Keys](https://learn.microsoft.com/nuget/nuget-org/scoped-api-keys)
 - [Package Versioning](https://learn.microsoft.com/nuget/concepts/package-versioning)
 
 ### Discord Integration
+
 - [Discord Webhook Guide](https://discord.com/developers/docs/resources/webhook)
 - [Discord Embed Formatting](https://discord.com/developers/docs/resources/channel#embed-object)
-
----
-
-## Version History
-
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0 | 2025-10-28 | Initial comprehensive documentation |
 
 ---
 
@@ -412,6 +439,7 @@ When modifying workflows:
 ### Providing Feedback
 
 We welcome feedback on workflow documentation:
+
 - Clarity improvements
 - Additional examples
 - Missing troubleshooting scenarios
@@ -423,6 +451,7 @@ We welcome feedback on workflow documentation:
 ## Quick Links
 
 ### Documentation
+
 - [Build Workflow Documentation](Workflows/BuildWorkflow.md)
 - [Release Workflow Documentation](Workflows/ReleaseWorkflow.md)
 - [Nightly Workflow Documentation](Workflows/NightlyWorkflow.md)

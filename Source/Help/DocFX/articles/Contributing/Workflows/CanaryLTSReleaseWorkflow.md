@@ -320,3 +320,9 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 
 - Variable name must be exactly `CANARY_LTS_DISABLED` and value `true` (lowercase). Variables are case-sensitive.
 - Ensure you are editing **Variables** under **Actions**, not environment-specific variables, unless the workflow uses an environment.
+
+<a id="see-also"></a>
+## See Also
+
+- [Release Workflow](ReleaseWorkflow.md) — Main release pipeline for stable, LTS, and Canary
+- [Build Workflow](BuildWorkflow.md) — CI validation

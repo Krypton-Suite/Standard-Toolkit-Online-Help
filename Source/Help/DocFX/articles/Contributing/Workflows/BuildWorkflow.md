@@ -269,6 +269,13 @@ The build workflow doesn't require any secrets. It only validates builds and doe
 
 **Solution**: Fork PRs should be merged via a branch in the main repository
 
+<a id="usage-examples"></a>
+## Usage Examples
+
+- **Submit a Pull Request**: Create a PR from your branch; the build workflow runs automatically to validate the changes.
+- **Validate Before Merge**: Push to your branch and open a PR; fix any build failures before merging.
+- **Release Build**: On push to `master`, the release job builds and packs NuGet packages.
+
 ## Related Workflows
 
 - **Release Workflow**: Uses similar build process for publishing

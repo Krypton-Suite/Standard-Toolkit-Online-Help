@@ -909,3 +909,11 @@ Due to the non-client area rendering, button spec changes made in the designer c
 ### Memory leak warning after hot-reload
 
 - Hot-reload in .NET may reinitialise `InitializeComponent()` without disposing the previous title bar. If this is a concern, explicitly null `this.TitleBar` before hot-reload and re-assign after.
+
+<a id="related-components"></a>
+## Related Components
+
+- **KryptonForm** — Hosts the title bar via the `TitleBar` property
+- **ButtonSpecAny** — Individual buttons in the title bar
+- **KryptonRibbon** — Integrates with the title bar when both are present
+- **Palette** — Provides theme and styling for title bar elements

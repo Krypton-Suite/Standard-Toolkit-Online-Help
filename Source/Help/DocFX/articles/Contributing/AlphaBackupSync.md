@@ -39,7 +39,7 @@ The **Alpha to Alpha-Backup Sync** workflow is a GitHub Actions automation that 
 ## Key Features
 
 | Feature | Description |
-|---------|-------------|
+| --- | --- |
 | **24-hour window** | Only acts when `alpha` has at least one commit in the last 24 hours. |
 | **Branch creation** | Creates `alpha-backup` from current `alpha` if the branch does not exist. |
 | **PR-based sync** | Sync is proposed via a PR (base: `alpha-backup`, head: `alpha`). |
@@ -65,7 +65,7 @@ The **Alpha to Alpha-Backup Sync** workflow is a GitHub Actions automation that 
 ## Triggers
 
 | Trigger | When |
-|---------|------|
+| --- | --- |
 | **Schedule** | Daily at **00:00 UTC** (`cron: '0 0 * * *'`). |
 | **Manual** | **Actions** → **Alpha to Alpha-Backup Sync** → **Run workflow** → **Run workflow**. |
 
@@ -90,7 +90,7 @@ When disabled, the workflow still runs (triggered by schedule or manual) but exi
 
 The workflow is defined in:
 
-```
+```plaintext
 .github/workflows/alpha-backup-sync.yml
 ```
 
@@ -220,7 +220,7 @@ PATs are created from a user account. A PAT from a user who is an org member (or
 
 Each run creates a new dated directory at the root of the backup repo:
 
-```
+```plaintext
 Standard-Toolkit-Backup/
 ├── Standard Toolkit Backup - 2025-02-01/
 │   ├── Source/
@@ -236,7 +236,7 @@ Standard-Toolkit-Backup/
 ### Configuration
 
 | Variable / Secret | Required | Default | Description |
-|-------------------|----------|---------|-------------|
+| --- | --- | --- | --- |
 | `BACKUP_REPO` | Yes (for backup) | — | Full repo name, e.g. `Krypton-Suite/Standard-Toolkit-Backup` |
 | `BACKUP_REPO_TOKEN` | Yes (for backup) | — | PAT with push access to the backup repo |
 | `BACKUP_DIR_PREFIX` | No | `Standard Toolkit Backup` | Prefix for the directory name |
@@ -284,7 +284,7 @@ Standard-Toolkit-Backup/
 ## Edge Cases and Behaviour
 
 | Scenario | Behaviour |
-|----------|-----------|
+| --- | --- |
 | **alpha-backup does not exist** | Branch created from current `alpha`. No PR (identical). Discord reports branch created. |
 | **alpha-backup exists, alpha is ahead** | PR created or reused. Auto-merge enabled. Discord includes PR link. |
 | **alpha-backup already up to date** | No PR. Discord still sent if webhook set. |

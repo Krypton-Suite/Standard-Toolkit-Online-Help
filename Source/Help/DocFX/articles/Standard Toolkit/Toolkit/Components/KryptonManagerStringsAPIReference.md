@@ -13,10 +13,8 @@ This document provides a complete API reference for the `KryptonManager.Strings`
 1. [Core API](#core-api)
 2. [General String Categories](#general-string-categories)
 3. [Component-Specific String Categories](#component-specific-string-categories)
-4. [Style Converter String Categories](#style-converter-string-categories)
-5. [Color String Categories](#color-string-categories)
-6. [API Patterns and Conventions](#api-patterns-and-conventions)
-7. [Technical Implementation](#technical-implementation)
+4. [API Patterns and Conventions](#api-patterns-and-conventions)
+5. [Technical Implementation](#technical-implementation)
 
 ---
 

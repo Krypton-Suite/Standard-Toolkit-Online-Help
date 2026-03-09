@@ -1,6 +1,6 @@
-﻿<!-- Start Document Outline -->
+<!-- Start Document Outline -->
 
-* [Extended Controls](#ExtendedControls)
+* [Extended Controls](#extendedcontrols)
 	* [Things of note in the picture](#things-of-note-in-the-picture)
 	* [Usage](#usage)
 * [ToDo](#todo)

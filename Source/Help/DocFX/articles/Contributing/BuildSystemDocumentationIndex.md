@@ -7,6 +7,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 ## Documentation Index
 
 ### 1. [Build System Overview](Build%20System/BuildSystemOverview.md)
+
 **Start here for an introduction to the build system.**
 
 - Build system architecture and components
@@ -18,6 +19,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Common build tasks
 
 ### 2. [MSBuild Project Files](Build%20System/MSBuildProjectFiles.md)
+
 **Detailed documentation of `.proj` files.**
 
 - Project file structure and patterns
@@ -31,6 +33,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Custom target execution
 
 ### 3. [Build Scripts](Build%20System/BuildScripts.md)
+
 **Windows command scripts for building and maintenance.**
 
 - `build-stable.cmd` - Stable release builds
@@ -43,6 +46,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Logging and troubleshooting
 
 ### 4. [Directory.Build Configuration](Build%20System/DirectoryBuildConfiguration.md)
+
 **MSBuild property and target configuration.**
 
 - Root `Directory.Build.props` - Global versioning
@@ -55,6 +59,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Property inheritance
 
 ### 5. [Version Management](Build%20System/VersionManagement.md)
+
 **Automated versioning strategy and implementation.**
 
 - Version format: `Major.Minor.Build.Revision[-Suffix]`
@@ -66,6 +71,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Best practices and troubleshooting
 
 ### 6. [NuGet Package Creation and Publishing](Build%20System/NuGetPackaging.md)
+
 **Complete guide to NuGet packages.**
 
 - Package structure and variants
@@ -80,6 +86,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Troubleshooting
 
 ### 7. [GitHub Actions CI/CD Workflows](../GitHubActionsWorkflows.md)
+
 **Automated continuous integration and deployment.**
 
 - `build.yml` - CI builds for PRs and branches
@@ -92,6 +99,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Manual workflow execution
 
 ### 8. [ModernBuild Tool](Build%20System/ModernBuildTool.md)
+
 **Interactive Terminal UI build tool.**
 
 - Installation and running
@@ -103,8 +111,8 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Project file detection
 - Troubleshooting ModernBuild
 
-
 ### 9. [Troubleshooting Guide](Build%20System/Troubleshooting.md)
+
 **Solutions to common issues.**
 
 - Build system issues
@@ -149,12 +157,13 @@ This document contains comprehensive developer documentation for the Krypton Too
 ## Common Tasks
 
 ### Build Debug Locally
+
 ```cmd
 dotnet build "Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln" -c Debug
 ```
 
-
 ### Build Release
+
 ```cmd
 cd Scripts
 build-stable.cmd Build
@@ -163,6 +172,7 @@ build-stable.cmd Build
 See: [Build Scripts](Build%20System/BuildScripts.md#build-stable-cmd)
 
 ### Create NuGet Packages
+
 ```cmd
 cd Scripts
 msbuild build.proj /t:Build;Pack
@@ -171,6 +181,7 @@ msbuild build.proj /t:Build;Pack
 See: [NuGet Package Creation and Publishing](Build%20System/NuGetPackaging.md#package-creation-workflow)
 
 ### Publish to NuGet.org
+
 ```cmd
 cd Scripts
 publish.cmd
@@ -179,6 +190,7 @@ publish.cmd
 See: [NuGet Package Creation and Publishing](Build%20System/NuGetPackaging.md#publishing-to-nugetorg)
 
 ### Clean Build Artifacts
+
 ```cmd
 cd Scripts
 purge.cmd
@@ -187,16 +199,17 @@ purge.cmd
 See: [Build Scripts](Build%20System/BuildScripts.md#purge-cmd)
 
 ### Run TestForm
+
 ```cmd
 dotnet run --project "Source/Krypton Components/TestForm/TestForm.csproj" -c Debug
 ```
-
 
 ## Conventions
 
 ### Code Examples
 
 All code examples use:
+
 - **Windows Command Prompt** syntax (not PowerShell or Bash)
 - **Absolute paths** where needed for clarity
 - **Relative paths** from repository root by default
@@ -204,7 +217,7 @@ All code examples use:
 ### Terminology
 
 | Term | Meaning |
-|------|---------|
+| --- | --- |
 | **TFM** | Target Framework Moniker (e.g., `net8.0-windows`) |
 | **Configuration** | Build configuration (Debug, Release, Canary, Nightly, Installer) |
 | **Channel** | Release channel (Stable, Canary, Nightly) |
@@ -257,4 +270,3 @@ All code examples use:
 ### Krypton Suite Resources
 
 - [Krypton Toolkit Suite Version Dashboard](https://github.com/Krypton-Suite/Krypton-Toolkit-Suite-Version-Dashboard)
-
