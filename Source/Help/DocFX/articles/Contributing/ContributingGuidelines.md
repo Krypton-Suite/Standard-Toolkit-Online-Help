@@ -36,7 +36,7 @@ The developers **respects** diversity. Any user who posts offensive or disrespec
 
 ## Coding Style
 
- These repositories use the C# 10 or newer specification. **If** a new class is added, please be sure to append a license header. The `Standard Toolkit` is governed by the BSD-3-Clause license, whereas the `Extended Toolkit` is governed by the MIT license.
+ These repositories use C# with `LangVersion` set to `preview` in the build configuration. For compatibility, ensure code builds for .NET Framework 4.7.2 (C# 7.3). New classes should follow existing patterns. **If** a new class is added, please be sure to append a license header. The `Standard Toolkit` is governed by the BSD-3-Clause license, whereas the `Extended Toolkit` is governed by the MIT license.
 
 ### Handling `using` statements
 

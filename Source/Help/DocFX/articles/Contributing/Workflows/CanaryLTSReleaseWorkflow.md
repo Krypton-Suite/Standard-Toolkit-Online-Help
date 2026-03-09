@@ -24,7 +24,7 @@
 The **Canary LTS Release** workflow (`canary-lts-release.yml`) builds and publishes **Canary** NuGet packages from the **V105-LTS** branch only. It is the only workflow that produces Canary packages when running on V105-LTS; the main Canary pipeline runs from the `canary` branch.
 
 | Attribute | Value |
-|-----------|--------|
+| --- | --- |
 | **Workflow file** | `.github/workflows/canary-lts-release.yml` |
 | **Display name** | Canary LTS Release |
 | **Runner** | `windows-latest` |
@@ -43,7 +43,7 @@ The **Canary LTS Release** workflow (`canary-lts-release.yml`) builds and publis
 ## Relationship to Other Workflows
 
 | Workflow | Branch | Build type | Package IDs / Notes |
-|----------|--------|------------|---------------------|
+| --- | --- | --- | --- |
 | **Release** (release.yml) | `master` | Release | Krypton.Toolkit, Krypton.Standard.Toolkit, etc. |
 | **Release** (release.yml) | **V105-LTS** | Release | Same stable IDs; LTS changelog links. |
 | **Release** (release.yml) | `canary` | Canary | Krypton.Toolkit.Canary, Krypton.Standard.Toolkit.Canary, etc. |
@@ -61,7 +61,7 @@ The **Canary LTS Release** workflow (`canary-lts-release.yml`) builds and publis
 ### Triggers
 
 | Trigger | When it runs |
-|---------|----------------------|
+| --- | --- |
 | **Push** | Any push to the `V105-LTS` branch. |
 | **workflow_dispatch** | Manual run from **Actions** → **Canary LTS Release** → **Run workflow** (branch must be **V105-LTS** when using "Run workflow" from the UI). |
 
@@ -97,7 +97,7 @@ if: github.ref == 'refs/heads/V105-LTS' && (github.event_name == 'push' || githu
 The workflow can be disabled without code changes.
 
 | Item | Value |
-|------|--------|
+| --- | --- |
 | **Variable** | `CANARY_LTS_DISABLED` |
 | **Location** | **Settings** → **Secrets and variables** → **Actions** → **Variables** |
 | **To disable** | Set value to `true` (case-sensitive). |
@@ -260,7 +260,7 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 ## Secrets and Variables Reference
 
 | Name | Type | Required | Description |
-|------|------|----------|-------------|
+| --- | --- | --- | --- |
 | **NUGET_API_KEY** | Secret | Yes (for push) | nuget.org API key; push to https://api.nuget.org/v3/index.json. If unset, push is skipped and the workflow still succeeds. |
 | **AUTHENTICODE_CERT_BASE64** | Secret | No | Base64-encoded .pfx used for Authenticode signing. If set, Build step enables signing. |
 | **AUTHENTICODE_CERT_PASSWORD** | Secret | No | Password for the .pfx. Only used when AUTHENTICODE_CERT_BASE64 is set. |
@@ -321,7 +321,6 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 - Variable name must be exactly `CANARY_LTS_DISABLED` and value `true` (lowercase). Variables are case-sensitive.
 - Ensure you are editing **Variables** under **Actions**, not environment-specific variables, unless the workflow uses an environment.
 
-<a id="see-also"></a>
 ## See Also
 
 - [Release Workflow](ReleaseWorkflow.md) — Main release pipeline for stable, LTS, and Canary

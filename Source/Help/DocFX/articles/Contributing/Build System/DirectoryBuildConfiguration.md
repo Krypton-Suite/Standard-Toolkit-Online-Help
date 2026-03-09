@@ -7,15 +7,17 @@ The Krypton Toolkit uses MSBuild's `Directory.Build.props` and `Directory.Build.
 ## File Hierarchy
 
 ### Root Level
+
 - `Directory.Build.props` - Global versioning and configuration
 
 ### Component Level
+
 - `Source/Krypton Components/Directory.Build.props` - Component-specific properties
 - `Source/Krypton Components/Directory.Build.targets` - Component-specific targets
 
 ### Inheritance Chain
 
-```
+```text
 Directory.Build.props (root)
     ↓ imported by
 Source/Krypton Components/Directory.Build.props
@@ -36,17 +38,19 @@ The toolkit uses date-based semantic versioning:
 **Format**: `Major.YY.MM.DayOfYear[-suffix]`
 
 **Components**:
-- **Major**: `100` (fixed)
-- **Minor**: Current year (2 digits, e.g., `25` for 2025)
+
+- **Major**: `110` (fixed)
+- **Minor**: Current year (2 digits, e.g., `26` for 2026)
 - **Build**: Current month (2 digits, e.g., `01` for January)
 - **Revision**: Day of year (1-366)
 - **Suffix**: Configuration-dependent (e.g., `-alpha`, `-beta`)
 
-**Example**: `100.25.1.305` = Version 100, released in 2025, January, on the 305th day of the year
+**Example**: `110.26.1.1` = Version 110, released in 2026, January, on the 1st day of the year
 
 ### Configuration-Based Versioning
 
 #### Canary Configuration
+
 ```xml
 <When Condition="'$(Configuration)' == 'Canary'">
     <PropertyGroup>
@@ -61,10 +65,12 @@ The toolkit uses date-based semantic versioning:
 ```
 
 **Properties**:
+
 - `LibraryVersion`: Assembly version
 - `PackageVersion`: NuGet package version with `-beta` suffix
 
 #### Nightly Configuration
+
 ```xml
 <When Condition="'$(Configuration)' == 'Nightly'">
     <PropertyGroup>
@@ -79,9 +85,11 @@ The toolkit uses date-based semantic versioning:
 ```
 
 **Properties**:
+
 - `PackageVersion`: Has `-alpha` suffix for nightly builds
 
 #### Installer Configuration
+
 ```xml
 <When Condition="'$(Configuration)' == 'Installer'">
     <PropertyGroup>
@@ -96,10 +104,12 @@ The toolkit uses date-based semantic versioning:
 ```
 
 **Special Notes**:
+
 - WiX installers require build numbers ≤ 256
 - Uses month number for Build component
 
 #### Release/Stable Configuration (Default)
+
 ```xml
 <Otherwise>
     <PropertyGroup>
@@ -116,6 +126,7 @@ The toolkit uses date-based semantic versioning:
 ### .NET 10 Resource Handling
 
 For .NET 10 compatibility:
+
 ```xml
 <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
@@ -151,6 +162,7 @@ Defines configuration-specific compilation symbols:
 ```
 
 **Usage in Code**:
+
 ```csharp
 #if NIGHTLY
     // Nightly-specific code
@@ -221,13 +233,14 @@ Uses `LibraryVersion` from root `Directory.Build.props`.
 ```
 
 **Result**: Packages go to `Bin/Packages/<Configuration>/`
+
 - `Bin/Packages/Release/`
 - `Bin/Packages/Canary/`
 - `Bin/Packages/Nightly/`
 
 ### Configuration-Specific Package Metadata
 
-#### Canary Configuration
+#### Canary Configuration (Package Metadata)
 
 ```xml
 <When Condition="'$(Configuration)' == 'Canary'">
@@ -260,11 +273,12 @@ Uses `LibraryVersion` from root `Directory.Build.props`.
 ```
 
 **Features**:
+
 - Custom Canary icon
 - Includes License.md and README.md
 - Source link enabled
 
-#### Nightly Configuration
+#### Nightly Configuration (Package Metadata)
 
 Similar to Canary, but uses `Krypton Nightly.png` icon.
 
@@ -316,6 +330,7 @@ Similar to Canary, but uses `Krypton Nightly.png` icon.
 ### Version Properties by Configuration
 
 #### Canary
+
 ```xml
 <When Condition="'$(Configuration)' == 'Canary'">
     <PropertyGroup>
@@ -334,13 +349,16 @@ Similar to Canary, but uses `Krypton Nightly.png` icon.
 ```
 
 **Features**:
+
 - Separate symbol packages (`.snupkg`)
 - Preview language and analyzer versions
 
 #### Nightly
+
 Similar to Canary with `-alpha` suffix and symbol packages.
 
 #### Release/Stable
+
 ```xml
 <Otherwise>
     <PropertyGroup>
@@ -356,6 +374,7 @@ Similar to Canary with `-alpha` suffix and symbol packages.
 ```
 
 ### Assembly Info
+
 ```xml
 <PropertyGroup>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
@@ -367,14 +386,15 @@ Similar to Canary with `-alpha` suffix and symbol packages.
 
 ### Package ID Customization
 
-#### Canary
+#### Canary (Package ID)
+
 ```xml
 <When Condition="'$(Configuration)' == 'Canary'">
     <PropertyGroup>
         <PackageId Condition="'$(TFMs)' == 'all'">$(PackageId).Canary</PackageId>
         <Description Condition="'$(TFMs)' == 'all'">
-            An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 10. 
-            $(Description) This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 10. 
+            An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 11. 
+            $(Description) This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 11. 
             Also, all libraries are included targeting each specific framework version for performance purposes. 
             To view all of the standard toolkit package latest version information, please visit: 
             https://github.com/Krypton-Suite/Krypton-Toolkit-Suite-Version-Dashboard/blob/main/Documents/Modules/Standard/Krypton-Toolkit-Suite-Standard-Modules.md 
@@ -387,15 +407,17 @@ Similar to Canary with `-alpha` suffix and symbol packages.
 
 **Result**: Package named `Krypton.Toolkit.Canary` with detailed description
 
-#### Nightly
+#### Nightly (Package ID)
+
 Similar with `.Nightly` suffix and alpha-specific description.
 
 #### Release (Lite)
+
 ```xml
 <PropertyGroup>
     <PackageId Condition="'$(TFMs)' == 'lite'">$(PackageId).Lite</PackageId>
     <Description Condition="'$(TFMs)' == 'lite'">
-        An update to Component factory's krypton toolkit to support .NET Framework 4.8 - 4.8.1 and .NET 8 - 10. 
+        An update to Component factory's krypton toolkit to support .NET Framework 4.8 - 4.8.1 and .NET 8 - 11. 
         $(Description) This package supports all .NET Framework versions starting .NET Framework 4.8 - 4.8.1, .NET 6 - 8. 
         Also, all libraries are included targeting each specific framework version for performance purposes.
     </Description>
@@ -403,12 +425,13 @@ Similar with `.Nightly` suffix and alpha-specific description.
 ```
 
 #### Release (All)
+
 ```xml
 <PropertyGroup>
     <PackageId Condition="'$(TFMs)' == 'all'">$(PackageId)</PackageId>
     <Description Condition="'$(TFMs)' == 'all'">
-        An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 10. 
-        $(Description) This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 10.
+        An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 11. 
+        $(Description) This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 11.
     </Description>
 </PropertyGroup>
 ```
@@ -418,7 +441,7 @@ Similar with `.Nightly` suffix and alpha-specific description.
 ### Global Properties
 
 | Property | Source | Purpose |
-|----------|--------|---------|
+| --- | --- | --- |
 | `LibraryVersion` | Root Directory.Build.props | Assembly version |
 | `PackageVersion` | Root Directory.Build.props | NuGet package version |
 | `Configuration` | MSBuild | Build configuration |
@@ -427,7 +450,7 @@ Similar with `.Nightly` suffix and alpha-specific description.
 ### Component Properties
 
 | Property | Source | Purpose |
-|----------|--------|---------|
+| --- | --- | --- |
 | `LangVersion` | Component Directory.Build.props | C# language version |
 | `PackageOutputPath` | Component Directory.Build.props | NuGet output directory |
 | `Version` | Component Directory.Build.props | Project version |
@@ -439,6 +462,7 @@ Similar with `.Nightly` suffix and alpha-specific description.
 ### Override Version Locally
 
 In a project file (`.csproj`):
+
 ```xml
 <PropertyGroup>
     <Version>1.2.3.4</Version>
@@ -467,4 +491,3 @@ In a project file (`.csproj`):
 - [NuGet Packaging](NuGetPackaging.md) - Package creation
 - [MSBuild Project Files](MSBuildProjectFiles.md) - .proj files
 - [Build System Overview](BuildSystemOverview.md) - System overview
-

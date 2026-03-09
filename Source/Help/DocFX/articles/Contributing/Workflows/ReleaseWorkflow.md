@@ -17,6 +17,7 @@ The Release workflow handles automated releases for multiple branch types: stabl
 ### Push Events
 
 The workflow triggers on pushes to:
+
 - `master` - Stable production releases
 - `alpha` - Alpha/nightly releases
 - `canary` - Canary pre-releases
@@ -61,7 +62,7 @@ All jobs follow a similar pattern:
 
 **Kill Switch**: `RELEASE_DISABLED`
 
-**Project File**: `Scripts/build.proj`
+**Project File**: `Scripts/Build/build.proj`
 
 **Configuration**: `Release`
 
@@ -70,6 +71,7 @@ All jobs follow a similar pattern:
 **Discord Webhook**: `DISCORD_WEBHOOK_MASTER`
 
 **Packages**:
+
 - Krypton.Toolkit
 - Krypton.Ribbon
 - Krypton.Navigator
@@ -91,7 +93,7 @@ All jobs follow a similar pattern:
 
 **Kill Switch**: `RELEASE_DISABLED`
 
-**Project File**: `Scripts/build.proj`
+**Project File**: `Scripts/Build/build.proj`
 
 **Configuration**: `Release`
 
@@ -111,14 +113,13 @@ All jobs follow a similar pattern:
 
 **Note**: Uses same webhook as master but different changelog location.
 
-<a id="job-3-release-v85-lts"></a>
 ### Job 3: `release-v85-lts`
 
 **Condition**: `github.ref == 'refs/heads/V85-LTS' && github.event_name == 'push'`
 
 **Kill Switch**: `LTS_DISABLED`
 
-**Project File**: `Scripts/longtermstable.proj`
+**Project File**: `Scripts/Build/longtermstable.proj`
 
 **Configuration**: `Release`
 
@@ -127,6 +128,7 @@ All jobs follow a similar pattern:
 **Discord Webhook**: `DISCORD_WEBHOOK_LTS`
 
 **Packages**:
+
 - Krypton.Toolkit.LTS
 - Krypton.Ribbon.LTS
 - Krypton.Navigator.LTS
@@ -151,7 +153,7 @@ All jobs follow a similar pattern:
 
 **Kill Switch**: `CANARY_DISABLED`
 
-**Project File**: `Scripts/canary.proj`
+**Project File**: `Scripts/Build/canary.proj`
 
 **Configuration**: `Canary`
 
@@ -160,6 +162,7 @@ All jobs follow a similar pattern:
 **Discord Webhook**: `DISCORD_WEBHOOK_CANARY`
 
 **Packages**:
+
 - Krypton.Toolkit.Canary
 - Krypton.Ribbon.Canary
 - Krypton.Navigator.Canary
@@ -181,7 +184,7 @@ All jobs follow a similar pattern:
 
 **Kill Switch**: `NIGHTLY_DISABLED`
 
-**Project File**: `Scripts/nightly.proj`
+**Project File**: `Scripts/Build/nightly.proj`
 
 **Configuration**: `Nightly`
 
@@ -200,7 +203,7 @@ All jobs follow a similar pattern:
 Each job has its own kill switch variable:
 
 | Job | Variable | Purpose |
-|-----|----------|---------|
+| --- | --- | --- |
 | release-master | `RELEASE_DISABLED` | Disable stable releases |
 | release-v105-lts | `RELEASE_DISABLED` | Disable V105 LTS releases |
 | release-v85-lts | `LTS_DISABLED` | Disable V85 LTS releases |
@@ -210,6 +213,7 @@ Each job has its own kill switch variable:
 **Location**: Repository Settings → Secrets and variables → Actions → Variables
 
 **Implementation**: All steps after kill switch check are conditional:
+
 ```yaml
 if: steps.{kill_switch_id}.outputs.enabled == 'true'
 ```
@@ -217,10 +221,12 @@ if: steps.{kill_switch_id}.outputs.enabled == 'true'
 ### .NET SDK Versions
 
 **Most Jobs** (master, V105-LTS, canary, alpha):
+
 - .NET 9.0.x
 - .NET 10.0.x
 
 **V85-LTS Job**:
+
 - .NET 6.0.x
 - .NET 7.0.x
 - .NET 8.0.x
@@ -232,22 +238,24 @@ if: steps.{kill_switch_id}.outputs.enabled == 'true'
 Each job uses a different project file:
 
 | Job | Project File | Purpose |
-|-----|--------------|---------|
-| release-master | `Scripts/build.proj` | Standard release build |
-| release-v105-lts | `Scripts/build.proj` | Standard release build |
+| --- | --- | --- |
+| release-master | `Scripts/Build/build.proj` | Standard release build |
+| release-v105-lts | `Scripts/Build/build.proj` | Standard release build |
 | release-v85-lts | `Scripts/longtermstable.proj` | LTS-specific build |
-| release-canary | `Scripts/canary.proj` | Canary-specific build |
-| release-alpha | `Scripts/nightly.proj` | Nightly/alpha build |
+| release-canary | `Scripts/Build/canary.proj` | Canary-specific build |
+| release-alpha | `Scripts/Build/nightly.proj` | Nightly/alpha build |
 
 ### NuGet Publishing
 
 **Process**:
+
 1. Scans for `.nupkg` files in package directory
 2. Pushes each package with `--skip-duplicate` flag
 3. Tracks if any packages were actually published
 4. Continues on individual package failures
 
 **Package Detection**:
+
 - Master/V105-LTS: `Bin/Packages/Release/*.nupkg`
 - V85-LTS: `Bin/Packages/Release/*.nupkg`
 - Canary: `Bin/Packages/Canary/*.nupkg`
@@ -274,6 +282,7 @@ Each job uses a different project file:
    - V85-LTS: `85.25.1.1`
 
 **Output Variables**:
+
 - `version` - Version number
 - `tag` - Git tag format (varies by job)
 
@@ -282,12 +291,14 @@ Each job uses a different project file:
 **Trigger**: Only if packages were published (`packages_published == 'True'`)
 
 **Webhooks**:
+
 - Master/V105-LTS: `DISCORD_WEBHOOK_MASTER`
 - V85-LTS: `DISCORD_WEBHOOK_LTS`
 - Canary: `DISCORD_WEBHOOK_CANARY`
 - Alpha: None (handled by nightly.yml)
 
 **Message Structure**:
+
 - Title (varies by release type)
 - Description
 - Version field
@@ -297,6 +308,7 @@ Each job uses a different project file:
 - Timestamp
 
 **Colors**:
+
 - Master/V105-LTS: `77dd76` (green)
 - V85-LTS: `0094ff` (blue)
 - Canary: `16776960` (yellow)
@@ -339,12 +351,14 @@ Each job uses a different project file:
 ### Job Not Running
 
 **Possible Causes**:
+
 1. Wrong branch pushed to
 2. Kill switch enabled
 3. Workflow file syntax errors
 4. Branch condition not met
 
 **Solutions**:
+
 - Verify branch name matches job condition
 - Check kill switch variable in repository settings
 - Review workflow logs for errors
@@ -353,12 +367,14 @@ Each job uses a different project file:
 ### Build Failures
 
 **Common Causes**:
+
 1. Missing project file
 2. Incorrect configuration name
 3. SDK version mismatches
 4. Compilation errors
 
 **Solutions**:
+
 - Verify project file exists at specified path
 - Check configuration name matches project file
 - Ensure correct SDK versions installed
@@ -367,12 +383,14 @@ Each job uses a different project file:
 ### NuGet Publishing Failed
 
 **Possible Causes**:
+
 1. Missing or invalid `NUGET_API_KEY`
 2. Package version already exists (handled gracefully)
 3. Invalid package format
 4. Network issues
 
 **Solutions**:
+
 - Verify API key is set and valid
 - Check if package version already exists (this is normal)
 - Review NuGet push logs
@@ -381,12 +399,14 @@ Each job uses a different project file:
 ### Discord Notification Not Sent
 
 **Possible Causes**:
+
 1. No packages were published (expected if duplicates)
 2. Missing webhook secret
 3. Invalid webhook URL
 4. Discord API issues
 
 **Solutions**:
+
 - Check `packages_published` output in logs
 - Verify webhook secret is set
 - Test webhook URL manually
@@ -397,6 +417,7 @@ Each job uses a different project file:
 **Behavior**: Uses fallback version
 
 **Solutions**:
+
 - Verify build completed successfully
 - Check if DLL exists at expected path
 - Review version extraction logs
@@ -408,7 +429,6 @@ Each job uses a different project file:
 
 **Solution**: Verify job condition matches intended branch and update project file reference if needed
 
-<a id="usage-examples"></a>
 ## Usage Examples
 
 - **Create a Stable Release**: Push to `master`; the release-master job builds, packs, and publishes to NuGet.
@@ -425,6 +445,7 @@ Each job uses a different project file:
 **File**: `.github/workflows/release.yml`
 
 **Key Components**:
+
 - Event: `push` to release branches
 - Jobs: 5 separate jobs for different release types
 - Kill Switches: Branch-specific disable controls
@@ -436,6 +457,7 @@ Each job uses a different project file:
 To add support for a new release branch:
 
 1. Create new job in workflow file:
+
    ```yaml
    release-new-branch:
      runs-on: windows-latest
@@ -484,7 +506,7 @@ If package naming changes:
 
 ## Workflow Flow Diagram
 
-```
+```text
 Push to Release Branch
     │
     ├─> Determine Branch Type
@@ -522,10 +544,9 @@ Push to Release Branch
 ## Release Type Comparison
 
 | Type | Branch | Kill Switch | Project | Config | Webhook | Tag Format |
-|------|--------|-------------|---------|--------|---------|------------|
-| Stable | master | RELEASE_DISABLED | build.proj | Release | MASTER | v{version} |
-| LTS v105 | V105-LTS | RELEASE_DISABLED | build.proj | Release | MASTER | v{version} |
+| --- | --- | --- | --- | --- | --- | --- |
+| Stable | master | RELEASE_DISABLED | Scripts/Build/build.proj | Release | MASTER | v{version} |
+| LTS v105 | V105-LTS | RELEASE_DISABLED | Scripts/Build/build.proj | Release | MASTER | v{version} |
 | LTS v85 | V85-LTS | LTS_DISABLED | longtermstable.proj | Release | LTS | v{version}-lts |
-| Canary | canary | CANARY_DISABLED | canary.proj | Canary | CANARY | v{version}-canary |
-| Alpha | alpha | NIGHTLY_DISABLED | nightly.proj | Nightly | None | N/A |
-
+| Canary | canary | CANARY_DISABLED | Scripts/Build/canary.proj | Canary | CANARY | v{version}-canary |
+| Alpha | alpha | NIGHTLY_DISABLED | Scripts/Build/nightly.proj | Nightly | None | N/A |

@@ -15,6 +15,7 @@ This directory contains comprehensive documentation for all GitHub Actions workf
 | **Build** | `build.yml` | CI/CD validation and releases | [Build Workflow](Workflows/BuildWorkflow.md) |
 | **Release** | `release.yml` | Multi-channel production releases | [Release Workflow](Workflows/ReleaseWorkflow.md) |
 | **Nightly** | `nightly.yml` | Scheduled nightly builds | [Nightly Workflow](Workflows/NightlyWorkflow.md) |
+| **Canary LTS** | `canary-lts-release.yml` | Canary packages from V105-LTS | [Canary LTS Release Workflow](Workflows/CanaryLTSReleaseWorkflow.md) |
 
 ---
 
@@ -29,7 +30,7 @@ Primary CI/CD workflow for validating code quality and creating releases.
 **Key Features**:
 
 - ✅ Validates all pull requests
-- ✅ Multi-framework builds (.NET Framework 4.7.2 - 4.8.1, .NET 8 - 10)
+- ✅ Multi-framework builds (.NET Framework 4.7.2 - 4.8.1, .NET 8 - 11)
 - ✅ Automated GitHub releases for master branch
 - ✅ NuGet package caching for performance
 - ✅ Fork protection
@@ -173,10 +174,10 @@ All secrets are configured at repository level (Settings → Secrets and variabl
 
 | Script | Used By | Configuration | Purpose |
 | --- | --- | --- | --- |
-| `Scripts/build.proj` | Build, Release (master) | Release | Stable production builds |
-| `Scripts/longtermstable.proj` | Release (V85-LTS) | Release | LTS builds |
-| `Scripts/canary.proj` | Release (canary) | Canary | Pre-release builds |
-| `Scripts/nightly.proj` | Build, Nightly, Release (alpha) | Nightly | Development builds |
+| `Scripts/Build/build.proj` | Build, Release (master) | Release | Stable production builds |
+| `Scripts/Build/longtermstable.proj` | Release (V85-LTS) | Release | LTS builds |
+| `Scripts/Build/canary.proj` | Release (canary), canary.yml | Canary | Pre-release builds |
+| `Scripts/Build/nightly.proj` | Build, Nightly, Release (alpha) | Nightly | Development builds |
 
 ---
 
@@ -198,10 +199,15 @@ Event: Push to alpha
 └─ Release Workflow → release-alpha (NuGet + Discord)
 
 Event: Push to canary
-└─ Release Workflow → release-canary (NuGet + Discord)
+├─ Release Workflow → release-canary (NuGet + Discord)
+└─ canary.yml (if using Canary branch) → Canary packages
 
 Event: Push to V85-LTS
 └─ Release Workflow → release-v85-lts (NuGet + Discord)
+
+Event: Push to V105-LTS
+├─ Release Workflow → release-v105-lts (Stable NuGet + Discord)
+└─ Canary LTS Release Workflow → canary-lts-release (Canary NuGet + Discord)
 
 Event: Cron Schedule (00:00 UTC)
 └─ Nightly Workflow → Check changes → Build if needed
@@ -229,6 +235,8 @@ Event: Manual Trigger
 | .NET 9 | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | .NET 10 | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | .NET 11 | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
+
+**Note**: Standalone workflows: `canary.yml` (push to Canary branch), `canary-lts-release.yml` (push to V105-LTS for Canary packages from the LTS branch).
 
 ---
 

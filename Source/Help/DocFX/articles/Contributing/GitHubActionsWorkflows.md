@@ -16,7 +16,7 @@
 
 ## Overview
 
-The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple release channels. The system consists of three specialized workflows that handle continuous integration, manual releases, and automated nightly builds.
+The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple release channels. The system includes workflows for continuous integration (`build.yml`), manual releases (`release.yml`), automated nightly builds (`nightly.yml`), a standalone Canary release workflow (`canary.yml`) on push to the Canary branch, and a **Canary LTS Release** workflow (`canary-lts-release.yml`) that publishes Canary packages from the V105-LTS branch.
 
 ### Key Features
 
@@ -57,10 +57,12 @@ The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple rele
 ### Workflow Separation Philosophy
 
 | Workflow | Purpose | When to Run | Outputs |
-|----------|---------|-------------|---------|
+| --- | --- | --- | --- |
 | **build.yml** | Validation | Every PR, every push | Build logs only |
 | **release.yml** | Distribution | Manual pushes to release branches | Packages, archives, releases |
 | **nightly.yml** | Automation | Daily at midnight | Packages (if version changed) |
+| **canary.yml** | Canary release | Push to Canary branch | Canary packages (alternative to release.yml's release-canary job) |
+| **canary-lts-release.yml** | Canary LTS | Push to V105-LTS branch | Canary packages built from LTS branch (see [CanaryLTSReleaseWorkflow](Workflows/CanaryLTSReleaseWorkflow.md)) |
 
 ---
 
@@ -68,11 +70,11 @@ The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple rele
 
 **File**: `.github/workflows/build.yml`
 
-### Purpose
+### Purpose (build.yml)
 
 Fast validation that code compiles correctly across all target frameworks. Provides quick feedback for pull requests and commits.
 
-### Triggers
+### Triggers (build.yml)
 
 ```yaml
 on:
@@ -128,7 +130,7 @@ Installs all SDKs to support every branch's target frameworks:
 
 **Why all SDKs?**: Single build job must handle PRs from any branch
 
-### Execution Time
+### Execution Time (build.yml)
 
 ⚡ **~3-5 minutes** (optimized for speed)
 
@@ -144,11 +146,11 @@ Installs all SDKs to support every branch's target frameworks:
 
 **File**: `.github/workflows/release.yml`
 
-### Purpose
+### Purpose (release.yml)
 
 Creates and publishes releases when code is pushed to specific branches. Each branch gets its own specialized job with appropriate configuration.
 
-### Triggers
+### Triggers (release.yml)
 
 ```yaml
 on:
@@ -169,7 +171,7 @@ on:
 Four independent jobs, one per branch:
 
 | Job | Branch | Purpose | Artifacts |
-|-----|--------|---------|-----------|
+| --- | --- | --- | --- |
 | `release-master` | master | Stable production | Packages + Archives + GitHub Release |
 | `release-v85-lts` | V85-LTS | Long-term support | LTS Packages |
 | `release-canary` | canary | Pre-release testing | Canary Packages |
@@ -179,16 +181,16 @@ Four independent jobs, one per branch:
 
 ### Job: `release-master`
 
-**Stable production releases**
+#### Stable production releases
 
-#### Configuration
+#### Configuration (release-master)
 
-- **Build Script**: `Scripts/build.proj`
+- **Build Script**: `Scripts/Build/build.proj`
 - **Configuration**: `Release`
-- **Target Frameworks**: net472, net48, net481, net8.0, net9.0, net10.0
+- **Target Frameworks**: net472, net48, net481, net8.0-windows, net9.0-windows, net10.0-windows, net11.0-windows
 - **Output**: `Bin/Packages/Release/`
 
-#### Steps
+#### Steps (release-master)
 
 1. **Setup Environment**
 
@@ -203,7 +205,7 @@ Four independent jobs, one per branch:
 
    ```yaml
    - Restore solution
-   - Build (Scripts/build.proj)
+   - Build (Scripts/Build/build.proj)
    - Pack (creates lite + full packages)
    ```
 
@@ -266,7 +268,7 @@ Four independent jobs, one per branch:
    - Send rich embed with version, packages, links
    ```
 
-#### Unique Features
+#### Unique Features (release-master)
 
 - ✅ Only job that creates GitHub releases
 - ✅ Creates both lite (5 TFMs) and full (6 TFMs) packages
@@ -274,7 +276,7 @@ Four independent jobs, one per branch:
 - ✅ Diagnostics step for troubleshooting
 - ✅ Idempotent release creation
 
-#### Execution Time
+#### Execution Time (release-master)
 
 🕐 **~12-15 minutes**
 
@@ -282,9 +284,9 @@ Four independent jobs, one per branch:
 
 ### Job: `release-v85-lts`
 
-**Long-Term Support releases**
+#### Long-Term Support releases
 
-#### Configuration
+#### Configuration (release-v85-lts)
 
 - **Build Script**: `Scripts/longtermstable.proj`
 - **Configuration**: `Release`
@@ -302,7 +304,7 @@ Four independent jobs, one per branch:
 
 **No .NET 9 or 10** - LTS focuses on stability
 
-#### Steps
+#### Steps (release-v85-lts)
 
 1. Setup .NET 6, 7, 8
 2. Restore → Build → Pack
@@ -310,14 +312,14 @@ Four independent jobs, one per branch:
 4. Get Version from assembly
 5. Discord notification (if packages published)
 
-#### Unique Features
+#### Unique Features (release-v85-lts)
 
 - ✅ Broadest framework support (9 target frameworks)
 - ✅ Separate package identities (*.LTS suffix)
 - ✅ Legacy framework support (net462 - 2015 vintage)
 - ✅ Stable SDK versions only (no previews)
 
-#### Execution Time
+#### Execution Time (release-v85-lts)
 
 🕐 **~15-18 minutes** (more target frameworks)
 
@@ -325,30 +327,32 @@ Four independent jobs, one per branch:
 
 ### Job: `release-canary`
 
-**Pre-release feature testing**
+#### Pre-release feature testing
 
-#### Configuration
+**Note**: A standalone `canary.yml` workflow also exists; it runs on push to the Canary branch. See `.github/workflows/canary.yml`.
 
-- **Build Script**: `Scripts/canary.proj`
+#### Configuration (release-canary)
+
+- **Build Script**: `Scripts/Build/canary.proj`
 - **Configuration**: `Canary`
-- **Target Frameworks**: net472, net48, net481, net8.0, net9.0, net10.0
+- **Target Frameworks**: net472, net48, net481, net8.0, net9.0, net10.0, net11.0
 - **Output**: `Bin/Packages/Canary/`
 
-#### Steps
+#### Steps (release-canary)
 
-1. Setup .NET 9, 10
+1. Setup .NET 9, 10, 11
 2. Restore → Build → Pack
 3. Push canary packages to NuGet
 4. Get Version
 5. Discord notification (if packages published)
 
-#### Unique Features
+#### Unique Features (release-canary)
 
 - ✅ Pre-release versioning
 - ✅ Yellow Discord embeds (warning color)
 - ✅ For early adopters and beta testers
 
-#### Execution Time
+#### Execution Time (release-canary)
 
 🕐 **~10-12 minutes**
 
@@ -356,30 +360,30 @@ Four independent jobs, one per branch:
 
 ### Job: `release-alpha`
 
-**Manual alpha/nightly releases**
+#### Manual alpha/nightly releases
 
-#### Configuration
+#### Configuration (release-alpha)
 
-- **Build Script**: `Scripts/nightly.proj`
+- **Build Script**: `Scripts/Build/nightly.proj`
 - **Configuration**: `Nightly`
-- **Target Frameworks**: net472, net48, net481, net8.0, net9.0, net10.0
+- **Target Frameworks**: net472, net48, net481, net8.0, net9.0, net10.0, net11.0
 - **Output**: `Bin/Packages/Nightly/`
 
-#### Steps
+#### Steps (release-alpha)
 
-1. Setup .NET 9, 10
+1. Setup .NET 9, 10, 11
 2. Restore → Build → Pack
 3. Push nightly packages to NuGet
 4. Get Version
 5. Discord notification (if packages published)
 
-#### Unique Features
+#### Unique Features (release-alpha)
 
 - ✅ Manual trigger only (scheduled runs use `nightly.yml`)
 - ✅ Purple Discord embeds
 - ✅ For developers and bleeding-edge testing
 
-#### Execution Time
+#### Execution Time (release-alpha)
 
 🕐 **~10-12 minutes**
 
@@ -389,11 +393,11 @@ Four independent jobs, one per branch:
 
 **File**: `.github/workflows/nightly.yml`
 
-### Purpose
+### Purpose (nightly.yml)
 
 Automatically build and publish nightly packages from the alpha branch every day at midnight UTC.
 
-### Triggers
+### Triggers (nightly.yml)
 
 ```yaml
 on:
@@ -426,7 +430,7 @@ steps:
 1. **Checkout** alpha branch (explicitly)
 2. **Setup** .NET 9 + 10 SDKs
 3. **Restore** NuGet packages
-4. **Build** using `Scripts/nightly.proj`
+4. **Build** using `Scripts/Build/nightly.proj`
 5. **Pack** NuGet packages
 6. **Push** to nuget.org (with smart detection)
 7. **Get Version** from compiled assembly
@@ -459,7 +463,7 @@ echo "packages_published=$publishedAny" >> $env:GITHUB_OUTPUT
 ### Behavior Scenarios
 
 | Scenario | Build | Package | Push | Discord |
-|----------|-------|---------|------|---------|
+| --- | --- | --- | --- | --- |
 | **Code changed, version bumped** | ✅ | ✅ | ✅ New | ✅ Sent |
 | **No code change, same version** | ✅ | ✅ | ⏭️ Skipped | ❌ Not sent |
 | **No API key configured** | ✅ | ✅ | ⏭️ Skipped | ❌ Not sent |
@@ -467,7 +471,7 @@ echo "packages_published=$publishedAny" >> $env:GITHUB_OUTPUT
 
 **Benefit**: No Discord spam from nightly builds when version hasn't changed!
 
-### Execution Time
+### Execution Time (nightly.yml)
 
 🕐 **~10-12 minutes**
 
@@ -536,7 +540,7 @@ echo "packages_published=$publishedAny" >> $env:GITHUB_OUTPUT
 **Four Separate Webhooks** (one per release type):
 
 | Secret Name | Branch | Channel Suggestion | Color |
-|-------------|--------|--------------------|-------|
+| --- | --- | --- | --- |
 | `DISCORD_WEBHOOK_MASTER` | master | `#releases` or `#announcements` | Blue |
 | `DISCORD_WEBHOOK_LTS` | V85-LTS | `#lts-releases` or `#releases` | Orange |
 | `DISCORD_WEBHOOK_CANARY` | canary | `#canary-builds` or `#pre-releases` | Yellow |
@@ -590,13 +594,13 @@ https://discordapp.com/api/webhooks/{id}/{token}
 
 All Discord notifications use rich embeds with this structure:
 
-```
+```plaintext
 ┌────────────────────────────────────────────────────┐
 │ 🎉 Krypton Toolkit Stable Release                  | 
 │ A new stable release is now available!             │
 ├────────────────────────────────────────────────────┤
 │ 📌 Version                                         │
-│ 100.25.1.1                                         │
+│ 110.26.1.1                                         │
 │                                                    │
 │ 📦 NuGet Packages                                  │
 │ - Krypton.Toolkit                                  │
@@ -612,6 +616,7 @@ All Discord notifications use rich embeds with this structure:
 │ • .NET 8.0                                         │
 │ • .NET 9.0                                         │
 │ • .NET 10.0                                        │
+│ • .NET 11.0                                        │
 │                                                    │
 │ 🔗 NuGet Packages                                  │
 │ • Toolkit  • Ribbon  • Navigator                   │
@@ -684,7 +689,7 @@ if: steps.push_nuget.outputs.packages_published == 'True'
 
 ### Testing Discord Notifications
 
-**Method 1: Manual Webhook Test**
+#### Method 1: Manual Webhook Test
 
 ```powershell
 # PowerShell test script
@@ -709,7 +714,7 @@ $payload = @{
 Invoke-RestMethod -Uri $webhook -Method Post -Body $payload -ContentType "application/json"
 ```
 
-**Method 2: Trigger Nightly Workflow**
+#### Method 2: Trigger Nightly Workflow
 
 1. Ensure alpha branch has different version than what's on nuget.org
 2. GitHub → Actions → Nightly Release → Run workflow
@@ -791,7 +796,7 @@ if (-not $env:DISCORD_WEBHOOK_NIGHTLY) {
 
 **Symptoms**:
 
-```
+```plaintext
 📌 Version
 ``
 ```
@@ -809,9 +814,9 @@ if (-not $env:DISCORD_WEBHOOK_NIGHTLY) {
 
 **Check logs for**:
 
-```
-Got version from assembly: 100.25.1.1
-Final determined version: 100.25.1.1
+```text
+Got version from assembly: 110.26.1.1
+Final determined version: 110.26.1.1
 ```
 
 ---
@@ -826,7 +831,7 @@ Final determined version: 100.25.1.1
 
 2. **Check condition**:
 
-   ```
+   ```yaml
    if: steps.push_nuget.outputs.packages_published == 'True'
    ```
 
@@ -902,8 +907,8 @@ ls .github/workflows/nightly.yml  # Should exist
 
 **Log shows**:
 
-```
-Package Krypton.Toolkit.100.25.1.1.nupkg already exists - skipped
+```text
+Package Krypton.Toolkit.110.26.1.1.nupkg already exists - skipped
 ```
 
 **This is EXPECTED if**:
@@ -1280,7 +1285,7 @@ Before merging workflow changes:
 ### Workflow Triggers Summary
 
 | Workflow | Automatic Triggers | Manual Trigger |
-|----------|-------------------|----------------|
+| --- | --- | --- |
 | build.yml | PR, Push to any release branch | ✅ workflow_dispatch |
 | release.yml | Push to master/V105-LTS/V85-LTS/canary/alpha | ✅ workflow_dispatch |
 | nightly.yml | Daily at 00:00 UTC | ✅ workflow_dispatch |
@@ -1288,7 +1293,7 @@ Before merging workflow changes:
 ### Secret Names Reference
 
 | Secret | Type | Required | Used By |
-|--------|------|----------|---------|
+| --- | --- | --- | --- |
 | `NUGET_API_KEY` | NuGet API Key | Yes (for publishing) | All release workflows |
 | `DISCORD_WEBHOOK_MASTER` | Discord URL | No | release.yml (master) |
 | `DISCORD_WEBHOOK_LTS` | Discord URL | No | release.yml (V85-LTS) |
@@ -1297,25 +1302,28 @@ Before merging workflow changes:
 
 ### Workflow File Locations
 
-```
+```text
 .github/
 └── workflows/
-    ├── build.yml      (194 lines)
-    ├── release.yml    (866 lines)
-    └── nightly.yml    (208 lines)
+    ├── build.yml           (CI validation)
+    ├── release.yml         (multi-channel releases)
+    ├── nightly.yml         (scheduled nightly builds)
+    ├── canary.yml            (standalone Canary branch release)
+    ├── canary-lts-release.yml (Canary packages from V105-LTS)
+    └── ...                   (alpha-backup-sync, auto-assign, auto-label)
 ```
 
 ### Common Commands
 
 **View workflow runs**:
 
-```
+```text
 GitHub → Actions tab
 ```
 
 **Manually trigger nightly**:
 
-```
+```text
 Actions → Nightly Release → Run workflow
 ```
 

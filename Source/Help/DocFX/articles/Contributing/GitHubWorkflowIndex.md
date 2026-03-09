@@ -29,7 +29,7 @@ The repository uses several automated workflows to handle builds, releases, issu
 ## Quick Reference
 
 | Workflow | Trigger | Purpose | Output |
-|----------|---------|---------|--------|
+| --- | --- | --- | --- |
 | Build | PR/Push/Manual | CI validation | Build artifacts |
 | Release | Push to release branches/Manual | Stable releases | NuGet packages |
 | Nightly | Schedule (00:00 UTC)/Manual | Bleeding-edge builds | Nightly NuGet packages |
@@ -38,7 +38,7 @@ The repository uses several automated workflows to handle builds, releases, issu
 
 ## Workflow Dependencies
 
-```
+```text
 ┌─────────────────┐
 │  Pull Request   │
 └────────┬────────┘
@@ -140,4 +140,3 @@ When modifying workflows:
 3. Document any new secrets or variables required
 4. Update this index if adding new workflows
 5. Consider backward compatibility with existing processes
-

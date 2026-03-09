@@ -23,9 +23,9 @@ This document contains comprehensive developer documentation for the Krypton Too
 **Detailed documentation of `.proj` files.**
 
 - Project file structure and patterns
-- `build.proj` - Stable/Release builds
-- `canary.proj` - Beta pre-releases
-- `nightly.proj` - Alpha nightly builds
+- `Scripts/Build/build.proj` - Stable/Release builds
+- `Scripts/Build/canary.proj` - Beta pre-releases
+- `Scripts/Build/nightly.proj` - Alpha nightly builds
 - `debug.proj` - Debug builds
 - `installer.proj` - Installer packages
 - Available targets (Clean, Restore, Build, Pack, Push, etc.)

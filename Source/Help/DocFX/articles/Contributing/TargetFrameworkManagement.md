@@ -36,7 +36,7 @@ The target framework selection logic is centralized in `Source/Krypton Component
 
 ### File Structure
 
-```
+```text
 Source/Krypton Components/
 ├── Directory.Build.props          ← Centralized target framework logic
 ├── Krypton.Toolkit/
@@ -121,16 +121,19 @@ MSBuild evaluates conditions in order:
 **Configuration**: `Debug`, `Nightly`, or `Canary`
 
 **Target Frameworks**: All frameworks
-```
-net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows
+
+```text
+net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows
 ```
 
-**Use Case**: 
+**Use Case**:
+
 - Comprehensive testing across all supported frameworks
 - Ensuring compatibility during development
 - CI/CD pipelines that need full coverage
 
 **Example Build Command**:
+
 ```cmd
 dotnet build "Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj" -c Debug
 ```
@@ -140,16 +143,19 @@ dotnet build "Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csp
 **Property**: `SkipNetFramework=true`
 
 **Target Frameworks**: Modern .NET only
-```
-net8.0-windows;net9.0-windows;net10.0-windows
+
+```text
+net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows
 ```
 
 **Use Case**:
+
 - Faster builds during development/testing
 - CI scenarios where .NET Framework support isn't needed
 - Testing modern .NET features only
 
 **Example Build Command**:
+
 ```cmd
 dotnet build "Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj" -p:SkipNetFramework=true
 ```
@@ -159,16 +165,19 @@ dotnet build "Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csp
 **Configuration**: `Release`, `Installer`, or any other configuration
 
 **Target Frameworks**: .NET Framework 4.8+ and modern .NET
-```
-net48;net481;net8.0-windows;net9.0-windows;net10.0-windows
+
+```text
+net48;net481;net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows
 ```
 
 **Use Case**:
+
 - Production builds
 - NuGet package creation
 - Balanced build time vs. compatibility
 
 **Example Build Command**:
+
 ```cmd
 dotnet build "Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj" -c Release
 ```
@@ -178,16 +187,19 @@ dotnet build "Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csp
 **Property**: `TFMs=all`
 
 **Target Frameworks**: All frameworks including .NET Framework 4.7.2
-```
-net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows
+
+```text
+net472;net48;net481;net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows
 ```
 
 **Use Case**:
+
 - Full compatibility testing
 - Legacy support validation
 - Complete framework coverage
 
 **Example Build Command**:
+
 ```cmd
 dotnet build "Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj" -c Release -p:TFMs=all
 ```
@@ -211,7 +223,7 @@ To change target framework selection for all projects, edit `Source/Krypton Comp
 <TargetFrameworks>net48;net481;net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows</TargetFrameworks>
 ```
 
-3. Update all relevant conditions (Debug, SkipNetFramework, default)
+1. Update all relevant conditions (Debug, SkipNetFramework, default)
 
 #### Removing a Target Framework
 
@@ -247,7 +259,7 @@ To add a new build configuration that uses specific target frameworks:
 </When>
 ```
 
-2. Ensure the new configuration is defined in project files (if needed):
+1. Ensure the new configuration is defined in project files (if needed):
 
 ```xml
 <PropertyGroup>
@@ -260,7 +272,7 @@ To add a new build configuration that uses specific target frameworks:
 When updating framework lists, maintain consistency across all branches:
 
 | Branch | Typical Frameworks | Notes |
-|--------|-------------------|-------|
+| --- | --- | --- |
 | Debug/Nightly/Canary | All frameworks | Maximum compatibility testing |
 | SkipNetFramework | Modern .NET only | Fast builds, modern features |
 | Default (Release) | net48+ and modern | Production balance |
@@ -348,6 +360,7 @@ dotnet build YourProject.csproj -p:TargetFrameworks=net8.0-windows
 ### Problem: Project Not Using Centralized Configuration
 
 **Symptoms**:
+
 - Project builds with different frameworks than expected
 - Build output shows unexpected target frameworks
 
@@ -362,6 +375,7 @@ dotnet build YourProject.csproj -p:TargetFrameworks=net8.0-windows
    - Remove any project-level definitions if they shouldn't be there
 
 3. **Verify MSBuild Evaluation**:
+
    ```cmd
    dotnet msbuild YourProject.csproj -t:GetTargetFramework -v:detailed
    ```
@@ -369,6 +383,7 @@ dotnet build YourProject.csproj -p:TargetFrameworks=net8.0-windows
 ### Problem: Configuration Not Matching Expected Behavior
 
 **Symptoms**:
+
 - Debug builds not including all frameworks
 - Release builds including net472 when they shouldn't
 
@@ -383,14 +398,17 @@ dotnet build YourProject.csproj -p:TargetFrameworks=net8.0-windows
    - Ensure conditions are evaluated in the correct order
 
 3. **Check Property Values**:
+
    ```cmd
    dotnet build YourProject.csproj -c Debug -v:detailed
    ```
+
    Look for property evaluation in the build log
 
 ### Problem: TFMs=all Not Working
 
 **Symptoms**:
+
 - Setting `TFMs=all` doesn't include net472
 
 **Solutions**:
@@ -400,6 +418,7 @@ dotnet build YourProject.csproj -p:TargetFrameworks=net8.0-windows
    - Debug/Nightly/Canary already include all frameworks
 
 2. **Verify Property Syntax**:
+
    ```cmd
    dotnet build YourProject.csproj -c Release -p:TFMs=all
    ```
@@ -407,6 +426,7 @@ dotnet build YourProject.csproj -p:TargetFrameworks=net8.0-windows
 ### Problem: SkipNetFramework Not Working
 
 **Symptoms**:
+
 - Setting `SkipNetFramework=true` still builds .NET Framework targets
 
 **Solutions**:
@@ -416,6 +436,7 @@ dotnet build YourProject.csproj -p:TargetFrameworks=net8.0-windows
    - Use Release configuration with SkipNetFramework
 
 2. **Verify Property Value**:
+
    ```cmd
    dotnet build YourProject.csproj -c Release -p:SkipNetFramework=true -v:detailed
    ```
@@ -423,17 +444,20 @@ dotnet build YourProject.csproj -p:TargetFrameworks=net8.0-windows
 ### Problem: Build Performance Issues
 
 **Symptoms**:
+
 - Builds taking too long
 - Building unnecessary frameworks
 
 **Solutions**:
 
 1. **Use SkipNetFramework for Development**:
+
    ```cmd
    dotnet build -p:SkipNetFramework=true
    ```
 
 2. **Build Specific Framework**:
+
    ```cmd
    dotnet build -f net8.0-windows
    ```
@@ -456,6 +480,7 @@ dotnet build YourProject.csproj -p:TargetFrameworks=net8.0-windows
 If a project must override the centralized configuration:
 
 ✅ **Do**: Add a comment explaining why:
+
 ```xml
 <!-- This project only supports .NET 8+ due to API dependencies -->
 <PropertyGroup>
@@ -574,4 +599,3 @@ The centralized target framework management system provides:
 - ✅ Automatic inheritance for new projects
 
 By following this guide, you can effectively manage target frameworks across the entire Krypton Standard Toolkit solution while maintaining consistency and reducing maintenance overhead.
-

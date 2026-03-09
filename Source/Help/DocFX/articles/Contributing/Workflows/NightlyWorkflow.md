@@ -34,6 +34,7 @@ The Nightly workflow automatically creates and publishes bleeding-edge builds fr
 **Environment**: `production` (requires approval before publishing)
 
 **Concurrency**:
+
 - **Group**: `nightly-alpha`
 - **Cancel In-Progress**: `true`
 - Prevents multiple nightly builds from running simultaneously
@@ -67,15 +68,18 @@ The Nightly workflow automatically creates and publishes bleeding-edge builds fr
 **Location**: Repository Settings → Secrets and variables → Actions → Variables
 
 **Values**:
+
 - `true` - Disables workflow (all steps skipped after check)
 - `false` or unset - Enables workflow
 
 **Use Cases**:
+
 - Emergency disabling of automated builds
 - Maintenance periods
 - Preventing duplicate releases
 
 **Implementation**:
+
 ```powershell
 $disabled = '${{ vars.NIGHTLY_DISABLED }}'
 if ($disabled -eq 'true') {
@@ -90,6 +94,7 @@ All subsequent steps check: `if: steps.nightly_release_kill_switch.outputs.enabl
 #### Repository Check
 
 Validates that workflow only runs on the correct repository:
+
 ```powershell
 if ($env:GITHUB_REPOSITORY -ne 'Krypton-Suite/Standard-Toolkit') {
   Write-Error "Security: Invalid repository"
@@ -100,6 +105,7 @@ if ($env:GITHUB_REPOSITORY -ne 'Krypton-Suite/Standard-Toolkit') {
 #### Branch Check
 
 Verifies workflow is running from an authorized branch:
+
 ```powershell
 $allowedRefs = @('refs/heads/alpha', 'refs/heads/master', 'refs/heads/main')
 if ($env:GITHUB_REF -notin $allowedRefs) {
@@ -115,17 +121,20 @@ if ($env:GITHUB_REF -notin $allowedRefs) {
 **Purpose**: Skips build if no commits in last 24 hours
 
 **Implementation**:
+
 ```powershell
 $yesterday = (Get-Date).AddDays(-1).ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss")
 $commitCount = git rev-list --count --since="$yesterday" alpha
 ```
 
 **Logic**:
+
 - Counts commits on `alpha` branch since 24 hours ago
 - If count > 0: proceeds with build
 - If count = 0: skips build and logs notice
 
 **Benefits**:
+
 - Saves CI minutes
 - Prevents duplicate packages
 - Reduces noise in notifications
@@ -133,29 +142,27 @@ $commitCount = git rev-list --count --since="$yesterday" alpha
 ### .NET SDK Setup
 
 **Versions Installed**:
+
 - .NET 9.0.x
 - .NET 10.0.x
-- .NET 11.0.x (optional, continues on error)
-
-**Special Handling**:
-- .NET 11 setup has `continue-on-error: true`
-- Falls back gracefully if .NET 11 not available
-- Logs notice if .NET 11 setup fails
+- .NET 11.0.x
 
 **global.json Generation**:
-- Prefers .NET 10 SDK
-- Falls back to .NET 8 if .NET 10 unavailable
+
+- Prefers .NET 11 SDK
+- Falls back to .NET 10 if .NET 11 unavailable
 - Uses `rollForward: latestFeature`
 
 ### Build Process
 
-**Project File**: `Scripts/nightly.proj`
+**Project File**: `Scripts/Build/nightly.proj`
 
 **Configuration**: `Nightly`
 
 **Platform**: `Any CPU`
 
 **Targets**:
+
 1. `Build` - Compiles solution
 2. `Pack` - Creates NuGet packages
 
@@ -164,17 +171,20 @@ $commitCount = git rev-list --count --since="$yesterday" alpha
 ### NuGet Publishing
 
 **Process**:
+
 1. Scans for `.nupkg` files in `Bin/Packages/Nightly/`
 2. Pushes each package to nuget.org
 3. Uses `--skip-duplicate` flag to handle existing packages
 4. Tracks if any packages were actually published
 
 **Package Detection**:
+
 ```powershell
 $packages = Get-ChildItem "Bin/Packages/Nightly/*.nupkg"
 ```
 
 **Publishing Logic**:
+
 - Checks output for "already exists" or "was not pushed"
 - Only marks as published if package was new
 - Continues with remaining packages on individual failures
@@ -188,12 +198,14 @@ $packages = Get-ChildItem "Bin/Packages/Nightly/*.nupkg"
 **Methods** (in order of preference):
 
 1. **Assembly Version** (Primary)
+
    ```powershell
    $dllPath = Get-ChildItem "Bin/Nightly/net48/Krypton.Toolkit.dll"
    $assemblyVersion = [System.Reflection.AssemblyName]::GetAssemblyName($dllPath.FullName).Version
    ```
 
 2. **Project File** (Fallback)
+
    ```powershell
    [xml]$projXml = Get-Content "Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit.csproj"
    $versionNode = $projXml.SelectSingleNode("//Version")
@@ -204,6 +216,7 @@ $packages = Get-ChildItem "Bin/Packages/Nightly/*.nupkg"
    - Tag: `v100.25.1.1-nightly`
 
 **Output Variables**:
+
 - `version` - Version number (e.g., `100.25.1.1`)
 - `tag` - Git tag format (e.g., `v100.25.1.1-nightly`)
 
@@ -214,6 +227,7 @@ $packages = Get-ChildItem "Bin/Packages/Nightly/*.nupkg"
 **Required Secret**: `DISCORD_WEBHOOK_NIGHTLY`
 
 **Message Content**:
+
 - Title: "🚀 Krypton Toolkit Nightly Release"
 - Version information
 - NuGet package links
@@ -223,6 +237,7 @@ $packages = Get-ChildItem "Bin/Packages/Nightly/*.nupkg"
 **Color**: `10181046` (purple/blue)
 
 **Packages Listed**:
+
 - Krypton.Toolkit.Nightly
 - Krypton.Ribbon.Nightly
 - Krypton.Navigator.Nightly
@@ -260,12 +275,14 @@ $packages = Get-ChildItem "Bin/Packages/Nightly/*.nupkg"
 ### Workflow Not Running
 
 **Possible Causes**:
+
 1. Kill switch enabled (`NIGHTLY_DISABLED=true`)
 2. No changes in last 24 hours (expected behavior)
 3. Schedule not configured correctly
 4. Workflow file syntax errors
 
 **Solutions**:
+
 - Check variable `NIGHTLY_DISABLED` in repository settings
 - Verify commits exist on `alpha` branch
 - Review workflow schedule syntax
@@ -282,12 +299,14 @@ $packages = Get-ChildItem "Bin/Packages/Nightly/*.nupkg"
 ### NuGet Publishing Failed
 
 **Possible Causes**:
+
 1. Missing or invalid `NUGET_API_KEY`
 2. Package version already exists
 3. Network issues
 4. Invalid package format
 
 **Solutions**:
+
 - Verify API key is set and valid
 - Check if package version already exists (this is handled gracefully)
 - Review NuGet push logs
@@ -296,12 +315,14 @@ $packages = Get-ChildItem "Bin/Packages/Nightly/*.nupkg"
 ### Discord Notification Not Sent
 
 **Possible Causes**:
+
 1. No packages were published (expected if duplicates)
 2. Missing `DISCORD_WEBHOOK_NIGHTLY` secret
 3. Webhook URL invalid
 4. Discord API issues
 
 **Solutions**:
+
 - Check `packages_published` output in logs
 - Verify webhook secret is set
 - Test webhook URL manually
@@ -312,6 +333,7 @@ $packages = Get-ChildItem "Bin/Packages/Nightly/*.nupkg"
 **Behavior**: Uses fallback version `100.25.1.1`
 
 **Solutions**:
+
 - Verify build completed successfully
 - Check if DLL exists at expected path
 - Review version extraction logs
@@ -333,6 +355,7 @@ $packages = Get-ChildItem "Bin/Packages/Nightly/*.nupkg"
 **File**: `.github/workflows/nightly.yml`
 
 **Key Components**:
+
 - Event: `schedule` and `workflow_dispatch`
 - Environment: `production`
 - Concurrency: `nightly-alpha` group
@@ -350,6 +373,7 @@ schedule:
 ```
 
 **Common Schedules**:
+
 - `0 0 * * *` - Daily at midnight UTC
 - `0 */6 * * *` - Every 6 hours
 - `0 0 * * 1` - Weekly on Monday
@@ -373,11 +397,13 @@ If new NuGet packages are added:
 ### Kill Switch Management
 
 **To Disable**:
+
 1. Go to Repository Settings → Secrets and variables → Actions
 2. Add/Edit variable: `NIGHTLY_DISABLED` = `true`
 3. Save
 
 **To Re-enable**:
+
 1. Set `NIGHTLY_DISABLED` = `false`
 2. Or delete the variable
 
@@ -392,7 +418,7 @@ If new NuGet packages are added:
 
 ## Workflow Flow Diagram
 
-```
+```text
 Schedule Trigger (00:00 UTC)
     │
     ├─> Kill Switch Check
@@ -423,4 +449,3 @@ Schedule Trigger (00:00 UTC)
     │
     └─> Discord Notification (if published)
 ```
-

@@ -33,11 +33,13 @@ The Build workflow provides continuous integration (CI) for the Krypton Standard
 ### Security Filter
 
 The build job includes a security check:
+
 ```yaml
 if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
 ```
 
 This ensures:
+
 - All pushes are built
 - Only PRs from the same repository are built (not forks)
 
@@ -117,13 +119,13 @@ This ensures:
 7. **Restore** - Same as build job
 
 8. **Build Release**
-   - Uses `Scripts/build.proj` instead of `nightly.proj`
+   - Uses `Scripts/Build/build.proj` instead of `nightly.proj`
    - Configuration: `Release`
    - Platform: `Any CPU`
    - Target: `Build`
 
 9. **Pack Release**
-   - Uses `Scripts/build.proj`
+   - Uses `Scripts/Build/build.proj`
    - Configuration: `Release`
    - Platform: `Any CPU`
    - Target: `Pack`
@@ -145,6 +147,7 @@ $sdkVersion = (dotnet --list-sdks | Select-String "10.0").ToString().Split(" ")[
 ```
 
 **Benefits**:
+
 - Automatically uses the latest installed .NET 10 SDK
 - Handles version variations across GitHub runners
 - Ensures consistent SDK usage
@@ -152,23 +155,27 @@ $sdkVersion = (dotnet --list-sdks | Select-String "10.0").ToString().Split(" ")[
 ### Build Projects
 
 **Build Job**:
-- Uses `Scripts/nightly.proj`
+
+- Uses `Scripts/Build/nightly.proj`
 - Rebuilds everything from scratch
 - Validates full build process
 
 **Release Job**:
-- Uses `Scripts/build.proj`
+
+- Uses `Scripts/Build/build.proj`
 - Standard release build configuration
 - Creates packages for distribution
 
 ### NuGet Caching
 
 **Cache Strategy**:
+
 - **Key**: `${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}`
 - **Path**: `~/.nuget/packages`
 - **Restore Keys**: Falls back to partial match if exact key not found
 
 **Benefits**:
+
 - Faster builds by reusing packages
 - Reduces network traffic
 - Speeds up CI pipeline
@@ -227,12 +234,14 @@ The build workflow doesn't require any secrets. It only validates builds and doe
 ### Build Failures
 
 **Common Causes**:
+
 1. **Compilation Errors**: Check code for syntax or type errors
 2. **Missing Dependencies**: Verify all NuGet packages restore correctly
 3. **SDK Version Issues**: Check `global.json` generation in logs
 4. **MSBuild Errors**: Review build logs for specific errors
 
 **Solutions**:
+
 - Review build logs in Actions tab
 - Test builds locally with same SDK versions
 - Check for breaking changes in dependencies
@@ -241,12 +250,14 @@ The build workflow doesn't require any secrets. It only validates builds and doe
 ### NuGet Restore Failures
 
 **Possible Causes**:
+
 1. Network issues
 2. Package source unavailable
 3. Invalid package references
 4. Cache corruption
 
 **Solutions**:
+
 - Check NuGet package sources
 - Clear cache and retry
 - Verify package versions exist
@@ -257,6 +268,7 @@ The build workflow doesn't require any secrets. It only validates builds and doe
 **Behavior**: Workflow continues with fallback version
 
 **Solutions**:
+
 - Check if assembly was built successfully
 - Verify project file has `<Version>` element
 - Review version extraction script in logs
@@ -269,7 +281,6 @@ The build workflow doesn't require any secrets. It only validates builds and doe
 
 **Solution**: Fork PRs should be merged via a branch in the main repository
 
-<a id="usage-examples"></a>
 ## Usage Examples
 
 - **Submit a Pull Request**: Create a PR from your branch; the build workflow runs automatically to validate the changes.
@@ -286,6 +297,7 @@ The build workflow doesn't require any secrets. It only validates builds and doe
 **File**: `.github/workflows/build.yml`
 
 **Key Components**:
+
 - Event: `pull_request` and `push`
 - Jobs: `build` and `release`
 - Build Tools: MSBuild, .NET SDK, NuGet
@@ -297,6 +309,7 @@ The build workflow doesn't require any secrets. It only validates builds and doe
 To add support for new .NET versions:
 
 1. Add version to `Setup .NET` step:
+
    ```yaml
    dotnet-version: |
      9.0.x
@@ -318,6 +331,7 @@ If build project files change:
 ### Cache Invalidation
 
 To force cache refresh:
+
 - Modify a `.csproj` file (changes hash)
 - Or manually clear cache in Actions settings
 
@@ -327,4 +341,3 @@ To force cache refresh:
 2. **Fail Fast**: Build should fail on any compilation error
 3. **Consistent Environments**: Use same SDK versions as local development
 4. **Clear Logs**: Ensure build output is readable and actionable
-

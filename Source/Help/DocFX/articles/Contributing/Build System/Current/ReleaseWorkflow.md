@@ -6,11 +6,11 @@ Authoritative documentation for `.github/workflows/release.yml`, which coordinat
 
 | Branch | Job Id | Runner | Build Script | Kill Switch Variable | Discord Webhook |
 | --- | --- | --- | --- | --- | --- |
-| `master` | `release-master` | `windows-latest` | `Scripts/build.proj` (Build/Pack) | `vars.RELEASE_DISABLED` | `secrets.DISCORD_WEBHOOK_MASTER` |
-| `V105-LTS` | `release-v105-lts` | `windows-latest` | `Scripts/build.proj` | `vars.RELEASE_DISABLED` | `secrets.DISCORD_WEBHOOK_MASTER` |
-| `V85-LTS` | `release-v85-lts` | `windows-latest` | `Scripts/longtermstable.proj` | `vars.LTS_DISABLED` | `secrets.DISCORD_WEBHOOK_LTS` |
-| `canary` | `release-canary` | `windows-latest` | `Scripts/canary.proj` | `vars.CANARY_DISABLED` | `secrets.DISCORD_WEBHOOK_CANARY` |
-| `alpha` | `release-alpha` | `windows-latest` | `Scripts/nightly.proj` | `vars.NIGHTLY_DISABLED` | `secrets.DISCORD_WEBHOOK_NIGHTLY` |
+| `master` | `release-master` | `windows-latest` | `Scripts/Build/build.proj` (Build/Pack) | `vars.RELEASE_DISABLED` | `secrets.DISCORD_WEBHOOK_MASTER` |
+| `V105-LTS` | `release-v105-lts` | `windows-latest` | `Scripts/Build/build.proj` | `vars.RELEASE_DISABLED` | `secrets.DISCORD_WEBHOOK_MASTER` |
+| `V85-LTS` | `release-v85-lts` | `windows-latest` | `Scripts/Build/longtermstable.proj` | `vars.LTS_DISABLED` | `secrets.DISCORD_WEBHOOK_LTS` |
+| `canary` | `release-canary` | `windows-latest` | `Scripts/Build/canary.proj` | `vars.CANARY_DISABLED` | `secrets.DISCORD_WEBHOOK_CANARY` |
+| `alpha` | `release-alpha` | `windows-latest` | `Scripts/Build/nightly.proj` | `vars.NIGHTLY_DISABLED` | `secrets.DISCORD_WEBHOOK_NIGHTLY` |
 
 Common characteristics:
 
@@ -34,7 +34,7 @@ Common characteristics:
    - Emits `enabled` output consumed by every subsequent step.
 2. **Checkout + Tooling Setup**  
    - Dual SDK install (9.0.x and 10.0.x) plus generated `global.json`.
-3. **Restore**, **Build**, **Pack** via `Scripts/build.proj`.
+3. **Restore**, **Build**, **Pack** via `Scripts/Build/build.proj`.
 4. **Push NuGet Packages**  
    - Searches `Bin/Packages/Release/*.nupkg`.  
    - Uses `dotnet nuget push ... --skip-duplicate`.  
@@ -58,7 +58,7 @@ Key divergences:
 
 - Kill switch variable is `vars.LTS_DISABLED`.
 - SDK set includes .NET 6, 7, and 8 to cover older target frameworks.
-- Build/Pack script is `Scripts/longtermstable.proj`.
+- Build/Pack script is `Scripts/Build/longtermstable.proj`.
 - Packages publish from `Bin/Packages/Release/*.nupkg` but contain `.LTS` suffixes.
 - Version fallback defaults to `85.25.1.1` and the git tag output is `v<version>-lts`.
 - Discord notifications use `secrets.DISCORD_WEBHOOK_LTS` with LTS-specific copy.
@@ -68,7 +68,7 @@ Key divergences:
 Highlights:
 
 - Kill switch `vars.CANARY_DISABLED`.
-- Build/Packing script `Scripts/canary.proj`, configuration `Canary`.
+- Build/Packing script `Scripts/Build/canary.proj`, configuration `Canary`.
 - Artifacts live in `Bin/Packages/Canary` and binaries under `Bin/Canary/...`.
 - Version extraction reads `Bin/Canary/net48/Krypton.Toolkit.dll`; fallback `100.25.1.1`.
 - Discord uses `DISCORD_WEBHOOK_CANARY` and points to `.Canary` nuget.org packages.
@@ -78,7 +78,7 @@ Highlights:
 Characteristics:
 
 - Kill switch `vars.NIGHTLY_DISABLED`.
-- Uses `Scripts/nightly.proj` with `Configuration=Nightly`.
+- Uses `Scripts/Build/nightly.proj` with `Configuration=Nightly`.
 - Packages stored under `Bin/Packages/Nightly`.
 - Discord uses `DISCORD_WEBHOOK_NIGHTLY`, referencing `.Nightly` packages.
 

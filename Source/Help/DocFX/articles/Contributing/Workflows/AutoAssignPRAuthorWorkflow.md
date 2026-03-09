@@ -50,6 +50,7 @@ if (branch.startsWith('dependabot/')) {
 ```
 
 **Rules**:
+
 1. **Standard PRs**: Assigns the PR author (`context.actor`)
 2. **Dependabot PRs**: Assigns the repository owner when branch starts with `dependabot/`
 3. **Existing Assignees**: Skips assignment if PR already has assignees
@@ -67,6 +68,7 @@ if (branch.startsWith('dependabot/')) {
 ### `pull_request_target` Event
 
 This workflow uses `pull_request_target` instead of `pull_request` to:
+
 - Access repository context even for PRs from forks
 - Use `GITHUB_TOKEN` with write permissions
 - Avoid security risks from untrusted code
@@ -104,11 +106,13 @@ This workflow requires no secrets, variables, or environment configuration. It u
 ### PR Author Not Assigned
 
 **Possible Causes**:
+
 1. PR already has assignees - This is expected behavior
 2. Workflow failed to run - Check Actions tab for errors
 3. Permission issues - Verify workflow has `issues: write` and `pull-requests: write` permissions
 
 **Solutions**:
+
 - Check workflow run logs in the Actions tab
 - Verify the PR trigger conditions are met
 - Ensure workflow file is in `.github/workflows/` directory
@@ -116,6 +120,7 @@ This workflow requires no secrets, variables, or environment configuration. It u
 ### Dependabot PRs Not Assigned Correctly
 
 **Check**:
+
 - Branch name starts with `dependabot/`
 - Repository owner is correctly identified
 - Workflow has necessary permissions
@@ -130,6 +135,7 @@ This workflow requires no secrets, variables, or environment configuration. It u
 **File**: `.github/workflows/auto-assign-pr-author.yml`
 
 **Key Components**:
+
 - Event: `pull_request_target` with type `opened`
 - Action: `actions/github-script@v8`
 - Logic: Branch-based assignee selection
@@ -139,4 +145,3 @@ This workflow requires no secrets, variables, or environment configuration. It u
 - The workflow is lightweight and requires minimal maintenance
 - Branch name patterns (e.g., `dependabot/`) should be updated if Dependabot changes its naming convention
 - Consider adding support for other bot types if needed in the future
-

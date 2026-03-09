@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Krypton Toolkit build system uses MSBuild project files (`.proj`) to orchestrate multi-project builds, NuGet package creation, and distribution archive generation. These files are located in the `Scripts/` directory.
+The Krypton Toolkit build system uses MSBuild project files (`.proj`) to orchestrate multi-project builds, NuGet package creation, and distribution archive generation. Project files are located under `Scripts/Build/`, `Scripts/VS2022/`, and `Scripts/Current/`; GitHub Actions use `Scripts/Build/`.
 
 ## Project File Structure
 
