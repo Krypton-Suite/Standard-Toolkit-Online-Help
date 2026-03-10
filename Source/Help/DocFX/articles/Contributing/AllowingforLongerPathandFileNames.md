@@ -9,27 +9,27 @@ There are two ways that you can do this. They are:-
 
 ## Option 1 - via `gpedit`
 
-**Step 1**
+### Step 1
 
 Search for `gpedit.msc` from the start or search menu, then open it.
 
-**Step 2**
+### Step 2
 
 Navigate to `Computer Configuration` -> `Administrative Templates` -> `System` -> `Filesystem`.
 
-**Step 3**
+### Step 3
 
 Look for a setting called `Enable Win32 Long paths` on the right side.
 
-![](Allowing%20Longer%20File%20Names/Group%20Policy%20Editor.png)
+![Group Policy Editor showing Filesystem settings with Enable Win32 Long paths](Allowing%20Longer%20File%20Names/Group%20Policy%20Editor.png)
 
-**Step 4**
+### Step 4
 
 Double click the `Enable Win32 Long paths` setting, click `Enabled`, then click OK.
 
-![](Allowing%20Longer%20File%20Names/Enable%20Win32%20Long%20Paths.png)
+![Enable Win32 Long paths policy setting dialog set to Enabled](Allowing%20Longer%20File%20Names/Enable%20Win32%20Long%20Paths.png)
 
-**Step 5**
+### Step 5
 
 Close _all_ windows and restart your computer.
 

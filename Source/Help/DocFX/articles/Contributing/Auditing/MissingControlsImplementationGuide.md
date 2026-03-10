@@ -1,19 +1,34 @@
 # Missing Controls - Implementation Guide
 
-This guide provides implementation recommendations for the critical missing WinForms controls in the Krypton Toolkit.
+This guide provides implementation recommendations for WinForms controls in the Krypton Toolkit.
+
+## Implementation Status (as of audit)
+
+| Control | Status | Notes |
+| --- | --- | --- |
+| KryptonErrorProvider | ✅ **IMPLEMENTED** | In codebase |
+| KryptonFlowLayoutPanel | ✅ **IMPLEMENTED** | In codebase |
+| KryptonHelpProvider | ✅ **IMPLEMENTED** | In codebase |
+| KryptonNotifyIcon | ✅ **IMPLEMENTED** | In codebase |
+| KryptonToolTip | ❌ **NOT IMPLEMENTED** | Implementation guide below still relevant |
+| KryptonTabControl | ❌ **Not needed** | Use KryptonNavigator with `NavigatorMode.BarTabGroup` |
+
+The following sections retain historical design/API guidance. Implemented controls can be used directly.
 
 ---
 
-## 1. KryptonErrorProvider (CRITICAL - Priority 1)
+## 1. KryptonErrorProvider (IMPLEMENTED ✅)
 
-### Standard Control Reference
+### Standard Control Reference (ErrorProvider)
+
 - **System.Windows.Forms.ErrorProvider**
 - **Purpose:** Provides visual validation feedback for controls on forms
 - **Behavior:** Shows error icons next to controls with validation errors
 
-### Implementation Requirements
+### Implementation Requirements (ErrorProvider)
 
-#### Core Features Needed
+#### Core Features Needed (ErrorProvider)
+
 1. **Component Tray Control** - Non-visual component like standard ErrorProvider
 2. **Error Icon Display** - Show icon next to controls with errors
 3. **Tooltip on Hover** - Display error message when hovering over icon
@@ -22,7 +37,8 @@ This guide provides implementation recommendations for the critical missing WinF
 6. **Icon Alignment** - Left, Right, Top, Bottom, Middle positions
 7. **Custom Icons** - Support custom error icons (themed)
 
-#### Public API Design
+#### Public API Design (ErrorProvider)
+
 ```csharp
 namespace Krypton.Toolkit;
 
@@ -102,10 +118,11 @@ public class KryptonErrorProvider : Component, IExtenderProvider, ISupportInitia
 }
 ```
 
-#### Implementation Details
+#### Implementation Details (ErrorProvider)
 
 **File Structure:**
-```
+
+```text
 Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/
   - KryptonErrorProvider.cs          (Main component)
   - KryptonErrorProvider.Designer.cs (Designer support)
@@ -121,6 +138,7 @@ Source/Krypton Components/Krypton.Toolkit/ToolboxBitmaps/
 ```
 
 **Key Implementation Points:**
+
 1. Use extender provider pattern (IExtenderProvider)
 2. Track control errors in Dictionary<Control, ErrorInfo>
 3. Create transparent overlay windows for error icons (like standard ErrorProvider)
@@ -131,6 +149,7 @@ Source/Krypton Components/Krypton.Toolkit/ToolboxBitmaps/
 8. Dispose overlay windows properly
 
 **Themed Icons:**
+
 - Use palette error colors
 - Create icon variations: Error (red), Warning (yellow), Information (blue)
 - Respect PaletteMode and custom palettes
@@ -138,16 +157,18 @@ Source/Krypton Components/Krypton.Toolkit/ToolboxBitmaps/
 
 ---
 
-## 2. KryptonToolTip (CRITICAL - Priority 2)
+## 2. KryptonToolTip (NOT IMPLEMENTED - Priority 1)
 
-### Standard Control Reference
+### Standard Control Reference (ToolTip)
+
 - **System.Windows.Forms.ToolTip**
 - **Purpose:** Display help text when user hovers over controls
 - **Behavior:** Popup window with styled text
 
-### Implementation Requirements
+### Implementation Requirements (ToolTip)
 
-#### Core Features Needed
+#### Core Features Needed (ToolTip)
+
 1. **Component Tray Control** - Non-visual component
 2. **Automatic Popup** - Show on hover
 3. **Per-Control Tooltips** - Set tooltip text for any control
@@ -157,7 +178,8 @@ Source/Krypton Components/Krypton.Toolkit/ToolboxBitmaps/
 7. **Manual Control** - Show(), Hide() methods
 8. **Theming** - Match current Krypton palette
 
-#### Public API Design
+#### Public API Design (ToolTip)
+
 ```csharp
 namespace Krypton.Toolkit;
 
@@ -272,10 +294,11 @@ public class KryptonToolTip : Component, IExtenderProvider
 }
 ```
 
-#### Implementation Details
+#### Implementation Details (ToolTip)
 
 **File Structure:**
-```
+
+```text
 Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/
   - KryptonToolTip.cs                (Main component)
 
@@ -290,6 +313,7 @@ Source/Krypton Components/Krypton.Toolkit/EventArgs/
 ```
 
 **Key Implementation Points:**
+
 1. Leverage existing `VisualPopupToolTip` class
 2. Use `ToolTipManager` internally for timing
 3. Track control tooltip info in Dictionary<Control, ToolTipInfo>
@@ -300,22 +324,25 @@ Source/Krypton Components/Krypton.Toolkit/EventArgs/
 8. Handle control parent/visibility changes
 
 **Integration with Existing Code:**
+
 - Many Krypton controls already have `ToolTipValues` property
 - KryptonToolTip should work alongside existing tooltip infrastructure
 - Consider adding `[ExtenderProvidedProperty]` support to Krypton controls
 
 ---
 
-## 3. KryptonFlowLayoutPanel (HIGH - Priority 3)
+## 3. KryptonFlowLayoutPanel (IMPLEMENTED ✅)
 
-### Standard Control Reference
+### Standard Control Reference (FlowLayoutPanel)
+
 - **System.Windows.Forms.FlowLayoutPanel**
 - **Purpose:** Dynamically arrange child controls in flow direction
 - **Behavior:** Auto-wrap controls based on available space
 
-### Implementation Requirements
+### Implementation Requirements (FlowLayoutPanel)
 
-#### Core Features Needed
+#### Core Features Needed (FlowLayoutPanel)
+
 1. **Panel Container** - Derives from Panel or custom container
 2. **Flow Direction** - LeftToRight, RightToLeft, TopDown, BottomUp
 3. **Auto-Wrapping** - Wrap to next row/column when space runs out
@@ -324,7 +351,8 @@ Source/Krypton Components/Krypton.Toolkit/EventArgs/
 6. **Padding/Margin** - Respect control margins and panel padding
 7. **Theming** - Themed background and borders
 
-#### Public API Design
+#### Public API Design (FlowLayoutPanel)
+
 ```csharp
 namespace Krypton.Toolkit;
 
@@ -365,10 +393,11 @@ public class KryptonFlowLayoutPanel : KryptonPanel, IExtenderProvider
 }
 ```
 
-#### Implementation Details
+#### Implementation Details (FlowLayoutPanel)
 
 **File Structure:**
-```
+
+```text
 Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/
   - KryptonFlowLayoutPanel.cs        (Main control)
 
@@ -380,10 +409,11 @@ Source/Krypton Components/Krypton.Toolkit/Designers/Designers/
 ```
 
 **Key Implementation Points:**
+
 1. Inherit from `KryptonPanel` for theming support
 2. Override `OnLayout()` to implement flow algorithm
 3. Use `IExtenderProvider` for `FlowBreak` property
-4. Track flow break controls in HashSet<Control>
+4. Track flow break controls in `HashSet<Control>`
 5. Implement flow layout algorithm:
    - Calculate available space
    - Position controls left-to-right (or flow direction)
@@ -395,6 +425,7 @@ Source/Krypton Components/Krypton.Toolkit/Designers/Designers/
 8. Designer support for setting FlowBreak in properties window
 
 **Flow Algorithm Pseudo-code:**
+
 ```csharp
 protected override void OnLayout(LayoutEventArgs e)
 {
@@ -445,14 +476,16 @@ protected override void OnLayout(LayoutEventArgs e)
 
 ## 4. KryptonHelpProvider (MEDIUM - Priority 4)
 
-### Standard Control Reference
+### Standard Control Reference (HelpProvider)
+
 - **System.Windows.Forms.HelpProvider**
 - **Purpose:** Context-sensitive help (F1 key, help button)
 - **Behavior:** Shows help when F1 pressed or help button clicked
 
-### Implementation Requirements
+### Implementation Requirements (HelpProvider)
 
-#### Core Features Needed
+#### Core Features Needed (HelpProvider)
+
 1. **Component Tray Control** - Non-visual component
 2. **F1 Key Support** - Show help when F1 pressed
 3. **Help String** - Simple string per control
@@ -462,7 +495,8 @@ protected override void OnLayout(LayoutEventArgs e)
 7. **HTML Help Support** - Open CHM files
 8. **Online Help Support** - Open URLs
 
-#### Public API Design (Brief)
+#### Public API Design (HelpProvider, Brief)
+
 ```csharp
 [ProvideProperty("HelpKeyword", typeof(Control))]
 [ProvideProperty("HelpNavigator", typeof(Control))]
@@ -488,16 +522,18 @@ public class KryptonHelpProvider : Component, IExtenderProvider
 
 ---
 
-## 5. KryptonNotifyIcon (MEDIUM - Priority 5)
+## 5. KryptonNotifyIcon (IMPLEMENTED ✅)
 
-### Standard Control Reference
+### Standard Control Reference (NotifyIcon)
+
 - **System.Windows.Forms.NotifyIcon**
 - **Purpose:** System tray icon
 - **Behavior:** Icon in system tray with context menu and notifications
 
-### Implementation Requirements
+### Implementation Requirements (NotifyIcon)
 
-#### Core Features Needed
+#### Core Features Needed (NotifyIcon)
+
 1. **Component Tray Control** - Non-visual component
 2. **System Tray Icon** - Show icon in notification area
 3. **Tooltip** - Hover text
@@ -506,7 +542,8 @@ public class KryptonHelpProvider : Component, IExtenderProvider
 6. **Click Events** - Single click, double click
 7. **Icon Animation** - Change icon for animation effects
 
-#### Public API Design (Brief)
+#### Public API Design (NotifyIcon, Brief)
+
 ```csharp
 public class KryptonNotifyIcon : Component
 {
@@ -529,6 +566,7 @@ public class KryptonNotifyIcon : Component
 ```
 
 **Implementation Note:**
+
 - Use P/Invoke to Shell_NotifyIcon API
 - Integrate with `KryptonContextMenu` for themed menus
 - Consider using Windows 10 toast notifications instead of balloon tips
@@ -539,11 +577,13 @@ public class KryptonNotifyIcon : Component
 ## 6. KryptonTabControl (LOW - Priority 6)
 
 ### Note
+
 This is a **wrapper/simplified mode** for KryptonNavigator, not a new control.
 
 ### Implementation Approach
 
-**Option A: Wrapper Class**
+#### Option A: Wrapper Class
+
 ```csharp
 /// <summary>
 /// Simplified tab control wrapping KryptonNavigator
@@ -575,8 +615,10 @@ public class KryptonTabControl : KryptonNavigator
 }
 ```
 
-**Option B: Documentation**
+#### Option B: Documentation
+
 Instead of new control, provide documentation showing how to use Navigator as simple TabControl:
+
 - Set `NavigatorMode = NavigatorMode.BarTabGroup`
 - Hide unnecessary properties
 - Provide migration guide
@@ -585,16 +627,16 @@ Instead of new control, provide documentation showing how to use Navigator as si
 
 ## Implementation Priority Summary
 
-| Control | Priority | Complexity | Impact | Estimated Effort |
-|---------|----------|------------|--------|------------------|
-| KryptonErrorProvider | ⚠️ CRITICAL | Medium | Very High | 2-3 weeks |
-| KryptonToolTip | ⚠️ CRITICAL | Medium | High | 2-3 weeks |
-| KryptonFlowLayoutPanel | HIGH | Medium | Medium-High | 1-2 weeks |
-| KryptonHelpProvider | MEDIUM | Low | Medium | 1 week |
-| KryptonNotifyIcon | MEDIUM | Low-Medium | Medium | 1 week |
-| ~~KryptonTabControl~~ | ✅ DONE | N/A | N/A | Already replaced by Navigator |
+| Control | Status | Notes |
+| --- | --- | --- |
+| KryptonErrorProvider | ✅ DONE | Implemented |
+| KryptonToolTip | ❌ TODO | ~2-3 weeks estimated |
+| KryptonFlowLayoutPanel | ✅ DONE | Implemented |
+| KryptonHelpProvider | ✅ DONE | Implemented |
+| KryptonNotifyIcon | ✅ DONE | Implemented |
+| KryptonTabControl | N/A | Use KryptonNavigator (BarTabGroup mode) |
 
-**Total Estimated Effort:** 7-10 weeks for all critical and high priority controls
+**Remaining work:** KryptonToolTip (standalone component tray control)
 
 ---
 
@@ -638,9 +680,6 @@ For each control:
 ---
 
 **Next Steps:**
-1. Review and approve implementation designs
-2. Create GitHub issues for each control
-3. Assign developers
-4. Set milestones
-5. Begin implementation with KryptonErrorProvider (highest priority)
 
+1. Implement KryptonToolTip (only remaining critical control)
+2. Update this guide when KryptonToolTip is completed

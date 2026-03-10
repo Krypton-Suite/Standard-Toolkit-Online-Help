@@ -3,6 +3,7 @@
 ## 🚀 Standard WinForms → Krypton Migration
 
 ### ✅ Direct Replacements (Just change the class name!)
+
 ```csharp
 // Forms & Containers
 Form                  → KryptonForm
@@ -69,12 +70,14 @@ WebBrowser            → KryptonWebBrowser
 ## ⚠️ Missing Controls (Use Standard WinForms)
 
 ```csharp
-// These don't have Krypton versions - use standard (NOT themed):
-ErrorProvider         → ErrorProvider (standard) ❌
-ToolTip               → ToolTip (standard) ❌
-FlowLayoutPanel       → FlowLayoutPanel (standard) ❌
-HelpProvider          → HelpProvider (standard) ❌
-NotifyIcon            → NotifyIcon (standard) ❌
+// Control with NO Krypton version - use standard (NOT themed):
+ToolTip               → ToolTip (standard) or ToolTipValues on Krypton controls ❌
+
+// Now available - use Krypton versions:
+ErrorProvider         → KryptonErrorProvider ✅
+FlowLayoutPanel       → KryptonFlowLayoutPanel ✅
+HelpProvider          → KryptonHelpProvider ✅
+NotifyIcon            → KryptonNotifyIcon ✅
 
 // These ARE fully replaced (not missing):
 TabControl            → KryptonNavigator ✅
@@ -99,6 +102,7 @@ FileSystemWatcher     → FileSystemWatcher
 ## 🎯 Special Cases
 
 ### TabControl → KryptonNavigator (Full Replacement!)
+
 ```csharp
 // KryptonNavigator REPLACES TabControl with MORE features!
 // For simple tabs, use BarTabGroup mode (like TabControl):
@@ -126,7 +130,8 @@ navigator.Pages.Add(page2);
 // ... and many more!
 ```
 
-### MenuStrip → Automatically Themed!
+### MenuStrip → Automatically Themed
+
 ```csharp
 // Good news: Standard MenuStrip is automatically themed by Krypton!
 var menuStrip = new MenuStrip();  // This will be Krypton-themed!
@@ -200,6 +205,7 @@ KryptonThemeBrowser         // Theme selection UI
 ## 🎨 Theming Basics
 
 ### Set Global Theme
+
 ```csharp
 // In Program.cs or Form.Load
 KryptonManager manager = new KryptonManager();
@@ -210,6 +216,7 @@ KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
 ```
 
 ### Available Themes
+
 ```csharp
 PaletteMode.Microsoft365Black
 PaletteMode.Microsoft365Blue
@@ -230,6 +237,7 @@ PaletteMode.ProfessionalSystem
 ```
 
 ### Per-Control Theme Override
+
 ```csharp
 var button = new KryptonButton
 {
@@ -242,6 +250,7 @@ var button = new KryptonButton
 ## 💡 Common Patterns
 
 ### Form with Krypton Controls
+
 ```csharp
 public partial class MyForm : KryptonForm  // Use KryptonForm
 {
@@ -254,10 +263,11 @@ public partial class MyForm : KryptonForm  // Use KryptonForm
 }
 ```
 
-### Validation (Until KryptonErrorProvider Exists)
+### Validation
+
 ```csharp
-// Use standard ErrorProvider (not themed)
-var errorProvider = new ErrorProvider();
+// Use KryptonErrorProvider (themed)
+var errorProvider = new KryptonErrorProvider();
 errorProvider.SetError(textBox, "This field is required");
 
 // Or use control state
@@ -266,9 +276,10 @@ kryptonLabel.StateCommon.ShortText.Color1 = Color.Red;
 kryptonLabel.Text = "Error: This field is required";
 ```
 
-### Tooltips (Until KryptonToolTip Exists)
+### Tooltips
+
 ```csharp
-// Option 1: Use standard ToolTip (not themed)
+// Option 1: Use standard ToolTip (not themed - KryptonToolTip not yet available)
 var toolTip = new ToolTip();
 toolTip.SetToolTip(kryptonButton, "Click me!");
 
@@ -278,12 +289,12 @@ kryptonButton.ToolTipValues.Description = "Click me!";
 kryptonButton.ToolTipValues.EnableToolTips = true;
 ```
 
-### FlowLayoutPanel (Until KryptonFlowLayoutPanel Exists)
+### FlowLayoutPanel
+
 ```csharp
-// Use standard FlowLayoutPanel
-var flow = new FlowLayoutPanel
+// Use KryptonFlowLayoutPanel (themed)
+var flow = new KryptonFlowLayoutPanel
 {
-    BackColor = Color.Transparent,  // Match Krypton background
     FlowDirection = FlowDirection.LeftToRight,
     WrapContents = true
 };
@@ -294,6 +305,7 @@ flow.Controls.Add(new KryptonButton { Text = "Button 2" });
 ```
 
 ### Context Menu
+
 ```csharp
 // KryptonContextMenu is MORE powerful than ContextMenuStrip!
 var contextMenu = new KryptonContextMenu();
@@ -315,10 +327,11 @@ contextMenu.Items.Add(menuItems);
 kryptonTextBox.KryptonContextMenu = contextMenu;  // Assign to control
 ```
 
-### System Tray Icon (Until KryptonNotifyIcon Exists)
+### System Tray Icon
+
 ```csharp
-// Use standard NotifyIcon with KryptonContextMenu
-var notifyIcon = new NotifyIcon
+// Use KryptonNotifyIcon (themed) with KryptonContextMenu
+var notifyIcon = new KryptonNotifyIcon
 {
     Icon = SystemIcons.Application,
     Text = "My App",
@@ -379,31 +392,40 @@ grid.Columns.Add(new KryptonDataGridViewIconColumn());      // Icon display
 ## 🐛 Common Issues
 
 ### Issue: Controls not themed
+
 **Solution:** Ensure form inherits from `KryptonForm` or add `KryptonManager` component
 
 ### Issue: Standard dialogs not themed
+
 **Solution:** Use `Krypton*Dialog` classes instead of standard dialogs
 
 ### Issue: MenuStrip not themed
+
 **Solution:** It IS themed! Standard `MenuStrip` automatically adopts Krypton theming when used in a `KryptonForm` or with `KryptonManager`
 
 ### Issue: Can't change MenuStrip font
+
 **Solution:** This is a limitation - MenuStrip font is controlled by the Krypton renderer and cannot be customized. For font control, use:
+
 - `KryptonRibbon` (font customizable)
 - `KryptonToolStrip` (font customizable)
 - `KryptonContextMenu` (font customizable)
 
 ### Issue: ContextMenuStrip not themed
+
 **Solution:** Use `KryptonContextMenu` instead of `ContextMenuStrip` - it's a full replacement with MORE features (colors, calendars, progress bars, etc.)!
 
 ### Issue: Need validation error icons
-**Solution:** Use standard `ErrorProvider` (not themed) - or wait for `KryptonErrorProvider`
+
+**Solution:** Use `KryptonErrorProvider` (themed)
 
 ### Issue: Need tooltips
-**Solution:** Use standard `ToolTip` (not themed) or use control's `ToolTipValues` property
+
+**Solution:** Use standard `ToolTip` (not themed) or use control's `ToolTipValues` property - `KryptonToolTip` not yet available
 
 ### Issue: Need FlowLayout
-**Solution:** Use standard `FlowLayoutPanel` with `BackColor = Color.Transparent`
+
+**Solution:** Use `KryptonFlowLayoutPanel` (themed)
 
 ---
 
@@ -451,4 +473,3 @@ namespace MyKryptonApp
     }
 }
 ```
-

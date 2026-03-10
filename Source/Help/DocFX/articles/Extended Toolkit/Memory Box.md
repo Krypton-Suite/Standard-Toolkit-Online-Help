@@ -1,7 +1,7 @@
-﻿# KryptonMemoryBox
+# KryptonMemoryBox
 
-* [Description](#Description)
-	* [Demonstration](#Demonstration)
+* [Description](#description)
+	* [Demonstration](#demonstration)
 * [ToDo](#todo)
 
 ## Description

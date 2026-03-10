@@ -466,6 +466,10 @@ public class ThemeHostObject
 }
 ```
 
+## Navigation Control
+
+The Basic Web Browser example above demonstrates navigation controls: Back, Forward, Refresh, and URL navigation. Use `CanGoBack`, `CanGoForward`, `GoBack()`, `GoForward()`, `Reload()`, and `CoreWebView2.Navigate()` for programmatic navigation.
+
 ## Error Handling
 
 ### Comprehensive Error Handling

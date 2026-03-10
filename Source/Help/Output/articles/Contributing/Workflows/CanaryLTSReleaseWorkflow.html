@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Canary LTS Release Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Canary LTS Release Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="canary-lts-release-workflow">Canary LTS Release Workflow</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#purpose-and-context">Purpose and Context</a></li>
+<li><a href="#relationship-to-other-workflows">Relationship to Other Workflows</a></li>
+<li><a href="#triggers-and-branch-policy">Triggers and Branch Policy</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#kill-switch">Kill Switch</a></li>
+<li><a href="#workflow-logic--step-by-step">Workflow Logic — Step by Step</a></li>
+<li><a href="#build-system-and-package-output">Build System and Package Output</a></li>
+<li><a href="#versioning-and-package-identity">Versioning and Package Identity</a></li>
+<li><a href="#secrets-and-variables-reference">Secrets and Variables Reference</a></li>
+<li><a href="#discord-notifications">Discord Notifications</a></li>
+<li><a href="#security-and-permissions">Security and Permissions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#see-also">See Also</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The <strong>Canary LTS Release</strong> workflow (<code>canary-lts-release.yml</code>) builds and publishes <strong>Canary</strong> NuGet packages from the <strong>V105-LTS</strong> branch only. It is the only workflow that produces Canary packages when running on V105-LTS; the main Canary pipeline runs from the <code>canary</code> branch.</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Workflow file</strong></td>
+<td><code>.github/workflows/canary-lts-release.yml</code></td>
+</tr>
+<tr>
+<td><strong>Display name</strong></td>
+<td>Canary LTS Release</td>
+</tr>
+<tr>
+<td><strong>Runner</strong></td>
+<td><code>windows-latest</code></td>
+</tr>
+<tr>
+<td><strong>Allowed branch</strong></td>
+<td><code>V105-LTS</code> only</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="purpose-and-context">Purpose and Context</h2>
+<ul>
+<li><strong>Canary</strong> builds are pre-release packages (version suffix <code>-beta</code>) that include the latest code and support preview .NET versions (e.g. .NET 11). Package IDs use the <code>.Canary</code> suffix (e.g. <code>Krypton.Toolkit.Canary</code>, <code>Krypton.Standard.Toolkit.Canary</code>).</li>
+<li><strong>V105-LTS</strong> is the long-term support line aligned with .NET 9/10 (and related targets). The main Release workflow on V105-LTS produces <strong>stable</strong> packages (no suffix). This workflow adds the ability to publish <strong>Canary</strong> (pre-release) packages from the same branch.</li>
+<li><strong>Use case</strong>: Ship pre-release Canary builds from the LTS branch for testing and validation before cutting a stable LTS release, without using the <code>canary</code> branch.</li>
+</ul>
+<hr>
+<h2 id="relationship-to-other-workflows">Relationship to Other Workflows</h2>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Branch</th>
+<th>Build type</th>
+<th>Package IDs / Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Release</strong> (release.yml)</td>
+<td><code>master</code></td>
+<td>Release</td>
+<td>Krypton.Toolkit, Krypton.Standard.Toolkit, etc.</td>
+</tr>
+<tr>
+<td><strong>Release</strong> (release.yml)</td>
+<td><strong>V105-LTS</strong></td>
+<td>Release</td>
+<td>Same stable IDs; LTS changelog links.</td>
+</tr>
+<tr>
+<td><strong>Release</strong> (release.yml)</td>
+<td><code>canary</code></td>
+<td>Canary</td>
+<td>Krypton.Toolkit.Canary, Krypton.Standard.Toolkit.Canary, etc.</td>
+</tr>
+<tr>
+<td><strong>Canary LTS Release</strong> (this)</td>
+<td><strong>V105-LTS</strong></td>
+<td>Canary</td>
+<td>Same Canary IDs as <code>canary</code> branch; built from V105-LTS.</td>
+</tr>
+<tr>
+<td><strong>Release</strong> (release.yml)</td>
+<td>V85-LTS</td>
+<td>Release (LTS)</td>
+<td>Krypton.Toolkit.LTS, etc. (different solution/proj).</td>
+</tr>
+<tr>
+<td><strong>Nightly</strong> (nightly.yml)</td>
+<td><code>alpha</code> (checked out)</td>
+<td>Nightly</td>
+<td>Krypton.Toolkit.Nightly, etc.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Canary LTS</strong> and <strong>Canary (canary branch)</strong> both produce the same package IDs (e.g. <code>Krypton.Toolkit.Canary</code>). They differ by branch and version/build content; NuGet version (e.g. <code>110.yy.MM.ddd-beta</code>) distinguishes them.</li>
+<li>This workflow does <strong>not</strong> run on <code>canary</code>, <code>master</code>, or any branch other than <code>V105-LTS</code>.</li>
+</ul>
+<hr>
+<h2 id="triggers-and-branch-policy">Triggers and Branch Policy</h2>
+<h3 id="triggers">Triggers</h3>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>When it runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Push</strong></td>
+<td>Any push to the <code>V105-LTS</code> branch.</td>
+</tr>
+<tr>
+<td><strong>workflow_dispatch</strong></td>
+<td>Manual run from <strong>Actions</strong> → <strong>Canary LTS Release</strong> → <strong>Run workflow</strong> (branch must be <strong>V105-LTS</strong> when using &quot;Run workflow&quot; from the UI).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="branch-enforcement">Branch enforcement</h3>
+<p>The job condition is:</p>
+<pre><code class="lang-yaml">if: github.ref == 'refs/heads/V105-LTS' &amp;&amp; (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+</code></pre>
+<ul>
+<li>The workflow may appear in the Actions list for other branches (e.g. when opened from a PR), but the <strong>job will not run</strong> unless the ref is exactly <code>refs/heads/V105-LTS</code>.</li>
+<li>For <strong>workflow_dispatch</strong>, GitHub uses the <strong>default branch</strong> or the branch selector; to run this workflow you must either set V105-LTS as the branch in the dropdown or trigger from a context where the ref is V105-LTS.</li>
+</ul>
+<hr>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li><strong>Repository</strong>: Contains the Standard Toolkit solution and <code>Scripts/Build/canary.proj</code>.</li>
+<li><strong>Branch</strong>: Workflow logic runs only on <code>V105-LTS</code>.</li>
+<li><strong>Secrets</strong> (see <a href="#secrets-and-variables-reference">Secrets and Variables Reference</a>):
+<ul>
+<li><strong>NUGET_API_KEY</strong> (required for push): nuget.org API key with push permission.</li>
+<li><strong>AUTHENTICODE_CERT_BASE64</strong> (optional): Base64-encoded .pfx for code signing.</li>
+<li><strong>AUTHENTICODE_CERT_PASSWORD</strong> (optional): Password for the .pfx.</li>
+<li><strong>DISCORD_WEBHOOK_CANARY</strong> (optional): Discord webhook for release announcements.</li>
+</ul>
+</li>
+<li><strong>Variables</strong>:
+<ul>
+<li><strong>CANARY_LTS_DISABLED</strong>: Set to <code>true</code> to disable the workflow (kill switch).</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="kill-switch">Kill Switch</h2>
+<p>The workflow can be disabled without code changes.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Variable</strong></td>
+<td><code>CANARY_LTS_DISABLED</code></td>
+</tr>
+<tr>
+<td><strong>Location</strong></td>
+<td><strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong> → <strong>Variables</strong></td>
+</tr>
+<tr>
+<td><strong>To disable</strong></td>
+<td>Set value to <code>true</code> (case-sensitive).</td>
+</tr>
+<tr>
+<td><strong>To re-enable</strong></td>
+<td>Set value to <code>false</code> or remove the variable.</td>
+</tr>
+</tbody>
+</table>
+<p>When disabled, the first step writes a warning and sets <code>enabled=false</code>; all subsequent steps are skipped via <code>if: steps.canary_lts_kill_switch.outputs.enabled == 'true'</code>.</p>
+<hr>
+<h2 id="workflow-logic--step-by-step">Workflow Logic — Step by Step</h2>
+<h3 id="1-canary-lts-release-kill-switch-check">1. Canary LTS Release Kill Switch Check</h3>
+<ul>
+<li><strong>Id</strong>: <code>canary_lts_kill_switch</code></li>
+<li><strong>Shell</strong>: PowerShell</li>
+<li><strong>Behaviour</strong>: Reads <code>vars.CANARY_LTS_DISABLED</code>. If <code>'true'</code>, sets output <code>enabled=false</code> and logs a warning; otherwise sets <code>enabled=true</code>. All later steps depend on this output.</li>
+</ul>
+<h3 id="2-checkout">2. Checkout</h3>
+<ul>
+<li><strong>Action</strong>: <code>actions/checkout@v6</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Effect</strong>: Full checkout of the repository at the commit that triggered the run (e.g. HEAD of V105-LTS on push).</li>
+</ul>
+<h3 id="3-setup-net">3. Setup .NET</h3>
+<ul>
+<li><strong>Action</strong>: <code>actions/setup-dotnet@v5</code></li>
+<li><strong>Versions</strong>: <code>9.0.x</code>, <code>10.0.x</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Purpose</strong>: Provides .NET 9 and 10 runtimes/SDKs for building and packing the multi-targeting projects.</li>
+</ul>
+<h3 id="4-setup-net-11-preview">4. Setup .NET 11 (Preview)</h3>
+<ul>
+<li><strong>Action</strong>: <code>actions/setup-dotnet@v5</code></li>
+<li><strong>Version</strong>: <code>11.0.x</code> with <code>dotnet-quality: preview</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Purpose</strong>: Canary configuration supports .NET 11; this step ensures the preview SDK is available.</li>
+</ul>
+<h3 id="5-force-net-11-sdk-via-globaljson">5. Force .NET 11 SDK via global.json</h3>
+<ul>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Behaviour</strong>: Detects the installed 11.0 SDK (e.g. via <code>dotnet --list-sdks</code>), writes a <code>global.json</code> in the repo root that pins the SDK version with <code>rollForward: latestFeature</code>. Subsequent <code>dotnet</code>/MSBuild calls use .NET 11 for building and packing.</li>
+</ul>
+<h3 id="6-setup-msbuild">6. Setup MSBuild</h3>
+<ul>
+<li><strong>Action</strong>: <code>microsoft/setup-msbuild@v2</code></li>
+<li><strong>Options</strong>: <code>msbuild-architecture: x64</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Purpose</strong>: Makes MSBuild available for <code>Scripts/Build/canary.proj</code>.</li>
+</ul>
+<h3 id="7-setup-nuget">7. Setup NuGet</h3>
+<ul>
+<li><strong>Action</strong>: <code>NuGet/setup-nuget@v2.0.1</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Purpose</strong>: Ensures <code>nuget.exe</code> (and related) is on PATH for restore and pack.</li>
+</ul>
+<h3 id="8-cache-nuget">8. Cache NuGet</h3>
+<ul>
+<li><strong>Action</strong>: <code>actions/cache@v5</code></li>
+<li><strong>Path</strong>: <code>~/.nuget/packages</code></li>
+<li><strong>Key</strong>: <code>${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Purpose</strong>: Speeds up restore by reusing the NuGet package cache across runs when project files are unchanged.</li>
+</ul>
+<h3 id="9-setup-webview2-sdk">9. Setup WebView2 SDK</h3>
+<ul>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Behaviour</strong>:
+<ul>
+<li>Creates <code>WebView2SDK</code> directory if missing.</li>
+<li>Resolves latest stable <strong>Microsoft.Web.WebView2</strong> (NuGet search or API); fallback version <code>1.0.3595.46</code>.</li>
+<li>Temporarily adds the package to <code>Krypton.Utilities.csproj</code>, restores, copies <code>Microsoft.Web.WebView2.Core.dll</code>, <code>Microsoft.Web.WebView2.WinForms.dll</code>, and <code>WebView2Loader.dll</code> into <code>WebView2SDK\</code>, then removes the package reference.</li>
+</ul>
+</li>
+<li><strong>Purpose</strong>: Canary build can bundle WebView2; this step provides the SDK files expected by the build without persisting the package reference in the repo.</li>
+</ul>
+<h3 id="10-restore">10. Restore</h3>
+<ul>
+<li><strong>Command</strong>: <code>dotnet restore &quot;Source/Current/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.slnx&quot;</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Purpose</strong>: Restores dependencies for the solution used by the Canary build.</li>
+</ul>
+<h3 id="11-prepare-code-signing-certificate-optional">11. Prepare Code Signing Certificate (Optional)</h3>
+<ul>
+<li><strong>Id</strong>: <code>prepare_cert</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Behaviour</strong>: If secret <code>AUTHENTICODE_CERT_BASE64</code> is set, decodes it and writes a .pfx to <code>$env:RUNNER_TEMP\codesign.pfx</code>, then sets outputs <code>cert_path</code> and <code>cert_available=true</code>. Otherwise <code>cert_available=false</code>. Build step uses this to enable Authenticode signing when a certificate is present.</li>
+</ul>
+<h3 id="12-build-canary">12. Build Canary</h3>
+<ul>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Command</strong>: <code>msbuild &quot;Scripts/Build/canary.proj&quot; /t:Build /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;</code> with optional signing parameters when <code>prepare_cert</code> has made a certificate available.</li>
+<li><strong>Purpose</strong>: Builds all Canary-configuration outputs (DLLs, etc.) for the TFMs defined in the solution. See <a href="#build-system-and-package-output">Build System and Package Output</a>.</li>
+</ul>
+<h3 id="13-pack-canary">13. Pack Canary</h3>
+<ul>
+<li><strong>Command</strong>: <code>msbuild &quot;Scripts/Build/canary.proj&quot; /t:Pack /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Purpose</strong>: Cleans old Canary packages, then builds and packs all projects in Canary configuration; produces <code>.nupkg</code> files. Output location is defined by the build (see next section).</li>
+</ul>
+<h3 id="14-push-nuget-packages-to-nugetorg">14. Push NuGet Packages to nuget.org</h3>
+<ul>
+<li><strong>Id</strong>: <code>push_nuget</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Behaviour</strong>:
+<ul>
+<li>If <code>NUGET_API_KEY</code> is not set: logs a warning, sets <code>packages_published=false</code>, exits successfully (no failure).</li>
+<li>Otherwise: enumerates <code>Artefacts/Packages/Canary/*.nupkg</code>, and for each runs <code>dotnet nuget push ... --source https://api.nuget.org/v3/index.json --skip-duplicate</code>. Sets <code>packages_published=true</code> if at least one package was actually pushed (not skipped as duplicate).</li>
+</ul>
+</li>
+<li><strong>Note</strong>: If your build outputs to <code>Bin/Packages/Canary</code> instead of <code>Artefacts/Packages/Canary</code>, the push step will find no packages; see <a href="#troubleshooting">Troubleshooting</a>.</li>
+</ul>
+<h3 id="15-get-version">15. Get Version</h3>
+<ul>
+<li><strong>Id</strong>: <code>get_version</code></li>
+<li><strong>Condition</strong>: Kill switch enabled.</li>
+<li><strong>Behaviour</strong>:
+<ul>
+<li>Prefer: read version from <code>Artefacts/Canary/net48/Krypton.Toolkit.dll</code> via reflection.</li>
+<li>Fallback: parse <code>Version</code> from <code>Source/Current/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj</code>.</li>
+<li>Last resort: <code>100.25.1.1</code>.</li>
+<li>Outputs: <code>version</code>, <code>tag=v&lt;version&gt;-canary-lts</code>.</li>
+</ul>
+</li>
+</ul>
+<h3 id="16-announce-canary-lts-release-on-discord">16. Announce Canary LTS Release on Discord</h3>
+<ul>
+<li><strong>Condition</strong>: Kill switch enabled <strong>and</strong> <code>steps.push_nuget.outputs.packages_published == 'True'</code>.</li>
+<li><strong>Behaviour</strong>: If <code>DISCORD_WEBHOOK_CANARY</code> is set, sends an embed with title &quot;Krypton Toolkit Canary LTS Release&quot;, version, branch V105-LTS, package links, and changelog link to the V105-LTS Changelog. If the webhook is not set, logs a warning and exits successfully.</li>
+</ul>
+<hr>
+<h2 id="build-system-and-package-output">Build System and Package Output</h2>
+<ul>
+<li><strong>Project</strong>: <code>Scripts/Build/canary.proj</code></li>
+<li><strong>Configuration</strong>: <code>Canary</code></li>
+<li><strong>Targets used</strong>: <code>Build</code>, then <code>Pack</code> (which depends on <code>CleanPackages</code> and <code>PackAll</code>).</li>
+</ul>
+<p>The Canary configuration is defined in:</p>
+<ul>
+<li><strong>Directory.Build.props</strong> (root and under <code>Source/Current/Krypton Components</code>): version schema, <code>PackageVersion</code> with <code>-beta</code> suffix, <code>PackageId</code> suffix <code>.Canary</code> for the “all TFMs” build.</li>
+<li><strong>Directory.Build.targets</strong>: TFM set and package metadata (description, icon, etc.) for Canary.</li>
+</ul>
+<p><strong>Package output path</strong>:</p>
+<ul>
+<li>The workflow expects <strong>NuGet packages</strong> in: <code>Artefacts/Packages/Canary/*.nupkg</code>.</li>
+<li>The workflow expects <strong>assembly version</strong> from: <code>Artefacts/Canary/net48/Krypton.Toolkit.dll</code>.</li>
+<li>In the Current tree, <code>Source/Current/Krypton Components/Directory.Build.props</code> sets <code>PackageOutputPath</code> to <code>Bin\Packages\$(Configuration)\</code>. If the build does not override this (e.g. with a central Artefacts path), packages may instead be under <code>Bin/Packages/Canary/</code>. In that case, either the build should be updated to output to <code>Artefacts/Packages/Canary/</code>, or the workflow’s push and version steps should be updated to use <code>Bin/Packages/Canary</code> and <code>Bin/Canary</code> (see <a href="#troubleshooting">Troubleshooting</a>).</li>
+</ul>
+<p><strong>Projects built</strong>: All <code>Krypton.*</code> projects under <code>Source/Current/Krypton Components</code> with <code>Configuration=Canary</code> and <code>TFMs=all</code>, including the Standard Toolkit meta-package.</p>
+<hr>
+<h2 id="versioning-and-package-identity">Versioning and Package Identity</h2>
+<ul>
+<li><strong>Assembly / library version</strong>: Driven by <code>Directory.Build.props</code> for Canary: <code>110.$(Minor).$(Build).$(Revision)</code> with Minor=year, Build=month, Revision=day-of-year.</li>
+<li><strong>NuGet package version</strong>: Same base with prerelease suffix, e.g. <code>110.yy.MM.ddd-beta</code> (e.g. <code>110.26.2.45-beta</code>).</li>
+<li><strong>Package IDs</strong>: Same as the main Canary channel, e.g.:
+<ul>
+<li><code>Krypton.Toolkit.Canary</code></li>
+<li><code>Krypton.Ribbon.Canary</code></li>
+<li><code>Krypton.Navigator.Canary</code></li>
+<li><code>Krypton.Workspace.Canary</code></li>
+<li><code>Krypton.Docking.Canary</code></li>
+<li><code>Krypton.Standard.Toolkit.Canary</code></li>
+</ul>
+</li>
+</ul>
+<p>Canary LTS and Canary (from <code>canary</code> branch) share these IDs; the NuGet version and the fact that this workflow runs only from V105-LTS distinguish LTS canary builds.</p>
+<hr>
+<h2 id="secrets-and-variables-reference">Secrets and Variables Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NUGET_API_KEY</strong></td>
+<td>Secret</td>
+<td>Yes (for push)</td>
+<td>nuget.org API key; push to <a href="https://api.nuget.org/v3/index.json">https://api.nuget.org/v3/index.json</a>. If unset, push is skipped and the workflow still succeeds.</td>
+</tr>
+<tr>
+<td><strong>AUTHENTICODE_CERT_BASE64</strong></td>
+<td>Secret</td>
+<td>No</td>
+<td>Base64-encoded .pfx used for Authenticode signing. If set, Build step enables signing.</td>
+</tr>
+<tr>
+<td><strong>AUTHENTICODE_CERT_PASSWORD</strong></td>
+<td>Secret</td>
+<td>No</td>
+<td>Password for the .pfx. Only used when AUTHENTICODE_CERT_BASE64 is set.</td>
+</tr>
+<tr>
+<td><strong>DISCORD_WEBHOOK_CANARY</strong></td>
+<td>Secret</td>
+<td>No</td>
+<td>Discord webhook URL. If set and at least one package was pushed, an announcement is sent.</td>
+</tr>
+<tr>
+<td><strong>CANARY_LTS_DISABLED</strong></td>
+<td>Variable</td>
+<td>No</td>
+<td>Kill switch. Set to <code>true</code> to disable the workflow.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="discord-notifications">Discord Notifications</h2>
+<ul>
+<li><strong>When</strong>: Only if the push step actually published at least one package (<code>packages_published == 'True'</code>) and <code>DISCORD_WEBHOOK_CANARY</code> is set.</li>
+<li><strong>Content</strong>: Embed titled &quot;Krypton Toolkit Canary LTS Release&quot;, with version, branch (V105-LTS), links to the six Canary packages on nuget.org, and a link to the V105-LTS Changelog. Footer: &quot;Canary LTS (V105-LTS)&quot;.</li>
+<li><strong>Webhook</strong>: Same as for the main Canary release (<code>release-canary</code> in release.yml); you can use one channel or separate channels by using a different webhook secret for LTS if desired.</li>
+</ul>
+<hr>
+<h2 id="security-and-permissions">Security and Permissions</h2>
+<ul>
+<li><strong>Permissions</strong>: Uses default <code>GITHUB_TOKEN</code> for checkout. No special scopes are required unless you add steps that need them.</li>
+<li><strong>Secrets</strong>: All sensitive data (NuGet key, certificate, Discord webhook) are stored as repository secrets and are not logged.</li>
+<li><strong>Branch</strong>: The job runs only when <code>github.ref == 'refs/heads/V105-LTS'</code>, so only the V105-LTS branch can trigger this pipeline.</li>
+<li><strong>Certificate</strong>: The .pfx is written to <code>RUNNER_TEMP</code> and used only for the build; it is not committed or re-exposed in logs.</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="workflow-does-not-run-when-i-push-to-v105-lts">Workflow does not run when I push to V105-LTS</h3>
+<ul>
+<li>Confirm the push was to <code>V105-LTS</code> (e.g. <code>git push origin V105-LTS</code>).</li>
+<li>Check that the job condition is satisfied: <strong>Actions</strong> → run → job; if the job is skipped, the condition at the top of the job will show the evaluated expression.</li>
+<li>Ensure the kill switch is not set: Variables → <code>CANARY_LTS_DISABLED</code> should be <code>false</code> or absent.</li>
+</ul>
+<h3 id="no-nuget-packages-found-to-push">&quot;No NuGet packages found to push&quot;</h3>
+<ul>
+<li>The push step looks for <code>Artefacts/Packages/Canary/*.nupkg</code>. If the build writes to a different path (e.g. <code>Bin/Packages/Canary/</code> per Current <code>Directory.Build.props</code>), no packages will be found.</li>
+<li><strong>Fix</strong>: Either (1) ensure the build outputs to <code>Artefacts/Packages/Canary</code> (e.g. by setting <code>PackageOutputPath</code> or a central output dir in CI), or (2) change the workflow to match the actual output path (e.g. <code>Bin/Packages/Canary/*.nupkg</code>) and, for version detection, the path that contains <code>Krypton.Toolkit.dll</code> (e.g. <code>Bin/Canary/net48/</code>).</li>
+</ul>
+<h3 id="build-or-pack-fails">Build or Pack fails</h3>
+<ul>
+<li>Check the <strong>Build Canary</strong> and <strong>Pack Canary</strong> logs for MSBuild errors.</li>
+<li>Confirm .NET 11 preview SDK is available (Setup .NET 11 step and global.json step).</li>
+<li>Confirm WebView2 SDK step completed and <code>WebView2SDK</code> contains the expected DLLs if the build requires them.</li>
+<li>Locally: <code>msbuild Scripts/Build/canary.proj /t:Build /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;</code> (and same for <code>Pack</code>) to reproduce.</li>
+</ul>
+<h3 id="get-version-fails-or-uses-fallback">Get Version fails or uses fallback</h3>
+<ul>
+<li>The step expects <code>Artefacts/Canary/net48/Krypton.Toolkit.dll</code>. If build output is under <code>Bin/Canary/</code>, that path will not exist and the step will fall back to csproj or <code>100.25.1.1</code>.</li>
+<li>Align the path in the &quot;Get Version&quot; step with the actual build output directory, or ensure the build writes to <code>Artefacts/Canary/</code>.</li>
+</ul>
+<h3 id="nuget-push-fails-eg-403-or-409">NuGet push fails (e.g. 403 or 409)</h3>
+<ul>
+<li>Verify <strong>NUGET_API_KEY</strong> is correct and has push permission for the package IDs.</li>
+<li>For 409: version already exists; the script uses <code>--skip-duplicate</code>, so the run may still succeed but no new version is pushed. Check NuGet for that version.</li>
+</ul>
+<h3 id="kill-switch-has-no-effect">Kill switch has no effect</h3>
+<ul>
+<li>Variable name must be exactly <code>CANARY_LTS_DISABLED</code> and value <code>true</code> (lowercase). Variables are case-sensitive.</li>
+<li>Ensure you are editing <strong>Variables</strong> under <strong>Actions</strong>, not environment-specific variables, unless the workflow uses an environment.</li>
+</ul>
+<p><a id="see-also"></a></p>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="ReleaseWorkflow.html">Release Workflow</a> — Main release pipeline for stable, LTS, and Canary</li>
+<li><a href="BuildWorkflow.html">Build Workflow</a> — CI validation</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

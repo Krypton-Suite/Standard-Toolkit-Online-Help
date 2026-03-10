@@ -1,13 +1,14 @@
 # How to create the API reference
 
 ## Prerequisites
+
 * [Tools](#tools)
 * [Details](#details)
 
 ## Tools
 
 * A current copy of [Sandcastle Help File Builder](https://github.com/EWSoftware/SHFB/releases)
-* Documentation project files, available from [here](https://github.com/Krypton-Suite/Help-Files)
+* Documentation project files, available from the [Help-Files repository](https://github.com/Krypton-Suite/Help-Files)
 * Built binaries and documentation files
 * Time
 

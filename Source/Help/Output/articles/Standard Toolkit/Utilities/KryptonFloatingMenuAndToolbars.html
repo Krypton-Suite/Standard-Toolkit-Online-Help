@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonFloatingMenuAndToolbars | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonFloatingMenuAndToolbars | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonfloatingmenuandtoolbars">KryptonFloatingMenuAndToolbars</h1>
+
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#core-components">Core Components</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#features">Features</a></li>
+<li><a href="#usage-guide">Usage Guide</a></li>
+<li><a href="#designer-integration">Designer Integration</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#examples">Examples</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The <strong>KryptonFloatingMenuAndToolbars</strong> feature provides a comprehensive solution for creating dockable and floatable toolbars and menu strips in Windows Forms applications using the Krypton Toolkit. This feature allows users to drag toolbars and menu strips out of their docked positions and float them as separate windows, then dock them back into designated panel areas.</p>
+<h3 id="key-capabilities">Key Capabilities</h3>
+<ul>
+<li><strong>Drag-and-Drop Floating</strong>: Users can drag toolbars/menu strips by their grip handles to float them as separate windows</li>
+<li><strong>Automatic Docking</strong>: Floating toolbars automatically dock when dragged over designated panel areas</li>
+<li><strong>Panel Management</strong>: Extended panel controls provide docking zones for toolbars and menu strips</li>
+<li><strong>Visual Feedback</strong>: Smooth transitions between docked and floating states</li>
+<li><strong>Designer Support</strong>: Full Visual Studio designer integration with collection editors</li>
+</ul>
+<h3 id="use-cases">Use Cases</h3>
+<ul>
+<li>Applications requiring customizable toolbar layouts</li>
+<li>MDI applications with multiple document windows</li>
+<li>Professional software with advanced UI customization</li>
+<li>Applications where users need to reorganize their workspace</li>
+</ul>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<p>The KryptonFloatingMenuAndToolbars feature consists of several interconnected components:</p>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    Application Form                          │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  KryptonToolStripPanelExtended /                     │  │
+│  │  KryptonMenuStripPanelExtended                       │  │
+│  │  (Docking Zones)                                     │  │
+│  └──────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │  KryptonFloatableToolStrip /                         │  │
+│  │  KryptonFloatableMenuStrip                           │  │
+│  │  (Floatable Controls)                                │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                          │ (when floating)
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  VisualToolStripContainerForm /                            │
+│  VisualMenuStripContainerForm                              │
+│  (Floating Window Container)                               │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="component-relationships">Component Relationships</h3>
+<ol>
+<li><p><strong>Floatable Controls</strong> (<code>KryptonFloatableToolStrip</code>, <code>KryptonFloatableMenuStrip</code>)</p>
+<ul>
+<li>Extend standard Krypton toolstrip controls</li>
+<li>Handle mouse events for drag-to-float functionality</li>
+<li>Manage floating state and container forms</li>
+</ul>
+</li>
+<li><p><strong>Panel Extensions</strong> (<code>KryptonToolStripPanelExtended</code>, <code>KryptonMenuStripPanelExtended</code>)</p>
+<ul>
+<li>Extend <code>ToolStripPanel</code> with active docking zones</li>
+<li>Calculate active rectangles for docking detection</li>
+<li>Manage layout styles based on orientation</li>
+</ul>
+</li>
+<li><p><strong>Container Forms</strong> (<code>VisualToolStripContainerForm</code>, <code>VisualMenuStripContainerForm</code>)</p>
+<ul>
+<li>Host floating toolbars/menu strips</li>
+<li>Provide window chrome and resize constraints</li>
+<li>Handle window events (close, double-click to dock)</li>
+</ul>
+</li>
+<li><p><strong>Designer Support</strong> (Collection Editors)</p>
+<ul>
+<li>Visual Studio designer integration</li>
+<li>Component chooser dialogs for panel selection</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="core-components">Core Components</h2>
+<h3 id="kryptonfloatabletoolstrip">KryptonFloatableToolStrip</h3>
+<p>A <code>KryptonToolStrip</code> that can be dragged to float as a separate window and docked back into designated panels.</p>
+<p><strong>Inheritance Hierarchy:</strong></p>
+<pre><code>KryptonToolStrip → KryptonFloatableToolStrip
+</code></pre>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>Drag-to-float via grip handle</li>
+<li>Automatic docking detection</li>
+<li>Panel collection management</li>
+<li>Floating state tracking</li>
+</ul>
+<h3 id="kryptonfloatablemenustrip">KryptonFloatableMenuStrip</h3>
+<p>A <code>KryptonMenuStrip</code> that can be dragged to float as a separate window and docked back into designated panels.</p>
+<p><strong>Inheritance Hierarchy:</strong></p>
+<pre><code>KryptonMenuStrip → KryptonFloatableMenuStrip
+</code></pre>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>Drag-to-float via grip handle</li>
+<li>Configurable window control box</li>
+<li>Customizable floating window text</li>
+<li>Panel collection management</li>
+</ul>
+<h3 id="kryptontoolstrippanelextended">KryptonToolStripPanelExtended</h3>
+<p>An extended <code>ToolStripPanel</code> that provides docking zones for <code>KryptonFloatableToolStrip</code> controls.</p>
+<p><strong>Inheritance Hierarchy:</strong></p>
+<pre><code>ToolStripPanel → KryptonToolStripPanelExtended
+</code></pre>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>Active rectangle calculation for docking detection</li>
+<li>Automatic layout style management</li>
+<li>Orientation-aware sizing</li>
+</ul>
+<h3 id="kryptonmenustrippanelextended">KryptonMenuStripPanelExtended</h3>
+<p>An extended <code>ToolStripPanel</code> that provides docking zones for <code>KryptonFloatableMenuStrip</code> controls.</p>
+<p><strong>Inheritance Hierarchy:</strong></p>
+<pre><code>ToolStripPanel → KryptonMenuStripPanelExtended
+</code></pre>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>Active rectangle calculation for docking detection</li>
+<li>Menu strip-specific layout management</li>
+<li>Reference to associated menu strip</li>
+</ul>
+<h3 id="kryptonfloatablepanelhost">KryptonFloatablePanelHost</h3>
+<p>A flexible panel host that can accommodate both tool strips and menu strips.</p>
+<p><strong>Inheritance Hierarchy:</strong></p>
+<pre><code>ToolStripPanel → KryptonFloatablePanelHost
+</code></pre>
+<p><strong>Key Features:</strong></p>
+<ul>
+<li>Dual support for tool strips and menu strips</li>
+<li>Active area calculation</li>
+<li>Orientation-aware layout</li>
+</ul>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="kryptonfloatabletoolstrip-1">KryptonFloatableToolStrip</h3>
+<h4 id="properties">Properties</h4>
+<h5 id="kryptontoolstrippanelextendedlist"><code>KryptonToolStripPanelExtendedList</code></h5>
+<pre><code class="lang-csharp">[Editor(typeof(KryptonToolStripPanelCollectionEditor), typeof(UITypeEditor))]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public List&lt;KryptonToolStripPanelExtended&gt; KryptonToolStripPanelExtendedList { get; set; }
+</code></pre>
+<p>Gets or sets the list of <code>KryptonToolStripPanelExtended</code> panels where this toolbar can dock.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">toolStrip.KryptonToolStripPanelExtendedList.Add(panel1);
+toolStrip.KryptonToolStripPanelExtendedList.Add(panel2);
+</code></pre>
+<h5 id="isfloating"><code>IsFloating</code></h5>
+<pre><code class="lang-csharp">public bool IsFloating { get; }
+</code></pre>
+<p>Gets a value indicating whether the toolbar is currently floating.</p>
+<p><strong>Returns:</strong> <code>true</code> if floating; otherwise, <code>false</code>.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">if (toolStrip.IsFloating)
+{
+    // Handle floating state
+}
+</code></pre>
+<h5 id="visible"><code>Visible</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public new bool Visible { get; set; }
+</code></pre>
+<p>Gets or sets the visibility of the control. When floating, controls the container form visibility.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">toolStrip.Visible = false; // Hides toolbar whether docked or floating
+</code></pre>
+<h5 id="floatingtoolbarwindowtext"><code>FloatingToolBarWindowText</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public string FloatingToolBarWindowText { get; set; }
+</code></pre>
+<p>Gets or sets the text displayed in the floating window title bar.</p>
+<p><strong>Default:</strong> <code>&quot;Tool Bar&quot;</code></p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">toolStrip.FloatingToolBarWindowText = &quot;My Custom Toolbar&quot;;
+</code></pre>
+<h5 id="enableanimation"><code>EnableAnimation</code></h5>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool EnableAnimation { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether animation is enabled during dock/float transitions.</p>
+<p><strong>Default:</strong> <code>true</code></p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">toolStrip.EnableAnimation = true; // Enable smooth animations
+toolStrip.EnableAnimation = false; // Instant transitions
+</code></pre>
+<h5 id="animationduration"><code>AnimationDuration</code></h5>
+<pre><code class="lang-csharp">[DefaultValue(200)]
+public int AnimationDuration { get; set; }
+</code></pre>
+<p>Gets or sets the duration of dock/float animations in milliseconds.</p>
+<p><strong>Default:</strong> <code>200</code></p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">toolStrip.AnimationDuration = 300; // 300ms animation
+toolStrip.AnimationDuration = 0; // No animation (same as EnableAnimation = false)
+</code></pre>
+<h5 id="floatingwindowstyle"><code>FloatingWindowStyle</code></h5>
+<pre><code class="lang-csharp">[DefaultValue(FloatingWindowStyle.Default)]
+public FloatingWindowStyle FloatingWindowStyle { get; set; }
+</code></pre>
+<p>Gets or sets the style of the floating window.</p>
+<p><strong>Default:</strong> <code>FloatingWindowStyle.Default</code></p>
+<p><strong>Available Styles:</strong></p>
+<ul>
+<li><code>Default</code>: Standard window with full chrome</li>
+<li><code>Minimal</code>: No border or title bar</li>
+<li><code>ToolWindow</code>: Smaller title bar, tool window style</li>
+<li><code>Custom</code>: For future customization options</li>
+</ul>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">toolStrip.FloatingWindowStyle = FloatingWindowStyle.Minimal;
+toolStrip.FloatingWindowStyle = FloatingWindowStyle.ToolWindow;
+</code></pre>
+<h4 id="internal-properties">Internal Properties</h4>
+<h5 id="originalparent"><code>OriginalParent</code></h5>
+<pre><code class="lang-csharp">internal Control? OriginalParent { get; }
+</code></pre>
+<p>Gets the original parent control before floating. Used internally for restoration.</p>
+<h4 id="events">Events</h4>
+<h5 id="floatingstatechanged"><code>FloatingStateChanged</code></h5>
+<pre><code class="lang-csharp">public event EventHandler&lt;FloatingStateChangedEventArgs&gt;? FloatingStateChanged;
+</code></pre>
+<p>Occurs when the floating state of the toolbar changes (becomes floating or docked).</p>
+<p><strong>Event Args:</strong> <code>FloatingStateChangedEventArgs</code> containing <code>IsFloating</code> property.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">toolStrip.FloatingStateChanged += (sender, e) =&gt;
+{
+    if (e.IsFloating)
+    {
+        // Toolbar is now floating
+    }
+    else
+    {
+        // Toolbar is now docked
+    }
+};
+</code></pre>
+<p>The control also inherits all standard <code>KryptonToolStrip</code> events and handles:</p>
+<ul>
+<li><strong>Mouse Events</strong>: <code>OnMouseDown</code>, <code>OnMouseUp</code>, <code>OnMouseEnter</code> - Handle drag-to-float</li>
+<li><strong>Parent Changed</strong>: <code>OnParentChanged</code> - Tracks parent changes during docking/floating</li>
+</ul>
+<h4 id="methods">Methods</h4>
+<h5 id="floatpoint"><code>Float(Point?)</code></h5>
+<pre><code class="lang-csharp">public bool Float(Point? location = null)
+</code></pre>
+<p>Programmatically floats the toolbar at the specified location.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>location</code> (optional): The screen location where the floating window should appear. If <code>null</code>, uses current control location.</li>
+</ul>
+<p><strong>Returns:</strong> <code>true</code> if the toolbar was successfully floated; <code>false</code> if it was already floating or cannot be floated.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Float at current location
+toolStrip.Float();
+
+// Float at specific location
+toolStrip.Float(new Point(100, 100));
+</code></pre>
+<h5 id="dockkryptontoolstrippanelextended"><code>Dock(KryptonToolStripPanelExtended?)</code></h5>
+<pre><code class="lang-csharp">public bool Dock(KryptonToolStripPanelExtended? targetPanel = null)
+</code></pre>
+<p>Programmatically docks the toolbar to the specified panel or original parent.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>targetPanel</code> (optional): The panel to dock to. If <code>null</code>, docks to original parent.</li>
+</ul>
+<p><strong>Returns:</strong> <code>true</code> if the toolbar was successfully docked; <code>false</code> if it was not floating or cannot be docked.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Dock to original parent
+toolStrip.Dock();
+
+// Dock to specific panel
+toolStrip.Dock(targetPanel);
+</code></pre>
+<h5 id="savestate"><code>SaveState()</code></h5>
+<pre><code class="lang-csharp">public FloatingToolbarState? SaveState()
+</code></pre>
+<p>Saves the current floating state to a <code>FloatingToolbarState</code> object.</p>
+<p><strong>Returns:</strong> A <code>FloatingToolbarState</code> object containing the current state, or <code>null</code> if the control has no name.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Ensure toolbar has a name
+toolStrip.Name = &quot;MainToolbar&quot;;
+
+// Save state
+var state = toolStrip.SaveState();
+if (state != null)
+{
+    // Save to file or store in settings
+    FloatingToolbarStateManager.SaveStatesToFile(new[] { state }, &quot;states.xml&quot;);
+}
+</code></pre>
+<h5 id="loadstatefloatingtoolbarstate"><code>LoadState(FloatingToolbarState?)</code></h5>
+<pre><code class="lang-csharp">public bool LoadState(FloatingToolbarState? state)
+</code></pre>
+<p>Loads a floating state from a <code>FloatingToolbarState</code> object.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code>: The <code>FloatingToolbarState</code> object to load.</li>
+</ul>
+<p><strong>Returns:</strong> <code>true</code> if the state was loaded successfully; otherwise, <code>false</code>.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Load from file
+var collection = FloatingToolbarStateManager.LoadStatesFromFile(&quot;states.xml&quot;);
+if (collection != null)
+{
+    var state = collection.ToolbarStates.FirstOrDefault(s =&gt; s.Name == &quot;MainToolbar&quot;);
+    toolStrip.LoadState(state);
+}
+</code></pre>
+<h5 id="onfloatingstatechangedbool"><code>OnFloatingStateChanged(bool)</code></h5>
+<pre><code class="lang-csharp">protected virtual void OnFloatingStateChanged(bool isFloating)
+</code></pre>
+<p>Raises the <code>FloatingStateChanged</code> event. Can be overridden in derived classes.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>isFloating</code>: <code>true</code> if the toolbar is now floating; <code>false</code> if docked.</li>
+</ul>
+<h4 id="override-methods">Override Methods</h4>
+<h5 id="onmousedownmouseeventargs"><code>OnMouseDown(MouseEventArgs)</code></h5>
+<pre><code class="lang-csharp">protected override void OnMouseDown(MouseEventArgs mea)
+</code></pre>
+<p>Handles mouse down events. Initiates floating when grip handle is clicked.</p>
+<h5 id="onmouseupmouseeventargs"><code>OnMouseUp(MouseEventArgs)</code></h5>
+<pre><code class="lang-csharp">protected override void OnMouseUp(MouseEventArgs mea)
+</code></pre>
+<p>Handles mouse up events. Creates floating window if dragged outside original parent.</p>
+<h5 id="onparentchangedeventargs"><code>OnParentChanged(EventArgs)</code></h5>
+<pre><code class="lang-csharp">protected override void OnParentChanged(EventArgs e)
+</code></pre>
+<p>Tracks parent changes and stores original parent reference.</p>
+<hr>
+<h3 id="kryptonfloatablemenustrip-1">KryptonFloatableMenuStrip</h3>
+<h4 id="properties-1">Properties</h4>
+<h5 id="menustrippanelextendedlist"><code>MenuStripPanelExtendedList</code></h5>
+<pre><code class="lang-csharp">[Editor(typeof(KryptonMenuStripPanelCollectionEditor), typeof(UITypeEditor))]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public List&lt;KryptonMenuStripPanelExtended&gt;? MenuStripPanelExtendedList { get; set; }
+</code></pre>
+<p>Gets or sets the list of <code>KryptonMenuStripPanelExtended</code> panels where this menu strip can dock.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">menuStrip.MenuStripPanelExtendedList = new List&lt;KryptonMenuStripPanelExtended&gt; { panel1, panel2 };
+</code></pre>
+<h5 id="isfloating-1"><code>IsFloating</code></h5>
+<pre><code class="lang-csharp">public bool IsFloating { get; }
+</code></pre>
+<p>Gets a value indicating whether the menu strip is currently floating.</p>
+<p><strong>Returns:</strong> <code>true</code> if floating; otherwise, <code>false</code>.</p>
+<h5 id="visible-1"><code>Visible</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public new bool Visible { get; set; }
+</code></pre>
+<p>Gets or sets the visibility of the control. When floating, controls the container form visibility.</p>
+<h5 id="showfloatingwindowcontrolbox"><code>ShowFloatingWindowControlBox</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public bool ShowFloatingWindowControlBox { get; set; }
+</code></pre>
+<p>Gets or sets whether the floating window displays a control box (minimize/maximize/close buttons).</p>
+<p><strong>Default:</strong> <code>true</code></p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">menuStrip.ShowFloatingWindowControlBox = false; // Hide control box
+</code></pre>
+<h5 id="floatingwindowtext"><code>FloatingWindowText</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public string FloatingWindowText { get; set; }
+</code></pre>
+<p>Gets or sets the text displayed in the floating window title bar.</p>
+<p><strong>Default:</strong> <code>&quot;Menu&quot;</code></p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">menuStrip.FloatingWindowText = &quot;Main Menu&quot;;
+</code></pre>
+<h5 id="enableanimation-1"><code>EnableAnimation</code></h5>
+<pre><code class="lang-csharp">[DefaultValue(true)]
+public bool EnableAnimation { get; set; }
+</code></pre>
+<p>Gets or sets a value indicating whether animation is enabled during dock/float transitions.</p>
+<p><strong>Default:</strong> <code>true</code></p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">menuStrip.EnableAnimation = true; // Enable smooth animations
+menuStrip.EnableAnimation = false; // Instant transitions
+</code></pre>
+<h5 id="animationduration-1"><code>AnimationDuration</code></h5>
+<pre><code class="lang-csharp">[DefaultValue(200)]
+public int AnimationDuration { get; set; }
+</code></pre>
+<p>Gets or sets the duration of dock/float animations in milliseconds.</p>
+<p><strong>Default:</strong> <code>200</code></p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">menuStrip.AnimationDuration = 300; // 300ms animation
+menuStrip.AnimationDuration = 0; // No animation
+</code></pre>
+<h5 id="floatingwindowstyle-1"><code>FloatingWindowStyle</code></h5>
+<pre><code class="lang-csharp">[DefaultValue(FloatingWindowStyle.Default)]
+public FloatingWindowStyle FloatingWindowStyle { get; set; }
+</code></pre>
+<p>Gets or sets the style of the floating window.</p>
+<p><strong>Default:</strong> <code>FloatingWindowStyle.Default</code></p>
+<p><strong>Available Styles:</strong></p>
+<ul>
+<li><code>Default</code>: Standard window with full chrome</li>
+<li><code>Minimal</code>: No border or title bar</li>
+<li><code>ToolWindow</code>: Smaller title bar, tool window style</li>
+<li><code>Custom</code>: For future customization options</li>
+</ul>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">menuStrip.FloatingWindowStyle = FloatingWindowStyle.Minimal;
+menuStrip.FloatingWindowStyle = FloatingWindowStyle.ToolWindow;
+</code></pre>
+<h4 id="events-1">Events</h4>
+<h5 id="floatingstatechanged-1"><code>FloatingStateChanged</code></h5>
+<pre><code class="lang-csharp">public event EventHandler&lt;FloatingStateChangedEventArgs&gt;? FloatingStateChanged;
+</code></pre>
+<p>Occurs when the floating state of the menu strip changes (becomes floating or docked).</p>
+<p><strong>Event Args:</strong> <code>FloatingStateChangedEventArgs</code> containing <code>IsFloating</code> property.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">menuStrip.FloatingStateChanged += (sender, e) =&gt;
+{
+    if (e.IsFloating)
+    {
+        // Menu strip is now floating
+    }
+    else
+    {
+        // Menu strip is now docked
+    }
+};
+</code></pre>
+<h4 id="methods-1">Methods</h4>
+<h5 id="floatpoint-1"><code>Float(Point?)</code></h5>
+<pre><code class="lang-csharp">public bool Float(Point? location = null)
+</code></pre>
+<p>Programmatically floats the menu strip at the specified location.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>location</code> (optional): The screen location where the floating window should appear. If <code>null</code>, uses current control location.</li>
+</ul>
+<p><strong>Returns:</strong> <code>true</code> if the menu strip was successfully floated; <code>false</code> if it was already floating or cannot be floated.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Float at current location
+menuStrip.Float();
+
+// Float at specific location
+menuStrip.Float(new Point(100, 100));
+</code></pre>
+<h5 id="dockkryptonmenustrippanelextended"><code>Dock(KryptonMenuStripPanelExtended?)</code></h5>
+<pre><code class="lang-csharp">public bool Dock(KryptonMenuStripPanelExtended? targetPanel = null)
+</code></pre>
+<p>Programmatically docks the menu strip to the specified panel or original parent.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>targetPanel</code> (optional): The panel to dock to. If <code>null</code>, docks to original parent.</li>
+</ul>
+<p><strong>Returns:</strong> <code>true</code> if the menu strip was successfully docked; <code>false</code> if it was not floating or cannot be docked.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Dock to original parent
+menuStrip.Dock();
+
+// Dock to specific panel
+menuStrip.Dock(targetPanel);
+</code></pre>
+<h5 id="savestate-1"><code>SaveState()</code></h5>
+<pre><code class="lang-csharp">public FloatingToolbarState? SaveState()
+</code></pre>
+<p>Saves the current floating state to a <code>FloatingToolbarState</code> object.</p>
+<p><strong>Returns:</strong> A <code>FloatingToolbarState</code> object containing the current state, or <code>null</code> if the control has no name.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Ensure menu strip has a name
+menuStrip.Name = &quot;MainMenu&quot;;
+
+// Save state
+var state = menuStrip.SaveState();
+if (state != null)
+{
+    FloatingToolbarStateManager.SaveStatesToFile(new[] { state }, &quot;states.xml&quot;);
+}
+</code></pre>
+<h5 id="loadstatefloatingtoolbarstate-1"><code>LoadState(FloatingToolbarState?)</code></h5>
+<pre><code class="lang-csharp">public bool LoadState(FloatingToolbarState? state)
+</code></pre>
+<p>Loads a floating state from a <code>FloatingToolbarState</code> object.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>state</code>: The <code>FloatingToolbarState</code> object to load.</li>
+</ul>
+<p><strong>Returns:</strong> <code>true</code> if the state was loaded successfully; otherwise, <code>false</code>.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="lang-csharp">// Load from file
+var collection = FloatingToolbarStateManager.LoadStatesFromFile(&quot;states.xml&quot;);
+if (collection != null)
+{
+    var state = collection.ToolbarStates.FirstOrDefault(s =&gt; s.Name == &quot;MainMenu&quot;);
+    menuStrip.LoadState(state);
+}
+</code></pre>
+<h5 id="onfloatingstatechangedbool-1"><code>OnFloatingStateChanged(bool)</code></h5>
+<pre><code class="lang-csharp">protected virtual void OnFloatingStateChanged(bool isFloating)
+</code></pre>
+<p>Raises the <code>FloatingStateChanged</code> event. Can be overridden in derived classes.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>isFloating</code>: <code>true</code> if the menu strip is now floating; <code>false</code> if docked.</li>
+</ul>
+<h4 id="constructor">Constructor</h4>
+<h5 id="kryptonfloatablemenustrip-2"><code>KryptonFloatableMenuStrip()</code></h5>
+<pre><code class="lang-csharp">public KryptonFloatableMenuStrip()
+</code></pre>
+<p>Initializes a new instance with default settings:</p>
+<ul>
+<li><code>ShowFloatingWindowControlBox = true</code></li>
+<li><code>Dock = DockStyle.None</code></li>
+<li><code>GripStyle = ToolStripGripStyle.Visible</code></li>
+<li><code>FloatingWindowText = &quot;Menu&quot;</code></li>
+</ul>
+<hr>
+<h3 id="floatingstatechangedeventargs">FloatingStateChangedEventArgs</h3>
+<p>Event arguments class for the <code>FloatingStateChanged</code> event.</p>
+<h4 id="properties-2">Properties</h4>
+<h5 id="isfloating-2"><code>IsFloating</code></h5>
+<pre><code class="lang-csharp">public bool IsFloating { get; }
+</code></pre>
+<p>Gets a value indicating whether the control is now floating.</p>
+<p><strong>Returns:</strong> <code>true</code> if the control is floating; <code>false</code> if docked.</p>
+<h4 id="constructor-1">Constructor</h4>
+<h5 id="floatingstatechangedeventargsbool"><code>FloatingStateChangedEventArgs(bool)</code></h5>
+<pre><code class="lang-csharp">public FloatingStateChangedEventArgs(bool isFloating)
+</code></pre>
+<p>Initializes a new instance of the <code>FloatingStateChangedEventArgs</code> class.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>isFloating</code>: <code>true</code> if the control is floating; otherwise, <code>false</code>.</li>
+</ul>
+<hr>
+<h3 id="floatingtoolbarstatemanager">FloatingToolbarStateManager</h3>
+<p>Static helper class for saving and loading floating toolbar states to/from XML files.</p>
+<h4 id="methods-2">Methods</h4>
+<h5 id="savestatestofileienumerablefloatingtoolbarstate-string"><code>SaveStatesToFile(IEnumerable&lt;FloatingToolbarState&gt;, string)</code></h5>
+<pre><code class="lang-csharp">public static bool SaveStatesToFile(IEnumerable&lt;FloatingToolbarState&gt; states, string filePath)
+</code></pre>
+<p>Saves a collection of floating toolbar states to an XML file.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>states</code>: The collection of toolbar states to save.</li>
+<li><code>filePath</code>: The path to the XML file.</li>
+</ul>
+<p><strong>Returns:</strong> <code>true</code> if the save was successful; otherwise, <code>false</code>.</p>
+<h5 id="loadstatesfromfilestring"><code>LoadStatesFromFile(string)</code></h5>
+<pre><code class="lang-csharp">public static FloatingToolbarStateCollection? LoadStatesFromFile(string filePath)
+</code></pre>
+<p>Loads floating toolbar states from an XML file.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>filePath</code>: The path to the XML file.</li>
+</ul>
+<p><strong>Returns:</strong> A <code>FloatingToolbarStateCollection</code> object, or <code>null</code> if loading failed.</p>
+<h5 id="savestatestostringienumerablefloatingtoolbarstate"><code>SaveStatesToString(IEnumerable&lt;FloatingToolbarState&gt;)</code></h5>
+<pre><code class="lang-csharp">public static string? SaveStatesToString(IEnumerable&lt;FloatingToolbarState&gt; states)
+</code></pre>
+<p>Saves a collection of floating toolbar states to an XML string.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>states</code>: The collection of toolbar states to save.</li>
+</ul>
+<p><strong>Returns:</strong> The XML string representation, or <code>null</code> if serialization failed.</p>
+<h5 id="loadstatesfromstringstring"><code>LoadStatesFromString(string)</code></h5>
+<pre><code class="lang-csharp">public static FloatingToolbarStateCollection? LoadStatesFromString(string xmlString)
+</code></pre>
+<p>Loads floating toolbar states from an XML string.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>xmlString</code>: The XML string to deserialize.</li>
+</ul>
+<p><strong>Returns:</strong> A <code>FloatingToolbarStateCollection</code> object, or <code>null</code> if loading failed.</p>
+<hr>
+<h3 id="kryptontoolstrippanelextended-1">KryptonToolStripPanelExtended</h3>
+<h4 id="properties-3">Properties</h4>
+<h5 id="activerectangle"><code>ActiveRectangle</code></h5>
+<pre><code class="lang-csharp">public Rectangle ActiveRectangle { get; }
+</code></pre>
+<p>Gets the active rectangle where floating toolbars can dock. This rectangle is calculated based on panel size and orientation.</p>
+<p><strong>Returns:</strong> A <code>Rectangle</code> representing the docking zone.</p>
+<p><strong>Note:</strong> The active rectangle is automatically calculated when the panel size changes. For small panels (&lt; 23 pixels), the rectangle extends beyond the panel bounds to provide a larger docking target.</p>
+<h4 id="methods-3">Methods</h4>
+<h5 id="onsizechangedeventargs"><code>OnSizeChanged(EventArgs)</code></h5>
+<pre><code class="lang-csharp">protected override void OnSizeChanged(EventArgs e)
+</code></pre>
+<p>Recalculates the active rectangle when the panel size changes.</p>
+<h5 id="oncontroladdedcontroleventargs"><code>OnControlAdded(ControlEventArgs)</code></h5>
+<pre><code class="lang-csharp">protected override void OnControlAdded(ControlEventArgs e)
+</code></pre>
+<p>Automatically sets the layout style of added tool strips based on panel orientation.</p>
+<hr>
+<h3 id="kryptonmenustrippanelextended-1">KryptonMenuStripPanelExtended</h3>
+<h4 id="properties-4">Properties</h4>
+<h5 id="kryptonfloatablemenustrip-3"><code>KryptonFloatableMenuStrip</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public KryptonFloatableMenuStrip KryptonFloatableMenuStrip { get; set; }
+</code></pre>
+<p>Gets or sets the associated floatable menu strip.</p>
+<h5 id="activerectangle-1"><code>ActiveRectangle</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public Rectangle ActiveRectangle { get; }
+</code></pre>
+<p>Gets the active rectangle where floating menu strips can dock.</p>
+<h4 id="methods-4">Methods</h4>
+<h5 id="oncontroladdedcontroleventargs-1"><code>OnControlAdded(ControlEventArgs)</code></h5>
+<pre><code class="lang-csharp">protected override void OnControlAdded(ControlEventArgs e)
+</code></pre>
+<p>Automatically sets the layout style of added menu strips based on panel orientation.</p>
+<hr>
+<h3 id="kryptonfloatablepanelhost-1">KryptonFloatablePanelHost</h3>
+<h4 id="properties-5">Properties</h4>
+<h5 id="kryptonfloatablemenustrip-4"><code>KryptonFloatableMenuStrip</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public KryptonFloatableMenuStrip? KryptonFloatableMenuStrip { get; set; }
+</code></pre>
+<p>Gets or sets the associated floatable menu strip (optional).</p>
+<h5 id="kryptonfloatabletoolstrip-2"><code>KryptonFloatableToolStrip</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public KryptonFloatableToolStrip? KryptonFloatableToolStrip { get; set; }
+</code></pre>
+<p>Gets or sets the associated floatable tool strip (optional).</p>
+<h5 id="activearea"><code>ActiveArea</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public Rectangle ActiveArea { get; }
+</code></pre>
+<p>Gets the active area where floating controls can dock.</p>
+<hr>
+<h3 id="visualtoolstripcontainerform">VisualToolStripContainerForm</h3>
+<p>A <code>KryptonForm</code> that hosts floating <code>KryptonFloatableToolStrip</code> controls.</p>
+<h4 id="properties-6">Properties</h4>
+<h5 id="kryptonfloatabletoolstrip-3"><code>KryptonFloatableToolStrip</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public KryptonFloatableToolStrip? KryptonFloatableToolStrip { get; set; }
+</code></pre>
+<p>Gets or sets the tool strip hosted in this floating window.</p>
+<p><strong>Note:</strong> Setting this property automatically configures the form size and layout.</p>
+<h4 id="events-2">Events</h4>
+<h5 id="nclbuttondblclk"><code>NCLBUTTONDBLCLK</code></h5>
+<pre><code class="lang-csharp">public event EventHandler NCLBUTTONDBLCLK;
+</code></pre>
+<p>Raised when the non-client area (title bar) is double-clicked. Typically used to dock the toolbar back.</p>
+<h4 id="features">Features</h4>
+<ul>
+<li><strong>Auto-sizing</strong>: Form size automatically adjusts to toolbar content</li>
+<li><strong>Resize constraints</strong>: Minimum and maximum width constraints based on toolbar items</li>
+<li><strong>System menu</strong>: Minimize, maximize, and restore options are removed</li>
+<li><strong>Double-click to dock</strong>: Double-clicking the title bar docks the toolbar back</li>
+</ul>
+<hr>
+<h3 id="visualmenustripcontainerform">VisualMenuStripContainerForm</h3>
+<p>A <code>KryptonForm</code> that hosts floating <code>KryptonFloatableMenuStrip</code> controls.</p>
+<h4 id="properties-7">Properties</h4>
+<h5 id="kryptonfloatablemenustrip-5"><code>KryptonFloatableMenuStrip</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public KryptonFloatableMenuStrip KryptonFloatableMenuStrip { get; set; }
+</code></pre>
+<p>Gets or sets the menu strip hosted in this floating window.</p>
+<h5 id="showwindowframe"><code>ShowWindowFrame</code></h5>
+<pre><code class="lang-csharp">[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+public bool ShowWindowFrame { get; set; }
+</code></pre>
+<p>Gets or sets whether to show a window frame border.</p>
+<h4 id="features-1">Features</h4>
+<ul>
+<li><strong>Configurable control box</strong>: Can show/hide window control box based on menu strip settings</li>
+<li><strong>Custom window text</strong>: Uses <code>FloatingWindowText</code> from the menu strip</li>
+<li><strong>Auto-sizing</strong>: Form size automatically adjusts to menu strip content</li>
+</ul>
+<hr>
+<h2 id="features-2">Features</h2>
+<h3 id="1-drag-to-float">1. Drag-to-Float</h3>
+<p>Users can drag toolbars and menu strips by their grip handles to float them as separate windows.</p>
+<p><strong>How it works:</strong></p>
+<ol>
+<li>User clicks and holds the grip handle (<code>GripRectangle</code>)</li>
+<li>User drags the control outside its parent's bounds</li>
+<li>A floating container form is created</li>
+<li>The control is moved to the floating form</li>
+<li>The floating form is displayed</li>
+</ol>
+<h3 id="2-automatic-docking">2. Automatic Docking</h3>
+<p>When a floating toolbar/menu strip is dragged over a designated panel's active rectangle, it automatically docks.</p>
+<p><strong>How it works:</strong></p>
+<ol>
+<li>Floating container form's <code>LocationChanged</code> event fires</li>
+<li>Cursor position is checked against all panels in the collection</li>
+<li>If cursor is within a panel's <code>ActiveRectangle</code>, docking occurs:
+<ul>
+<li>Control is removed from floating form</li>
+<li>Control is added to the panel</li>
+<li>Floating form is hidden</li>
+<li>Control's floating state is reset</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-panel-active-rectangles">3. Panel Active Rectangles</h3>
+<p>Panels calculate &quot;active rectangles&quot; that define docking zones:</p>
+<ul>
+<li><strong>Normal panels</strong>: Active rectangle equals client rectangle</li>
+<li><strong>Small panels</strong> (&lt; 23 pixels): Active rectangle extends beyond bounds to provide larger docking target</li>
+<li><strong>Orientation-aware</strong>: Horizontal panels extend height, vertical panels extend width</li>
+</ul>
+<h3 id="4-window-management">4. Window Management</h3>
+<p>Floating windows provide:</p>
+<ul>
+<li><strong>Auto-sizing</strong>: Size adjusts to content</li>
+<li><strong>Resize constraints</strong>: Minimum width based on largest item, maximum width based on preferred size</li>
+<li><strong>Double-click to dock</strong>: Double-clicking title bar returns control to original parent</li>
+<li><strong>Close button</strong>: Closing window docks control back (canceled, form hidden)</li>
+</ul>
+<h3 id="5-state-management">5. State Management</h3>
+<p>Controls track:</p>
+<ul>
+<li><strong>Floating state</strong>: <code>IsFloating</code> property</li>
+<li><strong>Original parent</strong>: Stored for restoration</li>
+<li><strong>Panel collections</strong>: Lists of valid docking targets</li>
+</ul>
+<h3 id="6-designer-integration">6. Designer Integration</h3>
+<p>Visual Studio designer support includes:</p>
+<ul>
+<li><strong>Collection editors</strong>: Visual editors for panel collections</li>
+<li><strong>Component choosers</strong>: Dialogs to select existing panels</li>
+<li><strong>Property serialization</strong>: Proper serialization of panel lists</li>
+</ul>
+<hr>
+<h2 id="usage-guide">Usage Guide</h2>
+<h3 id="basic-setup">Basic Setup</h3>
+<h4 id="step-1-add-panels-to-form">Step 1: Add Panels to Form</h4>
+<p>Add <code>KryptonToolStripPanelExtended</code> or <code>KryptonMenuStripPanelExtended</code> panels to your form:</p>
+<pre><code class="lang-csharp">// In form designer or code
+var topPanel = new KryptonToolStripPanelExtended
+{
+    Name = &quot;topPanel&quot;,
+    Dock = DockStyle.Top,
+    Orientation = Orientation.Horizontal
+};
+this.Controls.Add(topPanel);
+</code></pre>
+<h4 id="step-2-create-floatable-toolbar">Step 2: Create Floatable Toolbar</h4>
+<p>Create a <code>KryptonFloatableToolStrip</code>:</p>
+<pre><code class="lang-csharp">var toolStrip = new KryptonFloatableToolStrip
+{
+    Name = &quot;mainToolStrip&quot;,
+    FloatingToolBarWindowText = &quot;Main Toolbar&quot;
+};
+
+// Add items
+toolStrip.Items.Add(new KryptonButton { Text = &quot;New&quot; });
+toolStrip.Items.Add(new KryptonButton { Text = &quot;Open&quot; });
+toolStrip.Items.Add(new KryptonButton { Text = &quot;Save&quot; });
+</code></pre>
+<h4 id="step-3-configure-panel-collection">Step 3: Configure Panel Collection</h4>
+<p>Add panels where the toolbar can dock:</p>
+<pre><code class="lang-csharp">toolStrip.KryptonToolStripPanelExtendedList.Add(topPanel);
+toolStrip.KryptonToolStripPanelExtendedList.Add(bottomPanel);
+</code></pre>
+<h4 id="step-4-add-toolbar-to-panel">Step 4: Add Toolbar to Panel</h4>
+<p>Add the toolbar to a panel:</p>
+<pre><code class="lang-csharp">topPanel.Controls.Add(toolStrip);
+</code></pre>
+<h3 id="complete-example">Complete Example</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+using Krypton.Utilities;
+using System.Drawing;
+using System.Windows.Forms;
+
+public partial class MainForm : KryptonForm
+{
+    private KryptonFloatableToolStrip _toolStrip;
+    private KryptonToolStripPanelExtended _topPanel;
+    private KryptonToolStripPanelExtended _bottomPanel;
+
+    public MainForm()
+    {
+        InitializeComponent();
+        SetupFloatingToolbars();
+    }
+
+    private void SetupFloatingToolbars()
+    {
+        // Create panels
+        _topPanel = new KryptonToolStripPanelExtended
+        {
+            Name = &quot;topPanel&quot;,
+            Dock = DockStyle.Top,
+            Orientation = Orientation.Horizontal,
+            Height = 30
+        };
+
+        _bottomPanel = new KryptonToolStripPanelExtended
+        {
+            Name = &quot;bottomPanel&quot;,
+            Dock = DockStyle.Bottom,
+            Orientation = Orientation.Horizontal,
+            Height = 30
+        };
+
+        this.Controls.Add(_topPanel);
+        this.Controls.Add(_bottomPanel);
+
+        // Create floatable toolbar
+        _toolStrip = new KryptonFloatableToolStrip
+        {
+            Name = &quot;mainToolStrip&quot;,
+            FloatingToolBarWindowText = &quot;Main Toolbar&quot;,
+            GripStyle = ToolStripGripStyle.Visible
+        };
+
+        // Add toolbar items
+        _toolStrip.Items.Add(new ToolStripButton(&quot;New&quot;, null, OnNewClick));
+        _toolStrip.Items.Add(new ToolStripButton(&quot;Open&quot;, null, OnOpenClick));
+        _toolStrip.Items.Add(new ToolStripButton(&quot;Save&quot;, null, OnSaveClick));
+        _toolStrip.Items.Add(new ToolStripSeparator());
+        _toolStrip.Items.Add(new ToolStripButton(&quot;Cut&quot;, null, OnCutClick));
+        _toolStrip.Items.Add(new ToolStripButton(&quot;Copy&quot;, null, OnCopyClick));
+        _toolStrip.Items.Add(new ToolStripButton(&quot;Paste&quot;, null, OnPasteClick));
+
+        // Configure docking panels
+        _toolStrip.KryptonToolStripPanelExtendedList.Add(_topPanel);
+        _toolStrip.KryptonToolStripPanelExtendedList.Add(_bottomPanel);
+
+        // Add to panel
+        _topPanel.Controls.Add(_toolStrip);
+    }
+
+    private void OnNewClick(object sender, EventArgs e) { /* ... */ }
+    private void OnOpenClick(object sender, EventArgs e) { /* ... */ }
+    private void OnSaveClick(object sender, EventArgs e) { /* ... */ }
+    private void OnCutClick(object sender, EventArgs e) { /* ... */ }
+    private void OnCopyClick(object sender, EventArgs e) { /* ... */ }
+    private void OnPasteClick(object sender, EventArgs e) { /* ... */ }
+}
+</code></pre>
+<h3 id="menu-strip-example">Menu Strip Example</h3>
+<pre><code class="lang-csharp">private void SetupFloatingMenuStrip()
+{
+    // Create menu strip panel
+    var menuPanel = new KryptonMenuStripPanelExtended
+    {
+        Name = &quot;menuPanel&quot;,
+        Dock = DockStyle.Top,
+        Orientation = Orientation.Horizontal,
+        Height = 25
+    };
+    this.Controls.Add(menuPanel);
+
+    // Create floatable menu strip
+    var menuStrip = new KryptonFloatableMenuStrip
+    {
+        Name = &quot;mainMenuStrip&quot;,
+        FloatingWindowText = &quot;Main Menu&quot;,
+        ShowFloatingWindowControlBox = true,
+        GripStyle = ToolStripGripStyle.Visible
+    };
+
+    // Add menu items
+    var fileMenu = new ToolStripMenuItem(&quot;File&quot;);
+    fileMenu.DropDownItems.Add(&quot;New&quot;, null, OnNewClick);
+    fileMenu.DropDownItems.Add(&quot;Open&quot;, null, OnOpenClick);
+    fileMenu.DropDownItems.Add(&quot;Save&quot;, null, OnSaveClick);
+    menuStrip.Items.Add(fileMenu);
+
+    var editMenu = new ToolStripMenuItem(&quot;Edit&quot;);
+    editMenu.DropDownItems.Add(&quot;Cut&quot;, null, OnCutClick);
+    editMenu.DropDownItems.Add(&quot;Copy&quot;, null, OnCopyClick);
+    editMenu.DropDownItems.Add(&quot;Paste&quot;, null, OnPasteClick);
+    menuStrip.Items.Add(editMenu);
+
+    // Configure docking panels
+    menuStrip.MenuStripPanelExtendedList = new List&lt;KryptonMenuStripPanelExtended&gt; { menuPanel };
+
+    // Add to panel
+    menuPanel.Controls.Add(menuStrip);
+    menuPanel.KryptonFloatableMenuStrip = menuStrip;
+}
+</code></pre>
+<h3 id="programmatic-floating">Programmatic Floating</h3>
+<p>You can programmatically float a toolbar or menu strip using the <code>Float()</code> method:</p>
+<pre><code class="lang-csharp">// Float at current location
+if (toolStrip.Float())
+{
+    Console.WriteLine(&quot;Toolbar floated successfully&quot;);
+}
+
+// Float at specific screen location
+Point customLocation = new Point(100, 100);
+if (toolStrip.Float(customLocation))
+{
+    Console.WriteLine(&quot;Toolbar floated at custom location&quot;);
+}
+
+// Float menu strip
+if (menuStrip.Float())
+{
+    Console.WriteLine(&quot;Menu strip floated successfully&quot;);
+}
+</code></pre>
+<p><strong>Returns:</strong> <code>true</code> if floating was successful; <code>false</code> if already floating or cannot float.</p>
+<h3 id="programmatic-docking">Programmatic Docking</h3>
+<p>You can programmatically dock a floating toolbar or menu strip using the <code>Dock()</code> method:</p>
+<pre><code class="lang-csharp">// Dock to original parent
+if (toolStrip.Dock())
+{
+    Console.WriteLine(&quot;Toolbar docked to original parent&quot;);
+}
+
+// Dock to specific panel
+var targetPanel = toolStrip.KryptonToolStripPanelExtendedList.FirstOrDefault();
+if (targetPanel != null &amp;&amp; toolStrip.Dock(targetPanel))
+{
+    Console.WriteLine(&quot;Toolbar docked to specified panel&quot;);
+}
+
+// Dock menu strip to specific panel
+var menuPanel = menuStrip.MenuStripPanelExtendedList?.FirstOrDefault();
+if (menuPanel != null &amp;&amp; menuStrip.Dock(menuPanel))
+{
+    Console.WriteLine(&quot;Menu strip docked successfully&quot;);
+}
+</code></pre>
+<p><strong>Returns:</strong> <code>true</code> if docking was successful; <code>false</code> if not floating or cannot dock.</p>
+<h3 id="floating-state-events">Floating State Events</h3>
+<p>You can subscribe to the <code>FloatingStateChanged</code> event to be notified when a toolbar or menu strip changes between floating and docked states:</p>
+<pre><code class="lang-csharp">toolStrip.FloatingStateChanged += (sender, e) =&gt;
+{
+    if (e.IsFloating)
+    {
+        Console.WriteLine(&quot;Toolbar is now floating&quot;);
+        // Update UI, save state, etc.
+    }
+    else
+    {
+        Console.WriteLine(&quot;Toolbar is now docked&quot;);
+        // Update UI, save state, etc.
+    }
+};
+
+menuStrip.FloatingStateChanged += (sender, e) =&gt;
+{
+    // Handle state change
+    UpdateMenuStripUI(e.IsFloating);
+};
+</code></pre>
+<hr>
+<h2 id="designer-integration">Designer Integration</h2>
+<h3 id="collection-editors">Collection Editors</h3>
+<p>The floating toolbar controls provide custom collection editors for managing panel lists in the Visual Studio designer.</p>
+<h4 id="toolstrippanelcollectioneditor">ToolStripPanelCollectionEditor</h4>
+<p>Accessed via the <code>KryptonToolStripPanelExtendedList</code> property in the Properties window.</p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Visual dialog to select existing <code>KryptonToolStripPanelExtended</code> controls</li>
+<li>Add/remove panels from the collection</li>
+<li>Shows available panels from the form</li>
+<li>Shows currently selected panels</li>
+</ul>
+<p><strong>Usage:</strong></p>
+<ol>
+<li>Select <code>KryptonFloatableToolStrip</code> in designer</li>
+<li>Find <code>KryptonToolStripPanelExtendedList</code> property</li>
+<li>Click the ellipsis (...) button</li>
+<li>Use the dialog to select panels</li>
+</ol>
+<h4 id="menustrippanelcollectioneditor">MenuStripPanelCollectionEditor</h4>
+<p>Accessed via the <code>MenuStripPanelExtendedList</code> property in the Properties window.</p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Visual dialog to select existing <code>KryptonMenuStripPanelExtended</code> controls</li>
+<li>Similar interface to ToolStripPanelCollectionEditor</li>
+</ul>
+<h3 id="component-chooser-forms">Component Chooser Forms</h3>
+<h4 id="visualtoolstripexistingcomponentchooserform">VisualToolStripExistingComponentChooserForm</h4>
+<p>A dialog form that allows selecting <code>KryptonToolStripPanelExtended</code> controls.</p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>SourceComponentContainer</code>: The container control to search for panels</li>
+<li><code>SelectedComponents</code>: Returns the list of selected panels</li>
+</ul>
+<h4 id="visualmenustripexistingcomponentchooserform">VisualMenuStripExistingComponentChooserForm</h4>
+<p>A dialog form that allows selecting <code>KryptonMenuStripPanelExtended</code> controls.</p>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><code>SourceComponentContainer</code>: The container control to search for panels</li>
+<li><code>SelectedComponents</code>: Returns the list of selected panels</li>
+</ul>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-panel-configuration">1. Panel Configuration</h3>
+<p><strong>DO:</strong></p>
+<ul>
+<li>Use descriptive names for panels (e.g., &quot;TopToolbarPanel&quot;, &quot;BottomStatusPanel&quot;)</li>
+<li>Set appropriate <code>Orientation</code> based on panel position</li>
+<li>Ensure panels have adequate size (minimum 23 pixels recommended)</li>
+<li>Use <code>Dock</code> property to position panels correctly</li>
+</ul>
+<p><strong>DON'T:</strong></p>
+<ul>
+<li>Don't create panels that are too small (&lt; 23 pixels)</li>
+<li>Don't forget to set <code>Orientation</code> property</li>
+<li>Don't add panels to the collection that aren't on the form</li>
+</ul>
+<h3 id="2-toolbar-configuration">2. Toolbar Configuration</h3>
+<p><strong>DO:</strong></p>
+<ul>
+<li>Set meaningful <code>FloatingToolBarWindowText</code> / <code>FloatingWindowText</code></li>
+<li>Configure <code>GripStyle = ToolStripGripStyle.Visible</code> to enable dragging</li>
+<li>Add all valid docking panels to the collection</li>
+<li>Use consistent naming conventions</li>
+</ul>
+<p><strong>DON'T:</strong></p>
+<ul>
+<li>Don't forget to add panels to the collection before users try to dock</li>
+<li>Don't set <code>Dock</code> property directly on floatable controls (let panels manage it)</li>
+<li>Don't modify <code>OriginalParent</code> property (internal use only)</li>
+</ul>
+<h3 id="3-state-management">3. State Management</h3>
+<p><strong>DO:</strong></p>
+<ul>
+<li>Check <code>IsFloating</code> property before performing operations</li>
+<li>Handle visibility through the <code>Visible</code> property (works for both states)</li>
+<li>Store panel references if you need to programmatically manage docking</li>
+</ul>
+<p><strong>DON'T:</strong></p>
+<ul>
+<li>Don't manually manipulate parent controls during floating operations</li>
+<li>Don't assume control location when floating (use <code>IsFloating</code> check)</li>
+<li>Don't modify internal state fields directly</li>
+</ul>
+<h3 id="4-performance-considerations">4. Performance Considerations</h3>
+<p><strong>DO:</strong></p>
+<ul>
+<li>Limit the number of panels in collections (only add necessary ones)</li>
+<li>Reuse panel instances when possible</li>
+<li>Consider panel visibility when calculating active rectangles</li>
+</ul>
+<p><strong>DON'T:</strong></p>
+<ul>
+<li>Don't add every panel on the form to every toolbar's collection</li>
+<li>Don't create excessive floating windows simultaneously</li>
+</ul>
+<h3 id="5-user-experience">5. User Experience</h3>
+<p><strong>DO:</strong></p>
+<ul>
+<li>Provide visual feedback during drag operations</li>
+<li>Use descriptive window titles</li>
+<li>Ensure adequate docking targets are available</li>
+<li>Test drag-to-float and dock-back scenarios</li>
+</ul>
+<p><strong>DON'T:</strong></p>
+<ul>
+<li>Don't make docking zones too small</li>
+<li>Don't use generic window titles</li>
+<li>Don't remove panels while toolbars are floating</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="toolbar-wont-float">Toolbar Won't Float</h3>
+<p><strong>Symptoms:</strong> Clicking and dragging the grip handle doesn't create a floating window.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li><code>GripStyle</code> is not set to <code>Visible</code></li>
+<li>Toolbar is not in a valid parent container</li>
+<li>Mouse events are being intercepted by another control</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<pre><code class="lang-csharp">// Ensure grip is visible
+toolStrip.GripStyle = ToolStripGripStyle.Visible;
+
+// Check parent
+if (toolStrip.Parent == null)
+{
+    // Add to a panel first
+    panel.Controls.Add(toolStrip);
+}
+</code></pre>
+<h3 id="toolbar-wont-dock">Toolbar Won't Dock</h3>
+<p><strong>Symptoms:</strong> Dragging floating toolbar over panel doesn't dock it.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li>Panel is not in the toolbar's panel collection</li>
+<li>Panel's <code>ActiveRectangle</code> is too small</li>
+<li>Cursor position calculation issue</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<pre><code class="lang-csharp">// Verify panel is in collection
+if (!toolStrip.KryptonToolStripPanelExtendedList.Contains(panel))
+{
+    toolStrip.KryptonToolStripPanelExtendedList.Add(panel);
+}
+
+// Check panel size
+if (panel.Width &lt; 23 || panel.Height &lt; 23)
+{
+    // Panel may be too small - increase size
+    panel.Height = 30; // or appropriate size
+}
+</code></pre>
+<h3 id="floating-window-too-smalllarge">Floating Window Too Small/Large</h3>
+<p><strong>Symptoms:</strong> Floating window size doesn't match toolbar content.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li>Toolbar items have unusual sizes</li>
+<li>Minimum/maximum width calculations incorrect</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Check toolbar item sizes</li>
+<li>Verify <code>PreferredSize</code> is calculated correctly</li>
+<li>Container form auto-sizes based on toolbar content</li>
+</ul>
+<h3 id="panel-active-rectangle-issues">Panel Active Rectangle Issues</h3>
+<p><strong>Symptoms:</strong> Docking zone doesn't match panel visual bounds.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li>Panel size changed after active rectangle calculation</li>
+<li>Orientation mismatch</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<pre><code class="lang-csharp">// Force recalculation by resizing panel
+panel.Size = new Size(panel.Width + 1, panel.Height);
+panel.Size = new Size(panel.Width - 1, panel.Height);
+
+// Or check orientation
+if (panel.Orientation != Orientation.Horizontal &amp;&amp; panel.Dock == DockStyle.Top)
+{
+    // Mismatch - fix orientation
+    panel.Orientation = Orientation.Horizontal;
+}
+</code></pre>
+<h3 id="designer-serialization-issues">Designer Serialization Issues</h3>
+<p><strong>Symptoms:</strong> Panel collections don't persist in designer.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li>Panels not properly named</li>
+<li>Collection editor not saving correctly</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Ensure panels have unique, valid names</li>
+<li>Use the collection editor in Properties window</li>
+<li>Check <code>.Designer.cs</code> file for serialized code</li>
+</ul>
+<h3 id="multiple-floating-windows">Multiple Floating Windows</h3>
+<p><strong>Symptoms:</strong> Multiple floating windows created for same toolbar.</p>
+<p><strong>Possible Causes:</strong></p>
+<ol>
+<li>Rapid clicking/dragging</li>
+<li>Event handler issues</li>
+</ol>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>This is typically prevented by internal state management</li>
+<li>Check for event handler conflicts</li>
+<li>Ensure <code>_aboutToFloat</code> flag is working correctly</li>
+</ul>
+<hr>
+<h2 id="examples">Examples</h2>
+<h3 id="example-1-simple-floating-toolbar">Example 1: Simple Floating Toolbar</h3>
+<pre><code class="lang-csharp">public partial class SimpleToolbarForm : KryptonForm
+{
+    public SimpleToolbarForm()
+    {
+        InitializeComponent();
+        SetupToolbar();
+    }
+
+    private void SetupToolbar()
+    {
+        // Panel
+        var panel = new KryptonToolStripPanelExtended
+        {
+            Dock = DockStyle.Top,
+            Height = 30
+        };
+        Controls.Add(panel);
+
+        // Toolbar
+        var toolbar = new KryptonFloatableToolStrip
+        {
+            FloatingToolBarWindowText = &quot;Tools&quot;
+        };
+        toolbar.Items.Add(new ToolStripButton(&quot;Button 1&quot;));
+        toolbar.Items.Add(new ToolStripButton(&quot;Button 2&quot;));
+
+        toolbar.KryptonToolStripPanelExtendedList.Add(panel);
+        panel.Controls.Add(toolbar);
+    }
+}
+</code></pre>
+<h3 id="example-2-multiple-docking-zones">Example 2: Multiple Docking Zones</h3>
+<pre><code class="lang-csharp">public partial class MultiPanelForm : KryptonForm
+{
+    private KryptonFloatableToolStrip _toolbar;
+    private KryptonToolStripPanelExtended _topPanel;
+    private KryptonToolStripPanelExtended _leftPanel;
+    private KryptonToolStripPanelExtended _rightPanel;
+
+    public MultiPanelForm()
+    {
+        InitializeComponent();
+        SetupMultiPanelToolbar();
+    }
+
+    private void SetupMultiPanelToolbar()
+    {
+        // Create multiple panels
+        _topPanel = new KryptonToolStripPanelExtended
+        {
+            Name = &quot;TopPanel&quot;,
+            Dock = DockStyle.Top,
+            Height = 30
+        };
+
+        _leftPanel = new KryptonToolStripPanelExtended
+        {
+            Name = &quot;LeftPanel&quot;,
+            Dock = DockStyle.Left,
+            Width = 30,
+            Orientation = Orientation.Vertical
+        };
+
+        _rightPanel = new KryptonToolStripPanelExtended
+        {
+            Name = &quot;RightPanel&quot;,
+            Dock = DockStyle.Right,
+            Width = 30,
+            Orientation = Orientation.Vertical
+        };
+
+        Controls.Add(_topPanel);
+        Controls.Add(_leftPanel);
+        Controls.Add(_rightPanel);
+
+        // Create toolbar
+        _toolbar = new KryptonFloatableToolStrip
+        {
+            FloatingToolBarWindowText = &quot;Multi-Panel Toolbar&quot;
+        };
+        _toolbar.Items.Add(new ToolStripButton(&quot;A&quot;));
+        _toolbar.Items.Add(new ToolStripButton(&quot;B&quot;));
+        _toolbar.Items.Add(new ToolStripButton(&quot;C&quot;));
+
+        // Add all panels to collection
+        _toolbar.KryptonToolStripPanelExtendedList.Add(_topPanel);
+        _toolbar.KryptonToolStripPanelExtendedList.Add(_leftPanel);
+        _toolbar.KryptonToolStripPanelExtendedList.Add(_rightPanel);
+
+        // Start docked in top panel
+        _topPanel.Controls.Add(_toolbar);
+    }
+}
+</code></pre>
+<h3 id="example-3-floating-menu-strip-with-custom-settings">Example 3: Floating Menu Strip with Custom Settings</h3>
+<pre><code class="lang-csharp">public partial class MenuStripForm : KryptonForm
+{
+    public MenuStripForm()
+    {
+        InitializeComponent();
+        SetupMenuStrip();
+    }
+
+    private void SetupMenuStrip()
+    {
+        var panel = new KryptonMenuStripPanelExtended
+        {
+            Dock = DockStyle.Top,
+            Height = 25
+        };
+        Controls.Add(panel);
+
+        var menuStrip = new KryptonFloatableMenuStrip
+        {
+            FloatingWindowText = &quot;Application Menu&quot;,
+            ShowFloatingWindowControlBox = false, // No control box
+            GripStyle = ToolStripGripStyle.Visible
+        };
+
+        // Build menu
+        var fileMenu = new ToolStripMenuItem(&quot;File&quot;);
+        fileMenu.DropDownItems.Add(&quot;New&quot;);
+        fileMenu.DropDownItems.Add(&quot;Open&quot;);
+        fileMenu.DropDownItems.Add(&quot;Exit&quot;);
+
+        var editMenu = new ToolStripMenuItem(&quot;Edit&quot;);
+        editMenu.DropDownItems.Add(&quot;Undo&quot;);
+        editMenu.DropDownItems.Add(&quot;Redo&quot;);
+
+        menuStrip.Items.Add(fileMenu);
+        menuStrip.Items.Add(editMenu);
+
+        menuStrip.MenuStripPanelExtendedList = new List&lt;KryptonMenuStripPanelExtended&gt; { panel };
+        panel.Controls.Add(menuStrip);
+        panel.KryptonFloatableMenuStrip = menuStrip;
+    }
+}
+</code></pre>
+<h3 id="example-4-state-aware-toolbar-handling">Example 4: State-Aware Toolbar Handling</h3>
+<pre><code class="lang-csharp">public partial class StateAwareForm : KryptonForm
+{
+    private KryptonFloatableToolStrip _toolbar;
+
+    public StateAwareForm()
+    {
+        InitializeComponent();
+        SetupToolbar();
+        SetupEventHandlers();
+    }
+
+    private void SetupToolbar()
+    {
+        var panel = new KryptonToolStripPanelExtended { Dock = DockStyle.Top, Height = 30 };
+        Controls.Add(panel);
+
+        _toolbar = new KryptonFloatableToolStrip { FloatingToolBarWindowText = &quot;State Toolbar&quot; };
+        _toolbar.Items.Add(new ToolStripButton(&quot;Action&quot;));
+        _toolbar.KryptonToolStripPanelExtendedList.Add(panel);
+        panel.Controls.Add(_toolbar);
+    }
+
+    private void SetupEventHandlers()
+    {
+        // Monitor floating state changes
+        // Note: There's no direct event, but you can check periodically
+        // or hook into parent changed events
+        
+        _toolbar.ParentChanged += (s, e) =&gt;
+        {
+            UpdateUIForFloatingState();
+        };
+    }
+
+    private void UpdateUIForFloatingState()
+    {
+        if (_toolbar.IsFloating)
+        {
+            // Toolbar is floating - adjust UI accordingly
+            Text = &quot;Main Window - Toolbar Floating&quot;;
+        }
+        else
+        {
+            // Toolbar is docked
+            Text = &quot;Main Window&quot;;
+        }
+    }
+
+    private void SomeAction()
+    {
+        // Always check state before operations
+        if (_toolbar.IsFloating)
+        {
+            // Handle floating state
+        }
+        else
+        {
+            // Handle docked state
+        }
+
+        // Visibility works for both states
+        _toolbar.Visible = true;
+    }
+}
+</code></pre>
+<hr>
+<h2 id="additional-resources">Additional Resources</h2>
+<h3 id="related-components">Related Components</h3>
+<ul>
+<li><strong>KryptonToolStrip</strong>: Base toolbar control</li>
+<li><strong>KryptonMenuStrip</strong>: Base menu strip control</li>
+<li><strong>ToolStripPanel</strong>: Standard .NET panel for tool strips</li>
+<li><strong>KryptonForm</strong>: Krypton-themed form container</li>
+</ul>
+<h3 id="namespace">Namespace</h3>
+<p>All components are in the <code>Krypton.Utilities</code> namespace:</p>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+</code></pre>
+<h3 id="dependencies">Dependencies</h3>
+<ul>
+<li>Krypton.Toolkit (for base controls and theming)</li>
+<li>System.Windows.Forms (for standard controls)</li>
+<li>System.Drawing (for rectangles and points)</li>
+</ul>
+<hr>
+<h2 id="version-history">Version History</h2>
+<p>This documentation covers the KryptonFloatingMenuAndToolbars feature as implemented in the Standard Toolkit.</p>
+<h3 id="known-limitations">Known Limitations</h3>
+<ol>
+<li><strong>Single Container</strong>: Each floatable control maintains a single container form instance (this is intentional for efficiency - the container is reused)</li>
+<li><strong>Panel Types</strong>: Tool strips and menu strips use separate panel types (cannot mix in same panel). However, <code>KryptonFloatablePanelHost</code> can accommodate both types.</li>
+</ol>
+<h3 id="additional-features">Additional Features</h3>
+<p>The following features are now available:</p>
+<h4 id="saveload-floating-positions">Save/Load Floating Positions</h4>
+<p>You can save and restore the floating state and positions of toolbars:</p>
+<pre><code class="lang-csharp">// Save state of a toolbar
+var state = toolStrip.SaveState();
+if (state != null)
+{
+    // Save to file
+    FloatingToolbarStateManager.SaveStatesToFile(new[] { state }, &quot;toolbar_states.xml&quot;);
+    
+    // Or save to string
+    string xml = FloatingToolbarStateManager.SaveStatesToString(new[] { state });
+}
+
+// Load states from file
+var collection = FloatingToolbarStateManager.LoadStatesFromFile(&quot;toolbar_states.xml&quot;);
+if (collection != null)
+{
+    foreach (var state in collection.ToolbarStates)
+    {
+        // Find toolbar by name and load its state
+        var toolbar = Controls.Find(state.Name, true).FirstOrDefault() as KryptonFloatableToolStrip;
+        toolbar?.LoadState(state);
+    }
+}
+</code></pre>
+<h4 id="animation">Animation</h4>
+<p>Smooth animations during dock/float transitions can be enabled:</p>
+<pre><code class="lang-csharp">// Enable animation with custom duration
+toolStrip.EnableAnimation = true;
+toolStrip.AnimationDuration = 300; // milliseconds
+
+// Disable animation for instant transitions
+toolStrip.EnableAnimation = false;
+</code></pre>
+<h4 id="custom-window-styles">Custom Window Styles</h4>
+<p>Customize the appearance of floating windows:</p>
+<pre><code class="lang-csharp">// Set window style
+toolStrip.FloatingWindowStyle = FloatingWindowStyle.Minimal; // No border
+toolStrip.FloatingWindowStyle = FloatingWindowStyle.ToolWindow; // Tool window style
+toolStrip.FloatingWindowStyle = FloatingWindowStyle.Default; // Standard window
+</code></pre>
+<p>Available styles:</p>
+<ul>
+<li><strong>Default</strong>: Standard window with full chrome</li>
+<li><strong>Minimal</strong>: No border or title bar</li>
+<li><strong>ToolWindow</strong>: Smaller title bar, tool window style</li>
+<li><strong>Custom</strong>: For future customization options</li>
+</ul>
+<h3 id="additional-advanced-features">Additional Advanced Features</h3>
+<p>The following advanced features are now available:</p>
+<h4 id="enhanced-docking-preview-indicators">Enhanced Docking Preview Indicators</h4>
+<p>Visual feedback when dragging toolbars over dock zones:</p>
+<pre><code class="lang-csharp">// Enable/disable preview indicators
+toolStrip.ShowDockingPreview = true;
+
+// Customize preview colors
+toolStrip.DockingPreviewColor = Color.FromArgb(100, 0, 120, 215); // Fill color
+toolStrip.DockingPreviewBorderColor = Color.FromArgb(200, 0, 120, 215); // Border color
+</code></pre>
+<p>The preview indicator shows a semi-transparent overlay with animated borders when dragging over valid dock zones.</p>
+<h4 id="custom-window-themes-and-colors">Custom Window Themes and Colors</h4>
+<p>Apply custom themes to floating windows:</p>
+<pre><code class="lang-csharp">// Use predefined themes
+toolStrip.WindowTheme = FloatingWindowTheme.Dark;
+toolStrip.WindowTheme = FloatingWindowTheme.Light;
+toolStrip.WindowTheme = FloatingWindowTheme.BlueAccent;
+
+// Create custom theme
+var customTheme = new FloatingWindowTheme
+{
+    BackColor = Color.FromArgb(240, 240, 240),
+    BorderColor = Color.FromArgb(100, 100, 100),
+    TitleBarColor = Color.FromArgb(50, 50, 50),
+    TitleTextColor = Color.White,
+    Opacity = 0.95,
+    UseGradient = true,
+    GradientEndColor = Color.FromArgb(220, 220, 220)
+};
+toolStrip.WindowTheme = customTheme;
+</code></pre>
+<h4 id="per-toolbar-animation-settings">Per-Toolbar Animation Settings</h4>
+<p>Each toolbar can have its own animation settings:</p>
+<pre><code class="lang-csharp">// Different animation settings per toolbar
+toolStrip1.EnableAnimation = true;
+toolStrip1.AnimationDuration = 200;
+
+toolStrip2.EnableAnimation = true;
+toolStrip2.AnimationDuration = 400; // Slower animation
+
+toolStrip3.EnableAnimation = false; // No animation
+</code></pre>
+<h4 id="state-persistence-with-user-preferences">State Persistence with User Preferences</h4>
+<p>Save and load toolbar states from user application data:</p>
+<pre><code class="lang-csharp">// Save to user preferences folder (AppData)
+var states = toolbars.Select(t =&gt; t.SaveState()).Where(s =&gt; s != null);
+FloatingToolbarStateManager.SaveStatesToUserPreferences(states, &quot;MyApplication&quot;);
+
+// Load from user preferences
+var collection = FloatingToolbarStateManager.LoadStatesFromUserPreferences(&quot;MyApplication&quot;);
+if (collection != null)
+{
+    foreach (var state in collection.ToolbarStates)
+    {
+        var toolbar = Controls.Find(state.Name, true).FirstOrDefault() as KryptonFloatableToolStrip;
+        toolbar?.LoadState(state);
+    }
+}
+
+// Get preferences path
+string prefsPath = FloatingToolbarStateManager.GetUserPreferencesPath(&quot;MyApplication&quot;);
+</code></pre>
+<p>The user preferences are stored in: <code>%AppData%\YourApplication\FloatingToolbars\toolbar_states.xml</code></p>
+<h3 id="advanced-features">Advanced Features</h3>
+<p>The following advanced features are now available:</p>
+<h4 id="advanced-theme-customization-with-custom-painting">Advanced Theme Customization with Custom Painting</h4>
+<p>Create fully custom window appearances using the custom painter interface:</p>
+<pre><code class="lang-csharp">// Create a custom painter
+public class MyCustomPainter : IFloatingWindowCustomPainter
+{
+    public void PaintBackground(PaintEventArgs e, Rectangle rect)
+    {
+        // Custom background painting
+        using (var brush = new LinearGradientBrush(rect, Color.Blue, Color.DarkBlue, 45f))
+        {
+            e.Graphics.FillRectangle(brush, rect);
+        }
+    }
+
+    public void PaintTitleBar(PaintEventArgs e, Rectangle rect, string text)
+    {
+        // Custom title bar painting
+        using (var brush = new SolidBrush(Color.Navy))
+        {
+            e.Graphics.FillRectangle(brush, rect);
+        }
+        // Draw text, icons, etc.
+    }
+
+    public void PaintBorder(PaintEventArgs e, Rectangle rect)
+    {
+        // Custom border painting
+        using (var pen = new Pen(Color.Gold, 2f))
+        {
+            e.Graphics.DrawRectangle(pen, rect);
+        }
+    }
+}
+
+// Apply custom painter
+var theme = new FloatingWindowTheme();
+theme.CustomPainter = new MyCustomPainter();
+toolStrip.WindowTheme = theme;
+
+// Or use default painter with theme
+theme.CustomPainter = new FloatingWindowDefaultPainter(theme);
+toolStrip.WindowTheme = theme;
+</code></pre>
+<h4 id="animated-docking-preview-transitions">Animated Docking Preview Transitions</h4>
+<p>The docking preview indicators now feature smooth animations:</p>
+<ul>
+<li><strong>Pulsing border</strong>: Border opacity pulses smoothly</li>
+<li><strong>Animated dash offset</strong>: Dashed border animates continuously</li>
+<li><strong>60 FPS animation</strong>: Smooth 60 frames per second updates</li>
+</ul>
+<p>The animation automatically starts when preview is shown and stops when hidden.</p>
+<h4 id="multi-monitor-support-enhancements">Multi-Monitor Support Enhancements</h4>
+<p>Enhanced support for multi-monitor setups:</p>
+<pre><code class="lang-csharp">// Ensure toolbar floats on visible screen
+Point location = new Point(2000, 100); // Might be off-screen
+location = MultiMonitorHelper.EnsurePointOnScreen(location);
+
+// Get screen information
+Screen currentScreen = MultiMonitorHelper.GetScreenFromPoint(location);
+Screen[] allScreens = MultiMonitorHelper.GetAllScreens();
+int screenCount = MultiMonitorHelper.GetScreenCount();
+
+// Check if point is on any screen
+bool isOnScreen = MultiMonitorHelper.IsPointOnScreen(location);
+
+// Ensure rectangle is visible
+Rectangle rect = new Rectangle(2000, 100, 200, 50);
+rect = MultiMonitorHelper.EnsureRectangleOnScreen(rect);
+</code></pre>
+<p>Floating toolbars automatically ensure they appear on visible screens when programmatically floated.</p>
+<h4 id="toolbar-grouping-and-tabbing">Toolbar Grouping and Tabbing</h4>
+<p>Organize toolbars into groups that can be managed together:</p>
+<pre><code class="lang-csharp">// Create a toolbar group
+var group = FloatingToolbarGroupManager.CreateGroup(&quot;MainToolbars&quot;);
+
+// Add toolbars to group
+group.AddToolbar(toolStrip1);
+group.AddToolbar(toolStrip2);
+group.AddMenuStrip(menuStrip1);
+
+// Enable tabbing (future feature - groups can be tabbed together)
+group.IsTabbed = true;
+group.ActiveTabIndex = 0;
+
+// Find group containing a toolbar
+var foundGroup = FloatingToolbarGroupManager.FindGroupContaining(toolStrip1);
+
+// Remove toolbar from group
+group.RemoveToolbar(toolStrip1);
+
+// Find group by name
+var mainGroup = FloatingToolbarGroupManager.FindGroup(&quot;MainToolbars&quot;);
+
+// Get all groups
+foreach (var g in FloatingToolbarGroupManager.Groups)
+{
+    Console.WriteLine($&quot;Group: {g.Name}, Count: {g.Count}&quot;);
+}
+</code></pre>
+<p>Groups allow you to:</p>
+<ul>
+<li>Organize related toolbars together</li>
+<li>Manage multiple toolbars as a unit</li>
+<li>Display toolbars in a tabbed interface</li>
+<li>Drag-and-drop toolbars between groups</li>
+<li>Save and restore group configurations</li>
+<li>Track toolbar relationships</li>
+</ul>
+<h3 id="advanced-group-features-implemented">Advanced Group Features (Implemented)</h3>
+<p>The following advanced features are now available:</p>
+<h4 id="full-tabbed-interface-implementation">Full Tabbed Interface Implementation</h4>
+<p>Groups can now display toolbars in a tabbed interface using <code>FloatingToolbarTabbedContainerForm</code>:</p>
+<pre><code class="lang-csharp">// Create a group and enable tabbing
+var group = FloatingToolbarGroupManager.CreateGroup(&quot;MyGroup&quot;);
+group.IsTabbed = true; // Automatically creates tabbed container
+
+// Add toolbars - they will appear as tabs
+group.AddToolbar(toolbar1);
+group.AddToolbar(toolbar2);
+group.AddMenuStrip(menuStrip1);
+
+// Access the tabbed container
+var container = group.TabbedContainerForm;
+container.Show(); // Display the tabbed interface
+</code></pre>
+<h4 id="drag-and-drop-between-groups">Drag-and-Drop Between Groups</h4>
+<p>Toolbars can be dragged between groups:</p>
+<pre><code class="lang-csharp">// Move a toolbar from one group to another
+FloatingToolbarGroupManager.MoveToolbarToGroup(toolbar, targetGroup);
+
+// Move a menu strip between groups
+FloatingToolbarGroupManager.MoveMenuStripToGroup(menuStrip, targetGroup);
+
+// When dragging a floating toolbar over a tabbed group container,
+// it will automatically be added to that group on mouse release
+</code></pre>
+<h4 id="group-state-persistence">Group State Persistence</h4>
+<p>Save and load group configurations:</p>
+<pre><code class="lang-csharp">// Save all group states
+var groupStates = FloatingToolbarGroupManager.SaveAllGroupStates();
+FloatingToolbarStateManager.SaveGroupStatesToUserPreferences(
+    groupStates.GroupStates,
+    &quot;MyApplication&quot;,
+    &quot;group_states.xml&quot;
+);
+
+// Load group states
+var collection = FloatingToolbarStateManager.LoadGroupStatesFromUserPreferences(
+    &quot;MyApplication&quot;,
+    &quot;group_states.xml&quot;
+);
+
+if (collection != null)
+{
+    var toolbars = Controls.OfType&lt;KryptonFloatableToolStrip&gt;()
+        .ToDictionary(t =&gt; t.Name, t =&gt; t);
+    var menuStrips = Controls.OfType&lt;KryptonFloatableMenuStrip&gt;()
+        .ToDictionary(m =&gt; m.Name, m =&gt; m);
+    
+    FloatingToolbarGroupManager.LoadGroupStates(collection, toolbars, menuStrips);
+}
+</code></pre>
+<h4 id="advanced-multi-monitor-layout-management">Advanced Multi-Monitor Layout Management</h4>
+<p>Enhanced multi-monitor support with layout management:</p>
+<pre><code class="lang-csharp">// Get best screen for a window
+Screen bestScreen = MultiMonitorHelper.GetBestScreenForWindow(preferredLocation);
+
+// Calculate optimal window position
+Point optimalPos = MultiMonitorHelper.CalculateOptimalWindowPosition(
+    bestScreen,
+    windowSize,
+    preferredLocation
+);
+
+// Distribute multiple windows across screens
+var windowSizes = new List&lt;Size&gt; { size1, size2, size3 };
+var preferredLocations = new List&lt;Point&gt; { loc1, loc2, loc3 };
+var positions = MultiMonitorHelper.DistributeWindowsAcrossScreens(
+    windowSizes,
+    preferredLocations
+);
+
+// Get detailed screen layout information
+var layoutInfo = MultiMonitorHelper.GetScreenLayoutInfo();
+foreach (var screen in layoutInfo.Values)
+{
+    Console.WriteLine($&quot;Screen: {screen.DeviceName}, Primary: {screen.IsPrimary}&quot;);
+    Console.WriteLine($&quot;Bounds: {screen.Bounds}, Working Area: {screen.WorkingArea}&quot;);
+}
+</code></pre>
+<hr>
+<h2 id="support">Support</h2>
+<p>For issues, questions, or contributions related to KryptonFloatingMenuAndToolbars:</p>
+<ul>
+<li>Check the troubleshooting section above</li>
+<li>Review example code in the TestForm project</li>
+<li>Consult the main Krypton Toolkit documentation</li>
+<li>Report issues on the project repository</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

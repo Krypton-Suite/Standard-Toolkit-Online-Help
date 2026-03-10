@@ -663,3 +663,17 @@ All previously planned enhancements have been implemented:
 - ✅ **Overlay coverage**: Support for both full client area and "below ribbon only" overlay modes
 
 **Current Status**: The Backstage View feature is feature-complete with all planned enhancements implemented.
+
+<a id="files-and-key-types"></a>
+## Files and Key Types
+
+Key types used in the Backstage View implementation:
+
+| Type | Purpose |
+|------|---------|
+| `RibbonFileAppTab` | Ribbon configuration (UseBackstageView, BackstageContent) |
+| `KryptonBackstageView` | Main Backstage control (Pages, Commands, OverlayMode) |
+| `KryptonBackstagePage` | Navigation page item |
+| `KryptonBackstageCommand` | Command-only item (no page) |
+| `BackstageOverlayMode` | Overlay coverage (FullClient, BelowRibbon) |
+| `BackstageItemSize` | Navigation item size (Large, Small) |

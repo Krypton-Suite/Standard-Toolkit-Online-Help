@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>OAuth2 with PKCE | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="OAuth2 with PKCE | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="oauth2-with-pkce">OAuth2 with PKCE</h1>
+
+<p><strong>Namespace:</strong> <code>Krypton.Utilities</code><br>
+<strong>Assembly:</strong> <code>Krypton.Utilities</code></p>
+<p>This document provides comprehensive developer documentation for the OAuth2 with PKCE (Proof Key for Code Exchange) authentication feature in Krypton Utilities.</p>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#provider-presets">Provider Presets</a></li>
+<li><a href="#extensibility">Extensibility</a></li>
+<li><a href="#advanced-usage">Advanced Usage</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#architecture--file-layout">Architecture &amp; File Layout</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The OAuth2 PKCE feature supports the <strong>authorization code flow with PKCE</strong> as defined in <a href="https://tools.ietf.org/html/rfc7636">RFC 7636</a>. It is designed for:</p>
+<ul>
+<li><strong>Desktop and mobile applications</strong> that cannot securely store a client secret (public clients)</li>
+<li><strong>Single sign-on</strong> with Azure AD / Entra ID, Google, GitHub, or custom OAuth2/OIDC providers</li>
+<li><strong>Flexible UI</strong> via embedded WebView2 or system browser with HTTP callback</li>
+</ul>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>PKCE (S256)</strong> – Secure authorization without client secret</li>
+<li><strong>Provider presets</strong> – Azure AD, Google, GitHub</li>
+<li><strong>Custom providers</strong> – Implement <code>IOAuth2Provider</code> for any OIDC provider</li>
+<li><strong>Multiple browser hosts</strong> – WebView2 form (Krypton-styled) or system browser + HttpListener</li>
+<li><strong>Flow hooks</strong> – Before authorize, after code received, after tokens, after refresh</li>
+<li><strong>HTTP interceptors</strong> – Add headers, log traffic, transform requests</li>
+<li><strong>Token refresh</strong> – Refresh access tokens using refresh tokens</li>
+<li><strong>Static API</strong> – <code>KryptonOAuth2Login.ShowAsync()</code> for simple sign-in dialogs</li>
+</ul>
+<hr>
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="webview2-for-embedded-sign-in">WebView2 (for embedded sign-in)</h3>
+<p>To use the default embedded sign-in form (<code>KryptonOAuth2Login</code> / <code>OAuth2WebView2BrowserHost</code>), the <strong>WebView2 Runtime</strong> must be available:</p>
+<ul>
+<li>Bundled DLLs: Place <code>Microsoft.Web.WebView2.Core.dll</code> and <code>Microsoft.Web.WebView2.WinForms.dll</code> in <code>Krypton.Utilities/Lib/WebView2/</code></li>
+<li>Or run: <code>Scripts\WebView2\Populate-BundledWebView2.cmd</code></li>
+</ul>
+<p>If WebView2 is not available, you can:</p>
+<ol>
+<li>Use <code>OAuth2SystemBrowserHost</code> with <code>OAuth2HttpListenerRedirectHandler</code> for system-browser-based auth</li>
+<li>Implement a custom <code>IOAuth2BrowserHost</code></li>
+</ol>
+<h3 id="redirect-uri">Redirect URI</h3>
+<p>The redirect URI must be registered with your OAuth2 provider and match exactly:</p>
+<ul>
+<li><strong>Custom scheme</strong> (recommended for WebView2): <code>myapp://callback</code> or <code>com.myapp://auth</code></li>
+<li><strong>Localhost</strong> (for system browser): <code>http://localhost:8400/callback</code> or <code>http://127.0.0.1:8400/</code></li>
+</ul>
+<hr>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="1-simple-sign-in-dialog-webview2">1. Simple sign-in dialog (WebView2)</h3>
+<pre><code class="lang-csharp">using Krypton.Utilities;
+
+// Use provider preset
+var options = OAuth2ProviderPresets.AzureAd(
+    clientId: &quot;your-client-id&quot;,
+    redirectUri: &quot;myapp://callback&quot;,
+    tenantId: &quot;common&quot;,
+    scopes: &quot;openid profile User.Read&quot;
+);
+
+var client = new OAuth2PkceClient(options);
+var tokens = await client.AuthorizeWithBrowserAsync(this, &quot;Sign in to My App&quot;);
+
+// Use tokens.AccessToken for API calls
+// tokens.RefreshToken to refresh when expired
+</code></pre>
+<h3 id="2-manual-flow-custom-ui">2. Manual flow (custom UI)</h3>
+<p>If you provide your own sign-in UI, build the authorization URL, obtain the code, then exchange it. You must generate a PKCE code verifier (RFC 7636: 43–128 chars, base64url-safe) and keep it for the token exchange:</p>
+<pre><code class="lang-csharp">var client = new OAuth2PkceClient(options);
+var codeVerifier = /* generate per RFC 7636 */;
+var authUrl = client.BuildAuthorizationUrl(codeVerifier, state: &quot;optional-state&quot;);
+
+// Show authUrl in your UI; after user completes sign-in and you receive the code:
+var tokens = await client.ExchangeCodeAsync(authorizationCode, codeVerifier);
+</code></pre>
+<p><strong>Recommended:</strong> Use <code>AuthorizeWithBrowserAsync</code> when possible; it handles PKCE internally.</p>
+<h3 id="3-static-dialog-like-kryptonmessagebox">3. Static dialog (like KryptonMessageBox)</h3>
+<p>Use <code>KryptonOAuth2Login</code> when you want the Krypton sign-in dialog but need custom flow logic. You must use the same <code>codeVerifier</code> for both <code>BuildAuthorizationUrl</code> and <code>ExchangeCodeAsync</code>:</p>
+<pre><code class="lang-csharp">var codeVerifier = /* generate per RFC 7636 */;
+var authUrl = client.BuildAuthorizationUrl(codeVerifier, state);
+var result = await KryptonOAuth2Login.ShowAsync(this, authUrl, redirectUri, &quot;Sign in&quot;);
+
+if (result.Success &amp;&amp; !string.IsNullOrEmpty(result.Code))
+    tokens = await client.ExchangeCodeAsync(result.Code, codeVerifier);
+else
+    MessageBox.Show(result.ErrorMessage ?? &quot;Sign-in failed.&quot;);
+</code></pre>
+<p><strong>Tip:</strong> <code>AuthorizeWithBrowserAsync</code> uses this dialog internally and handles PKCE automatically.</p>
+<h3 id="4-refresh-tokens">4. Refresh tokens</h3>
+<pre><code class="lang-csharp">var newTokens = await client.RefreshTokenAsync(tokens.RefreshToken!);
+</code></pre>
+<hr>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="kryptonoauth2login-static"><code>KryptonOAuth2Login</code> (static)</h3>
+<p>Displays an OAuth2 sign-in dialog similar to <code>KryptonMessageBox</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ShowAsync(authUrl, redirectUri)</code></td>
+<td>Show dialog, no owner, default title &quot;Sign in&quot;</td>
+</tr>
+<tr>
+<td><code>ShowAsync(authUrl, redirectUri, title)</code></td>
+<td>Show dialog with custom title</td>
+</tr>
+<tr>
+<td><code>ShowAsync(owner, authUrl, redirectUri)</code></td>
+<td>Show modal in front of owner window</td>
+</tr>
+<tr>
+<td><code>ShowAsync(owner, authUrl, redirectUri, title)</code></td>
+<td>Full overload</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>Task&lt;OAuth2AuthorizationResult&gt;</code></p>
+<p><strong>WebView2:</strong> When WebView2 is not available, returns a failed result with error message instead of throwing.</p>
+<hr>
+<h3 id="oauth2pkceclient"><code>OAuth2PkceClient</code></h3>
+<p>Main client for OAuth2 PKCE flows.</p>
+<h4 id="constructors">Constructors</h4>
+<table>
+<thead>
+<tr>
+<th>Constructor</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OAuth2PkceClient(OAuth2PkceOptions options, IOAuth2BrowserHost? browserHost = null)</code></td>
+<td>From options; optional custom browser host</td>
+</tr>
+<tr>
+<td><code>OAuth2PkceClient(IOAuth2Provider provider, clientId, redirectUri, scopes = &quot;openid&quot;, IOAuth2BrowserHost? browserHost = null)</code></td>
+<td>From provider preset</td>
+</tr>
+</tbody>
+</table>
+<h4 id="methods">Methods</h4>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BuildAuthorizationUrl(codeVerifier, state?)</code></td>
+<td>Builds authorization URL with PKCE parameters</td>
+</tr>
+<tr>
+<td><code>GetTokenEndpoint()</code></td>
+<td>Returns the token endpoint URL</td>
+</tr>
+<tr>
+<td><code>ExchangeCodeAsync(code, codeVerifier, cancellationToken?)</code></td>
+<td>Exchanges authorization code for tokens</td>
+</tr>
+<tr>
+<td><code>AuthorizeWithBrowserAsync(owner?, title?, cancellationToken?)</code></td>
+<td>Full flow: open browser, intercept redirect, exchange code, return tokens</td>
+</tr>
+<tr>
+<td><code>RefreshTokenAsync(refreshToken, cancellationToken?)</code></td>
+<td>Refreshes access token using refresh token</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="oauth2pkceoptions"><code>OAuth2PkceOptions</code></h3>
+<p>Configuration for the OAuth2 PKCE flow.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Authority</code></td>
+<td>string</td>
+<td>Base URL of identity provider</td>
+</tr>
+<tr>
+<td><code>ClientId</code></td>
+<td>string</td>
+<td>Application/client ID</td>
+</tr>
+<tr>
+<td><code>RedirectUri</code></td>
+<td>string</td>
+<td>Registered redirect URI</td>
+</tr>
+<tr>
+<td><code>Scopes</code></td>
+<td>string</td>
+<td>Space-separated scopes (default: <code>&quot;openid&quot;</code>)</td>
+</tr>
+<tr>
+<td><code>AuthorizationEndpoint</code></td>
+<td>string?</td>
+<td>Override; otherwise derived from Authority</td>
+</tr>
+<tr>
+<td><code>TokenEndpoint</code></td>
+<td>string?</td>
+<td>Override; otherwise derived from Authority</td>
+</tr>
+<tr>
+<td><code>ExtraParameters</code></td>
+<td><code>IDictionary&lt;string, string&gt;?</code></td>
+<td>Extra query params for auth URL</td>
+</tr>
+<tr>
+<td><code>Prompt</code></td>
+<td>string?</td>
+<td><code>login</code>, <code>consent</code>, <code>select_account</code>, etc.</td>
+</tr>
+<tr>
+<td><code>LoginHint</code></td>
+<td>string?</td>
+<td>Pre-fill username</td>
+</tr>
+<tr>
+<td><code>HttpInterceptors</code></td>
+<td><code>IList&lt;IOAuth2HttpInterceptor&gt;?</code></td>
+<td>Interceptors for token requests</td>
+</tr>
+<tr>
+<td><code>FlowHooks</code></td>
+<td><code>OAuth2FlowHooks?</code></td>
+<td>Hooks at key flow points</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="oauth2tokenresponse"><code>OAuth2TokenResponse</code></h3>
+<p>Result of token exchange or refresh.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AccessToken</code></td>
+<td>string?</td>
+<td>Access token for API calls</td>
+</tr>
+<tr>
+<td><code>RefreshToken</code></td>
+<td>string?</td>
+<td>Refresh token (if issued)</td>
+</tr>
+<tr>
+<td><code>TokenType</code></td>
+<td>string?</td>
+<td>Typically <code>&quot;Bearer&quot;</code></td>
+</tr>
+<tr>
+<td><code>ExpiresIn</code></td>
+<td>int</td>
+<td>Seconds until access token expires</td>
+</tr>
+<tr>
+<td><code>IdToken</code></td>
+<td>string?</td>
+<td>OpenID Connect ID token (JWT)</td>
+</tr>
+<tr>
+<td><code>Scope</code></td>
+<td>string?</td>
+<td>Granted scopes</td>
+</tr>
+<tr>
+<td><code>HasRefreshToken</code></td>
+<td>bool</td>
+<td>True when refresh token is present</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="oauth2authorizationresult"><code>OAuth2AuthorizationResult</code></h3>
+<p>Result of the authorization step (before token exchange).</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Success</code></td>
+<td>bool</td>
+<td>User completed sign-in successfully</td>
+</tr>
+<tr>
+<td><code>Code</code></td>
+<td>string?</td>
+<td>Authorization code when Success</td>
+</tr>
+<tr>
+<td><code>State</code></td>
+<td>string?</td>
+<td>State parameter returned</td>
+</tr>
+<tr>
+<td><code>ErrorMessage</code></td>
+<td>string?</td>
+<td>Error message when !Success</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="oauth2exception"><code>OAuth2Exception</code></h3>
+<p>Thrown on OAuth2 failures.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Error</code></td>
+<td>string?</td>
+<td>OAuth2 error code (e.g. <code>invalid_grant</code>, <code>access_denied</code>)</td>
+</tr>
+<tr>
+<td><code>ErrorDescription</code></td>
+<td>string?</td>
+<td>Provider error description</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="provider-presets">Provider Presets</h2>
+<h3 id="oauth2providerpresets"><code>OAuth2ProviderPresets</code></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AzureAd(clientId, redirectUri, tenantId?, scopes?)</code></td>
+<td>Microsoft Azure AD / Entra ID</td>
+</tr>
+<tr>
+<td><code>Google(clientId, redirectUri, scopes?)</code></td>
+<td>Google OAuth2</td>
+</tr>
+<tr>
+<td><code>GitHub(clientId, redirectUri, scopes?)</code></td>
+<td>GitHub OAuth2</td>
+</tr>
+<tr>
+<td><code>Custom(provider, clientId, redirectUri, scopes?)</code></td>
+<td>Custom <code>IOAuth2Provider</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="built-in-providers">Built-in providers</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Authority / Endpoints</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AzureAdOAuth2Provider</code></td>
+<td><code>login.microsoftonline.com/{tenant}/v2.0</code></td>
+</tr>
+<tr>
+<td><code>GoogleOAuth2Provider</code></td>
+<td><code>accounts.google.com</code>, <code>oauth2.googleapis.com</code></td>
+</tr>
+<tr>
+<td><code>GitHubOAuth2Provider</code></td>
+<td><code>github.com/login/oauth</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-azure-ad-with-microsoft-graph">Example: Azure AD with Microsoft Graph</h3>
+<pre><code class="lang-csharp">var options = OAuth2ProviderPresets.AzureAd(
+    &quot;your-app-client-id&quot;,
+    &quot;myapp://callback&quot;,
+    tenantId: &quot;common&quot;,
+    scopes: &quot;openid profile https://graph.microsoft.com/User.Read&quot;
+);
+</code></pre>
+<hr>
+<h2 id="extensibility">Extensibility</h2>
+<h3 id="ioauth2provider"><code>IOAuth2Provider</code></h3>
+<p>Implement to add support for a custom OAuth2/OIDC provider.</p>
+<pre><code class="lang-csharp">public interface IOAuth2Provider
+{
+    string Name { get; }
+    void ApplyTo(OAuth2PkceOptions options);
+}
+</code></pre>
+<p>Example:</p>
+<pre><code class="lang-csharp">public class MyOAuth2Provider : IOAuth2Provider
+{
+    public string Name =&gt; &quot;My Provider&quot;;
+    public void ApplyTo(OAuth2PkceOptions options)
+    {
+        options.Authority = &quot;https://auth.example.com&quot;;
+        options.AuthorizationEndpoint = &quot;https://auth.example.com/authorize&quot;;
+        options.TokenEndpoint = &quot;https://auth.example.com/token&quot;;
+    }
+}
+
+var options = OAuth2ProviderPresets.Custom(new MyOAuth2Provider(), clientId, redirectUri);
+</code></pre>
+<hr>
+<h3 id="ioauth2browserhost"><code>IOAuth2BrowserHost</code></h3>
+<p>Controls how the sign-in UI is shown (embedded vs system browser).</p>
+<pre><code class="lang-csharp">public interface IOAuth2BrowserHost
+{
+    Task&lt;OAuth2AuthorizationResult&gt; LaunchAsync(
+        string authorizationUrl,
+        string redirectUri,
+        string title,
+        IWin32Window? owner,
+        CancellationToken cancellationToken);
+}
+</code></pre>
+<p><strong>Built-in implementations:</strong></p>
+<ul>
+<li><code>OAuth2WebView2BrowserHost</code> – Krypton form with WebView2 (default when WebView2 available)</li>
+<li><code>OAuth2SystemBrowserHost</code> – Opens system browser; requires <code>IOAuth2RedirectHandler</code></li>
+</ul>
+<hr>
+<h3 id="ioauth2redirecthandler"><code>IOAuth2RedirectHandler</code></h3>
+<p>Handles receiving the OAuth2 callback.</p>
+<pre><code class="lang-csharp">public interface IOAuth2RedirectHandler
+{
+    Task&lt;OAuth2AuthorizationResult&gt; WaitForRedirectAsync(string redirectUri, CancellationToken cancellationToken);
+}
+</code></pre>
+<p><strong>Built-in implementations:</strong></p>
+<ul>
+<li><code>OAuth2WebView2RedirectHandler</code> – Intercepts WebView2 navigations</li>
+<li><code>OAuth2HttpListenerRedirectHandler</code> – Listens on <code>http://localhost:port</code> for redirect</li>
+</ul>
+<hr>
+<h3 id="ioauth2httpinterceptor"><code>IOAuth2HttpInterceptor</code></h3>
+<p>Intercepts token HTTP requests and responses.</p>
+<pre><code class="lang-csharp">public interface IOAuth2HttpInterceptor
+{
+    void OnBeforeTokenRequest(HttpRequestMessage request, OAuth2TokenRequestContext context);
+    void OnAfterTokenResponse(HttpResponseMessage response, string jsonBody, OAuth2TokenRequestContext context);
+}
+</code></pre>
+<p>Use for: adding headers, logging, transforming requests.</p>
+<hr>
+<h3 id="oauth2flowhooks"><code>OAuth2FlowHooks</code></h3>
+<p>Hooks invoked at key points in the flow.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Signature</th>
+<th>When invoked</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BeforeAuthorize</code></td>
+<td><code>(authUrl, state, ct) =&gt; Task</code></td>
+<td>Before opening sign-in UI</td>
+</tr>
+<tr>
+<td><code>AfterAuthorizationCodeReceived</code></td>
+<td><code>(code, state, ct) =&gt; Task</code></td>
+<td>After redirect, before token exchange</td>
+</tr>
+<tr>
+<td><code>AfterTokensReceived</code></td>
+<td><code>(tokens, ct) =&gt; Task</code></td>
+<td>After successful token exchange/refresh</td>
+</tr>
+<tr>
+<td><code>AfterRefresh</code></td>
+<td><code>(tokens, ct) =&gt; Task</code></td>
+<td>After successful token refresh only</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code class="lang-csharp">options.FlowHooks = new OAuth2FlowHooks
+{
+    BeforeAuthorize = async (url, state, ct) =&gt; { /* log, metrics */ },
+    AfterTokensReceived = async (tokens, ct) =&gt; { /* persist tokens */ }
+};
+</code></pre>
+<hr>
+<h2 id="advanced-usage">Advanced Usage</h2>
+<h3 id="system-browser-with-httplistener">System browser with HttpListener</h3>
+<pre><code class="lang-csharp">var redirectHandler = new OAuth2HttpListenerRedirectHandler();
+var browserHost = new OAuth2SystemBrowserHost(redirectHandler);
+
+var options = OAuth2ProviderPresets.AzureAd(clientId, &quot;http://localhost:8400/callback&quot;);
+var client = new OAuth2PkceClient(options, browserHost);
+
+var tokens = await client.AuthorizeWithBrowserAsync(this, &quot;Sign in&quot;);
+</code></pre>
+<p><strong>Note:</strong> Redirect URI must be <code>http://localhost</code> or <code>http://127.0.0.1</code>.</p>
+<hr>
+<h3 id="custom-http-interceptor-add-header">Custom HTTP interceptor (add header)</h3>
+<pre><code class="lang-csharp">options.HttpInterceptors = new List&lt;IOAuth2HttpInterceptor&gt;
+{
+    new CustomHeaderInterceptor()
+};
+
+public class CustomHeaderInterceptor : IOAuth2HttpInterceptor
+{
+    public void OnBeforeTokenRequest(HttpRequestMessage request, OAuth2TokenRequestContext context)
+    {
+        request.Headers.Add(&quot;X-Custom-Header&quot;, &quot;value&quot;);
+    }
+    public void OnAfterTokenResponse(HttpResponseMessage response, string jsonBody, OAuth2TokenRequestContext context) { }
+}
+</code></pre>
+<hr>
+<h3 id="login-hint-and-prompt">Login hint and prompt</h3>
+<pre><code class="lang-csharp">options.LoginHint = &quot;user@example.com&quot;;  // Pre-fill username
+options.Prompt = &quot;select_account&quot;;       // Force account picker
+</code></pre>
+<hr>
+<h2 id="error-handling">Error Handling</h2>
+<ol>
+<li><p><strong><code>OAuth2Exception</code></strong> – Thrown on token exchange/refresh failure.</p>
+<ul>
+<li>Check <code>Error</code> and <code>ErrorDescription</code> for provider details.</li>
+</ul>
+</li>
+<li><p><strong><code>OAuth2AuthorizationResult</code></strong> – Returned by <code>KryptonOAuth2Login</code> and <code>IOAuth2BrowserHost</code>.</p>
+<ul>
+<li>When <code>!Success</code>, use <code>ErrorMessage</code>.</li>
+</ul>
+</li>
+<li><p><strong>WebView2 not available</strong> – <code>KryptonOAuth2Login</code> returns failed result with explanatory message; does not throw.</p>
+</li>
+<li><p><strong>Cancellation</strong> – User closes sign-in window; <code>OAuth2AuthorizationResult.Success</code> is false, <code>ErrorMessage</code> indicates cancellation.</p>
+</li>
+</ol>
+<hr>
+<h2 id="architecture--file-layout">Architecture &amp; File Layout</h2>
+<pre><code>Components/Krypton OAuth2/
+├── Controls Toolkit/
+│   ├── KryptonOAuth2Login.cs      # Static API (ShowAsync)
+│   ├── OAuth2PkceClient.cs        # Main client
+│   └── OAuth2ProviderPresets.cs   # AzureAd, Google, GitHub, Custom
+├── Controls Visuals/
+│   ├── VisualOAuth2LoginForm.cs       # Krypton form with WebView2
+│   └── VisualOAuth2LoginForm.Designer.cs
+└── General/
+    ├── OAuth2PkceOptions.cs
+    ├── OAuth2TokenResponse.cs
+    ├── OAuth2AuthorizationResult.cs
+    ├── OAuth2Exception.cs
+    ├── OAuth2FlowHooks.cs
+    ├── PkceHelper.cs (internal)
+    ├── IOAuth2Provider.cs
+    ├── IOAuth2BrowserHost.cs
+    ├── IOAuth2RedirectHandler.cs
+    ├── IOAuth2HttpInterceptor.cs
+    ├── OAuth2TokenRequestContext.cs
+    ├── AzureAdOAuth2Provider.cs
+    ├── GoogleOAuth2Provider.cs
+    ├── GitHubOAuth2Provider.cs
+    ├── OAuth2WebView2RedirectHandler.cs  (#if WEBVIEW2_AVAILABLE)
+    ├── OAuth2HttpListenerRedirectHandler.cs
+    ├── OAuth2SystemBrowserHost.cs
+    └── OAuth2WebView2BrowserHost.cs      (#if WEBVIEW2_AVAILABLE)
+</code></pre>
+<hr>
+<h2 id="target-frameworks">Target Frameworks</h2>
+<p>The OAuth2 feature targets all frameworks supported by <code>Krypton.Utilities</code>:</p>
+<ul>
+<li>.NET Framework 4.7.2, 4.8, 4.8.1</li>
+<li>.NET 8.0, 9.0, 10.0, 11.0 (Windows)</li>
+</ul>
+<hr>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://tools.ietf.org/html/rfc6749">RFC 6749 – OAuth 2.0</a></li>
+<li><a href="https://tools.ietf.org/html/rfc7636">RFC 7636 – PKCE</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/active-directory/develop/">Microsoft identity platform (Azure AD)</a></li>
+<li><a href="https://developers.google.com/identity/protocols/oauth2">Google OAuth 2.0</a></li>
+<li><a href="https://docs.github.com/en/developers/apps/building-oauth-apps">GitHub OAuth Apps</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

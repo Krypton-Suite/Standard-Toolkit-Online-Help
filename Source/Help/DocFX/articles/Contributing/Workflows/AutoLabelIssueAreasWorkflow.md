@@ -3,6 +3,7 @@
 ## Overview
 
 The Auto-Label Issue Areas workflow automatically processes issues to:
+
 1. **Extract area labels** from the "Areas Affected" field in bug reports
 2. **Prefix issue titles** based on the issue template type (Bug, Feature Request, Question, etc.)
 3. **Apply area labels** to help categorize and route issues to the appropriate maintainers
@@ -47,13 +48,14 @@ The Auto-Label Issue Areas workflow automatically processes issues to:
 The workflow automatically prefixes issue titles based on template type and labels:
 
 | Template Type | Prefix | Detection Criteria |
-|---------------|--------|-------------------|
-| Bug Report | `[Bug]: ` | Has `bug` label OR contains "### Steps to Reproduce" |
-| Feature Request | `[Feature Request]: ` | Has `enhancement`, `new feature`, or `suggestion` label OR contains "### Feature Description" |
-| Other Issues | `[Other Issues]: ` | Has `discussion` or `other` label OR contains "### Please describe your issue" |
-| Question | `[Question]: ` | Has `question` label OR contains "### What do you want to ask?" |
+| --- | --- | --- |
+| Bug Report | `[Bug]:` | Has `bug` label OR contains "### Steps to Reproduce" |
+| Feature Request | `[Feature Request]:` | Has `enhancement`, `new-feature`, or `suggestion` label OR contains "### Feature Description" |
+| Other Issues | `[Other Issues]:` | Has `discussion` or `other` label OR contains "### Please describe your issue" |
+| Question | `[Question]:` | Has `question` label OR contains "### What do you want to ask?" |
 
 **Rules**:
+
 - Only applies to newly opened issues (not edits)
 - Skips if title already has the correct prefix
 - Applies the first matching template type
@@ -63,7 +65,7 @@ The workflow automatically prefixes issue titles based on template type and labe
 The workflow maps area names from issue forms to GitHub labels:
 
 | Area Name | Label |
-|-----------|-------|
+| --- | --- |
 | Docking | `area:docking` |
 | Navigator | `area:navigator` |
 | Ribbon | `area:ribbon` |
@@ -96,6 +98,7 @@ These patterns handle various markdown formatting differences in GitHub issue fo
 ### Empty Field Handling
 
 The workflow skips processing if:
+
 - Field is empty
 - Field contains "no selection"
 - Field contains "none"
@@ -112,18 +115,21 @@ The workflow skips processing if:
 ### Scenario 1: Bug Report with Single Area
 
 **Issue Body**:
+
 ```markdown
 ### Areas Affected
 - Toolkit
 ```
 
 **Result**:
+
 - Title prefixed: `[Bug]: Original Title`
 - Label added: `area:toolkit`
 
 ### Scenario 2: Bug Report with Multiple Areas
 
 **Issue Body**:
+
 ```markdown
 ### Areas Affected
 - Toolkit
@@ -132,17 +138,20 @@ The workflow skips processing if:
 ```
 
 **Result**:
+
 - Labels added: `area:toolkit`, `area:ribbon`, `area:navigator`
 
 ### Scenario 3: Feature Request
 
 **Issue Body**:
+
 ```markdown
 ### Feature Description
 Add new feature...
 ```
 
 **Result**:
+
 - Title prefixed: `[Feature Request]: Original Title`
 - No area labels (only applies to bug reports)
 
@@ -152,6 +161,7 @@ Add new feature...
 **Edit**: User adds "Areas Affected: Toolkit"
 
 **Result**:
+
 - Label added: `area:toolkit`
 - Title not modified (only prefixed on open)
 
@@ -167,6 +177,7 @@ Add new feature...
 ### Logging
 
 The workflow provides detailed logging:
+
 - Pattern matching results
 - Extracted areas
 - Label operations
@@ -181,6 +192,7 @@ This workflow requires no secrets, variables, or environment configuration. It u
 ### Label Requirements
 
 The following labels must exist in the repository:
+
 - `area:docking`
 - `area:navigator`
 - `area:ribbon`
@@ -194,12 +206,14 @@ If labels don't exist, the workflow will log warnings but continue processing.
 ### Labels Not Applied
 
 **Possible Causes**:
+
 1. Issue is not a bug report - Area labels only apply to bug reports
 2. "Areas Affected" field not found - Check issue body format
 3. Labels don't exist - Create missing labels in repository settings
 4. Field is empty - This is expected behavior
 
 **Solutions**:
+
 - Verify issue uses bug report template
 - Check workflow logs for extraction details
 - Ensure labels exist in repository
@@ -208,11 +222,13 @@ If labels don't exist, the workflow will log warnings but continue processing.
 ### Title Not Prefixed
 
 **Possible Causes**:
+
 1. Issue was edited, not opened - Prefixing only occurs on open
 2. Title already has prefix - Workflow skips if prefix exists
 3. Template type not detected - Check labels and issue body
 
 **Solutions**:
+
 - Prefix is only added when issue is first opened
 - Manually add prefix if needed for existing issues
 - Verify issue template is being used correctly
@@ -231,6 +247,7 @@ If labels don't exist, the workflow will log warnings but continue processing.
 **File**: `.github/workflows/auto-label-issue-areas.yml`
 
 **Key Components**:
+
 - Event: `issues` with types `opened` and `edited`
 - Action: `actions/github-script@v8`
 - Logic: Regex-based field extraction and label mapping
@@ -242,6 +259,7 @@ If labels don't exist, the workflow will log warnings but continue processing.
 To add support for new areas:
 
 1. Add mapping in `areaToLabel` object:
+
    ```javascript
    'NewArea': 'area:newarea'
    ```
@@ -261,6 +279,7 @@ To change or add title prefixes:
 ### Template Changes
 
 If issue templates change:
+
 - Update regex patterns if field names change
 - Adjust detection logic for new template types
 - Test extraction with new template format
@@ -271,4 +290,3 @@ If issue templates change:
 2. **Test Templates**: Verify templates work with the workflow
 3. **Monitor Logs**: Check workflow runs for extraction issues
 4. **Document Areas**: Keep area list in sync with actual codebase structure
-

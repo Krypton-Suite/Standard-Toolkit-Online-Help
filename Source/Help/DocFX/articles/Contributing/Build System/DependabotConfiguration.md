@@ -43,4 +43,3 @@ This document explains how `.github/dependabot.yml` keeps the Krypton Standard T
 - **Noise from flaky updates:** Use Dependabot’s `ignore` rules (not currently present) to suppress specific versions or packages that should not be updated automatically.
 
 Keeping this configuration current ensures workflow dependencies stay secure without manual chasing of GitHub Action releases. Update this document whenever `.github/dependabot.yml` changes.
-

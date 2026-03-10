@@ -9,6 +9,7 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 ## 1. IMPLEMENTED CONTROLS ✅
 
 ### Core Input Controls
+
 - ✅ **KryptonButton** - Standard button with Krypton styling
 - ✅ **KryptonCheckBox** - Checkbox control
 - ✅ **KryptonCheckButton** - Check button variant
@@ -25,6 +26,7 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 - ✅ **KryptonTrackBar** - Slider control
 
 ### Extended Input Controls (Krypton-specific)
+
 - ✅ **KryptonCommandLinkButton** - Vista-style command link
 - ✅ **KryptonAlternateCommandLinkButton** - Alternative command link
 - ✅ **KryptonCheckSet** - Mutually exclusive checkbox group
@@ -33,11 +35,13 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 - ✅ **KryptonCalcInput** - Calculator input control
 
 ### Editor Controls (Krypton-specific)
+
 - ✅ **KryptonCodeEditor** - Native code editor with syntax highlighting, line numbering, code folding, and auto-completion for 14+ languages
 - ✅ **KryptonMarkdownEditor** - Markdown editor control with formatting capabilities
 - ✅ **KryptonMarkdownPreview** - Markdown preview control with custom Krypton rendering and HTML preview modes
 
 ### Display Controls
+
 - ✅ **KryptonLabel** - Static text label
 - ✅ **KryptonLinkLabel** - Clickable hyperlink label
 - ✅ **KryptonWrapLabel** - Auto-wrapping label
@@ -48,6 +52,7 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 - ✅ **KryptonPropertyGrid** - Property inspector
 
 ### List & Data Controls
+
 - ✅ **KryptonListBox** - List selection control
 - ✅ **KryptonCheckedListBox** - List with checkboxes
 - ✅ **KryptonListView** - Multi-column list view
@@ -68,6 +73,7 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
   - KryptonDataGridViewIconColumn
 
 ### Container & Layout Controls
+
 - ✅ **KryptonPanel** - Basic panel container
 - ✅ **KryptonGroup** - Grouped panel with border
 - ✅ **KryptonGroupBox** - Traditional groupbox
@@ -78,10 +84,9 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 - ✅ **KryptonTableLayoutPanel** - Table layout
 - ✅ **KryptonFlowLayoutPanel** - Flow layout panel
 - ✅ **KryptonBreadCrumb** - Breadcrumb navigation
-- ✅ **KryptonTabControl** - Tab control with full Krypton theming (including tab headers)
-- ✅ **KryptonTabPage** - Tab page with Krypton theming
 
 ### Form & Dialog Controls
+
 - ✅ **KryptonForm** - Styled form window
 - ✅ **KryptonMessageBox** - Message dialog
 - ✅ **KryptonInputBox** - Input dialog
@@ -97,6 +102,7 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 - ✅ **KryptonExceptionDialog** - Exception display dialog
 
 ### Menu & Toolbar Controls
+
 - ✅ **KryptonContextMenu** - Full replacement for ContextMenuStrip with enhanced features:
   - KryptonContextMenuCheckBox
   - KryptonContextMenuCheckButton
@@ -117,13 +123,16 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 - ✅ **KryptonProgressBarToolStripItem** - Progress in toolbar
 
 ### Web & Media Controls
+
 - ✅ **KryptonWebBrowser** - Embedded browser
 
 ### Notification Controls (Krypton-specific)
+
 - ✅ **KryptonToastNotification** - Modern toast notifications
 - ✅ **KryptonSplashScreen** - Splash screen
 
 ### Utility & Support Controls
+
 - ✅ **KryptonBorderEdge** - Separator border
 - ✅ **KryptonSeparator** - Visual separator
 - ✅ **KryptonCommand** - Command binding
@@ -131,7 +140,6 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 - ✅ **KryptonThemeBrowser** - Theme selection UI
 - ✅ **KryptonThemeComboBox** - Theme dropdown
 - ✅ **KryptonThemeListBox** - Theme list
-- ✅ **KryptonToolTip** - Standalone tooltip control with Krypton theming
 - ✅ **KryptonErrorProvider** - Error indication provider with Krypton theming
 - ✅ **KryptonNotifyIcon** - System tray icon component with Krypton theming
 - ✅ **KryptonHelpProvider** - Context-sensitive help provider with Krypton theming
@@ -140,6 +148,7 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 - ✅ **KryptonTimer** - Timer component with Krypton palette integration
 
 ### Advanced Components (Separate Libraries)
+
 - ✅ **Krypton.Ribbon** - Office-style ribbon interface
 - ✅ **Krypton.Navigator** - Full replacement for TabControl with 15+ modes (tabs, ribbon tabs, Outlook-style, buttons, stacked, etc.)
 - ✅ **Krypton.Workspace** - Workspace management
@@ -152,45 +161,55 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 ### High Priority Missing Controls
 
 #### **ErrorProvider** ✅
+
 **Status:** IMPLEMENTED as KryptonErrorProvider  
 **Description:** Provides a user interface for indicating that a control on a form has an error associated with it.  
 **Use Cases:**
+
 - Form validation feedback
 - Real-time error indication
 - Data entry validation
 **Notes:** Fully implemented with Krypton theming support, palette integration, and Krypton-specific enums for blink style and icon alignment.
 
-#### **ToolTip** ✅
-**Status:** IMPLEMENTED as KryptonToolTip  
+#### **ToolTip** ❌
+
+**Status:** NOT IMPLEMENTED - No standalone KryptonToolTip component  
 **Description:** Standard tooltip control for showing help text on hover.  
 **Use Cases:**
+
 - Context-sensitive help
 - Button descriptions
 - Form field guidance
-**Notes:** Fully implemented as a standalone control with full Krypton theming support, ToolTipValues customization, palette integration, and VisualPopupToolTip rendering.
+**Notes:** Krypton controls have built-in tooltip support via `ToolTipValues` property, but there is no component tray control for general use (e.g. SetToolTip for any control). Use standard `ToolTip` (not themed) or `ToolTipValues` on Krypton controls.
 
 #### **NotifyIcon** ✅
+
 **Status:** IMPLEMENTED as KryptonNotifyIcon  
 **Description:** System tray icon component.  
 **Use Cases:**
+
 - Background applications
 - System tray integration
 - Notification area presence
 **Notes:** Fully implemented with Krypton theming support and palette integration.
 
 #### **HelpProvider** ✅
+
 **Status:** IMPLEMENTED as KryptonHelpProvider  
 **Description:** Provides context-sensitive help (F1 key support).  
 **Use Cases:**
+
 - F1 help integration
 - Context help for forms
 - Help button on form title bar
 **Notes:** Fully implemented with Krypton theming support and palette integration.
 
 #### **FlowLayoutPanel** ✅
+
 **Status:** IMPLEMENTED as KryptonFlowLayoutPanel  
 **Description:** Panel that dynamically lays out controls in horizontal or vertical flow.  
 **Use Cases:**
+
 - Responsive layouts
 - Dynamic control arrangement
 - Tag clouds
@@ -200,9 +219,11 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 ### Medium Priority Missing Controls
 
 #### **MenuStrip** ✅ (with limitation)
+
 **Status:** THEMED via Krypton Renderer  
 **Description:** Standard `MenuStrip` automatically adopts Krypton theming when KryptonManager is present.  
 **Use Cases:**
+
 - File/Edit/View menus
 - Traditional desktop applications
 - MDI applications
@@ -210,45 +231,55 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 **Notes:** `KryptonMenuStrip` wraps the standard `MenuStrip` and uses `ToolStripRenderMode.ManagerRenderMode` to automatically apply Krypton theming. The control supports per-control palette customization and integrates with the global palette system.
 
 #### **ContextMenuStrip** ✅
+
 **Status:** FULLY REPLACED by KryptonContextMenu  
 **Description:** `KryptonContextMenu` is a full-featured replacement for `ContextMenuStrip` with enhanced capabilities.  
 **Additional Features in KryptonContextMenu:**
+
 - Rich content support (images, colors, calendars, etc.)
 - Enhanced theming
 - More control types (checkbox, radio button, combo box, etc.)
 **Notes:** No need for a separate control - `KryptonContextMenu` is superior to standard `ContextMenuStrip`.
 
 #### **Timer** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - `KryptonTimer` provides a timer component with Krypton palette integration.
 **Impact:** LOW  
 **Description:** Component for executing code at regular intervals.  
 **Use Cases:**
+
 - Periodic updates
 - Animation
 - Polling operations
 **Notes:** This is a non-visual component. Developers typically use `System.Windows.Forms.Timer` directly.
 
 #### **ImageList** ❌
+
 **Impact:** LOW  
 **Description:** Collection of images for use with other controls.  
 **Use Cases:**
+
 - TreeView images
 - ListView images
 - Toolbar icons
 **Notes:** Non-visual component. Standard `ImageList` works fine with Krypton controls.
 
 #### **BindingSource** ❌
+
 **Impact:** LOW  
 **Description:** Data binding intermediary.  
 **Use Cases:**
+
 - Data binding
 - Master-detail relationships
 - Currency management
 **Notes:** Non-visual component. Standard `BindingSource` works with Krypton controls.
 
 #### **BindingNavigator** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - `KryptonBindingNavigator` provides a navigation UI for data-bound controls with Krypton theming.
 **Description:** `KryptonBindingNavigator` features:
+
 - Navigation buttons (First, Previous, Next, Last) using KryptonButton
 - Position textbox using KryptonTextBox
 - Count label using KryptonLabel
@@ -264,21 +295,25 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 ### Low Priority / Rarely Used
 
 #### **VScrollBar / HScrollBar (Standalone)** ❌
+
 **Impact:** LOW  
 **Description:** Standalone scrollbar controls.  
 **Notes:** Krypton has `KryptonScrollBar`, but standard usage is for these to be embedded in containers. ✅ (Implemented)
 
 #### **PageSetupDialog** ❌
+
 **Impact:** LOW  
 **Description:** Page setup dialog for printing.  
 **Notes:** Printing dialogs are less commonly themed.
 
 #### **PrintPreviewDialog** ❌
+
 **Impact:** LOW  
 **Description:** Print preview dialog.  
 **Notes:** Printing dialogs are less commonly themed.
 
 #### **PrintPreviewControl** ❌
+
 **Impact:** LOW  
 **Description:** Embedded print preview control.  
 **Notes:** Rarely used standalone.
@@ -290,17 +325,21 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 ### Modern UI Controls
 
 #### **Rating Control** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - `KryptonRating` provides a standalone rating control with star display and selection.
 **Use Cases:**
+
 - User reviews
 - Preference selection
 - Satisfaction surveys
 
 #### **FileSystemWatcher** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - `KryptonFileSystemWatcher` provides a file system watcher component with Krypton palette integration.
 **Impact:** LOW  
 **Description:** Monitors file system changes and raises events when directories or files change.  
 **Use Cases:**
+
 - File system monitoring
 - Auto-refresh on file changes
 - Directory watching
@@ -308,9 +347,11 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 **Notes:** Non-visual component with full Krypton palette integration. Wraps `System.IO.FileSystemWatcher` and provides `PaletteMode` and `Palette` properties for consistency with other Krypton components.
 
 #### **TabControl** ✅
+
 **Status:** FULLY REPLACED by KryptonNavigator  
 **Description:** `KryptonNavigator` is a full-featured replacement for `TabControl` with multiple display modes.  
 **Additional Features in KryptonNavigator:**
+
 - Multiple modes: BarTabGroup, BarRibbonTabGroup, OutlookFull, OutlookMini, and many more
 - Enhanced styling and theming
 - Drag-and-drop page reordering
@@ -320,8 +361,10 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 **Notes:** For simple tab scenarios, use `NavigatorMode.BarTabGroup` which provides TabControl-like behavior. No separate control needed - Navigator is the full replacement.
 
 #### **SearchBox / AutoCompleteTextBox** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - `KryptonSearchBox` provides a modern search input control with search icon and clear button functionality.
 **Description:** `KryptonSearchBox` wraps `KryptonTextBox` and adds search-specific features:
+
 - Search icon button (configurable visibility)
 - Clear button that appears when text is entered (configurable visibility)
 - Search event triggered on Enter key or search button click
@@ -338,8 +381,10 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 **Notes:** Could be implemented with button specs on KryptonTextBox.
 
 #### **Rating/Star Control (Standalone)** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - `KryptonRating` provides a standalone rating control.
 **Description:** `KryptonRating` features:
+
 - Star-based visual display (configurable number of stars)
 - Mouse interaction for selecting ratings
 - Hover feedback
@@ -349,10 +394,12 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 **Notes:** Standalone control that can be used anywhere, not just in DataGridView.
 
 #### **Code Editor Control** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - `KryptonCodeEditor` provides a fully native code editor control.
 **Impact:** MEDIUM  
 **Description:** Professional code editor with syntax highlighting, line numbering, code folding, and auto-completion.  
 **Use Cases:**
+
 - Code editing applications
 - Script editors
 - Configuration file editors
@@ -371,10 +418,12 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 **Notes:** Built entirely with WinForms and Krypton controls. Provides professional code editing capabilities without requiring external libraries like ScintillaNET.
 
 #### **Markdown Editor/Preview Controls** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - `KryptonMarkdownEditor` and `KryptonMarkdownPreview` provide markdown editing and preview capabilities.
 **Impact:** MEDIUM  
 **Description:** Markdown editor and preview controls with Krypton theming.  
 **Use Cases:**
+
 - Markdown documentation editors
 - Readme file editors
 - Documentation tools
@@ -389,8 +438,10 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 **Notes:** Provides a complete markdown editing solution with full Krypton theming support.
 
 #### **Tag Input / TokenBox** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - `KryptonTagInput` provides a token/chip input control.
 **Description:** `KryptonTagInput` features:
+
 - Tag collection management
 - Visual chip/token rendering with remove buttons
 - Keyboard support (Enter to add, Backspace to remove)
@@ -405,13 +456,16 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 - Multi-select alternatives
 
 #### **Breadcrumb Navigation** ✅
+
 **Status:** IMPLEMENTED as KryptonBreadCrumb
 
 #### **Split Button** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - `KryptonSplitButton` provides a true split button implementation.  
 **Impact:** MEDIUM  
 **Description:** Button with a primary action and a dropdown for secondary actions.  
 **Description:** `KryptonSplitButton` inherits from `KryptonDropButton` and provides:
+
 - Always-on split button behavior (Splitter and DropDown always enabled)
 - Main button area triggers Click event
 - Dropdown arrow area triggers DropDownClick event and shows context menu
@@ -422,6 +476,7 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 ### Advanced Data Controls
 
 #### **Chart Control** ❌
+
 **Impact:** MEDIUM  
 **Description:** Graphing and charting control.  
 **Notes:** Not part of standard WinForms, but System.Windows.Forms.DataVisualization.Charting is common.
@@ -429,10 +484,12 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 ### Touch & Modern Input
 
 #### **Touch Gesture Support / Touchscreen Support** ✅
+
 **Status:** ✅ **FULLY IMPLEMENTED** - Touchscreen support is implemented via `KryptonManager` with control and font scaling capabilities.
 **Impact:** MEDIUM  
 **Description:** Support for touch-enabled devices with automatic control and font scaling.  
 **Features:**
+
 - Global touchscreen support flag (`KryptonManager.UseTouchscreenSupport`)
 - Configurable control scale factor (default: 1.25, making controls 25% larger)
 - Optional font scaling (`KryptonManager.UseTouchscreenFontScaling`)
@@ -448,6 +505,7 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 **Notes:** Implemented in `KryptonManager.cs`. Controls automatically scale when touchscreen support is enabled. The scale factor can be adjusted per application needs. Font scaling can be enabled/disabled independently.
 
 #### **High DPI / Scaling Support** ❓
+
 **Status:** Partial - needs audit
 **Impact:** HIGH  
 **Description:** Per-monitor DPI awareness and proper scaling.
@@ -482,24 +540,29 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 ## 5. FEATURE GAPS IN EXISTING CONTROLS
 
 ### KryptonDataGridView
+
 - ✅ Excellent custom column support
 - ✅ Progress bar column
 - ✅ Rating column
 - ⚠️ May need DPI scaling verification
 
 ### KryptonComboBox
+
 - ⚠️ Check if supports DropDownList style
 - ⚠️ AutoComplete modes verification
 
 ### KryptonTextBox
+
 - ✅ CueHint property for watermark/placeholder text (fully implemented)
 
 ### KryptonListView
+
 - ❓ Virtual mode support
 - ❓ Groups support
 - ❓ Tile view support
 
 ### KryptonTreeView
+
 - ❓ Node checkbox support
 - ❓ Node state image support
 
@@ -539,6 +602,7 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 ## 8. COMPARISON WITH OTHER TOOLKITS
 
 ### Features Krypton Has That Are Unique
+
 - ✅ Toast Notifications
 - ✅ Theme Manager and Switching
 - ✅ Comprehensive Ribbon Control
@@ -566,8 +630,9 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
   - Custom headings and separators
 
 ### Industry Standard Controls Actually Missing
+
 - ✅ ErrorProvider - Implemented as KryptonErrorProvider
-- ✅ Standalone ToolTip control - Implemented as KryptonToolTip
+- ❌ Standalone ToolTip control - Not implemented (use ToolTipValues or standard ToolTip)
 - ✅ NotifyIcon - Implemented as KryptonNotifyIcon
 - ✅ HelpProvider - Implemented as KryptonHelpProvider
 - ✅ FlowLayoutPanel - Implemented as KryptonFlowLayoutPanel
@@ -575,6 +640,7 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 - ✅ FileSystemWatcher - Implemented as KryptonFileSystemWatcher
 
 ### Controls That Work with Krypton Renderer
+
 - ✅ MenuStrip - Has KryptonMenuStrip + standard is themed (font customizable via KryptonMenuStrip)
 - ✅ ToolStrip - Has KryptonToolStrip + standard is themed (font customizable)
 - ✅ StatusStrip - Has KryptonStatusStrip + standard is themed (font customizable)
@@ -584,34 +650,39 @@ This audit compares the Krypton Toolkit against standard Windows Forms controls 
 ## 9. RECOMMENDATIONS
 
 ### Critical (Implement ASAP)
+
 1. ✅ **KryptonErrorProvider** - Essential for form validation - **IMPLEMENTED**
-2. ✅ **KryptonToolTip** - Standalone tooltip control for custom tooltips - **IMPLEMENTED**
+2. ❌ **KryptonToolTip** - Standalone tooltip control - **NOT IMPLEMENTED** (use ToolTipValues or standard ToolTip)
 3. ✅ **KryptonFlowLayoutPanel** - Modern responsive layouts - **IMPLEMENTED**
-4. ✅ **KryptonTabControl** - Simple tab control (simpler than Navigator) - **IMPLEMENTED**
+4. ❌ **KryptonTabControl** - Not implemented - use **KryptonNavigator** with `NavigatorMode.BarTabGroup` for simple tabs
 
 ### High Priority
-5. ✅ **KryptonNotifyIcon** - System tray support - **IMPLEMENTED**
-6. ✅ **KryptonHelpProvider** - F1 help support - **IMPLEMENTED**
-7. ✅ **KryptonMenuStrip** - Traditional menu bar with full palette support - **IMPLEMENTED & ENHANCED**
-8. **Accessibility Audit** - Full accessibility testing and improvements
-9. **High DPI Audit** - Verify all controls scale properly
+
+1. ✅ **KryptonNotifyIcon** - System tray support - **IMPLEMENTED**
+2. ✅ **KryptonHelpProvider** - F1 help support - **IMPLEMENTED**
+3. ✅ **KryptonMenuStrip** - Traditional menu bar with full palette support - **IMPLEMENTED & ENHANCED**
+4. **Accessibility Audit** - Full accessibility testing and improvements
+5. **High DPI Audit** - Verify all controls scale properly
 
 ### Medium Priority
-10. ✅ **KryptonSearchBox** - Modern search input with clear button - **IMPLEMENTED**
-11. ✅ **KryptonSplitButton** - True split button implementation - **IMPLEMENTED**
-12. ✅ **KryptonTagInput** - Token/chip input control - **IMPLEMENTED**
-13. ✅ **KryptonRating** - Standalone rating control (not just DataGridView column) - **IMPLEMENTED**
+
+1. ✅ **KryptonSearchBox** - Modern search input with clear button - **IMPLEMENTED**
+2. ✅ **KryptonSplitButton** - True split button implementation - **IMPLEMENTED**
+3. ✅ **KryptonTagInput** - Token/chip input control - **IMPLEMENTED**
+4. ✅ **KryptonRating** - Standalone rating control (not just DataGridView column) - **IMPLEMENTED**
 
 ### Low Priority
-15. **KryptonPageSetupDialog**
-16. **KryptonPrintPreviewDialog**
-17. ✅ **KryptonBindingNavigator** - Navigation UI for data-bound controls - **IMPLEMENTED**
-18. **KryptonChart** - Basic charting (or recommend third-party)
+
+1. **KryptonPageSetupDialog**
+2. **KryptonPrintPreviewDialog**
+3. ✅ **KryptonBindingNavigator** - Navigation UI for data-bound controls - **IMPLEMENTED**
+4. **KryptonChart** - Basic charting (or recommend third-party)
 
 ### Documentation Needs
-19. **Migration Guide** - Standard WinForms to Krypton mapping
-20. **Accessibility Guide** - How to make Krypton apps accessible
-21. **DPI Guide** - Best practices for DPI-aware apps
+
+1. **Migration Guide** - Standard WinForms to Krypton mapping
+2. **Accessibility Guide** - How to make Krypton apps accessible
+3. **DPI Guide** - Best practices for DPI-aware apps
 
 ---
 
@@ -650,7 +721,9 @@ The following controls should be audited for feature completeness:
 ## 11. THIRD-PARTY INTEGRATION NOTES
 
 ### Controls That Work As-Is
+
 These standard controls work fine with Krypton and don't need themed versions:
+
 - BindingSource
 - ✅ BindingNavigator - Implemented as KryptonBindingNavigator
 - ✅ Timer - Implemented as KryptonTimer (with palette integration)
@@ -659,9 +732,11 @@ These standard controls work fine with Krypton and don't need themed versions:
 - ✅ FileSystemWatcher - Implemented as KryptonFileSystemWatcher (with palette integration)
 
 ### Controls That Should Be Themed
+
 These would benefit from Krypton-styled versions:
+
 - ✅ ErrorProvider - Implemented as KryptonErrorProvider
-- ✅ ToolTip - Implemented as KryptonToolTip
+- ❌ ToolTip - Not implemented (use ToolTipValues or standard ToolTip)
 - ✅ NotifyIcon - Implemented as KryptonNotifyIcon
 - ✅ HelpProvider - Implemented as KryptonHelpProvider
 
@@ -672,6 +747,7 @@ These would benefit from Krypton-styled versions:
 The Krypton Toolkit provides **excellent coverage** of standard WinForms controls with significant enhancements and additional controls not found in standard WinForms. However, there are notable gaps:
 
 ### Strengths
+
 - Comprehensive theming system
 - Rich set of enhanced controls
 - Unique advanced components (Ribbon, Navigator, Docking)
@@ -679,26 +755,29 @@ The Krypton Toolkit provides **excellent coverage** of standard WinForms control
 - Excellent DataGridView extensions
 
 ### Critical Gaps
+
 1. ✅ ErrorProvider - Implemented as KryptonErrorProvider
-2. ✅ Standalone ToolTip control - Implemented as KryptonToolTip
+2. ❌ Standalone ToolTip control - Not implemented
 3. ✅ FlowLayoutPanel - Implemented as KryptonFlowLayoutPanel
-4. ✅ Simple TabControl - Implemented as KryptonTabControl (with full tab header theming)
+4. TabControl - Use KryptonNavigator with NavigatorMode.BarTabGroup (no separate KryptonTabControl)
 5. ✅ NotifyIcon - Implemented as KryptonNotifyIcon
 6. ✅ HelpProvider - Implemented as KryptonHelpProvider
 7. ✅ Splitter - Implemented as KryptonSplitter
 8. ✅ FileSystemWatcher - Implemented as KryptonFileSystemWatcher
 
 ### Overall Assessment
+
 **Coverage:** ~98% of standard WinForms controls  
 **Quality:** High quality implementation  
 **Modern Features:** Excellent  
 **Gaps:** Mostly specialized controls (all major gaps addressed)
 
 ### Immediate Action Items
+
 1. ✅ Implement KryptonErrorProvider - **COMPLETED**
-2. ✅ Implement KryptonToolTip - **COMPLETED**
+2. ❌ Implement KryptonToolTip - **NOT DONE** (still needed)
 3. ✅ Implement KryptonFlowLayoutPanel - **ALREADY EXISTS**
-4. ✅ Implement KryptonTabControl - **COMPLETED** (with full tab header theming via OwnerDraw)
+4. KryptonTabControl - Use KryptonNavigator (BarTabGroup mode); no separate control
 5. ✅ Implement KryptonSplitter - **COMPLETED**
 6. ✅ Implement KryptonFileSystemWatcher - **COMPLETED**
 7. Conduct accessibility audit
@@ -709,7 +788,7 @@ The Krypton Toolkit provides **excellent coverage** of standard WinForms control
 ## APPENDIX A: CONTROL MAPPING TABLE
 
 | Standard WinForms | Krypton Equivalent | Status | Notes |
-|-------------------|-------------------|--------|-------|
+| --- | --- | --- | --- |
 | Button | KryptonButton | ✅ | Full featured |
 | SplitButton | KryptonSplitButton | ✅ | Full featured with always-on split behavior |
 | CheckBox | KryptonCheckBox | ✅ | Full featured |
@@ -737,7 +816,7 @@ The Krypton Toolkit provides **excellent coverage** of standard WinForms control
 | GroupBox | KryptonGroupBox | ✅ | Full featured |
 | SplitContainer | KryptonSplitContainer | ✅ | Full featured |
 | Splitter | KryptonSplitter | ✅ | Full featured with Krypton palette integration |
-| TabControl | KryptonTabControl | ✅ | Full featured with Krypton theming (including tab headers) |
+| TabControl | KryptonNavigator (BarTabGroup mode) | ✅ | Full replacement; no separate KryptonTabControl |
 | TabControl (Advanced) | KryptonNavigator | ✅ | Full replacement with 15+ modes |
 | TableLayoutPanel | KryptonTableLayoutPanel | ✅ | Full featured |
 | FlowLayoutPanel | KryptonFlowLayoutPanel | ✅ | Full featured with Krypton theming |
@@ -749,7 +828,7 @@ The Krypton Toolkit provides **excellent coverage** of standard WinForms control
 | WebBrowser | KryptonWebBrowser | ✅ | Full featured |
 | PropertyGrid | KryptonPropertyGrid | ✅ | Full featured |
 | ErrorProvider | KryptonErrorProvider | ✅ | Full featured with Krypton theming |
-| ToolTip | KryptonToolTip | ✅ | Full featured with Krypton theming |
+| ToolTip | (none) | ❌ | Use ToolTipValues on Krypton controls or standard ToolTip |
 | NotifyIcon | KryptonNotifyIcon | ✅ | Full featured with Krypton theming |
 | HelpProvider | KryptonHelpProvider | ✅ | Full featured with Krypton theming |
 | SearchBox | KryptonSearchBox | ✅ | Full featured with search/clear buttons and Krypton theming |

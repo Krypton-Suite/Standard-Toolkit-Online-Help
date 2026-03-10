@@ -11,6 +11,7 @@ This document provides an index to build workflow documentation for the Krypton 
 The primary CI/CD workflow that validates code quality and creates releases.
 
 **Key Features**:
+
 - ✅ Validates all pull requests
 - ✅ Multi-framework builds (.NET Framework 4.7.2 - 4.8.1, .NET 8 - 10)
 - ✅ Automated GitHub releases for master branch
@@ -18,6 +19,7 @@ The primary CI/CD workflow that validates code quality and creates releases.
 - ✅ Fork protection
 
 **Triggers**:
+
 - Pull requests to any branch
 - Push to protected branches (master, alpha, canary, gold, V85-LTS)
 - Manual: workflow_dispatch
@@ -47,18 +49,20 @@ Scheduled nightly builds that automatically create and publish bleeding-edge bui
 ### Build System
 
 For comprehensive build system documentation, see:
+
 - [Build System Documentation Index](BuildSystemDocumentationIndex.md) - Complete guide to the build system, MSBuild files, scripts, and configuration
 
 ### GitHub Actions
 
 For general GitHub Actions workflow information, see:
+
 - [GitHub Actions Workflows](GitHubActionsIndex.md) - Overview of all GitHub Actions workflows
 - [GitHub Workflow Index](GitHubWorkflowIndex.md) - Index of all GitHub workflows
 
 ## Quick Reference
 
 | Workflow | Purpose | Trigger | Output |
-|----------|---------|---------|--------|
+| --- | --- | --- | --- |
 | Build | CI validation | PR/Push/Manual | Build artifacts |
 | Release | Stable releases | Push to release branches/Manual | NuGet packages |
 | Nightly | Bleeding-edge builds | Schedule (00:00 UTC)/Manual | Nightly NuGet packages |
@@ -83,4 +87,3 @@ For general GitHub Actions workflow information, see:
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [MSBuild Documentation](https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild)
 - [NuGet Package Publishing](https://docs.microsoft.com/en-us/nuget/nuget-org/publish-a-package)
-

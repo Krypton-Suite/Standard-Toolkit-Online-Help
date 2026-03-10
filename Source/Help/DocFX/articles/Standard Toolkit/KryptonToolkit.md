@@ -88,6 +88,7 @@ the toolbox.
 * [KryptonForm](Toolkit/Forms/KryptonForm.md)
     * [AdministratorSuffixFeatureforKryptonForm](Toolkit/Forms/AdministratorSuffixFeatureforKryptonForm.md)
     * [KryptonThemedSystemMenu](Toolkit/Forms/KryptonThemedSystemMenu.md)
+    * [KryptonFormTitleBar](Toolkit/Forms/KryptonFormTitleBar.md)
   
 **Utilities**
 * [ExceptionHandler](Toolkit/ExceptionHandler.md)

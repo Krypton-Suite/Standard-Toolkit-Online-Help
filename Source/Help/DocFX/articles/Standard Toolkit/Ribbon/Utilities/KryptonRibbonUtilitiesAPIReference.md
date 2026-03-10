@@ -135,7 +135,7 @@ merger.Unmerge(pluginRibbon);
 
 **See Also:**
 - [Merge Method](#mergekryptonribbon)
-- [Unmerge Behavior Documentation](RibbonMerging.md#unmerge-behavior)
+- [Unmerge Behavior Documentation](RibbonMerging.md#unmerge-method)
 
 ##### FixGroupWidths()
 

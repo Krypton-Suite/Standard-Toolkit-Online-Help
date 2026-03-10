@@ -211,3 +211,7 @@ default. You can then import these settings into another *KryptonCustomPaletteBa
 instance in the same or a different application. Use the *Reset* option from the
 smart tag to reset all the palette properties back to the default settings that
 have when the component is first created.
+
+**See also**
+
+[External Themes Bundled Names](ExternalThemesBundledNames.md) - How to customize and display the names of custom themes.

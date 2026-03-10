@@ -18,6 +18,8 @@ The repository uses several automated workflows to handle builds, releases, issu
 
 - **[Nightly Workflow](Workflows/NightlyWorkflow.md)** - Scheduled nightly builds that automatically create and publish bleeding-edge builds from the `alpha` branch. Includes change detection to skip builds when no changes are present.
 
+- **[Canary LTS Release Workflow](Workflows/CanaryLTSReleaseWorkflow.md)** - Handles automated canary LTS releases and publishes NuGet packages to nuget.org with Discord notifications.
+
 ### Automation Workflows
 
 - **[Auto-Assign PR Author](Workflows/AutoAssignPRAuthorWorkflow.md)** - Automatically assigns the pull request author as an assignee when a PR is opened, with special handling for Dependabot PRs.
@@ -27,7 +29,7 @@ The repository uses several automated workflows to handle builds, releases, issu
 ## Quick Reference
 
 | Workflow | Trigger | Purpose | Output |
-|----------|---------|---------|--------|
+| --- | --- | --- | --- |
 | Build | PR/Push/Manual | CI validation | Build artifacts |
 | Release | Push to release branches/Manual | Stable releases | NuGet packages |
 | Nightly | Schedule (00:00 UTC)/Manual | Bleeding-edge builds | Nightly NuGet packages |
@@ -36,7 +38,7 @@ The repository uses several automated workflows to handle builds, releases, issu
 
 ## Workflow Dependencies
 
-```
+```text
 ┌─────────────────┐
 │  Pull Request   │
 └────────┬────────┘
@@ -138,4 +140,3 @@ When modifying workflows:
 3. Document any new secrets or variables required
 4. Update this index if adding new workflows
 5. Consider backward compatibility with existing processes
-

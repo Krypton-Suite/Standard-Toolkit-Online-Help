@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonJumpList | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonJumpList | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonjumplist">KryptonJumpList</h1>
+
+<p>This document describes the <strong>current</strong> Windows taskbar jump list integration in the Krypton Toolkit.<br>
+It reflects the implementation based on <code>JumpListValues</code>, <code>JumpListItem</code>, and the COM / WPF bridges that
+were added for Windows 7+ style Jump Lists.</p>
+<h2 id="overview">Overview</h2>
+<p>Jump lists let <code>VisualForm</code>-based applications (including <code>KryptonForm</code>) expose:</p>
+<ul>
+<li><strong>User tasks</strong> (e.g. “New document”, “Open settings”)</li>
+<li><strong>Custom categories</strong> (e.g. “Recent Files”, “Templates”) – backed by <code>JumpListValues.Categories</code> and shown under named headings in the taskbar jump list (supported in the core COM implementation and in the TestForm demo).</li>
+<li><strong>Shell–managed sections</strong> like <strong>Recent</strong> and <strong>Frequent</strong> – controlled by <code>ShowRecentCategory</code> / <code>ShowFrequentCategory</code> <strong>and</strong> the Windows privacy setting “Show recently opened items in Start, Jump Lists, and File Explorer”; if that OS setting is off or Windows has no data, these sections will not appear.</li>
+</ul>
+<p>These appear when the user right‑clicks the app’s taskbar button.</p>
+<h2 id="core-types">Core Types</h2>
+<h3 id="jumplistitem"><code>JumpListItem</code></h3>
+<ul>
+<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/General/JumpListItem.cs</code></li>
+<li><strong>Purpose</strong>: Represents a single item (task or destination) that can appear in the jump list.</li>
+<li><strong>Key properties</strong>:
+<ul>
+<li><code>Title</code> – Display text shown in the jump list.</li>
+<li><code>Path</code> – Executable or file path (e.g. app EXE, document path).</li>
+<li><code>Arguments</code> – Command–line arguments (for tasks).</li>
+<li><code>WorkingDirectory</code> – Working directory for the process.</li>
+<li><code>IconPath</code> – Optional icon source (defaults to <code>Path</code> if omitted).</li>
+<li><code>IconIndex</code> – Index within the icon resource.</li>
+<li><code>Description</code> – Tooltip text.</li>
+</ul>
+</li>
+</ul>
+<h3 id="jumplistvalues"><code>JumpListValues</code></h3>
+<ul>
+<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/Values/JumpListValues.cs</code></li>
+<li><strong>Purpose</strong>: Stores jump list configuration for a <code>VisualForm</code>.</li>
+<li><strong>Key members</strong>:
+<ul>
+<li><code>AppId</code> – Application User Model ID (AppUserModelID).</li>
+<li><code>ShowFrequentCategory</code> – Whether to show the Windows‑managed <strong>Frequent</strong> section.</li>
+<li><code>ShowRecentCategory</code> – Whether to show the Windows‑managed <strong>Recent</strong> section.</li>
+<li><code>UserTasks : List&lt;JumpListItem&gt;</code> – Collection of user tasks.</li>
+<li><code>Categories : Dictionary&lt;string, List&lt;JumpListItem&gt;&gt;</code> – Custom categories.</li>
+<li><code>ResetUserTasks()</code>, <code>ClearCategories()</code> – Helpers to clear state.</li>
+<li><code>Apply()</code> – Raises the internal <code>JumpListChanged</code> event so <code>VisualForm</code> can rebuild the shell jump list.</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>Note</strong><br>
+Mutating <code>UserTasks</code> or <code>Categories</code> directly (e.g. <code>Add</code>, <code>Clear</code>) does <strong>not</strong> automatically update Windows.
+You must either call <code>Apply()</code> or use higher-level helpers that raise <code>JumpListChanged</code>.</p>
+</blockquote>
+<h3 id="com-interop-platforminvokecs">COM Interop (<code>PlatformInvoke.cs</code>)</h3>
+<ul>
+<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/General/PlatformInvoke.cs</code></li>
+<li><strong>Purpose</strong>: Provides the native interfaces and CLSIDs used to talk to the Windows shell.</li>
+<li><strong>Relevant declarations</strong>:
+<ul>
+<li><code>ICustomDestinationList</code> – Creates and commits a custom jump list.</li>
+<li><code>IShellLinkW</code> – Represents a shell link used for tasks and destinations.</li>
+<li><code>IObjectCollection</code> / <code>IObjectArray</code> – Collections of shell COM objects.</li>
+<li><code>CustomDestinationList</code> / <code>ObjectCollection</code> – COM classes (CLSIDs) used to create the objects.</li>
+<li><code>IPropertyStore</code>, <code>PROPERTYKEY</code>, <code>PROPVARIANT</code>, <code>PKEY_Title</code> – Used to set the display title for shell links.</li>
+<li><code>SetCurrentProcessExplicitAppUserModelID</code> – P/Invoke call to set the process AppUserModelID.</li>
+</ul>
+</li>
+</ul>
+<p>Krypton uses these to:</p>
+<ul>
+<li>Create <code>IShellLinkW</code> instances for each <code>JumpListItem</code>.</li>
+<li>Set required fields (path, arguments, icon, description, title).</li>
+<li>Place links into categories and the tasks section.</li>
+<li>Commit the list via <code>ICustomDestinationList.CommitList()</code>.</li>
+</ul>
+<h2 id="integration-with-visualform--kryptonform">Integration with <code>VisualForm</code> / <code>KryptonForm</code></h2>
+<h3 id="properties">Properties</h3>
+<p>On <code>VisualForm</code> (and therefore <code>KryptonForm</code>) you get:</p>
+<ul>
+<li><code>JumpListValues</code> – Exposes the <code>JumpListValues</code> instance.</li>
+<li><code>JumpList</code> – Convenience wrapper that forwards to <code>JumpListValues</code>.</li>
+</ul>
+<h3 id="lifecycle">Lifecycle</h3>
+<ul>
+<li>On construction, <code>VisualForm</code> creates a <code>JumpListValues</code> instance and subscribes to its internal <code>JumpListChanged</code> event.</li>
+<li>When the form handle is created, <code>VisualForm</code> calls its internal <code>OnJumpListChanged()</code> which:
+<ul>
+<li>Ensures:
+<ul>
+<li>Not in design mode.</li>
+<li>Window handle exists.</li>
+<li>OS is Windows 7+.</li>
+<li><code>AppId</code> is non-empty.</li>
+</ul>
+</li>
+<li>Creates a <code>CustomDestinationList</code> instance.</li>
+<li>Adds <strong>Recent</strong>/<strong>Frequent</strong> categories if enabled.</li>
+<li>Converts <code>Categories</code> and <code>UserTasks</code> into <code>IShellLinkW</code> objects and appends them.</li>
+<li>Calls <code>CommitList()</code> to apply the jump list to the shell.</li>
+</ul>
+</li>
+<li><code>JumpListValues.Apply()</code> simply invokes <code>JumpListChanged</code>, which in turn causes <code>VisualForm</code> to rebuild the COM jump list.</li>
+</ul>
+<h3 id="error-handling">Error Handling</h3>
+<ul>
+<li>If COM activation fails (e.g. <code>REGDB_E_CLASSNOTREG</code>), the exception is caught and ignored so the app continues running without a jump list.</li>
+<li>Any other exceptions from the COM layer are captured by <code>KryptonExceptionHandler</code>.</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<h3 id="1-setting-the-appusermodelid">1. Setting the AppUserModelID</h3>
+<p>Windows uses the AppUserModelID to associate your process with its taskbar icon and jump list.</p>
+<p>You must set it <strong>before</strong> any window is created:</p>
+<pre><code class="lang-csharp">// Typical Program.Main (WinForms)
+[STAThread]
+static void Main()
+{
+    // Set AppID first
+    Krypton.Toolkit.PI.SetCurrentProcessExplicitAppUserModelID(&quot;MyCompany.MyApp&quot;);
+
+    Application.EnableVisualStyles();
+    Application.SetCompatibleTextRenderingDefault(false);
+
+    Application.Run(new MyKryptonForm());
+}
+</code></pre>
+<p>On the form, match the values:</p>
+<pre><code class="lang-csharp">public MyKryptonForm()
+{
+    InitializeComponent();
+    JumpList.AppId = &quot;MyCompany.MyApp&quot;;
+}
+</code></pre>
+<h3 id="2-configuring-via-designer">2. Configuring via Designer</h3>
+<ol>
+<li>Select your <code>KryptonForm</code> in the designer.</li>
+<li>In the Properties grid, expand <code>JumpList</code>.</li>
+<li>Set:
+<ul>
+<li><code>AppId</code> – Same as you use in <code>SetCurrentProcessExplicitAppUserModelID</code>.</li>
+<li><code>ShowFrequentCategory</code> / <code>ShowRecentCategory</code> as needed.</li>
+</ul>
+</li>
+<li>Expand <code>UserTasks</code>:
+<ul>
+<li>Click the collection editor <code>...</code>.</li>
+<li>Add <code>JumpListItem</code> entries (set <code>Title</code>, <code>Path</code>, optional <code>Arguments</code>, <code>IconPath</code>, etc.).</li>
+</ul>
+</li>
+<li>Custom categories:
+<ul>
+<li>Use code or helpers to populate <code>Categories</code> at runtime (currently a dictionary, not designer-editable).</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-configuring-in-code">3. Configuring in Code</h3>
+<pre><code class="lang-csharp">// Inside a KryptonForm
+private void ConfigureJumpList()
+{
+    JumpList.AppId = &quot;MyCompany.MyApp&quot;;
+
+    // Show Windows-managed sections
+    JumpList.ShowRecentCategory = true;
+    JumpList.ShowFrequentCategory = false;
+
+    // User tasks
+    JumpList.UserTasks.Clear();
+    JumpList.UserTasks.Add(new JumpListItem
+    {
+        Title = &quot;New Document&quot;,
+        Path = Application.ExecutablePath,
+        Arguments = &quot;/new&quot;,
+        Description = &quot;Create a new document&quot;,
+        IconPath = Application.ExecutablePath,
+        IconIndex = 0
+    });
+
+    // Custom category: Recent Documents
+    var recents = new List&lt;JumpListItem&gt;
+    {
+        new()
+        {
+            Title = &quot;Document1.txt&quot;,
+            Path = @&quot;C:\Docs\Document1.txt&quot;,
+            Description = @&quot;C:\Docs\Document1.txt&quot;
+        },
+        new()
+        {
+            Title = &quot;Document2.txt&quot;,
+            Path = @&quot;C:\Docs\Document2.txt&quot;,
+            Description = @&quot;C:\Docs\Document2.txt&quot;
+        }
+    };
+
+    JumpList.Categories[&quot;Recent Documents&quot;] = recents;
+
+    // Apply changes
+    JumpList.Apply();
+}
+</code></pre>
+<h3 id="4-handling-item-clicks">4. Handling Item Clicks</h3>
+<p>When the user chooses a task or file from the jump list, Windows starts your application with the configured arguments or file path:</p>
+<pre><code class="lang-csharp">// Program.Main example
+static void Main()
+{
+    Krypton.Toolkit.PI.SetCurrentProcessExplicitAppUserModelID(&quot;MyCompany.MyApp&quot;);
+
+    Application.EnableVisualStyles();
+    Application.SetCompatibleTextRenderingDefault(false);
+
+    var args = Environment.GetCommandLineArgs();
+
+    if (args.Length &gt; 1)
+    {
+        var argument = args[1];
+        // Interpret your custom verbs or file paths
+        switch (argument)
+        {
+            case &quot;/new&quot;:
+                // create new document
+                break;
+            case &quot;/open&quot;:
+                // show open dialog
+                break;
+            default:
+                if (File.Exists(argument))
+                {
+                    // open the file
+                }
+                break;
+        }
+    }
+
+    Application.Run(new MyKryptonForm());
+}
+</code></pre>
+<h2 id="requirements--notes">Requirements &amp; Notes</h2>
+<ul>
+<li><strong>OS</strong>: Windows 7 or later.</li>
+<li><strong>.NET</strong>:
+<ul>
+<li>.NET Framework 4.7.2+ or</li>
+<li>.NET 8.0‑windows+ (for modern TFMs in this repo).</li>
+</ul>
+</li>
+<li>Jump lists are only created at runtime (never in the designer).</li>
+<li>If COM activation fails (<code>REGDB_E_CLASSNOTREG</code> or similar), Krypton silently skips jump list updates so the app still runs.</li>
+<li>The TestForm jump list demo also includes an optional WPF <code>System.Windows.Shell.JumpList</code> bridge for environments where native COM is unreliable; that bridge is <strong>demo-only</strong> and not required for normal applications.</li>
+</ul>
+<h2 id="benefits">Benefits</h2>
+<ul>
+<li><strong>Improved UX</strong>: Quick access to common tasks and documents directly from the taskbar.</li>
+<li><strong>Native integration</strong>: Uses the same mechanisms as WPF’s <a href="https://learn.microsoft.com/en-us/dotnet/api/system.windows.shell.jumplist?view=windowsdesktop-10.0"><code>System.Windows.Shell.JumpList</code></a>.</li>
+<li><strong>Flexible</strong>: Supports user tasks, custom categories, and shell‑managed Recent/Frequent sections.</li>
+<li><strong>Safe &amp; resilient</strong>: Handles unsupported or misconfigured environments gracefully without crashing the app.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

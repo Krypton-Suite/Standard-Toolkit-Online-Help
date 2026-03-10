@@ -12,7 +12,7 @@ The developers **respects** diversity. Any user who posts offensive or disrespec
 
 ## Reporting issues, bugs and making requests
 
-#### Bugs
+### Bugs
 
 - Please use the provided `Bug` template
 - Please be clear when describing issues.
@@ -20,7 +20,7 @@ The developers **respects** diversity. Any user who posts offensive or disrespec
 - Please make sure to check for duplicates as said in the `Bug` template.
 - Please make sure to precede titles with the `[Bug]:` string, so they can be easily identified.
 
-#### Feature Requests
+### Feature Requests
 
 - Please use the `Feature Request` template
 - Please detail how the feature should work. Please be as specific as possible.
@@ -36,13 +36,13 @@ The developers **respects** diversity. Any user who posts offensive or disrespec
 
 ## Coding Style
 
- These repositories use the C# 10 or newer specification. **If** a new class is added, please be sure to append a license header. The `Standard Toolkit` is governed by the BSD-3-Clause license, whereas the `Extended Toolkit` is governed by the MIT license.
+ These repositories use C# with `LangVersion` set to `preview` in the build configuration. For compatibility, ensure code builds for .NET Framework 4.7.2 (C# 7.3). New classes should follow existing patterns. **If** a new class is added, please be sure to append a license header. The `Standard Toolkit` is governed by the BSD-3-Clause license, whereas the `Extended Toolkit` is governed by the MIT license.
 
-#### Handling `using` statements
+### Handling `using` statements
 
  Please follow [this](HowtoManageUsingStatements.md) guide to learn more.
 
-#### Variables, Constructors, Methods, Properties etc
+### Variables, Constructors, Methods, Properties etc
 
  Each class has a standard layout of `regions`. These `regions` are as described:-
 
@@ -55,7 +55,7 @@ The developers **respects** diversity. Any user who posts offensive or disrespec
 
  **Note:** You can define your own regions within the prescribed region definitions.
 
-##### Fields
+#### Fields
 
  **Any** new fields _must_ be in the following format `_myNewField`, for example:
 
@@ -63,7 +63,7 @@ The developers **respects** diversity. Any user who posts offensive or disrespec
  private bool _myNewField;
  ```
 
-##### Methods and Arguments
+#### Methods and Arguments
 
  **Any** new methods and arguments _must_ be in the following format `MyNewMethod(bool myNewField)`, for example:
 
@@ -74,15 +74,15 @@ The developers **respects** diversity. Any user who posts offensive or disrespec
  }
  ```
 
-#### Usage of `this.`
+### Usage of `this.`
 
  The toolkit does not use the `this.` citation _except_ in the 'designer' files, to follow the C# 10 and newer specifications.
 
-#### Usage of ReSharper
+### Usage of ReSharper
 
  These toolkits use [ReSharper](https://www.jetbrains.com/resharper/) to do a multitude of tasks on the code-base such as refactoring. It is not essential to have it to work on the code, but it is a bonus to have it installed.
 
-#### Breaking Changes
+### Breaking Changes
 
  If you make a breaking change within the code, ensure that the maintainers are aware of these changes, and that they are recorded **both** in the `README` and `Changelog` of that particular repository. The changelog is located in `Documents\Changelog`. Please ensure that in the `Changelog`, you precede the change with the following:
 

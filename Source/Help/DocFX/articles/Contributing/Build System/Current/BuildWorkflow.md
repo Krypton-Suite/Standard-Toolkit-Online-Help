@@ -11,7 +11,7 @@ Comprehensive reference for the Build workflow located at `.github/workflows/bui
 | Hosted Images | `windows-latest` (build), `windows-latest` (release) |
 | Toolchains | .NET SDKs 9.0.x and 10.0.x, MSBuild x64, NuGet CLI 6.x |
 | Global.json | Generated on the fly to force the latest installed 10.0 SDK |
-| Build Scripts | `Scripts/nightly.proj` (build job), `Scripts/build.proj` (release job) |
+| Build Scripts | `Scripts/Build/nightly.proj` (build job), `Scripts/Build/build.proj` (release job) |
 | Secrets/Vars | `NUGET_API_KEY` (only needed when invoking release job manually) |
 
 ## Job Topology
@@ -48,7 +48,7 @@ Purpose: validate the solution for PRs and pushes, producing a Release build via
 5. **Setup NuGet CLI** to support restore operations not exposed via dotnet.
 6. **Cache NuGet packages** under `~/.nuget/packages`.
 7. **Restore** the full solution (`Krypton Toolkit Suite 2022 - VS2022.sln`).
-8. **Build** via `msbuild Scripts/nightly.proj /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU"`.
+8. **Build** via `msbuild Scripts/Build/nightly.proj /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU"`.
    - Script encapsulates multi-project orchestration and ensures parity with nightly builds.
 
 ### `release` Job (windows-latest, master pushes only)
@@ -57,8 +57,8 @@ Purpose: promote master builds to NuGet packages when commits land directly on `
 
 1. **Checkout + SDK setup + global.json + tooling**: mirrored from the `build` job to avoid cross-runner drift.
 2. **Restore** solution again (isolated workspace).
-3. **Build Release**: `msbuild Scripts/build.proj /t:Build /p:Configuration=Release`.
-4. **Pack Release**: `msbuild Scripts/build.proj /t:Pack ...` creates `.nupkg` artifacts under `Bin/Packages/Release`.
+3. **Build Release**: `msbuild Scripts/Build/build.proj /t:Build /p:Configuration=Release`.
+4. **Pack Release**: `msbuild Scripts/Build/build.proj /t:Pack ...` creates `.nupkg` artifacts under `Bin/Packages/Release`.
 5. **Get Version** (`pwsh`):
    - Runs `dotnet build` on `Krypton.Toolkit.csproj` quietly.
    - Parses the `Version=` log line; default fallback `100.25.1.1`.

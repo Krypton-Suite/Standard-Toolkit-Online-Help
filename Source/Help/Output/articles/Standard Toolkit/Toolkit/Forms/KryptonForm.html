@@ -69,97 +69,1154 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonform">KryptonForm</h1>
 
-<p>The <em>KryptonForm</em> derives from <em>Form</em> and is intended as the base class for all
-your application <em>Form</em> instances.  So instead of inheriting your window classes
-from <em>Form</em> you should always inherit from <em>KryptonForm</em>.  The purpose of the
-<em>KryptonForm</em> is to perform custom chrome painting so that the border and
-caption areas of the form are drawn according to the defined palette settings.
-This ensures that your whole application has a consistent look and feel that
-extends to the windows themselves as well as the regular <em>Krypton</em> controls.</p>
-<p><strong>Appearance</strong></p>
-<p>The <em>GroupBackStyle</em> and <em>GroupBorderStyle</em> properties are used to define the
-border areas of the custom chrome drawing. The default value for both of these
-properties is <em>FormMain.</em> The <em>HeaderStyle</em> property is used to define the
-appearance of the caption area of the custom chrome, it has a default value of
-<em>Form</em>.</p>
-<p><strong>Two States</strong></p>
-<p>Only two possible states of <em>Active</em> and <em>Inactive</em> are used by
-the <em>KryptonForm</em> control. In order to customize the appearance use the
-corresponding <em>StateActive</em> and <em>StateInactive</em> properties. So if you wanted the
-custom chrome to have a red border when active but a blue border when inactive
-you would alter these two states respectively to achieve that customization.</p>
-<p>To speed up the customization process an extra <em>StateCommon</em> property has been
-provided. The settings from this are used if no override has been defined for
-the state specific entry. Note that the specific state values always take
-precedence and so if you define the border color in <em>StateActive</em> and
-<em>StateCommon</em> then the <em>StateActive</em> value will be used whenever the control is
-in the <em>Active</em> state. Only if the <em>StateActive</em> value is not overridden will it
-look in <em>StateCommon</em>.</p>
-<p><strong>AllowFormChrome</strong></p>
-<p>The default value for this property is <em>True</em> and indicates that the form is
-allowed to have custom chrome painting if all other criteria are matched. Other
-criteria include the <em>KryptonManager.GlobalAllowFormChrome</em> being set to True as
-well as the palette being used for drawing having an <em>AllowFormChrome</em> setting
-of <em>True</em>. So you will only have custom chrome is the form, palette and global
-manager allowed it to be used.</p>
-<p>If you set this property to <em>False</em> then the form will not perform custom
-painting of borders and caption area no matter what the global manager and
-palette might request. When custom chrome is not applied then the window shows a
-standard appearance appropriate for the operating system.</p>
-<p><strong>AllowStatusStripMerge</strong></p>
-<p>In order to achieve a professional looking appearance it is possible to request
-that the status strip of the form be merged into the border area. This gives an
-integrated look can be observed with many of the <em>Office 2007</em> applications. To
-prevent status strip merging just set this property to <em>False</em>. When defined as
-<em>True</em>, the default, there are several criteria that must be met before status
-strip merging will occur.</p>
-<p>First of all the form can only merge an instance of the <em>StatusStrip</em> control
-into the border, the older <em>StatusBar</em> cannot be merged nor any custom control
-that you have created. Second the <em>StatusStrip</em> must be visible and have
-a <em>Dock</em> value of <em>DockStyle.Bottom</em>, thus showing the control is intended to be
-at the bottom of the form and sized to fill the entire width of the client area.
-Last of all the StatusStrip must be using a <em>RenderMode</em> setting of
-<em>ToolStripRenderMode.ManagerRenderMode</em>. Only if all these criteria are met will
-the control be considered for merging. Figure 1 shows an example of a status
-strip merged and not merged so you can see the visual difference.</p>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonForm</code> derives from <code>VisualForm</code> (which derives from <code>System.Windows.Forms.Form</code>) and is the intended base class for every application window in a Krypton-themed application. By inheriting from <code>KryptonForm</code> instead of the stock <code>Form</code>, all border and caption chrome is drawn using the active Krypton palette, ensuring a visually consistent look and feel across the entire application — including the window chrome itself.</p>
+<p><code>KryptonForm</code> also implements <code>IContentValues</code>, allowing the title bar to be treated as a styled Krypton content element, with support for icon, short-text (title) and long-text (<code>TextExtra</code>) rendering.</p>
+<hr>
+<h2 id="inheritance-hierarchy">Inheritance Hierarchy</h2>
+<pre><code>System.Object
+  └─ System.MarshalByRefObject
+       └─ System.ComponentModel.Component
+            └─ System.Windows.Forms.Control
+                 └─ System.Windows.Forms.ScrollableControl
+                      └─ System.Windows.Forms.ContainerControl
+                           └─ System.Windows.Forms.Form
+                                └─ Krypton.Toolkit.VisualForm
+                                     └─ Krypton.Toolkit.KryptonForm
+</code></pre>
+<hr>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="minimum-setup">Minimum Setup</h3>
+<p>Change the base class of any <code>Form</code> in your project to <code>KryptonForm</code>:</p>
+<pre><code class="lang-csharp">public partial class MainForm : KryptonForm
+{
+    public MainForm()
+    {
+        InitializeComponent();
+    }
+}
+</code></pre>
+<p>The form will now participate in Krypton palette theming automatically. No further configuration is required for the default appearance.</p>
+<h3 id="designer-support">Designer Support</h3>
+<p><code>KryptonForm</code> is fully supported in the Visual Studio WinForms designer. All palette state properties (<code>StateCommon</code>, <code>StateActive</code>, <code>StateInactive</code>) are serialisable sub-objects and appear in the Properties window. <code>ButtonSpecs</code> and <code>TitleBar</code> are also designer-serialisable.</p>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<h3 id="internal-panel">Internal Panel</h3>
+<p>Controls added to the form at design time are physically parented to an internal <code>KryptonPanel</code> (<code>InternalKryptonPanel</code>), not to the form itself. This panel fills the client area, takes part in Krypton palette theming and ensures that child controls inherit the correct background. The <code>Controls</code> property is overridden to transparently redirect to <code>InternalKryptonPanel.Controls</code> unless <code>IsMdiContainer</code> is <code>true</code> or <code>SetInheritedControlOverride</code> has been called.</p>
+<blockquote>
+<p><strong>Tip:</strong> Use <code>InternalPanel</code> (the public accessor) to interact with the underlying <code>KryptonPanel</code> directly if needed.</p>
+</blockquote>
+<h3 id="view-tree">View Tree</h3>
+<p>The non-client chrome is painted through a lightweight retained view-tree:</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ViewDrawForm</code> (<code>_drawDocker</code>)</td>
+<td>Root docker; draws the form border/background</td>
+</tr>
+<tr>
+<td><code>ViewDecoratorFixedSize</code> (<code>_headingFixedSize</code>)</td>
+<td>Enforces caption height</td>
+</tr>
+<tr>
+<td><code>ViewDrawDocker</code> (<code>_drawHeading</code>)</td>
+<td>Draws the caption header (back + border)</td>
+</tr>
+<tr>
+<td><code>ViewDrawContent</code> (<code>_drawContent</code>)</td>
+<td>Draws icon, title text and <code>TextExtra</code></td>
+</tr>
+<tr>
+<td><code>ViewLayoutNull</code> (<code>_layoutNull</code>)</td>
+<td>Fill placeholder for the client area</td>
+</tr>
+</tbody>
+</table>
+<h3 id="button-management">Button Management</h3>
+<p>Three separate managers handle caption buttons:</p>
+<ul>
+<li><strong><code>_buttonManager</code></strong> — manages the user-defined <code>ButtonSpecs</code> collection and the fixed Min/Max/Close buttons on <code>_drawHeading</code>.</li>
+<li><strong><code>_titleBarButtonManager</code></strong> — manages buttons from an attached <code>KryptonFormTitleBar</code> component, rendered in <code>_titleBarDocker</code>.</li>
+<li>System menu is surfaced through <code>KryptonSystemMenu</code> / <code>SystemMenuValues</code>.</li>
+</ul>
+<h3 id="palette-redirect">Palette Redirect</h3>
+<p><code>FormPaletteRedirect</code> (an internal <code>PaletteRedirect</code> subclass) intercepts horizontal alignment queries for header content. It transparently handles:</p>
+<ul>
+<li><code>FormTitleAlign</code> customisation.</li>
+<li>RTL + <code>RightToLeftLayout</code> title/icon mirroring: title is placed on the <code>Far</code> side, <code>TextExtra</code> on the <code>Near</code> side, and the icon is flipped to <code>Far</code>.</li>
+</ul>
+<hr>
+<h2 id="appearance-properties">Appearance Properties</h2>
+<h3 id="groupbackstyle">GroupBackStyle</h3>
+<pre><code class="lang-csharp">public PaletteBackStyle GroupBackStyle { get; set; }
+// Default: PaletteBackStyle.FormMain
+</code></pre>
+<p>Controls the background style of the custom chrome region (the form border area). Maps to <code>StateCommon.BackStyle</code>.</p>
+<h3 id="groupborderstyle">GroupBorderStyle</h3>
+<pre><code class="lang-csharp">public PaletteBorderStyle GroupBorderStyle { get; set; }
+// Default: PaletteBorderStyle.FormMain
+</code></pre>
+<p>Controls the border style of the custom chrome region. Maps to <code>StateCommon.BorderStyle</code>.</p>
+<h3 id="headerstyle">HeaderStyle</h3>
+<pre><code class="lang-csharp">public HeaderStyle HeaderStyle { get; set; }
+// Default: HeaderStyle.Form
+</code></pre>
+<p>Defines the palette style used to draw the caption/title bar header. Can be set to any <code>HeaderStyle</code> value (e.g. <code>Primary</code>, <code>Secondary</code>, <code>DockActive</code>, <code>Calendar</code>, <code>Custom1</code>–<code>Custom3</code>) to completely restyle the caption using a different palette entry.</p>
+<h3 id="formtitlealign">FormTitleAlign</h3>
+<pre><code class="lang-csharp">public PaletteRelativeAlign FormTitleAlign { get; set; }
+// Default: PaletteRelativeAlign.Near
+</code></pre>
+<p>Controls the horizontal alignment of the title text within the caption area. Accepts <code>Near</code> (left), <code>Center</code>, or <code>Far</code> (right). Ignored in RTL mode — see the <a href="#right-to-left-support">RTL section</a> below.</p>
+<blockquote>
+<p><strong>Note:</strong> When a Material renderer is active, this is automatically set to <code>Center</code> for a modern look. The user can override this after <code>Load</code>.</p>
+</blockquote>
+<h3 id="titlestyle">TitleStyle</h3>
+<pre><code class="lang-csharp">public KryptonFormTitleStyle TitleStyle { get; set; }
+// Default: KryptonFormTitleStyle.Inherit
+</code></pre>
+<p>A convenience wrapper over <code>FormTitleAlign</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Maps to <code>FormTitleAlign</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Inherit</code></td>
+<td><code>PaletteRelativeAlign.Inherit</code></td>
+</tr>
+<tr>
+<td><code>Classic</code></td>
+<td><code>PaletteRelativeAlign.Near</code></td>
+</tr>
+<tr>
+<td><code>Modern</code></td>
+<td><code>PaletteRelativeAlign.Center</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="textextra">TextExtra</h3>
+<pre><code class="lang-csharp">public string? TextExtra { get; set; }
+// Default: &quot;&quot;
+</code></pre>
+<p>An additional string displayed in the caption area alongside the title text. Rendered as the <em>long text</em> of the caption content element. Useful for showing sub-titles, document names, or other secondary information.</p>
+<p><strong>Example output:</strong> <code>MyApp – [Document1]</code> where <code>Text = &quot;MyApp&quot;</code> and <code>TextExtra = &quot;– [Document1]&quot;</code>.</p>
+<hr>
+<h2 id="two-state-palette">Two-State Palette</h2>
+<p><code>KryptonForm</code> uses two visual states:</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Active</strong></td>
+<td>Applied when the window has input focus</td>
+</tr>
+<tr>
+<td><strong>Inactive</strong></td>
+<td>Applied when the window is in the background</td>
+</tr>
+</tbody>
+</table>
+<h3 id="state-properties">State Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StateCommon</code></td>
+<td><code>PaletteFormRedirect</code></td>
+<td>Shared base values; overridden by state-specific entries</td>
+</tr>
+<tr>
+<td><code>StateActive</code></td>
+<td><code>PaletteForm</code></td>
+<td>Active (focused) window appearance</td>
+</tr>
+<tr>
+<td><code>StateInactive</code></td>
+<td><code>PaletteForm</code></td>
+<td>Inactive (background) window appearance</td>
+</tr>
+</tbody>
+</table>
+<p>Each <code>PaletteForm</code> exposes <code>.Back</code> (background), <code>.Border</code> (border) and <code>.Header</code> (caption header with <code>.Back</code>, <code>.Border</code>, <code>.Content</code>) for granular customisation.</p>
+<p><strong>Example — Red border when active, blue when inactive:</strong></p>
+<pre><code class="lang-csharp">myForm.StateActive.Border.Color1 = Color.Red;
+myForm.StateInactive.Border.Color1 = Color.Blue;
+</code></pre>
+<hr>
+<h2 id="custom-chrome">Custom Chrome</h2>
+<h3 id="usethemeformchromeborderwidth">UseThemeFormChromeBorderWidth</h3>
+<pre><code class="lang-csharp">public new bool UseThemeFormChromeBorderWidth { get; set; }
+// Default: true
+</code></pre>
+<p>Master switch for custom Krypton chrome on this form instance. Three conditions must all be <code>true</code> for chrome to be active:</p>
+<ol>
+<li><code>KryptonForm.UseThemeFormChromeBorderWidth</code> — this property.</li>
+<li><code>KryptonManager.UseThemeFormChromeBorderWidth</code> — global switch.</li>
+<li>The resolved palette's <code>UseThemeFormChromeBorderWidth</code> returns <code>InheritBool.True</code>.</li>
+</ol>
+<p>When custom chrome is not active, the form displays the standard OS-provided window chrome.</p>
+<blockquote>
+<p><strong>Formerly named <code>AllowFormChrome</code></strong> in older Krypton versions; the underlying backing field is still <code>_allowFormChrome</code>.</p>
+</blockquote>
+<h3 id="formborderstyle">FormBorderStyle</h3>
+<pre><code class="lang-csharp">public new FormBorderStyle FormBorderStyle { get; set; }
+// Default: FormBorderStyle.Sizable
+</code></pre>
+<p>Overrides the base <code>Form.FormBorderStyle</code> to synchronise the Krypton control buttons (Min/Max/Close) automatically when the style changes:</p>
+<table>
+<thead>
+<tr>
+<th>Style</th>
+<th>ControlBox</th>
+<th>Min</th>
+<th>Max</th>
+<th>Close</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>None</code></td>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+</tr>
+<tr>
+<td><code>FixedSingle</code>, <code>Fixed3D</code>, <code>FixedDialog</code>, <code>Sizable</code></td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr>
+<td><code>FixedToolWindow</code>, <code>SizableToolWindow</code></td>
+<td>✗</td>
+<td>✗</td>
+<td>✗</td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+<h3 id="inertform">InertForm</h3>
+<pre><code class="lang-csharp">public bool InertForm { get; set; }
+// Default: false
+</code></pre>
+<p>When <code>true</code>, all hit-testing in the custom chrome returns <code>HTCLIENT</code>, preventing the user from moving the window by dragging the caption or resizing via the borders. Useful for splash screens and locked layouts.</p>
+<h3 id="customcaptionarea">CustomCaptionArea</h3>
+<pre><code class="lang-csharp">public Rectangle CustomCaptionArea { get; set; }
+// Default: Rectangle.Empty
+</code></pre>
+<p>Specifies a rectangle in form client coordinates that should be treated as caption area for hit-testing purposes. Primarily used internally by <code>KryptonRibbon</code> to mark the tab/QAT row as a draggable caption region. Can be used by custom integrations that inject content into the caption area.</p>
+<hr>
+<h2 id="window-control-buttons">Window Control Buttons</h2>
+<h3 id="built-in-buttons">Built-in Buttons</h3>
+<p>The Minimize, Maximize/Restore, and Close buttons are implemented as <code>ButtonSpec</code> instances and are fully palette-aware. They are accessed via:</p>
+<pre><code class="lang-csharp">public ButtonSpecFormWindowMin  ButtonSpecMin   { get; }
+public ButtonSpecFormWindowMax  ButtonSpecMax   { get; }
+public ButtonSpecFormWindowClose ButtonSpecClose { get; }
+</code></pre>
+<p>These are not shown in the designer but can be programmatically referenced for hit-test queries:</p>
+<pre><code class="lang-csharp">bool overClose = myForm.HitTestCloseButton(windowPoint);
+bool overMax   = myForm.HitTestMaxButton(windowPoint);
+bool overMin   = myForm.HitTestMinButton(windowPoint);
+</code></pre>
+<h3 id="minimizebox--maximizebox--closebox--controlbox">MinimizeBox / MaximizeBox / CloseBox / ControlBox</h3>
+<pre><code class="lang-csharp">public new bool MinimizeBox { get; set; } // Default: true
+public new bool MaximizeBox { get; set; } // Default: true
+public new bool CloseBox    { get; set; } // Default: true
+public new bool ControlBox  { get; set; } // Default: true
+</code></pre>
+<p>All override the base <code>Form</code> properties to additionally trigger a button-manager repaint (<code>_buttonManager.PerformNeedPaint(true)</code>) so the chrome updates immediately.</p>
+<hr>
+<h2 id="buttonspecs--custom-caption-buttons">ButtonSpecs — Custom Caption Buttons</h2>
+<pre><code class="lang-csharp">public FormButtonSpecCollection ButtonSpecs { get; }
+</code></pre>
+<p>A collection of <code>ButtonSpecAny</code> instances that appear in the caption area alongside the system buttons. Each <code>ButtonSpec</code> controls:</p>
+<ul>
+<li><code>Image</code> / <code>Text</code> — visual content.</li>
+<li><code>Edge</code> — <code>Near</code> (left) or <code>Far</code> (right) placement relative to existing buttons.</li>
+<li><code>Visible</code> / <code>Enabled</code> — runtime visibility/interactivity.</li>
+<li><code>ToolTipTitle</code> / <code>ToolTipBody</code> / <code>ToolTipStyle</code> — tooltip content and style.</li>
+<li><code>KryptonCommand</code> — bind to a <code>KryptonCommand</code> for automatic enable/disable and state management.</li>
+<li><code>Click</code> event — raised when the button is clicked.</li>
+</ul>
+<p><strong>Example — Adding a settings button to the right of the caption:</strong></p>
+<pre><code class="lang-csharp">var settingsBtn = new ButtonSpecAny
+{
+    Type    = PaletteButtonSpecStyle.Generic,
+    Image   = Properties.Resources.SettingsIcon,
+    Edge    = PaletteRelativeEdgeAlign.Far,
+    ToolTipTitle = &quot;Settings&quot;
+};
+settingsBtn.Click += (s, e) =&gt; ShowSettingsDialog();
+myForm.ButtonSpecs.Add(settingsBtn);
+</code></pre>
+<h3 id="allowbuttonspectooltips">AllowButtonSpecToolTips</h3>
+<pre><code class="lang-csharp">public bool AllowButtonSpecToolTips { get; set; }
+// Default: false
+</code></pre>
+<p>When <code>true</code>, hovering over a <code>ButtonSpec</code> in the caption area shows a Krypton-themed tooltip. Use <code>ButtonSpec.ToolTipTitle</code> / <code>ButtonSpec.ToolTipBody</code> to define content.</p>
+<hr>
+<h2 id="kryptonformtitlebar--embedded-title-bar-toolbar">KryptonFormTitleBar — Embedded Title Bar Toolbar</h2>
+<p><code>KryptonFormTitleBar</code> is a non-visual component that hosts a secondary set of <code>ButtonSpecAny</code> buttons inside the caption area, to the left of the title text (after the form icon). It mirrors the approach used by <code>KryptonRibbon</code> to embed the Quick Access Toolbar in the caption.</p>
+<h3 id="attaching">Attaching</h3>
+<ol>
+<li>Drop a <code>KryptonFormTitleBar</code> component onto the form.</li>
+<li>Set <code>KryptonForm.TitleBar = myTitleBar</code> (or use the designer property drop-down).</li>
+<li>Add <code>ButtonSpecAny</code> items to <code>myTitleBar.ButtonSpecs</code>.</li>
+</ol>
+<pre><code class="lang-csharp">public KryptonFormTitleBar? TitleBar { get; set; }
+// Default: null
+</code></pre>
+<p>Setting <code>TitleBar</code> to <code>null</code> cleanly detaches and disposes the embedded docker and button manager.</p>
+<h3 id="kryptonformtitlebar-members">KryptonFormTitleBar Members</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ButtonSpecs</code></td>
+<td><code>FormTitleBarButtonSpecCollection</code></td>
+<td>Collection of buttons shown in the title bar</td>
+</tr>
+<tr>
+<td><code>ShowDropArrow</code></td>
+<td><code>bool</code></td>
+<td>When <code>true</code>, all buttons with a <code>KryptonContextMenu</code> show a drop arrow</td>
+</tr>
+<tr>
+<td><code>Values</code></td>
+<td><code>FormTitleBarValues</code></td>
+<td>Stores <code>ButtonVisibility</code> and <code>ButtonAlignment</code> sub-objects</td>
+</tr>
+<tr>
+<td><code>OwnerForm</code></td>
+<td><code>KryptonForm?</code></td>
+<td>Back-reference to the owning form; <code>null</code> when detached</td>
+</tr>
+<tr>
+<td><code>InsertStandardItems()</code></td>
+<td>method</td>
+<td>Populates <code>ButtonSpecs</code> with a standard File/Edit/Tools/Help menu set plus common toolbar actions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="insertstandarditems">InsertStandardItems</h3>
+<p>Calling <code>InsertStandardItems()</code> (or using the designer verb) adds a standard set of buttons to the title bar:</p>
+<p><strong>Menu buttons:</strong> File, Edit, Tools, Help (each with a dropdown <code>KryptonContextMenu</code>).</p>
+<p><strong>Toolbar buttons:</strong> New, Open, Save, Save As, Save All, Cut, Copy, Paste, Undo, Redo, Page Setup, Print Preview, Print, Quick Print.</p>
+<p>All labels are taken from <code>KryptonManager.Strings</code> and are therefore localisation-aware. Wire <code>ButtonSpecAny.Click</code> or context menu item <code>Click</code> events to implement the actions.</p>
+<h3 id="formtitlebarvalues">FormTitleBarValues</h3>
+<p><code>KryptonFormTitleBar.Values</code> exposes two nested objects:</p>
+<h4 id="buttonvisibility">ButtonVisibility</h4>
+<p>Controls whether each standard toolbar button is visible:</p>
+<pre><code class="lang-csharp">titleBar.Values.ButtonVisibility.ShowNewButton        = true;
+titleBar.Values.ButtonVisibility.ShowSaveButton       = true;
+titleBar.Values.ButtonVisibility.ShowPrintButton      = false;
+// ... ShowOpenButton, ShowSaveAsButton, ShowSaveAllButton,
+//     ShowCutButton, ShowCopyButton, ShowPasteButton,
+//     ShowUndoButton, ShowRedoButton, ShowPageSetupButton,
+//     ShowPrintPreviewButton, ShowQuickPrintButton
+</code></pre>
+<h4 id="buttonalignment-formtitlebarbuttonalignment">ButtonAlignment (FormTitleBarButtonAlignment)</h4>
+<p>Controls the caption edge (<code>Near</code> or <code>Far</code>) for each standard toolbar button:</p>
+<pre><code class="lang-csharp">titleBar.Values.ButtonAlignment.NewButtonAlignment  = PaletteRelativeEdgeAlign.Near;
+titleBar.Values.ButtonAlignment.SaveButtonAlignment = PaletteRelativeEdgeAlign.Far;
+// ... OpenButtonAlignment, SaveAsButtonAlignment, SaveAllButtonAlignment,
+//     CutButtonAlignment, CopyButtonAlignment, PasteButtonAlignment,
+//     UndoButtonAlignment, RedoButtonAlignment, PageSetupButtonAlignment,
+//     PrintPreviewButtonAlignment, PrintButtonAlignment, QuickPrintButtonAlignment
+</code></pre>
+<hr>
+<h2 id="status-strip-merging">Status Strip Merging</h2>
+<h3 id="allowstatusstripmerge">AllowStatusStripMerge</h3>
+<pre><code class="lang-csharp">public bool AllowStatusStripMerge { get; set; }
+// Default: true
+</code></pre>
+<p>When <code>true</code>, the form attempts to merge a <code>StatusStrip</code> control into the lower border area, producing an integrated, Office-style look.</p>
+<p><strong>Merge conditions — all must be met:</strong></p>
+<ol>
+<li><code>AllowStatusStripMerge</code> is <code>true</code>.</li>
+<li>A <code>StatusStrip</code> is present and <code>Visible</code>.</li>
+<li><code>StatusStrip.Dock == DockStyle.Bottom</code>.</li>
+<li><code>StatusStrip.Bottom == ClientRectangle.Bottom</code> (strip fills the full width at the bottom).</li>
+<li><code>StatusStrip.RenderMode == ToolStripRenderMode.ManagerRenderMode</code>.</li>
+<li><code>ToolStripManager.Renderer</code> is one of the Office/Krypton-compatible renderers (<code>KryptonOffice2007Renderer</code>, <code>KryptonVisualStudio2010With2007Renderer</code>, or <code>KryptonSparkleRenderer</code>).</li>
+</ol>
 <p><img src="Images/StatusStripMergingTrue.png" alt=""> <img src="Images/StatusStripMergingFalse.png" alt=""></p>
-<p><em>Figure 1 - StatusStripMerging = True &amp; False</em></p>
-<p></p>
-<p><strong>AllowButtonSpecTooltips</strong><br>
-By default the control will not show any tool tips when you hover the mouse over
-the user defined button specifications. If you set this boolean property to
-<em>True</em> then it will turn on tool tips for those button specs. Use the
-<em>ButtonSpec.TooltipText</em> property in order to define the string you would like
-to appear inside the displayed tool tip.</p>
-<p><strong>ButtonSpecs</strong><br>
-You can add buttons to the caption area by modifying the <em>ButtonSpecs</em>
-collection exposed by the <em>KryptonForm</em>. Each <em>ButtonSpec</em> entry in the
-collection describes a single button for display on the header. You can use the
-<em>ButtonSpec</em> to control all aspects of the displayed button including
-visibility, edge, image, text and more. At design time use the collection editor
-for the <em>ButtonSpecs</em> property in order to modify the collection and modify
-individual <em>ButtonSpec</em> instances. See the <a href="buttonspec.md">ButtonSpec</a> section for
-more details. Figure 2 shows an example of a <em>KryptonForm</em> with an extra button.</p>
-<p><img src="Images/KryptonFormButtonSpec.png" alt=""></p>
-<p><em>Figure 2 – KryptonForm with extra ButtonSpec</em></p>
-<p></p>
-<p></p>
-<p><strong>Caption Values</strong><br>
-You can specify three values that are then displayed inside the caption
-area. Two of these are existing properties of the form, <em>Text</em> and <em>Icon</em>. The
-third property is a new one called <em>ExtraText</em> and allows an additional string
-to be specified and displayed. Figure 3 shows the result of defining a value for
-this <em>ExtraText</em> property.</p>
-<p><img src="Images/KryptonFormExtraText.png" alt=""></p>
-<p><em>Figure 3 – ExtraText = &quot;String&quot;</em></p>
-<p><strong>Blur Values</strong>
-You can specify four values to blur the form when inactive. To enable this functionality,
-you will need to set both <em>BlurWhenFocusLost</em> &amp; <em>EnableBlur</em> properties to <em>true</em> under
-<em>BlurValues</em>. The <em>Opacity</em> property allows you to set how much 'blur' is applied to the
-source form, and the <em>Radius</em> property allows you to set the gausian pixel radius used
-to blur each pixel.</p>
-<p><img src="https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/blob/master/Source/Help/DocFX/articles/Toolkit/KryptonFormBlur.gif?raw=true" alt=""></p>
-<p><em>Figure 4 – Example of blur in action</em></p>
+<p><em>Figure 1 — StatusStripMerging = True &amp; False</em></p>
+<p>The <code>StatusStripMerging</code> property (internal, read-only) reflects the computed merge state.</p>
+<hr>
+<h2 id="blur-effect">Blur Effect</h2>
+<p><code>KryptonForm</code> integrates with the <code>BlurValues</code> sub-system (owned by <code>VisualForm</code>) to apply a Gaussian blur to the form when it loses focus.</p>
+<h3 id="blurvalues-members">BlurValues Members</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BlurWhenFocusLost</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Enable blur when the form loses focus</td>
+</tr>
+<tr>
+<td><code>Opacity</code></td>
+<td><code>byte</code></td>
+<td><code>80</code></td>
+<td>Blur opacity percentage (0–100)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> The blur effect is implemented at the <code>VisualForm</code> level and requires platform support. Both <code>BlurWhenFocusLost</code> <strong>and</strong> <code>EnableBlur</code> (on <code>VisualForm</code>) must be <code>true</code> to activate the effect.</p>
+</blockquote>
+<p><img src="https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/blob/master/Source/Help/DocFX/articles/Toolkit/KryptonFormBlur.gif?raw=true" alt="Blur Animation"></p>
+<p><em>Figure 2 — Blur effect in action</em></p>
+<hr>
+<h2 id="system-menu">System Menu</h2>
+<p><code>KryptonForm</code> provides a styled Krypton system menu that replaces the default OS context menu shown when right-clicking the title bar or clicking the form icon.</p>
+<h3 id="systemmenuvalues">SystemMenuValues</h3>
+<pre><code class="lang-csharp">public SystemMenuValues SystemMenuValues { get; }
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Enabled</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Enables or disables the themed system menu</td>
+</tr>
+<tr>
+<td><code>MenuItems</code></td>
+<td><code>KryptonContextMenuCollection</code></td>
+<td>—</td>
+<td>Direct access to the menu item collection for customisation</td>
+</tr>
+</tbody>
+</table>
+<p>When <code>Enabled</code> is <code>false</code>, clicking the form icon posts a <code>WM_CONTEXTMENU</code> to the standard system handler instead.</p>
+<p><strong>Example — Adding a custom item to the system menu:</strong></p>
+<pre><code class="lang-csharp">var customItem = new KryptonContextMenuItem(&quot;About…&quot;);
+customItem.Click += (s, e) =&gt; ShowAboutDialog();
+myForm.SystemMenuValues.MenuItems.Add(customItem);
+</code></pre>
+<hr>
+<h2 id="drop-shadow">Drop Shadow</h2>
+<pre><code class="lang-csharp">[Obsolete(&quot;Deprecated - Only use if you are using Windows 7, 8 or 8.1.&quot;)]
+public bool UseDropShadow { get; set; }
+// Default: false
+</code></pre>
+<p>Adds a <code>CS_DROPSHADOW</code> class style to the window. This is deprecated and only relevant on Windows 7/8/8.1. Windows 10 and later provide a native drop shadow for all top-level windows automatically.</p>
+<hr>
+<h2 id="administrator-mode">Administrator Mode</h2>
+<p><code>KryptonForm</code> can detect whether the current process is running with elevated (administrator) privileges.</p>
+<pre><code class="lang-csharp">public bool IsInAdministratorMode { get; }                           // instance
+public static bool GetIsInAdministratorMode()                        // static, cached
+public static bool GetHasCurrentInstanceGotAdministrativeRights()    // static, live check
+public static void SetIsInAdministratorMode(bool value)              // static, manual override
+</code></pre>
+<p>When <code>KryptonManager.UseAdministratorSuffix</code> is <code>true</code> and the process is elevated, the title bar automatically appends <code>(Administrator)</code> (from <code>KryptonManager.Strings.GeneralStrings.Administrator</code>) to the form title returned by <code>GetShortText()</code>.</p>
+<hr>
+<h2 id="caption-content-icontentvalues">Caption Content (IContentValues)</h2>
+<p><code>KryptonForm</code> implements <code>IContentValues</code> to supply content to the caption's <code>ViewDrawContent</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Returns</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GetShortText()</code></td>
+<td><code>string</code></td>
+<td><code>Text</code> + optional administrator suffix</td>
+</tr>
+<tr>
+<td><code>GetLongText()</code></td>
+<td><code>string</code></td>
+<td><code>TextExtra</code> value</td>
+</tr>
+<tr>
+<td><code>GetImage(PaletteState)</code></td>
+<td><code>Image?</code></td>
+<td>DPI-scaled form icon bitmap (cached)</td>
+</tr>
+<tr>
+<td><code>GetImageTransparentColor(PaletteState)</code></td>
+<td><code>Color</code></td>
+<td>Always <code>EMPTY_COLOR</code> (no transparency)</td>
+</tr>
+</tbody>
+</table>
+<p>The icon is rendered at <code>16×16</code> logical pixels, scaled by the current DPI factor. When <code>AllowIconDisplay</code> is <code>false</code>, or <code>FormBorderStyle</code> is a style that does not show icons, <code>GetImage</code> returns <code>null</code>.</p>
+<hr>
+<h2 id="right-to-left-support">Right-to-Left Support</h2>
+<p><code>KryptonForm</code> fully supports RTL layouts:</p>
+<pre><code class="lang-csharp">public override RightToLeft RightToLeft { get; set; }
+// Default: RightToLeft.No
+</code></pre>
+<p>When <code>RightToLeft = RightToLeft.Yes</code> and <code>RightToLeftLayout = true</code>:</p>
+<ul>
+<li>The title text is placed on the <code>Far</code> (right) edge.</li>
+<li><code>TextExtra</code> is placed on the <code>Near</code> (left) edge.</li>
+<li>The form icon is placed on the <code>Far</code> (right) edge.</li>
+<li>The Min/Max/Close buttons migrate to the left.</li>
+<li>The sizing grip is placed in the bottom-left corner.</li>
+<li>The system menu corner hit-test (top-left corner) triggers a close instead of the system menu.</li>
+<li><code>FormPaletteRedirect</code> intercepts the palette alignment queries to implement all of the above transparently.</li>
+</ul>
+<p>Button managers are recreated whenever <code>RightToLeft</code> or <code>RightToLeftLayout</code> changes.</p>
+<hr>
+<h2 id="sizing-grip">Sizing Grip</h2>
+<p>The sizing grip is rendered as a client-area overlay (painted in <code>WM_PAINT</code>), independent of the OS-provided non-client grip.</p>
+<p><strong>Visibility logic (<code>ShouldShowSizingGrip</code>):</strong></p>
+<ul>
+<li><code>SizeGripStyle != SizeGripStyle.Hide</code>.</li>
+<li><code>FormBorderStyle</code> is <code>Sizable</code> or <code>SizableToolWindow</code>.</li>
+<li><code>WindowState</code> is <code>Normal</code>.</li>
+<li>No merged <code>StatusStrip</code> with its own <code>SizingGrip</code>.</li>
+<li><code>SizeGripStyle</code> is <code>Auto</code> or <code>Show</code>.</li>
+</ul>
+<p><strong>Rendering priority:</strong></p>
+<ol>
+<li>Themed bitmap image from <code>palette.GetSizeGripImage(rtl)</code> (DPI-scaled, magenta colour-key transparency).</li>
+<li>Fallback: diagonal dot pattern using palette-derived, contrast-checked colour.</li>
+</ol>
+<p>The grip colour is resolved from the palette's border colour, falling back to the text colour, and finally to black or white based on background luminance.</p>
+<hr>
+<h2 id="mdi-support">MDI Support</h2>
+<p><code>KryptonForm</code> overrides <code>IsMdiContainer</code> to route child controls correctly when MDI mode is activated:</p>
+<pre><code class="lang-csharp">public new bool IsMdiContainer { get; set; }
+</code></pre>
+<p>When <code>IsMdiContainer = true</code> is set, controls are moved from <code>_internalKryptonPanel</code> to the base <code>Controls</code> collection. <code>SetInheritedControlOverride()</code> can be called explicitly to trigger the same transfer when inheriting from <code>KryptonForm</code> in a MDI scenario.</p>
+<hr>
+<h2 id="background-image">Background Image</h2>
+<pre><code class="lang-csharp">public override Image? BackgroundImage { get; set; }
+</code></pre>
+<p>Redirected to <code>_internalKryptonPanel.StateCommon.Image</code>, so the background image is rendered by the internal panel's palette system rather than the base <code>Form</code> background paint.</p>
+<pre><code class="lang-csharp">public PaletteImageStyle ImageStyle { get; set; }
+// Default: PaletteImageStyle.Inherit
+</code></pre>
+<p>Controls how <code>BackgroundImage</code> is tiled/stretched/positioned within the client area.</p>
+<hr>
+<h2 id="hiddensuppressed-base-members">Hidden/Suppressed Base Members</h2>
+<p>The following <code>Form</code> properties are hidden in the designer (<code>Browsable(false)</code> / <code>EditorBrowsable(Never)</code>) because they conflict with Krypton's palette-driven approach:</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Reason suppressed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Font</code></td>
+<td>Krypton controls inherit font from the palette</td>
+</tr>
+<tr>
+<td><code>ForeColor</code></td>
+<td>Managed by palette</td>
+</tr>
+<tr>
+<td><code>BackColor</code></td>
+<td>Managed by palette; the internal panel handles client background</td>
+</tr>
+<tr>
+<td><code>BackgroundImageLayout</code></td>
+<td>Use <code>ImageStyle</code> instead</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="overridable-protected-members">Overridable Protected Members</h2>
+<p>The following protected members are intended for subclass customisation:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WindowChromeStart()</code></td>
+<td>Called when custom chrome painting begins (creates buttons)</td>
+</tr>
+<tr>
+<td><code>WindowChromeEnd()</code></td>
+<td>Called when custom chrome painting ends (removes border region)</td>
+</tr>
+<tr>
+<td><code>WindowChromeHitTest(Point)</code></td>
+<td>Override to customise hit-testing in the non-client area</td>
+</tr>
+<tr>
+<td><code>WindowChromePaint(Graphics, Rectangle)</code></td>
+<td>Override to customise chrome painting</td>
+</tr>
+<tr>
+<td><code>WindowChromeLeftMouseDown(Point)</code></td>
+<td>Override to handle left mouse down in chrome area</td>
+</tr>
+<tr>
+<td><code>OnWM_NCLBUTTONDOWN(ref Message)</code></td>
+<td>Override to intercept non-client left button down (icon single-click)</td>
+</tr>
+<tr>
+<td><code>OnWM_NCLBUTTONDBLCLK(ref Message)</code></td>
+<td>Override to intercept non-client double-click (double-clicking icon closes the form)</td>
+</tr>
+<tr>
+<td><code>OnWM_NCCALCSIZE(ref Message)</code></td>
+<td>Override to adjust the non-client size calculation</td>
+</tr>
+<tr>
+<td><code>OnWindowActiveChanged()</code></td>
+<td>Called when the window gains or loses focus; switches between <code>StateActive</code>/<code>StateInactive</code></td>
+</tr>
+<tr>
+<td><code>OnNonClientPaint(IntPtr)</code></td>
+<td>Called to paint the non-client area</td>
+</tr>
+<tr>
+<td><code>CreateRedirector()</code></td>
+<td>Returns the <code>FormPaletteRedirect</code>; override to inject a custom redirector</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="wndproc-customisations">WndProc Customisations</h2>
+<p><code>KryptonForm.WndProc</code> handles the following Windows messages in addition to the base class:</p>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>WM_HELP</code> (0x0053)</td>
+<td>Walks up the control tree to find a <code>HelpProvider</code> and calls <code>Help.ShowHelp</code></td>
+</tr>
+<tr>
+<td><code>WM_CONTEXTMENU</code> (0x007B)</td>
+<td>Shows <code>ContextMenuStrip</code> at the click position if one is assigned</td>
+</tr>
+<tr>
+<td><code>WM_PAINT</code> (0x000F)</td>
+<td>After base paint, draws the sizing grip overlay if <code>ShouldShowSizingGrip()</code> is <code>true</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="global-event-subscriptions">Global Event Subscriptions</h2>
+<p><code>KryptonForm</code> subscribes to three <code>KryptonManager</code> global events for the lifetime of the instance:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Handler</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GlobalPaletteChanged</code></td>
+<td><code>OnGlobalPaletteChanged</code></td>
+<td>Re-evaluates chrome decision; applies Material defaults; recalculates non-client</td>
+</tr>
+<tr>
+<td><code>GlobalUseThemeFormChromeBorderWidthChanged</code></td>
+<td><code>OnGlobalUseThemeFormChromeBorderWidthChanged</code></td>
+<td>Re-evaluates chrome decision</td>
+</tr>
+<tr>
+<td><code>GlobalTouchscreenSupportChanged</code></td>
+<td><code>OnGlobalTouchscreenSupportChanged</code></td>
+<td>Recreates all caption buttons to resize for touch targets</td>
+</tr>
+</tbody>
+</table>
+<p>These event handlers are unsubscribed in <code>Dispose(bool)</code>.</p>
+<hr>
+<h2 id="net-10-compatibility">.NET 10 Compatibility</h2>
+<p>On .NET 10 and later, <code>KryptonForm</code> sets:</p>
+<pre><code class="lang-csharp">FormCornerPreference = FormCornerPreference.DoNotRound;
+</code></pre>
+<p>This prevents the platform's <code>FormCornerPreference</code> feature from rounding form corners, which would cause flicker during resize when combined with Krypton's custom chrome rendering.</p>
+<hr>
+<h2 id="borderless-form-fade-in">Borderless Form Fade-in</h2>
+<p>When <code>FormBorderStyle == FormBorderStyle.None</code> and the form is shown for the first time, <code>KryptonForm</code> temporarily sets <code>Opacity = 0</code>, lets the form become visible, then restores the target opacity via <code>BeginInvoke</code>. This produces a smooth fade-in on Windows 11, which otherwise applies a built-in fade animation starting from full transparency.</p>
+<hr>
+<h2 id="view-injection-api">View Injection API</h2>
+<p>These methods allow Krypton components (such as <code>KryptonRibbon</code>) to embed custom view elements into the caption area:</p>
+<pre><code class="lang-csharp">[EditorBrowsable(EditorBrowsableState.Never)]
+public void InjectViewElement(ViewBase element, ViewDockStyle style)
+
+[EditorBrowsable(EditorBrowsableState.Never)]
+public void RevokeViewElement(ViewBase element, ViewDockStyle style)
+</code></pre>
+<p>When <code>style == ViewDockStyle.Fill</code>, the incoming element must be a <code>ViewLayoutDocker</code>; the existing <code>_drawContent</code> is re-parented inside it, so the title text and icon remain visible. For any other style, the element is simply docked to the specified edge.</p>
+<hr>
+<h2 id="static-utility-methods">Static Utility Methods</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GetIsInAdministratorMode()</code></td>
+<td>Returns cached administrator-mode flag; performs a live check on first call</td>
+</tr>
+<tr>
+<td><code>GetHasCurrentInstanceGotAdministrativeRights()</code></td>
+<td>Performs a live <code>WindowsPrincipal</code> check and caches the result</td>
+</tr>
+<tr>
+<td><code>SetIsInAdministratorMode(bool)</code></td>
+<td>Manually overrides the cached administrator flag (for testing / impersonation)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="full-public-api-reference">Full Public API Reference</h2>
+<h3 id="properties">Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Category</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AllowButtonSpecToolTips</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Visuals</td>
+<td>Show tooltips on caption <code>ButtonSpec</code> items</td>
+</tr>
+<tr>
+<td><code>AllowIconDisplay</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>—</td>
+<td>Internal; controls whether the form icon is rendered</td>
+</tr>
+<tr>
+<td><code>AllowStatusStripMerge</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Visuals</td>
+<td>Merge bottom <code>StatusStrip</code> into the chrome border</td>
+</tr>
+<tr>
+<td><code>ActiveControl</code></td>
+<td><code>Control?</code></td>
+<td><code>null</code></td>
+<td>—</td>
+<td>Sets focus to the specified control on assignment</td>
+</tr>
+<tr>
+<td><code>BackgroundImage</code></td>
+<td><code>Image?</code></td>
+<td><code>null</code></td>
+<td>Visuals</td>
+<td>Background image (stored in internal panel)</td>
+</tr>
+<tr>
+<td><code>BackgroundImageLayout</code></td>
+<td><code>ImageLayout</code></td>
+<td>—</td>
+<td>—</td>
+<td>Inherited; use <code>ImageStyle</code> for palette-aware control</td>
+</tr>
+<tr>
+<td><code>ButtonSpecClose</code></td>
+<td><code>ButtonSpecFormWindowClose</code></td>
+<td>—</td>
+<td>—</td>
+<td>Access to the Close button spec</td>
+</tr>
+<tr>
+<td><code>ButtonSpecMax</code></td>
+<td><code>ButtonSpecFormWindowMax</code></td>
+<td>—</td>
+<td>—</td>
+<td>Access to the Maximize/Restore button spec</td>
+</tr>
+<tr>
+<td><code>ButtonSpecMin</code></td>
+<td><code>ButtonSpecFormWindowMin</code></td>
+<td>—</td>
+<td>—</td>
+<td>Access to the Minimize button spec</td>
+</tr>
+<tr>
+<td><code>ButtonSpecs</code></td>
+<td><code>FormButtonSpecCollection</code></td>
+<td>—</td>
+<td>Visuals</td>
+<td>User-defined caption buttons</td>
+</tr>
+<tr>
+<td><code>CloseBox</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Window Style</td>
+<td>Show/hide the Close button</td>
+</tr>
+<tr>
+<td><code>ControlBox</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Window Style</td>
+<td>Show/hide the entire control box</td>
+</tr>
+<tr>
+<td><code>Controls</code></td>
+<td><code>Control.ControlCollection</code></td>
+<td>—</td>
+<td>—</td>
+<td>Redirected to internal panel (or base in MDI mode)</td>
+</tr>
+<tr>
+<td><code>CustomCaptionArea</code></td>
+<td><code>Rectangle</code></td>
+<td><code>Rectangle.Empty</code></td>
+<td>—</td>
+<td>Rectangle (client coords) treated as caption for dragging</td>
+</tr>
+<tr>
+<td><code>FormBorderStyle</code></td>
+<td><code>FormBorderStyle</code></td>
+<td><code>Sizable</code></td>
+<td>Appearance</td>
+<td>Border style; auto-syncs Min/Max/Close buttons</td>
+</tr>
+<tr>
+<td><code>FormTitleAlign</code></td>
+<td><code>PaletteRelativeAlign</code></td>
+<td><code>Near</code></td>
+<td>Visuals</td>
+<td>Horizontal alignment of title text</td>
+</tr>
+<tr>
+<td><code>GroupBackStyle</code></td>
+<td><code>PaletteBackStyle</code></td>
+<td><code>FormMain</code></td>
+<td>Visuals</td>
+<td>Background style for chrome region</td>
+</tr>
+<tr>
+<td><code>GroupBorderStyle</code></td>
+<td><code>PaletteBorderStyle</code></td>
+<td><code>FormMain</code></td>
+<td>Visuals</td>
+<td>Border style for chrome region</td>
+</tr>
+<tr>
+<td><code>HeaderStyle</code></td>
+<td><code>HeaderStyle</code></td>
+<td><code>Form</code></td>
+<td>Visuals</td>
+<td>Palette header style for the caption bar</td>
+</tr>
+<tr>
+<td><code>ImageStyle</code></td>
+<td><code>PaletteImageStyle</code></td>
+<td><code>Inherit</code></td>
+<td>Visuals</td>
+<td>Layout style for <code>BackgroundImage</code></td>
+</tr>
+<tr>
+<td><code>InertForm</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>—</td>
+<td>Disable window move and resize via chrome hit-test</td>
+</tr>
+<tr>
+<td><code>InternalPanel</code></td>
+<td><code>KryptonPanel</code></td>
+<td>—</td>
+<td>—</td>
+<td>Direct access to the internal <code>KryptonPanel</code></td>
+</tr>
+<tr>
+<td><code>IsInAdministratorMode</code></td>
+<td><code>bool</code></td>
+<td>—</td>
+<td>Appearance</td>
+<td>Whether the current process is elevated</td>
+</tr>
+<tr>
+<td><code>IsMdiContainer</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Window Style</td>
+<td>MDI container mode</td>
+</tr>
+<tr>
+<td><code>MaximizeBox</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Window Style</td>
+<td>Show/hide the Maximize button</td>
+</tr>
+<tr>
+<td><code>MinimizeBox</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Window Style</td>
+<td>Show/hide the Minimize button</td>
+</tr>
+<tr>
+<td><code>RightToLeft</code></td>
+<td><code>RightToLeft</code></td>
+<td><code>No</code></td>
+<td>—</td>
+<td>RTL mode; triggers button recreation</td>
+</tr>
+<tr>
+<td><code>StateActive</code></td>
+<td><code>PaletteForm</code></td>
+<td>—</td>
+<td>Visuals</td>
+<td>Active window appearance overrides</td>
+</tr>
+<tr>
+<td><code>StateCommon</code></td>
+<td><code>PaletteFormRedirect</code></td>
+<td>—</td>
+<td>Visuals</td>
+<td>Shared appearance base; other states override this</td>
+</tr>
+<tr>
+<td><code>StateInactive</code></td>
+<td><code>PaletteForm</code></td>
+<td>—</td>
+<td>Visuals</td>
+<td>Inactive window appearance overrides</td>
+</tr>
+<tr>
+<td><code>SystemMenuValues</code></td>
+<td><code>SystemMenuValues</code></td>
+<td>—</td>
+<td>—</td>
+<td>Themed system menu configuration</td>
+</tr>
+<tr>
+<td><code>TextExtra</code></td>
+<td><code>string?</code></td>
+<td><code>&quot;&quot;</code></td>
+<td>Appearance</td>
+<td>Secondary caption text (long text)</td>
+</tr>
+<tr>
+<td><code>TitleBar</code></td>
+<td><code>KryptonFormTitleBar?</code></td>
+<td><code>null</code></td>
+<td>Visuals</td>
+<td>Embedded title bar toolbar component</td>
+</tr>
+<tr>
+<td><code>TitleStyle</code></td>
+<td><code>KryptonFormTitleStyle</code></td>
+<td><code>Inherit</code></td>
+<td>Appearance</td>
+<td>Convenience wrapper for <code>FormTitleAlign</code></td>
+</tr>
+<tr>
+<td><code>ToolTipManager</code></td>
+<td><code>ToolTipManager</code></td>
+<td>—</td>
+<td>—</td>
+<td>Tooltip infrastructure for caption buttons</td>
+</tr>
+<tr>
+<td><code>UseDropShadow</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Visuals</td>
+<td>Legacy drop shadow (Windows 7/8 only; deprecated)</td>
+</tr>
+<tr>
+<td><code>UseThemeFormChromeBorderWidth</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Visuals</td>
+<td>Enable/disable custom Krypton chrome for this form</td>
+</tr>
+</tbody>
+</table>
+<h3 id="methods">Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GetWindowState()</code></td>
+<td>Returns the current <code>FormWindowState</code> directly from the Win32 window style (more accurate than <code>WindowState</code>)</td>
+</tr>
+<tr>
+<td><code>HitTestMinButton(Point)</code></td>
+<td>Returns <code>true</code> if the window-coordinate point is inside the Minimize button</td>
+</tr>
+<tr>
+<td><code>HitTestMaxButton(Point)</code></td>
+<td>Returns <code>true</code> if the window-coordinate point is inside the Maximize button</td>
+</tr>
+<tr>
+<td><code>HitTestCloseButton(Point)</code></td>
+<td>Returns <code>true</code> if the window-coordinate point is inside the Close button</td>
+</tr>
+<tr>
+<td><code>RecreateMinMaxCloseButtons()</code></td>
+<td>Schedules recreation of the Min/Max/Close button views on next layout</td>
+</tr>
+<tr>
+<td><code>SetInheritedControlOverride()</code></td>
+<td>Bypasses the internal panel; use when inheriting <code>KryptonForm</code> in MDI-aware scenarios</td>
+</tr>
+<tr>
+<td><code>UpdateDropShadowDraw(bool)</code></td>
+<td>Forces a drop shadow repaint (deprecated, for legacy use)</td>
+</tr>
+<tr>
+<td><code>InjectViewElement(ViewBase, ViewDockStyle)</code></td>
+<td>Injects a view element into the caption view tree</td>
+</tr>
+<tr>
+<td><code>RevokeViewElement(ViewBase, ViewDockStyle)</code></td>
+<td>Removes a previously injected view element from the caption view tree</td>
+</tr>
+<tr>
+<td><code>GetIsInAdministratorMode()</code></td>
+<td>Static; returns cached elevation state</td>
+</tr>
+<tr>
+<td><code>GetHasCurrentInstanceGotAdministrativeRights()</code></td>
+<td>Static; performs a live elevation check</td>
+</tr>
+<tr>
+<td><code>SetIsInAdministratorMode(bool)</code></td>
+<td>Static; manually sets the cached elevation state</td>
+</tr>
+<tr>
+<td><code>SuspendLayout()</code> / <code>ResumeLayout(bool)</code></td>
+<td>Overridden to coordinate the internal panel's <code>ISupportInitialize</code> lifecycle</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="common-usage-patterns">Common Usage Patterns</h2>
+<h3 id="palette-themed-dialog">Palette-Themed Dialog</h3>
+<pre><code class="lang-csharp">public partial class SettingsDialog : KryptonForm
+{
+    public SettingsDialog()
+    {
+        InitializeComponent();
+        TextExtra = &quot;– Settings&quot;;
+        FormTitleAlign = PaletteRelativeAlign.Center;
+        StateActive.Border.Color1 = Color.SteelBlue;
+    }
+}
+</code></pre>
+<h3 id="borderless--splash-screen">Borderless / Splash Screen</h3>
+<pre><code class="lang-csharp">public partial class SplashForm : KryptonForm
+{
+    public SplashForm()
+    {
+        InitializeComponent();
+        FormBorderStyle = FormBorderStyle.None; // Auto-disables all control buttons
+        InertForm = true;                        // Prevent accidental dragging
+        Opacity = 0.95;
+    }
+}
+</code></pre>
+<h3 id="title-bar-toolbar">Title Bar Toolbar</h3>
+<pre><code class="lang-csharp">// In the designer: set myForm.TitleBar = kryptonFormTitleBar1
+// Then at runtime or in designer:
+kryptonFormTitleBar1.InsertStandardItems();
+kryptonFormTitleBar1.Values.ButtonVisibility.ShowPrintButton = false;
+kryptonFormTitleBar1.Values.ButtonVisibility.ShowPageSetupButton = false;
+</code></pre>
+<h3 id="administrator-suffix">Administrator Suffix</h3>
+<pre><code class="lang-csharp">KryptonManager.UseAdministratorSuffix = true;
+// Title bar will now show:  &quot;My App (Administrator)&quot;  when elevated
+</code></pre>
+<h3 id="centered-title-material-theme">Centered Title (Material Theme)</h3>
+<pre><code class="lang-csharp">// Material themes auto-center the title; to opt out after load:
+protected override void OnLoad(EventArgs e)
+{
+    base.OnLoad(e);
+    FormTitleAlign = PaletteRelativeAlign.Near; // override Material default
+}
+</code></pre>
+<hr>
+<h2 id="known-limitations-and-notes">Known Limitations and Notes</h2>
+<ul>
+<li><strong><code>Font</code> and <code>ForeColor</code> are no-ops:</strong> Setting <code>Font</code> or <code>ForeColor</code> on a <code>KryptonForm</code> has no effect; fonts and colours are governed by the palette. Use the palette's <code>StateCommon.Header.Content</code> to set caption font.</li>
+<li><strong><code>BackColor</code> is no-op:</strong> The client area background is painted by the internal <code>KryptonPanel</code>. To change the form background colour, modify <code>StateCommon</code> of the panel via <code>InternalPanel.StateCommon</code>.</li>
+<li><strong><code>UseDropShadow</code> is deprecated:</strong> On Windows 10 and later, native drop shadows are always active. Only use this flag for Windows 7/8 targets.</li>
+<li><strong>MDI + Ribbon:</strong> When a <code>KryptonRibbon</code> is present in an MDI container form, the ribbon manages its own injection into the caption area and calls <code>InjectViewElement</code> / <code>RevokeViewElement</code> internally. Do not manually manipulate these in that scenario.</li>
+<li><strong><code>WindowState</code> vs <code>GetWindowState()</code>:</strong> The standard <code>WindowState</code> property can be slightly stale because it is updated on the next message pump cycle. <code>GetWindowState()</code> reads the Win32 window style directly and is always current. Use it in custom hit-test and paint overrides.</li>
+<li><strong><code>NET10_0_OR_GREATER</code> corner rounding:</strong> The <code>FormCornerPreference.DoNotRound</code> override only applies when targeting .NET 10+. On earlier runtimes this code is not compiled in.</li>
+</ul>
 
 </article>
           </div>
@@ -180,7 +1237,7 @@ to blur each pixel.</p>
             <span class="pull-right">
               <a href="#top">Back to top</a>
             </span>
-      <span>Krypton Component Suite 2024
+      <span>Krypton Component Suite
 BSD 3-Clause License
 © Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
