@@ -1,35 +1,41 @@
 # KryptonCommandLinkButton
 
+**Assembly and namespace (V110+):** `KryptonCommandLinkButton` is in the `Krypton.Utilities` assembly and namespace. Add `using Krypton.Utilities;` (or fully qualify the type) when upgrading from earlier releases that exposed it under `Krypton.Toolkit`.
+
 ## Overview
 
 `KryptonCommandLinkButton` is a specialized button control that displays in the Windows command link style, featuring a primary heading, descriptive text, and an optional UAC shield icon. It's designed for presenting users with clear, descriptive action choices in dialogs and wizards.
 
-**Namespace:** `Krypton.Toolkit`  
-**Assembly:** Krypton.Toolkit  
+**Namespace (V110+):** `Krypton.Utilities`  
+**Assembly (V110+):** `Krypton.Utilities`  
 **Inheritance:** `Object` → `MarshalByRefObject` → `Component` → `Control` → `VisualSimpleBase` → `KryptonCommandLinkButton`  
 **Implements:** `IButtonControl`
 
 ## Key Features
 
 ### Command Link Style
+
 - Large heading text (primary action)
 - Secondary descriptive text
 - Optional UAC shield icon
 - Arrow indicator (implied by style)
 
 ### Full Button Functionality
+
 - Click event support
 - DialogResult integration
 - Default button capability
 - Mnemonic support
 
 ### Krypton Integration
+
 - Full palette support
 - State-based styling (Normal, Disabled, Tracking, Pressed)
 - Focus and default state overrides
 - Command binding support
 
 ### Visual States
+
 - Normal, Tracking (hover), Pressed, Disabled
 - Default button highlighting
 - Focus rectangle display
@@ -47,6 +53,7 @@ public KryptonCommandLinkButton()
 ```
 
 **Default Settings:**
+
 - `ButtonStyle` = `ButtonStyle.Command`
 - `AutoSize` = `false`
 - `DialogResult` = `DialogResult.None`
@@ -61,6 +68,7 @@ public KryptonCommandLinkButton()
 ### Content Properties
 
 #### CommandLinkTextValues
+
 Gets access to the button's heading and description text.
 
 ```csharp
@@ -71,6 +79,7 @@ public CommandLinkTextValues CommandLinkTextValues { get; }
 ```
 
 **Available Properties:**
+
 - `Heading` - Primary large text
 - `Description` - Secondary descriptive text
 - `HeadingFont` - Font for heading
@@ -81,6 +90,7 @@ public CommandLinkTextValues CommandLinkTextValues { get; }
 - `DescriptionTextVAlignment` - Vertical alignment for description
 
 **Example:**
+
 ```csharp
 kryptonCommandLinkButton1.CommandLinkTextValues.Heading = "Create a new document";
 kryptonCommandLinkButton1.CommandLinkTextValues.Description = "Start with a blank document or choose from a template";
@@ -89,6 +99,7 @@ kryptonCommandLinkButton1.CommandLinkTextValues.Description = "Start with a blan
 ---
 
 #### UACShieldIcon
+
 Gets access to the UAC shield icon settings.
 
 ```csharp
@@ -99,11 +110,13 @@ public CommandLinkImageValues UACShieldIcon { get; }
 ```
 
 **Remarks:**
+
 - Displays the Windows UAC shield icon
 - Useful for operations requiring elevation
 - Automatically scales with DPI
 
 **Example:**
+
 ```csharp
 // Show UAC shield icon
 kryptonCommandLinkButton1.UACShieldIcon.Image = SystemIcons.Shield.ToBitmap();
@@ -112,6 +125,7 @@ kryptonCommandLinkButton1.UACShieldIcon.Image = SystemIcons.Shield.ToBitmap();
 ---
 
 #### Text
+
 Gets or sets the heading text (maps to `CommandLinkTextValues.Heading`).
 
 ```csharp
@@ -122,6 +136,7 @@ public new string Text { get; set; }
 ```
 
 **Remarks:**
+
 - Hidden in designer (use `CommandLinkTextValues.Heading` instead)
 - Provided for compatibility
 
@@ -130,6 +145,7 @@ public new string Text { get; set; }
 ### Appearance Properties
 
 #### ButtonStyle
+
 Gets or sets the button style.
 
 ```csharp
@@ -141,12 +157,14 @@ public ButtonStyle ButtonStyle { get; set; }
 **Default:** `ButtonStyle.Command`
 
 **Remarks:**
+
 - Locked to Command style for proper appearance
 - Rarely needs to be changed
 
 ---
 
 #### Orientation
+
 Gets or sets the visual orientation of the control.
 
 ```csharp
@@ -157,6 +175,7 @@ public virtual VisualOrientation Orientation { get; set; }
 ```
 
 **Available Values:**
+
 - `Top` - Normal horizontal layout (default)
 - `Bottom` - Flipped horizontal
 - `Left` - Vertical left-to-right
@@ -165,6 +184,7 @@ public virtual VisualOrientation Orientation { get; set; }
 ---
 
 #### AutoSize
+
 Gets or sets whether the control automatically resizes to fit content.
 
 ```csharp
@@ -176,6 +196,7 @@ public override bool AutoSize { get; set; }
 **Default:** `false`
 
 **Remarks:**
+
 - Command links typically have fixed dimensions
 - Set to `true` for dynamic sizing
 
@@ -184,6 +205,7 @@ public override bool AutoSize { get; set; }
 ### State Properties
 
 #### StateCommon
+
 Gets access to common appearance settings that other states can override.
 
 ```csharp
@@ -194,6 +216,7 @@ public PaletteTripleRedirect StateCommon { get; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonCommandLinkButton1.StateCommon.Back.Color1 = Color.AliceBlue;
 kryptonCommandLinkButton1.StateCommon.Border.Rounding = 5;
@@ -202,6 +225,7 @@ kryptonCommandLinkButton1.StateCommon.Border.Rounding = 5;
 ---
 
 #### StateNormal
+
 Gets access to normal state appearance.
 
 ```csharp
@@ -214,6 +238,7 @@ public PaletteTriple StateNormal { get; }
 ---
 
 #### StateTracking
+
 Gets access to hot tracking (hover) appearance.
 
 ```csharp
@@ -226,6 +251,7 @@ public PaletteTriple StateTracking { get; }
 ---
 
 #### StatePressed
+
 Gets access to pressed appearance.
 
 ```csharp
@@ -238,6 +264,7 @@ public PaletteTriple StatePressed { get; }
 ---
 
 #### StateDisabled
+
 Gets access to disabled appearance.
 
 ```csharp
@@ -250,6 +277,7 @@ public PaletteTriple StateDisabled { get; }
 ---
 
 #### OverrideDefault
+
 Gets access to appearance when the button is the default button.
 
 ```csharp
@@ -260,12 +288,14 @@ public PaletteTripleRedirect OverrideDefault { get; }
 ```
 
 **Remarks:**
+
 - Applied when button is the form's `AcceptButton`
 - Typically shows highlighted border
 
 ---
 
 #### OverrideFocus
+
 Gets access to appearance when the button has focus.
 
 ```csharp
@@ -280,6 +310,7 @@ public PaletteTripleRedirect OverrideFocus { get; }
 ### Behavior Properties
 
 #### DialogResult
+
 Gets or sets the dialog result value returned when clicked.
 
 ```csharp
@@ -290,6 +321,7 @@ public DialogResult DialogResult { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonCommandLinkButton1.DialogResult = DialogResult.OK;
 ```
@@ -297,6 +329,7 @@ kryptonCommandLinkButton1.DialogResult = DialogResult.OK;
 ---
 
 #### KryptonCommand
+
 Gets or sets the associated command.
 
 ```csharp
@@ -307,10 +340,12 @@ public virtual IKryptonCommand? KryptonCommand { get; set; }
 ```
 
 **Remarks:**
+
 - Automatically synchronizes `Enabled` state with command
 - Executes command on click
 
 **Example:**
+
 ```csharp
 var command = new KryptonCommand
 {
@@ -325,6 +360,7 @@ kryptonCommandLinkButton1.KryptonCommand = command;
 ---
 
 #### UseMnemonic
+
 Gets or sets whether ampersand characters create mnemonics.
 
 ```csharp
@@ -335,6 +371,7 @@ public bool UseMnemonic { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonCommandLinkButton1.CommandLinkTextValues.Heading = "&Open File";
 kryptonCommandLinkButton1.UseMnemonic = true;
@@ -346,6 +383,7 @@ kryptonCommandLinkButton1.UseMnemonic = true;
 ## Methods
 
 ### PerformClick()
+
 Generates a Click event for the control.
 
 ```csharp
@@ -353,6 +391,7 @@ public void PerformClick()
 ```
 
 **Example:**
+
 ```csharp
 kryptonCommandLinkButton1.PerformClick(); // Programmatically click
 ```
@@ -360,6 +399,7 @@ kryptonCommandLinkButton1.PerformClick(); // Programmatically click
 ---
 
 ### NotifyDefault(bool)
+
 Notifies the button it is the default button.
 
 ```csharp
@@ -367,15 +407,18 @@ public void NotifyDefault(bool value)
 ```
 
 **Parameters:**
+
 - `value` - True if this is the default button
 
 **Remarks:**
+
 - Called automatically by the form
 - Applies `OverrideDefault` styling
 
 ---
 
 ### SetFixedState(PaletteState)
+
 Fixes the control to a particular palette state.
 
 ```csharp
@@ -383,13 +426,16 @@ public virtual void SetFixedState(PaletteState state)
 ```
 
 **Parameters:**
+
 - `state` - Palette state to fix
 
 **Remarks:**
+
 - Useful for preview/design scenarios
 - Prevents state changes
 
 **Example:**
+
 ```csharp
 kryptonCommandLinkButton1.SetFixedState(PaletteState.Pressed); // Always show pressed
 ```
@@ -397,6 +443,7 @@ kryptonCommandLinkButton1.SetFixedState(PaletteState.Pressed); // Always show pr
 ---
 
 ### ResetText()
+
 Resets the text property to its default value.
 
 ```csharp
@@ -408,6 +455,7 @@ public override void ResetText()
 ## Events
 
 ### Click
+
 Occurs when the button is clicked.
 
 ```csharp
@@ -416,6 +464,7 @@ public event EventHandler Click
 ```
 
 **Example:**
+
 ```csharp
 kryptonCommandLinkButton1.Click += (s, e) =>
 {
@@ -426,6 +475,7 @@ kryptonCommandLinkButton1.Click += (s, e) =>
 ---
 
 ### KryptonCommandChanged
+
 Occurs when the KryptonCommand property changes.
 
 ```csharp
@@ -803,6 +853,7 @@ Per Windows UX guidelines, use command links when:
 4. **Task-based actions** - "Create new" vs "Open existing"
 
 **Don't use command links for:**
+
 - Simple Yes/No/Cancel dialogs (use standard buttons)
 - More than 7 options (use list or other control)
 - When space is limited
@@ -812,12 +863,14 @@ Per Windows UX guidelines, use command links when:
 ### Text Guidelines
 
 **Heading:**
+
 - 1-5 words
 - Action verb or noun phrase
 - Use sentence case
 - Include mnemonic if needed
 
 **Description:**
+
 - 1-2 sentences
 - Explain what happens or when to choose this
 - Complete sentences with punctuation
@@ -826,13 +879,15 @@ Per Windows UX guidelines, use command links when:
 **Examples:**
 
 ✅ **Good:**
-```
+
+```text
 Heading: "Create a new database"
 Description: "Start with an empty database and add your own data."
 ```
 
 ❌ **Bad:**
-```
+
+```text
 Heading: "Create Database"  // Too terse
 Description: "Creates a new database."  // Just restates heading
 ```
@@ -842,11 +897,13 @@ Description: "Creates a new database."  // Just restates heading
 ### Layout Guidelines
 
 **Spacing:**
+
 - 10-20px between buttons
 - 20-40px margins from container edges
 - Group related options closer
 
 **Sizing:**
+
 - Minimum height: 50px
 - Recommended height: 60-70px
 - Width: Accommodate longest description + margins
@@ -1001,6 +1058,7 @@ public class TroubleshootDialog : KryptonForm
 ### vs KryptonButton
 
 **KryptonCommandLinkButton:**
+
 - ✅ Two-line text (heading + description)
 - ✅ Large, clear choice presentation
 - ✅ Built-in UAC shield support
@@ -1008,6 +1066,7 @@ public class TroubleshootDialog : KryptonForm
 - ❌ Limited to specific use cases
 
 **KryptonButton:**
+
 - ✅ Compact size
 - ✅ Flexible usage
 - ✅ Standard button appearance
@@ -1019,6 +1078,7 @@ public class TroubleshootDialog : KryptonForm
 ### When to Use
 
 **Use KryptonCommandLinkButton for:**
+
 - Wizard navigation
 - Setup/installation choices
 - Task selection dialogs
@@ -1026,6 +1086,7 @@ public class TroubleshootDialog : KryptonForm
 - Administrative actions
 
 **Use standard KryptonButton for:**
+
 - OK/Cancel/Apply buttons
 - Toolbars and ribbons
 - Small action buttons
@@ -1035,13 +1096,6 @@ public class TroubleshootDialog : KryptonForm
 
 ## See Also
 
-- [KryptonButton](KryptonButton.md) - Standard button control
-- [ButtonStyle Enumeration](../Enumerations/ButtonStyle.md) - Available button styles
-- [CommandLinkTextValues](../Values/CommandLinkTextValues.md) - Text values class
-- [IKryptonCommand](../Interfaces/IKryptonCommand.md) - Command interface
-
----
-
-*Last Updated: October 2025*  
-*Krypton Toolkit Version: 100+*
-
+- [KryptonButton](KryptonButton.md) — standard button control
+- [CommandLinkTextValues](CommandLinkTextValues.md) — text values class
+- [IKryptonCommand](IKryptonCommand.md) — command interface

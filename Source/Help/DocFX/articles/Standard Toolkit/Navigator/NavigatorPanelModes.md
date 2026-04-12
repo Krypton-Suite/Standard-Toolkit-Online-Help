@@ -1,6 +1,7 @@
 # Navigator Panel Modes  
   
 Applicable Modes:  
+
 * Bar - Tab - Group
 * Bar - Tab - Only
 * Bar - RibbonTab - Group
@@ -10,15 +11,13 @@ Applicable Modes:
 * HeaderBar - CheckButton - Only
 * Panel
 
- 
-
 **Panel Mode Properties**  
 The set of properties associated with Panel modes can be seen in Figure 1 as
 they appear in the properties window.  
 
-![](Images/NavPanelProperties.png)  
+![Figure 1 - Panel Mode Properties](Images/NavPanelProperties.png)  
   
-*Figure 1 - Panel Mode Properties*  
+## Figure 1 - Panel Mode Properties
   
 The only property you can alter is called *PanelBackStyle* and alters the
 background style of the panel area within the navigator appearance. A default
@@ -35,6 +34,6 @@ background of the bar area to the requested style. Figure 2 shows the *Bar -
 CheckButton - Group - Outside* mode and the light blue area behind the check
 buttons and bar buttons is the area affected by the *PanelBackStyle* property.
 
-![](Images/NavPanelFigure1.png)
+![Figure 2 - Mode = Bar - CheckButton - Group - Outside](Images/NavPanelFigure1.png)
   
-*Figure 2 - Mode = Bar - CheckButton - Group - Outside*
+## Figure 2 - Mode = Bar - CheckButton - Group - Outside

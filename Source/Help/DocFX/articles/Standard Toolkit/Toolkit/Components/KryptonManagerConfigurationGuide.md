@@ -1,6 +1,7 @@
 # KryptonManager Configuration Guide
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Getting Started](#getting-started)
 3. [Core Properties](#core-properties)
@@ -111,6 +112,7 @@ public PaletteMode GlobalPaletteMode
 ```
 
 **Available Themes:**
+
 ```csharp
 // Office Themes
 PaletteMode.Office2007Blue
@@ -147,6 +149,7 @@ PaletteMode.Custom
 ```
 
 **Usage Examples:**
+
 ```csharp
 // Set Microsoft 365 Blue theme
 KryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365Blue;
@@ -192,6 +195,7 @@ public KryptonCustomPaletteBase? GlobalCustomPalette
 ```
 
 **Usage:**
+
 ```csharp
 // Create and apply custom palette
 var customPalette = new KryptonCustomPaletteBase();
@@ -334,6 +338,7 @@ public bool GlobalApplyToolstrips
 ```
 
 **Usage:**
+
 ```csharp
 // Apply Krypton styling to ToolStrips
 KryptonManager.GlobalApplyToolstrips = true;
@@ -435,6 +440,7 @@ public ToolkitStringValues ToolkitStrings => _toolkitStrings;
 ```
 
 **Usage:**
+
 ```csharp
 // Access general strings
 var okText = KryptonManager.ToolkitStrings.GeneralStrings.OK;
@@ -510,6 +516,7 @@ public Font? BaseFont
 ```
 
 **Usage:**
+
 ```csharp
 // Set custom base font
 KryptonManager.BaseFont = new Font("Segoe UI", 10f, FontStyle.Regular);
@@ -533,6 +540,7 @@ public ToolkitColorValues ToolkitColors => _toolkitColors;
 ```
 
 **Usage:**
+
 ```csharp
 // Customize colors
 KryptonManager.ToolkitColors.PrimaryColors.PrimaryColor1 = Color.Red;

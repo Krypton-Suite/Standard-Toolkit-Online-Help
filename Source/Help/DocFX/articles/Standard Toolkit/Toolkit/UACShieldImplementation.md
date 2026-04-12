@@ -12,26 +12,31 @@ This document details the comprehensive implementation of UAC shield icon extrac
 
 A new method that extracts icons from `imageres.dll` using both `ImageresIconID` and `IconSize` parameters.
 
-#### Method Signature
+#### `ExtractIconFromImageres` signature
+
 ```csharp
 public static Icon? ExtractIconFromImageres(int iconId, IconSize iconSize = IconSize.Medium, IconSelectionStrategy selectionStrategy = IconSelectionStrategy.OSBased)
 ```
 
 #### Parameters
+
 - `iconId` (int): The icon ID from the comprehensive ImageresIconID enum (cast to int for public accessibility)
 - `iconSize` (IconSize): The size of the icon to extract (defaults to Medium - 32x32)
 - `selectionStrategy` (IconSelectionStrategy): The strategy for selecting fallback icons (defaults to OS-based selection)
 
 #### Returns
+
 - `Icon?`: The extracted icon, or null if extraction fails
 
-#### Features
+#### `ExtractIconFromImageres` features
+
 - **Smart Size Detection**: Automatically determines whether to use large or small icon extraction based on requested size
 - **Default Parameter**: Uses `MediumSmall` (32x32) as the default size for convenience
 - **Error Handling**: Gracefully handles extraction failures and returns null
 - **Resource Management**: Properly manages Windows resources during extraction
 
 #### Usage Examples
+
 ```csharp
 // Extract a shield icon at default size (32x32)
 var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
@@ -56,8 +61,9 @@ var themeAwareIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.Imageres
 The existing enum was leveraged and enhanced with comprehensive size mapping.
 
 #### Available Sizes
+
 | Enum Value | Pixel Size | Description |
-|------------|------------|-------------|
+| ---------- | ---------- | ----------- |
 | `Tiny` | 8x8 | Very small icon for compact interfaces |
 | `ExtraSmall` | 16x16 | Small icon for toolbars and menus |
 | `Small` | 20x20 | Standard small icon |
@@ -76,8 +82,9 @@ The existing enum was leveraged and enhanced with comprehensive size mapping.
 A new enum that controls how fallback icons are selected when `imageres.dll` is not available.
 
 #### Available Strategies
+
 | Enum Value | Description |
-|------------|-------------|
+| ---------- | ----------- |
 | `OSBased` | **Default** - Select icons based on the current operating system |
 | `ThemeBased` | Select icons based on the current Krypton theme |
 
@@ -88,6 +95,7 @@ A new enum that controls how fallback icons are selected when `imageres.dll` is 
 Extensive XML documentation was added to the `ImageresIconID` enum, providing detailed descriptions for over 200+ system icons.
 
 #### Documentation Features
+
 - **Enhanced Enum Summary**: Comprehensive description with usage examples
 - **Category Organization**: Icons organized into logical groups using `#region` directives
 - **Individual Icon Documentation**: Each icon has detailed XML documentation explaining its purpose
@@ -96,30 +104,35 @@ Extensive XML documentation was added to the `ImageresIconID` enum, providing de
 #### Icon Categories
 
 ##### System Icons (Security, Users, Files, Folders)
+
 - **Security**: `Shield`, `ShieldAlt`, `Lock`, `Unlock`, `Key`
 - **Users**: `User`, `Users`, `UserGroup`
 - **File System**: `Computer`, `Network`, `Folder`, `File`, `FileText`, `FileImage`, etc.
 - **Microsoft Office**: `FileWord`, `FileExcel`, `FilePowerpoint`, `FileAccess`, `FileOutlook`, etc.
 
 ##### Application Icons (Software, Tools, Productivity)
+
 - **Generic Apps**: `Application`, `ApplicationAlt`, `ApplicationGeneric`
 - **System Functions**: `ApplicationSettings`, `ApplicationHelp`, `ApplicationInfo`, `ApplicationWarning`
 - **Productivity**: `ApplicationCalendar`, `ApplicationContacts`, `ApplicationTasks`, `ApplicationNotes`
 - **Utilities**: `ApplicationCalculator`, `ApplicationClock`, `ApplicationTimer`, `ApplicationStopwatch`
 
 ##### Media Icons (Audio, Video, Photography, Storage)
+
 - **Playback Controls**: `MediaPlay`, `MediaPause`, `MediaStop`, `MediaNext`, `MediaPrevious`
 - **Audio Controls**: `MediaVolume`, `MediaVolumeMute`, `MediaMicrophone`, `MediaHeadphones`
 - **Media Types**: `MediaCamera`, `MediaVideo`, `MediaPhoto`, `MediaPicture`
 - **Storage**: `MediaUsb`, `MediaSd`, `MediaHdd`, `MediaSsd`, `MediaCloud`
 
 ##### Communication Icons (Email, Messaging, Calls, Status)
+
 - **Email**: `CommunicationEmail`, `CommunicationInbox`, `CommunicationSent`, `CommunicationDraft`
 - **Messaging**: `CommunicationSms`, `CommunicationChat`, `CommunicationMessage`
 - **Calls**: `CommunicationCall`, `CommunicationAnswer`, `CommunicationEndCall`
 - **Status**: `CommunicationOnline`, `CommunicationOffline`, `CommunicationBusy`, `CommunicationAvailable`
 
 #### Additional Categories (Referenced)
+
 - **System Status Icons** (201-255): Status indicators, system states, performance levels
 - **Action Icons** (256-400): Common actions like add, remove, edit, copy, paste
 - **Navigation Icons** (401-492): Navigation controls, directions, mathematical symbols
@@ -132,12 +145,14 @@ Extensive XML documentation was added to the `ImageresIconID` enum, providing de
 
 A private helper method that maps `IconSize` enum values to actual pixel sizes.
 
-#### Method Signature
+#### `GetSizeFromIconSize` signature
+
 ```csharp
 private static Size GetSizeFromIconSize(IconSize iconSize)
 ```
 
-#### Features
+#### `GetSizeFromIconSize` features
+
 - **Switch Expression**: Uses modern C# switch expression for clean, efficient mapping
 - **Default Handling**: Provides sensible default (32x32) for unknown values
 - **Comprehensive Mapping**: Maps all enum values to their corresponding pixel sizes
@@ -145,7 +160,9 @@ private static Size GetSizeFromIconSize(IconSize iconSize)
 ## Implementation Details
 
 ### Architecture
+
 The implementation follows the existing Krypton Toolkit patterns:
+
 - **Public Wrapper**: Uses a public method that accepts `int` parameters for accessibility
 - **Internal Implementation**: Contains the actual logic in an internal method that accepts the internal enum
 - **Static Methods**: Uses static methods in utility classes for easy access
@@ -154,6 +171,7 @@ The implementation follows the existing Krypton Toolkit patterns:
 - **Documentation**: Comprehensive XML documentation for IntelliSense support
 
 ### Dependencies
+
 - **GraphicsExtensions.ExtractIcon**: Leverages existing icon extraction infrastructure
 - **Libraries.Imageres**: Uses the predefined imageres.dll path constant
 - **PI.ImageresIconID**: Comprehensive enum of available icon IDs (internal)
@@ -161,6 +179,7 @@ The implementation follows the existing Krypton Toolkit patterns:
 - **IconSelectionStrategy**: Strategy selection enum
 
 ### Performance Considerations
+
 - **Lazy Loading**: Icons are extracted on-demand, not pre-loaded
 - **Resource Cleanup**: Proper disposal of Windows handles
 - **Size Optimization**: Automatic selection of large vs small icon extraction
@@ -169,6 +188,7 @@ The implementation follows the existing Krypton Toolkit patterns:
 ## Usage Scenarios
 
 ### 1. UAC Shield Buttons
+
 ```csharp
 // Create a button with UAC shield icon
 var button = new KryptonButton();
@@ -176,12 +196,14 @@ button.Image = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID
 ```
 
 ### 2. Security Dialogs
+
 ```csharp
 // Use lock icon for security dialogs
 var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Lock, IconSize.Medium);
 ```
 
 ### 3. File Operations
+
 ```csharp
 // Use appropriate icons for file operations
 var folderIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Folder, IconSize.Small);
@@ -189,6 +211,7 @@ var fileIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID
 ```
 
 ### 4. Application Toolbars
+
 ```csharp
 // Use application icons for toolbars
 var settingsIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.ApplicationSettings, IconSize.ExtraSmall);
@@ -196,6 +219,7 @@ var helpIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID
 ```
 
 ### 5. Media Applications
+
 ```csharp
 // Use media icons for media applications
 var playIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.MediaPlay, IconSize.Small);
@@ -203,6 +227,7 @@ var pauseIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconI
 ```
 
 ### 6. Theme-Aware Icon Selection
+
 ```csharp
 // Use theme-based selection for consistent visual experience
 var themeAwareShield = GraphicsExtensions.ExtractIconFromImageres(
@@ -215,6 +240,7 @@ var themeAwareShield = GraphicsExtensions.ExtractIconFromImageres(
 ## Benefits
 
 ### 1. Developer Experience
+
 - **Easy Access**: Simple method call to extract any system icon
 - **IntelliSense Support**: Rich documentation provides excellent IntelliSense experience
 - **Consistent API**: Follows existing Krypton Toolkit patterns
@@ -222,18 +248,21 @@ var themeAwareShield = GraphicsExtensions.ExtractIconFromImageres(
 - **Accessibility Compliance**: Public wrapper method resolves internal enum accessibility issues
 
 ### 2. Application Quality
+
 - **Native Look**: Uses authentic Windows system icons
 - **Consistent Design**: Maintains Windows design language
 - **High Quality**: Vector-based icons scale perfectly at any size
 - **Professional Appearance**: Enhances application professionalism
 
 ### 3. Maintenance
+
 - **Future-Proof**: Uses Windows system resources that are maintained by Microsoft
 - **Version Compatibility**: Works across different Windows versions
 - **Localization**: Icons automatically adapt to system theme and language
 - **Accessibility**: System icons include accessibility features
 
 ### 4. Performance
+
 - **Efficient**: On-demand loading reduces memory usage
 - **Optimized**: Automatic size selection for best performance
 - **Resource Management**: Proper cleanup prevents resource leaks
@@ -242,6 +271,7 @@ var themeAwareShield = GraphicsExtensions.ExtractIconFromImageres(
 ## Future Enhancements
 
 ### Potential Additions
+
 1. **Icon Caching**: Implement caching for frequently used icons
 2. **Theme Awareness**: Automatic adaptation to Windows theme changes
 3. **Custom Icon Support**: Allow custom icon sources beyond imageres.dll
@@ -250,6 +280,7 @@ var themeAwareShield = GraphicsExtensions.ExtractIconFromImageres(
 6. **Accessibility Improvements**: Further enhance public API accessibility
 
 ### Integration Opportunities
+
 1. **KryptonButton Enhancement**: Direct UAC shield support in button controls
 2. **Message Box Integration**: Use system icons in message dialogs
 3. **Toolbar Integration**: Easy icon assignment for toolbars

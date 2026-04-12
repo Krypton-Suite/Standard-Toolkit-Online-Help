@@ -2,16 +2,19 @@
 
 Learn more about the capabilities of `Krypton Docking` using the following sections.
 
-**Introduction**
+## Introduction
+
 * [Overview](Docking/KryptonDockingOverview.md)
 * [Page Creation](Docking/KryptonDockingPageCreation.md)
 
-**Intermediate**
+## Intermediate
+
 * [Flags](Docking/KryptonDockingFlags.md)
 * [Persistence](Docking/KryptonDockingPersistence.md)
 * [Hierarchy](Docking/KryptonDockingHierarchy.md)
 
-**Events**
+## Events
+
 * [Persistence](Docking/KryptonDockingPersistenceEvents.md)
 * [User Requests](Docking/KryptonDockingUserRequests.md)
 * [Controls](Docking/KryptonDockingControlsEvents.md)

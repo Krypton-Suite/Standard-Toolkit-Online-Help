@@ -6,7 +6,7 @@ The `KryptonThemeBrowser` class provides a static utility for displaying theme s
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── Krypton.Toolkit.KryptonThemeBrowser
 ```

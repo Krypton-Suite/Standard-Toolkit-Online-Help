@@ -6,7 +6,7 @@ The `KryptonIntegratedToolBarManager` class provides a comprehensive toolbar man
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -20,6 +20,7 @@ public KryptonIntegratedToolBarManager()
 ```
 
 The constructor initializes enhanced features:
+
 - **Toolbar Setup**: Creates 14 predefined toolbar buttons with default configurations
 - **Default Values**: Sets up default orientation, alignment, and visibility settings
 - **Button Array**: Initializes the integrated toolbar button array with all button types

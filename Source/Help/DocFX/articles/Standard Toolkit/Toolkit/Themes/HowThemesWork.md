@@ -1,3 +1,3 @@
 # How Themes Work
 
-To view the list of colors each theme uses, click [here](ThemeColorDescriptions.md).
+For the list of colors each theme uses, see [Theme color descriptions](ThemeColorDescriptions.md).

@@ -29,6 +29,7 @@ public class KryptonToolStripContainer : ToolStripContainer
 ### Palette Properties
 
 #### `PaletteMode`
+
 ```csharp
 [Category("Visuals")]
 [Description("Sets the palette mode.")]
@@ -37,6 +38,7 @@ public PaletteMode PaletteMode { get; set; }
 ```
 
 Gets or sets the palette mode. Valid values:
+
 - `PaletteMode.Global` (default) - Uses the global palette from `KryptonManager`
 - `PaletteMode.ProfessionalSystem` - Uses the Professional System palette
 - `PaletteMode.ProfessionalOffice2003` - Uses the Office 2003 palette
@@ -48,6 +50,7 @@ Gets or sets the palette mode. Valid values:
 - `PaletteMode.Custom` - Uses a custom palette (requires `Palette` property to be set)
 
 #### `Palette`
+
 ```csharp
 [Category("Visuals")]
 [Description("Sets the custom palette to be used.")]
@@ -60,6 +63,7 @@ Gets or sets a custom palette implementation. When set, `PaletteMode` automatica
 ### State Properties
 
 #### `StateCommon`
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining common appearance that other states can override.")]
@@ -70,6 +74,7 @@ public PaletteBack StateCommon { get; }
 Gets access to the common appearance settings that other states can override. This is the base state from which `StateDisabled` and `StateNormal` inherit.
 
 **Sub-properties:**
+
 - `StateCommon.Back` - Background appearance settings
   - `Back.Color1`, `Back.Color2` - Background colors
   - `Back.ColorStyle` - Color style (Solid, Linear, etc.)
@@ -80,6 +85,7 @@ Gets access to the common appearance settings that other states can override. Th
   - `Back.ImageAlign` - Image alignment
 
 #### `StateDisabled`
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining disabled appearance.")]
@@ -90,6 +96,7 @@ public PaletteBack StateDisabled { get; }
 Gets access to the disabled state appearance settings. Used when the control is disabled.
 
 #### `StateNormal`
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining normal appearance.")]
@@ -102,6 +109,7 @@ Gets access to the normal state appearance settings. Used when the control is en
 ### Inherited Properties
 
 `KryptonToolStripContainer` inherits all properties from `ToolStripContainer`, including:
+
 - `ContentPanel` - The main content panel that can be themed
 - `TopToolStripPanel`, `BottomToolStripPanel`, `LeftToolStripPanel`, `RightToolStripPanel` - Tool strip panels
 - `Dock` - Docking behavior
@@ -111,6 +119,7 @@ Gets access to the normal state appearance settings. Used when the control is en
 ## Methods
 
 ### `SetFixedState`
+
 ```csharp
 public virtual void SetFixedState(PaletteState state)
 ```
@@ -118,11 +127,13 @@ public virtual void SetFixedState(PaletteState state)
 Fixes the control to a particular palette state. This method is provided for API consistency with other Krypton controls but is not typically used for `ToolStripContainer`.
 
 **Parameters:**
+
 - `state` - The palette state to fix (Normal, Disabled, etc.)
 
 ## Events
 
 `KryptonToolStripContainer` inherits all events from `ToolStripContainer` and `Control`, including:
+
 - `Paint` - Raised when the control is painted
 - `EnabledChanged` - Raised when the `Enabled` property changes
 - Standard control events
@@ -223,6 +234,7 @@ KryptonManager.GlobalPalette = new PaletteOffice2013();
 ## Integration with Other Controls
 
 `KryptonToolStripContainer` works seamlessly with:
+
 - `KryptonMenuStrip` - Add to `TopToolStripPanel`
 - `KryptonToolStrip` - Add to any tool strip panel
 - `KryptonStatusStrip` - Add to `BottomToolStripPanel`
@@ -234,6 +246,7 @@ KryptonManager.GlobalPalette = new PaletteOffice2013();
 ### Palette Architecture
 
 The control uses the Krypton palette system:
+
 1. **PaletteRedirect**: Redirects palette requests to the current palette
 2. **PaletteDoubleRedirect**: Manages background and border styles
 3. **PaletteDouble**: Provides state-specific overrides
@@ -241,6 +254,7 @@ The control uses the Krypton palette system:
 ### ContentPanel Painting
 
 The `ContentPanel` is a standard `Panel` control. The theming is applied by:
+
 1. Hooking into the `ContentPanel.Paint` event
 2. Querying the palette for background colors based on the current state
 3. Drawing the background using `Graphics.FillRectangle` with palette colors
@@ -261,4 +275,3 @@ States inherit from each other in this order: `StateDisabled`/`StateNormal` → 
 - `KryptonStatusStrip` - Status strip control
 - `PaletteMode` - Enumeration of available palette modes
 - `PaletteBase` - Base class for custom palettes
-

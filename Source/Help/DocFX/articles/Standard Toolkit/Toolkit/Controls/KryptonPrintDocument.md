@@ -5,6 +5,7 @@
 `KryptonPrintDocument` extends the standard .NET `PrintDocument` class to provide full integration with the Krypton Toolkit theming system. It enables printing with palette-based colors, fonts, and styles, ensuring that printed output matches the visual appearance of your Krypton-themed application.
 
 This class provides:
+
 - Palette-aware color retrieval for text, backgrounds, and borders
 - Themed font support
 - Helper methods for drawing themed content
@@ -19,7 +20,7 @@ using Krypton.Toolkit;
 
 ## Class Hierarchy
 
-```
+```text
 PrintDocument
 └── KryptonPrintDocument
 ```
@@ -51,11 +52,13 @@ PrintDocument
 Initializes a new instance of the `KryptonPrintDocument` class.
 
 **Example:**
+
 ```csharp
 var document = new KryptonPrintDocument();
 ```
 
 **Notes:**
+
 - Automatically subscribes to global palette changes
 - Sets palette to global default (`PaletteMode.Global`)
 - Initializes with default text and background styles
@@ -74,6 +77,7 @@ Gets or sets the palette mode to be applied.
 - **Description**: Palette applied to printing.
 
 **Valid Values:**
+
 - `PaletteMode.Global`: Uses the current global palette
 - `PaletteMode.ProfessionalSystem`: Professional system palette
 - `PaletteMode.ProfessionalOffice2003`: Office 2003 palette
@@ -98,11 +102,13 @@ Gets or sets the palette mode to be applied.
 - `PaletteMode.Custom`: Uses a custom palette (set via `Palette` property)
 
 **Example:**
+
 ```csharp
 document.PaletteMode = PaletteMode.Office365Blue;
 ```
 
 **Notes:**
+
 - Setting to `PaletteMode.Custom` requires setting the `Palette` property
 - Changing this property raises the `PaletteChanged` event
 - Resets `Palette` to `null` when changed from `Custom`
@@ -119,6 +125,7 @@ Gets and sets the custom palette implementation.
 - **Description**: Custom palette applied to printing.
 
 **Example:**
+
 ```csharp
 var customPalette = new PaletteCustom();
 document.Palette = customPalette;
@@ -126,6 +133,7 @@ document.PaletteMode = PaletteMode.Custom;
 ```
 
 **Notes:**
+
 - Setting a custom palette automatically sets `PaletteMode` to `Custom`
 - Setting to `null` reverts to `PaletteMode.Global`
 - Changing this property raises the `PaletteChanged` event
@@ -142,12 +150,14 @@ Gets or sets a value indicating whether to use palette colors when printing.
 - **Description**: Indicates whether to use palette colors when printing.
 
 **Example:**
+
 ```csharp
 document.UsePaletteColors = true; // Use themed colors
 document.UsePaletteColors = false; // Use default colors (Black/White)
 ```
 
 **Notes:**
+
 - When `false`, color methods return default colors (Black for text, White for background)
 - Useful for printing documents that should always use standard colors
 - Does not affect standard `PrintDocument` functionality
@@ -164,6 +174,7 @@ Gets or sets the text style used for retrieving text colors from the palette.
 - **Description**: Text style used for retrieving text colors from the palette.
 
 **Common Values:**
+
 - `PaletteContentStyle.LabelNormalPanel`
 - `PaletteContentStyle.LabelBoldPanel`
 - `PaletteContentStyle.LabelItalicPanel`
@@ -172,11 +183,13 @@ Gets or sets the text style used for retrieving text colors from the palette.
 - And many more...
 
 **Example:**
+
 ```csharp
 document.TextStyle = PaletteContentStyle.LabelBoldPanel;
 ```
 
 **Notes:**
+
 - Affects the color and font returned by `GetTextColor()` and `GetFont()`
 - Choose a style that matches your document's text appearance needs
 
@@ -192,6 +205,7 @@ Gets or sets the background style used for retrieving background colors from the
 - **Description**: Background style used for retrieving background colors from the palette.
 
 **Common Values:**
+
 - `PaletteBackStyle.PanelClient`
 - `PaletteBackStyle.PanelAlternate`
 - `PaletteBackStyle.PanelCustom1`
@@ -200,11 +214,13 @@ Gets or sets the background style used for retrieving background colors from the
 - And many more...
 
 **Example:**
+
 ```csharp
 document.BackgroundStyle = PaletteBackStyle.PanelAlternate;
 ```
 
 **Notes:**
+
 - Affects the color returned by `GetBackgroundColor()`
 - Choose a style that matches your document's background appearance needs
 
@@ -219,6 +235,7 @@ Occurs when the palette changes.
 - **Description**: Occurs when the value of the Palette property is changed.
 
 **Example:**
+
 ```csharp
 document.PaletteChanged += (sender, e) =>
 {
@@ -228,6 +245,7 @@ document.PaletteChanged += (sender, e) =>
 ```
 
 **Notes:**
+
 - Raised when `PaletteMode` or `Palette` property changes
 - Also raised when global palette changes (if using `PaletteMode.Global`)
 
@@ -238,18 +256,22 @@ document.PaletteChanged += (sender, e) =>
 Gets the text color from the current palette.
 
 **Parameters:**
+
 - `state` (`PaletteState`): The palette state to use. Default: `PaletteState.Normal`
 
 **Returns:**
+
 - `Color`: The text color from the palette, or `Color.Black` if palette is not available or `UsePaletteColors` is `false`.
 
 **Example:**
+
 ```csharp
 var textColor = document.GetTextColor();
 var disabledColor = document.GetTextColor(PaletteState.Disabled);
 ```
 
 **Notes:**
+
 - Returns `Color.Black` if `UsePaletteColors` is `false`
 - Returns `Color.Black` if palette is `null`
 - Uses `TextStyle` property to determine which color to retrieve
@@ -261,18 +283,22 @@ var disabledColor = document.GetTextColor(PaletteState.Disabled);
 Gets the background color from the current palette.
 
 **Parameters:**
+
 - `state` (`PaletteState`): The palette state to use. Default: `PaletteState.Normal`
 
 **Returns:**
+
 - `Color`: The background color from the palette, or `Color.White` if palette is not available or `UsePaletteColors` is `false`.
 
 **Example:**
+
 ```csharp
 var backColor = document.GetBackgroundColor();
 var pressedColor = document.GetBackgroundColor(PaletteState.Pressed);
 ```
 
 **Notes:**
+
 - Returns `Color.White` if `UsePaletteColors` is `false`
 - Returns `Color.White` if palette is `null`
 - Uses `BackgroundStyle` property to determine which color to retrieve
@@ -284,17 +310,21 @@ var pressedColor = document.GetBackgroundColor(PaletteState.Pressed);
 Gets the border color from the current palette.
 
 **Parameters:**
+
 - `state` (`PaletteState`): The palette state to use. Default: `PaletteState.Normal`
 
 **Returns:**
+
 - `Color`: The border color from the palette, or `Color.Black` if palette is not available or `UsePaletteColors` is `false`.
 
 **Example:**
+
 ```csharp
 var borderColor = document.GetBorderColor();
 ```
 
 **Notes:**
+
 - Returns `Color.Black` if `UsePaletteColors` is `false`
 - Returns `Color.Black` if palette is `null`
 - Uses `PaletteBorderStyle.ControlClient` for border style
@@ -306,18 +336,22 @@ var borderColor = document.GetBorderColor();
 Gets the font from the current palette.
 
 **Parameters:**
+
 - `state` (`PaletteState`): The palette state to use. Default: `PaletteState.Normal`
 
 **Returns:**
+
 - `Font`: The font from the palette, or a default font (`Arial`, 12pt) if palette is not available or `UsePaletteColors` is `false`.
 
 **Example:**
+
 ```csharp
 var font = document.GetFont();
 var boldFont = new Font(document.GetFont(), FontStyle.Bold);
 ```
 
 **Notes:**
+
 - Returns `new Font("Arial", 12)` if `UsePaletteColors` is `false`
 - Returns `new Font("Arial", 12)` if palette is `null`
 - Uses `TextStyle` property to determine which font to retrieve
@@ -330,6 +364,7 @@ var boldFont = new Font(document.GetFont(), FontStyle.Bold);
 Draws text using palette colors.
 
 **Parameters:**
+
 - `graphics` (`Graphics`): The Graphics object to draw on
 - `text` (`string`): The text to draw
 - `font` (`Font?`): The font to use (if `null`, uses palette font)
@@ -338,12 +373,14 @@ Draws text using palette colors.
 - `state` (`PaletteState`): The palette state to use. Default: `PaletteState.Normal`
 
 **Example:**
+
 ```csharp
 document.DrawThemedText(e.Graphics, "Hello, World!", null, 
     new Rectangle(100, 100, 200, 50));
 ```
 
 **Notes:**
+
 - Does nothing if `graphics` is `null` or `text` is null/empty
 - Uses palette font if `font` parameter is `null`
 - Creates and disposes a `SolidBrush` internally
@@ -355,17 +392,20 @@ document.DrawThemedText(e.Graphics, "Hello, World!", null,
 Draws a rectangle with themed background and border.
 
 **Parameters:**
+
 - `graphics` (`Graphics`): The Graphics object to draw on
 - `bounds` (`Rectangle`): The bounding rectangle
 - `state` (`PaletteState`): The palette state to use. Default: `PaletteState.Normal`
 
 **Example:**
+
 ```csharp
 document.DrawThemedRectangle(e.Graphics, 
     new Rectangle(50, 50, 500, 700));
 ```
 
 **Notes:**
+
 - Does nothing if `graphics` is `null`
 - Fills the rectangle with background color, then draws border
 - Creates and disposes brushes/pens internally
@@ -377,6 +417,7 @@ document.DrawThemedRectangle(e.Graphics,
 Draws a line using the border color from the palette.
 
 **Parameters:**
+
 - `graphics` (`Graphics`): The Graphics object to draw on
 - `x1` (`int`): The x-coordinate of the first point
 - `y1` (`int`): The y-coordinate of the first point
@@ -385,11 +426,13 @@ Draws a line using the border color from the palette.
 - `state` (`PaletteState`): The palette state to use. Default: `PaletteState.Normal`
 
 **Example:**
+
 ```csharp
 document.DrawThemedLine(e.Graphics, 100, 200, 500, 200);
 ```
 
 **Notes:**
+
 - Does nothing if `graphics` is `null`
 - Creates and disposes a `Pen` internally
 
@@ -400,12 +443,15 @@ document.DrawThemedLine(e.Graphics, 100, 200, 500, 200);
 Gets a `SolidBrush` with the text color from the palette.
 
 **Parameters:**
+
 - `state` (`PaletteState`): The palette state to use. Default: `PaletteState.Normal`
 
 **Returns:**
+
 - `Brush`: A `SolidBrush` with the palette text color.
 
 **Example:**
+
 ```csharp
 using (var brush = document.GetTextBrush())
 {
@@ -414,6 +460,7 @@ using (var brush = document.GetTextBrush())
 ```
 
 **Notes:**
+
 - **Important**: Caller is responsible for disposing the returned brush
 - Use within a `using` statement for proper resource management
 
@@ -424,12 +471,15 @@ using (var brush = document.GetTextBrush())
 Gets a `SolidBrush` with the background color from the palette.
 
 **Parameters:**
+
 - `state` (`PaletteState`): The palette state to use. Default: `PaletteState.Normal`
 
 **Returns:**
+
 - `Brush`: A `SolidBrush` with the palette background color.
 
 **Example:**
+
 ```csharp
 using (var brush = document.GetBackgroundBrush())
 {
@@ -438,6 +488,7 @@ using (var brush = document.GetBackgroundBrush())
 ```
 
 **Notes:**
+
 - **Important**: Caller is responsible for disposing the returned brush
 - Use within a `using` statement for proper resource management
 
@@ -448,13 +499,16 @@ using (var brush = document.GetBackgroundBrush())
 Gets a `Pen` with the border color from the palette.
 
 **Parameters:**
+
 - `state` (`PaletteState`): The palette state to use. Default: `PaletteState.Normal`
 - `width` (`float`): The pen width. Default: `1.0f`
 
 **Returns:**
+
 - `Pen`: A `Pen` with the palette border color.
 
 **Example:**
+
 ```csharp
 using (var pen = document.GetBorderPen(state: PaletteState.Normal, width: 2.0f))
 {
@@ -463,6 +517,7 @@ using (var pen = document.GetBorderPen(state: PaletteState.Normal, width: 2.0f))
 ```
 
 **Notes:**
+
 - **Important**: Caller is responsible for disposing the returned pen
 - Use within a `using` statement for proper resource management
 
@@ -675,6 +730,7 @@ document.PrintPage += (sender, e) =>
 ### Property Grid Support
 
 All properties are visible in the Visual Studio property grid with appropriate categories:
+
 - **Behavior**: `UsePaletteColors`
 - **Visuals**: `PaletteMode`, `Palette`, `TextStyle`, `BackgroundStyle`
 

@@ -11,12 +11,14 @@
 ## Key Features
 
 ### Palette Integration
+
 - Full Krypton palette support with automatic theme switching
 - Support for built-in and custom palettes
 - State-based styling (Normal, Disabled, Active, Tracking, CheckedNormal, CheckedTracking)
 - Item-level palette application
 
 ### Visual Capabilities
+
 - All standard ListView view modes (List, Details, Tiles, Icons)
 - Checkboxes and multi-selection support
 - Column headers with sorting
@@ -25,6 +27,7 @@
 - Item state-based coloring (selected, checked, focused, disabled)
 
 ### Behavior Features
+
 - Full mouse tracking and hover states
 - KryptonContextMenu integration
 - Item selection and activation events
@@ -33,6 +36,7 @@
 - Drag-and-drop column reordering
 
 ### Performance
+
 - Double-buffered rendering to reduce flicker
 - Optimized palette change handling
 - Efficient item state updates
@@ -51,6 +55,7 @@ public KryptonListView()
 ```
 
 **Default Settings:**
+
 - `Padding` = `1, 1, 1, 1`
 - `BackStyle` = `PaletteBackStyle.InputControlStandalone`
 - `BorderStyle` = `PaletteBorderStyle.InputControlStandalone`
@@ -64,6 +69,7 @@ public KryptonListView()
 ### Core ListView Properties
 
 #### View
+
 Gets or sets how items are displayed in the control.
 
 ```csharp
@@ -74,6 +80,7 @@ public View View { get; set; }
 ```
 
 **Available Views:**
+
 - `LargeIcon` - Large icon view (default)
 - `SmallIcon` - Small icon view
 - `List` - Simple list view
@@ -81,6 +88,7 @@ public View View { get; set; }
 - `Tile` - Tile view (Windows Vista+)
 
 **Example:**
+
 ```csharp
 kryptonListView1.View = View.Details;
 ```
@@ -88,6 +96,7 @@ kryptonListView1.View = View.Details;
 ---
 
 #### Items
+
 Gets the collection containing all items in the control.
 
 ```csharp
@@ -98,6 +107,7 @@ public ListView.ListViewItemCollection Items { get; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.Items.Add(new ListViewItem("Item 1"));
 kryptonListView1.Items.Add(new ListViewItem(new[] { "Name", "Value" }));
@@ -106,6 +116,7 @@ kryptonListView1.Items.Add(new ListViewItem(new[] { "Name", "Value" }));
 ---
 
 #### Columns
+
 Gets the collection of all column headers in Details view.
 
 ```csharp
@@ -116,6 +127,7 @@ public ListView.ColumnHeaderCollection Columns { get; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.View = View.Details;
 kryptonListView1.Columns.Add("Name", 200);
@@ -126,6 +138,7 @@ kryptonListView1.Columns.Add("Size", 80);
 ---
 
 #### CheckBoxes
+
 Gets or sets whether a checkbox appears next to each item.
 
 ```csharp
@@ -136,6 +149,7 @@ public bool CheckBoxes { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.CheckBoxes = true;
 kryptonListView1.Items.Add("Option 1").Checked = true;
@@ -145,6 +159,7 @@ kryptonListView1.Items.Add("Option 2");
 ---
 
 #### MultiSelect
+
 Gets or sets whether multiple items can be selected.
 
 ```csharp
@@ -157,6 +172,7 @@ public bool MultiSelect { get; set; }
 ---
 
 #### FullRowSelect
+
 Gets or sets whether clicking an item selects all its subitems.
 
 ```csharp
@@ -167,6 +183,7 @@ public bool FullRowSelect { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.View = View.Details;
 kryptonListView1.FullRowSelect = true; // Entire row highlights
@@ -175,6 +192,7 @@ kryptonListView1.FullRowSelect = true; // Entire row highlights
 ---
 
 #### GridLines
+
 Gets or sets whether grid lines appear between rows and columns.
 
 ```csharp
@@ -187,6 +205,7 @@ public bool GridLines { get; set; }
 ---
 
 #### Groups
+
 Gets the collection of ListViewGroup objects assigned to the control.
 
 ```csharp
@@ -197,6 +216,7 @@ public ListViewGroupCollection Groups { get; }
 ```
 
 **Example:**
+
 ```csharp
 var group1 = new ListViewGroup("Group 1");
 var group2 = new ListViewGroup("Group 2");
@@ -210,6 +230,7 @@ kryptonListView1.Items.Add(new ListViewItem("Item 2", group2));
 ---
 
 #### ShowGroups
+
 Gets or sets whether items are displayed in groups.
 
 ```csharp
@@ -224,6 +245,7 @@ public bool ShowGroups { get; set; }
 ### Selection Properties
 
 #### SelectedItems
+
 Gets the items that are selected in the control.
 
 ```csharp
@@ -233,6 +255,7 @@ public ListView.SelectedListViewItemCollection SelectedItems { get; }
 ```
 
 **Example:**
+
 ```csharp
 foreach (ListViewItem item in kryptonListView1.SelectedItems)
 {
@@ -243,6 +266,7 @@ foreach (ListViewItem item in kryptonListView1.SelectedItems)
 ---
 
 #### SelectedIndices
+
 Gets the indexes of the selected items.
 
 ```csharp
@@ -254,6 +278,7 @@ public ListView.SelectedIndexCollection SelectedIndices { get; }
 ---
 
 #### CheckedItems
+
 Gets the currently checked items.
 
 ```csharp
@@ -263,6 +288,7 @@ public ListView.CheckedListViewItemCollection CheckedItems { get; }
 ```
 
 **Example:**
+
 ```csharp
 foreach (ListViewItem item in kryptonListView1.CheckedItems)
 {
@@ -273,6 +299,7 @@ foreach (ListViewItem item in kryptonListView1.CheckedItems)
 ---
 
 #### CheckedIndices
+
 Gets the indexes of the currently checked items.
 
 ```csharp
@@ -284,6 +311,7 @@ public ListView.CheckedIndexCollection CheckedIndices { get; }
 ---
 
 #### FocusedItem
+
 Gets or sets the item that currently has focus.
 
 ```csharp
@@ -298,6 +326,7 @@ public ListViewItem? FocusedItem { get; set; }
 ### Image List Properties
 
 #### LargeImageList
+
 Gets or sets the ImageList to use when displaying items as large icons.
 
 ```csharp
@@ -308,6 +337,7 @@ public ImageList? LargeImageList { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 var largeImages = new ImageList { ImageSize = new Size(48, 48) };
 largeImages.Images.Add("folder", Properties.Resources.FolderIcon);
@@ -321,6 +351,7 @@ kryptonListView1.Items.Add("Report.pdf", "file");
 ---
 
 #### SmallImageList
+
 Gets or sets the ImageList to use when displaying items as small icons.
 
 ```csharp
@@ -333,6 +364,7 @@ public ImageList? SmallImageList { get; set; }
 ---
 
 #### StateImageList
+
 Gets or sets the ImageList for application-defined states.
 
 ```csharp
@@ -347,6 +379,7 @@ public ImageList? StateImageList { get; set; }
 ### Palette State Properties
 
 #### StateCommon
+
 Gets access to common appearance settings that other states can override.
 
 ```csharp
@@ -357,6 +390,7 @@ public PaletteTreeStateRedirect StateCommon { get; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.StateCommon.Back.Color1 = Color.White;
 kryptonListView1.StateCommon.Border.Rounding = 5;
@@ -365,6 +399,7 @@ kryptonListView1.StateCommon.Border.Rounding = 5;
 ---
 
 #### StateNormal
+
 Gets access to normal state appearance settings.
 
 ```csharp
@@ -377,6 +412,7 @@ public PaletteTreeState StateNormal { get; }
 ---
 
 #### StateDisabled
+
 Gets access to disabled state appearance settings.
 
 ```csharp
@@ -389,6 +425,7 @@ public PaletteTreeState StateDisabled { get; }
 ---
 
 #### StateActive
+
 Gets access to active state appearance settings.
 
 ```csharp
@@ -399,11 +436,13 @@ public PaletteDouble StateActive { get; }
 ```
 
 **Remarks:**
+
 - Applied when the control has focus or `AlwaysActive = true`
 
 ---
 
 #### StateTracking
+
 Gets access to hot tracking item appearance settings.
 
 ```csharp
@@ -414,11 +453,13 @@ public PaletteTreeNodeTriple StateTracking { get; }
 ```
 
 **Remarks:**
+
 - Applied to selected/hovered items
 
 ---
 
 #### StateCheckedNormal
+
 Gets access to normal checked item appearance settings.
 
 ```csharp
@@ -431,6 +472,7 @@ public PaletteTreeNodeTriple StateCheckedNormal { get; }
 ---
 
 #### StateCheckedTracking
+
 Gets access to hot tracking checked item appearance settings.
 
 ```csharp
@@ -443,6 +485,7 @@ public PaletteTreeNodeTriple StateCheckedTracking { get; }
 ---
 
 #### OverrideFocus
+
 Gets access to item appearance when it has focus.
 
 ```csharp
@@ -457,6 +500,7 @@ public PaletteTreeNodeTripleRedirect OverrideFocus { get; }
 ### Style Properties
 
 #### BackStyle
+
 Gets or sets the background style.
 
 ```csharp
@@ -470,6 +514,7 @@ public PaletteBackStyle BackStyle { get; set; }
 ---
 
 #### BorderStyle
+
 Gets or sets the border style.
 
 ```csharp
@@ -483,6 +528,7 @@ public PaletteBorderStyle BorderStyle { get; set; }
 ---
 
 #### AlwaysActive
+
 Gets or sets whether the control is always active or only when it has focus.
 
 ```csharp
@@ -493,6 +539,7 @@ public bool AlwaysActive { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.AlwaysActive = true; // Always show active state colors
 ```
@@ -502,6 +549,7 @@ kryptonListView1.AlwaysActive = true; // Always show active state colors
 ### Behavior Properties
 
 #### Activation
+
 Gets or sets the type of action required to activate an item.
 
 ```csharp
@@ -512,6 +560,7 @@ public ItemActivation Activation { get; set; }
 ```
 
 **Values:**
+
 - `Standard` - Single click
 - `OneClick` - Single click (Vista+ style)
 - `TwoClick` - Double click
@@ -519,6 +568,7 @@ public ItemActivation Activation { get; set; }
 ---
 
 #### LabelEdit
+
 Gets or sets whether the user can edit item labels.
 
 ```csharp
@@ -529,6 +579,7 @@ public bool LabelEdit { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.LabelEdit = true;
 kryptonListView1.AfterLabelEdit += (s, e) =>
@@ -543,6 +594,7 @@ kryptonListView1.AfterLabelEdit += (s, e) =>
 ---
 
 #### HotTracking
+
 Gets or sets whether item text appears as a hyperlink when hovered.
 
 ```csharp
@@ -555,6 +607,7 @@ public bool HotTracking { get; set; }
 ---
 
 #### HoverSelection
+
 Gets or sets whether items are automatically selected on hover.
 
 ```csharp
@@ -567,6 +620,7 @@ public bool HoverSelection { get; set; }
 ---
 
 #### AllowColumnReorder
+
 Gets or sets whether columns can be reordered by dragging headers.
 
 ```csharp
@@ -579,6 +633,7 @@ public bool AllowColumnReorder { get; set; }
 ---
 
 #### Sorting
+
 Gets or sets the sort order for items.
 
 ```csharp
@@ -589,6 +644,7 @@ public SortOrder Sorting { get; set; }
 ```
 
 **Values:**
+
 - `None` - No sorting
 - `Ascending` - Sort ascending
 - `Descending` - Sort descending
@@ -596,6 +652,7 @@ public SortOrder Sorting { get; set; }
 ---
 
 #### ListViewItemSorter
+
 Gets or sets the custom sorting comparer.
 
 ```csharp
@@ -606,6 +663,7 @@ public IComparer? ListViewItemSorter { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 public class ListViewItemComparer : IComparer
 {
@@ -628,6 +686,7 @@ kryptonListView1.ListViewItemSorter = new ListViewItemComparer(0);
 ### Contained Control
 
 #### ListView
+
 Gets access to the contained ListView instance.
 
 ```csharp
@@ -637,6 +696,7 @@ public ListView ListView { get; }
 ```
 
 **Remarks:**
+
 - Provides access to underlying ListView for advanced scenarios
 - Use sparingly - prefer using KryptonListView properties
 
@@ -647,6 +707,7 @@ public ListView ListView { get; }
 ### Item Management
 
 #### Clear()
+
 Removes all items and columns from the control.
 
 ```csharp
@@ -654,6 +715,7 @@ public void Clear()
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.Clear();
 ```
@@ -661,6 +723,7 @@ kryptonListView1.Clear();
 ---
 
 #### BeginUpdate() / EndUpdate()
+
 Suspends/resumes drawing during bulk operations.
 
 ```csharp
@@ -669,6 +732,7 @@ public void EndUpdate()
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.BeginUpdate();
 try
@@ -687,6 +751,7 @@ finally
 ---
 
 #### EnsureVisible(int)
+
 Scrolls to ensure the specified item is visible.
 
 ```csharp
@@ -694,6 +759,7 @@ public void EnsureVisible(int index)
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.EnsureVisible(kryptonListView1.Items.Count - 1);
 ```
@@ -703,6 +769,7 @@ kryptonListView1.EnsureVisible(kryptonListView1.Items.Count - 1);
 ### Search and Hit Testing
 
 #### FindItemWithText(string)
+
 Finds the first item that begins with the specified text.
 
 ```csharp
@@ -712,6 +779,7 @@ public ListViewItem? FindItemWithText(string text, bool includeSubItemsInSearch,
 ```
 
 **Example:**
+
 ```csharp
 var item = kryptonListView1.FindItemWithText("Report");
 if (item != null)
@@ -724,6 +792,7 @@ if (item != null)
 ---
 
 #### HitTest(int, int)
+
 Provides item information at the specified coordinates.
 
 ```csharp
@@ -732,6 +801,7 @@ public ListViewHitTestInfo HitTest(Point point)
 ```
 
 **Example:**
+
 ```csharp
 var hitTest = kryptonListView1.HitTest(e.X, e.Y);
 if (hitTest.Item != null)
@@ -743,6 +813,7 @@ if (hitTest.Item != null)
 ---
 
 #### GetItemAt(int, int)
+
 Retrieves the item at the specified location.
 
 ```csharp
@@ -752,6 +823,7 @@ public ListViewItem? GetItemAt(int x, int y)
 ---
 
 #### GetItemRect(int)
+
 Retrieves the bounding rectangle for a specific item.
 
 ```csharp
@@ -764,6 +836,7 @@ public Rectangle GetItemRect(int index, ItemBoundsPortion portion)
 ### Layout and Arrangement
 
 #### ArrangeIcons()
+
 Arranges items when displayed as icons.
 
 ```csharp
@@ -772,6 +845,7 @@ public void ArrangeIcons(ListViewAlignment value)
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.View = View.LargeIcon;
 kryptonListView1.ArrangeIcons(ListViewAlignment.SnapToGrid);
@@ -780,6 +854,7 @@ kryptonListView1.ArrangeIcons(ListViewAlignment.SnapToGrid);
 ---
 
 #### AutoResizeColumns()
+
 Resizes column widths automatically.
 
 ```csharp
@@ -788,6 +863,7 @@ public void AutoResizeColumn(int columnIndex, ColumnHeaderAutoResizeStyle header
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
 ```
@@ -795,6 +871,7 @@ kryptonListView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
 ---
 
 #### Sort()
+
 Sorts the items using the current sort order or comparer.
 
 ```csharp
@@ -804,6 +881,7 @@ public void Sort()
 ---
 
 #### RedrawItems(int, int, bool)
+
 Forces a range of items to be redrawn.
 
 ```csharp
@@ -815,6 +893,7 @@ public void RedrawItems(int startIndex, int endIndex, bool invalidateOnly)
 ### State Management
 
 #### SetFixedState(bool)
+
 Sets the fixed state of the control.
 
 ```csharp
@@ -822,12 +901,14 @@ public void SetFixedState(bool active)
 ```
 
 **Remarks:**
+
 - Overrides automatic active state detection
 - Useful for maintaining visual state during operations
 
 ---
 
 #### IsActive
+
 Gets whether the input control is currently active.
 
 ```csharp
@@ -836,6 +917,7 @@ public bool IsActive { get; }
 ```
 
 **Calculated based on:**
+
 - Design mode
 - `AlwaysActive` property
 - Control has focus
@@ -848,6 +930,7 @@ public bool IsActive { get; }
 ### Selection Events
 
 #### SelectedIndexChanged
+
 Occurs when the selection state of an item changes.
 
 ```csharp
@@ -856,6 +939,7 @@ public event EventHandler? SelectedIndexChanged
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.SelectedIndexChanged += (s, e) =>
 {
@@ -866,6 +950,7 @@ kryptonListView1.SelectedIndexChanged += (s, e) =>
 ---
 
 #### ItemSelectionChanged
+
 Occurs when the selection state of an individual item changes.
 
 ```csharp
@@ -874,6 +959,7 @@ public event ListViewItemSelectionChangedEventHandler? ItemSelectionChanged
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.ItemSelectionChanged += (s, e) =>
 {
@@ -889,6 +975,7 @@ kryptonListView1.ItemSelectionChanged += (s, e) =>
 ### Item Events
 
 #### ItemActivate
+
 Occurs when an item is activated.
 
 ```csharp
@@ -897,6 +984,7 @@ public event EventHandler? ItemActivate
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.ItemActivate += (s, e) =>
 {
@@ -910,6 +998,7 @@ kryptonListView1.ItemActivate += (s, e) =>
 ---
 
 #### ItemCheck
+
 Occurs when the check state of an item is about to change.
 
 ```csharp
@@ -918,6 +1007,7 @@ public event ItemCheckEventHandler? ItemCheck
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.ItemCheck += (s, e) =>
 {
@@ -932,6 +1022,7 @@ kryptonListView1.ItemCheck += (s, e) =>
 ---
 
 #### ItemChecked
+
 Occurs when the check state of an item changes.
 
 ```csharp
@@ -944,6 +1035,7 @@ public event ItemCheckedEventHandler? ItemChecked
 ### Label Editing Events
 
 #### BeforeLabelEdit
+
 Occurs when the user starts editing an item label.
 
 ```csharp
@@ -952,6 +1044,7 @@ public event LabelEditEventHandler? BeforeLabelEdit
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.BeforeLabelEdit += (s, e) =>
 {
@@ -966,6 +1059,7 @@ kryptonListView1.BeforeLabelEdit += (s, e) =>
 ---
 
 #### AfterLabelEdit
+
 Occurs when a label is edited by the user.
 
 ```csharp
@@ -974,6 +1068,7 @@ public event LabelEditEventHandler? AfterLabelEdit
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.AfterLabelEdit += (s, e) =>
 {
@@ -990,6 +1085,7 @@ kryptonListView1.AfterLabelEdit += (s, e) =>
 ### Column Events
 
 #### ColumnClick
+
 Occurs when a column header is clicked.
 
 ```csharp
@@ -998,6 +1094,7 @@ public event ColumnClickEventHandler? ColumnClick
 ```
 
 **Example:**
+
 ```csharp
 kryptonListView1.ColumnClick += (s, e) =>
 {
@@ -1011,6 +1108,7 @@ kryptonListView1.ColumnClick += (s, e) =>
 ### Virtual Mode Events
 
 #### SearchForVirtualItem
+
 Occurs when the ListView is in virtual mode and a search is taking place.
 
 ```csharp
@@ -1021,6 +1119,7 @@ public event SearchForVirtualItemEventHandler? SearchForVirtualItem
 ---
 
 #### VirtualItemsSelectionRangeChanged
+
 Occurs in virtual mode when the selection state of a range changes.
 
 ```csharp
@@ -1216,18 +1315,21 @@ The control resolves item appearance using the following priority:
 ### Performance Tips
 
 1. **Bulk Operations:** Use `BeginUpdate()`/`EndUpdate()`
+
 ```csharp
 kryptonListView1.BeginUpdate();
 // Add/modify many items
 kryptonListView1.EndUpdate();
 ```
 
-2. **Virtual Mode:** For large datasets (1000+ items)
+1. **Virtual Mode:** For large datasets (1000+ items)
+
 ```csharp
 // Note: Virtual mode commented out in source - implementation needed
 ```
 
-3. **Image Lists:** Reuse ImageList instances
+1. **Image Lists:** Reuse ImageList instances
+
 ```csharp
 // Share ImageList across multiple controls
 var sharedImages = new ImageList();
@@ -1240,6 +1342,7 @@ kryptonListView2.SmallImageList = sharedImages;
 ### Designer Support
 
 The control is fully designer-compatible:
+
 - Appears in the Toolbox under "Krypton Toolkit"
 - Property grid shows categorized properties
 - Collection editors for Items, Columns, Groups
@@ -1338,7 +1441,5 @@ private void SetupImageGallery()
 
 ## See Also
 
-- [KryptonTreeView](KryptonTreeView.md) - Tree view variant
-- [KryptonDataGridView](KryptonDataGridView.md) - Data grid variant
-- [PaletteTreeState](../Palette/PaletteTreeState.md) - Palette system
-- [PaletteBackStyle Enumeration](../Enumerations/PaletteBackStyle.md) - Background styles
+- [KryptonTreeView](KryptonTreeView.md) — tree view variant
+- [KryptonDataGridView](KryptonDataGridView.md) — data grid variant

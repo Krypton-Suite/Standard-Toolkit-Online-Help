@@ -53,6 +53,7 @@ IconSize.Huge          // 256×256
 ### 🔑 Common Icon IDs
 
 #### From Shell32.dll
+
 ```csharp
 Shell32IconID.Folder              // 3   - Closed folder
 Shell32IconID.FolderOpen          // 4   - Open folder
@@ -70,6 +71,7 @@ Shell32IconID.Properties          // 165 - Properties
 ```
 
 #### From Imageres.dll
+
 ```csharp
 ImageresIconID.Shield             // 78  - UAC shield
 ImageresIconID.Lock               // 48  - Lock/Security
@@ -78,6 +80,7 @@ ImageresIconID.Key                // 50  - Key/Password
 ```
 
 #### From NetShell.dll
+
 ```csharp
 NetShellIconID.NetworkConnection  // 0   - Network connection
 NetShellIconID.WirelessNetwork    // 3   - WiFi
@@ -89,6 +92,7 @@ NetShellIconID.VpnConnection      // 8   - VPN
 ### 💡 Quick Examples
 
 #### Extract by Enum
+
 ```csharp
 var folder = GraphicsExtensions.ExtractIconFromShell32(
     (int)Shell32IconID.Folder, 
@@ -97,11 +101,13 @@ var folder = GraphicsExtensions.ExtractIconFromShell32(
 ```
 
 #### Extract by Index
+
 ```csharp
 var icon = GraphicsExtensions.ExtractIconFromShell32(16805, IconSize.Medium);
 ```
 
 #### Extract from Any DLL
+
 ```csharp
 var icon = GraphicsExtensions.ExtractIcon("mydll.dll", 42, largeIcon: true);
 ```
@@ -169,6 +175,7 @@ for (int i = 0; i < 1000; i++)
 ### 🎨 Common Patterns
 
 #### With Krypton Button
+
 ```csharp
 var icon = GraphicsExtensions.ExtractIconFromShell32(
     (int)Shell32IconID.Folder, 
@@ -183,6 +190,7 @@ if (icon != null)
 ```
 
 #### With Picture Box
+
 ```csharp
 var icon = GraphicsExtensions.ExtractIconFromNetShell(
     (int)NetShellIconID.WirelessNetwork, 
@@ -196,6 +204,7 @@ if (icon != null)
 ```
 
 #### With Image List
+
 ```csharp
 var imageList = new ImageList { ImageSize = new Size(32, 32) };
 
@@ -227,7 +236,7 @@ treeView1.ImageList = imageList;
 ### 🔍 Troubleshooting
 
 | Problem | Solution |
-|---------|----------|
+| --- | --- |
 | Returns `null` | Icon doesn't exist at that index, or DLL not found |
 | Wrong size | Use different `IconSize` value |
 | Blurry icon | Extract at exact display size, don't scale |
@@ -247,7 +256,7 @@ treeView1.ImageList = imageList;
 
 ### 🚀 Total Available Icons
 
-```
+```text
 imageres.dll      300+
 shell32.dll       300+
 ieframe.dll       200+

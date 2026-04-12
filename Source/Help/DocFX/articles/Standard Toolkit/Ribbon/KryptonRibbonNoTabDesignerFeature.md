@@ -105,6 +105,7 @@ private void UpdateVerbStatus()
 ### Event Handlers
 
 #### OnNoTab Method
+
 ```csharp
 private void OnNoTab(object? sender, EventArgs e)
 {
@@ -132,6 +133,7 @@ private void OnNoTab(object? sender, EventArgs e)
 ```
 
 #### OnSetTab Method
+
 ```csharp
 private void OnSetTab(object? sender, EventArgs e)
 {
@@ -164,6 +166,7 @@ private void OnSetTab(object? sender, EventArgs e)
 ## Use Cases
 
 ### 1. Toolbar Mode
+
 When you want to use the ribbon as a toolbar without visible tab headers:
 
 ```csharp
@@ -172,6 +175,7 @@ kryptonRibbon1.SelectedTab = null;
 ```
 
 ### 2. Dynamic Tab Management
+
 For applications that need to dynamically show/hide tabs:
 
 ```csharp
@@ -186,6 +190,7 @@ if (kryptonRibbon1.RibbonTabs.Count > 0)
 ```
 
 ### 3. Context-Sensitive Ribbons
+
 For ribbons that change behavior based on application state:
 
 ```csharp
@@ -229,6 +234,7 @@ Potential future enhancements could include:
 ## Compatibility
 
 This feature is compatible with:
+
 - .NET Framework 4.7.2 and later
 - .NET 8.0 Windows and later
 - Visual Studio 2022 and later

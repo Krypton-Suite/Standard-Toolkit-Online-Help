@@ -1,6 +1,5 @@
 # Workspace Layout
 
-  
 **Cells and Sequences**  
 You can create any complexity of workspace layout by combining the
 *KryptonWorkspaceCell* and *KryptonWorkspaceSequences* elements. Each
@@ -12,8 +11,6 @@ can customize the appearance with any of the *Navigator* capabilities. The
 combing sequences within sequences you can create a tree like structure that
 defines the layout hierarchy.
 
- 
-
 **KryptonWorkspace.Root**  
 The starting point for defining the layout is the *Root* property of the
 *KryptonWorkspace* that is actually just a *KryptonWorkspaceSequence* instance.
@@ -22,12 +19,8 @@ determines the direction that child elements are positioned. To demonstrate
 Figure 1 has a *Root* sequence with three cells inside. The left image has a
 *Root.Orientation* of *Horizontal* and the right image a value of *Vertical*.
 
- 
+Figure 1 — Horizontal and Vertical orientations.
 
-     
-  *Figure 1 - Horizontal and Vertical orientations*
-
-  
 Children within a sequence are always sized to fill the opposite direction. So
 in the left image we have a horizontal sequence where each cell is automatically
 defined to be the full height of the area. The height definition of the cell is
@@ -41,17 +34,13 @@ The following hierarchy represents the left hand image:-
 * Cell (Page 2)
 * Cell (Page 3)
 
- 
-
 **Embedded Sequences**  
 To create a more complex layout we need to embed sequence instances inside the
 root sequence. Figure 2 shows a simple design where we have a cell on the left
 and then on the right we have two cells that are arranged in a vertically
 column.  
- 
 
-      
-  *Figure 2 - Sequence with the Root sequence*
+Figure 2 — Sequence with the Root sequence.
 
 The hierarchy of elements looks like the following with the first sequence being
 the *Root* sequence property of the *KryptonWorkspace*.
@@ -62,14 +51,10 @@ the *Root* sequence property of the *KryptonWorkspace*.
 * Cell (Page 2)
 * Cell (Page 3)
 
-
- 
-
 We can keep going and place another sequence in the place of the third cell
 above. In that case we would achieve Figure 3.
 
-      
-  *Figure 3 - Sequence within Sequence within Root sequence*
+Figure 3 — Sequence within Sequence within Root sequence.
 
 This hierarchy of elements now looks like the following.
 
@@ -80,8 +65,6 @@ This hierarchy of elements now looks like the following.
 * Sequence (Horizontal)
 * Cell (Page 3)
 * Cell (Page 4)
-
- 
 
 **Perform Layout**  
 You can make as many changes as you like the workspace hierarchy but no change
@@ -94,8 +77,6 @@ during the layout processing it means you will not receive the
 *WorkspacePageAdding* and *WorkspacePageRemoved* events during your changes to
 the workspace definition. Instead they will occur some time afterwards once
 layout processing is performed by the control.
-
- 
 
 **Compacting**  
 As the user drags and drops pages around the workspace extra sequences are

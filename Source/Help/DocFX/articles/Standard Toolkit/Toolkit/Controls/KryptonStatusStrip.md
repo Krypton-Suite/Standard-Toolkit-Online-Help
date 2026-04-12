@@ -6,7 +6,7 @@ The `KryptonStatusStrip` class provides a Krypton-themed replacement for the sta
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -23,6 +23,7 @@ public KryptonStatusStrip()
 ```
 
 The constructor initializes enhanced features:
+
 - **Krypton Rendering**: Sets `RenderMode` to `ToolStripRenderMode.ManagerRenderMode` for automatic Krypton theming
 - **Palette Integration**: Automatic theme detection and application
 - **Visual States**: Common, Normal, and Disabled state management

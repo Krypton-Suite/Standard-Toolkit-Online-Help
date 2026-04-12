@@ -3,7 +3,7 @@
 ## Theme Overview
 
 | Theme | Description | Transparency | Performance | Best For |
-|-------|-------------|--------------|-------------|----------|
+| --- | --- | --- | --- | --- |
 | **Acrylic Light** | Windows 10 Fluent Design with light colors | High (120-180 alpha) | Moderate | Desktop apps, visual impact |
 | **Acrylic Dark** | Windows 10 Fluent Design with dark colors | High (120-180 alpha) | Moderate | Desktop apps, visual impact |
 | **Mica Light** | Windows 11 Fluent Design with light colors | Subtle (80-120 alpha) | High | Performance-critical apps |
@@ -12,6 +12,7 @@
 ## Quick Start
 
 ### Apply Themes
+
 ```csharp
 // Acrylic Themes
 KryptonManager.GlobalPaletteMode = PaletteMode.AcrylicLight;
@@ -23,6 +24,7 @@ KryptonManager.GlobalPaletteMode = PaletteMode.MicaDark;
 ```
 
 ### Theme Detection
+
 ```csharp
 // Check theme type
 bool isAcrylic = ThemeHelper.IsAcrylicTheme();
@@ -36,7 +38,7 @@ bool isDark = ThemeHelper.IsDarkTheme();
 
 ## File Structure
 
-```
+```text
 Palette Builtin/
 ├── Acrylic/
 │   ├── Bases/PaletteAcrylicBase.cs
@@ -61,11 +63,13 @@ Palette Builtin/
 ## Color Characteristics
 
 ### Transparency Levels
+
 - **Acrylic**: Alpha 120-180 (pronounced transparency)
 - **Mica**: Alpha 80-120 (subtle transparency)
 - **Text**: Alpha 255 (fully opaque for readability)
 
 ### Color Palettes
+
 - **Light Themes**: Semi-transparent white backgrounds
 - **Dark Themes**: Semi-transparent black backgrounds
 - **Accent Colors**: Microsoft blue variants
@@ -73,6 +77,7 @@ Palette Builtin/
 ## Integration Points
 
 ### PaletteMode Enum
+
 ```csharp
 public enum PaletteMode
 {
@@ -85,6 +90,7 @@ public enum PaletteMode
 ```
 
 ### KryptonManager Properties
+
 ```csharp
 // Palette instances
 KryptonManager.PaletteAcrylicLight
@@ -100,6 +106,7 @@ KryptonManager.RenderMica
 ## Customization
 
 ### Modify Transparency
+
 ```csharp
 // In base scheme class
 public override Color ButtonNormalBorder { get; set; } = Color.FromArgb(150, 220, 220, 220);
@@ -107,6 +114,7 @@ public override Color ButtonNormalBorder { get; set; } = Color.FromArgb(150, 220
 ```
 
 ### Create Custom Variants
+
 ```csharp
 // 1. Create custom scheme
 public sealed class PaletteAcrylicCustom_BaseScheme : KryptonColorSchemeBase
@@ -126,10 +134,12 @@ public class PaletteAcrylicCustom : PaletteAcrylicBase
 ## Performance Tips
 
 ### Choose the Right Theme
+
 - **Use Mica** for performance-critical applications
 - **Use Acrylic** for visual impact and modern desktop apps
 
 ### Optimization
+
 - Test on target hardware
 - Consider disabling transparency on low-end devices
 - Apply themes selectively to specific UI elements
@@ -137,11 +147,13 @@ public class PaletteAcrylicCustom : PaletteAcrylicBase
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Theme not applying**: Check `KryptonManager.GlobalPaletteMode`
 2. **No transparency**: Verify `EvalTransparentPaint()` returns `true`
 3. **Performance issues**: Switch to Mica theme or reduce transparency
 
 ### Debug Code
+
 ```csharp
 public static void DebugTheme()
 {
@@ -152,7 +164,8 @@ public static void DebugTheme()
 ```
 
 ## Related Files
-- [Acrylic Documentation](./Acrylic/README.md)
-- [Mica Documentation](./Mica/README.md)
-- [Developer Guide](./FluentDesign-DeveloperGuide.md)
-- [Palette System Documentation](../../Documents/palette-mechanics-intro.md)
+
+- [Acrylic theme (overview)](AcrylicTheme.md)
+- [Mica theme (overview)](MicaTheme.md)
+- [Developer guide](FluentDesignDeveloperGuide.md)
+- [Palette system](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Documents/palette-mechanics-intro.md)

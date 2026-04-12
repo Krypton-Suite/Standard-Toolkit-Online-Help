@@ -1,4 +1,4 @@
-Docking Page Creation
+# Docking Page Creation
 
 **Best Practice**  
 Once you have your docking system up and working your focus will shift to
@@ -8,8 +8,6 @@ use pages in the docking system. In fact the same approach could be used for
 creating pages that are intended for use in the *KryptonNavigator* or
 *KryptonWorkspace*.
 
- 
-
 **Step 1 - Create a User Control**  
 We begin by creating a new user control. Right click your project entry in the
 solution explorer and select '*Add*' followed by '*New Item...*' in order to
@@ -18,12 +16,10 @@ creation. Double click the '*User Control*' option as can be seen in Figure 1.
 This will result in a new user control derived class being created and the
 designer for the control should be opened by default.
 
-![](Images/DockPageC1.png)
+![Figure 1 - Add New Item Dialog](Images/DockPageC1.png)
   
-*Figure 1 - Add New Item Dialog*
+## Figure 1 - Add New Item Dialog
 
-  
-  
 **Step 2 - Design your User Control**  
 This is where you need to use the control designer to build the control content
 that is appropriate for your application. That might be a entry form with many
@@ -32,13 +28,10 @@ tutorial simple we add a single *KryptonButton* by dragging it from the Toolb
 and dropping it on the design surface. This results in the following simple
 appearance as seen in Figure 2.
 
-![](Images/DockPageC2.png)
+![Figure 2 - Designed UserControl](Images/DockPageC2.png)
 
-*Figure 2 - Designed UserControl*
+## Figure 2 - Designed UserControl
 
- 
-
-  
 **Step 3 - Create a Class**  
 To make this user control usable in the docking system we need to add a new
 class. Right click your project entry in the solution explorer and select
@@ -47,11 +40,9 @@ dialog box that presents different items for creation. This click double click
 the '*Class*' option. This will result in a simple class outline being created
 as can be seen in Figure 3.
 
-![](Images/DockPageC3.png)
+![Figure 3 - New Class file](Images/DockPageC3.png)
 
-*Figure 3 - New Class file*
-
- 
+## Figure 3 - New Class file
 
 **Step 4 - Add 'using' Statement**  
 Place an additional 'using' statement at the top of the file so we can refer to
@@ -60,7 +51,6 @@ the *KryptonPage* class.
 ```cs
     using Krypton.Navigator;
 ```
- 
 
 **Step 5 - Inherit from 'KryptonPage'**
 Replace the class definition line so that we create a public class that inherits
@@ -69,7 +59,6 @@ from the *KrytonPage*.
 ```cs
     public class Class1 : KryptonPage
 ```
- 
 
 **Step 6 - Create UserControl in Constructor**  
 We need to add a constructor that creates an instance of the user control we
@@ -100,7 +89,6 @@ looks like the following...
         }  
     }
 ```
- 
 
 **Step 7 - Use the custom page**  
 Using our custom page is now trivial. Here is an example of adding the page

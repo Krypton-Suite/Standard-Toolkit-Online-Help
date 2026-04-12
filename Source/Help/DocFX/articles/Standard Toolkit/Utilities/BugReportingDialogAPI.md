@@ -2,7 +2,7 @@
 
 ## Namespace
 
-```
+```csharp
 Krypton.Utilities
 ```
 
@@ -14,7 +14,7 @@ Static class providing the main API for displaying bug reporting dialogs.
 
 **Assembly:** `Krypton.Utilities.dll`
 
-#### Methods
+#### KryptonBugReportingDialog methods
 
 ##### Show(Exception?, BugReportEmailConfig)
 
@@ -25,12 +25,14 @@ public static DialogResult Show(Exception? exception, BugReportEmailConfig email
 Displays the bug reporting dialog with an optional exception.
 
 **Parameters:**
+
 - `exception` (`Exception?`): Optional exception to include in the bug report
 - `emailConfig` (`BugReportEmailConfig`): Email configuration (required, cannot be null)
 
 **Returns:** `DialogResult.OK` if sent successfully; `DialogResult.Cancel` otherwise
 
 **Exceptions:**
+
 - `ArgumentNullException`: Thrown when `emailConfig` is null
 
 **Remarks:**
@@ -47,11 +49,13 @@ public static DialogResult Show(BugReportEmailConfig emailConfig)
 Displays the bug reporting dialog without an exception.
 
 **Parameters:**
+
 - `emailConfig` (`BugReportEmailConfig`): Email configuration (required, cannot be null)
 
 **Returns:** `DialogResult.OK` if sent successfully; `DialogResult.Cancel` otherwise
 
 **Exceptions:**
+
 - `ArgumentNullException`: Thrown when `emailConfig` is null
 
 ---
@@ -62,7 +66,7 @@ Configuration class for SMTP email settings.
 
 **Assembly:** `Krypton.Utilities.dll`
 
-#### Constructor
+#### BugReportEmailConfig constructor
 
 ##### BugReportEmailConfig()
 
@@ -71,6 +75,7 @@ public BugReportEmailConfig()
 ```
 
 Initializes a new instance with default values:
+
 - `SmtpPort`: 587
 - `UseSsl`: true
 - All string properties: `string.Empty`
@@ -229,9 +234,9 @@ public BugReportEmailService()
 
 Initializes a new instance of the `BugReportEmailService` class.
 
-#### Methods
+#### BugReportEmailService methods
 
-##### SendBugReport(BugReportEmailConfig, string, string, List<string>?)
+##### SendBugReport(BugReportEmailConfig, string, string, List&lt;string&gt;?)
 
 ```csharp
 public bool SendBugReport(
@@ -244,6 +249,7 @@ public bool SendBugReport(
 Sends a bug report email.
 
 **Parameters:**
+
 - `config` (`BugReportEmailConfig`): Email configuration (required, cannot be null)
 - `subject` (`string`): Email subject line
 - `body` (`string`): Email body content
@@ -252,10 +258,12 @@ Sends a bug report email.
 **Returns:** `true` if the email was sent successfully; otherwise, `false`
 
 **Exceptions:**
+
 - `ArgumentNullException`: Thrown when `config` is null
 - `InvalidOperationException`: Thrown when `SmtpServer` or `ToEmail` is not configured
 
 **Remarks:**
+
 - Only existing files will be attached (non-existent paths are skipped)
 - Email body is sent as plain text (not HTML)
 - All exceptions during sending are caught and return `false`
@@ -268,7 +276,7 @@ Helper class for integrating bug reporting with exception dialogs.
 
 **Assembly:** `Krypton.Utilities.dll`
 
-#### Methods
+#### BugReportingHelper methods
 
 ##### ShowExceptionWithBugReporting(Exception, BugReportEmailConfig, Color?, bool?, bool?)
 
@@ -284,6 +292,7 @@ public static void ShowExceptionWithBugReporting(
 Shows an exception dialog with integrated bug reporting capability.
 
 **Parameters:**
+
 - `exception` (`Exception`): The exception to display (required)
 - `emailConfig` (`BugReportEmailConfig`): Email configuration for bug reporting (required)
 - `highlightColor` (`Color?`): Optional highlight color for the exception dialog
@@ -301,7 +310,7 @@ Localizable string resources for the bug reporting dialog.
 
 **Assembly:** `Krypton.Utilities.dll`
 
-#### Constructor
+#### KryptonBugReportingDialogStrings constructor
 
 ##### KryptonBugReportingDialogStrings()
 
@@ -311,7 +320,7 @@ public KryptonBugReportingDialogStrings()
 
 Initializes a new instance with default English strings.
 
-#### Properties
+#### KryptonBugReportingDialogStrings properties
 
 All properties are of type `string` and are localizable:
 
@@ -333,7 +342,7 @@ All properties are of type `string` and are localizable:
 - `InvalidEmail`: Invalid email error message
 - `RequiredFields`: Required fields error message
 
-#### Methods
+#### KryptonBugReportingDialogStrings methods
 
 ##### Reset()
 
@@ -371,6 +380,7 @@ public static void Show(
 ```
 
 **Parameters:**
+
 - `bugReportCallback` (`Action<Exception>?`): Optional callback invoked when "Report Bug" button is clicked
 
 **Remarks:**
@@ -425,6 +435,5 @@ For convenience, the following types are used:
 ## See Also
 
 - [Full Documentation](BugReportingDialog.md)
-- [Quick Reference](BugReportingDialog-QuickReference.md)
-- [KryptonExceptionDialog API](../API/KryptonExceptionDialog.md)
-
+- [Quick Reference](BugReportingDialogQuickReference.md)
+- [KryptonExceptionDialog API](KryptonExceptionDialog.md)

@@ -80,12 +80,13 @@
 <li><strong>Archive Generation</strong>: Creates ZIP and TAR.GZ distribution archives</li>
 <li><strong>CI/CD Integration</strong>: Full GitHub Actions workflow support</li>
 <li><strong>Modern Build Tool</strong>: Optional Terminal UI tool for interactive builds</li>
+<li><strong>Artifacts output layout (optional)</strong>: MSBuild can place binaries under <code>artifacts/bin/&lt;Configuration&gt;/</code> and packages under <code>artifacts/packages/&lt;Configuration&gt;/</code> when <code>UseArtifactsOutput=true</code> (default is legacy <code>Bin/</code>). Script <code>.proj</code> files and GitHub Actions use the shared path properties so both layouts work.</li>
 </ul>
 <h2 id="build-system-components">Build System Components</h2>
 <h3 id="1-msbuild-project-files-proj">1. MSBuild Project Files (<code>.proj</code>)</h3>
 <p>Located in <code>Scripts/</code>:</p>
 <ul>
-<li><code>build.proj</code> - Stable/Release builds</li>
+<li><code>Scripts/Build/build.proj</code> - Stable/Release builds</li>
 <li><code>canary.proj</code> - Beta pre-release builds</li>
 <li><code>nightly.proj</code> - Alpha nightly builds</li>
 <li><code>debug.proj</code> - Debug builds</li>
@@ -94,7 +95,7 @@
 <h3 id="2-windows-command-scripts-cmd">2. Windows Command Scripts (<code>.cmd</code>)</h3>
 <p>Located in <code>Scripts/</code>:</p>
 <ul>
-<li><code>build-stable.cmd</code> - Build stable releases</li>
+<li><code>Scripts/VS2022/build-stable.cmd</code> - Build stable releases (or <code>run.cmd</code> for interactive menu)</li>
 <li><code>build-canary.cmd</code> - Build canary releases</li>
 <li><code>build-nightly.cmd</code> - Build nightly releases</li>
 <li><code>buildsolution.cmd</code> - Interactive solution builder</li>
@@ -103,9 +104,9 @@
 </ul>
 <h3 id="3-directorybuild-files">3. Directory.Build Files</h3>
 <ul>
-<li><code>Directory.Build.props</code> (root) - Global build properties and versioning</li>
-<li><code>Source/Krypton Components/Directory.Build.props</code> - Component-specific properties</li>
-<li><code>Source/Krypton Components/Directory.Build.targets</code> - Component-specific targets</li>
+<li><code>Directory.Build.props</code> (root) - Global build properties, versioning, and shared output roots (<code>KryptonBuildOutputRoot</code>, <code>KryptonPackageOutputRoot</code>, <code>UseArtifactsOutput</code>)</li>
+<li><code>Source/Krypton Components/Directory.Build.props</code> - Component-specific properties (including <code>PackageOutputPath</code> derived from <code>KryptonPackageOutputRoot</code>)</li>
+<li><code>Source/Krypton Components/Directory.Build.targets</code> - Component-specific targets (optional <code>OutputPath</code> override when <code>UseArtifactsOutput=true</code>)</li>
 </ul>
 <h3 id="4-github-actions-workflows">4. GitHub Actions Workflows</h3>
 <p>Located in <code>.github/workflows/</code>:</p>
@@ -169,7 +170,7 @@
 <p>The build system supports multiple target framework monikers:</p>
 <ul>
 <li><strong>Full Framework</strong>: <code>net472</code>, <code>net48</code>, <code>net481</code></li>
-<li><strong>.NET</strong>: <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code></li>
+<li><strong>.NET</strong>: <code>net8.0-windows</code>, <code>net9.0-windows</code>, <code>net10.0-windows</code>, <code>net11.0-windows</code></li>
 </ul>
 <p>Two packaging modes:</p>
 <ul>
@@ -177,7 +178,7 @@
 <li><strong>All</strong> (<code>TFMs=all</code>): All supported frameworks</li>
 </ul>
 <h2 id="directory-structure">Directory Structure</h2>
-<pre><code>Standard-Toolkit/
+<pre><code class="lang-text">Standard-Toolkit/
 ├── Scripts/              # Build scripts and project files
 │   ├── *.cmd            # Windows batch scripts
 │   ├── *.proj           # MSBuild project files
@@ -189,26 +190,31 @@
 │       ├── Krypton.Navigator/
 │       ├── Krypton.Workspace/
 │       └── Krypton.Docking/
-├── Bin/                 # Build outputs
+├── Bin/                 # Default build outputs (when UseArtifactsOutput is false or unset)
 │   ├── Debug/
 │   ├── Release/
 │   ├── Canary/
 │   ├── Nightly/
 │   └── Packages/        # NuGet packages
+├── artifacts/           # Optional outputs when UseArtifactsOutput=true
+│   ├── bin/             # Per-configuration binaries (mirrors Bin/&lt;Configuration&gt;/ layout)
+│   └── packages/        # NuGet packages (mirrors Bin/Packages/&lt;Configuration&gt;/)
 ├── Logs/                # Build logs
 └── Documents/
     └── Workflows/       # Build documentation
 </code></pre>
 <h2 id="build-outputs">Build Outputs</h2>
-<h3 id="binary-outputs">Binary Outputs</h3>
-<p>Location: <code>Bin/&lt;Configuration&gt;/</code></p>
+<h3 id="binary-outputs">Binary outputs</h3>
+<p><strong>Default (legacy)</strong>: <code>Bin/&lt;Configuration&gt;/</code></p>
+<p><strong>Artifacts mode</strong>: <code>artifacts/bin/&lt;Configuration&gt;/</code> when building with <code>/p:UseArtifactsOutput=true</code></p>
 <p>Each configuration produces outputs for all target frameworks in separate subdirectories:</p>
 <ul>
 <li><code>net472/</code>, <code>net48/</code>, <code>net481/</code></li>
-<li><code>net8.0-windows/</code>, <code>net9.0-windows/</code>, <code>net10.0-windows/</code></li>
+<li><code>net8.0-windows/</code>, <code>net9.0-windows/</code>, <code>net10.0-windows/</code>, <code>net11.0-windows/</code></li>
 </ul>
-<h3 id="nuget-packages">NuGet Packages</h3>
-<p>Location: <code>Bin/Packages/&lt;Configuration&gt;/</code></p>
+<h3 id="nuget-packages">NuGet packages</h3>
+<p><strong>Default (legacy)</strong>: <code>Bin/Packages/&lt;Configuration&gt;/</code></p>
+<p><strong>Artifacts mode</strong>: <code>artifacts/packages/&lt;Configuration&gt;/</code> when <code>UseArtifactsOutput=true</code></p>
 <p>Generated packages:</p>
 <ul>
 <li><code>Krypton.Toolkit[.Suffix].&lt;version&gt;.nupkg</code></li>
@@ -218,8 +224,8 @@
 <li><code>Krypton.Docking[.Suffix].&lt;version&gt;.nupkg</code></li>
 <li>Symbol packages: <code>*.snupkg</code> (for Canary and Nightly)</li>
 </ul>
-<h3 id="distribution-archives">Distribution Archives</h3>
-<p>Location: <code>Bin/&lt;Configuration&gt;/Zips/</code></p>
+<h3 id="distribution-archives">Distribution archives</h3>
+<p>Location: under the active binary root, e.g. <code>Bin/&lt;Configuration&gt;/Zips/</code> or <code>artifacts/bin/&lt;Configuration&gt;/Zips/</code>.</p>
 <p>Generated archives:</p>
 <ul>
 <li><code>Krypton-&lt;Channel&gt;_&lt;yyyyMMdd&gt;.zip</code></li>
@@ -306,7 +312,7 @@ msbuild build.proj /t:CreateAllReleaseArchives
 <li><a href="DirectoryBuildConfiguration.html">Directory.Build Configuration</a> - MSBuild configuration</li>
 <li><a href="VersionManagement.html">Version Management</a> - Versioning strategy</li>
 <li><a href="NuGetPackaging.html">NuGet Packaging</a> - Package creation and publishing</li>
-<li><a href="GitHubActionsWorkflows.md">GitHub Actions Workflows</a> - CI/CD documentation</li>
+<li><a href="Current/BuildWorkflow.html">Build workflow (build.yml)</a> and <a href="Current/ReleaseWorkflow.html">Release workflow (release.yml)</a> - CI/CD documentation</li>
 <li><a href="ModernBuildTool.html">ModernBuild Tool</a> - Interactive build tool</li>
 <li><a href="Troubleshooting.html">Troubleshooting</a> - Common issues and solutions</li>
 </ul>

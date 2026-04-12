@@ -6,7 +6,6 @@ which displays no mechanism for the user to switch pages, to the sophisticated
 such as *Outlook - Full*, where the user can randomly switch to any page using a
 pleasant user interface experience.  
   
-  
 **Modes of Operation**  
 One of the big advantages this control provides is the use of a single mode
 property to switch the entire user interface. This simplifies application
@@ -18,32 +17,29 @@ user interface. Instead just change the mode and you switch from a traditional
 TabControl style to a header group style. Figure 1 shows examples of two
 different modes that are achieved by just altering the mode property.  
   
-![](Images/NavMode1.png)![](Images/NavMode5.png)
+![Figure 1 - Two example modes (first)](Images/NavMode1.png) ![Figure 1 - Two example modes (second)](Images/NavMode5.png)
 
-*Figure 1 - Two Example Modes*
+## Figure 1 - Two Example Modes
 
 See [Navigator Modes](NavigatorModes.md) for a detailed list of all the different
 modes available.
 
- 
-
 **Navigator Properties**  
 Properties that control the appearance and operation of the navigator are
 concentrated in two different categories. Figure 2 shows the set of properties
-in the *Visuals* category; these are explained here and in the [Popup Pages Properties](Navigator PopupPages.md) and [ToolTips Properties](NavigatorToolTips.md) sections.
+in the *Visuals* category; these are explained here and in the [Popup Pages Properties](NavigatorPopupPages.md) and [ToolTips Properties](NavigatorToolTips.md) sections.
 Figure 3 shows the *Visuals (Modes)* category which contains mode specific
 properties that are described in detail in the [Bar Modes](NavigatorBarModes.md),
 [Button Modes](NavigatorButtonModes.md), [Group Modes](NavigatorGroupModes.md), [Header Modes](NavigatorHeaderModes.md), [Outlook Modes](NavigatorOutlookModes.md), [Panel Modes](NavigatorPanelModes.md) and [Stack Modes](NavigatorStackModes.md) sections.
 
-![](Images/NavProperties.png)
+![Figure 2 - Visuals](Images/NavProperties.png)
   
-*Figure 2 - Visuals*  
+## Figure 2 - Visuals
 
-![](Images/NavProperties2.png)
+![Figure 3 - Visuals (Modes)](Images/NavProperties2.png)
   
-*Figure 3 - Visuals (Modes)*
+## Figure 3 - Visuals (Modes)
 
-  
 **Navigator Events**  
 Information about all the different events exposed by the navigator are found in
 the [Selection Events](NavigatorSelectionEvents.md), [Action Events](NavigatorActionEvents.md) and [Other Events](NavigatorOtherEvents.md) sections. At a minimum you are recommended to read up on
@@ -51,7 +47,6 @@ the selection events as they are crucial in understanding how to correctly
 handle selection changes and provide fine grained control over selection
 activity.
 
-  
 **Pages Property**  
 To add, remove and modify the collection of *KryptonPage* instances associated
 with the control you just need click the property value button for the *Pages*
@@ -60,11 +55,9 @@ property. This will then display the collection editor as can be seen in Figure
 pages will not be reflected immediately in the navigator; not until you press
 *OK* and leave the collection editor does the control get refreshed.
 
-![](Images/UserPage4.png)
+![Figure 4 - KryptonPage Collection Editor](Images/UserPage4.png)
   
-*Figure 4 - KryptonPage Collection Editor*
-
- 
+## Figure 4 - KryptonPage Collection Editor
 
 **PageBackStyle Property**  
 The navigator allows you to use the *PageBackStyle* property to define the
@@ -73,9 +66,9 @@ appearance of the selected *KryptonPage* background. The default value of
 change the value to any of the background styles. Figure 5 shows the default
 style on the left and the *Header - Primary* style on the right.
 
-![](Images/NavProperties4.png)
+![Figure 5 - PageBackStyle styles](Images/NavProperties4.png)
 
-*Figure 5 - PageBackStyle Styles*
+## Figure 5 - PageBackStyle Styles
 
 **KryptonPage**  
 Each *KryptonPage* has the ability to override the appearance of the navigator
@@ -83,7 +76,6 @@ when the page is selected and also, to a lesser extent, when not selected. Thi
 is useful if you want a particular page to have a different color border or text
 for its display. Read the [KryptonPage](NavigatorKryptonPage.md) section for a detailed
 description of how to achieve this.  
- 
 
 **Five States**  
 As with all the *Krypton* controls, each possible state of the control has a set
@@ -102,7 +94,6 @@ will only find properties for customizing the *Group* appearance inside the
 appear for some of the bar modes make use of all states as they need to
 represent the three states of *Tracking*, *Pressed* and *Selected* modes.  
   
-  
 **Common State**  
 To speed up the customization process an extra *StateCommon* property has been
 provided. The settings from this are used if no override has been defined for
@@ -112,7 +103,6 @@ precedence and so if you define a property in both the *StateNormal* and
 control is in the *Normal* state. Only if the *StateNormal* value is not
 overridden will it look in *StateCommon*.  
   
-  
 **Override States**  
 There is an additional state related property called *OverrideFocus* is used to
 alter the appearance of the control when it has the focus. Notice that the
@@ -120,7 +110,6 @@ property starts with the *Override* prefix instead of the usual *State*. This i
 because it does not relate to a specific control state such as *Normal* or
 *Tracking*. Instead it is applied to any of the other states and is used to
 override the appearance that would otherwise be shown.  
-  
   
 **Mnemonics**  
 In order to use mnemonics for the quick selection of different pages you need to

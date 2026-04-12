@@ -2,7 +2,7 @@
 
 The following articles contain answers to common questions.
 
-**Support**
+## Support
 
 * [Breaking Changes](Support/BreakingChanges.md)
 * [Designer Fixes with .NET](Support/DesignerFix.md)

@@ -10,19 +10,19 @@ Following are a detailed description of the different types of group container.
 
 The group separator is the simplest of all the group containers and should be used to draw a visual separator between other group containers. This container does not allow you to add any child items. Figure 1 shows an example of a group with six group separators at design time. On the right hand side you will notice the New block, this is used at design time to add another group container and when pressed will show a context menu with the types of container available for adding. At runtime this helper element is not present. There are only two properties of interest exposed by the group separator as can be seen in Figure 2.
 
-![](Images/RibbonSeparatorExample.png)
+![Ribbon group at design time showing several group separator containers](Images/RibbonSeparatorExample.png)
 
-*Figure 1 - Group Separator Design Time Appearance*
+Figure 1 - Group Separator Design Time Appearance.
 
-![](Images/RibbonSeparatorProps.png)
+![Group separator container properties in the Properties window](Images/RibbonSeparatorProps.png)
 
-*Figure 2 - Group Separator Properties*
+Figure 2 - Group Separator Properties.
 
-**Visible**
+### Visible (group separator)
 
-Use this property to specify if the group triple should be visible at runtime. 
+Use this property to specify if the group separator should be visible at runtime.
 
-**Tag**
+### Tag (group separator)
 
 Associate application specific information with the object instance by using this property.
 
@@ -30,70 +30,70 @@ Associate application specific information with the object instance by using thi
 
 As the name suggests the group triple container is used to display a maximum of three child items. Figure 3 shows an example of a group at design time that contains a single group triple instance with three child group button items. The group triple at runtime has no user interface but at design time shows the dark blue area around the three buttons. This dark blue area can be used to select the group triple container instance and allow you to update the properties of the instance in the Properties Window. On the right hand side you will notice the New block, this is used at design time to add another group container and when pressed will show a context menu with the types of container available for adding. At runtime neither the dark blue or New button will be present. Figure 4 shows a list of the properties you can modify for the group triple instance.
 
-![](Images/RibbonTripleImage.png)
+![Ribbon group at design time with a group triple and three child buttons](Images/RibbonTripleImage.png)
 
-*Figure 3 - Group Triple Design Time Appearance*
+Figure 3 - Group Triple Design Time Appearance.
 
-![](Images/RibbonTripleProps.png)
+![Group triple container properties in the Properties window](Images/RibbonTripleProps.png)
 
-*Figure 4 - Group Triple Properties*
+Figure 4 - Group Triple Properties.
 
-**Visible**
+### Visible (group triple)
 
 Use this property to specify if the group triple should be visible at runtime.
 
-**Tag**
+### Tag (group triple)
 
 Associate application specific information with the object instance by using this property.
 
-**ItemAlignment**
+### ItemAlignment
 
 Determines how items are horizontally aligned when in the medium and small settings.
 
-**Items**
+### Items (group triple)
 
 A collection property that contains a maximum of three child items.
 
-**MaximumSize**
+### MaximumSize (group triple)
 
-**MinimumSize**
+### MinimumSize (group triple)
 
-These two properties are used to determine the maximum and minimum sizing used for the group at runtime. The maximum size is always the size used if there is enough room for the group to size fully. If there is not enough room then each intermediate size is used until the minimum is reached. The group triple never sizes its child items smaller than the minimum setting. Figure 5 shows the group triple at runtime in each of the three possible size values of *Large*, *Medium* and *Small*. 
+These two properties are used to determine the maximum and minimum sizing used for the group at runtime. The maximum size is always the size used if there is enough room for the group to size fully. If there is not enough room then each intermediate size is used until the minimum is reached. The group triple never sizes its child items smaller than the minimum setting. Figure 5 shows the group triple at runtime in each of the three possible size values of *Large*, *Medium* and *Small*.
 
-![](Images/RibbonTripleSizes.png)
+![Group triple at runtime in Large, Medium, and Small size modes](Images/RibbonTripleSizes.png)
 
-*Figure 5 - Group Triple Sizing - Large, Medium and Small*
+Figure 5 - Group Triple Sizing - Large, Medium and Small.
 
 ## Group Container Lines
 
 The group lines container is used to layout child items over either two or three horizontal lines. Figure 6 shows an example of a group at design time that contains a single group lines instance with four child group button items. The group lines at runtime has no user interface but at design time shows the dark blue area around the three buttons. This dark blue area can be used to select the group lines container instance and allow you to update the properties of the instance in the *Properties Window*. On the right hand side you will notice the *New* block, this is used at design time to add another group container and when pressed will show a context menu with the types of container available for adding. At runtime neither the dark blue or New button will be present. Figure 7 shows a list of the properties you can modify for the group line instance.
 
-![](Images/RibbonLinesImage.png)
+![Ribbon group at design time with a group lines container and child buttons](Images/RibbonLinesImage.png)
 
-*Figure 6 - Group Lines Design Time Appearance*
+Figure 6 - Group Lines Design Time Appearance.
 
-![](Images/RibbonTripleProps.png)
+![Group lines container properties in the Properties window](Images/RibbonTripleProps.png)
 
-*Figure 7 - Group Lines Properties*
+Figure 7 - Group Lines Properties.
 
-**Visible**
+### Visible (group lines)
 
 Use this property to specify if the group lines should be visible at runtime.
 
-**Items**
+### Items (group lines)
 
 A collection property that contains a zero or more child items.
 
-**MaximumSize**
+### MaximumSize (group lines)
 
-**MinimumSize**
+### MinimumSize (group lines)
 
-These two properties are used to determine the maximum and minimum sizing used for the group at runtime. The maximum size is always the size used if there is enough room for the group to size fully. If there is not enough room then each intermediate size is used until the minimum is reached. The group triple never sizes its child items smaller than the minimum setting. Figure 8 shows the group triple at runtime in each of the three possible size values of *Large*, *Medium* and *Small*. 
+These two properties are used to determine the maximum and minimum sizing used for the group at runtime. The maximum size is always the size used if there is enough room for the group to size fully. If there is not enough room then each intermediate size is used until the minimum is reached. The group triple never sizes its child items smaller than the minimum setting. Figure 8 shows the group triple at runtime in each of the three possible size values of *Large*, *Medium* and *Small*.
 
-![](Images/RibbonLinesSizing.png)
+![Group lines container at runtime in Large, Medium, and Small size modes](Images/RibbonLinesSizing.png)
 
-*Figure 8 - Group Line Sizing - Large, Medium and Small*
+Figure 8 - Group Line Sizing - Large, Medium and Small.
 
-**Tag**
+### Tag (group lines)
 
 Associate application specific information with the object instance by using this property.

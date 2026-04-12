@@ -12,24 +12,28 @@
 ## Key Features
 
 ### Modern Toggle Interface
+
 - Smooth animated transitions
 - Draggable knob support
 - iOS/Android-style appearance
 - Keyboard navigation support
 
 ### Visual Effects
+
 - Gradient knob rendering
 - Emboss shadow effects
 - Customizable corner rounding
 - On/Off text labels
 
 ### Palette Integration
+
 - Full Krypton theme support
 - State-based styling (Normal, Tracking, Pressed, Disabled)
 - Theme color extraction
 - Custom color overrides
 
 ### Animation
+
 - Smooth knob sliding animation
 - Gradient color transitions
 - Configurable animation speed
@@ -48,6 +52,7 @@ public KryptonToggleSwitch()
 ```
 
 **Default Settings:**
+
 - `Checked` = `false`
 - `Size` = `90 x 28` (adjusts based on padding)
 - Double buffered rendering enabled
@@ -62,6 +67,7 @@ public KryptonToggleSwitch()
 ### Core Properties
 
 #### Checked
+
 Gets or sets whether the toggle switch is in the ON position.
 
 ```csharp
@@ -74,6 +80,7 @@ public bool Checked { get; set; }
 **Default:** `false`
 
 **Example:**
+
 ```csharp
 kryptonToggleSwitch1.Checked = true; // Turn ON
 kryptonToggleSwitch1.Checked = false; // Turn OFF
@@ -87,6 +94,7 @@ kryptonToggleSwitch1.Checked = !kryptonToggleSwitch1.Checked;
 ### Appearance States
 
 #### StateCommon
+
 Gets access to common appearance settings that other states can override.
 
 ```csharp
@@ -97,6 +105,7 @@ public PaletteTripleRedirect StateCommon { get; }
 ```
 
 **Example:**
+
 ```csharp
 kryptonToggleSwitch1.StateCommon.Back.Color1 = Color.LightGray;
 kryptonToggleSwitch1.StateCommon.Border.Width = 2;
@@ -106,6 +115,7 @@ kryptonToggleSwitch1.StateCommon.Border.Rounding = 15;
 ---
 
 #### StateNormal
+
 Gets access to normal state appearance settings.
 
 ```csharp
@@ -118,6 +128,7 @@ public PaletteTriple StateNormal { get; }
 ---
 
 #### StateTracking
+
 Gets access to tracking (hover) state appearance settings.
 
 ```csharp
@@ -128,11 +139,13 @@ public PaletteTriple StateTracking { get; }
 ```
 
 **Remarks:**
+
 - Applied when mouse hovers over the control
 
 ---
 
 #### StatePressed
+
 Gets access to pressed state appearance settings.
 
 ```csharp
@@ -145,6 +158,7 @@ public PaletteTriple StatePressed { get; }
 ---
 
 #### StateDisabled
+
 Gets access to disabled state appearance settings.
 
 ```csharp
@@ -159,6 +173,7 @@ public PaletteTriple StateDisabled { get; }
 ### Toggle Switch Customization
 
 #### ToggleSwitchValues
+
 Gets or sets the toggle switch visual customization options.
 
 ```csharp
@@ -171,6 +186,7 @@ public ToggleSwitchValues ToggleSwitchValues { get; set; }
 **Properties Available in ToggleSwitchValues:**
 
 ##### OnColor / OffColor
+
 Sets the color for ON and OFF states when not using theme colors.
 
 ```csharp
@@ -179,6 +195,7 @@ kryptonToggleSwitch1.ToggleSwitchValues.OffColor = Color.Red;
 ```
 
 ##### UseThemeColors
+
 Determines whether to use colors from the current theme.
 
 ```csharp
@@ -186,6 +203,7 @@ kryptonToggleSwitch1.ToggleSwitchValues.UseThemeColors = true;
 ```
 
 ##### EnableKnobGradient
+
 Enables gradient rendering on the knob.
 
 ```csharp
@@ -193,6 +211,7 @@ kryptonToggleSwitch1.ToggleSwitchValues.EnableKnobGradient = true;
 ```
 
 ##### GradientDirection
+
 Sets the gradient direction when gradient is enabled.
 
 ```csharp
@@ -200,6 +219,7 @@ kryptonToggleSwitch1.ToggleSwitchValues.GradientDirection = LinearGradientMode.V
 ```
 
 ##### ShowText
+
 Determines whether to show ON/OFF text labels.
 
 ```csharp
@@ -207,6 +227,7 @@ kryptonToggleSwitch1.ToggleSwitchValues.ShowText = true;
 ```
 
 ##### OnlyShowColorOnKnob
+
 When true, only the knob shows color; background remains theme-colored.
 
 ```csharp
@@ -214,6 +235,7 @@ kryptonToggleSwitch1.ToggleSwitchValues.OnlyShowColorOnKnob = true;
 ```
 
 ##### EnableEmbossEffect
+
 Enables a shadow/emboss effect for depth.
 
 ```csharp
@@ -221,6 +243,7 @@ kryptonToggleSwitch1.ToggleSwitchValues.EnableEmbossEffect = true;
 ```
 
 ##### CornerRadius
+
 Sets the corner rounding radius.
 
 ```csharp
@@ -245,6 +268,7 @@ The following base Control properties are hidden as they're not applicable:
 ## Methods
 
 ### ResetToggleSwitchValues()
+
 Resets the ToggleSwitchValues property to default values.
 
 ```csharp
@@ -252,6 +276,7 @@ public void ResetToggleSwitchValues()
 ```
 
 **Example:**
+
 ```csharp
 kryptonToggleSwitch1.ResetToggleSwitchValues(); // Reset all customizations
 ```
@@ -261,6 +286,7 @@ kryptonToggleSwitch1.ResetToggleSwitchValues(); // Reset all customizations
 ## Events
 
 ### CheckedChanged
+
 Occurs when the value of the Checked property changes.
 
 ```csharp
@@ -269,6 +295,7 @@ public event EventHandler CheckedChanged
 ```
 
 **Example:**
+
 ```csharp
 kryptonToggleSwitch1.CheckedChanged += (s, e) =>
 {
@@ -607,7 +634,7 @@ The control uses a timer-based animation system:
 
 ### Rendering Pipeline
 
-```
+```text
 OnPaint
   ├─ Set graphics quality (AntiAlias, HighQuality)
   ├─ Determine current state (Normal/Tracking/Pressed/Disabled)
@@ -754,12 +781,14 @@ public class DashboardPanel : KryptonPanel
 ### vs CheckBox
 
 **KryptonToggleSwitch:**
+
 - ✅ Modern appearance
 - ✅ Animated transitions
 - ✅ Clear ON/OFF indication
 - ❌ Takes more space
 
 **KryptonCheckBox:**
+
 - ✅ Traditional and familiar
 - ✅ Compact
 - ✅ Three-state support
@@ -770,11 +799,13 @@ public class DashboardPanel : KryptonPanel
 ### vs RadioButton
 
 Use **ToggleSwitch** for:
+
 - Single ON/OFF options
 - Feature enable/disable
 - Binary choices with clear states
 
 Use **RadioButton** for:
+
 - Multiple mutually exclusive options
 - Selection from a set of choices
 
@@ -782,7 +813,5 @@ Use **RadioButton** for:
 
 ## See Also
 
-- [KryptonCheckBox](KryptonCheckBox.md) - Traditional checkbox control
-- [KryptonRadioButton](KryptonRadioButton.md) - Radio button control
-- [PaletteTriple](../Palette/PaletteTriple.md) - Triple palette settings
-- [ToggleSwitchValues](../Values/ToggleSwitchValues.md) - Customization values class
+- [KryptonCheckBox](KryptonCheckBox.md) — traditional checkbox control
+- [KryptonRadioButton](KryptonRadioButton.md) — radio button control

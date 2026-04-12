@@ -15,22 +15,25 @@ var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Lo
 ## What You Need to Know
 
 ### The Method
+
 ```csharp
 public static Icon? ExtractIconFromImageres(int iconId, IconSize iconSize = IconSize.Medium, IconSelectionStrategy selectionStrategy = IconSelectionStrategy.OSBased)
 ```
 
 ### Parameters
+
 - **iconId**: Choose from the comprehensive `ImageresIconID` enum (200+ icons available) - cast to `int`
 - **iconSize**: Optional size parameter (defaults to 32x32 pixels)
 - **selectionStrategy**: Optional strategy for theme-aware selection (defaults to OS-based)
 
 ### Returns
+
 - **Icon?**: The extracted icon, or `null` if extraction fails
 
 ## Available Icon Sizes
 
 | Size | Pixels | Use Case |
-|------|--------|----------|
+| --- | --- | --- |
 | `IconSize.Small` | 8x8 | Very small UI elements |
 | `IconSize.Small` | 16x16 | Toolbars, menus |
 | `IconSize.Small` | 20x20 | Standard small icons |
@@ -45,6 +48,7 @@ public static Icon? ExtractIconFromImageres(int iconId, IconSize iconSize = Icon
 ## Common Icon Categories
 
 ### Security Icons
+
 ```csharp
 var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield);
 var lockIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Lock);
@@ -53,6 +57,7 @@ var keyIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Key
 ```
 
 ### User & System Icons
+
 ```csharp
 var userIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.User);
 var usersIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Users);
@@ -61,6 +66,7 @@ var networkIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID
 ```
 
 ### File & Folder Icons
+
 ```csharp
 var folderIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Folder);
 var fileIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.File);
@@ -69,6 +75,7 @@ var fileImageIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIcon
 ```
 
 ### Application Icons
+
 ```csharp
 var settingsIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationSettings);
 var helpIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ApplicationHelp);
@@ -77,6 +84,7 @@ var warningIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID
 ```
 
 ### Media Icons
+
 ```csharp
 var playIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.MediaPlay);
 var pauseIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.MediaPause);
@@ -87,6 +95,7 @@ var volumeIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.
 ## Practical Examples
 
 ### 1. Button Icons
+
 ```csharp
 // Create a button with a shield icon
 var button = new KryptonButton();
@@ -100,6 +109,7 @@ settingsButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresI
 ```
 
 ### 2. Menu Items
+
 ```csharp
 // Add icons to menu items
 var menuItem = new KryptonContextMenuItem("Save");
@@ -110,6 +120,7 @@ helpMenuItem.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIco
 ```
 
 ### 3. Toolbar Icons
+
 ```csharp
 // Create toolbar buttons with system icons
 var toolbar = new KryptonToolStrip();
@@ -127,6 +138,7 @@ toolbar.Items.Add(openButton);
 ```
 
 ### 4. Status Bar Icons
+
 ```csharp
 // Add status indicators
 var statusStrip = new KryptonStatusStrip();
@@ -139,6 +151,7 @@ statusStrip.Items.Add(statusLabel);
 ```
 
 ### 5. Error Handling
+
 ```csharp
 // Safe icon extraction with fallback
 public Image? GetSafeIcon(int iconId, IconSize size = IconSize.Medium)
@@ -161,6 +174,7 @@ var icon = GetSafeIcon((int)ImageresIconID.Shield) ?? Properties.Resources.Defau
 ```
 
 ### 6. Theme-Aware Icons
+
 ```csharp
 // Refresh icons when theme changes
 KryptonManager.GlobalPaletteChanged += (sender, e) =>
@@ -179,6 +193,7 @@ private void RefreshAllIcons()
 ```
 
 ### 7. Conditional Icons
+
 ```csharp
 // Show different icons based on application state
 public void UpdateStatusIcon(bool isConnected)
@@ -191,6 +206,7 @@ public void UpdateStatusIcon(bool isConnected)
 ## Best Practices
 
 ### 1. Choose Appropriate Sizes
+
 ```csharp
 // Use smaller sizes for toolbars and menus
 var toolbarIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.ActionSave, IconSize.Small);
@@ -200,6 +216,7 @@ var buttonIcon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.
 ```
 
 ### 2. Cache Frequently Used Icons
+
 ```csharp
 private static readonly Dictionary<int, Image> _iconCache = new();
 
@@ -218,6 +235,7 @@ public static Image? GetCachedIcon(int iconId, IconSize size = IconSize.Medium)
 ```
 
 ### 3. Handle Null Returns
+
 ```csharp
 // Always check for null returns
 var icon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield);
@@ -233,6 +251,7 @@ else
 ```
 
 ### 4. Dispose Icons Properly
+
 ```csharp
 // Icons should be disposed when no longer needed
 using var icon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield);
@@ -245,6 +264,7 @@ if (icon != null)
 ## Common Use Cases
 
 ### UAC Shield Buttons
+
 ```csharp
 // Create an "Run as Administrator" button
 var adminButton = new KryptonButton();
@@ -253,6 +273,7 @@ adminButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIcon
 ```
 
 ### Security Dialogs
+
 ```csharp
 // Use lock icon for security dialogs
 var securityForm = new KryptonForm();
@@ -260,6 +281,7 @@ securityForm.Icon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIcon
 ```
 
 ### File Operations
+
 ```csharp
 // Use appropriate icons for file operations
 var openButton = new KryptonButton();
@@ -270,6 +292,7 @@ saveButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconI
 ```
 
 ### Application Settings
+
 ```csharp
 // Settings and configuration icons
 var settingsButton = new KryptonButton();
@@ -282,6 +305,7 @@ helpButton.Image = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconI
 ## Troubleshooting
 
 ### Icon Not Found
+
 ```csharp
 // Check if icon extraction failed
 var icon = GraphicsExtensions.ExtractIconFromImageres((int)ImageresIconID.Shield);
@@ -293,6 +317,7 @@ if (icon == null)
 ```
 
 ### Performance Issues
+
 ```csharp
 // For frequently used icons, cache them
 private static Image? _cachedShieldIcon;
@@ -309,6 +334,7 @@ public static Image GetShieldIcon()
 ```
 
 ### Theme Changes
+
 ```csharp
 // Clear cache when theme changes
 KryptonManager.GlobalPaletteChanged += (sender, e) =>

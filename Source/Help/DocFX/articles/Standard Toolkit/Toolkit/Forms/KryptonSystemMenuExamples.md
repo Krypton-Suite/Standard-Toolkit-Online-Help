@@ -721,13 +721,13 @@ public class SystemMenuSettings
 }
 ```
 
-# Additional Notes:
+## Additional Notes
 
- 1. Always dispose of KryptonSystemMenu instances properly
- 2. Handle exceptions when showing menus
- 3. Check menu state before operations
- 4. Use throttling for frequent refresh operations
- 5. Integrate with application settings for persistence
- 6. Consider screen bounds when positioning menus
- 7. Handle theme changes appropriately
- 8. Use the using statement for automatic disposal
+1. Always dispose of KryptonSystemMenu instances properly
+2. Handle exceptions when showing menus
+3. Check menu state before operations
+4. Use throttling for frequent refresh operations
+5. Integrate with application settings for persistence
+6. Consider screen bounds when positioning menus
+7. Handle theme changes appropriately
+8. Use the using statement for automatic disposal

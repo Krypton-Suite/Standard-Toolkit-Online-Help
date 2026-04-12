@@ -7,6 +7,7 @@ This document details the comprehensive designer mode detection and handling imp
 ## Problem Statement
 
 The KryptonForm's themed system menu was interfering with Visual Studio designer operations, specifically:
+
 - Preventing drag and drop of controls from toolbox
 - Blocking designer selection and manipulation
 - Creating intermittent "hit and miss" behavior
@@ -28,7 +29,7 @@ private bool IsInDesignMode()
 }
 ```
 
-#### Detection Methods (in order of reliability):
+#### Detection Methods (in order of reliability)
 
 1. **`LicenseManager.UsageMode`**
    - **Most reliable** during constructor execution
@@ -48,6 +49,7 @@ private bool IsInDesignMode()
 ### Implementation Strategy
 
 #### 1. **Source-Level Disabling**
+
 Instead of working around system menu interference, the solution disables it entirely at the source:
 
 ```csharp
@@ -65,6 +67,7 @@ else
 ```
 
 #### 2. **Runtime Safety Checks**
+
 All system menu operations include runtime design mode checks:
 
 ```csharp
@@ -83,11 +86,13 @@ protected override void ShowSystemMenu(Point screenLocation)
 ### 1. KryptonForm.cs
 
 #### Constructor Changes
+
 - **Conditional service creation** based on `LicenseManager.UsageMode`
 - **Minimal initialization** in design mode
 - **Null-safe property access** throughout
 
 #### Method Updates
+
 - `WndProc()` - Enhanced designer detection
 - `OnWM_NCLBUTTONDOWN()` - Robust design mode checks
 - `ProcessCmdKey()` - Designer-aware keyboard handling
@@ -97,18 +102,21 @@ protected override void ShowSystemMenu(Point screenLocation)
 - `WindowChromeHitTest()` - Designer-transparent hit testing
 
 #### New Methods
+
 - `IsInDesignMode()` - Robust multi-method detection
 
 ### 2. KryptonSystemMenuService.cs
 
-#### Enhanced Methods
+#### Enhanced Methods (KryptonSystemMenuService)
+
 - `HandleRightClick()` - Designer mode detection added
 - `HandleLeftClick()` - Designer mode detection added
 - `HandleKeyboardShortcut()` - Designer mode detection added
 
 ### 3. KryptonSystemMenu.cs
 
-#### Enhanced Methods
+#### Enhanced Methods (KryptonSystemMenu)
+
 - `Show()` - Designer mode detection added
 - `ShowAtFormTopLeft()` - Designer mode detection added
 - `HandleKeyboardShortcut()` - Designer mode detection added
@@ -116,7 +124,9 @@ protected override void ShowSystemMenu(Point screenLocation)
 ### 4. VisualForm.cs (Base Class)
 
 #### Message Handler Updates
+
 All mouse-related message handlers now include designer mode detection:
+
 - `OnWM_NCHITTEST()` - **Critical fix** - prevents hit test interference
 - `OnWM_NCLBUTTONDOWN()` - Mouse down handling
 - `OnWM_NCLBUTTONUP()` - Mouse up handling
@@ -132,17 +142,20 @@ All mouse-related message handlers now include designer mode detection:
 ### 5. Application-Level Message Filters
 
 #### VisualPopupManager.cs
+
 - `PreFilterMessage()` - Global message filtering with design mode detection
 - `IsAnyFormInDesignMode()` - Helper method for application-wide design mode detection
 
 #### ThemeChangeCoordinator.cs
+
 - `ComboCommandFilter.PreFilterMessage()` - Theme change filtering with design mode detection
 - `IsAnyFormInDesignMode()` - Helper method for design mode detection
 
 ## Design Mode Detection Flow
 
 ### 1. Constructor Phase
-```
+
+```text
 KryptonForm Constructor
 ├── Check LicenseManager.UsageMode
 ├── If Designtime: Create minimal _systemMenuValues only
@@ -150,7 +163,8 @@ KryptonForm Constructor
 ```
 
 ### 2. Runtime Phase
-```
+
+```text
 Any System Menu Operation
 ├── Call IsInDesignMode()
 ├── Check LicenseManager.UsageMode
@@ -160,7 +174,8 @@ Any System Menu Operation
 ```
 
 ### 3. Message Handling Phase
-```
+
+```text
 Windows Message Received
 ├── Check IsInDesignMode()
 ├── If Design Mode: Skip processing or return to base
@@ -231,6 +246,7 @@ Windows Message Received
 ## Code Examples
 
 ### Basic Usage
+
 ```csharp
 // Create a KryptonForm with themed system menu
 var form = new KryptonForm();
@@ -241,6 +257,7 @@ form.Text = "My Application";
 ```
 
 ### Advanced Customization
+
 ```csharp
 // Access system menu for customization
 var systemMenu = form.KryptonSystemMenu;
@@ -257,6 +274,7 @@ if (systemMenu != null)
 ```
 
 ### Configuration
+
 ```csharp
 // Configure system menu behavior
 form.SystemMenuValues.ShowOnRightClick = true;   // Enable right-click
@@ -268,11 +286,13 @@ form.SystemMenuValues.Enabled = true;            // Enable system menu
 ## Integration Notes
 
 ### With Other Krypton Components
+
 - **KryptonRibbon**: Automatically integrates with form chrome
 - **KryptonPanel**: InternalPanel provides themed client area
 - **KryptonManager**: Respects global theme settings
 
 ### With Visual Studio Designer
+
 - **Complete Transparency**: No interference with designer operations
 - **Property Support**: All properties available in Properties window
 - **Serialization**: Proper designer serialization support
@@ -280,12 +300,14 @@ form.SystemMenuValues.Enabled = true;            // Enable system menu
 ## Future Enhancements
 
 ### Potential Improvements
+
 1. **Additional Themes**: Support for more icon themes
 2. **Animation**: Smooth menu appearance animations
 3. **Accessibility**: Enhanced screen reader support
 4. **Customization**: More granular menu item control
 
 ### Extensibility Points
+
 1. **Custom Menu Items**: Easy addition of application-specific items
 2. **Theme Integration**: Automatic adaptation to new themes
 3. **Event Handling**: Comprehensive event model for customization
@@ -293,7 +315,7 @@ form.SystemMenuValues.Enabled = true;            // Enable system menu
 
 ## References
 
-- [KryptonForm API Documentation](KryptonForm-API-Reference.md)
-- [System Menu Service Documentation](KryptonSystemMenuService-Documentation.md)
-- [Troubleshooting Guide](KryptonForm-Troubleshooting.md)
-- [Migration Guide](KryptonForm-Migration-Guide.md)
+- [KryptonForm API Documentation](KryptonFormAPIReference.md)
+- [System Menu Service Documentation](KryptonSystemMenuDeveloperGuide.md)
+- [Troubleshooting Guide](KryptonFormTroubleshooting.md)
+- [Migration Guide](KryptonFormMigrationGuide.md)

@@ -32,7 +32,7 @@ public class KryptonSplitter : Splitter
 
 ## Inheritance Hierarchy
 
-```
+```text
 System.Object
   └─ System.MarshalByRefObject
       └─ System.ComponentModel.Component
@@ -52,6 +52,7 @@ var splitter = new KryptonSplitter();
 ```
 
 **Initial Values:**
+
 - `Dock`: `DockStyle.None`
 - `MinSize`: `(25, 25)`
 - `MinExtra`: `25`
@@ -75,6 +76,7 @@ public DockStyle Dock { get; set; }
 ```
 
 **DockStyle Enum Values:**
+
 - `None` - Not docked (default)
 - `Top` - Docked to top edge
 - `Bottom` - Docked to bottom edge
@@ -83,6 +85,7 @@ public DockStyle Dock { get; set; }
 - `Fill` - Fills entire container (not typically used for splitters)
 
 **Example:**
+
 ```csharp
 splitter.Dock = DockStyle.Left;   // Vertical splitter on left
 splitter.Dock = DockStyle.Top;    // Horizontal splitter on top
@@ -92,6 +95,7 @@ splitter.Dock = DockStyle.Bottom; // Horizontal splitter on bottom
 
 **Usage Pattern:**
 Typically used between two docked controls:
+
 1. First control docks to one edge (e.g., `DockStyle.Left`)
 2. Splitter docks to the same edge (e.g., `DockStyle.Left`)
 3. Second control docks to fill remaining space (e.g., `DockStyle.Fill`)
@@ -109,6 +113,7 @@ public Size MinSize { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 splitter.MinSize = new Size(50, 50);  // Minimum 50x50 pixels
 splitter.MinSize = new Size(25, 25);  // Default minimum
@@ -129,12 +134,14 @@ public int MinExtra { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 splitter.MinExtra = 100;  // Adjacent control must be at least 100 pixels
 splitter.MinExtra = 25;   // Default minimum
 ```
 
 **Usage:**
+
 - For vertical splitters (`DockStyle.Left` or `Right`): Minimum width of adjacent control
 - For horizontal splitters (`DockStyle.Top` or `Bottom`): Minimum height of adjacent control
 
@@ -151,11 +158,13 @@ public int SplitPosition { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 splitter.SplitPosition = 200;  // Position splitter 200 pixels from edge
 ```
 
 **Notes:**
+
 - Not browsable in property grid
 - Automatically updated when user drags the splitter
 - Can be set programmatically to position the splitter
@@ -174,11 +183,13 @@ public BorderStyle BorderStyle { get; set; }
 ```
 
 **BorderStyle Enum Values:**
+
 - `None` - No border (default)
 - `FixedSingle` - Single-line border
 - `Fixed3D` - 3D border
 
 **Example:**
+
 ```csharp
 splitter.BorderStyle = BorderStyle.FixedSingle;  // Single-line border
 splitter.BorderStyle = BorderStyle.Fixed3D;      // 3D border
@@ -199,6 +210,7 @@ public PaletteMode PaletteMode { get; set; }
 ```
 
 **PaletteMode Values:**
+
 - `Global` - Uses the global Krypton palette (default)
 - `ProfessionalSystem` - Professional system theme
 - `ProfessionalOffice2003` - Office 2003 theme
@@ -211,6 +223,7 @@ public PaletteMode PaletteMode { get; set; }
 - `Custom` - Use custom palette (requires `Palette` property)
 
 **Example:**
+
 ```csharp
 splitter.PaletteMode = PaletteMode.ProfessionalOffice2010;
 ```
@@ -231,6 +244,7 @@ public PaletteBase? Palette { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 var customPalette = new KryptonPalette();
 // Configure custom palette...
@@ -274,17 +288,20 @@ public event SplitterEventHandler? SplitterMoved;
 ```
 
 **Event Handler Signature:**
+
 ```csharp
 void OnSplitterMoved(object sender, SplitterEventArgs e)
 ```
 
 **SplitterEventArgs Properties:**
+
 - `X` (int): X-coordinate of the splitter
 - `Y` (int): Y-coordinate of the splitter
 - `SplitX` (int): X-coordinate where the splitter was moved
 - `SplitY` (int): Y-coordinate where the splitter was moved
 
 **Example:**
+
 ```csharp
 splitter.SplitterMoved += (sender, e) =>
 {
@@ -307,6 +324,7 @@ public event SplitterEventHandler? SplitterMoving;
 ```
 
 **Example:**
+
 ```csharp
 splitter.SplitterMoving += (sender, e) =>
 {
@@ -673,7 +691,7 @@ KryptonManager.GlobalPalette = new PaletteOffice2010Blue();
 
 ### Vertical Splitter Layout
 
-```
+```text
 ┌─────────┬──────────────┐
 │         │              │
 │  Left   │   Splitter   │   Right
@@ -683,13 +701,14 @@ KryptonManager.GlobalPalette = new PaletteOffice2010Blue();
 ```
 
 **Dock Values:**
+
 - Left Panel: `DockStyle.Left`
 - Splitter: `DockStyle.Left`
 - Right Panel: `DockStyle.Fill`
 
 ### Horizontal Splitter Layout
 
-```
+```text
 ┌──────────────────────┐
 │     Top Panel        │
 ├──────────────────────┤
@@ -700,6 +719,7 @@ KryptonManager.GlobalPalette = new PaletteOffice2010Blue();
 ```
 
 **Dock Values:**
+
 - Top Panel: `DockStyle.Top`
 - Splitter: `DockStyle.Top`
 - Bottom Panel: `DockStyle.Fill`
@@ -803,4 +823,3 @@ All properties and events remain the same - it's a drop-in replacement.
 - `KryptonSplitter` is provided for compatibility with existing code that uses the standard `Splitter` control
 - For new development, consider using `KryptonSplitContainer` which provides better visual integration and more features
 - The splitter automatically integrates with the Krypton palette system for consistent theming
-

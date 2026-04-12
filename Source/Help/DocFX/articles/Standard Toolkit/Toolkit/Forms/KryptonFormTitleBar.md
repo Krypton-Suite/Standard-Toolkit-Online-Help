@@ -30,7 +30,7 @@
 
 ### What it looks like
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │ [Icon]        My Application    [⬡][★][⚙][File▼][Edit▼]  [─][□][✕] │  ← title bar
 ├─────────────────────────────────────────────────────────────────────┤
@@ -55,7 +55,7 @@ In **RTL** layout they mirror to the left of the title text — identical to how
 
 ### Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -65,7 +65,7 @@ System.Object
 ### Location
 
 | Item | Namespace / Assembly |
-|---|---|
+| --- | --- |
 | `KryptonFormTitleBar` | `Krypton.Toolkit` / `Krypton.Toolkit.dll` |
 | `KryptonForm.TitleBar` property | `Krypton.Toolkit` / `Krypton.Toolkit.dll` |
 
@@ -87,7 +87,7 @@ This means all rendering, hit-testing, mouse tracking, tooltip display, and pale
 
 ### Caption Layout Order (LTR)
 
-```
+```text
 _drawHeading (ViewDrawDocker)
   ├─ [Fill]  _drawContent (form icon + title text)
   ├─ [Right] _titleBarDocker  ← injected by KryptonFormTitleBar (to the right of the icon)
@@ -214,7 +214,7 @@ Returns the `KryptonForm` that this component is currently attached to, or `null
 
 ---
 
-### Methods
+### Instance methods
 
 #### `InsertStandardItems()`
 
@@ -227,7 +227,7 @@ Inserts a standard set of button specifications into the title bar, similar to t
 **Top-level menu dropdowns** (File, Edit, Tools, Help) — text buttons with drop-down arrows; each opens a `KryptonContextMenu`:
 
 | Menu | Sub-items |
-|------|-----------|
+| --- | --- |
 | **File** | New, Open, Save, Save As, Save All, —, Print, Print Preview, —, Exit |
 | **Edit** | Undo, Redo, —, Cut, Copy, Paste, —, Select All |
 | **Tools** | Customize, Options |
@@ -261,7 +261,7 @@ public class FormTitleBarButtonSpecCollection : ButtonSpecCollection<ButtonSpecA
 Strongly-typed collection of `ButtonSpecAny` items. Inherits all standard collection behaviour from `ButtonSpecCollection<T>`, including:
 
 | Member | Description |
-|---|---|
+| --- | --- |
 | `Add(ButtonSpecAny)` | Appends a button spec. Triggers title bar refresh. |
 | `AddRange(IEnumerable<ButtonSpecAny>)` | Appends multiple specs. Each triggers a refresh. |
 | `Insert(int, ButtonSpecAny)` | Inserts at a specific index. |
@@ -276,10 +276,10 @@ Strongly-typed collection of `ButtonSpecAny` items. Inherits all standard collec
 
 ---
 
-### Methods
+### Method summary
 
 | Method | Description |
-|---|---|
+| --- | --- |
 | `InsertStandardItems()` | Adds top-level menus (File, Edit, Tools, Help) and flat icon buttons (New, Open, Save, etc.). See [Insert Standard Items](#insert-standard-items) above. |
 | `Dispose()` | *(inherited)* Disposes the component, detaching it from any owning form first. |
 
@@ -322,7 +322,7 @@ Each item in `KryptonFormTitleBar.ButtonSpecs` is a `ButtonSpecAny`. All propert
 ### Visual Properties
 
 | Property | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `Image` | `Image?` | `null` | The icon shown on the button. 16×16 px recommended for title bar sizing. |
 | `Text` | `string` | `""` | Text label shown alongside or instead of the image. |
 | `ExtraText` | `string` | `""` | Secondary text shown below the main text. |
@@ -334,7 +334,7 @@ Each item in `KryptonFormTitleBar.ButtonSpecs` is a `ButtonSpecAny`. All propert
 ### Behaviour Properties
 
 | Property | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `Type` | `PaletteButtonSpecStyle` | `Generic` | Determines whether the palette supplies a default image/style. `Generic` means the spec is fully custom. Other values (`Close`, `Pin`, `FormMin`, etc.) inherit defaults from the palette. |
 | `Visible` | `bool` | `true` | When `false` the button is hidden and takes no space. |
 | `Enabled` | `ButtonEnabled` | `Container` | `True` forces enabled; `False` forces disabled; `Container` follows the form's enabled state. |
@@ -345,14 +345,14 @@ Each item in `KryptonFormTitleBar.ButtonSpecs` is a `ButtonSpecAny`. All propert
 ### Context Menu Properties
 
 | Property | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `ContextMenuStrip` | `ContextMenuStrip?` | `null` | Standard WinForms context menu shown on click when `ShowDrop = true`. |
 | `KryptonContextMenu` | `KryptonContextMenu?` | `null` | Krypton-styled context menu shown on click. Takes precedence over `ContextMenuStrip`. |
 
 ### Tooltip Properties
 
 | Property | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `ToolTipTitle` | `string` | `""` | Bold heading text in the tooltip. |
 | `ToolTipBody` | `string` | `""` | Body text in the tooltip. |
 | `ToolTipImage` | `Image?` | `null` | Image shown inside the tooltip. |
@@ -364,7 +364,7 @@ Each item in `KryptonFormTitleBar.ButtonSpecs` is a `ButtonSpecAny`. All propert
 The `ImageStates` property (`CheckButtonImageStates`) provides separate images for each visual state:
 
 | Sub-property | Description |
-|---|---|
+| --- | --- |
 | `ImageNormal` | Image when the button is in its default state. |
 | `ImageDisabled` | Image when the button is disabled. |
 | `ImageTracking` | Image when the mouse is hovering over the button. |
@@ -378,7 +378,7 @@ If per-state images are not set, the single `Image` property is used for all sta
 ### Events
 
 | Event | Signature | Description |
-|---|---|---|
+| --- | --- | --- |
 | `Click` | `EventHandler?` | Fires when the button is clicked. The sender is the `ButtonSpecAny` instance. |
 | `ButtonSpecPropertyChanged` | `PropertyChangedEventHandler?` | Fires when any property of the spec changes. |
 
@@ -406,6 +406,7 @@ A string identifier assigned automatically at construction (using an internal co
 Like the WinForms MenuStrip, `KryptonFormTitleBar` supports **Insert Standard Items** to quickly populate the title bar with preconfigured buttons:
 
 **From the designer:**
+
 - **Right-click** the `KryptonFormTitleBar` in the component tray → **Insert Standard Items**
 - Or click the **smart-tag** (▶) → **Insert Standard Items** (under Actions)
 
@@ -416,7 +417,7 @@ This adds the full standard set: four top-level menu dropdowns (File, Edit, Tool
 Clicking the smart-tag arrow on `KryptonFormTitleBar` in the component tray opens a panel with:
 
 | Action | Description |
-|---|---|
+| --- | --- |
 | **Insert Standard Items** | Adds File, Edit, Tools, Help (menus) plus New, Open, Save, Cut, Copy, Paste, Print, etc. (icons). |
 | **Button Specs** | Opens the Collection Editor for `ButtonSpecs`. |
 
@@ -556,7 +557,7 @@ The `Type` property determines where the button spec's **default image and style
 Other useful values for title bar buttons:
 
 | Value | Palette default behaviour |
-|---|---|
+| --- | --- |
 | `Generic` | No palette defaults. You control everything. **Recommended for title bar use.** |
 | `Close` | Palette supplies a close-glyph image. |
 | `FormMin` | Palette supplies a minimise-glyph image. |
@@ -571,7 +572,7 @@ Other useful values for title bar buttons:
 Controls which edge of the title bar docker each button is anchored to.
 
 | Value | Effect |
-|---|---|
+| --- | --- |
 | `Inherit` | Uses the palette default (typically `Near` = left in LTR). |
 | `Near` | Left side of the docker (after form icon in LTR). |
 | `Far` | Right side of the docker (just before title text in LTR). |
@@ -581,7 +582,7 @@ Controls which edge of the title bar docker each button is anchored to.
 Controls the visual rendering style.
 
 | Value | Description |
-|---|---|
+| --- | --- |
 | `Inherit` | Inherits from the palette (default, recommended). |
 | `Standalone` | Rendered as a standalone button with full border/background. |
 | `ButtonSpec` | Rendered in the ButtonSpec style (flat, minimal chrome). Most appropriate for title bar use. |
@@ -618,7 +619,7 @@ saveCommand.Enabled = false;
 **Synchronisation behaviour:**
 
 | Command property change | Effect on ButtonSpec |
-|---|---|
+| --- | --- |
 | `Enabled = false` | `ButtonSpecAny.Enabled` → `ButtonEnabled.False` |
 | `Enabled = true` | `ButtonSpecAny.Enabled` → `ButtonEnabled.True` |
 | `Checked = true` | `ButtonSpecAny.Checked` → `ButtonCheckState.Checked` |
@@ -640,7 +641,7 @@ RTL support is entirely automatic. When `KryptonForm.RightToLeft = RightToLeft.Y
 
 ### Caption Layout — RTL
 
-```
+```text
 _drawHeading (LTR):  [Icon][Title text fill][TitleBarButtons][Min][Max][Close]
 _drawHeading (RTL):  [Close][Max][Min][TitleBarButtons][Title text fill][Icon]
 ```
@@ -650,7 +651,7 @@ No developer action is required to support RTL.
 ### `RightToLeft` vs `RightToLeftLayout`
 
 | Property | Affects | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `RightToLeft = Yes` | Text direction (bidi), child control layout | Does **not** mirror the caption chrome |
 | `RightToLeftLayout = true` | Caption chrome mirroring, button order | This is what controls title bar button placement |
 
@@ -675,6 +676,7 @@ new ViewDrawDocker(
 ```
 
 This means:
+
 - The docker's **background** uses `StateActive.Header.Back` — the same back palette as the title bar heading itself.
 - The docker's **border** uses `StateActive.Header.Border`.
 - Button specs inside it use `StateCommon.Header` as their metric provider.
@@ -706,7 +708,7 @@ A `KryptonRibbon` at `Location = Point.Empty` on a `KryptonForm` also injects vi
 
 In practice, a form with both a `KryptonRibbon` and a `KryptonFormTitleBar` will show:
 
-```
+```text
 [Icon] [TitleBarButtons] [Ribbon QAT][AppButton][Context tabs] [Min][Max][Close]
 ```
 
@@ -759,7 +761,7 @@ When `KryptonFormTitleBar.Dispose()` is called:
 ### Summary Matrix
 
 | Scenario | What happens |
-|---|---|
+| --- | --- |
 | Form disposed | Docker and button manager cleaned up. TitleBar component itself survives. |
 | `TitleBar = null` | Full detach. Form reverts to standard caption. |
 | `TitleBar = newComponent` | Old component detached, new component attached atomically. |
@@ -775,7 +777,7 @@ This section is for contributors and maintainers.
 ### Key Private Members on KryptonForm
 
 | Field | Type | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `_titleBar` | `KryptonFormTitleBar?` | The currently assigned title bar component. |
 | `_titleBarDocker` | `ViewDrawDocker?` | The view element injected into `_drawHeading`. |
 | `_titleBarButtonManager` | `ButtonSpecManagerDraw?` | Manages the `ButtonSpecAny` items inside `_titleBarDocker`. |
@@ -815,7 +817,7 @@ Extended to call `_titleBarButtonManager?.RecreateButtons()` alongside the exist
 ### Internal Events on KryptonFormTitleBar
 
 | Event | Visibility | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `ButtonSpecInserted` | `internal` | Forwarded from `ButtonSpecs.Inserted`. Consumed by `KryptonForm`. |
 | `ButtonSpecRemoved` | `internal` | Forwarded from `ButtonSpecs.Removed`. Consumed by `KryptonForm`. |
 
@@ -910,7 +912,6 @@ Due to the non-client area rendering, button spec changes made in the designer c
 
 - Hot-reload in .NET may reinitialise `InitializeComponent()` without disposing the previous title bar. If this is a concern, explicitly null `this.TitleBar` before hot-reload and re-assign after.
 
-<a id="related-components"></a>
 ## Related Components
 
 - **KryptonForm** — Hosts the title bar via the `TitleBar` property

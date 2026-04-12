@@ -102,6 +102,12 @@
 <td>Scheduled nightly builds</td>
 <td><a href="Workflows/NightlyWorkflow.html">Nightly Workflow</a></td>
 </tr>
+<tr>
+<td><strong>Canary LTS</strong></td>
+<td><code>canary-lts-release.yml</code></td>
+<td>Canary packages from V105-LTS</td>
+<td><a href="Workflows/CanaryLTSReleaseWorkflow.html">Canary LTS Release Workflow</a></td>
+</tr>
 </tbody>
 </table>
 <hr>
@@ -112,7 +118,7 @@
 <p><strong>Key Features</strong>:</p>
 <ul>
 <li>✅ Validates all pull requests</li>
-<li>✅ Multi-framework builds (.NET Framework 4.7.2 - 4.8.1, .NET 8 - 10)</li>
+<li>✅ Multi-framework builds (.NET Framework 4.7.2 - 4.8.1, .NET 8 - 11)</li>
 <li>✅ Automated GitHub releases for master branch</li>
 <li>✅ NuGet package caching for performance</li>
 <li>✅ Fork protection</li>
@@ -308,25 +314,25 @@
 </thead>
 <tbody>
 <tr>
-<td><code>Scripts/build.proj</code></td>
+<td><code>Scripts/Build/build.proj</code></td>
 <td>Build, Release (master)</td>
 <td>Release</td>
 <td>Stable production builds</td>
 </tr>
 <tr>
-<td><code>Scripts/longtermstable.proj</code></td>
+<td><code>Scripts/Build/longtermstable.proj</code></td>
 <td>Release (V85-LTS)</td>
 <td>Release</td>
 <td>LTS builds</td>
 </tr>
 <tr>
-<td><code>Scripts/canary.proj</code></td>
-<td>Release (canary)</td>
+<td><code>Scripts/Build/canary.proj</code></td>
+<td>Release (canary), canary.yml</td>
 <td>Canary</td>
 <td>Pre-release builds</td>
 </tr>
 <tr>
-<td><code>Scripts/nightly.proj</code></td>
+<td><code>Scripts/Build/nightly.proj</code></td>
 <td>Build, Nightly, Release (alpha)</td>
 <td>Nightly</td>
 <td>Development builds</td>
@@ -349,10 +355,15 @@ Event: Push to alpha
 └─ Release Workflow → release-alpha (NuGet + Discord)
 
 Event: Push to canary
-└─ Release Workflow → release-canary (NuGet + Discord)
+├─ Release Workflow → release-canary (NuGet + Discord)
+└─ canary.yml (if using Canary branch) → Canary packages
 
 Event: Push to V85-LTS
 └─ Release Workflow → release-v85-lts (NuGet + Discord)
+
+Event: Push to V105-LTS
+├─ Release Workflow → release-v105-lts (Stable NuGet + Discord)
+└─ Canary LTS Release Workflow → canary-lts-release (Canary NuGet + Discord)
 
 Event: Cron Schedule (00:00 UTC)
 └─ Nightly Workflow → Check changes → Build if needed
@@ -477,6 +488,7 @@ Event: Manual Trigger
 </tr>
 </tbody>
 </table>
+<p><strong>Note</strong>: Standalone workflows: <code>canary.yml</code> (push to Canary branch), <code>canary-lts-release.yml</code> (push to V105-LTS for Canary packages from the LTS branch).</p>
 <hr>
 <h2 id="common-tasks">Common Tasks</h2>
 <h3 id="how-do-i">How Do I...?</h3>

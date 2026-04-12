@@ -41,6 +41,7 @@ var watcher = new KryptonFileSystemWatcher();
 ```
 
 **Initial Values:**
+
 - `Path`: Empty string
 - `Filter`: "*.*"
 - `EnableRaisingEvents`: `false`
@@ -58,6 +59,7 @@ var watcher = new KryptonFileSystemWatcher(components);
 ```
 
 **Parameters:**
+
 - `container` (IContainer): The container that will contain this component
 
 ### KryptonFileSystemWatcher(string path)
@@ -69,6 +71,7 @@ var watcher = new KryptonFileSystemWatcher(@"C:\MyFolder");
 ```
 
 **Parameters:**
+
 - `path` (string): The directory to monitor (standard or UNC notation)
 
 ### KryptonFileSystemWatcher(string path, string filter)
@@ -80,6 +83,7 @@ var watcher = new KryptonFileSystemWatcher(@"C:\MyFolder", "*.txt");
 ```
 
 **Parameters:**
+
 - `path` (string): The directory to monitor
 - `filter` (string): File filter pattern (e.g., "*.txt", "*.log")
 
@@ -98,12 +102,14 @@ public string Path { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 watcher.Path = @"C:\MyDocuments";
 watcher.Path = @"\\Server\SharedFolder";
 ```
 
 **Notes:**
+
 - Supports standard paths and UNC notation
 - Use the folder name editor in the property grid for easy selection
 - Must be set before enabling the watcher
@@ -120,6 +126,7 @@ public string Filter { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 watcher.Filter = "*.txt";        // Only text files
 watcher.Filter = "*.log";        // Only log files
@@ -129,6 +136,7 @@ watcher.Filter = "MyFile.*";     // Files named "MyFile" with any extension
 ```
 
 **Common Patterns:**
+
 - `"*.txt"` - All text files
 - `"*.log"` - All log files
 - `"*.xml"` - All XML files
@@ -147,6 +155,7 @@ public NotifyFilters NotifyFilter { get; set; }
 ```
 
 **NotifyFilters Enum Values:**
+
 - `FileName` - Changes to file names
 - `DirectoryName` - Changes to directory names
 - `Attributes` - Changes to file or folder attributes
@@ -157,6 +166,7 @@ public NotifyFilters NotifyFilter { get; set; }
 - `Security` - Changes to security settings
 
 **Example:**
+
 ```csharp
 // Watch for file name changes and writes
 watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite;
@@ -180,6 +190,7 @@ public bool EnableRaisingEvents { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 watcher.Path = @"C:\MyFolder";
 watcher.Filter = "*.txt";
@@ -187,6 +198,7 @@ watcher.EnableRaisingEvents = true;  // Start watching
 ```
 
 **Important:**
+
 - Set `Path` before enabling
 - Set to `false` to stop watching
 - Must be set to `true` to receive events
@@ -203,12 +215,14 @@ public bool IncludeSubdirectories { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 watcher.Path = @"C:\MyDocuments";
 watcher.IncludeSubdirectories = true;  // Monitor all subdirectories
 ```
 
 **Performance Note:**
+
 - Enabling subdirectory monitoring increases resource usage
 - Use with caution on large directory trees
 
@@ -224,11 +238,13 @@ public int InternalBufferSize { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 watcher.InternalBufferSize = 16384;  // 16KB buffer
 ```
 
 **Recommendations:**
+
 - Default: 8192 bytes (8KB)
 - Increase for high-frequency file operations
 - Must be a multiple of 4096
@@ -247,11 +263,13 @@ public ISynchronizeInvoke? SynchronizingObject { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 watcher.SynchronizingObject = this;  // Marshal to UI thread
 ```
 
 **Usage:**
+
 - Set to a form or control to marshal events to the UI thread
 - Prevents cross-thread exceptions
 - Typically set to the form containing the watcher
@@ -270,6 +288,7 @@ public PaletteMode PaletteMode { get; set; }
 ```
 
 **PaletteMode Values:**
+
 - `Global` - Uses the global Krypton palette (default)
 - `ProfessionalSystem` - Professional system theme
 - `ProfessionalOffice2003` - Office 2003 theme
@@ -282,6 +301,7 @@ public PaletteMode PaletteMode { get; set; }
 - `Custom` - Use custom palette (requires `Palette` property)
 
 **Example:**
+
 ```csharp
 watcher.PaletteMode = PaletteMode.ProfessionalOffice2010;
 ```
@@ -300,6 +320,7 @@ public PaletteBase? Palette { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 var customPalette = new KryptonPalette();
 // Configure custom palette...
@@ -318,6 +339,7 @@ public FileSystemWatcher? FileSystemWatcher { get; }
 ```
 
 **Example:**
+
 ```csharp
 var underlyingWatcher = watcher.FileSystemWatcher;
 // Direct access to underlying component if needed
@@ -336,16 +358,19 @@ public event FileSystemEventHandler? Created;
 ```
 
 **Event Handler Signature:**
+
 ```csharp
 void OnFileCreated(object sender, FileSystemEventArgs e)
 ```
 
 **FileSystemEventArgs Properties:**
+
 - `FullPath` (string): Full path of the created file/directory
 - `Name` (string): Name of the file/directory
 - `ChangeType` (WatcherChangeTypes): Type of change (`Created`)
 
 **Example:**
+
 ```csharp
 watcher.Created += (sender, e) =>
 {
@@ -366,6 +391,7 @@ public event FileSystemEventHandler? Changed;
 ```
 
 **Example:**
+
 ```csharp
 watcher.Changed += (sender, e) =>
 {
@@ -392,6 +418,7 @@ public event FileSystemEventHandler? Deleted;
 ```
 
 **Example:**
+
 ```csharp
 watcher.Deleted += (sender, e) =>
 {
@@ -411,11 +438,13 @@ public event RenamedEventHandler? Renamed;
 ```
 
 **Event Handler Signature:**
+
 ```csharp
 void OnFileRenamed(object sender, RenamedEventArgs e)
 ```
 
 **RenamedEventArgs Properties:**
+
 - `FullPath` (string): Full path of the renamed file/directory
 - `Name` (string): New name
 - `OldFullPath` (string): Previous full path
@@ -423,6 +452,7 @@ void OnFileRenamed(object sender, RenamedEventArgs e)
 - `ChangeType` (WatcherChangeTypes): Type of change (`Renamed`)
 
 **Example:**
+
 ```csharp
 watcher.Renamed += (sender, e) =>
 {
@@ -443,14 +473,17 @@ public event ErrorEventHandler? Error;
 ```
 
 **Event Handler Signature:**
+
 ```csharp
 void OnError(object sender, ErrorEventArgs e)
 ```
 
 **ErrorEventArgs Properties:**
+
 - `GetException()` (Exception): The exception that occurred
 
 **Example:**
+
 ```csharp
 watcher.Error += (sender, e) =>
 {
@@ -463,6 +496,7 @@ watcher.Error += (sender, e) =>
 ```
 
 **Common Causes:**
+
 - Too many rapid file changes
 - Buffer size too small
 - Network latency (for UNC paths)
@@ -478,6 +512,7 @@ public void BeginInit()
 ```
 
 **Example:**
+
 ```csharp
 watcher.BeginInit();
 watcher.Path = @"C:\MyFolder";
@@ -505,12 +540,15 @@ public WaitForChangedResult WaitForChanged(WatcherChangeTypes changeType)
 ```
 
 **Parameters:**
+
 - `changeType` (WatcherChangeTypes): Type of change to wait for (`Created`, `Deleted`, `Changed`, `Renamed`, `All`)
 
 **Returns:**
+
 - `WaitForChangedResult`: Structure containing information about the change
 
 **Example:**
+
 ```csharp
 var result = watcher.WaitForChanged(WatcherChangeTypes.Created);
 Console.WriteLine($"File created: {result.Name}");
@@ -527,13 +565,16 @@ public WaitForChangedResult WaitForChanged(WatcherChangeTypes changeType, int ti
 ```
 
 **Parameters:**
+
 - `changeType` (WatcherChangeTypes): Type of change to wait for
 - `timeout` (int): Timeout in milliseconds
 
 **Returns:**
+
 - `WaitForChangedResult`: Structure containing information about the change, or default if timeout
 
 **Example:**
+
 ```csharp
 var result = watcher.WaitForChanged(WatcherChangeTypes.Created, 5000);
 if (result.TimedOut)

@@ -40,7 +40,7 @@ The Icon Extraction API provides a comprehensive, type-safe interface for extrac
 
 ### Component Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                  Public API Layer                        │
 │  GraphicsExtensions.ExtractIconFrom{Source}()            │
@@ -66,7 +66,7 @@ The Icon Extraction API provides a comprehensive, type-safe interface for extrac
 ### File Structure
 
 | File | Location | Purpose |
-|------|----------|---------|
+| --- | --- | --- |
 | `GraphicsExtensions.cs` | `Krypton.Toolkit/Utilities/` | Public API and extraction logic |
 | `ImageNativeMethods.cs` | `Krypton.Toolkit/Utilities/` | P/Invoke declarations |
 | `Definitions.cs` | `Krypton.Toolkit/General/` | Icon ID enumerations |
@@ -91,17 +91,21 @@ public static Icon? ExtractIcon(
 Generic icon extraction method that can extract from any DLL file.
 
 **Parameters:**
+
 - `filePath` (string): Full or relative path to the DLL file (e.g., "shell32.dll" or "C:\Windows\System32\custom.dll")
 - `imageIndex` (int): Zero-based index of the icon to extract
 - `largeIcon` (bool, optional): If `true`, extracts large icons (>32x32); if `false`, extracts small icons (≤32x32). Default: `true`
 
 **Returns:**
+
 - `Icon?`: The extracted icon, or `null` if extraction fails
 
 **Exceptions:**
+
 - `ArgumentNullException`: Thrown if `filePath` is null or empty
 
 **Example:**
+
 ```csharp
 // Extract icon #42 from shell32.dll as large icon
 var icon = GraphicsExtensions.ExtractIcon("shell32.dll", 42, largeIcon: true);
@@ -130,13 +134,16 @@ public static Icon? ExtractIconFromImageres(
 Extracts icons from Windows' imageres.dll (modern system icons, Vista+).
 
 **Parameters:**
+
 - `iconId` (int): Icon identifier from `ImageresIconID` enum or any valid index
 - `iconSize` (IconSize, optional): Desired icon size. Default: `IconSize.Medium` (32x32)
 
 **Returns:**
+
 - `Icon?`: The extracted icon, or `null` if extraction fails or icon doesn't exist
 
 **Example:**
+
 ```csharp
 // Extract UAC shield icon at 48x48
 var shield = GraphicsExtensions.ExtractIconFromImageres(
@@ -169,13 +176,16 @@ public static Icon? ExtractIconFromShell32(
 Extracts icons from Windows' shell32.dll (classic shell icons, available on all Windows versions).
 
 **Parameters:**
+
 - `iconId` (int): Icon identifier from `Shell32IconID` enum or any valid index
 - `iconSize` (IconSize, optional): Desired icon size. Default: `IconSize.Medium` (32x32)
 
 **Returns:**
+
 - `Icon?`: The extracted icon, or `null` if extraction fails
 
 **Example:**
+
 ```csharp
 // Extract folder icon
 var folder = GraphicsExtensions.ExtractIconFromShell32(
@@ -209,13 +219,16 @@ public static Icon? ExtractIconFromIeFrame(
 Extracts icons from Internet Explorer's ieframe.dll (web and browser icons).
 
 **Parameters:**
+
 - `iconId` (int): Icon identifier from `IeFrameIconID` enum or any valid index
 - `iconSize` (IconSize, optional): Desired icon size. Default: `IconSize.Medium` (32x32)
 
 **Returns:**
+
 - `Icon?`: The extracted icon, or `null` if extraction fails
 
 **Example:**
+
 ```csharp
 // Extract Internet Explorer icon
 var ie = GraphicsExtensions.ExtractIconFromIeFrame(
@@ -246,13 +259,16 @@ public static Icon? ExtractIconFromMoreIcons(
 Extracts icons from moricons.dll (miscellaneous system icons including DOS/legacy icons).
 
 **Parameters:**
+
 - `iconId` (int): Icon identifier from `MoreIconsIconID` enum or any valid index
 - `iconSize` (IconSize, optional): Desired icon size. Default: `IconSize.Medium` (32x32)
 
 **Returns:**
+
 - `Icon?`: The extracted icon, or `null` if extraction fails
 
 **Example:**
+
 ```csharp
 // Extract MS-DOS icon
 var dos = GraphicsExtensions.ExtractIconFromMoreIcons(
@@ -283,13 +299,16 @@ public static Icon? ExtractIconFromCompStui(
 Extracts icons from compstui.dll (printer, device, and composite UI icons).
 
 **Parameters:**
+
 - `iconId` (int): Icon identifier from `CompStuiIconID` enum or any valid index
 - `iconSize` (IconSize, optional): Desired icon size. Default: `IconSize.Medium` (32x32)
 
 **Returns:**
+
 - `Icon?`: The extracted icon, or `null` if extraction fails
 
 **Example:**
+
 ```csharp
 // Extract printer icon
 var printer = GraphicsExtensions.ExtractIconFromCompStui(
@@ -320,13 +339,16 @@ public static Icon? ExtractIconFromSetupApi(
 Extracts icons from setupapi.dll (hardware, device, and installation icons).
 
 **Parameters:**
+
 - `iconId` (int): Icon identifier from `SetupApiIconID` enum or any valid index
 - `iconSize` (IconSize, optional): Desired icon size. Default: `IconSize.Medium` (32x32)
 
 **Returns:**
+
 - `Icon?`: The extracted icon, or `null` if extraction fails
 
 **Example:**
+
 ```csharp
 // Extract generic hardware device icon
 var device = GraphicsExtensions.ExtractIconFromSetupApi(
@@ -357,13 +379,16 @@ public static Icon? ExtractIconFromNetShell(
 Extracts icons from netshell.dll (network connection and network-related icons).
 
 **Parameters:**
+
 - `iconId` (int): Icon identifier from `NetShellIconID` enum or any valid index
 - `iconSize` (IconSize, optional): Desired icon size. Default: `IconSize.Medium` (32x32)
 
 **Returns:**
+
 - `Icon?`: The extracted icon, or `null` if extraction fails
 
 **Example:**
+
 ```csharp
 // Extract wireless network icon
 var wifi = GraphicsExtensions.ExtractIconFromNetShell(
@@ -403,6 +428,7 @@ public enum IconSize : int
 ```
 
 **Usage:**
+
 ```csharp
 var icon16 = GraphicsExtensions.ExtractIconFromShell32(3, IconSize.ExtraSmall);
 var icon32 = GraphicsExtensions.ExtractIconFromShell32(3, IconSize.Medium);
@@ -431,6 +457,7 @@ public enum ImageresIconID : int
 ```
 
 **Categories:**
+
 - System Icons (Security, Users, Files, Folders)
 - Application Icons (Software, Tools, Productivity)
 - Media Icons (Audio, Video, Photography, Storage)
@@ -466,6 +493,7 @@ public enum Shell32IconID : int
 ```
 
 **Categories:**
+
 - Basic File and Folder Icons (0-4)
 - Drive and Storage Icons (5-12)
 - Network and Computer Icons (13-21)
@@ -490,7 +518,7 @@ public enum Shell32IconID : int
 #### Other Icon ID Enumerations
 
 | Enum | Purpose | Values | Availability |
-|------|---------|--------|--------------|
+| --- | --- | --- | --- |
 | `IeFrameIconID` | Internet Explorer/browser icons | 25+ | Windows 7+ |
 | `MoreIconsIconID` | Miscellaneous/legacy icons | 20+ | Windows 7+ |
 | `CompStuiIconID` | Printer/device UI icons | 18+ | Windows 7+ |
@@ -690,6 +718,7 @@ The extraction API handles memory management automatically:
 4. **Managed Icon**: Returned icon is a managed .NET `Icon` object
 
 **Code Flow:**
+
 ```csharp
 var hIconEx = new IntPtr[] { IntPtr.Zero };
 try
@@ -712,6 +741,7 @@ finally
 ```
 
 **Developer Responsibility:**
+
 - The API handles Windows handle cleanup automatically
 - Developers should dispose returned `Icon` objects when done
 - Use `using` statements or `Dispose()` calls for proper cleanup
@@ -758,6 +788,7 @@ else
 ```
 
 Windows DLLs typically contain two icon sets:
+
 - **Small icons**: 16x16 (sometimes 20x20 or 24x24)
 - **Large icons**: 32x32, 48x48, 64x64, 256x256
 
@@ -768,20 +799,25 @@ Windows DLLs typically contain two icon sets:
 The API provides two-layer type safety:
 
 1. **Public Layer** (accepts `int`):
+
    ```csharp
    public static Icon? ExtractIconFromShell32(int iconId, IconSize iconSize)
    ```
+
    - Allows accessing any index, including undocumented ones
    - Flexible for dynamic scenarios
 
 2. **Internal Layer** (accepts enum):
+
    ```csharp
    internal static Icon? ExtractIconFromShell32Internal(Shell32IconID iconId, IconSize iconSize)
    ```
+
    - Provides type safety when using enums
    - Enables IntelliSense and compile-time checking
 
 **Usage:**
+
 ```csharp
 // Type-safe with enum
 var icon1 = GraphicsExtensions.ExtractIconFromShell32(
@@ -855,6 +891,7 @@ Icons may fail to extract for several reasons:
 5. **Corrupted DLL**: System file corruption (very rare)
 
 **Best Practice:**
+
 ```csharp
 public void LoadIconSafe()
 {
@@ -897,7 +934,8 @@ Icon extraction is relatively fast but involves P/Invoke overhead:
 - **File I/O**: First access may load DLL into memory
 
 **Benchmarks** (typical modern PC):
-```
+
+```text
 ExtractIcon (cold):     ~2.0ms
 ExtractIcon (warm):     ~0.5ms
 ExtractIcon (cached):   ~0.001ms
@@ -984,6 +1022,7 @@ Each extracted icon consumes memory:
 - **256x256 icon**: ~256 KB (uncompressed)
 
 **Guidelines:**
+
 - Cache only icons you use frequently
 - Dispose icons when no longer needed
 - Consider weak references for large icon caches
@@ -998,12 +1037,14 @@ Each extracted icon consumes memory:
 To add support for additional system DLLs:
 
 1. **Add Library Constant** (`PlatformInvoke.cs`):
+
 ```csharp
 /// <summary>My Custom DLL - contains custom icons</summary>
 public const string MyCustomDll = "mycustom.dll";
 ```
 
-2. **Create Icon ID Enum** (`Definitions.cs`):
+1. **Create Icon ID Enum** (`Definitions.cs`):
+
 ```csharp
 /// <summary>Icon resource IDs found in mycustom.dll</summary>
 public enum MyCustomDllIconID : int
@@ -1016,7 +1057,8 @@ public enum MyCustomDllIconID : int
 }
 ```
 
-3. **Add Extraction Methods** (`GraphicsExtensions.cs`):
+1. **Add Extraction Methods** (`GraphicsExtensions.cs`):
+
 ```csharp
 /// <summary>Extracts an icon from mycustom.dll</summary>
 public static Icon? ExtractIconFromMyCustomDll(int iconId, IconSize iconSize = IconSize.Medium) 
@@ -1030,9 +1072,9 @@ internal static Icon? ExtractIconFromMyCustomDllInternal(MyCustomDllIconID iconI
 }
 ```
 
-4. **Add XML Documentation**: Document all enum values and methods
+1. **Add XML Documentation**: Document all enum values and methods
 
-5. **Add Tests**: Create test form examples
+2. **Add Tests**: Create test form examples
 
 ---
 
@@ -1080,17 +1122,18 @@ public static class CustomIconExtensions
 
 ### Windows Version Compatibility
 
-| DLL            | Windows 7, 8 and 8.1 | Windows 10+     |
-|----------------|------------|-----------------|
-| `shell32.dll`  | ✅          | ✅               |
-| `moricons.dll` | ✅          | ✅               |
-| `ieframe.dll`  | ✅          | ⚠️ (deprecated) |
-| `imageres.dll` | ✅          | ✅               |
-| `compstui.dll` | ✅          | ✅               |
-| `setupapi.dll` | ✅          | ✅               |
-| `netshell.dll` | ✅          | ✅               |
+| DLL | Windows 7, 8 and 8.1 | Windows 10+ |
+| --- | --- | --- |
+| `shell32.dll` | ✅ | ✅ |
+| `moricons.dll` | ✅ | ✅ |
+| `ieframe.dll` | ✅ | ⚠️ (deprecated) |
+| `imageres.dll` | ✅ | ✅ |
+| `compstui.dll` | ✅ | ✅ |
+| `setupapi.dll` | ✅ | ✅ |
+| `netshell.dll` | ✅ | ✅ |
 
 **Notes:**
+
 - ✅ = Fully supported
 - ⚠️ = Available but may be deprecated
 - ❌ = Not available
@@ -1109,6 +1152,7 @@ The API supports all Krypton Toolkit target frameworks:
 - ✅ .NET 10.0-windows
 
 **Requirements:**
+
 - Windows operating system (P/Invoke to Windows APIs)
 - `System.Drawing.Common` (for `Icon` and `Bitmap` classes)
 
@@ -1119,7 +1163,7 @@ The API supports all Krypton Toolkit target frameworks:
 Icon appearance may vary across Windows versions:
 
 | Windows Version | Icon Style | Example DLL |
-|-----------------|-----------|-------------|
+| --- | --- | --- |
 | Windows 7 | Glossy, Aero | imageres.dll |
 | Windows 8/8.1 | Flat, Modern | imageres.dll |
 | Windows 10 | Fluent, simplified | imageres.dll |
@@ -1134,7 +1178,7 @@ Icon appearance may vary across Windows versions:
 ### Quick Reference Table
 
 | Method | DLL | Icon Count | Min Windows | Common Use Cases |
-|--------|-----|-----------|-------------|------------------|
+| --- | --- | --- | --- | --- |
 | `ExtractIconFromImageres()` | imageres.dll | 300+ | Vista | Modern UI, security icons, system icons |
 | `ExtractIconFromShell32()` | shell32.dll | 300+ | 95 | Files, folders, drives, classic Windows icons |
 | `ExtractIconFromIeFrame()` | ieframe.dll | 200+ | XP | Web, browser, internet icons |
@@ -1151,4 +1195,3 @@ Icon appearance may vary across Windows versions:
 - [System Icons](SystemIcons.md) - Feature overview
 - [System Icons Comprehensive Guide](SystemIconsComprehensiveGuide.md) - User guide
 - [Icon Extraction Example](IconExtractionExample.md) - Quick examples
-

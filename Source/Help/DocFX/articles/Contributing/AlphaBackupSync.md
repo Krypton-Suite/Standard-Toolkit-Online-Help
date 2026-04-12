@@ -342,7 +342,7 @@ Use **Actions** → **Alpha to Alpha-Backup Sync** → **Run workflow**. Ensure 
 
 ## See Also
 
-- **Workflow file**: [.github/workflows/alpha-backup-sync.yml](../.github/workflows/alpha-backup-sync.yml)
-- **Nightly workflow**: [.github/workflows/nightly.yml](../.github/workflows/nightly.yml)
+- **Workflow file**: [alpha-backup-sync.yml](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/.github/workflows/alpha-backup-sync.yml)
+- **Nightly workflow**: [nightly.yml](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/.github/workflows/nightly.yml)
 - [GitHub: Events that trigger workflows – schedule](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule)
 - [GitHub: Using the GITHUB_TOKEN](https://docs.github.com/en/actions/security-guides/automatic-token-authentication)

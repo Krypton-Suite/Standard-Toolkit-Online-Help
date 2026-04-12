@@ -6,7 +6,7 @@ The `KryptonProgressBar` class provides a Krypton-themed replacement for the sta
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -21,6 +21,7 @@ public KryptonProgressBar()
 ```
 
 The constructor initializes enhanced features:
+
 - **Double Buffering**: Optimized drawing performance with anti-flicker controls
 - **Text Support**: Accessibility-friendly text integration
 - **Non-Selectable**: Properly configured to not accept focus
@@ -61,6 +62,7 @@ public ProgressBarStyle Style { get; set; }
   - `Blocks`: Discrete block segments showing progress
 
 **Usage Example:**
+
 ```csharp
 progressBar.Style = ProgressBarStyle.Marquee; // Indeterminate progress
 progressBar.Style = ProgressBarStyle.Continuous; // Determinate progress
@@ -108,6 +110,7 @@ public Color TextBackdropColor { get; set; }
 ```
 
 **Advanced Text Features:**
+
 - **Shadow Support**: Adds depth to text with configurable shadow colors
 - **Backdrop Support**: Places a rounded background behind text for readability
 - **Color Customization**: Automatic color selection or custom colors
@@ -143,6 +146,7 @@ public int Step { get; set; }
 ```
 
 **Range Management:**
+
 - **Validation**: Automatic bounds checking and adjustment
 - **Value Constraints**: Ensures Value stays within Minimum-Maximum range
 - **Step Control**: Defines increment amount for `PerformStep()` method

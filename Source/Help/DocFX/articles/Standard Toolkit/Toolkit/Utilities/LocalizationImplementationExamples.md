@@ -17,7 +17,7 @@ This document provides complete, ready-to-use implementation examples for locali
 
 ### Project Structure
 
-```
+```text
 MyKryptonApp/
 ├── Program.cs
 ├── Localization/
@@ -1242,4 +1242,3 @@ namespace MyKryptonApp.Localization.Database
 - [KryptonManager.Strings API Reference](../Components/KryptonManagerStringsAPIReference.md)
 - [Advanced Localization Topics](LocalizationAdvancedTopics.md)
 - [ExceptionHandler API Documentation](ExceptionHandlerAPIDocumentation.md)
-

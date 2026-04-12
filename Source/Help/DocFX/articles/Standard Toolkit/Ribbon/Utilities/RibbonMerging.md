@@ -21,6 +21,7 @@ Ribbon merging allows you to dynamically combine ribbon controls, enabling plugi
 ### What is Ribbon Merging?
 
 Ribbon merging is the process of combining ribbon controls by:
+
 - Moving tabs from a source ribbon to a target ribbon
 - Merging groups with matching names
 - Merging items within groups with matching names
@@ -102,15 +103,18 @@ merger.Merge(pluginRibbon);
 ### Tab Merging
 
 **When tabs with the same name exist:**
+
 - Groups from source tab are merged into existing tab
 - If groups have matching names, their items are merged
 - If groups don't exist, they are added to the existing tab
 
 **When tabs don't exist:**
+
 - Tab is moved from source to target ribbon
 - Tab order can be controlled using `Tag` property
 
 **Example:**
+
 ```csharp
 // Source ribbon has "Image Editor" tab
 // Target ribbon already has "Image Editor" tab
@@ -121,15 +125,18 @@ mainRibbon.Merge(pluginRibbon);
 ### Group Merging
 
 **When groups with matching names exist:**
+
 - Items from source group are merged into existing group
 - Matching is based on `TextLine1` and `TextLine2` properties
 - Items are inserted based on `Tag` property for ordering
 
 **When groups don't exist:**
+
 - Group is moved from source tab to target tab
 - Group order can be controlled using `Tag` property
 
 **Example:**
+
 ```csharp
 // Source has group "Editing" with items [Crop, Rotate]
 // Target has group "Editing" with items [Copy, Paste]
@@ -140,11 +147,13 @@ mainRibbon.Merge(pluginRibbon);
 ### Item Merging
 
 **When merging group items:**
+
 - Items are moved from source group to target group
 - Items are inserted based on `Tag` property
 - Duplicate items (same reference) are skipped
 
 **Example:**
+
 ```csharp
 var sourceGroup = new KryptonRibbonGroup { TextLine1 = "Tools" };
 var button1 = new KryptonRibbonGroupButton { TextLine1 = "Tool 1" };
@@ -159,14 +168,17 @@ mainRibbon.Merge(pluginRibbon);
 ### Context Merging
 
 **When contexts with matching names exist:**
+
 - Context is skipped (not merged)
 - Matching is based on `ContextTitle` property
 
 **When contexts don't exist:**
+
 - Context is moved from source to target ribbon
 - Context order can be controlled using `Tag` property
 
 **Example:**
+
 ```csharp
 var context = new KryptonRibbonContext
 {
@@ -201,6 +213,7 @@ group.Items[0].Items.Add(button);
 ```
 
 **Tag Value Rules:**
+
 - Numeric values (int, string that parses to int): Used as index
 - `null`: Item is added at the end
 - Invalid values: Item is added at the end
@@ -216,6 +229,7 @@ merger.FixGroupWidths(); // Ensures proper group sizing
 ```
 
 This method:
+
 - Measures text width for each group
 - Calculates minimum width based on DPI
 - Sets `MinimumWidth` property on groups
@@ -297,9 +311,11 @@ public void Merge(KryptonRibbon? ribbon)
 ```
 
 **Parameters:**
+
 - `ribbon`: The source ribbon to merge. Can be `null` (no-op).
 
 **Behavior:**
+
 1. Preserves current selection (tab and context)
 2. Merges tabs from source to target
 3. Merges contexts from source to target
@@ -308,6 +324,7 @@ public void Merge(KryptonRibbon? ribbon)
 6. Tracks all merged items for unmerging
 
 **Example:**
+
 ```csharp
 var merger = new KryptonRibbonMerger(mainRibbon);
 merger.Merge(pluginRibbon);
@@ -320,9 +337,11 @@ public void Unmerge(KryptonRibbon? ribbon)
 ```
 
 **Parameters:**
+
 - `ribbon`: The source ribbon to unmerge. Can be `null` (no-op).
 
 **Behavior:**
+
 1. Preserves current selection
 2. Unmerges contexts from target to source
 3. Unmerges tabs from target to source
@@ -330,6 +349,7 @@ public void Unmerge(KryptonRibbon? ribbon)
 5. Restores selection (or resets if tab no longer exists)
 
 **Example:**
+
 ```csharp
 var merger = new KryptonRibbonMerger(mainRibbon);
 merger.Unmerge(pluginRibbon);
@@ -342,11 +362,13 @@ public void FixGroupWidths()
 ```
 
 **Behavior:**
+
 - Measures text width for each group in each tab
 - Calculates minimum width based on DPI scaling
 - Sets `MinimumWidth` property to prevent clipping
 
 **Example:**
+
 ```csharp
 var merger = new KryptonRibbonMerger(mainRibbon);
 merger.Merge(pluginRibbon);
@@ -440,11 +462,13 @@ mainRibbon.Merge(pluginRibbon);
 **Symptoms:** Merged tabs don't appear in target ribbon.
 
 **Possible Causes:**
+
 1. Source ribbon has no tabs
 2. Ribbon is disposed
 3. Layout not refreshed
 
 **Solutions:**
+
 ```csharp
 // Check tabs exist
 if (pluginRibbon.RibbonTabs.Count > 0)
@@ -469,10 +493,12 @@ mainRibbon.Invalidate();
 **Symptoms:** Groups with same name create duplicates instead of merging.
 
 **Possible Causes:**
+
 1. Group names don't match exactly (case-sensitive)
 2. `TextLine1` or `TextLine2` differ
 
 **Solutions:**
+
 ```csharp
 // Ensure exact match
 var group = new KryptonRibbonGroup
@@ -487,10 +513,12 @@ var group = new KryptonRibbonGroup
 **Symptoms:** Items don't appear in merged groups.
 
 **Possible Causes:**
+
 1. Group structure mismatch
 2. Items not properly added to containers
 
 **Solutions:**
+
 ```csharp
 // Ensure proper structure
 var group = new KryptonRibbonGroup { TextLine1 = "Tools" };
@@ -505,11 +533,13 @@ group.Items.Add(triple);
 **Symptoms:** Items not restored to source ribbon after unmerge.
 
 **Possible Causes:**
+
 1. Source ribbon disposed
 2. Items not tracked properly
 3. Unmerge called multiple times
 
 **Solutions:**
+
 ```csharp
 // Ensure source ribbon exists
 if (!pluginRibbon.IsDisposed)
@@ -530,11 +560,13 @@ if (loadedPlugins.Contains(plugin))
 **Symptoms:** Slow merge/unmerge operations.
 
 **Possible Causes:**
+
 1. Too many items
 2. Frequent merge/unmerge operations
 3. Layout refresh overhead
 
 **Solutions:**
+
 ```csharp
 // Batch operations
 SuspendLayout();
@@ -606,10 +638,10 @@ public void LoadPlugins(IEnumerable<IPlugin> plugins)
 Ribbon merging provides a powerful mechanism for building dynamic, plugin-based applications. By understanding merge behavior, using best practices, and following the patterns outlined in this guide, you can create robust, maintainable plugin architectures.
 
 Key takeaways:
+
 - Use extension methods for simple cases
 - Use `KryptonRibbonMerger` class for advanced scenarios
 - Always unmerge before disposal
 - Use `Tag` property for ordering
 - Fix group widths after merging
 - Handle null values appropriately
-

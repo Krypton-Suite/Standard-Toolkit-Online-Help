@@ -1,12 +1,12 @@
 # Navigator Selection Events  
   
 Applicable Events:  
+
 * Deselecting
 * Selecting
 * Deselected
 * Selected
 * SelectedPageChanged
-  
   
 **Standard Event Sequence**  
 When a change in selected page is requested the following sequence of events
@@ -16,32 +16,32 @@ or when you programmatically change selection by altering the *SelectedIndex* or
 difference in the events generated or the ordering of events just because the
 source of the change is programmatic compared to user interaction.
 
--   *Deselecting*  
+* *Deselecting*  
     Generated for the currently selected page in order to ask if the page is
     allowed to be deselected. This event can be cancelled so if the event
     handler sets the *e.Cancel* value to *True* then the selection change is
     aborted immediately. Use this event to perform page level validation and
     decide if you will allow the page to be deselected.
 
--   *Selecting*  
+* *Selecting*  
     Generated for the page that is to become selected and asks if the page is
     allowed to be selected. This event can be cancelled so if the event handler
     sets the *e.Cancel* value to *True* the the selection change is aborted
     immediately. Use this event to decide if the page is capable of becoming
     selected.
 
--   *Deselected*  
+* *Deselected*  
     Generated for the currently selected page and indicates that it is now
     becoming deselected. This event cannot be cancelled and so you should use
     the event to perform any cleanup actions that are required when the page is
     no longer to be displayed.
 
--   *Selected*  
+* *Selected*  
     Generated for the page that is to now becoming selected. This event cannot
     be cancelled and so you should perform actions to initialize the new page
     ready for display as the new selection.
 
--   *SelectedPageChanged*  
+* *SelectedPageChanged*  
     Generated when the value of the *SelectedPage* property is changed to
     reflect the new selection. This event cannot be cancelled and is always the
     last event in the sequence. If you do not need to perform any page specific
@@ -53,27 +53,25 @@ of the *Krypton Explorer* to see the events that are generated during selection
 changes. This handy example allows you to add and remove pages to the navigator
 and lists the selection events that occur as you click around the pages.  
   
-  
-  
 **First Page Sequence**  
 When the first visible page is added the sequence of events differs from that
 listed above. There is obviously no existing page that needs to be
 deselected and so no need to generate the *Deselecting* and *Deselected* events.
 So the generated event sequence becomes the following.
 
--   *Selecting*  
+* *Selecting*  
     Generated for the page that is to become selected. Any attempt to cancel the
     event will be ignored because one of the visible pages must be selected at
     all times. Although the event cannot be cancelled it is still fired so you
     can be sure that the logic inside the handler is always called before the
     page becomes selected.
 
--   *Selected*  
+* *Selected*  
     Generated for the page just added to the control. This event cannot be
     cancelled and so you should perform actions to initialize the new page ready
     for display as the new selection.
 
--   *SelectedPageChanged*  
+* *SelectedPageChanged*  
     Generated when the value of the *SelectedPage* property is changed to
     reflect the new selection. This event cannot be cancelled and is always the
     last event in the sequence. If you do not need to perform any page specific
@@ -85,20 +83,18 @@ When the last visible page is removed from the navigator only two events are
 fired. Once the last page is removed there is no choice left but to set the
 selected page to *(null)*. Therefore the only two events fired are as follows.
 
--   *Deselected*  
+* *Deselected*  
     Generated for the currently selected page and indicates that it is now
     becoming deselected. This event cannot be cancelled and so you should use
     the event to perform any cleanup actions that are required when the page is
     no longer to be displayed.
 
--   *SelectedPageChanged*  
+* *SelectedPageChanged*  
     Generated when the value of the *SelectedPage* property is changed to
     reflect the new selection. This event cannot be cancelled and is always the
     last event in the sequence. If you do not need to perform any page specific
     actions such as initialization, cleanup or validation then this is the most
     appropriate event to monitor for selection changes.
-
- 
 
 **Remove Page Sequence**  
 This sequence is applied when removing the selected page and there are one or
@@ -119,13 +115,13 @@ the control will automatically select the first enabled page that it tested.
 When there are no enabled pages remaining then it chooses the first disabled
 page that was tested.
 
--   *Deselected*  
+* *Deselected*  
     Generated for the currently selected page and indicates that it is being
     removed and so becoming deselected. This event cannot be cancelled and so
     you should use the event to perform any cleanup actions that are required
     when the page is no longer to be displayed.
 
--   *Selecting*  
+* *Selecting*  
     This event is fired for all remaining visible pages. If the event is not
     cancelled then it becomes the new selection. If all the remaining pages
     cancel the event then the control will automatically select the first
@@ -136,20 +132,18 @@ page that was tested.
     the default action for the control will be to selected the next available
     enabled page.
 
--   *Selected*  
+* *Selected*  
     Generated for the page that is to now becoming selected. This event cannot
     be cancelled and so you should perform actions to initialize the new page
     ready for display as the new selection.
 
--   *SelectedPageChanged*  
+* *SelectedPageChanged*  
     Generated when the value of the *SelectedPage* property is changed to
     reflect the new selection. This event cannot be cancelled and is always the
     last event in the sequence. If you do not need to perform any page specific
     actions such as initialization, cleanup or validation then this is the most
     appropriate event to monitor for selection changes.
 
-  
-  
 **KryptonPage.Visible Property**  
 Just because a page has been added to the navigator does not mean it has to be
 displayed. You can use the *KryptonPage.Visible* property and the
@@ -166,7 +160,6 @@ that page the *Last Page Sequence* will be fired.
 So although a page is might be constantly present in the
 *KryptonNavigator.Pages* collection you should think of it as only being present
 for selection purposes when set to be visible.  
-  
   
 **KryptonPage.Enabled Property**  
 Unlike the visible property the enabled property does not always prevent a page

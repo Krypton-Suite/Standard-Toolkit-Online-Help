@@ -10,7 +10,7 @@
 
 ## Inheritance Hierarchy
 
-```
+```text
 System.Object
   └─ System.MarshalByRefObject
        └─ System.ComponentModel.Component
@@ -61,7 +61,7 @@ Controls added to the form at design time are physically parented to an internal
 The non-client chrome is painted through a lightweight retained view-tree:
 
 | Element | Role |
-|---|---|
+| --- | --- |
 | `ViewDrawForm` (`_drawDocker`) | Root docker; draws the form border/background |
 | `ViewDecoratorFixedSize` (`_headingFixedSize`) | Enforces caption height |
 | `ViewDrawDocker` (`_drawHeading`) | Draws the caption header (back + border) |
@@ -135,7 +135,7 @@ public KryptonFormTitleStyle TitleStyle { get; set; }
 A convenience wrapper over `FormTitleAlign`:
 
 | Value | Maps to `FormTitleAlign` |
-|---|---|
+| --- | --- |
 | `Inherit` | `PaletteRelativeAlign.Inherit` |
 | `Classic` | `PaletteRelativeAlign.Near` |
 | `Modern` | `PaletteRelativeAlign.Center` |
@@ -158,14 +158,14 @@ An additional string displayed in the caption area alongside the title text. Ren
 `KryptonForm` uses two visual states:
 
 | State | Description |
-|---|---|
+| --- | --- |
 | **Active** | Applied when the window has input focus |
 | **Inactive** | Applied when the window is in the background |
 
 ### State Properties
 
 | Property | Type | Description |
-|---|---|---|
+| --- | --- | --- |
 | `StateCommon` | `PaletteFormRedirect` | Shared base values; overridden by state-specific entries |
 | `StateActive` | `PaletteForm` | Active (focused) window appearance |
 | `StateInactive` | `PaletteForm` | Inactive (background) window appearance |
@@ -210,7 +210,7 @@ public new FormBorderStyle FormBorderStyle { get; set; }
 Overrides the base `Form.FormBorderStyle` to synchronise the Krypton control buttons (Min/Max/Close) automatically when the style changes:
 
 | Style | ControlBox | Min | Max | Close |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `None` | ✗ | ✗ | ✗ | ✗ |
 | `FixedSingle`, `Fixed3D`, `FixedDialog`, `Sizable` | ✓ | ✓ | ✓ | ✓ |
 | `FixedToolWindow`, `SizableToolWindow` | ✗ | ✗ | ✗ | ✓ |
@@ -328,7 +328,7 @@ Setting `TitleBar` to `null` cleanly detaches and disposes the embedded docker a
 ### KryptonFormTitleBar Members
 
 | Member | Type | Description |
-|---|---|---|
+| --- | --- | --- |
 | `ButtonSpecs` | `FormTitleBarButtonSpecCollection` | Collection of buttons shown in the title bar |
 | `ShowDropArrow` | `bool` | When `true`, all buttons with a `KryptonContextMenu` show a drop arrow |
 | `Values` | `FormTitleBarValues` | Stores `ButtonVisibility` and `ButtonAlignment` sub-objects |
@@ -398,9 +398,9 @@ When `true`, the form attempts to merge a `StatusStrip` control into the lower b
 5. `StatusStrip.RenderMode == ToolStripRenderMode.ManagerRenderMode`.
 6. `ToolStripManager.Renderer` is one of the Office/Krypton-compatible renderers (`KryptonOffice2007Renderer`, `KryptonVisualStudio2010With2007Renderer`, or `KryptonSparkleRenderer`).
 
-![](Images/StatusStripMergingTrue.png) ![](Images/StatusStripMergingFalse.png)
+![Krypton form with StatusStrip merged into the lower chrome](../Images/StatusStripMergingTrue.png) ![Krypton form with StatusStrip not merged](../Images/StatusStripMergingFalse.png)
 
-*Figure 1 — StatusStripMerging = True & False*
+Figure 1 — StatusStripMerging = True and False
 
 The `StatusStripMerging` property (internal, read-only) reflects the computed merge state.
 
@@ -413,15 +413,15 @@ The `StatusStripMerging` property (internal, read-only) reflects the computed me
 ### BlurValues Members
 
 | Property | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `BlurWhenFocusLost` | `bool` | `false` | Enable blur when the form loses focus |
 | `Opacity` | `byte` | `80` | Blur opacity percentage (0–100) |
 
 > **Note:** The blur effect is implemented at the `VisualForm` level and requires platform support. Both `BlurWhenFocusLost` **and** `EnableBlur` (on `VisualForm`) must be `true` to activate the effect.
 
-![Blur Animation](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/blob/master/Source/Help/DocFX/articles/Toolkit/KryptonFormBlur.gif?raw=true)
+![Krypton form blur effect when focus is lost](https://github.com/Krypton-Suite/Standard-Toolkit-Online-Help/blob/master/Source/Help/DocFX/articles/Toolkit/KryptonFormBlur.gif?raw=true)
 
-*Figure 2 — Blur effect in action*
+Figure 2 — Blur effect in action
 
 ---
 
@@ -436,7 +436,7 @@ public SystemMenuValues SystemMenuValues { get; }
 ```
 
 | Property | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `Enabled` | `bool` | `true` | Enables or disables the themed system menu |
 | `MenuItems` | `KryptonContextMenuCollection` | — | Direct access to the menu item collection for customisation |
 
@@ -484,7 +484,7 @@ When `KryptonManager.UseAdministratorSuffix` is `true` and the process is elevat
 `KryptonForm` implements `IContentValues` to supply content to the caption's `ViewDrawContent`:
 
 | Method | Returns | Description |
-|---|---|---|
+| --- | --- | --- |
 | `GetShortText()` | `string` | `Text` + optional administrator suffix |
 | `GetLongText()` | `string` | `TextExtra` value |
 | `GetImage(PaletteState)` | `Image?` | DPI-scaled form icon bitmap (cached) |
@@ -572,7 +572,7 @@ Controls how `BackgroundImage` is tiled/stretched/positioned within the client a
 The following `Form` properties are hidden in the designer (`Browsable(false)` / `EditorBrowsable(Never)`) because they conflict with Krypton's palette-driven approach:
 
 | Member | Reason suppressed |
-|---|---|
+| --- | --- |
 | `Font` | Krypton controls inherit font from the palette |
 | `ForeColor` | Managed by palette |
 | `BackColor` | Managed by palette; the internal panel handles client background |
@@ -585,7 +585,7 @@ The following `Form` properties are hidden in the designer (`Browsable(false)` /
 The following protected members are intended for subclass customisation:
 
 | Method | Description |
-|---|---|
+| --- | --- |
 | `WindowChromeStart()` | Called when custom chrome painting begins (creates buttons) |
 | `WindowChromeEnd()` | Called when custom chrome painting ends (removes border region) |
 | `WindowChromeHitTest(Point)` | Override to customise hit-testing in the non-client area |
@@ -605,7 +605,7 @@ The following protected members are intended for subclass customisation:
 `KryptonForm.WndProc` handles the following Windows messages in addition to the base class:
 
 | Message | Behaviour |
-|---|---|
+| --- | --- |
 | `WM_HELP` (0x0053) | Walks up the control tree to find a `HelpProvider` and calls `Help.ShowHelp` |
 | `WM_CONTEXTMENU` (0x007B) | Shows `ContextMenuStrip` at the click position if one is assigned |
 | `WM_PAINT` (0x000F) | After base paint, draws the sizing grip overlay if `ShouldShowSizingGrip()` is `true` |
@@ -617,7 +617,7 @@ The following protected members are intended for subclass customisation:
 `KryptonForm` subscribes to three `KryptonManager` global events for the lifetime of the instance:
 
 | Event | Handler | Effect |
-|---|---|---|
+| --- | --- | --- |
 | `GlobalPaletteChanged` | `OnGlobalPaletteChanged` | Re-evaluates chrome decision; applies Material defaults; recalculates non-client |
 | `GlobalUseThemeFormChromeBorderWidthChanged` | `OnGlobalUseThemeFormChromeBorderWidthChanged` | Re-evaluates chrome decision |
 | `GlobalTouchscreenSupportChanged` | `OnGlobalTouchscreenSupportChanged` | Recreates all caption buttons to resize for touch targets |
@@ -663,7 +663,7 @@ When `style == ViewDockStyle.Fill`, the incoming element must be a `ViewLayoutDo
 ## Static Utility Methods
 
 | Method | Description |
-|---|---|
+| --- | --- |
 | `GetIsInAdministratorMode()` | Returns cached administrator-mode flag; performs a live check on first call |
 | `GetHasCurrentInstanceGotAdministrativeRights()` | Performs a live `WindowsPrincipal` check and caches the result |
 | `SetIsInAdministratorMode(bool)` | Manually overrides the cached administrator flag (for testing / impersonation) |
@@ -675,7 +675,7 @@ When `style == ViewDockStyle.Fill`, the incoming element must be a `ViewLayoutDo
 ### Properties
 
 | Property | Type | Default | Category | Description |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | `AllowButtonSpecToolTips` | `bool` | `false` | Visuals | Show tooltips on caption `ButtonSpec` items |
 | `AllowIconDisplay` | `bool` | `true` | — | Internal; controls whether the form icon is rendered |
 | `AllowStatusStripMerge` | `bool` | `true` | Visuals | Merge bottom `StatusStrip` into the chrome border |
@@ -717,7 +717,7 @@ When `style == ViewDockStyle.Fill`, the incoming element must be a `ViewLayoutDo
 ### Methods
 
 | Method | Description |
-|---|---|
+| --- | --- |
 | `GetWindowState()` | Returns the current `FormWindowState` directly from the Win32 window style (more accurate than `WindowState`) |
 | `HitTestMinButton(Point)` | Returns `true` if the window-coordinate point is inside the Minimize button |
 | `HitTestMaxButton(Point)` | Returns `true` if the window-coordinate point is inside the Maximize button |

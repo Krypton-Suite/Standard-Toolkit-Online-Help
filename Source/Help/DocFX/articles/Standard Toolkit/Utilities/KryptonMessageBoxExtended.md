@@ -7,7 +7,7 @@
 3. [API Reference](#api-reference)
 4. [Enumerations](#enumerations)
 5. [Usage Examples](#usage-examples)
-6. [Advanced Features](#advanced-features)
+6. [Advanced usage](#advanced-usage)
 7. [Best Practices](#best-practices)
 8. [Technical Details](#technical-details)
 
@@ -68,6 +68,7 @@ All public methods return `DialogResult` indicating which button was clicked.
 **Description**: Displays a basic message box with minimal configuration.
 
 **Parameters**:
+
 - `message` (string): The message text to display
 - `caption` (string): The window title/caption
 - `buttons` (ExtendedMessageBoxButtons): Button configuration
@@ -77,6 +78,7 @@ All public methods return `DialogResult` indicating which button was clicked.
 **Returns**: `DialogResult` - The button clicked by the user
 
 **Example**:
+
 ```csharp
 var result = KryptonMessageBoxExtended.Show(
     "Operation completed successfully!",
@@ -93,6 +95,7 @@ var result = KryptonMessageBoxExtended.Show(
 **Description**: Displays a message box with text alignment and timeout support.
 
 **Additional Parameters**:
+
 - `messageTextAlignment` (ContentAlignment?, optional): Alignment for message text (TopLeft, TopCenter, TopRight, MiddleLeft, MiddleCenter, MiddleRight, BottomLeft, BottomCenter, BottomRight)
 - `messageTextBoxAlignment` (HorizontalAlignment?, optional): Horizontal alignment for text box (Left, Center, Right)
 - `useTimeOut` (bool?, optional): Enable automatic timeout (default: false)
@@ -101,6 +104,7 @@ var result = KryptonMessageBoxExtended.Show(
 - `timerResult` (DialogResult?, optional): Result to return when timeout occurs (default: None)
 
 **Example**:
+
 ```csharp
 var result = KryptonMessageBoxExtended.Show(
     "This message will auto-close in 10 seconds",
@@ -122,6 +126,7 @@ var result = KryptonMessageBoxExtended.Show(
 **Description**: Displays a message box with link support and message container options.
 
 **Additional Parameters**:
+
 - `applicationPath` (string?, optional): Path to application executable (for Application icon type)
 - `messageContainerType` (ExtendedKryptonMessageBoxMessageContainerType?, optional): Container type (Normal, RichTextBox, HyperLink)
 - `linkLabelCommand` (KryptonCommand?, optional): Command to execute when link is clicked
@@ -131,6 +136,7 @@ var result = KryptonMessageBoxExtended.Show(
 - `richTextBoxTextAlignment` (PaletteRelativeAlign?, optional): Alignment for RichTextBox content
 
 **Example**:
+
 ```csharp
 var linkArea = new LinkArea(10, 20); // Characters 10-30 are clickable
 var result = KryptonMessageBoxExtended.Show(
@@ -153,6 +159,7 @@ var result = KryptonMessageBoxExtended.Show(
 **Description**: Full-featured overload with all customization options.
 
 **Additional Parameters**:
+
 - `defaultButton` (KryptonMessageBoxDefaultButton): Which button is the default (Button1, Button2, Button3, Button4)
 - `options` (MessageBoxOptions): Display options (RightAlign, RtlReading, ServiceNotification, DefaultDesktopOnly)
 - `displayHelpButton` (bool): Show help button
@@ -160,6 +167,7 @@ var result = KryptonMessageBoxExtended.Show(
 - `customImageIcon` (Image?, optional): Custom icon image
 
 **Example**:
+
 ```csharp
 var customFont = new Font("Segoe UI", 12, FontStyle.Bold);
 var customIcon = Image.FromFile("custom-icon.png");
@@ -184,9 +192,11 @@ var result = KryptonMessageBoxExtended.Show(
 **Description**: All Show methods have owner window variants that accept an `IWin32Window` parameter as the first argument.
 
 **Parameters**:
+
 - `owner` (IWin32Window): Parent window for modal dialog
 
 **Example**:
+
 ```csharp
 var result = KryptonMessageBoxExtended.Show(
     this, // Owner window
@@ -206,11 +216,13 @@ var result = KryptonMessageBoxExtended.Show(
 **Description**: Message box with integrated help system support.
 
 **Additional Parameters**:
+
 - `helpFilePath` (string): Path to help file (.chm)
 - `navigator` (HelpNavigator): Help navigation type (Topic, TableOfContents, Index, Find, etc.)
 - `param` (object?, optional): Additional parameter for help navigation
 
 **Example**:
+
 ```csharp
 var result = KryptonMessageBoxExtended.Show(
     "Click Help for more information",
@@ -232,12 +244,14 @@ var result = KryptonMessageBoxExtended.Show(
 **Description**: Maximum customization overload with custom button text, colors, and dialog results.
 
 **Additional Parameters**:
+
 - `messageTextColor` (Color?, optional): Custom color for message text
 - `buttonTextColors` (Color[]?, optional): Array of colors for button text (up to 4 buttons)
 - `buttonOneCustomDialogResult` through `buttonFourDialogResult` (DialogResult?, optional): Custom dialog results for each button
 - `buttonOneCustomText` through `buttonFourCustomText` (string?, optional): Custom text for each button
 
 **Example**:
+
 ```csharp
 var result = KryptonMessageBoxExtended.Show(
     this,
@@ -265,12 +279,14 @@ var result = KryptonMessageBoxExtended.Show(
 **Description**: Message box with expandable/collapsible footer section.
 
 **Parameters**:
+
 - `footerText` (string?, optional): Text to display in footer
 - `footerExpanded` (bool): Whether footer starts expanded (default: false)
 - `footerContentType` (ExtendedKryptonMessageBoxFooterContentType): Footer content type (Text, CheckBox, RichTextBox)
 - `footerRichTextBoxHeight` (int?, optional): Height for RichTextBox footer (when footerContentType is RichTextBox)
 
 **Example**:
+
 ```csharp
 var result = KryptonMessageBoxExtended.Show(
     "Main message text here",
@@ -292,6 +308,7 @@ var result = KryptonMessageBoxExtended.Show(
 Specifies the button configuration for the message box.
 
 **Values**:
+
 - `OK` - Single OK button
 - `OKCancel` - OK and Cancel buttons
 - `AbortRetryIgnore` - Abort, Retry, and Ignore buttons
@@ -307,6 +324,7 @@ Specifies the button configuration for the message box.
 Specifies the icon to display in the message box.
 
 **Values**:
+
 - `Custom` - Use custom icon image
 - `None` - No icon
 - `Hand` - Hand icon (error/stop)
@@ -329,6 +347,7 @@ Specifies the icon to display in the message box.
 Specifies the type of container for the message text.
 
 **Values**:
+
 - `Normal` - Standard text label (default)
 - `RichTextBox` - Rich text box with formatting support
 - `HyperLink` - Link label with clickable areas
@@ -340,6 +359,7 @@ Specifies the type of container for the message text.
 Specifies the content type for the footer section.
 
 **Values**:
+
 - `Text` - Plain text using KryptonWrapLabel (default)
 - `CheckBox` - Checkbox control
 - `RichTextBox` - Rich text box with formatting
@@ -351,6 +371,7 @@ Specifies the content type for the footer section.
 Specifies which button is the default (receives focus and responds to Enter key).
 
 **Values**:
+
 - `Button1` - First button (default)
 - `Button2` - Second button
 - `Button3` - Third button
@@ -530,7 +551,7 @@ var result = KryptonMessageBoxExtended.Show(
 
 ---
 
-## Advanced Features
+## Advanced usage
 
 ### Custom Fonts
 

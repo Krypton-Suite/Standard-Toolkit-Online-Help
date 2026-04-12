@@ -88,14 +88,12 @@
 </code></pre>
 <h3 id="2-all-downstream-steps-are-gated">2. All downstream steps are gated</h3>
 <p>Every subsequent action in the job checks the <code>enabled</code> output. If the switch is active the expression evaluates to <code>false</code>, GitHub skips the step, and the build/page/publish stages never start.</p>
-<pre><code class="lang-38:115:.github/workflows/release.yml">- name: Build Release
+<p>Example:</p>
+<pre><code class="lang-yaml">- name: Build Release
   if: steps.release_kill_switch.outputs.enabled == 'true'
-  run: msbuild &quot;Scripts/build.proj&quot; /t:Build /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;
-- name: Push NuGet Packages to nuget.org
-  if: steps.release_kill_switch.outputs.enabled == 'true'
-  id: push_nuget
-  shell: pwsh
+  run: msbuild &quot;Scripts/Build/build.proj&quot; /t:Build /p:Configuration=Release /p:Platform=&quot;Any CPU&quot; /p:UseArtifactsOutput=true
 </code></pre>
+<p><strong>Build</strong> and <strong>Pack</strong> steps use <code>/p:UseArtifactsOutput=true</code> so outputs land under <code>artifacts/</code>; <strong>Push</strong> collects <code>.nupkg</code> files from <code>artifacts/packages/...</code> first, then <code>Bin/Packages/...</code>.</p>
 <h2 id="configuration">Configuration</h2>
 <table>
 <thead>
@@ -114,12 +112,7 @@
 <tr>
 <td><code>V105-LTS</code> (<code>release-v105-lts</code>)</td>
 <td><code>RELEASE_DISABLED</code></td>
-<td>Latest LTS stream (shares the same switch to avoid drift)</td>
-</tr>
-<tr>
-<td><code>V85-LTS</code> (<code>release-v85-lts</code>)</td>
-<td><code>LTS_DISABLED</code></td>
-<td>Legacy LTS channel</td>
+<td>LTS stream (same switch as <code>master</code> so both channels freeze together)</td>
 </tr>
 <tr>
 <td><code>canary</code> (<code>release-canary</code>)</td>
@@ -133,8 +126,9 @@
 </tr>
 </tbody>
 </table>
+<p>These rows match the jobs defined in <code>.github/workflows/release.yml</code>. Older docs referred to a separate <code>V85-LTS</code> job (<code>LTS_DISABLED</code>); that job is not in the current workflow file—use <code>release.yml</code> as the source of truth.</p>
 <blockquote>
-<p>Why two LTS jobs share <code>RELEASE_DISABLED</code>: the V105 branch follows the same release cadence as <code>master</code>, so maintainers typically want to freeze both at once. If you need V105 to keep running while master is frozen, temporarily duplicate the kill-switch step under a new variable before toggling.</p>
+<p>Why <code>master</code> and <code>V105-LTS</code> share <code>RELEASE_DISABLED</code>: both use the same stable packaging path; maintainers usually want to freeze both at once. If you need different behavior, introduce a dedicated variable and gate the V105 job separately.</p>
 </blockquote>
 <h3 id="setting-or-clearing-a-switch">Setting or clearing a switch</h3>
 <ol>
@@ -149,19 +143,19 @@
 <li>When enabled, the log includes “kill switch check has passed” and normal build/pack/publish steps begin immediately afterward.</li>
 </ul>
 <h2 id="operational-playbook">Operational playbook</h2>
-<p><strong>Freezing a channel before a risky commit</strong></p>
+<h3 id="freezing-a-channel-before-a-risky-commit">Freezing a channel before a risky commit</h3>
 <ol>
 <li>Flip the relevant variable to <code>true</code>.</li>
 <li>Push your work—CI will run but the guarded job will skip, preventing packages and notifications.</li>
 <li>Once the branch is healthy again, set the variable back to <code>false</code> and rerun the latest workflow from the Actions tab if you need artifacts.</li>
 </ol>
-<p><strong>Recovering after an accidental freeze</strong></p>
+<h3 id="recovering-after-an-accidental-freeze">Recovering after an accidental freeze</h3>
 <ol>
 <li>Confirm the variable value in Settings.</li>
 <li>Re-enable (<code>false</code>), then re-run the failed workflow from Actions → select the skipped run → “Re-run all jobs”. Because kill switches act at runtime, no workflow edits are required.</li>
 </ol>
-<p><strong>Auditing who changed a switch</strong>
-Repository variables track the last editor in the activity log (<strong>Settings → Audit log</strong>). Filter for <code>repo.variable.update</code> events to see when and by whom a kill switch was toggled.</p>
+<h3 id="auditing-who-changed-a-switch">Auditing who changed a switch</h3>
+<p>Repository variables track the last editor in the activity log (<strong>Settings → Audit log</strong>). Filter for <code>repo.variable.update</code> events to see when and by whom a kill switch was toggled.</p>
 <h2 id="extending-the-pattern">Extending the pattern</h2>
 <p>To add a new kill switch (e.g., for a future <code>beta</code> branch), copy the existing pattern:</p>
 <ol>

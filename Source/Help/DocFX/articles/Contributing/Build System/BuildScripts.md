@@ -4,6 +4,8 @@
 
 The Krypton Toolkit provides Windows Command Prompt (`.cmd`) batch scripts for convenient building, packaging, and maintenance. Scripts are organized under `Scripts/VS2022/`, `Scripts/Current/`, and `Scripts/Build/`. The root `run.cmd` launches an interactive menu and invokes these scripts. Each script set uses a `build.proj` in its directory.
 
+Orchestrated MSBuild invocations import root `Directory.Build.props`, so binaries and `.nupkg` files go to `Bin/` and `Bin/Packages/` by default. To match CI, you can pass `/p:UseArtifactsOutput=true`, which redirects outputs to `artifacts/bin/` and `artifacts/packages/`. Script `.proj` Clean/Push/archive targets follow `$(KryptonBuildOutputRoot)` and `$(KryptonPackageOutputRoot)` automatically.
+
 ## Core Build Scripts
 
 ### build-stable.cmd
@@ -75,7 +77,7 @@ build-canary.cmd [target]
 - Same Visual Studio detection as build-stable.cmd
 - Builds using `canary.proj`
 - Outputs to `../Logs/canary-build-log.log` and `.binlog`
-- Packages go to `Bin/Packages/Canary/`
+- Packages go to `Bin/Packages/Canary/` unless the build used `UseArtifactsOutput=true` (`artifacts/packages/Canary/`)
 - Interactive menu integration
 
 **Examples**:
@@ -104,7 +106,7 @@ build-nightly.cmd [target]
 
 - Uses `nightly.proj`
 - Outputs to `../Logs/nightly-build-log.log` and `.binlog`
-- Packages go to `Bin/Packages/Nightly/`
+- Packages go to `Bin/Packages/Nightly/` by default, or `artifacts/packages/Nightly/` with `UseArtifactsOutput=true`
 - Interactive menu integration
 
 **Examples**:
@@ -177,7 +179,7 @@ You are about to delete the Bin folder; do you want to continue? (Y/N)
 
 **Deletes**:
 
-- `Bin/` - All build outputs
+- `Bin/` - Default build outputs (does not remove `artifacts/`; delete that folder manually if used)
 - `Source/Krypton Components/Krypton.Docking/obj/`
 - `Source/Krypton Components/Krypton.Navigator/obj/`
 - `Source/Krypton Components/Krypton.Ribbon/obj/`
@@ -215,7 +217,7 @@ publish.cmd
 **Prerequisites**:
 
 - NuGet API key must be configured
-- Packages must exist in `Bin/Packages/Release/`
+- Packages must exist under `Bin/Packages/Release/` (default) or `artifacts/packages/Release/` if you packed with `UseArtifactsOutput=true`
 
 **Configuration**:
 Set API key once:
@@ -467,7 +469,7 @@ build-stable.cmd Build
 
 ```cmd
 build-stable.cmd Pack
-# Manually inspect Bin/Packages/Release/
+REM Manually inspect Bin/Packages/Release/ or artifacts/packages/Release/
 build-stable.cmd Push
 ```
 

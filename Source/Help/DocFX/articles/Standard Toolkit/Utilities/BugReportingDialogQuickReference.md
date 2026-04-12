@@ -52,7 +52,7 @@ KryptonBugReportingDialog.Show(emailConfig);
 ## API Summary
 
 | Class/Method | Purpose |
-|--------------|---------|
+| -------------- | ------- |
 | `KryptonBugReportingDialog.Show()` | Display bug reporting dialog |
 | `BugReportEmailConfig` | Email configuration |
 | `BugReportEmailService` | Send emails programmatically |
@@ -68,7 +68,7 @@ KryptonBugReportingDialog.Show(emailConfig);
 ## Email Configuration Properties
 
 | Property | Type | Required | Default |
-|----------|------|----------|---------|
+| ---------- | ---- | ---------- | ------- |
 | `SmtpServer` | string | Yes | - |
 | `SmtpPort` | int | Yes | 587 |
 | `UseSsl` | bool | No | true |
@@ -82,7 +82,7 @@ KryptonBugReportingDialog.Show(emailConfig);
 ## Common SMTP Settings
 
 | Provider | Server | Port | SSL |
-|----------|--------|------|-----|
+| -------- | ------ | ---- | --- |
 | Gmail | smtp.gmail.com | 587 | Yes |
 | Outlook | smtp-mail.outlook.com | 587 | Yes |
 | Office 365 | smtp.office365.com | 587 | Yes |
@@ -95,4 +95,3 @@ KryptonBugReportingDialog.Show(emailConfig);
 ## See Full Documentation
 
 For complete documentation, see [BugReportingDialog.md](BugReportingDialog.md)
-

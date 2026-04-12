@@ -29,6 +29,7 @@ public class KryptonTimer : Component
 ### Timer Properties
 
 #### `Enabled`
+
 ```csharp
 [Category("Behavior")]
 [Description("Indicates whether the timer is running.")]
@@ -39,6 +40,7 @@ public bool Enabled { get; set; }
 Gets or sets a value indicating whether the timer is running. When `true`, the timer raises `Tick` events at the specified interval.
 
 #### `Interval`
+
 ```csharp
 [Category("Behavior")]
 [Description("The time, in milliseconds, between timer ticks.")]
@@ -51,6 +53,7 @@ Gets or sets the time, in milliseconds, between timer ticks. Default is 100ms. M
 ### Palette Properties
 
 #### `PaletteMode`
+
 ```csharp
 [Category("Visuals")]
 [Description("Sets the palette mode.")]
@@ -63,6 +66,7 @@ public PaletteMode PaletteMode { get; set; }
 Gets or sets the palette mode. This property is hidden from the designer as it's primarily for internal consistency. See `KryptonToolStripContainer` documentation for available palette modes.
 
 #### `Palette`
+
 ```csharp
 [Category("Visuals")]
 [Description("Sets the custom palette to be used.")]
@@ -77,6 +81,7 @@ Gets or sets a custom palette implementation. This property is hidden from the d
 ### Access to Underlying Component
 
 #### `Timer`
+
 ```csharp
 [Browsable(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -88,6 +93,7 @@ Gets access to the underlying `Timer` component for advanced scenarios.
 ## Methods
 
 ### `Start`
+
 ```csharp
 public void Start()
 ```
@@ -95,11 +101,13 @@ public void Start()
 Starts the timer. This is equivalent to setting `Enabled = true`.
 
 **Example:**
+
 ```csharp
 timer.Start();
 ```
 
 ### `Stop`
+
 ```csharp
 public void Stop()
 ```
@@ -107,6 +115,7 @@ public void Stop()
 Stops the timer. This is equivalent to setting `Enabled = false`.
 
 **Example:**
+
 ```csharp
 timer.Stop();
 ```
@@ -114,6 +123,7 @@ timer.Stop();
 ## Events
 
 ### `Tick`
+
 ```csharp
 [Category("Behavior")]
 [Description("Occurs when the specified timer interval has elapsed and the timer is enabled.")]
@@ -123,6 +133,7 @@ public event EventHandler? Tick;
 Occurs when the specified timer interval has elapsed and the timer is enabled. This is the main event for timer functionality.
 
 **Example:**
+
 ```csharp
 timer.Tick += (sender, e) =>
 {
@@ -259,6 +270,7 @@ timer.Interval = isFastMode ? 100 : 1000;
 ### Timer Thread
 
 The `KryptonTimer` uses a `System.Windows.Forms.Timer`, which:
+
 - Runs on the UI thread
 - Is safe for updating UI controls
 - Has lower precision than `System.Timers.Timer` or `System.Threading.Timer`
@@ -277,4 +289,3 @@ The timer automatically responds to global palette changes when `PaletteMode` is
 - `System.Windows.Forms.Timer` - The underlying timer component
 - `System.Timers.Timer` - For non-UI thread timing (not used by KryptonTimer)
 - `System.Threading.Timer` - For background thread timing (not used by KryptonTimer)
-

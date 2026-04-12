@@ -1,6 +1,7 @@
 # Navigator Header Modes  
   
 Applicable Modes:  
+
 * HeaderBar - CheckButton - HeaderGroup
 * Stack - CheckButton - HeaderGroup
 * Outlook - Full
@@ -8,14 +9,11 @@ Applicable Modes:
 * HeaderGroup
 * HeaderGroup - Tab
 
- 
-
 **Header Mode Properties**  
 The set of properties associated with Header related modes can be seen in Figure
 1 as they appear in the properties window.
 
-  
-*   Figure 1 - Header Mode Properties*
+## Figure 1 - Header Mode Properties
 
 **Header Positions**  
 The primary, secondary and bar headers can be positioned against any of the form
@@ -26,13 +24,9 @@ the secondary header and *HeaderPositionBar* for the bar header. Figure 2 shows
 the *HeaderGroup* mode with default settings and Figure 3 with the primary
 header on the *Left* and the secondary header on the *Right*.
 
-* *  
-*   Figure 2 - Default HeaderGroup appearance*
+## Figure 2 - Default HeaderGroup appearance
 
-*   *  
-*   Figure 3 - Modified header positions*
-
- 
+## Figure 3 - Modified header positions
 
 **Header Styles**  
 The header style can be altered using the *HeaderStylePrimary,
@@ -41,10 +35,8 @@ appearance with the primary header using the primary header style and the
 secondary header the secondary header style. Figure 4 shows an example where the
 *HeaderStylePrimary* property has been altered to *Secondary*.
 
-* *  
-*   Figure 4 - HeaderStylePrimary = Secondary*
+## Figure 4 - HeaderStylePrimary = Secondary
 
-  
 **Header Values**  
 The *HeaderValuesPrimary* set of properties are used to determine the text and
 image to show on the primary header. Likewise the *HeaderValuesSecondary*
@@ -60,7 +52,7 @@ user becoming confused because there is no text displayed at all.
   
 The *MapHeader*, *MapDescription* and *MapImage* properties are used when a page
 is selected and determine how to extract values from the selected *KryptonPage*
-for display. *MapImage *is used to recover an image from the *KryptonPage*. To
+for display. *MapImage* is used to recover an image from the *KryptonPage*. To
 prevent any image from being shown assign the *None* value. To show the
 *ImageSmall* form the page assign *Small* to the *MapImage*. More complex
 mappings are possible, for example a value of *LargeMediumSmall* indicates that

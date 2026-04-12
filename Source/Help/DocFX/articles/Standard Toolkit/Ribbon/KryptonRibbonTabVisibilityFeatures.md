@@ -23,6 +23,7 @@ The Krypton Ribbon now supports two complementary features for creating flexible
 #### 1. New Properties
 
 **ShowTabs Property**:
+
 ```csharp
 /// <summary>
 /// Gets and sets a value indicating if ribbon tabs are visible.
@@ -34,6 +35,7 @@ public bool ShowTabs { get; set; }
 ```
 
 **SelectedTab Property Enhancement**:
+
 - Modified to allow setting `SelectedTab` to `null` for "no tab" mode
 - Changed validation logic from `(value != null)` to `(value == null) ||` to permit null values
 
@@ -126,7 +128,8 @@ ribbon.SelectedTab = ribbon.RibbonTabs[0];
 ## Visual Comparison
 
 ### Normal Ribbon (ShowTabs = true, SelectedTab = Tab1)
-```
+
+```text
 ┌─────────────────────────────────────┐
 │ [Home] [Insert] [View] [Design]     │ ← Tab Headers
 ├─────────────────────────────────────┤
@@ -136,7 +139,8 @@ ribbon.SelectedTab = ribbon.RibbonTabs[0];
 ```
 
 ### No Tab Mode (ShowTabs = true, SelectedTab = null)
-```
+
+```text
 ┌─────────────────────────────────────┐
 │ [Home] [Insert] [View] [Design]     │ ← Tab Headers (visible but none selected)
 ├─────────────────────────────────────┤
@@ -145,7 +149,8 @@ ribbon.SelectedTab = ribbon.RibbonTabs[0];
 ```
 
 ### Hidden Tab Headers Mode (ShowTabs = false)
-```
+
+```text
 ┌─────────────────────────────────────┐
 │ [Paste] [Cut] [Copy] [Format]       │ ← Ribbon Groups (directly visible)
 │ Clipboard Group                     │
@@ -170,6 +175,7 @@ ribbon.SelectedTab = ribbon.RibbonTabs[0];
 ## Use Cases
 
 ### 1. Toolbar Mode
+
 When you want to use the ribbon as a toolbar without visible tab headers:
 
 ```csharp
@@ -178,6 +184,7 @@ ribbon.ShowTabs = false;
 ```
 
 ### 2. Dynamic Tab Management
+
 For applications that need to dynamically show/hide tabs:
 
 ```csharp
@@ -193,6 +200,7 @@ if (ribbon.RibbonTabs.Count > 0)
 ```
 
 ### 3. Context-Sensitive Ribbons
+
 For ribbons that change behavior based on application state:
 
 ```csharp
@@ -217,21 +225,28 @@ private void SwitchToTabMode()
 The implementation handles several edge cases to ensure robust behavior:
 
 ### 1. Tab Validation
+
 The `ValidateSelectedTab()` method respects the `ShowTabs` property:
+
 - **When `ShowTabs = false`**: Allows `SelectedTab` to remain `null` (toolbar mode)
 - **When `ShowTabs = true`**: Automatically selects a valid tab if none is selected
 
 ### 2. Focus Management
+
 The `OnGotFocus()` method handles focus appropriately:
+
 - **Toolbar Mode**: Focuses on groups area or QAT instead of trying to focus hidden tabs
 - **Normal Mode**: Focuses on selected tab or first available tab
 
 ### 3. Keyboard Navigation
+
 The `RibbonTabController` already handles keyboard navigation correctly:
+
 - **When `SelectedTab = null`**: Converts Tab/Shift+Tab to Right/Left arrow keys
 - **Toolbar Mode**: Navigation works through groups and QAT elements
 
 ### 4. Contextual Tabs
+
 Both regular tabs and contextual tab headers are properly hidden when `ShowTabs = false`.
 
 ## Related Issues
@@ -242,6 +257,7 @@ Both regular tabs and contextual tab headers are properly hidden when `ShowTabs 
 ## Future Enhancements
 
 Potential future improvements could include:
+
 - Animation support for tab show/hide transitions
 - Additional layout options for hidden tab mode
 - Custom styling options for toolbar mode
@@ -250,6 +266,7 @@ Potential future improvements could include:
 ## Compatibility
 
 This feature is compatible with:
+
 - .NET Framework 4.7.2 and later
 - .NET 8.0 Windows and later
 - Visual Studio 2022 and later

@@ -11,17 +11,20 @@
 ## Key Features
 
 ### Automatic Theming
+
 - Applies Krypton renderer automatically
 - Updates with global palette changes
 - No configuration required
 
 ### Full ToolStrip Functionality
+
 - All standard ToolStrip items supported
 - Docking and overflow support
 - Customizable layout
 - Image scaling
 
 ### Minimal Code
+
 - Single line change from ToolStrip
 - Drop-in replacement
 - Inherits all ToolStrip behavior
@@ -39,6 +42,7 @@ public KryptonToolStrip()
 ```
 
 **Initialization:**
+
 - Sets `RenderMode` to `ToolStripRenderMode.ManagerRenderMode`
 - Automatically uses the Krypton renderer from ToolStripManager
 
@@ -51,6 +55,7 @@ public KryptonToolStrip()
 All standard `ToolStrip` properties are available:
 
 #### Items
+
 Gets the collection of items in the ToolStrip.
 
 ```csharp
@@ -61,6 +66,7 @@ public ToolStripItemCollection Items { get; }
 ---
 
 #### Dock
+
 Gets or sets which edge of the parent container the ToolStrip is docked to.
 
 ```csharp
@@ -71,6 +77,7 @@ public override DockStyle Dock { get; set; }
 ---
 
 #### GripStyle
+
 Gets or sets whether the ToolStrip displays a grip for moving.
 
 ```csharp
@@ -81,6 +88,7 @@ public ToolStripGripStyle GripStyle { get; set; }
 ---
 
 #### ImageScalingSize
+
 Gets or sets the size of the images used on the ToolStrip.
 
 ```csharp
@@ -91,6 +99,7 @@ public Size ImageScalingSize { get; set; }
 ---
 
 #### LayoutStyle
+
 Gets or sets how items are laid out.
 
 ```csharp
@@ -101,6 +110,7 @@ public ToolStripLayoutStyle LayoutStyle { get; set; }
 ---
 
 #### ShowItemToolTips
+
 Gets or sets whether tooltips are shown for items.
 
 ```csharp
@@ -111,6 +121,7 @@ public bool ShowItemToolTips { get; set; }
 ---
 
 #### Renderer
+
 Gets or sets the renderer (automatically set to Krypton renderer).
 
 ```csharp
@@ -119,6 +130,7 @@ public ToolStripRenderer Renderer { get; set; }
 ```
 
 **Remarks:**
+
 - Automatically managed by `RenderMode = ManagerRenderMode`
 - Should not normally need to set manually
 
@@ -498,6 +510,7 @@ This tells the ToolStrip to use the renderer set in `ToolStripManager`, which Kr
 ### Theme Updates
 
 Theme changes are handled automatically:
+
 1. Global palette changes
 2. ToolStripManager updates renderer
 3. ToolStrip repaints with new theme
@@ -592,7 +605,7 @@ Controls.Add(quickAccessToolbar);
 
 - **Target Frameworks:** `net472`, `net48`, `net481`, `net8.0-windows`, `net9.0-windows`, `net10.0-windows`
 - **Windows Forms:** Required
-- **Dependencies:** 
+- **Dependencies:**
   - Krypton.Toolkit core
   - ToolStripManager configuration
 
@@ -603,11 +616,13 @@ Controls.Add(quickAccessToolbar);
 ### Simple Migration
 
 **Before:**
+
 ```csharp
 var toolStrip = new ToolStrip();
 ```
 
 **After:**
+
 ```csharp
 var toolStrip = new KryptonToolStrip();
 ```
@@ -631,12 +646,14 @@ That's it! Everything else remains the same.
 ### vs ToolStrip
 
 **KryptonToolStrip:**
+
 - ✅ Automatic Krypton theming
 - ✅ Matches application appearance
 - ✅ No additional code
 - ✅ Drop-in replacement
 
 **Standard ToolStrip:**
+
 - ❌ Plain Windows theme
 - ❌ Doesn't match Krypton controls
 - ❌ Requires manual renderer setup
@@ -646,12 +663,14 @@ That's it! Everything else remains the same.
 ### vs KryptonRibbon
 
 **KryptonToolStrip:**
+
 - ✅ Simple and lightweight
 - ✅ Compact vertical space
 - ✅ Traditional toolbar UX
 - ❌ Limited organization
 
 **KryptonRibbon:**
+
 - ✅ Rich organization (tabs, groups)
 - ✅ Contextual tabs
 - ✅ Large button support
@@ -662,9 +681,8 @@ That's it! Everything else remains the same.
 
 ## See Also
 
-- [KryptonRibbon](KryptonRibbon.md) - Full ribbon control
-- [KryptonContextMenu](KryptonContextMenu.md) - Context menus
-- [ToolStripRenderer](../Rendering/ToolStripRenderer.md) - Krypton renderer
+- [Krypton ribbon overview](../../Ribbon/KryptonRibbonOverview.md) — full ribbon control
+- [KryptonContextMenu](../Components/KryptonContextMenu.md) — context menus
 - [ToolStripManager](https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.toolstripmanager) - Microsoft documentation
 
 ---
@@ -674,12 +692,14 @@ That's it! Everything else remains the same.
 ### When to Use
 
 **Use KryptonToolStrip when:**
+
 - You need a simple toolbar
 - Migrating from standard ToolStrip
 - Want automatic Krypton theming
 - Space is at a premium
 
 **Use KryptonRibbon when:**
+
 - You have many commands to organize
 - Need contextual command groups
 - Building Office-style interface

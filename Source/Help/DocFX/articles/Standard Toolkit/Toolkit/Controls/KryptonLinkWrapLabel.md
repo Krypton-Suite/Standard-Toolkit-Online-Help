@@ -11,12 +11,14 @@
 ## Key Features
 
 ### Palette Integration
+
 - Full Krypton palette support with automatic theme switching
 - Support for built-in and custom palettes
 - Responds to global palette changes
 - State-based styling (Normal, Disabled, Common)
 
 ### Visual Capabilities
+
 - Automatic text wrapping
 - Transparent background rendering
 - Custom font and color overrides per state
@@ -24,12 +26,14 @@
 - Multiple label styles (NormalPanel, BoldPanel, ItalicPanel, etc.)
 
 ### Behavior Features
+
 - Mnemonic support with target control focus
 - KryptonContextMenu integration
 - Right-click context menu with keyboard shortcuts
 - Designer-friendly with proper serialization
 
 ### Performance
+
 - Double-buffered rendering to reduce flicker
 - Optimized palette change handling
 - Efficient parent background painting
@@ -47,6 +51,7 @@ public KryptonLinkWrapLabel()
 ```
 
 **Default Settings:**
+
 - `AutoSize` = `true`
 - `TabStop` = `false`
 - `LabelStyle` = `LabelStyle.NormalPanel`
@@ -60,6 +65,7 @@ public KryptonLinkWrapLabel()
 ### Appearance Properties
 
 #### LabelStyle
+
 Gets or sets the visual style of the label.
 
 ```csharp
@@ -70,6 +76,7 @@ public LabelStyle LabelStyle { get; set; }
 ```
 
 **Available Styles:**
+
 - `NormalPanel` - Standard panel label
 - `BoldPanel` - Bold panel label
 - `ItalicPanel` - Italic panel label
@@ -85,6 +92,7 @@ public LabelStyle LabelStyle { get; set; }
 - `Custom1` through `Custom3` - Custom styles
 
 **Example:**
+
 ```csharp
 kryptonLinkWrapLabel1.LabelStyle = LabelStyle.BoldPanel;
 ```
@@ -92,6 +100,7 @@ kryptonLinkWrapLabel1.LabelStyle = LabelStyle.BoldPanel;
 ---
 
 #### AutoSize
+
 Gets or sets whether the control automatically resizes to fit its content.
 
 ```csharp
@@ -106,6 +115,7 @@ public override bool AutoSize { get; set; }
 ### Palette Properties
 
 #### PaletteMode
+
 Gets or sets the palette mode to use for styling.
 
 ```csharp
@@ -115,6 +125,7 @@ public PaletteMode PaletteMode { get; set; }
 ```
 
 **Available Modes:**
+
 - `Global` - Use the global palette (default)
 - `ProfessionalSystem` - Professional system palette
 - `ProfessionalOffice2003` - Office 2003 style
@@ -126,6 +137,7 @@ public PaletteMode PaletteMode { get; set; }
 - `Custom` - Use custom palette (set via `Palette` property)
 
 **Example:**
+
 ```csharp
 kryptonLinkWrapLabel1.PaletteMode = PaletteMode.Office2010Blue;
 ```
@@ -133,6 +145,7 @@ kryptonLinkWrapLabel1.PaletteMode = PaletteMode.Office2010Blue;
 ---
 
 #### Palette
+
 Gets or sets a custom palette for the control.
 
 ```csharp
@@ -143,10 +156,12 @@ public PaletteBase? Palette { get; set; }
 ```
 
 **Remarks:**
+
 - Setting this property automatically changes `PaletteMode` to `PaletteMode.Custom`
 - Setting to `null` reverts to `PaletteMode.Global`
 
 **Example:**
+
 ```csharp
 var customPalette = new KryptonPalette();
 // Configure custom palette...
@@ -158,6 +173,7 @@ kryptonLinkWrapLabel1.Palette = customPalette;
 ### State Properties
 
 #### StateCommon
+
 Gets access to common appearance settings that other states can override.
 
 ```csharp
@@ -168,11 +184,13 @@ public PaletteWrapLabel StateCommon { get; }
 ```
 
 **Properties Available:**
+
 - `Font` - Override font
 - `TextColor` - Override text color
 - `Hint` - Text rendering hint
 
 **Example:**
+
 ```csharp
 kryptonLinkWrapLabel1.StateCommon.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
 kryptonLinkWrapLabel1.StateCommon.TextColor = Color.Navy;
@@ -182,6 +200,7 @@ kryptonLinkWrapLabel1.StateCommon.Hint = PaletteTextHint.ClearTypeGridFit;
 ---
 
 #### StateNormal
+
 Gets access to normal state appearance settings.
 
 ```csharp
@@ -192,10 +211,12 @@ public PaletteWrapLabel StateNormal { get; }
 ```
 
 **Remarks:**
+
 - Applied when the control is enabled
 - Overrides `StateCommon` settings
 
 **Example:**
+
 ```csharp
 kryptonLinkWrapLabel1.StateNormal.TextColor = Color.Blue;
 ```
@@ -203,6 +224,7 @@ kryptonLinkWrapLabel1.StateNormal.TextColor = Color.Blue;
 ---
 
 #### StateDisabled
+
 Gets access to disabled state appearance settings.
 
 ```csharp
@@ -213,10 +235,12 @@ public PaletteWrapLabel StateDisabled { get; }
 ```
 
 **Remarks:**
+
 - Applied when `Enabled = false`
 - Overrides `StateCommon` settings
 
 **Example:**
+
 ```csharp
 kryptonLinkWrapLabel1.StateDisabled.TextColor = Color.Gray;
 ```
@@ -226,6 +250,7 @@ kryptonLinkWrapLabel1.StateDisabled.TextColor = Color.Gray;
 ### Behavior Properties
 
 #### Target
+
 Gets or sets the target control for mnemonic and click actions.
 
 ```csharp
@@ -236,10 +261,12 @@ public Control? Target { get; set; }
 ```
 
 **Remarks:**
+
 - When a mnemonic is activated (e.g., Alt+Key), focus moves to the target control
 - The target must have `CanFocus = true`
 
 **Example:**
+
 ```csharp
 kryptonLinkWrapLabel1.Text = "&Name:";
 kryptonLinkWrapLabel1.Target = kryptonTextBox1;
@@ -249,6 +276,7 @@ kryptonLinkWrapLabel1.Target = kryptonTextBox1;
 ---
 
 #### KryptonContextMenu
+
 Gets or sets the KryptonContextMenu to display on right-click.
 
 ```csharp
@@ -259,6 +287,7 @@ public KryptonContextMenu? KryptonContextMenu { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 var contextMenu = new KryptonContextMenu();
 contextMenu.Items.Add(new KryptonContextMenuItem("Copy"));
@@ -287,6 +316,7 @@ The following base class properties are hidden as they conflict with Krypton the
 ### Public Methods
 
 #### UpdateFont()
+
 Manually updates the font based on current state and palette settings.
 
 ```csharp
@@ -296,6 +326,7 @@ public void UpdateFont()
 ```
 
 **Remarks:**
+
 - Automatically called during paint operations
 - Rarely needs to be called manually
 - Respects state hierarchy: State-specific → StateCommon → Palette default
@@ -303,6 +334,7 @@ public void UpdateFont()
 ---
 
 #### GetResolvedPalette()
+
 Gets the actual palette being used for rendering.
 
 ```csharp
@@ -314,6 +346,7 @@ public PaletteBase GetResolvedPalette()
 **Returns:** The active `PaletteBase` instance.
 
 **Example:**
+
 ```csharp
 var activePalette = kryptonLinkWrapLabel1.GetResolvedPalette();
 Console.WriteLine($"Using palette: {activePalette.GetType().Name}");
@@ -322,6 +355,7 @@ Console.WriteLine($"Using palette: {activePalette.GetType().Name}");
 ---
 
 #### CreateToolStripRenderer()
+
 Creates a ToolStripRenderer matching the current palette.
 
 ```csharp
@@ -333,6 +367,7 @@ public ToolStripRenderer? CreateToolStripRenderer()
 **Returns:** A `ToolStripRenderer` instance configured for the current palette.
 
 **Example:**
+
 ```csharp
 var contextMenuStrip = new ContextMenuStrip();
 contextMenuStrip.Renderer = kryptonLinkWrapLabel1.CreateToolStripRenderer();
@@ -341,6 +376,7 @@ contextMenuStrip.Renderer = kryptonLinkWrapLabel1.CreateToolStripRenderer();
 ---
 
 #### AttachGlobalEvents() / UnattachGlobalEvents()
+
 Controls whether the control responds to global palette changes.
 
 ```csharp
@@ -354,12 +390,14 @@ public void UnattachGlobalEvents()
 ```
 
 **Remarks:**
+
 - Automatically managed by the control
 - Useful for temporarily suspending palette updates during batch operations
 
 ---
 
 #### ResetPaletteMode() / ResetPalette() / ResetLabelStyle()
+
 Resets properties to their default values.
 
 ```csharp
@@ -373,6 +411,7 @@ public void ResetLabelStyle()    // Resets to LabelStyle.NormalPanel
 ### Protected Methods
 
 #### ProcessMnemonic(char)
+
 Processes mnemonic characters for keyboard navigation.
 
 ```csharp
@@ -380,6 +419,7 @@ protected override bool ProcessMnemonic(char charCode)
 ```
 
 **Remarks:**
+
 - Automatically handles Alt+Key combinations
 - Focuses the `Target` control if set
 - Respects `UseMnemonic` property
@@ -387,6 +427,7 @@ protected override bool ProcessMnemonic(char charCode)
 ---
 
 #### ProcessCmdKey(ref Message, Keys)
+
 Processes keyboard shortcuts for the context menu.
 
 ```csharp
@@ -394,6 +435,7 @@ protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 ```
 
 **Remarks:**
+
 - Automatically invokes `KryptonContextMenu` shortcuts
 
 ---
@@ -401,6 +443,7 @@ protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 ## Events
 
 ### PaletteChanged
+
 Occurs when the palette is changed.
 
 ```csharp
@@ -410,6 +453,7 @@ public event EventHandler? PaletteChanged
 ```
 
 **Example:**
+
 ```csharp
 kryptonLinkWrapLabel1.PaletteChanged += (s, e) => 
 {
@@ -562,6 +606,7 @@ The control resolves appearance properties using the following priority:
 3. **Palette default** (from current palette)
 
 **Example:**
+
 ```csharp
 // If StateNormal.Font is null, falls back to StateCommon.Font
 // If StateCommon.Font is also null, uses palette default font
@@ -572,6 +617,7 @@ The control resolves appearance properties using the following priority:
 ### Performance Tips
 
 1. **Batch Updates:** Suspend drawing during multiple property changes
+
 ```csharp
 kryptonLinkWrapLabel1.SuspendLayout();
 kryptonLinkWrapLabel1.Text = "New text";
@@ -580,9 +626,9 @@ kryptonLinkWrapLabel1.StateNormal.TextColor = Color.Blue;
 kryptonLinkWrapLabel1.ResumeLayout();
 ```
 
-2. **Global Events:** Automatically attached/detached - no manual management needed
+1. **Global Events:** Automatically attached/detached - no manual management needed
 
-3. **Palette Caching:** The control caches palette references for efficient lookups
+2. **Palette Caching:** The control caches palette references for efficient lookups
 
 ---
 
@@ -661,11 +707,8 @@ var wrappedLink = new KryptonLinkWrapLabel
 
 ## See Also
 
-- [KryptonLabel](KryptonLabel.md) - Non-link label variant
-- [KryptonWrapLabel](KryptonWrapLabel.md) - Plain wrap label
-- [PaletteBase](../Palette/PaletteBase.md) - Palette system
-- [LabelStyle Enumeration](../Enumerations/LabelStyle.md) - Available styles
-- [PaletteMode Enumeration](../Enumerations/PaletteMode.md) - Palette modes
+- [KryptonLabel](KryptonLabel.md) — non-link label variant
+- [KryptonWrapLabel](KryptonWrapLabel.md) — plain wrap label
 
 ---
 
@@ -684,6 +727,7 @@ var wrappedLink = new KryptonLinkWrapLabel
 ### When to Use
 
 **Use KryptonLinkWrapLabel when:**
+
 - You need a link label that matches Krypton theme
 - You want automatic text wrapping
 - You need separate normal/disabled styling

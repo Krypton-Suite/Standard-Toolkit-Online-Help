@@ -24,6 +24,7 @@ For comprehensive information about all features, implementation details, and ad
 ## Features
 
 ### Core Functionality
+
 - **Themed System Menu**: Complete replacement of native Windows system menu with Krypton-themed context menu
 - **Standard Menu Items**: Full support for Restore, Move, Size, Minimize, Maximize, and Close operations
 - **Dynamic State Management**: Intelligent enable/disable logic based on form state and properties
@@ -31,6 +32,7 @@ For comprehensive information about all features, implementation details, and ad
 - **Icon Integration**: Comprehensive themed icon system with automatic adaptation
 
 ### Advanced Features
+
 - **Multi-Theme Icon Support**: 8 supported themes (Office 2013, 2010, 2007, Sparkle, Professional, Microsoft 365, Office 2003, Material)
 - **Fallback Icon Generation**: Custom-drawn icons when theme-specific resources are unavailable
 - **Smart Positioning**: Intelligent menu positioning with screen bounds awareness
@@ -40,6 +42,7 @@ For comprehensive information about all features, implementation details, and ad
 - **Resource Management**: Proper disposal patterns and memory management
 
 ### Technical Features
+
 - **Palette Integration**: Automatic theme detection based on form palette colors
 - **Multi-Screen Support**: Screen-aware positioning for multi-monitor setups
 - **State Synchronization**: Real-time synchronization with form state changes
@@ -57,12 +60,14 @@ KryptonSystemMenu : IKryptonSystemMenu, IDisposable
 ```
 
 ### Key Components
+
 - **KryptonContextMenu**: The underlying menu container
 - **Menu Item References**: Direct field references for efficient state management
 - **Icon Management System**: Handles theme-specific icon loading and fallback generation
 - **State Management**: Updates menu item states based on form properties
 
 ### Dependencies
+
 - `KryptonForm`: Required form type for integration
 - `KryptonContextMenu`: Core menu functionality
 - `SystemMenuImageResources`: Icon resources for different themes
@@ -105,138 +110,180 @@ if (systemMenu != null)
 ### Public Properties
 
 #### `ContextMenu`
+
 ```csharp
 public KryptonContextMenu ContextMenu { get; }
 ```
+
 Gets the underlying themed context menu. This property is read-only and provides access to the menu for advanced customization.
 
 #### `Enabled`
+
 ```csharp
 public bool Enabled { get; set; }
 ```
+
 Gets or sets whether the themed system menu is enabled. When disabled, the menu will not respond to show requests.
 
 #### `MenuItemCount`
+
 ```csharp
 public int MenuItemCount { get; }
 ```
+
 Gets the number of items currently in the themed system menu.
 
 #### `HasMenuItems`
+
 ```csharp
 public bool HasMenuItems { get; }
 ```
+
 Gets whether the themed system menu contains any items.
 
 #### `ShowOnLeftClick`
+
 ```csharp
 public bool ShowOnLeftClick { get; set; }
 ```
+
 Gets or sets whether left-click on title bar shows the themed system menu.
 
 #### `ShowOnRightClick`
+
 ```csharp
 public bool ShowOnRightClick { get; set; }
 ```
+
 Gets or sets whether right-click on title bar shows the themed system menu.
 
 #### `ShowOnAltSpace`
+
 ```csharp
 public bool ShowOnAltSpace { get; set; }
 ```
+
 Gets or sets whether Alt+Space shows the themed system menu.
 
 #### `CurrentIconTheme`
+
 ```csharp
 public string CurrentIconTheme { get; }
 ```
+
 Gets the current theme name being used for system menu icons.
 
 ### Public Methods
 
 #### `Show(Point screenLocation)`
+
 ```csharp
 public void Show(Point screenLocation)
 ```
+
 Shows the themed system menu at the specified screen location. The position is automatically adjusted to ensure the menu stays within screen bounds.
 
 **Parameters:**
+
 - `screenLocation`: The screen coordinates where to show the menu.
 
 #### `ShowAtFormTopLeft()`
+
 ```csharp
 public void ShowAtFormTopLeft()
 ```
+
 Shows the themed system menu at the top-left corner of the form, mimicking the native system menu behavior.
 
 #### `Refresh()`
+
 ```csharp
 public void Refresh()
 ```
+
 Refreshes the system menu items based on current form state. This method:
+
 - Rebuilds the menu structure
 - Updates menu item states (enabled/disabled)
 - Refreshes icons to match current theme
 
 #### `HandleKeyboardShortcut(Keys keyData)`
+
 ```csharp
 public bool HandleKeyboardShortcut(Keys keyData)
 ```
+
 Handles keyboard shortcuts for system menu actions.
 
 **Parameters:**
+
 - `keyData`: The key combination pressed.
 
 **Returns:** `true` if the shortcut was handled; otherwise `false`.
 
 **Supported Shortcuts:**
+
 - `Alt+F4`: Close the form
 - `Alt+Space`: Show the system menu (if enabled)
 
 #### `GetCurrentTheme()`
+
 ```csharp
 public string GetCurrentTheme()
 ```
+
 Determines the current theme based on the form's palette.
 
 **Returns:** The current theme name.
 
 #### `RefreshThemeIcons()`
+
 ```csharp
 public void RefreshThemeIcons()
 ```
+
 Manually refreshes all icons to match the current theme. Call this method when the application theme changes.
 
 #### `SetIconTheme(string themeName)`
+
 ```csharp
 public void SetIconTheme(string themeName)
 ```
+
 Manually sets the theme for icon selection.
 
 **Parameters:**
+
 - `themeName`: The theme name to use for icons.
 
 #### `SetThemeType(ThemeType themeType)`
+
 ```csharp
 public void SetThemeType(ThemeType themeType)
 ```
+
 Sets the theme based on specific theme types.
 
 **Parameters:**
+
 - `themeType`: The theme type to use (Black, Blue, Silver, etc.).
 
 ### Constructor
 
 #### `KryptonSystemMenu(KryptonForm form)`
+
 ```csharp
 public KryptonSystemMenu(KryptonForm form)
 ```
+
 Initializes a new instance of the KryptonSystemMenu class.
 
 **Parameters:**
+
 - `form`: The KryptonForm to attach the themed system menu to.
 
 **Exceptions:**
+
 - `ArgumentNullException`: Thrown when `form` is null.
 
 ## Theming and Icons
@@ -246,7 +293,7 @@ Initializes a new instance of the KryptonSystemMenu class.
 The `KryptonSystemMenu` supports 7 comprehensive themes for icons, each with distinct visual characteristics:
 
 | Theme | Description | Visual Style | Use Case |
-|-------|-------------|--------------|----------|
+| --- | --- | --- | --- |
 | **Office 2013** | Default modern theme | Clean, flat design with minimal details | Modern applications, default choice |
 | **Office 2010** | Classic Office 2010 | Traditional Windows style with subtle gradients | Business applications, classic look |
 | **Office 2007** | Office 2007 style | Ribbon-era design with moderate styling | Legacy compatibility, ribbon applications |
@@ -260,7 +307,7 @@ The `KryptonSystemMenu` supports 7 comprehensive themes for icons, each with dis
 The system supports comprehensive icon types with intelligent fallback mechanisms:
 
 | Icon Type | Description | Visual Representation | Theme Support | Fallback |
-|-----------|-------------|----------------------|---------------|----------|
+| --- | --- | --- | --- | --- |
 | **Restore** | Restore window to normal size | Square with overlapping arrow | ✅ All themes | ✅ Custom drawn |
 | **Minimize** | Minimize window to taskbar | Horizontal line (underscore) | ✅ All themes | ✅ Custom drawn |
 | **Maximize** | Maximize window to full screen | Square outline | ✅ All themes | ✅ Custom drawn |
@@ -269,6 +316,7 @@ The system supports comprehensive icon types with intelligent fallback mechanism
 | **Size** | Allow window resizing | Text only (no icon) | ❌ N/A | ❌ N/A |
 
 ### Icon Characteristics
+
 - **Size**: Standard 16x16 pixel icons
 - **Format**: 32-bit ARGB with proper transparency support
 - **Anti-aliasing**: Smooth rendering with anti-aliasing enabled
@@ -364,6 +412,7 @@ private void ExecuteRestore()
 ## Best Practices
 
 ### 1. Proper Initialization
+
 Always initialize the `KryptonSystemMenu` with a valid `KryptonForm`:
 
 ```csharp
@@ -375,6 +424,7 @@ var systemMenu = new KryptonSystemMenu(null);
 ```
 
 ### 2. Theme Integration
+
 Call `RefreshThemeIcons()` when the application theme changes:
 
 ```csharp
@@ -384,6 +434,7 @@ systemMenu.RefreshThemeIcons();
 ```
 
 ### 3. State Management
+
 The system automatically manages menu item states, but you can manually refresh when needed:
 
 ```csharp
@@ -393,6 +444,7 @@ systemMenu.Refresh();
 ```
 
 ### 4. Error Handling
+
 The system includes comprehensive error handling, but you should handle disposal properly:
 
 ```csharp
@@ -404,6 +456,7 @@ using (var systemMenu = new KryptonSystemMenu(form))
 ```
 
 ### 5. Performance Considerations
+
 - Menu items are created once and reused
 - Icons are cached and only regenerated when theme changes
 - State updates are efficient using direct field references
@@ -413,9 +466,11 @@ using (var systemMenu = new KryptonSystemMenu(form))
 ### Common Issues
 
 #### Menu Not Showing
+
 **Problem**: Menu doesn't appear when called.
 
 **Solutions**:
+
 1. Check if `Enabled` property is set to `true`
 2. Verify the form has menu items: `systemMenu.HasMenuItems`
 3. Ensure the form is not disposed
@@ -428,9 +483,11 @@ if (systemMenu.Enabled && systemMenu.HasMenuItems)
 ```
 
 #### Icons Not Displaying
+
 **Problem**: Menu items show without icons.
 
 **Solutions**:
+
 1. Check if icon resources are available
 2. Call `RefreshThemeIcons()` after theme changes
 3. Verify theme detection is working: `systemMenu.CurrentIconTheme`
@@ -445,9 +502,11 @@ systemMenu.RefreshThemeIcons();
 ```
 
 #### Menu Items Not Responding
+
 **Problem**: Clicking menu items doesn't perform actions.
 
 **Solutions**:
+
 1. Check if the form is in a valid state
 2. Verify form properties (MinimizeBox, MaximizeBox, ControlBox)
 3. Call `Refresh()` to update menu states

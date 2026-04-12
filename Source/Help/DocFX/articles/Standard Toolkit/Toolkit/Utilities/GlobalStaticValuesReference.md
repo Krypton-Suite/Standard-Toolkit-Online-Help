@@ -1,6 +1,7 @@
 # GlobalStaticValues Reference
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Core Constants](#core-constants)
 3. [Exception Handling Constants](#exception-handling-constants)
@@ -40,6 +41,7 @@ internal const bool DEFAULT_USE_INNER_EXCEPTION = true;
 ```
 
 **Usage:**
+
 ```csharp
 // In exception handling code
 if (GlobalStaticValues.DEFAULT_USE_STACK_TRACE)
@@ -61,6 +63,7 @@ internal const int DEFAULT_COUNTDOWN_VALUE = 60;       // 60 seconds
 ```
 
 **Usage:**
+
 ```csharp
 // For toggle switch animations
 timer.Interval = GlobalStaticValues.DEFAULT_TOGGLE_SWITCH_ANIMATION_SPEED;
@@ -81,6 +84,7 @@ internal const int DEFAULT_PADDING = 10;
 ```
 
 **Usage:**
+
 ```csharp
 // Apply consistent padding
 button.Padding = new Padding(GlobalStaticValues.GLOBAL_BUTTON_PADDING);
@@ -101,6 +105,7 @@ public const int CURRENT_SUPPORTED_PALETTE_VERSION = 20;
 ```
 
 **Usage:**
+
 ```csharp
 // Set default theme
 KryptonManager.GlobalPaletteMode = GlobalStaticValues.GLOBAL_DEFAULT_PALETTE_MODE;
@@ -126,6 +131,7 @@ public const float DEFAULT_RAFTING_RIBBON_TAB_BACKGROUND_GRADIENT = 90F;
 ```
 
 **Usage:**
+
 ```csharp
 // Apply corner rounding
 button.CornerRoundingRadius = GlobalStaticValues.DEFAULT_PRIMARY_CORNER_ROUNDING_VALUE;
@@ -143,6 +149,7 @@ public static Size DEFAULT_UAC_SHIELD_ICON_CUSTOM_SIZE = new Size(16, 16);
 ```
 
 **Usage:**
+
 ```csharp
 // Configure UAC shield
 uacButton.ShieldIconSize = GlobalStaticValues.DEFAULT_UAC_SHIELD_ICON_SIZE;
@@ -163,6 +170,7 @@ internal static string DEFAULT_WORKSPACE_FILE = @"Krypton.Workspace.dll";
 ```
 
 **Usage:**
+
 ```csharp
 // Get version information
 var toolkitVersion = FileVersionInfo.GetVersionInfo(GlobalStaticValues.DEFAULT_TOOLKIT_FILE);
@@ -178,6 +186,7 @@ public const string DEFAULT_PUBLIC_EMOJI_LIST_URL = @"https://unicode.org/Public
 ```
 
 **Usage:**
+
 ```csharp
 // Load emoji data
 var emojiUrl = GlobalStaticValues.DEFAULT_LATEST_EMOJI_LIST_URL;
@@ -194,6 +203,7 @@ internal static string DEFAULT_EMPTY_STRING = string.Empty;
 ```
 
 **Usage:**
+
 ```csharp
 // Show not implemented message
 MessageBox.Show(GlobalStaticValues.DEFAULT_NOT_IMPLEMENTED_YET_MESSAGE);
@@ -224,6 +234,7 @@ public static readonly Color DEFAULT_RIBBON_FILE_APP_TAB_TEXT_COLOR = Color.Whit
 ```
 
 **Usage:**
+
 ```csharp
 // Apply ribbon colors
 ribbonAppButton.BottomColor = GlobalStaticValues.DEFAULT_RIBBON_FILE_APP_TAB_BOTTOM_COLOR;
@@ -292,6 +303,7 @@ public static Image[] VisualStudioToolBarImages = [...];
 ```
 
 **Usage:**
+
 ```csharp
 // Apply toolbar images based on theme
 Image[] toolbarImages = KryptonManager.GlobalPaletteMode switch
@@ -341,6 +353,7 @@ public static string ParameterCannotBeNull(string parameterName) =>
 ```
 
 **Usage:**
+
 ```csharp
 // Validate parameters
 if (parameter == null)
@@ -368,6 +381,7 @@ public static Color KryptonMessageBoxRichTextBoxTextColor
 ```
 
 **Usage:**
+
 ```csharp
 // Apply correct text color for rich text boxes in message boxes
 richTextBox.ForeColor = GlobalStaticValues.KryptonMessageBoxRichTextBoxTextColor;

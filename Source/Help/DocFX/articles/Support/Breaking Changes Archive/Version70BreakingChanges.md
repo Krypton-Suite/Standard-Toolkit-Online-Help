@@ -1,27 +1,35 @@
 # Version 70 Breaking Changes
 
 ## Version 70 - Build 2211 - November 2022 - Initial Release Date: 08-11-2022
+
 There are list of changes that have occurred during the development of the V70.## version
 
-- https://github.com/Krypton-Suite/Standard-Toolkit/issues/382
-- https://github.com/Krypton-Suite/Standard-Toolkit/issues/511
+- [Standard-Toolkit issue #382](https://github.com/Krypton-Suite/Standard-Toolkit/issues/382)
+- [Standard-Toolkit issue #511](https://github.com/Krypton-Suite/Standard-Toolkit/issues/511)
+
 ### Ribbon Tooltips
-![][image_ref_tnqwpvc0]
+
+![Krypton Ribbon tooltip example][image_ref_tnqwpvc0]
 
 ### `dpiAware`
+
 If you are getting scaling problems in high dpi monitors, then please add an application manifest to your MainForm application, and uncomment the section that covers the `dpiAware` setting.
 
 ## `KryptonTaskDialog`
+
 As of v70.xx, the `KryptonTaskDialog` now uses the built-in `KryptonMessageBoxIcon` instead of the standard `System.Windows.Forms.MessageBoxIcon`. This will cause errors within your project. To resolve, simply replace `MessageBoxIcon` with the `KryptonMessageBoxIcon` equivalent.
 
 ## `KryptonPalette`
+
 Both ***Font1*** & ***Font2*** have been removed from `Cargo`, as they were not used.
 
 ## `KryptonMessageBox`
+
 The standard `MessageBoxIcon` option has been removed in favour of the built-in `KryptonMessageBoxIcon`. In addition, the `MessageBoxDefaultButton` has also been removed in favour of the built-in `KryptonMessageBoxDefaultButton`.
 
 ## Strong Named Assemblies
-After updating to v70, you may need to sign your assemblies for a successful build. To find out how to do this, click [here](https://learn.microsoft.com/en-us/dotnet/standard/assembly/strong-named).
+
+After updating to v70, you may need to sign your assemblies for a successful build. For guidance, see [Strong-named assemblies](https://learn.microsoft.com/en-us/dotnet/standard/assembly/strong-named) on Microsoft Learn.
 
 ## Management of `using` Statements
 

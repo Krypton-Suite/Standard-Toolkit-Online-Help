@@ -5,6 +5,7 @@
 The Krypton Toolkit provides a comprehensive localization system that allows all user-facing strings to be customized and translated into different languages. This system is built around the `KryptonManager.Strings` property, which provides centralized access to all localizable strings used throughout the toolkit.
 
 **Key Features:**
+
 - Centralized string management through `KryptonGlobalToolkitStrings`
 - Over 30 string categories covering all toolkit components
 - Full designer support with `[Localizable(true)]` attributes
@@ -16,7 +17,7 @@ The Krypton Toolkit provides a comprehensive localization system that allows all
 
 ### Core Components
 
-```
+```text
 KryptonManager
     ↓
 KryptonManager.Strings (Static Property)
@@ -39,7 +40,9 @@ The toolkit organizes strings into the following categories:
 ### General Strings
 
 #### GeneralToolkitStrings
+
 Common strings used across multiple components:
+
 - `OK` - OK button text (default: "O&K")
 - `Cancel` - Cancel button text (default: "Cance&l")
 - `Yes` - Yes button text (default: "&Yes")
@@ -56,7 +59,9 @@ Common strings used across multiple components:
 **Access:** `KryptonManager.Strings.GeneralStrings`
 
 #### CustomToolkitStrings
+
 Custom strings for specialized scenarios:
+
 - `Apply` - Apply button text
 - `Back` - Back button text
 - `Collapse` - Collapse action text
@@ -81,7 +86,9 @@ Custom strings for specialized scenarios:
 **Access:** `KryptonManager.Strings.CustomStrings`
 
 #### SystemMenuStrings
+
 Strings for Windows system menu items:
+
 - Minimize, Maximize, Restore, Close, etc.
 
 **Access:** `KryptonManager.Strings.SystemMenuStrings`
@@ -89,31 +96,41 @@ Strings for Windows system menu items:
 ### Component-Specific Strings
 
 #### GeneralRibbonStrings
+
 Strings specific to Krypton Ribbon components.
 
 **Access:** `KryptonManager.Strings.RibbonStrings`
 
 #### IntegratedToolBarStrings
+
 Strings for integrated toolbar components.
 
 **Access:** `KryptonManager.Strings.ToolBarStrings`
 
 #### KryptonAboutBoxStrings
+
 Strings used in the KryptonAboutBox component.
 
 **Access:** `KryptonManager.Strings.AboutBoxStrings`
 
+**V110+:** `KryptonAboutBox` UI type is in `Krypton.Utilities`; string table type name is unchanged.
+
 #### KryptonToastNotificationStrings
+
 Strings for toast notification components.
 
 **Access:** `KryptonManager.Strings.ToastNotificationStrings`
 
+**V110+:** Static toast API is `KryptonToast` in `Krypton.Utilities`; this string table name is unchanged.
+
 #### KryptonScrollBarStrings
+
 Strings for scroll bar components.
 
 **Access:** `KryptonManager.Strings.ScrollBarStrings`
 
 #### KryptonOutlookGridStrings
+
 Strings specific to Outlook-style grid components.
 
 **Access:** `KryptonManager.Strings.OutlookGridStrings`
@@ -143,6 +160,7 @@ These categories provide localized names for various style enumerations used in 
 ### Color Strings
 
 #### GlobalColorStrings
+
 Localized names for colors used throughout the toolkit.
 
 **Access:** `KryptonManager.Strings.ColorStrings`
@@ -647,6 +665,7 @@ private void ApplyNewLanguage()
 **Cause:** Form's `Localizable` property not set to `true`.
 
 **Solution:** Enable localization in the form designer:
+
 1. Select the form in the designer
 2. Set `Localizable` property to `true`
 3. Make changes to string properties
@@ -738,6 +757,7 @@ public class StringExporter
 ### KryptonManager
 
 The `KryptonManager` component provides additional global settings beyond strings:
+
 - **GlobalPalette**: Theme and color scheme management
 - **ApplyToolstrips**: Apply palette colors to toolstrips
 - **Images**: Global image storage for the toolkit
@@ -745,6 +765,7 @@ The `KryptonManager` component provides additional global settings beyond string
 ### String Storage Classes
 
 All string categories inherit from `GlobalId` and implement:
+
 - **IsDefault Property**: Check if all strings are at default values
 - **Reset Method**: Reset all strings to their default English values
 - **ToString Method**: Returns "Modified" if any strings have been changed
@@ -766,4 +787,3 @@ By following this guide and the best practices outlined, you can create fully lo
 
 - [ExceptionHandler API Documentation](ExceptionHandlerAPIDocumentation.md)
 - [.NET Globalization Documentation](https://docs.microsoft.com/en-us/dotnet/standard/globalization-localization/)
-

@@ -11,55 +11,55 @@ The `Krypton.Ribbon` namespace contains components for creating modern ribbon-st
 ### Main Ribbon Components
 
 - **[KryptonRibbon](KryptonRibbon.md)** - Main ribbon control that hosts tabs and groups
-- **[KryptonRibbonTab](KryptonRibbonTab.md)** - Individual tab within the ribbon
-- **[KryptonRibbonGroup](KryptonRibbonGroup.md)** - Group of related controls within a tab
-- **[KryptonRibbonContext](KryptonRibbonContext.md)** - Contextual tab that appears based on selection
+- **`KryptonRibbonTab`** - Individual tab within the ribbon
+- **`KryptonRibbonGroup`** - Group of related controls within a tab
+- **`KryptonRibbonContext`** - Contextual tab that appears based on selection
 
 ### Ribbon Group Items
 
 #### Basic Controls
-- **[KryptonRibbonGroupButton](KryptonRibbonGroupButton.md)** - Button control within a ribbon group
-- **[KryptonRibbonGroupCheckBox](KryptonRibbonGroupCheckBox.md)** - Checkbox control within a ribbon group
-- **[KryptonRibbonGroupRadioButton](KryptonRibbonGroupRadioButton.md)** - Radio button control within a ribbon group
-- **[KryptonRibbonGroupLabel](KryptonRibbonGroupLabel.md)** - Label control within a ribbon group
-- **[KryptonRibbonGroupSeparator](KryptonRibbonGroupSeparator.md)** - Visual separator within a ribbon group
+- **`KryptonRibbonGroupButton`** - Button control within a ribbon group
+- **`KryptonRibbonGroupCheckBox`** - Checkbox control within a ribbon group
+- **`KryptonRibbonGroupRadioButton`** - Radio button control within a ribbon group
+- **`KryptonRibbonGroupLabel`** - Label control within a ribbon group
+- **`KryptonRibbonGroupSeparator`** - Visual separator within a ribbon group
 
 #### Input Controls
-- **[KryptonRibbonGroupTextBox](KryptonRibbonGroupTextBox.md)** - Text input control within a ribbon group
-- **[KryptonRibbonGroupRichTextBox](KryptonRibbonGroupRichTextBox.md)** - Rich text input control within a ribbon group
-- **[KryptonRibbonGroupMaskedTextBox](KryptonRibbonGroupMaskedTextBox.md)** - Masked text input control within a ribbon group
-- **[KryptonRibbonGroupComboBox](KryptonRibbonGroupComboBox.md)** - Dropdown selection control within a ribbon group
-- **[KryptonRibbonGroupDomainUpDown](KryptonRibbonGroupDomainUpDown.md)** - Domain up/down control within a ribbon group
-- **[KryptonRibbonGroupNumericUpDown](KryptonRibbonGroupNumericUpDown.md)** - Numeric up/down control within a ribbon group
-- **[KryptonRibbonGroupDateTimePicker](KryptonRibbonGroupDateTimePicker.md)** - Date/time picker control within a ribbon group
-- **[KryptonRibbonGroupTrackBar](KryptonRibbonGroupTrackBar.md)** - Track bar control within a ribbon group
+- **`KryptonRibbonGroupTextBox`** - Text input control within a ribbon group
+- **`KryptonRibbonGroupRichTextBox`** - Rich text input control within a ribbon group
+- **`KryptonRibbonGroupMaskedTextBox`** - Masked text input control within a ribbon group
+- **`KryptonRibbonGroupComboBox`** - Dropdown selection control within a ribbon group
+- **`KryptonRibbonGroupDomainUpDown`** - Domain up/down control within a ribbon group
+- **`KryptonRibbonGroupNumericUpDown`** - Numeric up/down control within a ribbon group
+- **`KryptonRibbonGroupDateTimePicker`** - Date/time picker control within a ribbon group
+- **`KryptonRibbonGroupTrackBar`** - Track bar control within a ribbon group
 
 #### Specialized Controls
-- **[KryptonRibbonGroupColorButton](KryptonRibbonGroupColorButton.md)** - Color selection button within a ribbon group
-- **[KryptonRibbonGroupThemeComboBox](KryptonRibbonGroupThemeComboBox.md)** - Theme selector within a ribbon group
-- **[KryptonRibbonGroupCustomControl](KryptonRibbonGroupCustomControl.md)** - Custom control container within a ribbon group
-- **[KryptonRibbonGroupGallery](KryptonRibbonGroupGallery.md)** - Gallery control within a ribbon group
+- **`KryptonRibbonGroupColorButton`** - Color selection button within a ribbon group
+- **`KryptonRibbonGroupThemeComboBox`** - Theme selector within a ribbon group
+- **`KryptonRibbonGroupCustomControl`** - Custom control container within a ribbon group
+- **`KryptonRibbonGroupGallery`** - Gallery control within a ribbon group
 
 #### Container Controls
-- **[KryptonRibbonGroupCluster](KryptonRibbonGroupCluster.md)** - Cluster container for organizing related controls
-- **[KryptonRibbonGroupClusterButton](KryptonRibbonGroupClusterButton.md)** - Button within a cluster container
-- **[KryptonRibbonGroupClusterColorButton](KryptonRibbonGroupClusterColorButton.md)** - Color button within a cluster container
-- **[KryptonRibbonGroupLines](KryptonRibbonGroupLines.md)** - Lines container for organizing controls vertically
-- **[KryptonRibbonGroupTriple](KryptonRibbonGroupTriple.md)** - Triple container for organizing three controls
+- **`KryptonRibbonGroupCluster`** - Cluster container for organizing related controls
+- **`KryptonRibbonGroupClusterButton`** - Button within a cluster container
+- **`KryptonRibbonGroupClusterColorButton`** - Color button within a cluster container
+- **`KryptonRibbonGroupLines`** - Lines container for organizing controls vertically
+- **`KryptonRibbonGroupTriple`** - Triple container for organizing three controls
 
 ### Quick Access Toolbar (QAT)
 
-- **[KryptonRibbonQATButton](KryptonRibbonQATButton.md)** - Button in the Quick Access Toolbar
-- **[KryptonRibbonQATButtonCollection](KryptonRibbonQATButtonCollection.md)** - Collection of QAT buttons
+- **`KryptonRibbonQATButton`** - Button in the Quick Access Toolbar
+- **`KryptonRibbonQATButtonCollection`** - Collection of QAT buttons
 
 ### Recent Documents
 
-- **[KryptonRibbonRecentDoc](KryptonRibbonRecentDoc.md)** - Recent document entry
-- **[KryptonRibbonRecentDocCollection](KryptonRibbonRecentDocCollection.md)** - Collection of recent documents
+- **`KryptonRibbonRecentDoc`** - Recent document entry
+- **`KryptonRibbonRecentDocCollection`** - Collection of recent documents
 
 ### Utility Components
 
-- **[KryptonRibbonMerger](KryptonRibbonMerger.md)** - Utility for merging ribbon configurations
+- **`KryptonRibbonMerger`** - Utility for merging ribbon configurations
 
 ## Common Features
 

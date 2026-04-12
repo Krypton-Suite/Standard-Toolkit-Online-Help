@@ -9,7 +9,7 @@ The Krypton Toolkit now includes comprehensive support for extracting icons from
 ### Supported DLL Icon Sources
 
 | DLL | Icons | Enum | Method | Status |
-|-----|-------|------|--------|--------|
+| --- | ----- | ---- | ------ | ------ |
 | **imageres.dll** | ~300 | `ImageresIconID` | `ExtractIconFromImageres()` | ✅ Complete |
 | **shell32.dll** | ~300 | `Shell32IconID` | `ExtractIconFromShell32()` | ✅ Complete |
 | **ieframe.dll** | ~200 | `IeFrameIconID` | `ExtractIconFromIeFrame()` | ✅ Complete |
@@ -23,6 +23,7 @@ The Krypton Toolkit now includes comprehensive support for extracting icons from
 ## Files Added/Modified
 
 ### Core Implementation
+
 - ✅ `Source/Krypton Components/Krypton.Toolkit/General/Definitions.cs`
   - Added `ImageresIconID` enum (300+ values with full XML documentation)
   - Added `Shell32IconID` enum (300+ values with full XML documentation)
@@ -56,6 +57,7 @@ The Krypton Toolkit now includes comprehensive support for extracting icons from
     - `NetShell = "netshell.dll"`
 
 ### Test Forms and Documentation
+
 - ✅ `Source/Krypton Components/TestForm/IconExtractionTest.cs` - Demo form with live examples
 - ✅ `Source/Krypton Components/TestForm/IconExtractionTest.Designer.cs` - Form designer
 - ✅ `Source/Krypton Components/TestForm/IconExtractionExample.md` - Basic usage guide
@@ -119,11 +121,13 @@ if (folderIcon != null)
 ## Key Features
 
 ### Type Safety
+
 - All icon IDs are strongly typed enums
 - IntelliSense support with full XML documentation
 - Compile-time checking prevents invalid icon IDs
 
 ### Comprehensive Coverage
+
 - 300+ imageres.dll icons (modern Windows icons)
 - 300+ shell32.dll icons (classic Windows icons)
 - 200+ ieframe.dll icons (Internet Explorer icons)
@@ -133,7 +137,9 @@ if (folderIcon != null)
 - 40+ netshell.dll icons (network icons)
 
 ### Size Flexibility
+
 All methods support the `IconSize` enum:
+
 - `Tiny` (8x8)
 - `ExtraSmall` (16x16)
 - `Small` (20x20)
@@ -146,6 +152,7 @@ All methods support the `IconSize` enum:
 - `Huge` (256x256)
 
 ### Access to Unlisted Icons
+
 You can access any icon by index, even if not in the enum:
 
 ```csharp
@@ -173,7 +180,7 @@ var customIcon = GraphicsExtensions.ExtractIcon(
 ## Windows Compatibility
 
 | DLL | Minimum Windows Version |
-|-----|------------------------|
+| --- | ----------------------- |
 | imageres.dll | Windows Vista |
 | shell32.dll | Windows 95 |
 | ieframe.dll | Windows XP |
@@ -185,6 +192,7 @@ var customIcon = GraphicsExtensions.ExtractIcon(
 ## Build Status
 
 ✅ Successfully builds for all target frameworks:
+
 - net472
 - net48
 - net481
@@ -247,6 +255,7 @@ public enum IconSize : int { /* 10 standard sizes */ }
 ## Future Enhancements
 
 Potential additions if needed:
+
 - Additional icon DLLs (mmcndmgr.dll, pifmgr.dll, wmploc.dll, etc.)
 - Icon caching mechanism
 - Async extraction methods
@@ -257,6 +266,6 @@ Potential additions if needed:
 
 This feature provides comprehensive access to **1500+ Windows system icons** from **7 different DLLs**, giving developers a rich palette of system icons without needing to embed custom resources. All icons are accessible through type-safe enums with full IntelliSense support and XML documentation.
 
-# More Information
+## More Information
 
 Please visit the [comprehensive guide](SystemIconsComprehensiveGuide.md) for more details.

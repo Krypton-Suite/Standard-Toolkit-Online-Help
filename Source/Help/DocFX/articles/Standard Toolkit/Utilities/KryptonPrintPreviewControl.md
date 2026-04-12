@@ -5,6 +5,7 @@
 `KryptonPrintPreviewControl` is a Windows Forms control that provides a themed print preview display for `PrintDocument` objects. It wraps the standard .NET `PrintPreviewControl` and applies Krypton theming to create a visually consistent preview experience that matches your application's theme.
 
 This control provides:
+
 - Full Krypton palette theming integration
 - All standard `PrintPreviewControl` functionality
 - Customizable appearance through palette states
@@ -20,7 +21,7 @@ using Krypton.Toolkit;
 
 ## Class Hierarchy
 
-```
+```text
 Control
 └── VisualControlBase
     └── KryptonPrintPreviewControl
@@ -61,11 +62,13 @@ Control
 Initializes a new instance of the `KryptonPrintPreviewControl` class.
 
 **Example:**
+
 ```csharp
 var previewControl = new KryptonPrintPreviewControl();
 ```
 
 **Initialization Details:**
+
 - Creates an internal `PrintPreviewControl` instance
 - Sets up Krypton theming infrastructure with palette states
 - Initializes with default panel style (`PanelAlternate`)
@@ -74,6 +77,7 @@ var previewControl = new KryptonPrintPreviewControl();
 - Sets `AutoZoom` to `false` on the internal control
 
 **Notes:**
+
 - The control uses a composition pattern, wrapping the standard control
 - The wrapper control itself cannot receive focus (only the child can)
 - All theming is handled through the Krypton view manager system
@@ -92,12 +96,14 @@ Gets or sets the `PrintDocument` to preview.
 - **Description**: The PrintDocument to preview.
 
 **Example:**
+
 ```csharp
 var document = new KryptonPrintDocument();
 previewControl.Document = document;
 ```
 
 **Notes:**
+
 - Can be any `PrintDocument`, including `KryptonPrintDocument`
 - Setting to `null` clears the preview
 - Changes are reflected immediately
@@ -115,17 +121,20 @@ Gets or sets the number of pages displayed horizontally across the page.
 - **Description**: The number of pages displayed horizontally across the page.
 
 **Example:**
+
 ```csharp
 previewControl.Columns = 2; // Show 2 pages side by side
 previewControl.Columns = 3; // Show 3 pages side by side
 ```
 
 **Common Values:**
+
 - `1`: Single column (default)
 - `2`: Two columns
 - `3`: Three columns
 
 **Common Combinations:**
+
 - `Columns = 1, Rows = 1`: Single page view
 - `Columns = 2, Rows = 1`: Two pages side by side
 - `Columns = 3, Rows = 1`: Three pages side by side
@@ -133,6 +142,7 @@ previewControl.Columns = 3; // Show 3 pages side by side
 - `Columns = 3, Rows = 2`: Six pages in a 2x3 grid
 
 **Notes:**
+
 - Combined with `Rows` to determine total pages shown
 - Changing this property triggers a layout recalculation
 - More columns = smaller individual page size
@@ -149,21 +159,25 @@ Gets or sets the number of pages displayed vertically down the page.
 - **Description**: The number of pages displayed vertically down the page.
 
 **Example:**
+
 ```csharp
 previewControl.Rows = 2; // Show 2 rows of pages
 ```
 
 **Common Values:**
+
 - `1`: Single row (default)
 - `2`: Two rows
 
 **Common Combinations:**
+
 - `Rows = 1, Columns = 1`: Single page view
 - `Rows = 1, Columns = 2`: Two pages side by side
 - `Rows = 2, Columns = 2`: Four pages in a 2x2 grid
 - `Rows = 2, Columns = 3`: Six pages in a 2x3 grid
 
 **Notes:**
+
 - Combined with `Columns` to determine total pages shown
 - Changing this property triggers a layout recalculation
 - More rows = smaller individual page size
@@ -180,6 +194,7 @@ Gets or sets the zoom level of the pages.
 - **Description**: The zoom level of the pages.
 
 **Example:**
+
 ```csharp
 previewControl.Zoom = 1.0;  // 100% zoom (actual size)
 previewControl.Zoom = 0.5;  // 50% zoom (half size)
@@ -188,11 +203,13 @@ previewControl.Zoom = 0.25; // 25% zoom (quarter size)
 ```
 
 **Valid Range:**
+
 - Typically `0.25` (25%) to `5.0` (500%)
 - Exact range depends on the underlying `PrintPreviewControl`
 - Values outside the valid range are clamped
 
 **Common Zoom Levels:**
+
 - `0.25`: 25% - See many pages at once
 - `0.5`: 50% - Standard overview
 - `0.75`: 75% - Slightly zoomed
@@ -201,6 +218,7 @@ previewControl.Zoom = 0.25; // 25% zoom (quarter size)
 - `2.0`: 200% - Highly zoomed
 
 **Notes:**
+
 - `1.0` represents 100% (actual size)
 - Values less than `1.0` zoom out, greater than `1.0` zoom in
 - Setting `AutoZoom` to `true` overrides this value
@@ -218,16 +236,19 @@ Gets or sets a value indicating whether the control automatically resizes to fit
 - **Description**: Indicates whether the control automatically resizes to fit its contents.
 
 **Example:**
+
 ```csharp
 previewControl.AutoZoom = true; // Automatically fit pages to control size
 previewControl.AutoZoom = false; // Use manual zoom level
 ```
 
 **Behavior:**
+
 - When `true`: The control automatically calculates zoom to fit all pages within the control's bounds
 - When `false`: Uses the value specified in the `Zoom` property
 
 **Notes:**
+
 - When `true`, the `Zoom` property is ignored
 - Control automatically calculates zoom to fit all pages
 - Useful for ensuring all pages are visible without scrolling
@@ -245,17 +266,20 @@ Gets or sets the starting page number.
 - **Description**: The starting page number.
 
 **Example:**
+
 ```csharp
 previewControl.StartPage = 0; // Start at first page
 previewControl.StartPage = 5;  // Start at page 6 (0-based)
 ```
 
 **Page Numbering:**
+
 - Zero-based index (0 = first page, 1 = second page, etc.)
 - Must be within valid page range (0 to page count - 1)
 - Values outside range are clamped
 
 **Notes:**
+
 - Zero-based index (0 = first page)
 - Raises `StartPageChanged` event when changed
 - Must be within valid page range
@@ -273,16 +297,19 @@ Gets or sets a value indicating whether anti-aliasing is used when rendering the
 - **Description**: Indicates whether anti-aliasing is used when rendering the page.
 
 **Example:**
+
 ```csharp
 previewControl.UseAntiAlias = true;  // Smooth rendering (default)
 previewControl.UseAntiAlias = false; // Faster rendering, may appear jagged
 ```
 
 **Performance Impact:**
+
 - `true`: Better visual quality, may be slower on complex documents
 - `false`: Faster rendering, text and graphics may appear jagged
 
 **Notes:**
+
 - Anti-aliasing improves visual quality but may impact performance
 - Recommended for high-quality previews
 - May be slower on complex documents with many graphics
@@ -300,6 +327,7 @@ Gets and sets the panel style.
 - **Description**: Panel style.
 
 **Example:**
+
 ```csharp
 previewControl.PanelBackStyle = PaletteBackStyle.PanelClient;
 previewControl.PanelBackStyle = PaletteBackStyle.PanelAlternate;
@@ -307,6 +335,7 @@ previewControl.PanelBackStyle = PaletteBackStyle.PanelCustom1;
 ```
 
 **Common Values:**
+
 - `PaletteBackStyle.PanelClient`: Standard client panel style
 - `PaletteBackStyle.PanelAlternate`: Alternate panel style (default)
 - `PaletteBackStyle.PanelCustom1`: Custom panel style 1
@@ -314,6 +343,7 @@ previewControl.PanelBackStyle = PaletteBackStyle.PanelCustom1;
 - `PaletteBackStyle.PanelCustom3`: Custom panel style 3
 
 **Notes:**
+
 - Affects the background appearance of the control
 - Changing this property triggers a repaint
 - Uses the palette's definition for the selected style
@@ -331,6 +361,7 @@ Gets access to the common print preview control appearance that other states can
 - **DesignerSerializationVisibility**: Content
 
 **Example:**
+
 ```csharp
 // Set common background color
 previewControl.StateCommon.Back.Color1 = Color.White;
@@ -341,6 +372,7 @@ previewControl.StateCommon.Back.Style = PaletteBackStyle.PanelClient;
 ```
 
 **Available Properties:**
+
 - `Color1`, `Color2`: Background colors
 - `ColorStyle`: Color drawing style
 - `Image`: Background image
@@ -349,6 +381,7 @@ previewControl.StateCommon.Back.Style = PaletteBackStyle.PanelClient;
 - And more...
 
 **Notes:**
+
 - Use this to set common appearance properties
 - Other states inherit from this unless overridden
 - Changes trigger a repaint
@@ -366,6 +399,7 @@ Gets access to the disabled print preview control appearance.
 - **DesignerSerializationVisibility**: Content
 
 **Example:**
+
 ```csharp
 // Customize disabled state appearance
 previewControl.StateDisabled.Back.Color1 = Color.Gray;
@@ -373,11 +407,13 @@ previewControl.StateDisabled.Back.Color2 = Color.DarkGray;
 ```
 
 **When Applied:**
+
 - Used when `Enabled` property is `false`
 - Inherits from `StateCommon` unless overridden
 - Provides visual feedback that control is disabled
 
 **Notes:**
+
 - Applied when `Enabled` is `false`
 - Inherits from `StateCommon` unless overridden
 - Changes trigger a repaint
@@ -395,6 +431,7 @@ Gets access to the normal print preview control appearance.
 - **DesignerSerializationVisibility**: Content
 
 **Example:**
+
 ```csharp
 // Customize normal state appearance
 previewControl.StateNormal.Back.Color1 = Color.White;
@@ -402,11 +439,13 @@ previewControl.StateNormal.Back.Color2 = Color.LightBlue;
 ```
 
 **When Applied:**
+
 - Used when `Enabled` property is `true`
 - Inherits from `StateCommon` unless overridden
 - Default state for the control
 
 **Notes:**
+
 - Applied when `Enabled` is `true`
 - Inherits from `StateCommon` unless overridden
 - Changes trigger a repaint
@@ -424,6 +463,7 @@ Gets access to the contained `PrintPreviewControl` instance.
 - **DesignerSerializationVisibility**: Hidden
 
 **Example:**
+
 ```csharp
 var baseControl = previewControl.PrintPreviewControl;
 // Access standard PrintPreviewControl members if needed
@@ -431,11 +471,13 @@ baseControl.StartPage = 0;
 ```
 
 **Use Cases:**
+
 - Access to standard `PrintPreviewControl` features not exposed by wrapper
 - Advanced scenarios requiring direct control access
 - Compatibility with code expecting the standard control
 
 **Notes:**
+
 - Provides direct access to the underlying .NET control
 - Use for advanced scenarios requiring standard control features
 - Most functionality is exposed through wrapper properties
@@ -451,12 +493,14 @@ Gets and sets if the control is in the tab chain.
 - **DesignerSerializationVisibility**: Visible
 
 **Example:**
+
 ```csharp
 previewControl.TabStop = true;  // Control can receive focus via Tab key
 previewControl.TabStop = false; // Control skipped in tab navigation
 ```
 
 **Notes:**
+
 - Actually controls the tab stop of the internal `PrintPreviewControl`
 - The wrapper control itself is not selectable
 - Setting this affects keyboard navigation
@@ -476,6 +520,7 @@ Gets or sets the background color for the control.
 - **DesignerSerializationVisibility**: Hidden
 
 **Notes:**
+
 - Hidden from property grid (use palette instead)
 - Background color comes from the palette system
 - Setting this property has no effect
@@ -490,6 +535,7 @@ Gets or sets the foreground color for the control.
 - **DesignerSerializationVisibility**: Hidden
 
 **Notes:**
+
 - Hidden from property grid (use palette instead)
 - Foreground color comes from the palette system
 - Setting this property has no effect
@@ -503,6 +549,7 @@ Gets or sets the background image displayed in the control.
 - **DesignerSerializationVisibility**: Hidden
 
 **Notes:**
+
 - Hidden from property grid (use palette instead)
 - Background images come from the palette system
 - Setting this property has no effect
@@ -517,6 +564,7 @@ Gets or sets the background image layout.
 - **DesignerSerializationVisibility**: Hidden
 
 **Notes:**
+
 - Hidden from property grid (use palette instead)
 - Layout comes from the palette system
 - Setting this property has no effect
@@ -533,6 +581,7 @@ Occurs when the starting page changes.
 - **Description**: Occurs when the starting page changes.
 
 **Example:**
+
 ```csharp
 previewControl.StartPageChanged += (sender, e) =>
 {
@@ -543,12 +592,14 @@ previewControl.StartPageChanged += (sender, e) =>
 ```
 
 **Use Cases:**
+
 - Update UI elements that display current page number
 - Enable/disable navigation buttons
 - Update status bar information
 - Track user navigation through document
 
 **Notes:**
+
 - Raised when `StartPage` property changes
 - Useful for updating UI elements that display current page
 - Event is forwarded from the internal `PrintPreviewControl`
@@ -567,6 +618,7 @@ Occurs when the value of the BackColor property changes.
 - **EditorBrowsable**: Never
 
 **Notes:**
+
 - Hidden event (use palette change events instead)
 - Not typically used in application code
 - Use `PaletteChanged` event from `VisualControlBase` instead
@@ -579,6 +631,7 @@ Occurs when the value of the BackgroundImage property changes.
 - **EditorBrowsable**: Never
 
 **Notes:**
+
 - Hidden event (use palette change events instead)
 - Not typically used in application code
 
@@ -590,6 +643,7 @@ Occurs when the value of the BackgroundImageLayout property changes.
 - **EditorBrowsable**: Never
 
 **Notes:**
+
 - Hidden event (use palette change events instead)
 - Not typically used in application code
 
@@ -601,6 +655,7 @@ Occurs when the value of the ForeColor property changes.
 - **EditorBrowsable**: Never
 
 **Notes:**
+
 - Hidden event (use palette change events instead)
 - Not typically used in application code
 
@@ -611,15 +666,18 @@ Occurs when the value of the ForeColor property changes.
 Raises the EnabledChanged event and updates the control's appearance.
 
 **Parameters:**
+
 - `e`: An EventArgs that contains the event data.
 
 **Behavior:**
+
 - Updates palette states based on enabled state
 - Updates the internal control's enabled state
 - Updates background color to match new state
 - Triggers a repaint
 
 **Notes:**
+
 - Called automatically when `Enabled` property changes
 - Switches between `StateNormal` and `StateDisabled`
 - Updates the internal `PrintPreviewControl` enabled state
@@ -629,14 +687,17 @@ Raises the EnabledChanged event and updates the control's appearance.
 Raises the PaletteChanged event and updates the control's appearance.
 
 **Parameters:**
+
 - `e`: An EventArgs containing the event data.
 
 **Behavior:**
+
 - Updates the palette redirector
 - Updates background color from new palette
 - Calls base class implementation
 
 **Notes:**
+
 - Called automatically when palette changes
 - Ensures control appearance matches current palette
 - Updates internal control background color
@@ -646,9 +707,11 @@ Raises the PaletteChanged event and updates the control's appearance.
 Creates a new instance of the control collection.
 
 **Returns:**
+
 - `ControlCollection`: A `KryptonReadOnlyControls` instance.
 
 **Notes:**
+
 - Returns a read-only controls collection
 - Prevents external code from modifying child controls
 - Only the internal `PrintPreviewControl` is allowed
@@ -658,14 +721,17 @@ Creates a new instance of the control collection.
 Handles layout events and positions the internal control.
 
 **Parameters:**
+
 - `levent`: A LayoutEventArgs that contains the event data.
 
 **Behavior:**
+
 - Calculates fill rectangle from view manager
 - Positions internal `PrintPreviewControl` to fill available space
 - Only performs layout if control is initialized
 
 **Notes:**
+
 - Called automatically during layout
 - Positions the internal control within themed border
 - Respects the themed border and padding
@@ -931,7 +997,7 @@ var baseControl = previewControl.PrintPreviewControl;
 
 The control uses a composition pattern with Krypton's view manager system:
 
-```
+```text
 KryptonPrintPreviewControl (wrapper)
 ├── VisualControlBase (base class)
 │   ├── Palette integration
@@ -983,6 +1049,7 @@ All properties are visible in the Visual Studio property grid with appropriate c
 This class is **not thread-safe**. All operations should be performed on the UI thread.
 
 **Important:**
+
 - All property access must be on the UI thread
 - Event handlers are called on the UI thread
 - Document printing operations should be on the UI thread
@@ -1013,6 +1080,7 @@ previewControl.Dispose();
 ```
 
 **Notes:**
+
 - Disposes the internal `PrintPreviewControl`
 - Unsubscribes from events
 - Releases resources properly
@@ -1028,6 +1096,7 @@ previewControl.Dispose();
 - **Palette Updates**: Palette changes trigger repaints but are optimized
 
 **Optimization Tips:**
+
 - Disable anti-aliasing for better performance on slower systems
 - Use appropriate zoom levels (don't zoom too high unnecessarily)
 - Consider page count when choosing columns/rows layout
@@ -1062,11 +1131,13 @@ The control uses an internal class that extends `PrintPreviewControl`:
 **Purpose**: Wraps the standard control with Krypton-specific behavior
 
 **Key Features:**
+
 - **Hit Testing**: Handles hit testing in design mode (returns `HT.TRANSPARENT`)
 - **AutoZoom**: Initialized with `AutoZoom = false` (controlled by wrapper)
 - **Reference**: Maintains reference to parent `KryptonPrintPreviewControl`
 
 **Design Mode Behavior:**
+
 - In design mode, hit testing returns transparent
 - Allows designer to select the wrapper control instead
 - Prevents designer from selecting the internal control directly
@@ -1076,12 +1147,14 @@ The control uses an internal class that extends `PrintPreviewControl`:
 Uses Krypton's view manager system for rendering:
 
 **Components:**
+
 - **ViewDrawDocker**: Provides themed border and background
 - **ViewLayoutFill**: Manages the fill area for the preview control
 - **ViewLayoutDocker**: Arranges inner elements
 - **Palette States**: Applies appropriate palette state based on `Enabled` property
 
 **Rendering Flow:**
+
 1. View manager calculates layout
 2. `ViewDrawDocker` draws themed border and background
 3. `ViewLayoutFill` calculates fill rectangle
@@ -1093,11 +1166,13 @@ Uses Krypton's view manager system for rendering:
 The control manages appearance through palette states:
 
 **States:**
+
 - **Common**: Base appearance for all states
 - **Normal**: Applied when `Enabled = true`
 - **Disabled**: Applied when `Enabled = false`
 
 **State Switching:**
+
 - Automatically switches states when `Enabled` changes
 - Updates internal control background color
 - Triggers repaint when state changes
@@ -1109,6 +1184,7 @@ The control synchronizes the internal control's background color with the palett
 **Method**: `UpdatePreviewControlBackColor()`
 
 **Behavior:**
+
 - Retrieves background color from current palette state
 - Updates internal `PrintPreviewControl.BackColor`
 - Called when palette changes or enabled state changes

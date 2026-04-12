@@ -2,10 +2,12 @@
 
 Learn more about the capabilities of the `KryptonRibbon` using the following sections.
 
-**Overview**
+## Overview
+
 * [Overview](Ribbon/KryptonRibbonOverview.md)
 
-**Operation**
+## Operation
+
 * [Tabs](Ribbon/KryptonRibbonTabs.md)
 * [Groups](Ribbon/KryptonRibbonGroups.md)
 * [Group Containers](Ribbon/KryptonRibbonGroupContainers.md)
@@ -17,10 +19,12 @@ Learn more about the capabilities of the `KryptonRibbon` using the following sec
 * [Notification Bar](Ribbon/KryptonRibbonNotificationBar.md)
 * [ButtonSpecs](Ribbon/ButtonSpecs.md)
 
-**Events**
+## Events
+
 * [Control Events](Ribbon/ControlEvents.md)
 * [Item Events](Ribbon/ItemEvents.md)
 
-**Standalone Controls**
+## Standalone Controls
+
 * [BackStage View](Ribbon/Components/BackStage%20View/KryptonRibbonBackstageView.md)
 * [KryptonGallery](Ribbon/KryptonGallery.md)

@@ -134,7 +134,7 @@ var newTokens = await client.RefreshTokenAsync(tokens.RefreshToken!);
 Displays an OAuth2 sign-in dialog similar to `KryptonMessageBox`.
 
 | Method | Description |
-|--------|-------------|
+| --- | --- |
 | `ShowAsync(authUrl, redirectUri)` | Show dialog, no owner, default title "Sign in" |
 | `ShowAsync(authUrl, redirectUri, title)` | Show dialog with custom title |
 | `ShowAsync(owner, authUrl, redirectUri)` | Show modal in front of owner window |
@@ -153,14 +153,14 @@ Main client for OAuth2 PKCE flows.
 #### Constructors
 
 | Constructor | Description |
-|-------------|-------------|
+| --- | --- |
 | `OAuth2PkceClient(OAuth2PkceOptions options, IOAuth2BrowserHost? browserHost = null)` | From options; optional custom browser host |
 | `OAuth2PkceClient(IOAuth2Provider provider, clientId, redirectUri, scopes = "openid", IOAuth2BrowserHost? browserHost = null)` | From provider preset |
 
 #### Methods
 
 | Method | Description |
-|--------|-------------|
+| --- | --- |
 | `BuildAuthorizationUrl(codeVerifier, state?)` | Builds authorization URL with PKCE parameters |
 | `GetTokenEndpoint()` | Returns the token endpoint URL |
 | `ExchangeCodeAsync(code, codeVerifier, cancellationToken?)` | Exchanges authorization code for tokens |
@@ -174,7 +174,7 @@ Main client for OAuth2 PKCE flows.
 Configuration for the OAuth2 PKCE flow.
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Authority` | string | Base URL of identity provider |
 | `ClientId` | string | Application/client ID |
 | `RedirectUri` | string | Registered redirect URI |
@@ -194,7 +194,7 @@ Configuration for the OAuth2 PKCE flow.
 Result of token exchange or refresh.
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `AccessToken` | string? | Access token for API calls |
 | `RefreshToken` | string? | Refresh token (if issued) |
 | `TokenType` | string? | Typically `"Bearer"` |
@@ -210,7 +210,7 @@ Result of token exchange or refresh.
 Result of the authorization step (before token exchange).
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Success` | bool | User completed sign-in successfully |
 | `Code` | string? | Authorization code when Success |
 | `State` | string? | State parameter returned |
@@ -223,7 +223,7 @@ Result of the authorization step (before token exchange).
 Thrown on OAuth2 failures.
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Error` | string? | OAuth2 error code (e.g. `invalid_grant`, `access_denied`) |
 | `ErrorDescription` | string? | Provider error description |
 
@@ -234,7 +234,7 @@ Thrown on OAuth2 failures.
 ### `OAuth2ProviderPresets`
 
 | Method | Description |
-|--------|-------------|
+| --- | --- |
 | `AzureAd(clientId, redirectUri, tenantId?, scopes?)` | Microsoft Azure AD / Entra ID |
 | `Google(clientId, redirectUri, scopes?)` | Google OAuth2 |
 | `GitHub(clientId, redirectUri, scopes?)` | GitHub OAuth2 |
@@ -243,7 +243,7 @@ Thrown on OAuth2 failures.
 ### Built-in providers
 
 | Class | Authority / Endpoints |
-|-------|------------------------|
+| --- | --- |
 | `AzureAdOAuth2Provider` | `login.microsoftonline.com/{tenant}/v2.0` |
 | `GoogleOAuth2Provider` | `accounts.google.com`, `oauth2.googleapis.com` |
 | `GitHubOAuth2Provider` | `github.com/login/oauth` |
@@ -356,7 +356,7 @@ Use for: adding headers, logging, transforming requests.
 Hooks invoked at key points in the flow.
 
 | Property | Signature | When invoked |
-|----------|-----------|--------------|
+| --- | --- | --- |
 | `BeforeAuthorize` | `(authUrl, state, ct) => Task` | Before opening sign-in UI |
 | `AfterAuthorizationCodeReceived` | `(code, state, ct) => Task` | After redirect, before token exchange |
 | `AfterTokensReceived` | `(tokens, ct) => Task` | After successful token exchange/refresh |
@@ -437,7 +437,7 @@ options.Prompt = "select_account";       // Force account picker
 
 ## Architecture & File Layout
 
-```
+```text
 Components/Krypton OAuth2/
 ├── Controls Toolkit/
 │   ├── KryptonOAuth2Login.cs      # Static API (ShowAsync)

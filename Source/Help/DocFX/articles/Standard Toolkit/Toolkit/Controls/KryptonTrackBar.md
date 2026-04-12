@@ -1,7 +1,5 @@
 # KryptonTrackBar
 
- 
-
 The *KryptonTrackBar* is a scrollable control similar to the scroll bar. You can
 configure ranges through which the value of the *Value* property of a track bar
 scrolls by setting the *Minimum* property to specify the lower end and the
@@ -12,9 +10,7 @@ property defines the increment to add or subtract from the *Value* property when
 using the keyboard. You can use the *Orientation* property to change the default
 horizontal appearance to become vertical.
 
- 
-
-**Appearance** 
+## Appearance
 
 The *Orientation* property is used to change the direction of the track bar
 control. Figure 1 shows the vertical and horizontal values. You will see also in
@@ -28,15 +24,11 @@ possible values of *Small*, *Medium* and *Large* and specifies how large the
 track and track indicator are drawn. Figure 1 shows instances with the default
 value of *Medium*.
 
- 
-![](../Images/KryptonTrackBarOrientation.jpg)
+![KryptonTrackBar vertical and horizontal orientation with tick styles](../Images/KryptonTrackBarOrientation.jpg)
 
-*Figure 1 - Orientation settings.*  
+Figure 1 - Orientation settings.
 
-
- 
-
-**Four States**
+## Four States
 
 The track bar can be in one of four possible states, *Disabled*, *Normal*,
 *Tracking* and *Pressed*. If the control has been disabled because the *Enabled*
@@ -46,15 +38,11 @@ moves the mouse over the track bar position indicator at which point it enters
 the *Tracking* state. If the user presses the left mouse button whilst over the
 position indicator then it enters the *Pressed* state.
 
- 
-
 In order to customize the appearance of the control in each of the four states
 you can use the properties *StateDisabled*, *StateNormal*, *StateTracking* and
 *StatePressed*.
 
- 
-
-**Common State** 
+## Common State
 
 To speed up the customization process an extra *StateCommon* property has been
 provided. The settings from this are used if no override has been defined for
@@ -64,20 +52,18 @@ precedence and so if you define the border width in *StateNormal* and
 in the *Normal* state. Only if the *StateNormal* value is not overridden will it
 look in *StateCommon*.
 
-**Focus Override** 
+## Focus Override
 
 If the control currently has the focus then the *OverrideFocus* settings are
 applied. This can occur when the control is in *Normal*, *Tracking* or *Pressed*
 states. By default the override only alters the appearance so that the track bar
 position indicator shows that the control has the focus.
 
- 
-
-**Examples of Appearance** 
+## Examples of Appearance
 
 Figure 2 shows the appearance when a track bar is using the *Office 2010 Blue*
 palette and for each of the different possible states.
 
-![](../Images/KryptonTrackBarStates.jpg)
+![KryptonTrackBar states with Office 2010 Blue palette](../Images/KryptonTrackBarStates.jpg)
 
-*Figure 2 - TrackBar states.*
+Figure 2 - TrackBar states.

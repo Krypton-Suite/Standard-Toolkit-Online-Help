@@ -1,12 +1,14 @@
 # KryptonToastNotificationManager
 
+**V110+:** Call the static toast API as `KryptonToast` in the `Krypton.Utilities` namespace (`using Krypton.Utilities;`). `KryptonToastNotificationManager` remains a **design-time component** in `Krypton.Toolkit`.
+
 ## Overview
 
 The `KryptonToastNotificationManager` class provides a component-based manager for toast notifications in Krypton applications. It inherits from `Component` and serves as a design-time component that can be added to forms or used programmatically to manage toast notification functionality with enhanced control and configuration options.
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -20,6 +22,7 @@ public KryptonToastNotificationManager()
 ```
 
 The constructor initializes the component:
+
 - **Component Base**: Inherits from `Component` for design-time support
 - **Toolbox Integration**: Available in Visual Studio toolbox with custom bitmap
 - **Design-Time Support**: Full design-time integration and configuration
@@ -92,7 +95,7 @@ public class ApplicationNotificationService
             ShowDoNotShowAgain = true
         };
 
-        bool doNotShowAgain = KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+        bool doNotShowAgain = KryptonToast.ShowBasicNotificationWithBooleanReturnValue(notificationData);
         
         if (doNotShowAgain)
         {
@@ -112,7 +115,7 @@ public class ApplicationNotificationService
             ProgressMaximum = maximum
         };
 
-        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        KryptonToast.ShowBasicProgressBarNotification(notificationData);
     }
 
     public void ShowErrorNotification(string errorMessage)
@@ -124,7 +127,7 @@ public class ApplicationNotificationService
             Icon = MessageBoxIcon.Error
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 
     private bool ShouldShowNotification(string notificationKey)
@@ -174,14 +177,14 @@ public class CentralizedNotificationManager
             switch (type)
             {
                 case NotificationType.Basic:
-                    KryptonToastNotification.ShowBasicNotification(notificationData);
+                    KryptonToast.ShowBasicNotification(notificationData);
                     break;
                 case NotificationType.WithBooleanReturn:
-                    bool result = KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+                    bool result = KryptonToast.ShowBasicNotificationWithBooleanReturnValue(notificationData);
                     OnNotificationResult(result);
                     break;
                 case NotificationType.WithCheckStateReturn:
-                    CheckState checkState = KryptonToastNotification.ShowBasicNotificationWithCheckStateReturnValue(notificationData);
+                    CheckState checkState = KryptonToast.ShowBasicNotificationWithCheckStateReturnValue(notificationData);
                     OnNotificationCheckStateResult(checkState);
                     break;
             }
@@ -201,7 +204,7 @@ public class CentralizedNotificationManager
                 ProgressMaximum = maximum
             };
 
-            KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+            KryptonToast.ShowBasicProgressBarNotification(notificationData);
         }
     }
 
@@ -217,7 +220,7 @@ public class CentralizedNotificationManager
                 SelectedIndex = defaultIndex
             };
 
-            object result = KryptonToastNotification.ShowNotification(inputData);
+            object result = KryptonToast.ShowNotification(inputData);
             OnUserInputResult(result);
         }
     }
@@ -284,7 +287,7 @@ public class ApplicationNotificationSystem
             Icon = MessageBoxIcon.Information
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 
     public static void ShowWarning(string title, string message)
@@ -296,7 +299,7 @@ public class ApplicationNotificationSystem
             Icon = MessageBoxIcon.Warning
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 
     public static void ShowError(string title, string message)
@@ -308,7 +311,7 @@ public class ApplicationNotificationSystem
             Icon = MessageBoxIcon.Error
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 
     public static bool ShowQuestion(string title, string message, bool showDoNotShowAgain = false)
@@ -321,7 +324,7 @@ public class ApplicationNotificationSystem
             ShowDoNotShowAgain = showDoNotShowAgain
         };
 
-        return KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+        return KryptonToast.ShowBasicNotificationWithBooleanReturnValue(notificationData);
     }
 
     public static void ShowProgress(string title, string message, int progress, int maximum)
@@ -335,7 +338,7 @@ public class ApplicationNotificationSystem
             ProgressMaximum = maximum
         };
 
-        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        KryptonToast.ShowBasicProgressBarNotification(notificationData);
     }
 }
 ```
@@ -459,7 +462,7 @@ public class NotificationService
             ProgressMaximum = maximum
         };
 
-        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        KryptonToast.ShowBasicProgressBarNotification(notificationData);
     }
 
     private void ShowInfo(string title, string message)
@@ -471,7 +474,7 @@ public class NotificationService
             Icon = MessageBoxIcon.Information
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 
     private void ShowError(string title, string message)
@@ -483,7 +486,7 @@ public class NotificationService
             Icon = MessageBoxIcon.Error
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 }
 ```
@@ -549,7 +552,7 @@ public class NotificationViewModel : INotifyPropertyChanged
             Icon = MessageBoxIcon.Information
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 
     private void ShowProgress()
@@ -563,7 +566,7 @@ public class NotificationViewModel : INotifyPropertyChanged
             ProgressMaximum = ProgressMaximum
         };
 
-        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        KryptonToast.ShowBasicProgressBarNotification(notificationData);
     }
 
     private void ShowUserInput()
@@ -576,7 +579,7 @@ public class NotificationViewModel : INotifyPropertyChanged
             SelectedIndex = 0
         };
 
-        object result = KryptonToastNotification.ShowNotification(inputData);
+        object result = KryptonToast.ShowNotification(inputData);
         if (result != null)
         {
             StatusMessage = $"Selected: {result}";
@@ -656,7 +659,7 @@ var notificationData = new KryptonBasicToastNotificationData
     // Ensure all required properties are set
 };
 
-KryptonToastNotification.ShowBasicNotification(notificationData);
+KryptonToast.ShowBasicNotification(notificationData);
 ```
 
 ### Component Disposal Issues
@@ -698,7 +701,7 @@ public partial class MainForm : Form
 
 ```csharp
 // Old way (direct static calls)
-// KryptonToastNotification.ShowBasicNotification(notificationData);
+// KryptonToast.ShowBasicNotification(notificationData);
 
 // New way (with component management)
 var notificationManager = new KryptonToastNotificationManager();
@@ -720,7 +723,7 @@ var notificationData = new KryptonBasicToastNotificationData
     Message = "Message",
     Icon = MessageBoxIcon.Information
 };
-KryptonToastNotification.ShowBasicNotification(notificationData);
+KryptonToast.ShowBasicNotification(notificationData);
 ```
 
 ## Real-World Integration Examples
@@ -776,16 +779,16 @@ public class EnterpriseNotificationSystem
         switch (level)
         {
             case NotificationLevel.Info:
-                KryptonToastNotification.ShowBasicNotification(notificationData);
+                KryptonToast.ShowBasicNotification(notificationData);
                 break;
             case NotificationLevel.Warning:
-                KryptonToastNotification.ShowBasicNotification(notificationData);
+                KryptonToast.ShowBasicNotification(notificationData);
                 break;
             case NotificationLevel.Error:
-                KryptonToastNotification.ShowBasicNotification(notificationData);
+                KryptonToast.ShowBasicNotification(notificationData);
                 break;
             case NotificationLevel.Question:
-                bool result = KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+                bool result = KryptonToast.ShowBasicNotificationWithBooleanReturnValue(notificationData);
                 OnQuestionResult(result, category);
                 break;
         }
@@ -805,7 +808,7 @@ public class EnterpriseNotificationSystem
             ProgressMaximum = maximum
         };
 
-        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        KryptonToast.ShowBasicProgressBarNotification(notificationData);
         
         LogProgress(operationId, progress, maximum);
     }
@@ -821,7 +824,7 @@ public class EnterpriseNotificationSystem
             SelectedIndex = 0
         };
 
-        object result = KryptonToastNotification.ShowNotification(inputData);
+        object result = KryptonToast.ShowNotification(inputData);
         OnUserDecisionResult(result, category);
     }
 
@@ -917,7 +920,7 @@ public class MultiTenantNotificationSystem
             Icon = icon
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 
     public void ShowTenantProgress(string tenantId, string title, string message, 
@@ -933,7 +936,7 @@ public class MultiTenantNotificationSystem
             ProgressMaximum = maximum
         };
 
-        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        KryptonToast.ShowBasicProgressBarNotification(notificationData);
     }
 
     public bool ShowTenantQuestion(string tenantId, string title, string message, 
@@ -948,7 +951,7 @@ public class MultiTenantNotificationSystem
             ShowDoNotShowAgain = showDoNotShowAgain
         };
 
-        return KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+        return KryptonToast.ShowBasicNotificationWithBooleanReturnValue(notificationData);
     }
 
     private KryptonToastNotificationManager GetTenantManager(string tenantId)

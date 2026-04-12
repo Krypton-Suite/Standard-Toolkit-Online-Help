@@ -27,7 +27,7 @@
   - [Using command items](#using-command-items)
   - [Configuring overlay coverage](#configuring-overlay-coverage)
 - [Creating Backstage Pages](#creating-backstage-pages)
-  - [See also: [Creating Backstage Pages - In-Depth Guide](Ribbon-BackstageView-CreatingPages.md)](#see-also-creating-backstage-pages---in-depth-guide)
+  - [See also: [Creating Backstage Pages - In-Depth Guide](KryptonRibbonBackstageViewCreatingPages.md)](#see-also-creating-backstage-pages---in-depth-guide)
 - [New Features](#new-features)
 - [Implementation Notes (for contributors)](#implementation-notes-for-contributors)
 - [Known Limitations and Future Enhancements](#known-limitations-and-future-enhancements)
@@ -64,11 +64,11 @@ It is designed to:
 
 ### Behavior matrix
 
-| Ribbon shape | User action | Backstage enabled & configured? | Result |
-|---|---:|---:|---|
-| `Office2007` | Click orb | N/A | App menu **popup** (existing behavior) |
-| `Office2010+` | Click File tab | Yes (see below) | Backstage **overlay** |
-| `Office2010+` | Click File tab | No | App menu **popup** (fallback/default) |
+| Ribbon shape | User action | Backstage enabled & configured? | Result |  
+| --- | ---: | ---: | --- |  
+| `Office2007` | Click orb | N/A | App menu **popup** (existing behavior) |  
+| `Office2010+` | Click File tab | Yes (see below) | Backstage **overlay** |  
+| `Office2010+` | Click File tab | No | App menu **popup** (fallback/default) |  
 
 ### “Enabled & configured” definition
 
@@ -179,18 +179,18 @@ Key API:
 
 Key API:
 
-#### `string Text`
+#### `string Text` (page)
 
 - Display text shown in the navigation list for this page.
 - Inherited from `Control.Text`.
 
-#### `Image? Image`
+#### `Image? Image` (page)
 
 - Image shown in the navigation list alongside the text.
 - Images are automatically scaled to fit (16px for Small items, 32px for Large items).
 - Optional; can be set to provide visual identification in the navigation list.
 
-#### `BackstageItemSize ItemSize`
+#### `BackstageItemSize ItemSize` (page)
 
 - Size of this item in the navigation list.
 - **Values**:
@@ -198,19 +198,20 @@ Key API:
   - `Large`: Office-like prominent display (60px height, 32px image, larger font)
 - **Default**: `Small`
 
-#### `bool VisibleInNavigation`
+#### `bool VisibleInNavigation` (page)
 
 - If `false`, the page remains in the collection but is not listed in the navigation.
 - Useful for programmatically accessible pages that shouldn't appear in the navigation list.
 - Default: `true`
 
-#### `event EventHandler NavigationPropertyChanged`
+#### `event EventHandler NavigationPropertyChanged` (page)
 
 - Raised when `Text`, `Image`, `ItemSize`, or `VisibleInNavigation` changes (used to refresh navigation).
 
 #### Inherited from `KryptonPanel`
 
 Since `KryptonBackstagePage` inherits from `KryptonPanel`, you have access to all panel properties:
+
 - `PanelBackStyle`: Control the background style of the page
 - `Dock`: Page docking (automatically set to `Fill` by the view)
 - `Padding`, `Margin`: Control spacing
@@ -226,17 +227,17 @@ Since `KryptonBackstagePage` inherits from `KryptonPanel`, you have access to al
 
 Key API:
 
-#### `string Text`
+#### `string Text` (command)
 
 - Display text shown in the navigation list for this command.
 
-#### `Image? Image`
+#### `Image? Image` (command)
 
 - Image shown in the navigation list alongside the text.
 - Images are automatically scaled to fit (16px for Small items, 32px for Large items).
 - Optional; can be set to provide visual identification.
 
-#### `BackstageItemSize ItemSize`
+#### `BackstageItemSize ItemSize` (command)
 
 - Size of this item in the navigation list.
 - **Values**:
@@ -244,7 +245,7 @@ Key API:
   - `Large`: Office-like prominent display (60px height, 32px image, larger font)
 - **Default**: `Small`
 
-#### `bool VisibleInNavigation`
+#### `bool VisibleInNavigation` (command)
 
 - If `false`, the command remains in the collection but is not listed in the navigation.
 - Default: `true`
@@ -254,7 +255,7 @@ Key API:
 - Occurs when the command is clicked.
 - Use this event to execute the command's action.
 
-#### `event EventHandler NavigationPropertyChanged`
+#### `event EventHandler NavigationPropertyChanged` (command)
 
 - Raised when `Text`, `Image`, `ItemSize`, or `VisibleInNavigation` changes (used to refresh navigation).
 
@@ -263,6 +264,7 @@ Key API:
 - Programmatically triggers the command's `Click` event.
 
 **Usage Example**:
+
 ```csharp
 var exitCommand = new KryptonBackstageCommand("Exit")
 {
@@ -311,8 +313,8 @@ The Backstage View supports two types of navigation items:
 ```csharp
 var backstage = new KryptonBackstageView();
 
-var page = new KryptonBackstagePage 
-{ 
+var page = new KryptonBackstagePage
+{
     Text = "Save",
     Image = Properties.Resources.SaveIcon,
     ItemSize = BackstageItemSize.Large
@@ -386,14 +388,14 @@ Pages are exposed as designable child controls; you can:
 var backstage = new KryptonBackstageView { Dock = DockStyle.Fill };
 
 // Add pages with images and sizes
-backstage.Pages.Add(new KryptonBackstagePage 
-{ 
+backstage.Pages.Add(new KryptonBackstagePage
+{
     Text = "Info",
     Image = Properties.Resources.InfoIcon,
     ItemSize = BackstageItemSize.Large
 });
-backstage.Pages.Add(new KryptonBackstagePage 
-{ 
+backstage.Pages.Add(new KryptonBackstagePage
+{
     Text = "Save",
     Image = Properties.Resources.SaveIcon,
     ItemSize = BackstageItemSize.Small
@@ -454,6 +456,7 @@ backstage.Colors.SelectedItemHighlightColor = null;
 ```
 
 **Note**: When color properties are `null`, the Backstage View automatically uses theme-appropriate defaults:
+
 - Navigation background: `PanelAlternate` palette color
 - Content background: `PanelClient` palette color
 - Selected item highlight: Theme's tracking color (`SchemeTrackingColors.MenuItemSelectedBegin`), which automatically adapts to Office 2010, Office 2013, Microsoft 365, and other themes
@@ -513,6 +516,7 @@ backstage.Commands.Add(optionsCommand);
 ```
 
 **Item Size Details**:
+
 - **Small**: 40px height, 16px image, standard font size (default)
 - **Large**: 60px height, 32px image, 10% larger font size
 
@@ -561,10 +565,12 @@ backstage.OverlayMode = BackstageOverlayMode.BelowRibbon;
 ```
 
 **Overlay Modes**:
+
 - **FullClient**: The overlay covers the entire form's client area (default behavior)
 - **BelowRibbon**: The overlay covers only the area below the ribbon, leaving the ribbon visible
 
 **Use Cases**:
+
 - `FullClient`: Traditional Office-style Backstage that covers everything
 - `BelowRibbon`: When you want users to still see and access the ribbon while in Backstage
 
@@ -575,6 +581,7 @@ backstage.OverlayMode = BackstageOverlayMode.BelowRibbon;
 For comprehensive guidance on creating and designing Backstage pages, see the [Creating Backstage Pages - In-Depth Guide](KryptonRibbonBackstageViewCreatingPages.md).
 
 This guide covers:
+
 - Understanding `KryptonBackstagePage` as a `KryptonPanel`
 - Designing pages in the Visual Studio designer
 - Common page layouts and patterns
@@ -613,6 +620,7 @@ The Backstage View now includes three major enhancements:
 - **Enhanced Typography**: Large items use a 10% larger font size for better visibility
 
 **Example**:
+
 ```csharp
 var page = new KryptonBackstagePage
 {
@@ -629,6 +637,7 @@ var page = new KryptonBackstagePage
 - **Full Feature Parity**: Commands support images, item sizes, and visibility control just like pages
 
 **Example**:
+
 ```csharp
 var exitCommand = new KryptonBackstageCommand("Exit")
 {
@@ -645,6 +654,7 @@ backstage.Commands.Add(exitCommand);
 - **BelowRibbon Mode**: Overlay covers only the area below the ribbon, keeping the ribbon visible
 
 **Example**:
+
 ```csharp
 // Traditional full-screen overlay
 backstage.OverlayMode = BackstageOverlayMode.FullClient;
@@ -658,19 +668,19 @@ backstage.OverlayMode = BackstageOverlayMode.BelowRibbon;
 ## Known Limitations and Future Enhancements
 
 All previously planned enhancements have been implemented:
+
 - ✅ **Navigation visuals**: Owner-draw navigation with image support and Office-like styling (large/small item sizes)
 - ✅ **Command items**: Command-only items (no page) for actions like Exit/Options
 - ✅ **Overlay coverage**: Support for both full client area and "below ribbon only" overlay modes
 
 **Current Status**: The Backstage View feature is feature-complete with all planned enhancements implemented.
 
-<a id="files-and-key-types"></a>
 ## Files and Key Types
 
 Key types used in the Backstage View implementation:
 
 | Type | Purpose |
-|------|---------|
+| ---- | ------- |
 | `RibbonFileAppTab` | Ribbon configuration (UseBackstageView, BackstageContent) |
 | `KryptonBackstageView` | Main Backstage control (Pages, Commands, OverlayMode) |
 | `KryptonBackstagePage` | Navigation page item |

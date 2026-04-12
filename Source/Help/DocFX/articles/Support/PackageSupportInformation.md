@@ -5,20 +5,20 @@ There are currently two types of package that are supported. The table below out
 ## Canary & Nightly Release
 
 | Package Type | Supported Frameworks |
-|---|---|
+| --- | --- |
 | Full | .NET Framework 4.7.2, 4.8, 4.8.1, .NET 8 - 11 |
 
 ## Stable Release
 
 | Package Type | Supported Frameworks |
-|---|---|
+| --- | --- |
 | Full | .NET Framework 4.7.2, 4.8, 4.8.1, .NET 8 - 10 |
 | Lite | .NET Framework 4.8, 4.8.1, .NET 8 - 10 |
 
 ## LTS Release
 
 | Package Type | Supported Frameworks |
-|---|---|
+| --- | --- |
 | Full | .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8, 4.8.1, .NET 6 - 8 |
 | Lite | .NET Framework 4.8, 4.8.1, .NET 6 - 8 |
 
@@ -29,8 +29,8 @@ There are currently two types of package that are supported. The table below out
 ### Supported .NET Versions
 
 | Version | Status | Latest Release | Latest Release Date | End of Support |
-|---|---|---|---|---|
-    | .NET 11.0 | Standard Term Support | 11.0.0-preview.2 | March 10, 2026 | TBA |
+| --- | --- | --- | --- | --- |
+| .NET 11.0 | Standard Term Support | 11.0.0-preview.2 | March 10, 2026 | TBA |
 | .NET 10.0 | Long Term Support | 10.0.4 | March 10, 2026 | November 14, 2028 |
 | .NET 9.0 | Standard Term Support | 9.0.14 | March 10, 2026 | May 12, 2026 |
 | .NET 8.0 | Long Term Support | 8.0.25 | March 10, 2026 | November 10, 2026 |
@@ -38,7 +38,7 @@ There are currently two types of package that are supported. The table below out
 ### Supported .NET Framework Versions
 
 | Version | Release Date | End of Support |
-|---|---|---|
+| --- | --- | --- |
 | .NET Framework 4.8.1 | August 9, 2022 | TBC |
 | .NET Framework 4.8 | April 18, 2019 | TBC |
 | .NET Framework 4.7.2 | April 30, 2018 | TBC |
@@ -46,4 +46,4 @@ There are currently two types of package that are supported. The table below out
 | .NET Framework 4.7 | April 5, 2017 | TBC |
 | .NET Framework 4.6.2 | August 2, 2016 | TBC |
 
-Full information can be found [here](https://dotnet.microsoft.com/en-us/download/dotnet), .NET Framework information can be found [here](https://dotnet.microsoft.com/en-us/download/dotnet-framework)
+For current .NET releases, see [.NET downloads](https://dotnet.microsoft.com/en-us/download/dotnet). For .NET Framework, see [.NET Framework downloads](https://dotnet.microsoft.com/en-us/download/dotnet-framework).

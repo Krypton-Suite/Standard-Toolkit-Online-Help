@@ -4,24 +4,27 @@
 
 `CaptionValues` provides storage for caption text and images used in group boxes, panels, and other controls that display a heading with an optional description. It serves as the base class for more specialized caption value classes like `CommandLinkTextValues`.
 
-**Namespace:** `Krypton.Toolkit`  
-**Assembly:** Krypton.Toolkit  
+**Namespace:** `Krypton.Toolkit`
+**Assembly:** Krypton.Toolkit
 **Inheritance:** `Object` → `Storage` → `HeaderValuesBase` → `CaptionValues`
 
 ## Key Features
 
 ### Caption Storage
+
 - Primary heading text
 - Optional description text
 - Optional caption image
 - Automatic paint invalidation
 
 ### Base Class
+
 - Provides foundation for specialized caption classes
 - Consistent interface for caption management
 - Localizable text properties
 
 ### Integration
+
 - Used by `KryptonGroupBox`
 - Used by `KryptonHeaderGroup`
 - Extended by `CommandLinkTextValues`
@@ -39,10 +42,12 @@ public CaptionValues(NeedPaintHandler needPaint, GetDpiFactor getDpiFactor)
 ```
 
 **Parameters:**
+
 - `needPaint` - Delegate for notifying paint requests
 - `getDpiFactor` - Delegate for retrieving DPI scaling factor
 
 **Default Values:**
+
 - `Heading` = `"Caption"`
 - `Description` = `""`
 - `Image` = `null`
@@ -52,6 +57,7 @@ public CaptionValues(NeedPaintHandler needPaint, GetDpiFactor getDpiFactor)
 ## Properties
 
 ### Heading
+
 Gets or sets the caption heading text.
 
 ```csharp
@@ -66,11 +72,13 @@ public string Heading { get; set; }
 **Inherited from:** `HeaderValuesBase`
 
 **Remarks:**
+
 - Primary text displayed in the caption
 - Supports mnemonics (e.g., "&File")
 - Automatically triggers repaint when changed
 
 **Example:**
+
 ```csharp
 kryptonGroupBox1.CaptionValues.Heading = "Customer Information";
 ```
@@ -78,6 +86,7 @@ kryptonGroupBox1.CaptionValues.Heading = "Customer Information";
 ---
 
 ### Description
+
 Gets or sets the caption description text.
 
 ```csharp
@@ -88,11 +97,13 @@ public override string Description { get; set; }
 **Default:** `""` (empty string)
 
 **Remarks:**
+
 - Secondary descriptive text
 - Optional - can be empty
 - Typically displayed below or alongside heading
 
 **Example:**
+
 ```csharp
 kryptonGroupBox1.CaptionValues.Heading = "Settings";
 kryptonGroupBox1.CaptionValues.Description = "Configure application preferences";
@@ -101,6 +112,7 @@ kryptonGroupBox1.CaptionValues.Description = "Configure application preferences"
 ---
 
 ### Image
+
 Gets or sets the caption image.
 
 ```csharp
@@ -115,11 +127,13 @@ public Image? Image { get; set; }
 **Inherited from:** `HeaderValuesBase`
 
 **Remarks:**
+
 - Optional icon/image displayed with caption
 - Typically 16x16 or 32x32 pixels
 - Should be DPI-aware for high-DPI displays
 
 **Example:**
+
 ```csharp
 kryptonGroupBox1.CaptionValues.Image = Properties.Resources.SettingsIcon;
 ```
@@ -127,6 +141,7 @@ kryptonGroupBox1.CaptionValues.Image = Properties.Resources.SettingsIcon;
 ---
 
 ### IsDefault
+
 Gets whether all values are in their default state.
 
 ```csharp
@@ -138,6 +153,7 @@ public override bool IsDefault { get; }
 **Returns:** `true` if all properties have default values; otherwise `false`.
 
 **Remarks:**
+
 - Used by designer for serialization decisions
 - Checks heading, description, and image
 
@@ -146,6 +162,7 @@ public override bool IsDefault { get; }
 ## Methods
 
 ### GetHeadingDefault()
+
 Gets the default heading value.
 
 ```csharp
@@ -155,12 +172,14 @@ protected override string GetHeadingDefault()
 **Returns:** `"Caption"`
 
 **Remarks:**
+
 - Can be overridden in derived classes
 - Used for reset operations
 
 ---
 
 ### GetDescriptionDefault()
+
 Gets the default description value.
 
 ```csharp
@@ -170,12 +189,14 @@ protected override string GetDescriptionDefault()
 **Returns:** `""` (empty string)
 
 **Remarks:**
+
 - Can be overridden in derived classes
 - Used for reset operations
 
 ---
 
 ### GetImageDefault()
+
 Gets the default image value.
 
 ```csharp
@@ -185,6 +206,7 @@ protected override Image? GetImageDefault()
 **Returns:** `null`
 
 **Remarks:**
+
 - Can be overridden in derived classes
 - Used for reset operations
 
@@ -241,13 +263,13 @@ private void UpdateCaption(string section)
             groupBox.CaptionValues.Description = "Name, email, and contact details";
             groupBox.CaptionValues.Image = Resources.UserIcon;
             break;
-            
+
         case "Preferences":
             groupBox.CaptionValues.Heading = "Preferences";
             groupBox.CaptionValues.Description = "Application settings and options";
             groupBox.CaptionValues.Image = Resources.SettingsIcon;
             break;
-            
+
         case "Security":
             groupBox.CaptionValues.Heading = "Security";
             groupBox.CaptionValues.Description = "Password and privacy settings";
@@ -308,13 +330,13 @@ public class LocalizedCaptions
 {
     private CultureInfo currentCulture;
     private Dictionary<string, (string heading, string description)> captions;
-    
+
     public LocalizedCaptions()
     {
         currentCulture = CultureInfo.CurrentUICulture;
         LoadCaptions();
     }
-    
+
     private void LoadCaptions()
     {
         captions = new Dictionary<string, (string, string)>
@@ -325,7 +347,7 @@ public class LocalizedCaptions
             ["de-DE"] = ("Einstellungen", "Anwendungsoptionen konfigurieren")
         };
     }
-    
+
     public void ApplyCaption(CaptionValues caption, string key)
     {
         var culture = currentCulture.Name;
@@ -369,16 +391,16 @@ private void UpdateCaptionForValidation(bool isValid)
 public class WizardStep
 {
     private KryptonPanel panel;
-    
+
     public WizardStep(string heading, string description, Image icon = null)
     {
         panel = new KryptonPanel();
-        
+
         // If the panel has caption values, set them
         // (This is illustrative - actual implementation depends on control)
         SetCaption(heading, description, icon);
     }
-    
+
     private void SetCaption(string heading, string description, Image icon)
     {
         // Set up header
@@ -386,7 +408,7 @@ public class WizardStep
         headerGroup.CaptionValues.Heading = heading;
         headerGroup.CaptionValues.Description = description;
         headerGroup.CaptionValues.Image = icon;
-        
+
         panel.Controls.Add(headerGroup);
     }
 }
@@ -424,25 +446,25 @@ private void UpdateStatusCaption(ProcessStatus status)
             "Ready to Start",
             "Click the button below to begin",
             Resources.InfoIcon),
-            
+
         ProcessStatus.InProgress => (
             "Processing...",
             "Please wait while the operation completes",
             Resources.SpinnerIcon),
-            
+
         ProcessStatus.Completed => (
             "Completed Successfully",
             "All operations finished without errors",
             Resources.SuccessIcon),
-            
+
         ProcessStatus.Error => (
             "Error Occurred",
             "An error prevented completion",
             Resources.ErrorIcon),
-            
+
         _ => ("Unknown", "", null)
     };
-    
+
     groupBox.CaptionValues.Heading = heading;
     groupBox.CaptionValues.Description = description;
     groupBox.CaptionValues.Image = icon;
@@ -458,25 +480,25 @@ public class CollapsibleSection
 {
     private KryptonHeaderGroup headerGroup;
     private bool isExpanded = true;
-    
+
     public CollapsibleSection(string heading, string description)
     {
         headerGroup = new KryptonHeaderGroup();
         headerGroup.CaptionValues.Heading = heading;
         headerGroup.CaptionValues.Description = description;
-        
+
         UpdateIcon();
-        
+
         headerGroup.Click += (s, e) => Toggle();
     }
-    
+
     private void Toggle()
     {
         isExpanded = !isExpanded;
         headerGroup.Panel.Visible = isExpanded;
         UpdateIcon();
     }
-    
+
     private void UpdateIcon()
     {
         headerGroup.CaptionValues.Image = isExpanded
@@ -493,12 +515,14 @@ public class CollapsibleSection
 ### Text Guidelines
 
 **Heading:**
+
 - Keep it short and descriptive
 - Use title case or sentence case consistently
 - Consider mnemonics for keyboard accessibility
 - Typically 1-5 words
 
 **Description:**
+
 - Optional clarifying text
 - Complete sentences with punctuation
 - Explain the purpose or contents
@@ -507,12 +531,14 @@ public class CollapsibleSection
 **Examples:**
 
 ✅ **Good:**
+
 ```csharp
 Heading: "Network Settings"
 Description: "Configure network connections and proxy settings"
 ```
 
 ❌ **Bad:**
+
 ```csharp
 Heading: "Network"  // Too terse
 Description: "Network settings"  // Redundant with heading
@@ -523,16 +549,19 @@ Description: "Network settings"  // Redundant with heading
 ### Image Guidelines
 
 **Size:**
+
 - Standard: 16x16 or 32x32 pixels
 - Match the size used throughout your application
 - Consider DPI scaling for high-resolution displays
 
 **Style:**
+
 - Use consistent icon style across application
 - Match the theme and color scheme
 - Ensure good contrast with background
 
 **Format:**
+
 - PNG with transparency preferred
 - Consider providing multiple sizes
 - Use vector icons when possible (scale better)
@@ -541,7 +570,7 @@ Description: "Network settings"  // Redundant with heading
 
 ### Inheritance Hierarchy
 
-```
+```text
 Storage
   └─ HeaderValuesBase
       └─ CaptionValues
@@ -549,11 +578,13 @@ Storage
 ```
 
 **Derived Classes Can:**
+
 - Override default values
 - Add specialized properties
 - Customize behavior
 
 **Example:**
+
 ```csharp
 public class CustomCaptionValues : CaptionValues
 {
@@ -561,9 +592,9 @@ public class CustomCaptionValues : CaptionValues
         : base(needPaint, dpi)
     {
     }
-    
+
     protected override string GetHeadingDefault() => "Custom Default";
-    
+
     protected override string GetDescriptionDefault() => "Custom description";
 }
 ```
@@ -573,6 +604,7 @@ public class CustomCaptionValues : CaptionValues
 ### Performance
 
 **Paint Invalidation:**
+
 - Property changes automatically trigger repaints
 - Use `SuspendLayout`/`ResumeLayout` for multiple changes
 
@@ -595,6 +627,7 @@ groupBox.ResumeLayout();
 ### Localization
 
 **Resource Files:**
+
 ```xml
 <!-- Resources.resx -->
 <data name="SettingsCaption_Heading" xml:space="preserve">
@@ -614,6 +647,7 @@ groupBox.ResumeLayout();
 ```
 
 **Usage:**
+
 ```csharp
 groupBox.CaptionValues.Heading = Resources.SettingsCaption_Heading;
 groupBox.CaptionValues.Description = Resources.SettingsCaption_Description;
@@ -624,22 +658,25 @@ groupBox.CaptionValues.Description = Resources.SettingsCaption_Description;
 ## Controls Using CaptionValues
 
 ### KryptonGroupBox
+
 ```csharp
 kryptonGroupBox1.CaptionValues.Heading = "Group Title";
 ```
 
 ### KryptonHeaderGroup
+
 ```csharp
 kryptonHeaderGroup1.ValuesPrimary.Heading = "Primary Header";
 kryptonHeaderGroup1.ValuesSecondary.Heading = "Secondary Header";
 ```
 
 ### Custom Controls
+
 ```csharp
 public class CustomPanel : KryptonPanel
 {
     public CaptionValues CaptionValues { get; }
-    
+
     public CustomPanel()
     {
         CaptionValues = new CaptionValues(OnNeedPaint, GetDpiFactor);

@@ -6,7 +6,7 @@ The `KryptonPictureBox` class provides a Krypton-themed wrapper around the stand
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -22,6 +22,7 @@ public KryptonPictureBox()
 ```
 
 The constructor initializes enhanced features:
+
 - **Transparent Background**: Sets `BackColor = Color.Transparent`
 - **ToolTip Support**: Creates `ToolTipManager` with DPI-aware scaling
 - **Event Handling**: Sets up mouse event handlers for tooltip functionality
@@ -43,6 +44,7 @@ public ToolTipValues ToolTipValues { get; set; }
 - • **Designer Visible**: Yes (expandable in property grid)
 
 **ToolTipValues Features:**
+
 - **Text Configuration**: Heading, description, and footnotes
 - **Style Options**: Normal, SuperTip, and non-focusable variants
 - **Shadow Effects**: Configurable drop shadows
@@ -50,6 +52,7 @@ public ToolTipValues ToolTipValues { get; set; }
 - **DPI Aware**: Automatic scaling based on current DPI
 
 **Usage Example:**
+
 ```csharp
 pictureBox.ToolTipValues.Heading = "Image Information";
 pictureBox.ToolTipValues.Description = "Resolution: 1920x1080\nFormat: JPEG\nSize: 2.3 MB";
@@ -197,6 +200,7 @@ The control automatically handles mouse events for tooltip management:
 - **MouseLeave**: Cancels tooltip display
 
 **Custom Mouse Handling:**
+
 ```csharp
 public class InteractiveImageControl : KryptonPictureBox
 {

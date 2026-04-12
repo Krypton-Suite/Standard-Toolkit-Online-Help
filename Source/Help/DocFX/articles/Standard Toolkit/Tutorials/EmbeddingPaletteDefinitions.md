@@ -1,7 +1,7 @@
 # Tutorial – Embedding Palette Definitions  
   
-**Deploying Palette Definition Files**  
-  
+## Deploying Palette Definition Files
+
 Rather than distribute palette definition files as separate XML files you might
 prefer to embed them as resources inside your compiled assembly. This prevents
 the risk of the user accidentally deleting them and so preventing your
@@ -9,27 +9,31 @@ application operating as expected. The following steps show how to embed any
 palette definition as a resource and then how to use just a couple of lines of
 code to load it at runtime for use.
 
-**1) Right click your project and select the 'Add -\> Existing Item...'**  
+### Step 1: Right click your project and select the 'Add -> Existing Item...'
+
 We are using this option in order to add out palette XML file to the project.
 
-![](Images/Embedding%20Palette%20Definitions/Embedding1.png)
+![Visual Studio: project shortcut menu with Add and Existing Item highlighted](Images/Embedding%20Palette%20Definitions/Embedding1.png)
 
-**2) Select the palette definition file you want to embed**  
-For this example we are going to choose a palette called, 'Green Palette.xml', from [here](https://github.com/Krypton-Suite/Theme-Palettes).
+### Step 2: Select the palette definition file you want to embed
 
-![](Images/Embedding%20Palette%20Definitions/Embedding2.png)
+For this example we are going to choose a palette called, 'Green Palette.xml', from the [Krypton Suite Theme-Palettes repository on GitHub](https://github.com/Krypton-Suite/Theme-Palettes).
 
-**3) Right click the new project item and select 'Properties'**
+![File picker dialog selecting a palette XML file such as Green Palette.xml](Images/Embedding%20Palette%20Definitions/Embedding2.png)
 
-![](Images/Embedding%20Palette%20Definitions/Embedding3.png)
+### Step 3: Right click the new project item and select 'Properties'
 
-**4) Change the 'Build Action' to 'Embedded Resource'**  
+![Visual Studio: shortcut menu on the palette file with Properties selected](Images/Embedding%20Palette%20Definitions/Embedding3.png)
+
+### Step 4: Change the 'Build Action' to 'Embedded Resource'
+
 Changing the build action will cause the XML file to be saved in the built
 assembly.
 
-![](Images/Embedding%20Palette%20Definitions/Embedding4.png)
+![Properties window: Build Action set to Embedded Resource for the palette XML](Images/Embedding%20Palette%20Definitions/Embedding4.png)
 
-**5) Add the following code when you need to load the palette definition.**  
+### Step 5: Add the following code when you need to load the palette definition
+
 You might choose the load the resource at the time your form is loaded, or maybe
 wait until the user chooses any appropriate action. Whatever the case may be you
 only need the following three lines of code to load the palette XML file from
@@ -57,8 +61,6 @@ followed with the name of the file. If your assembly has a namespace of
 'MyCompany.MyProject' then the string would have been
 'MyCompany.MyProject.Green Palette.xml'. You can discover the namespace used by
 looking at the project properties.
-
- 
 
 Note that if the resource is added inside a folder then you need to include the
 folder name in the created resource path. So if your project has a 'Resources'

@@ -85,7 +85,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Local package testing
 - Troubleshooting
 
-### 7. [GitHub Actions CI/CD Workflows](../GitHubActionsWorkflows.md)
+### 7. [GitHub Actions CI/CD Workflows](GitHubActionsWorkflows.md)
 
 **Automated continuous integration and deployment.**
 
@@ -144,7 +144,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 
 ### Setting up CI/CD?
 
-1. Study [GitHub Actions CI/CD Workflows](../GitHubActionsWorkflows.md)
+1. Study [GitHub Actions CI/CD Workflows](GitHubActionsWorkflows.md)
 2. Understand [Version Management](Build%20System/VersionManagement.md)
 3. Review [NuGet Package Creation and Publishing](Build%20System/NuGetPackaging.md)
 
@@ -169,7 +169,7 @@ cd Scripts
 build-stable.cmd Build
 ```
 
-See: [Build Scripts](Build%20System/BuildScripts.md#build-stable-cmd)
+See: [Build Scripts](Build%20System/BuildScripts.md) (section *build-stable.cmd*)
 
 ### Create NuGet Packages
 
@@ -196,7 +196,7 @@ cd Scripts
 purge.cmd
 ```
 
-See: [Build Scripts](Build%20System/BuildScripts.md#purge-cmd)
+See: [Build Scripts](Build%20System/BuildScripts.md) (section *purge.cmd*)
 
 ### Run TestForm
 

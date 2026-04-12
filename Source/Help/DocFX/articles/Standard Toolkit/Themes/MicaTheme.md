@@ -10,7 +10,7 @@ The Mica themes provide Windows 11 Fluent Design-inspired subtle transparency ef
 
 The Mica themes follow the Material palette structure pattern:
 
-```
+```text
 PaletteMicaBase (Abstract)
 ├── PaletteMicaLight
 └── PaletteMicaDark
@@ -22,6 +22,7 @@ PaletteMicaDark_BaseScheme (Color Scheme)
 ### Key Components
 
 #### 1. PaletteMicaBase
+
 - **Location**: `Source/Krypton Components/Krypton.Toolkit/Palette Builtin/Mica/Bases/PaletteMicaBase.cs`
 - **Purpose**: Abstract base class providing common Mica functionality
 - **Inherits**: `PaletteMicrosoft365Base`
@@ -31,6 +32,7 @@ PaletteMicaDark_BaseScheme (Color Scheme)
   - Renderer assignment (`KryptonManager.RenderMica`)
 
 #### 2. PaletteMicaLight & PaletteMicaDark
+
 - **Location**: `Source/Krypton Components/Krypton.Toolkit/Palette Builtin/Mica/`
 - **Purpose**: Concrete theme implementations
 - **Features**:
@@ -39,12 +41,14 @@ PaletteMicaDark_BaseScheme (Color Scheme)
   - Context menu glyph support
 
 #### 3. Color Schemes
+
 - **Location**: `Source/Krypton Components/Krypton.Toolkit/Palette Builtin/Mica/Schemes/`
 - **Purpose**: Explicit color definitions
 - **Pattern**: Inherit from `KryptonColorSchemeBase` and override all 250+ color properties
 - **Transparency**: Colors use alpha values (80-120 range) for subtle transparency
 
 #### 4. RenderMica
+
 - **Location**: `Source/Krypton Components/Krypton.Toolkit/Rendering/RenderMica.cs`
 - **Purpose**: Custom renderer for Mica effects
 - **Key Method**: `EvalTransparentPaint()` - Always returns `true` to enable transparency
@@ -92,12 +96,14 @@ public bool IsMicaTheme()
 ## Color Characteristics
 
 ### Transparency Values
+
 - **Background Colors**: Alpha 80-120 (subtle transparency)
 - **Border Colors**: Alpha 60-100 (more subtle than Acrylic)
 - **Text Colors**: Alpha 255 (fully opaque for readability)
 
 ### Color Palette
-- **Light Theme**: 
+
+- **Light Theme**:
   - Primary: `Color.FromArgb(120, 255, 255, 255)` (subtle transparent white)
   - Accent: `Color.FromArgb(255, 0, 120, 215)` (Microsoft blue)
 - **Dark Theme**:
@@ -107,6 +113,7 @@ public bool IsMicaTheme()
 ## Integration Points
 
 ### PaletteMode Enum
+
 ```csharp
 public enum PaletteMode
 {
@@ -118,12 +125,14 @@ public enum PaletteMode
 ```
 
 ### PaletteModeStrings
+
 ```csharp
 internal const string DEFAULT_PALETTE_MICA_LIGHT = @"Mica - Light";
 internal const string DEFAULT_PALETTE_MICA_DARK = @"Mica - Dark";
 ```
 
 ### KryptonManager Integration
+
 ```csharp
 public static PaletteMicaLight PaletteMicaLight => _paletteMicaLight ??= new PaletteMicaLight();
 public static PaletteMicaDark PaletteMicaDark => _paletteMicaDark ??= new PaletteMicaDark();
@@ -137,6 +146,7 @@ public static RenderMica RenderMica => _renderMica ??= new RenderMica();
 To create custom Mica variants:
 
 1. **Create Custom Base Scheme**:
+
 ```csharp
 public sealed class PaletteMicaCustom_BaseScheme : KryptonColorSchemeBase
 {
@@ -145,7 +155,8 @@ public sealed class PaletteMicaCustom_BaseScheme : KryptonColorSchemeBase
 }
 ```
 
-2. **Create Custom Palette**:
+1. **Create Custom Palette**:
+
 ```csharp
 public class PaletteMicaCustom : PaletteMicaBase
 {
@@ -155,7 +166,8 @@ public class PaletteMicaCustom : PaletteMicaBase
 }
 ```
 
-3. **Register in PaletteMode**:
+1. **Register in PaletteMode**:
+
 ```csharp
 public enum PaletteMode
 {
@@ -179,12 +191,14 @@ public override Color ButtonNormalBorder { get; set; } = Color.FromArgb(120, 220
 ## Performance Considerations
 
 ### Mica vs Acrylic Performance
+
 - **Better Performance**: Mica uses more subtle transparency effects
 - **Lower CPU Usage**: Reduced alpha blending operations
 - **Memory Efficient**: Less memory overhead than Acrylic
 - **Hardware Friendly**: Better performance on older hardware
 
 ### Optimization Tips
+
 - Mica is the recommended choice for performance-critical applications
 - Use Mica for large UI surfaces
 - Consider Mica for mobile or embedded applications
@@ -220,8 +234,9 @@ public void DebugMicaTheme()
 ## Comparison with Acrylic
 
 ### Visual Differences
+
 | Aspect | Mica | Acrylic |
-|--------|------|---------|
+| --- | --- | --- |
 | Transparency | Subtle (80-120 alpha) | More pronounced (120-180 alpha) |
 | Blur Effect | Minimal | More noticeable |
 | Performance | Better | Good |
@@ -230,12 +245,14 @@ public void DebugMicaTheme()
 ### When to Use Mica vs Acrylic
 
 **Use Mica when:**
+
 - Performance is critical
 - You want subtle, modern appearance
 - Targeting older hardware
 - Building mobile applications
 
 **Use Acrylic when:**
+
 - You want bold visual effects
 - Performance is not a concern
 - Targeting modern hardware
@@ -244,19 +261,23 @@ public void DebugMicaTheme()
 ## Future Enhancements
 
 ### Planned Features
+
 - Windows 11 API integration for true Mica effects
 - Dynamic transparency based on system wallpaper
 - Hardware acceleration support
 - Custom transparency controls
 
 ### Windows API Integration
+
 Future versions may integrate with:
+
 - Windows 11 Mica APIs
 - `SetWindowCompositionAttribute` with Mica flags
 - Desktop wallpaper integration
 - System theme adaptation
 
 ## Related Documentation
-- [Acrylic Themes Documentation](../Acrylic/README.md)
-- [Material Themes Documentation](../Material/README.md)
-- [Krypton Toolkit Palette System](../../../Documents/palette-mechanics-intro.md)
+
+- [Acrylic theme (overview)](AcrylicTheme.md)
+- [Fluent Design developer guide](FluentDesignDeveloperGuide.md)
+- [Krypton Toolkit palette system](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Documents/palette-mechanics-intro.md)

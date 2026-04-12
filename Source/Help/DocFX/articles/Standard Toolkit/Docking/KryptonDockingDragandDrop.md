@@ -1,12 +1,11 @@
 # Docking Drag & Drop Events
 
-## Docking Drag & Drop Events
+## Overview
 
-Drag & Drop Events:  
+**Drag & Drop events:**
+
 * DoDragDropEnd
 * DoDragDropQuit
-
- 
 
 **Event Firing**  
 At the end of a page drag and drop action within the docking system one of these
@@ -31,7 +30,6 @@ know when this drag operation completes so you can update the status of your
 can update as needed when the operation completes. The following sample code
 shows how this might look in practice.
 
- 
 ```cs
 protected override void OnMouseMove(MouseEventArgs e)  
 {  

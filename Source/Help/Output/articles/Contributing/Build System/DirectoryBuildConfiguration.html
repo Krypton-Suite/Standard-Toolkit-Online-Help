@@ -82,7 +82,7 @@
 <li><code>Source/Krypton Components/Directory.Build.targets</code> - Component-specific targets</li>
 </ul>
 <h3 id="inheritance-chain">Inheritance Chain</h3>
-<pre><code>Directory.Build.props (root)
+<pre><code class="lang-text">Directory.Build.props (root)
     ↓ imported by
 Source/Krypton Components/Directory.Build.props
     ↓ imported by
@@ -90,19 +90,47 @@ Each Krypton.*.csproj
 </code></pre>
 <h2 id="root-directorybuildprops">Root Directory.Build.props</h2>
 <p><strong>Location</strong>: <code>Directory.Build.props</code></p>
-<p><strong>Purpose</strong>: Global version calculation and conditional compilation symbols</p>
+<p><strong>Purpose</strong>: Global version calculation, conditional compilation symbols, and shared build output roots.</p>
+<h3 id="build-output-roots-useartifactsoutput">Build output roots (<code>UseArtifactsOutput</code>)</h3>
+<p>The root props define where binaries and NuGet packages are written. Script <code>.proj</code> files under <code>Scripts/</code> import this file and use <code>$(KryptonBuildOutputRoot)</code> and <code>$(KryptonPackageOutputRoot)</code> so Clean/Push/archive targets stay aligned with component projects.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default (<code>UseArtifactsOutput</code> false)</th>
+<th>When <code>UseArtifactsOutput=true</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonBuildOutputRoot</code></td>
+<td><code>Bin\</code> (repo root)</td>
+<td><code>artifacts\bin\</code></td>
+</tr>
+<tr>
+<td><code>KryptonPackageOutputRoot</code></td>
+<td><code>Bin\Packages\</code></td>
+<td><code>artifacts\packages\</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong><code>UseArtifactsOutput</code></strong>: MSBuild property; defaults to <code>false</code> for local/script compatibility.</li>
+<li><strong>CI</strong>: GitHub Actions workflows pass <code>/p:UseArtifactsOutput=true</code> on orchestrated <code>msbuild</code> steps; push/version steps resolve packages and <code>Krypton.Toolkit.dll</code> from <code>artifacts/*</code> first, then fall back to <code>Bin/*</code>.</li>
+</ul>
+<p>Individual <code>.csproj</code> files still set a default <code>&lt;OutputPath&gt;</code> under <code>Bin/</code>; when <code>UseArtifactsOutput=true</code>, <code>Source/Krypton Components/Directory.Build.targets</code> overrides <code>OutputPath</code> to <code>$(KryptonBuildOutputRoot)$(Configuration)\</code>.</p>
 <h3 id="version-calculation">Version Calculation</h3>
 <p>The toolkit uses date-based semantic versioning:</p>
 <p><strong>Format</strong>: <code>Major.YY.MM.DayOfYear[-suffix]</code></p>
 <p><strong>Components</strong>:</p>
 <ul>
-<li><strong>Major</strong>: <code>100</code> (fixed)</li>
-<li><strong>Minor</strong>: Current year (2 digits, e.g., <code>25</code> for 2025)</li>
+<li><strong>Major</strong>: <code>110</code> (fixed)</li>
+<li><strong>Minor</strong>: Current year (2 digits, e.g., <code>26</code> for 2026)</li>
 <li><strong>Build</strong>: Current month (2 digits, e.g., <code>01</code> for January)</li>
 <li><strong>Revision</strong>: Day of year (1-366)</li>
 <li><strong>Suffix</strong>: Configuration-dependent (e.g., <code>-alpha</code>, <code>-beta</code>)</li>
 </ul>
-<p><strong>Example</strong>: <code>100.25.1.305</code> = Version 100, released in 2025, January, on the 305th day of the year</p>
+<p><strong>Example</strong>: <code>110.26.1.1</code> = Version 110, released in 2026, January, on the 1st day of the year</p>
 <h3 id="configuration-based-versioning">Configuration-Based Versioning</h3>
 <h4 id="canary-configuration">Canary Configuration</h4>
 <pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Canary'&quot;&gt;
@@ -236,19 +264,19 @@ Each Krypton.*.csproj
 &lt;/PropertyGroup&gt;
 </code></pre>
 <p>Uses <code>LibraryVersion</code> from root <code>Directory.Build.props</code>.</p>
-<h3 id="package-output-directory">Package Output Directory</h3>
+<h3 id="package-output-directory">Package output directory</h3>
 <pre><code class="lang-xml">&lt;PropertyGroup&gt;
-    &lt;PackageOutputPath&gt;$(MSBuildThisFileDirectory)..\..\Bin\Packages\$(Configuration)\&lt;/PackageOutputPath&gt;
+    &lt;PackageOutputPath&gt;$(KryptonPackageOutputRoot)$(Configuration)\&lt;/PackageOutputPath&gt;
 &lt;/PropertyGroup&gt;
 </code></pre>
-<p><strong>Result</strong>: Packages go to <code>Bin/Packages/&lt;Configuration&gt;/</code></p>
+<p><strong>Result</strong>: Packages go to <code>$(KryptonPackageOutputRoot)&lt;Configuration&gt;/</code> (legacy: <code>Bin/Packages/&lt;Configuration&gt;/</code>; artifacts mode: <code>artifacts/packages/&lt;Configuration&gt;/</code>).</p>
 <ul>
-<li><code>Bin/Packages/Release/</code></li>
-<li><code>Bin/Packages/Canary/</code></li>
-<li><code>Bin/Packages/Nightly/</code></li>
+<li>Release: <code>.../Release/</code></li>
+<li>Canary: <code>.../Canary/</code></li>
+<li>Nightly: <code>.../Nightly/</code></li>
 </ul>
 <h3 id="configuration-specific-package-metadata">Configuration-Specific Package Metadata</h3>
-<h4 id="canary-configuration-1">Canary Configuration</h4>
+<h4 id="canary-configuration-package-metadata">Canary Configuration (Package Metadata)</h4>
 <pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Canary'&quot;&gt;
     &lt;ItemGroup&gt;
         &lt;None Include=&quot;../../../Assets/PNG/NuGet Package Icons/Krypton Canary.png&quot; 
@@ -283,7 +311,7 @@ Each Krypton.*.csproj
 <li>Includes License.md and README.md</li>
 <li>Source link enabled</li>
 </ul>
-<h4 id="nightly-configuration-1">Nightly Configuration</h4>
+<h4 id="nightly-configuration-package-metadata">Nightly Configuration (Package Metadata)</h4>
 <p>Similar to Canary, but uses <code>Krypton Nightly.png</code> icon.</p>
 <h4 id="releasestable-configuration">Release/Stable Configuration</h4>
 <pre><code class="lang-xml">&lt;Otherwise&gt;
@@ -322,7 +350,14 @@ Each Krypton.*.csproj
 <p><strong>Special Feature</strong>: Defaults <code>TFMs</code> to <code>lite</code> if not specified</p>
 <h2 id="component-directorybuildtargets">Component Directory.Build.targets</h2>
 <p><strong>Location</strong>: <code>Source/Krypton Components/Directory.Build.targets</code></p>
-<p><strong>Purpose</strong>: Advanced versioning, assembly metadata, and package ID customization</p>
+<p><strong>Purpose</strong>: Advanced versioning, assembly metadata, package ID customization, and optional unified output path when artifacts mode is enabled.</p>
+<h3 id="artifacts-outputpath-override">Artifacts <code>OutputPath</code> override</h3>
+<p>When <code>UseArtifactsOutput</code> is <code>true</code>, targets set:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup Condition=&quot;'$(UseArtifactsOutput)' == 'true'&quot;&gt;
+    &lt;OutputPath&gt;$(KryptonBuildOutputRoot)$(Configuration)\&lt;/OutputPath&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p>This overrides the per-project <code>&lt;OutputPath&gt;</code> that points at <code>Bin/</code> so binaries match script and CI expectations in artifacts layout.</p>
 <h3 id="version-properties-by-configuration">Version Properties by Configuration</h3>
 <h4 id="canary">Canary</h4>
 <pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Canary'&quot;&gt;
@@ -369,13 +404,13 @@ Each Krypton.*.csproj
 &lt;/PropertyGroup&gt;
 </code></pre>
 <h3 id="package-id-customization">Package ID Customization</h3>
-<h4 id="canary-1">Canary</h4>
+<h4 id="canary-package-id">Canary (Package ID)</h4>
 <pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Canary'&quot;&gt;
     &lt;PropertyGroup&gt;
         &lt;PackageId Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;$(PackageId).Canary&lt;/PackageId&gt;
         &lt;Description Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;
-            An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 10. 
-            $(Description) This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 10. 
+            An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 11. 
+            $(Description) This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 11. 
             Also, all libraries are included targeting each specific framework version for performance purposes. 
             To view all of the standard toolkit package latest version information, please visit: 
             https://github.com/Krypton-Suite/Krypton-Toolkit-Suite-Version-Dashboard/blob/main/Documents/Modules/Standard/Krypton-Toolkit-Suite-Standard-Modules.md 
@@ -386,13 +421,13 @@ Each Krypton.*.csproj
 &lt;/When&gt;
 </code></pre>
 <p><strong>Result</strong>: Package named <code>Krypton.Toolkit.Canary</code> with detailed description</p>
-<h4 id="nightly-1">Nightly</h4>
+<h4 id="nightly-package-id">Nightly (Package ID)</h4>
 <p>Similar with <code>.Nightly</code> suffix and alpha-specific description.</p>
 <h4 id="release-lite">Release (Lite)</h4>
 <pre><code class="lang-xml">&lt;PropertyGroup&gt;
     &lt;PackageId Condition=&quot;'$(TFMs)' == 'lite'&quot;&gt;$(PackageId).Lite&lt;/PackageId&gt;
     &lt;Description Condition=&quot;'$(TFMs)' == 'lite'&quot;&gt;
-        An update to Component factory's krypton toolkit to support .NET Framework 4.8 - 4.8.1 and .NET 8 - 10. 
+        An update to Component factory's krypton toolkit to support .NET Framework 4.8 - 4.8.1 and .NET 8 - 11. 
         $(Description) This package supports all .NET Framework versions starting .NET Framework 4.8 - 4.8.1, .NET 6 - 8. 
         Also, all libraries are included targeting each specific framework version for performance purposes.
     &lt;/Description&gt;
@@ -402,8 +437,8 @@ Each Krypton.*.csproj
 <pre><code class="lang-xml">&lt;PropertyGroup&gt;
     &lt;PackageId Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;$(PackageId)&lt;/PackageId&gt;
     &lt;Description Condition=&quot;'$(TFMs)' == 'all'&quot;&gt;
-        An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 10. 
-        $(Description) This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 10.
+        An update to Component factory's krypton toolkit to support .NET Framework 4.7.2 - 4.8.1 and .NET 8 - 11. 
+        $(Description) This package supports all .NET Framework versions starting .NET Framework 4.6.2 - 4.8.1 and .NET 8 - 11.
     &lt;/Description&gt;
 &lt;/PropertyGroup&gt;
 </code></pre>

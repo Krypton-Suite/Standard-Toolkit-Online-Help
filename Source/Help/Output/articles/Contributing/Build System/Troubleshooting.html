@@ -147,6 +147,22 @@ cd Scripts
   }
 }
 </code></pre>
+<h3 id="packages-or-dlls-not-found-after-a-ci-style-build">Packages or DLLs “not found” after a CI-style build</h3>
+<p><strong>Symptoms</strong>:</p>
+<ul>
+<li>Workflow or script reports no <code>.nupkg</code> under <code>Bin/Packages/...</code></li>
+<li><code>Krypton.Toolkit.dll</code> not found at <code>Bin/Release/...</code></li>
+</ul>
+<p><strong>Cause</strong>:</p>
+<ul>
+<li>Orchestrated builds with <code>/p:UseArtifactsOutput=true</code> write to <code>artifacts/packages/</code> and <code>artifacts/bin/</code> instead of <code>Bin/</code>.</li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ol>
+<li>Look under <code>artifacts/packages/&lt;Configuration&gt;/</code> and <code>artifacts/bin/&lt;Configuration&gt;/</code>.</li>
+<li>For local builds, omit <code>UseArtifactsOutput</code> (default) if you want outputs only under <code>Bin/</code>.</li>
+<li>In ModernBuild, package discovery checks <code>artifacts/</code> before <code>Bin/</code>; F7 Clean does not delete <code>artifacts/</code>—remove that folder manually when switching layouts.</li>
+</ol>
 <h3 id="long-path-errors">Long Path Errors</h3>
 <p><strong>Symptoms</strong>:</p>
 <ul>
@@ -915,7 +931,7 @@ msbuildlogviewer Logs/stable-build.binlog
 <ul>
 <li><a href="BuildSystemOverview.html">Build System Overview</a> - System architecture</li>
 <li><a href="BuildScripts.html">Build Scripts</a> - Build commands</li>
-<li><a href="GitHubActionsWorkflows.md">GitHub Actions Workflows</a> - CI/CD</li>
+<li><a href="Current/BuildWorkflow.html">Build workflow</a> and <a href="Current/ReleaseWorkflow.html">Release workflow</a> - CI/CD</li>
 <li><a href="NuGetPackaging.html">NuGet Packaging</a> - Package troubleshooting</li>
 </ul>
 

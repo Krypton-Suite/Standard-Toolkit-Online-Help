@@ -1,6 +1,6 @@
 # Docking Flags
 
-## Docking Flags
+## Overview
 
 **Controlling User Actions**  
 Each *KryptonPage* has a set of flags that are used to restrict page level user
@@ -13,21 +13,17 @@ On pressing the link you will be presented with a dialog box showing the full
 set of page flags including those applicable to the docking system. Figure 2
 shows an example of the dialog.
 
-![](Images/DockFlags1.png)
+![KryptonPage properties showing the Edit Flags verb](Images/DockFlags1.png)
 
-*Figure 1 - KryptonPage 'Edit Flags' verb*
+### Figure 1 – KryptonPage 'Edit Flags' verb
 
-![](Images/DockFlags2.png)
+![KryptonPage flags editing dialog](Images/DockFlags2.png)
 
-  *Figure 2 - KryptonPage Flags Editing*
-
- 
+### Figure 2 – KryptonPage flags editing
 
 To access the flags using code you can use the *KryptonPage.Flags* property and
 the helper methods *KryptonPage.ClearFlags*, *KryptonPage.SetFlags* and
-*KryptonPage.AreFlagsSet.* 
-
- 
+*KryptonPage.AreFlagsSet.*
 
 **DockingAllowClose**  
 This flag causes a close button to appear on the page header. When the flag is
@@ -59,7 +55,6 @@ docked and when this flag is cleared that menu option is disabled. Note that
 this flag only affects user interaction and you can still programmatically make
 the page docked.
 
-  
 **DockingAllowAutoHidden**  
 When defined an extra pin button is placed onto the page header of a docked page
 that allows the user to switch the page to auto hidden. Also affected is the
@@ -68,7 +63,6 @@ hidden state. When this flag is cleared the menu option is disabled. Note that
 this flag only affects user interaction and you can still programmatically make
 the page auto hidden.
 
-  
 **DockingAllowFloating**  
 Dragging a page will by default cause that page to become floating when this
 flag is defined. Clear this flag to prevent a page becoming floating at the
@@ -77,8 +71,6 @@ the state of a page to floating and when this flag is cleared that menu option
 is disabled. Note that this flag only affects user interaction and you can still
 programmatically make the page floating.
 
- 
-
 **DockingAllowWorkspace**  
 This flag is only used when you have added a *KryptonDockableWorkspace* into the
 docking hierarchy. In that scenario this flag allows a page to be dragged into
@@ -86,8 +78,6 @@ the workspace area. Clear this flag to prevent the user from dragging, or using
 the docking context menu, to transfer a page into the workspace area. Note that
 this flag only affects user interaction and you can still programmatically make
 the page appear in the workspace.
-
- 
 
 **DockingAllowNavigator**  
 This flag is only used when you have added a *KryptonDockableNavigator* into the

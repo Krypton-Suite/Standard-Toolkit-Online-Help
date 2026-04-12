@@ -42,7 +42,7 @@ using Krypton.Utilities;
 
 ### Inheritance Hierarchy
 
-```
+```text
 System.Object
   └─ System.MarshalByRefObject
       └─ System.ComponentModel.Component
@@ -55,7 +55,7 @@ System.Object
 ### Comparison with KryptonFileSystemTreeView
 
 | Feature | KryptonSystemTreeView | KryptonFileSystemTreeView |
-|---------|----------------------|--------------------------|
+| --- | --- | --- |
 | Root Modes | Fixed (Drives only) | Multiple (Desktop, Computer, Drives, CustomPath) |
 | Special Folders | No | Yes (Desktop mode) |
 | Icon Size | Configurable (16x16 or 32x32) | Fixed (16x16) |
@@ -109,7 +109,7 @@ System.Object
 
 ### Component Structure
 
-```
+```text
 KryptonSystemTreeView
 ├── SystemTreeViewValues (expandable properties)
 │   ├── ShowFiles (bool)
@@ -176,6 +176,7 @@ public KryptonSystemTreeView()
 ```
 
 Initializes a new instance with default settings:
+
 - Show files: `true`
 - Show hidden files: `false`
 - Show system files: `false`
@@ -192,7 +193,7 @@ Initializes a new instance with default settings:
 
 ### Public Properties
 
-#### SystemTreeViewValues
+#### SystemTreeViewValues property
 
 ```csharp
 public SystemTreeViewValues SystemTreeViewValues { get; }
@@ -201,6 +202,7 @@ public SystemTreeViewValues SystemTreeViewValues { get; }
 Gets the system TreeView values object containing all system tree view-specific properties. This is an expandable object that groups related properties for better PropertyGrid organization.
 
 **Access Pattern:**
+
 ```csharp
 systemTreeView.SystemTreeViewValues.ShowFiles = true;
 systemTreeView.SystemTreeViewValues.UseLargeIcons = true;
@@ -217,10 +219,12 @@ public string? SelectedPath { get; }
 Gets the full path of the currently selected file or folder.
 
 **Returns:**
+
 - The full path string if a node is selected, otherwise `null`
 - Path is stored in `TreeNode.Tag` property
 
 **Example:**
+
 ```csharp
 string? selectedPath = systemTreeView.SelectedPath;
 if (!string.IsNullOrEmpty(selectedPath))
@@ -259,10 +263,12 @@ Gets or sets a value indicating whether files should be displayed in the tree vi
 - **Description**: Indicates whether files should be displayed in the tree view.
 
 **Behavior:**
+
 - When `false`, only directories are displayed
 - Changing this property triggers `Reload()`
 
 **Example:**
+
 ```csharp
 // Show only directories
 systemTreeView.SystemTreeViewValues.ShowFiles = false;
@@ -282,10 +288,12 @@ Gets or sets a value indicating whether hidden files should be displayed.
 - **Description**: Indicates whether hidden files should be displayed.
 
 **Behavior:**
+
 - Files and folders with `FileAttributes.Hidden` are filtered based on this setting
 - Changing this property triggers `Reload()`
 
 **Example:**
+
 ```csharp
 systemTreeView.SystemTreeViewValues.ShowHiddenFiles = true;
 ```
@@ -304,10 +312,12 @@ Gets or sets a value indicating whether system files should be displayed.
 - **Description**: Indicates whether system files should be displayed.
 
 **Behavior:**
+
 - Files and folders with `FileAttributes.System` are filtered based on this setting
 - Changing this property triggers `Reload()`
 
 **Example:**
+
 ```csharp
 systemTreeView.SystemTreeViewValues.ShowSystemFiles = true;
 ```
@@ -326,16 +336,19 @@ Gets or sets the file filter to apply when showing files.
 - **Description**: The file filter to apply when showing files (e.g., "*.txt" or "*.txt;*.doc").
 
 **Filter Syntax:**
+
 - Single pattern: `"*.txt"` - shows only .txt files
 - Multiple patterns: `"*.txt;*.doc;*.pdf"` - shows files matching any pattern
 - All files: `"*.*"` - shows all files
 
 **Behavior:**
+
 - Used with `Directory.GetFiles(directoryPath, filter)`
 - Changing this property triggers `Reload()` only if `ShowFiles` is `true`
 - Null values are converted to `"*.*"`
 
 **Examples:**
+
 ```csharp
 // Show only text files
 systemTreeView.SystemTreeViewValues.FileFilter = "*.txt";
@@ -361,6 +374,7 @@ Gets or sets a value indicating whether to use large icons (32x32) instead of sm
 - **Description**: Indicates whether to use large icons (32x32) instead of small icons (16x16).
 
 **Behavior:**
+
 - When `true`, ImageList size is set to 32x32 pixels
 - When `false`, ImageList size is set to 16x16 pixels
 - Changing this property clears the icon cache and reloads icons
@@ -368,6 +382,7 @@ Gets or sets a value indicating whether to use large icons (32x32) instead of sm
 - Triggers `Reload()` to refresh display
 
 **Example:**
+
 ```csharp
 systemTreeView.SystemTreeViewValues.UseLargeIcons = true;
 ```
@@ -387,6 +402,7 @@ public void Reload()
 Reloads the tree view with all available drives.
 
 **Behavior:**
+
 - Clears all nodes, icon cache, and ImageList images
 - Adds default folder icon
 - Loads all available drives as root nodes
@@ -394,12 +410,14 @@ Reloads the tree view with all available drives.
 - Raises `FileSystemError` event for individual drive errors
 
 **Example:**
+
 ```csharp
 // Refresh the tree view
 systemTreeView.Reload();
 ```
 
 **When to Use:**
+
 - After changing filter or visibility settings programmatically
 - To refresh the display after external file system changes
 - After modifying `SystemTreeViewValues` properties directly
@@ -414,12 +432,15 @@ public bool NavigateToPath(string path)
 Navigates to the specified path in the tree view and selects it.
 
 **Parameters:**
+
 - `path` (string): The directory or file path to navigate to.
 
 **Returns:**
+
 - `true` if the path was found and selected; otherwise, `false`.
 
 **Behavior:**
+
 - Splits path into components
 - Traverses tree nodes matching path components
 - Matches nodes by name or full path
@@ -428,6 +449,7 @@ Navigates to the specified path in the tree view and selects it.
 - Returns `false` if path doesn't exist or cannot be found in tree
 
 **Example:**
+
 ```csharp
 bool success = systemTreeView.NavigateToPath(@"C:\Users\Public\Documents");
 if (success)
@@ -441,6 +463,7 @@ else
 ```
 
 **Limitations:**
+
 - Requires path to be already loaded in the tree (parent nodes must be expanded)
 - May not work for paths under collapsed nodes
 - For best results, ensure parent directories are expanded first
@@ -458,6 +481,7 @@ protected virtual void OnFileSystemError(FileSystemErrorEventArgs e)
 Raises the `FileSystemError` event.
 
 **Parameters:**
+
 - `e`: A `FileSystemErrorEventArgs` containing the event data.
 
 **Usage:**
@@ -476,12 +500,14 @@ internal void AddDefaultIcon()
 Adds a default folder icon to the image list.
 
 **Behavior:**
+
 - Attempts to get stock folder icon via `StockIconHelper`
 - Falls back to a simple gray bitmap if icon retrieval fails
 - Creates bitmap at current ImageList size (16x16 or 32x32)
 - Adds icon at index 0 (used as fallback)
 
 **When Called:**
+
 - Automatically called during construction
 - Called when `UseLargeIcons` changes
 - Called during `Reload()` to reset icon list
@@ -501,15 +527,18 @@ public event EventHandler<FileSystemErrorEventArgs>? FileSystemError;
 Occurs when an error occurs while loading the file system.
 
 **Event Data:** `FileSystemErrorEventArgs`
+
 - `Path` (string, read-only): The path where the error occurred
 - `Exception` (Exception, read-only): The exception that occurred
 
 **Raised When:**
+
 - Access denied when reading directory contents
 - General exceptions during directory loading
 - Drive access errors during `Reload()`
 
 **Example:**
+
 ```csharp
 systemTreeView.FileSystemError += (sender, e) =>
 {
@@ -523,6 +552,7 @@ systemTreeView.FileSystemError += (sender, e) =>
 ```
 
 **Common Exception Types:**
+
 - `UnauthorizedAccessException`: Insufficient permissions
 - `IOException`: General I/O errors
 - `DirectoryNotFoundException`: Directory doesn't exist
@@ -531,13 +561,14 @@ systemTreeView.FileSystemError += (sender, e) =>
 
 ## Related Classes
 
-### SystemTreeViewValues
+### SystemTreeViewValues class
 
 Groups system tree view-specific properties for PropertyGrid display.
 
 **Location:** `Krypton.Utilities.SystemTreeViewValues`
 
 **Properties:**
+
 - `ShowFiles` (bool)
 - `ShowHiddenFiles` (bool)
 - `ShowSystemFiles` (bool)
@@ -545,6 +576,7 @@ Groups system tree view-specific properties for PropertyGrid display.
 - `UseLargeIcons` (bool)
 
 **Features:**
+
 - Expandable object converter for PropertyGrid
 - Automatic `Reload()` on property changes
 - Inherits from `Storage` base class
@@ -556,10 +588,12 @@ Provides data for the `FileSystemError` event.
 **Location:** `Krypton.Toolkit.FileSystemErrorEventArgs`
 
 **Properties:**
+
 - `Path` (string, read-only): The path where the error occurred
 - `Exception` (Exception, read-only): The exception that occurred
 
 **Constructor:**
+
 ```csharp
 public FileSystemErrorEventArgs(string path, Exception exception)
 ```
@@ -571,11 +605,13 @@ Helper class for extracting file and folder icons from Windows Shell.
 **Location:** `Krypton.Toolkit.FileSystemIconHelper` (internal)
 
 **Methods:**
+
 - `GetFileSystemIcon(string path, bool largeIcon)`: Gets icon for file/folder
 - `GetFolderIcon(bool largeIcon)`: Gets generic folder icon
 - `GetFileIcon(string extension, bool largeIcon)`: Gets icon for file extension
 
 **Implementation:**
+
 - Uses Windows Shell API (`SHGetFileInfo`)
 - Returns disposable `Icon` objects
 - Returns `null` on failure
@@ -587,9 +623,11 @@ Provides fallback stock icons when file-specific icons cannot be retrieved.
 **Location:** `Krypton.Toolkit.StockIconHelper`
 
 **Methods:**
+
 - `GetStockIcon(StockIconId stockIconId)`: Gets a stock Windows icon
 
 **Common Stock Icons:**
+
 - `Folder`: Generic folder icon
 - `DocumentNotAssociated`: Generic document icon
 - `DriveFixed`: Fixed drive icon
@@ -615,17 +653,20 @@ Provides fallback stock icons when file-specific icons cannot be retrieved.
 ### Icon Cache
 
 **Cache Key Format:**
+
 - Directories: `"__DIRECTORY__"`
 - Files: File extension (lowercase), e.g., `".txt"`
 - Files without extension: `"__FILE__"`
 - Drives: `"__DRIVE_{DriveType}__"` (e.g., `"__DRIVE_Fixed__"`)
 
 **Cache Benefits:**
+
 - Avoids re-extracting icons for same file types
 - Improves performance when displaying many files
 - Reduces Windows Shell API calls
 
 **Cache Management:**
+
 - Cleared on `Reload()`
 - Cleared when `UseLargeIcons` changes
 - Dictionary uses case-insensitive string comparison
@@ -637,6 +678,7 @@ Provides fallback stock icons when file-specific icons cannot be retrieved.
 
 **Changing Icon Size:**
 Setting `UseLargeIcons` automatically:
+
 1. Updates ImageList size
 2. Clears icon cache
 3. Clears ImageList images
@@ -817,6 +859,7 @@ systemTreeView.FileSystemError += (sender, e) =>
 ### 3. Icon Size Selection
 
 Choose appropriate icon size based on use case:
+
 - **Small Icons (16x16)**: Default, better for dense displays, faster loading
 - **Large Icons (32x32)**: Better visibility, more modern appearance, slower loading
 
@@ -927,6 +970,7 @@ Unlike `KryptonFileSystemTreeView`, there are no `DirectoryExpanding` or `Direct
 **Symptoms:** Tree view appears empty after creation.
 
 **Solutions:**
+
 - Ensure control handle is created (control is visible)
 - Check that drives are available (`DriveInfo.GetDrives()`)
 - Handle `FileSystemError` event for underlying issues
@@ -937,6 +981,7 @@ Unlike `KryptonFileSystemTreeView`, there are no `DirectoryExpanding` or `Direct
 **Symptoms:** Icons appear as default/gray icons or not at all.
 
 **Solutions:**
+
 - Check Windows Shell API availability
 - Verify `UseLargeIcons` setting matches desired size
 - Check icon extraction permissions
@@ -948,6 +993,7 @@ Unlike `KryptonFileSystemTreeView`, there are no `DirectoryExpanding` or `Direct
 **Symptoms:** Slow expansion or UI freezing with large directories.
 
 **Solutions:**
+
 - Use file filters to limit displayed items
 - Set `ShowFiles = false` to show directories only
 - Consider implementing background loading (requires custom implementation)
@@ -958,6 +1004,7 @@ Unlike `KryptonFileSystemTreeView`, there are no `DirectoryExpanding` or `Direct
 **Symptoms:** `NavigateToPath()` returns `false` even for valid paths.
 
 **Solutions:**
+
 - Ensure parent directories are expanded first
 - Verify path exists: `Directory.Exists(path) || File.Exists(path)`
 - Check path format (use `Path.GetFullPath()` if needed)
@@ -968,6 +1015,7 @@ Unlike `KryptonFileSystemTreeView`, there are no `DirectoryExpanding` or `Direct
 **Symptoms:** `FileSystemError` event raised with `UnauthorizedAccessException`.
 
 **Solutions:**
+
 - Handle `FileSystemError` event gracefully
 - Check user permissions
 - Use `ShowHiddenFiles` and `ShowSystemFiles` appropriately
@@ -978,6 +1026,7 @@ Unlike `KryptonFileSystemTreeView`, there are no `DirectoryExpanding` or `Direct
 **Symptoms:** Drive icons don't match drive types.
 
 **Solutions:**
+
 - Verify `DriveInfo.DriveType` is correct
 - Check icon cache (cleared on `Reload()`)
 - Ensure `StockIconHelper` is working correctly
@@ -988,6 +1037,7 @@ Unlike `KryptonFileSystemTreeView`, there are no `DirectoryExpanding` or `Direct
 **Symptoms:** Icons remain same size after changing `UseLargeIcons`.
 
 **Solutions:**
+
 - Verify `UseLargeIcons` property is set correctly
 - Ensure `Reload()` is called (should happen automatically)
 - Check that ImageList size is updated
@@ -998,6 +1048,7 @@ Unlike `KryptonFileSystemTreeView`, there are no `DirectoryExpanding` or `Direct
 **Symptoms:** No drives appear in tree view.
 
 **Solutions:**
+
 - Check that drives are available: `DriveInfo.GetDrives().Length > 0`
 - Handle `FileSystemError` event for drive access errors
 - Verify user has permissions to enumerate drives

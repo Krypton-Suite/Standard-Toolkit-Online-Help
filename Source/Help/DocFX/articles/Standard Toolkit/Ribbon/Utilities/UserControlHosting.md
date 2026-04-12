@@ -39,7 +39,7 @@ With UserControl hosting, plugins can:
 
 ### Inheritance Hierarchy
 
-```
+```text
 Control (System.Windows.Forms)
   └── VisualControlBase (Krypton.Toolkit)
       └── VisualControl (Krypton.Toolkit)
@@ -423,7 +423,9 @@ private void UpdateRibbonFromBackgroundThread()
 **Symptoms:** Ribbon tabs don't appear in main ribbon after merge.
 
 **Solutions:**
+
 1. Ensure ribbon has tabs before merging:
+
    ```csharp
    if (pluginRibbon.RibbonTabs.Count > 0)
    {
@@ -432,6 +434,7 @@ private void UpdateRibbonFromBackgroundThread()
    ```
 
 2. Check that ribbon is not disposed:
+
    ```csharp
    if (!pluginRibbon.IsDisposed)
    {
@@ -440,6 +443,7 @@ private void UpdateRibbonFromBackgroundThread()
    ```
 
 3. Verify merge was successful:
+
    ```csharp
    mainRibbon.Merge(pluginRibbon);
    mainRibbon.PerformLayout();
@@ -451,6 +455,7 @@ private void UpdateRibbonFromBackgroundThread()
 **Symptoms:** Both UserControl ribbon and merged ribbon are visible.
 
 **Solution:** Hide the UserControl ribbon after merging:
+
 ```csharp
 pluginRibbon.Visible = false;
 mainRibbon.Merge(pluginRibbon);
@@ -461,6 +466,7 @@ mainRibbon.Merge(pluginRibbon);
 **Symptoms:** Ribbon doesn't dock correctly on UserControl.
 
 **Solution:** Set docking properties explicitly:
+
 ```csharp
 ribbon.Dock = DockStyle.Top;
 ribbon.AutoSize = true;
@@ -472,6 +478,7 @@ ribbon.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 **Symptoms:** Memory usage increases when loading/unloading plugins.
 
 **Solution:** Ensure proper disposal:
+
 ```csharp
 public void UnloadPlugin(IPluginUserControl plugin)
 {
@@ -496,6 +503,7 @@ public void UnloadPlugin(IPluginUserControl plugin)
 ### Plugin Isolation
 
 Each plugin should be:
+
 - **Self-contained**: All its UI elements in one UserControl
 - **Independent**: No dependencies on other plugins
 - **Disposable**: Properly clean up resources
@@ -508,7 +516,8 @@ Each plugin should be:
 
 ### Extensibility
 
-Design for:
+When extending your host application, plan for:
+
 - **Dynamic Loading**: Plugins loaded at runtime
 - **Hot Swapping**: Plugins can be loaded/unloaded without restart
 - **Versioning**: Support different plugin versions
@@ -600,4 +609,3 @@ public class MainForm : KryptonForm
 ## Summary
 
 UserControl hosting enables clean, maintainable plugin architectures by allowing ribbons to be defined directly on UserControls. This eliminates the need for dummy forms and simplifies plugin development while maintaining full functionality of the KryptonRibbon control.
-

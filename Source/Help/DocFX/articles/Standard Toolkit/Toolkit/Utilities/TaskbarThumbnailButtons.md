@@ -30,7 +30,7 @@ Buttons are **per-window**: each top-level `KryptonForm` (or other `VisualForm`-
 ## 2. Requirements
 
 | Requirement | Details |
-|-------------|---------|
+| ----------- | ------- |
 | **Operating system** | Windows 7 or later (6.1+). The feature is no-op on older OS versions. |
 | **Form type** | `KryptonForm` or any form derived from `VisualForm` (e.g. `KryptonForm`). |
 | **Taskbar visibility** | The form’s `ShowInTaskbar` must be `true`. Thumbnail buttons are not applied when `ShowInTaskbar` is `false`. |
@@ -50,7 +50,7 @@ The toolkit defers applying thumbnail buttons until **after** the taskbar has cr
 Represents a single button in the thumbnail toolbar.
 
 | Member | Type | Description |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `Id` | `uint` | Application-defined button ID. Must be **unique** within the toolbar. This value is passed to `ThumbnailButtonClick` when the button is clicked. **Note:** Uses `uint` for native API compatibility; non–CLS-compliant. |
 | `Icon` | `Icon?` | Icon displayed on the button. Should be **32-bit** (e.g. `Format32bppArgb`) and **SM_CXICON × SM_CYICON** size (typically **32×32**). See [Icon requirements](#5-icon-requirements). |
 | `Tooltip` | `string` | Tooltip shown when the user hovers over the button. Maximum **259 characters**; longer strings are truncated. |
@@ -80,7 +80,7 @@ var btn = new ThumbnailButtonItem
 Storage for thumbnail toolbar button definitions. Holds a list of `ThumbnailButtonItem` and notifies the form to update the taskbar when the list changes.
 
 | Member | Type | Description |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `Buttons` | `List<ThumbnailButtonItem>` | The list of buttons. Maximum **7**. Edit this list, then call `Apply()` to push changes to the taskbar. |
 | `Add(ThumbnailButtonItem item)` | `void` | Appends a button. No-op if already at 7 buttons. Triggers an update. |
 | `Remove(uint id)` | `void` | Removes the button with the given `Id`. No-op if not found. Triggers an update. **Note:** Non–CLS-compliant due to `uint`. |
@@ -102,7 +102,7 @@ Storage for thumbnail toolbar button definitions. Holds a list of `ThumbnailButt
 Event data for thumbnail toolbar button clicks.
 
 | Member | Type | Description |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `ButtonId` | `uint` | The `Id` of the button that was clicked. **Note:** Non–CLS-compliant. |
 
 ---
@@ -110,7 +110,7 @@ Event data for thumbnail toolbar button clicks.
 ### 3.4. Form-Level API (`VisualForm` / `KryptonForm`)
 
 | Member | Type | Description |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `ShellValues` | `WindowsShellValues` | Shell-related values (overlay icon, **thumbnail buttons**, jump list, etc.). |
 | `ShellValues.ThumbnailButtonValues` | `TaskbarThumbnailButtonValues` | The thumbnail toolbar button storage for this form. |
 | `ThumbnailButtonClick` | `event EventHandler<ThumbnailButtonClickEventArgs>` | Raised when the user clicks a thumbnail toolbar button. |
@@ -143,7 +143,7 @@ ThumbnailButtonClick += (s, e) =>
 Aggregates overlay icon, thumbnail buttons, and related shell settings. Exposed as `ShellValues` on `VisualForm`.
 
 | Member | Type | Description |
-|--------|------|-------------|
+| ------ | ---- | ----------- |
 | `ThumbnailButtonValues` | `TaskbarThumbnailButtonValues` | Thumbnail toolbar buttons. |
 | `OverlayIconValues` | `TaskbarOverlayIconValues` | Taskbar overlay icon (separate feature). |
 | `ResetThumbnailButtonValues()` | `void` | Resets thumbnail buttons to default (empty). |
@@ -198,7 +198,7 @@ The Windows thumbnail toolbar expects **32-bit** icons at **SM_CXICON × SM_CYIC
 2. Use **`PixelFormat.Format32bppArgb`** when creating bitmaps, then create an `Icon` (e.g. via `Icon.FromHandle(bitmap.GetHicon())`). Keep the `Icon` (or underlying bitmap) alive for the lifetime of the button.
 3. Prefer **simple, high-contrast** shapes so buttons remain readable at small size.
 
-**Example: creating a suitable icon**
+### Example: creating a suitable icon
 
 ```csharp
 using System.Drawing.Imaging;
@@ -291,7 +291,7 @@ ShellValues.ThumbnailButtonValues.Clear();
 ## 7. Limitations and Pitfalls
 
 | Limitation | Description |
-|------------|-------------|
+| ---------- | ----------- |
 | **Windows 7+** | No effect on Windows Vista or earlier. |
 | **ShowInTaskbar** | Buttons are only applied when `ShowInTaskbar` is `true`. |
 | **No real “remove”** | The native API does not support removing buttons. Use `Hidden = true` or `Clear()`; the toolkit clears its list, but the shell may keep reserved space. |

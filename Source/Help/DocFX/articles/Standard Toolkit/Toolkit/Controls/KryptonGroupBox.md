@@ -1,7 +1,7 @@
 # KryptonGroupBox
 
 Use the *KryptonGroupBox* control when you need to group related controls
-together and provide a caption. For example, you can use group boxes to
+together and provide a caption. For example, you can use group boxes to
 subdivide a form into distinct areas. Moving the group will cause all the
 contained controls to also be moved along with it as it acts as a container.
 This control is similar to the *KryptonGroup* except it provides a caption as
@@ -19,7 +19,6 @@ defined as *50%* and so causes the group border to be drawn halfway down the
 caption. If you would prefer the caption to be entirely outside of the border
 then set this property to *100%*. To place the caption entirely inside the
 border you can set the *CaptionOverlap* to *0%*.
-
 
 ## Two States
 
@@ -40,6 +39,6 @@ look in *StateCommon*.
 Figure 1 shows the appearance when *GroupBackStyle* and *GroupBorderStyle* are
 both defined as the default *ControlGroupBox*.
 
-![Krypton Group Box](../Images/KryptonGroupBox.png)
+![KryptonGroupBox examples showing default ControlGroupBox style for GroupBackStyle and GroupBorderStyle](../Images/KryptonGroupBox.png)
 
-*Figure 1 – KryptonGroupBox examples*
+Figure 1 – KryptonGroupBox examples

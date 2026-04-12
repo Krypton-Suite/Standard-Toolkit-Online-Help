@@ -83,12 +83,14 @@ public static bool UseTouchscreenSupport { get; set; }
 ```
 
 **Remarks:**
+
 - When set to `true`, all Krypton controls will be scaled according to the `TouchscreenScaleFactorValue`
 - When set to `false`, controls return to their normal size
 - Changing this value fires the `GlobalTouchscreenSupportChanged` event
 - All controls automatically refresh when this value changes
 
 **Example:**
+
 ```csharp
 KryptonManager.UseTouchscreenSupport = true;
 ```
@@ -107,6 +109,7 @@ public static float TouchscreenScaleFactorValue { get; set; }
 ```
 
 **Remarks:**
+
 - Must be greater than 0
 - A value of `1.25` means controls will be 25% larger
 - A value of `1.5` means controls will be 50% larger
@@ -115,9 +118,11 @@ public static float TouchscreenScaleFactorValue { get; set; }
 - Uses epsilon comparison (0.001f) to avoid unnecessary updates
 
 **Throws:**
+
 - `ArgumentOutOfRangeException` if value is less than or equal to 0
 
 **Example:**
+
 ```csharp
 KryptonManager.TouchscreenScaleFactorValue = 1.5f; // 50% larger
 ```
@@ -136,11 +141,13 @@ public static float TouchscreenScaleFactor { get; }
 ```
 
 **Remarks:**
+
 - Returns `TouchscreenScaleFactorValue` when `UseTouchscreenSupport` is `true`
 - Returns `1.0f` when `UseTouchscreenSupport` is `false`
 - This is the value used internally by the layout system
 
 **Example:**
+
 ```csharp
 float currentScale = KryptonManager.TouchscreenScaleFactor;
 // Returns 1.25 if enabled, 1.0 if disabled
@@ -166,10 +173,12 @@ public bool GlobalTouchscreenSupport { get; set; }
 ```
 
 **Remarks:**
+
 - This property wraps the static `UseTouchscreenSupport` property
 - Provided for designer support and instance-based configuration
 
 **Example:**
+
 ```csharp
 // Via instance (designer-friendly)
 kryptonManager1.GlobalTouchscreenSupport = true;
@@ -196,14 +205,17 @@ public float GlobalTouchscreenScaleFactor { get; set; }
 ```
 
 **Remarks:**
+
 - This property wraps the static `TouchscreenScaleFactorValue` property
 - Provided for designer support and instance-based configuration
 - Must be greater than 0
 
 **Throws:**
+
 - `ArgumentOutOfRangeException` if value is less than or equal to 0
 
 **Example:**
+
 ```csharp
 // Via instance (designer-friendly)
 kryptonManager1.GlobalTouchscreenScaleFactor = 1.5f;
@@ -230,11 +242,13 @@ public bool GlobalTouchscreenFontScaling { get; set; }
 ```
 
 **Remarks:**
+
 - This property wraps the static `UseTouchscreenFontScaling` property
 - When enabled, fonts are scaled by the `GlobalTouchscreenFontScaleFactor` value
 - Font scaling is independent of control scaling and can be disabled separately
 
 **Example:**
+
 ```csharp
 // Enable font scaling (default)
 KryptonManager.GlobalTouchscreenFontScaling = true;
@@ -261,14 +275,17 @@ public float GlobalTouchscreenFontScaleFactor { get; set; }
 ```
 
 **Remarks:**
+
 - This property wraps the static `TouchscreenFontScaleFactorValue` property
 - Must be greater than 0
 - Can be set independently from control scaling
 
 **Throws:**
+
 - `ArgumentOutOfRangeException` if value is less than or equal to 0
 
 **Example:**
+
 ```csharp
 // Scale fonts by 30% (1.3x)
 KryptonManager.GlobalTouchscreenFontScaleFactor = 1.3f;
@@ -293,11 +310,13 @@ public KryptonTouchscreenSettingValues TouchscreenSettingValues { get; }
 ```
 
 **Remarks:**
+
 - This property provides a convenient way to access all touchscreen settings in one place
 - Appears as an expandable property in the Visual Studio designer
 - All properties in this object map to the corresponding static properties in `KryptonManager`
 
 **Example:**
+
 ```csharp
 // Configure all touchscreen settings via the grouped API
 KryptonManager.TouchscreenSettingValues.Enabled = true;
@@ -322,12 +341,14 @@ public static bool UseTouchscreenFontScaling { get; set; }
 ```
 
 **Remarks:**
+
 - When set to `true`, fonts are scaled by `TouchscreenFontScaleFactorValue` when touchscreen support is enabled
 - When set to `false`, fonts are not scaled even if touchscreen support is enabled
 - Changing this value fires the `GlobalTouchscreenSupportChanged` event
 - All controls automatically refresh when this value changes
 
 **Example:**
+
 ```csharp
 KryptonManager.UseTouchscreenFontScaling = true;
 ```
@@ -346,6 +367,7 @@ public static float TouchscreenFontScaleFactorValue { get; set; }
 ```
 
 **Remarks:**
+
 - Must be greater than 0
 - A value of `1.25` means fonts will be 25% larger
 - A value of `1.5` means fonts will be 50% larger
@@ -354,9 +376,11 @@ public static float TouchscreenFontScaleFactorValue { get; set; }
 - Uses epsilon comparison (0.001f) to avoid unnecessary updates
 
 **Throws:**
+
 - `ArgumentOutOfRangeException` if value is less than or equal to 0
 
 **Example:**
+
 ```csharp
 KryptonManager.TouchscreenFontScaleFactorValue = 1.3f; // 30% larger fonts
 ```
@@ -375,11 +399,13 @@ public static float TouchscreenFontScaleFactor { get; }
 ```
 
 **Remarks:**
+
 - Returns `TouchscreenFontScaleFactorValue` when both `UseTouchscreenSupport` and `UseTouchscreenFontScaling` are `true`
 - Returns `1.0f` when either touchscreen support or font scaling is disabled
 - This is the value used internally by the font scaling system
 
 **Example:**
+
 ```csharp
 float currentFontScale = KryptonManager.TouchscreenFontScaleFactor;
 // Returns 1.25 if both enabled, 1.0 if either disabled
@@ -401,6 +427,7 @@ public static bool AutomaticallyDetectTouchscreen { get; set; }
 ```
 
 **Remarks:**
+
 - When set to `true`, the system automatically checks for touchscreen capability and enables/disables touchscreen support accordingly
 - Periodic polling is enabled to detect hot-plug scenarios (touchscreen connected/disconnected)
 - When enabled, performs immediate detection and starts periodic polling at the configured interval
@@ -408,6 +435,7 @@ public static bool AutomaticallyDetectTouchscreen { get; set; }
 - The polling interval can be configured via `TouchscreenDetectionInterval` (default: 2000ms)
 
 **Example:**
+
 ```csharp
 // Enable automatic detection
 KryptonManager.AutomaticallyDetectTouchscreen = true;
@@ -429,15 +457,18 @@ public static int TouchscreenDetectionInterval { get; set; }
 ```
 
 **Remarks:**
+
 - Used when `AutomaticallyDetectTouchscreen` is enabled to detect hot-plug scenarios
 - Timer restarts with the new interval when this value changes
 - Lower values provide faster detection but consume more CPU resources
 - Higher values reduce CPU usage but may delay detection of touchscreen connect/disconnect events
 
 **Throws:**
+
 - `ArgumentOutOfRangeException` if value is less than 500 milliseconds
 
 **Example:**
+
 ```csharp
 // Set detection interval to 1 second
 KryptonManager.TouchscreenDetectionInterval = 1000;
@@ -456,12 +487,14 @@ public static bool IsTouchscreenAvailable()
 ```
 
 **Remarks:**
+
 - Uses `GetSystemMetrics(SM_DIGITIZER)` to check for digitizer input support
 - Detects system-wide touchscreen capability, not per-monitor
 - Returns `false` if the API is not available on older Windows versions
 - This method can be called independently of `AutomaticallyDetectTouchscreen`
 
 **Example:**
+
 ```csharp
 bool hasTouchscreen = KryptonManager.IsTouchscreenAvailable();
 if (hasTouchscreen)
@@ -483,11 +516,13 @@ public static int GetMaximumTouchContacts()
 ```
 
 **Remarks:**
+
 - Returns `0` if no touchscreen is available or the API is not supported
 - Uses `GetSystemMetrics(SM_MAXIMUMTOUCHES)` to retrieve the value
 - Useful for determining touchscreen capabilities
 
 **Example:**
+
 ```csharp
 int maxContacts = KryptonManager.GetMaximumTouchContacts();
 Console.WriteLine($"Maximum touch contacts: {maxContacts}");
@@ -511,6 +546,7 @@ public static event EventHandler? GlobalTouchscreenSupportChanged;
 ```
 
 **Remarks:**
+
 - Fires when `UseTouchscreenSupport` changes
 - Fires when `TouchscreenScaleFactorValue` changes (only if touchscreen support is enabled)
 - Fires when `UseTouchscreenFontScaling` changes
@@ -519,6 +555,7 @@ public static event EventHandler? GlobalTouchscreenSupportChanged;
 - Controls automatically refresh their layout when this event fires
 
 **Example:**
+
 ```csharp
 KryptonManager.GlobalTouchscreenSupportChanged += (sender, e) =>
 {
@@ -543,12 +580,14 @@ public static event EventHandler<TouchscreenAvailabilityChangedEventArgs>? Touch
 ```
 
 **Remarks:**
+
 - Fires when `AutomaticallyDetectTouchscreen` is enabled and the system detects that a touchscreen has been connected or disconnected
 - Provides information about the current availability state and maximum touch contacts
 - Useful for applications that need to respond to touchscreen hot-plug events
 - Event args include `IsAvailable` (current availability) and `MaximumTouchContacts` (capability info)
 
 **Example:**
+
 ```csharp
 KryptonManager.TouchscreenAvailabilityChanged += (sender, e) =>
 {
@@ -575,7 +614,7 @@ KryptonManager.TouchscreenAvailabilityChanged += (sender, e) =>
 
 Provides data for the `TouchscreenAvailabilityChanged` event.
 
-#### Properties
+#### TouchscreenAvailabilityChangedEventArgs properties
 
 ##### `IsAvailable`
 
@@ -584,6 +623,7 @@ Gets a value indicating whether a touchscreen is currently available.
 **Type:** `bool`
 
 **Remarks:**
+
 - `true` if a touchscreen was just detected/connected
 - `false` if a touchscreen was just removed/disconnected
 
@@ -596,10 +636,12 @@ Gets the maximum number of simultaneous touch contacts supported by the system.
 **Type:** `int`
 
 **Remarks:**
+
 - Returns `0` if no touchscreen is available
 - Provides information about touchscreen capabilities
 
 **Example:**
+
 ```csharp
 KryptonManager.TouchscreenAvailabilityChanged += (sender, e) =>
 {
@@ -616,7 +658,7 @@ KryptonManager.TouchscreenAvailabilityChanged += (sender, e) =>
 
 The `KryptonTouchscreenSettingValues` class provides a convenient way to access all touchscreen-related settings as a single expandable object in the Visual Studio designer.
 
-#### Properties
+#### KryptonTouchscreenSettingValues properties
 
 ##### `Enabled`
 
@@ -674,6 +716,7 @@ Gets or sets a value indicating whether touchscreen support should be automatica
 Maps to: `KryptonManager.AutomaticallyDetectTouchscreen`
 
 **Remarks:**
+
 - When enabled, automatically detects touchscreen availability and enables/disables touchscreen support accordingly
 - Enables periodic polling to detect hot-plug scenarios
 
@@ -689,6 +732,7 @@ Gets the maximum number of simultaneous touch contacts supported by the system.
 Maps to: `KryptonManager.GetMaximumTouchContacts()`
 
 **Remarks:**
+
 - Read-only property that queries the system for touchscreen capabilities
 - Returns `0` if no touchscreen is available or the API is not supported
 
@@ -705,6 +749,7 @@ Gets or sets the interval (in milliseconds) for periodic touchscreen detection p
 Maps to: `KryptonManager.TouchscreenDetectionInterval`
 
 **Remarks:**
+
 - Used when `AutomaticallyDetectTouchscreen` is enabled
 - Lower values provide faster detection but consume more CPU resources
 - Higher values reduce CPU usage but may delay detection
@@ -867,6 +912,7 @@ public class SettingsForm : KryptonForm
 5. All controls on the form will automatically use touchscreen scaling
 
 **Alternative:** You can also use the individual properties:
+
 - `GlobalTouchscreenSupport` = `True`
 - `GlobalTouchscreenScaleFactor` = `1.25`
 - `GlobalTouchscreenFontScaling` = `True`
@@ -1057,7 +1103,7 @@ public class DetectionCheck
 
 ## Implementation Details
 
-### How It Works
+### How touchscreen scaling is applied
 
 1. **Global Setting**: The touchscreen support is controlled by static properties in `KryptonManager`, making it a global setting that affects all Krypton controls application-wide.
 
@@ -1080,7 +1126,7 @@ public class DetectionCheck
 
 ### Code Flow
 
-```
+```text
 User sets GlobalTouchscreenSupport = true
     ↓
 UseTouchscreenSupport setter fires
@@ -1135,6 +1181,7 @@ KryptonManager.TouchscreenSettingValues.FontScaleFactor = 1.3f; // Third refresh
 ### 2. Independent Control and Font Scaling
 
 Control scaling and font scaling are independent. You can:
+
 - Scale controls but not fonts (useful if fonts are already large enough)
 - Scale fonts differently than controls (useful for fine-tuning readability)
 - Disable font scaling entirely while keeping control scaling
@@ -1159,6 +1206,7 @@ KryptonManager.TouchscreenSettingValues.FontScaleFactor = 1.2f; // 20% larger fo
 ### 4. Test Layout at Different Scale Factors
 
 Some layouts may break at extreme scale factors. Test your application with different scale factors to ensure:
+
 - Controls don't overlap
 - Forms fit on screen
 - Text remains readable
@@ -1167,6 +1215,7 @@ Some layouts may break at extreme scale factors. Test your application with diff
 ### 5. Consider DPI Scaling
 
 Windows DPI scaling and touchscreen scaling are independent:
+
 - DPI scaling affects the entire application
 - Touchscreen scaling only affects Krypton controls
 - Both can be active simultaneously
@@ -1203,12 +1252,14 @@ KryptonManager.TouchscreenAvailabilityChanged += (sender, e) =>
 If your application runs on both touch and non-touch devices, you can either:
 
 **Option A:** Use automatic detection (recommended):
+
 ```csharp
 KryptonManager.TouchscreenSettingValues.AutomaticallyDetectTouchscreen = true;
 // System will automatically enable/disable based on detection
 ```
 
 **Option B:** Manual detection check:
+
 ```csharp
 if (KryptonManager.IsTouchscreenAvailable())
 {
@@ -1262,6 +1313,7 @@ The `KryptonNavigator` control inherits from `VisualSimple`, which uses `ViewMan
 - The entire navigator control scales proportionally
 
 **Example:**
+
 ```csharp
 KryptonManager.GlobalTouchscreenSupport = true;
 // Navigator tabs and buttons will be 25% larger automatically
@@ -1280,6 +1332,7 @@ The `KryptonRibbon` control inherits from `VisualSimple`, so it automatically sc
 **Note:** Ribbon is typically docked to the top of a form. When scaled, it will take more vertical space, so ensure your form has adequate height.
 
 **Example:**
+
 ```csharp
 KryptonManager.GlobalTouchscreenSupport = true;
 KryptonManager.GlobalTouchscreenScaleFactor = 1.5f;
@@ -1296,6 +1349,7 @@ The `KryptonWorkspace` control inherits from `VisualContainerControl`, so it sca
 - All content within workspace cells scales
 
 **Example:**
+
 ```csharp
 KryptonManager.GlobalTouchscreenSupport = true;
 // Workspace cells and their tabs will scale automatically
@@ -1321,12 +1375,13 @@ Docking panels and controls scale automatically:
 **Note:** `KryptonDockingManager` itself is a component (not a control), so it doesn't have a size. However, all docking-related controls scale automatically.
 
 **Example:**
+
 ```csharp
 KryptonManager.GlobalTouchscreenSupport = true;
 // All docking panels and controls will scale automatically
 ```
 
-### How It Works
+### How advanced components inherit scaling
 
 All these components inherit from base classes that use `ViewManager.GetPreferredSize()`:
 
@@ -1344,6 +1399,7 @@ Since the scaling is applied in `ViewManager.GetPreferredSize()`, all these comp
 ### 1. Only Affects Preferred Size
 
 The scaling only affects the control's preferred size calculation. If a control has:
+
 - Fixed `Size` or `Width`/`Height` properties set
 - `Dock` or `Anchor` properties that constrain size
 - Parent container size constraints
@@ -1377,6 +1433,7 @@ Custom controls that don't inherit from `VisualControlBase` won't automatically 
 ### 6. Form Size
 
 Forms themselves are not automatically resized. If controls grow larger, you may need to:
+
 - Increase form size
 - Enable scrolling
 - Use layout panels that handle overflow
@@ -1394,6 +1451,7 @@ Images within controls are not automatically scaled. Only the control's overall 
 **Problem:** Controls don't appear larger when touchscreen support is enabled.
 
 **Solutions:**
+
 1. Verify `KryptonManager.UseTouchscreenSupport` is `true`
 2. Check that controls inherit from `VisualControlBase`
 3. Ensure controls don't have fixed `Size` properties
@@ -1405,6 +1463,7 @@ Images within controls are not automatically scaled. Only the control's overall 
 **Problem:** Controls remain large after disabling touchscreen support.
 
 **Solutions:**
+
 1. Verify `KryptonManager.UseTouchscreenSupport` is `false`
 2. Force a layout refresh: `form.PerformLayout()` or `control.Invalidate()`
 3. Check if controls have cached sizes that need clearing
@@ -1414,6 +1473,7 @@ Images within controls are not automatically scaled. Only the control's overall 
 **Problem:** Controls overlap or forms don't fit on screen at high scale factors.
 
 **Solutions:**
+
 1. Reduce the scale factor (try 1.25 instead of 1.5 or higher)
 2. Increase form size
 3. Use scrollable containers
@@ -1425,6 +1485,7 @@ Images within controls are not automatically scaled. Only the control's overall 
 **Problem:** Application feels sluggish with touchscreen support enabled.
 
 **Solutions:**
+
 1. Verify you're not changing scale factor frequently
 2. Check for excessive layout calculations
 3. Profile to identify bottlenecks
@@ -1435,6 +1496,7 @@ Images within controls are not automatically scaled. Only the control's overall 
 **Problem:** `GlobalTouchscreenSupportChanged` event doesn't fire.
 
 **Solutions:**
+
 1. Verify you're subscribing to the static event: `KryptonManager.GlobalTouchscreenSupportChanged`
 2. Check that the value is actually changing (not setting to the same value)
 3. Ensure you're not disposing the subscriber before the event fires
@@ -1446,7 +1508,7 @@ Images within controls are not automatically scaled. Only the control's overall 
 - [KryptonManager API Reference](../Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonManager.cs)
 - [ViewManager Implementation](../Source/Krypton Components/Krypton.Toolkit/View Base/ViewManager.cs)
 - [VisualControlBase Implementation](../Source/Krypton Components/Krypton.Toolkit/Controls Visuals/VisualControlBase.cs)
-- [Palette Mechanics](../Documents/palette-mechanics-intro.md)
+- [Palette mechanics](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Documents/palette-mechanics-intro.md)
 
 ---
 
@@ -1491,6 +1553,6 @@ Images within controls are not automatically scaled. Only the control's overall 
 ## Feedback and Contributions
 
 For issues, feature requests, or contributions related to touchscreen support, please visit:
-- GitHub Issues: https://github.com/Krypton-Suite/Standard-Toolkit/issues
-- Feature Request: https://github.com/Krypton-Suite/Standard-Toolkit/issues/1760
 
+- [GitHub Issues](https://github.com/Krypton-Suite/Standard-Toolkit/issues)
+- [Feature request #1760](https://github.com/Krypton-Suite/Standard-Toolkit/issues/1760)

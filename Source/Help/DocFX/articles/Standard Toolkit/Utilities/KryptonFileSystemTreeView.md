@@ -43,7 +43,7 @@ using Krypton.Utilities;
 
 ### Inheritance Hierarchy
 
-```
+```text
 System.Object
   └─ System.MarshalByRefObject
       └─ System.ComponentModel.Component
@@ -111,7 +111,7 @@ System.Object
 
 ### Component Structure
 
-```
+```text
 KryptonFileSystemTreeView
 ├── FileSystemTreeViewValues (expandable properties)
 │   ├── RootMode (FileSystemRootMode)
@@ -182,6 +182,7 @@ public KryptonFileSystemTreeView()
 ```
 
 Initializes a new instance with default settings:
+
 - Root mode: `FileSystemRootMode.Drives`
 - Show files: `true`
 - Show hidden files: `false`
@@ -199,7 +200,7 @@ Initializes a new instance with default settings:
 
 ### Public Properties
 
-#### FileSystemTreeViewValues
+#### FileSystemTreeViewValues property
 
 ```csharp
 public FileSystemTreeViewValues FileSystemTreeViewValues { get; }
@@ -208,6 +209,7 @@ public FileSystemTreeViewValues FileSystemTreeViewValues { get; }
 Gets the file system TreeView values object containing all file system-specific properties. This is an expandable object that groups related properties for better PropertyGrid organization.
 
 **Access Pattern:**
+
 ```csharp
 fileSystemTreeView.FileSystemTreeViewValues.RootMode = FileSystemRootMode.Desktop;
 fileSystemTreeView.FileSystemTreeViewValues.ShowFiles = true;
@@ -225,15 +227,18 @@ public FileSystemRootMode RootMode { get; set; }
 Gets or sets the root mode for the tree view.
 
 **Values:**
+
 - `FileSystemRootMode.Desktop`: Desktop root with special folders and drives
 - `FileSystemRootMode.Computer`: Computer root with all drives
 - `FileSystemRootMode.Drives`: All drives as root nodes (default)
 - `FileSystemRootMode.CustomPath`: Custom root directory (uses `RootPath`)
 
 **Behavior:**
+
 - Changing this property automatically calls `Reload()` to refresh the display
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.RootMode = FileSystemRootMode.Desktop;
 ```
@@ -250,11 +255,13 @@ public string RootPath { get; set; }
 Gets or sets the root directory path to display in the tree view (used when `RootMode` is `CustomPath`).
 
 **Behavior:**
+
 - Only used when `RootMode` is `FileSystemRootMode.CustomPath`
 - If path is invalid or empty when in CustomPath mode, falls back to `Drives` mode
 - Changing this property automatically calls `Reload()` if in CustomPath mode
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.RootMode = FileSystemRootMode.CustomPath;
 fileSystemTreeView.RootPath = @"C:\Users";
@@ -272,10 +279,12 @@ public bool ShowFiles { get; set; }
 Gets or sets a value indicating whether files should be displayed in the tree view.
 
 **Behavior:**
+
 - When `false`, only directories are displayed
 - Changing this property triggers `Reload()`
 
 **Example:**
+
 ```csharp
 // Show only directories
 fileSystemTreeView.ShowFiles = false;
@@ -293,10 +302,12 @@ public bool ShowHiddenFiles { get; set; }
 Gets or sets a value indicating whether hidden files should be displayed.
 
 **Behavior:**
+
 - Files and folders with `FileAttributes.Hidden` are filtered based on this setting
 - Changing this property triggers `Reload()`
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.ShowHiddenFiles = true;
 ```
@@ -313,10 +324,12 @@ public bool ShowSystemFiles { get; set; }
 Gets or sets a value indicating whether system files should be displayed.
 
 **Behavior:**
+
 - Files and folders with `FileAttributes.System` are filtered based on this setting
 - Changing this property triggers `Reload()`
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.ShowSystemFiles = true;
 ```
@@ -333,16 +346,19 @@ public string FileFilter { get; set; }
 Gets or sets the file filter to apply when showing files.
 
 **Filter Syntax:**
+
 - Single pattern: `"*.txt"` - shows only .txt files
 - Multiple patterns: `"*.txt;*.doc;*.pdf"` - shows files matching any pattern
 - All files: `"*.*"` - shows all files
 
 **Behavior:**
+
 - Used with `Directory.GetFiles(directoryPath, filter)`
 - Changing this property triggers `Reload()` only if `ShowFiles` is `true`
 - Null values are converted to `"*.*"`
 
 **Examples:**
+
 ```csharp
 // Show only text files
 fileSystemTreeView.FileFilter = "*.txt";
@@ -363,11 +379,13 @@ public bool ShowSpecialFolders { get; set; }
 Gets or sets a value indicating whether special folders should be displayed when `RootMode` is `Desktop`.
 
 **Behavior:**
+
 - Only affects display when `RootMode` is `FileSystemRootMode.Desktop`
 - Special folders include: Computer, Control Panel, Network, Recycle Bin, My Documents, Shared Documents
 - Changing this property triggers `Reload()` only if in Desktop mode
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.RootMode = FileSystemRootMode.Desktop;
 fileSystemTreeView.ShowSpecialFolders = false; // Hide special folders
@@ -384,10 +402,12 @@ public string? SelectedPath { get; }
 Gets the full path of the currently selected file or folder.
 
 **Returns:**
+
 - The full path string if a node is selected, otherwise `null`
 - Path is stored in `TreeNode.Tag` property
 
 **Example:**
+
 ```csharp
 string? selectedPath = fileSystemTreeView.SelectedPath;
 if (!string.IsNullOrEmpty(selectedPath))
@@ -411,6 +431,7 @@ public void Reload()
 Reloads the tree view from the root path based on the current `RootMode`.
 
 **Behavior:**
+
 - Clears all nodes
 - Loads root nodes based on `RootMode`:
   - `Desktop`: Calls `LoadDesktopRoot()`
@@ -420,12 +441,14 @@ Reloads the tree view from the root path based on the current `RootMode`.
 - Does not clear icon cache (icons persist across reloads)
 
 **Example:**
+
 ```csharp
 // Refresh the tree view
 fileSystemTreeView.Reload();
 ```
 
 **When to Use:**
+
 - After changing `RootMode` or `RootPath` programmatically
 - To refresh the display after external file system changes
 - After modifying `FileSystemTreeViewValues` properties directly
@@ -439,12 +462,15 @@ public bool NavigateToPath(string path)
 Navigates to the specified path in the tree view and selects it.
 
 **Parameters:**
+
 - `path` (string): The directory or file path to navigate to.
 
 **Returns:**
+
 - `true` if the path was found and selected; otherwise, `false`.
 
 **Behavior:**
+
 - Splits path into components
 - Traverses tree nodes matching path components
 - Expands nodes as needed (but doesn't force expansion of all parent nodes)
@@ -452,6 +478,7 @@ Navigates to the specified path in the tree view and selects it.
 - Returns `false` if path doesn't exist or cannot be found in tree
 
 **Example:**
+
 ```csharp
 bool success = fileSystemTreeView.NavigateToPath(@"C:\Users\Public\Documents");
 if (success)
@@ -465,6 +492,7 @@ else
 ```
 
 **Limitations:**
+
 - Requires path to be already loaded in the tree (parent nodes must be expanded)
 - May not work for paths under collapsed nodes
 - For best results, ensure parent directories are expanded first
@@ -482,6 +510,7 @@ protected override void OnHandleCreated(EventArgs e)
 Ensures initial population of the tree when the control is created.
 
 **Behavior:**
+
 - Calls base implementation
 - Calls `Reload()` if not in design mode
 - Ensures tree is populated when control becomes visible
@@ -498,6 +527,7 @@ protected virtual void OnDirectoryExpanding(DirectoryExpandingEventArgs e)
 Raises the `DirectoryExpanding` event.
 
 **Parameters:**
+
 - `e`: A `DirectoryExpandingEventArgs` containing the event data.
 
 **Usage:**
@@ -512,6 +542,7 @@ protected virtual void OnDirectoryExpanded(DirectoryExpandedEventArgs e)
 Raises the `DirectoryExpanded` event.
 
 **Parameters:**
+
 - `e`: A `DirectoryExpandedEventArgs` containing the event data.
 
 **Usage:**
@@ -526,6 +557,7 @@ protected virtual void OnFileSystemError(FileSystemErrorEventArgs e)
 Raises the `FileSystemError` event.
 
 **Parameters:**
+
 - `e`: A `FileSystemErrorEventArgs` containing the event data.
 
 **Usage:**
@@ -546,14 +578,17 @@ public event EventHandler<DirectoryExpandingEventArgs>? DirectoryExpanding;
 Occurs when a directory is being expanded.
 
 **Event Data:** `DirectoryExpandingEventArgs`
+
 - `DirectoryPath` (string, read-only): The path of the directory being expanded
 - `Cancel` (bool): Set to `true` to cancel the expansion
 
 **Raised When:**
+
 - User expands a directory node
 - Before directory contents are loaded
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.DirectoryExpanding += (sender, e) =>
 {
@@ -565,6 +600,7 @@ fileSystemTreeView.DirectoryExpanding += (sender, e) =>
 ```
 
 **Use Cases:**
+
 - Log directory access
 - Validate permissions before loading
 - Cancel expansion based on custom logic
@@ -581,13 +617,16 @@ public event EventHandler<DirectoryExpandedEventArgs>? DirectoryExpanded;
 Occurs when a directory has been expanded or a node is selected.
 
 **Event Data:** `DirectoryExpandedEventArgs`
+
 - `Path` (string, read-only): The path that was expanded or selected
 
 **Raised When:**
+
 - Directory expansion completes
 - Node is selected (via `AfterSelect` event)
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.DirectoryExpanded += (sender, e) =>
 {
@@ -596,6 +635,7 @@ fileSystemTreeView.DirectoryExpanded += (sender, e) =>
 ```
 
 **Use Cases:**
+
 - Update status bar with current path
 - Load related data based on selected directory
 - Update other UI controls
@@ -611,15 +651,18 @@ public event EventHandler<FileSystemErrorEventArgs>? FileSystemError;
 Occurs when an error occurs while loading the file system.
 
 **Event Data:** `FileSystemErrorEventArgs`
+
 - `Path` (string, read-only): The path where the error occurred
 - `Exception` (Exception, read-only): The exception that occurred
 
 **Raised When:**
+
 - Access denied when reading directory contents
 - General exceptions during directory loading
 - Drive access errors
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.FileSystemError += (sender, e) =>
 {
@@ -633,6 +676,7 @@ fileSystemTreeView.FileSystemError += (sender, e) =>
 ```
 
 **Common Exception Types:**
+
 - `UnauthorizedAccessException`: Insufficient permissions
 - `IOException`: General I/O errors
 - `DirectoryNotFoundException`: Directory doesn't exist
@@ -641,13 +685,14 @@ fileSystemTreeView.FileSystemError += (sender, e) =>
 
 ## Related Classes
 
-### FileSystemTreeViewValues
+### FileSystemTreeViewValues class
 
 Groups file system-specific properties for PropertyGrid display.
 
 **Location:** `Krypton.Utilities.FileSystemTreeViewValues`
 
 **Properties:**
+
 - `RootMode` (FileSystemRootMode)
 - `RootPath` (string)
 - `ShowFiles` (bool)
@@ -657,6 +702,7 @@ Groups file system-specific properties for PropertyGrid display.
 - `ShowSpecialFolders` (bool)
 
 **Features:**
+
 - Expandable object converter for PropertyGrid
 - Automatic `Reload()` on property changes
 - Inherits from `Storage` base class
@@ -668,6 +714,7 @@ Specifies the root display mode for the file system tree view.
 **Location:** `Krypton.Toolkit.FileSystemRootMode`
 
 **Values:**
+
 - `Desktop`: Desktop root with special folders and drives
 - `Computer`: Computer root with all drives
 - `Drives`: All drives as root nodes
@@ -680,6 +727,7 @@ Provides data for the `DirectoryExpanding` event.
 **Location:** `Krypton.Toolkit.DirectoryExpandingEventArgs`
 
 **Properties:**
+
 - `DirectoryPath` (string, read-only): The path of the directory being expanded
 - `Cancel` (bool): Set to `true` to cancel the expansion
 
@@ -692,6 +740,7 @@ Provides data for the `DirectoryExpanded` event.
 **Location:** `Krypton.Toolkit.DirectoryExpandedEventArgs`
 
 **Properties:**
+
 - `Path` (string, read-only): The path that was expanded or selected
 
 ### FileSystemErrorEventArgs
@@ -701,6 +750,7 @@ Provides data for the `FileSystemError` event.
 **Location:** `Krypton.Toolkit.FileSystemErrorEventArgs`
 
 **Properties:**
+
 - `Path` (string, read-only): The path where the error occurred
 - `Exception` (Exception, read-only): The exception that occurred
 
@@ -713,7 +763,8 @@ Provides data for the `FileSystemError` event.
 Displays Desktop as root with special folders (Computer, Network, Recycle Bin, etc.) and drives, similar to Windows Explorer.
 
 **Structure:**
-```
+
+```text
 Desktop
 ├── Computer (CLSID: ::{20D04FE0-3AEA-1069-A2D8-08002B30309D})
 │   └── [All Drives]
@@ -726,11 +777,13 @@ Desktop
 ```
 
 **Special Folders:**
+
 - Only shown when `ShowSpecialFolders` is `true`
 - Computer CLSID expands to show all drives
 - Other CLSID folders (Control Panel, Network, Recycle Bin) don't expand to file system contents
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.RootMode = FileSystemRootMode.Desktop;
 fileSystemTreeView.ShowSpecialFolders = true;
@@ -741,7 +794,8 @@ fileSystemTreeView.ShowSpecialFolders = true;
 Displays Computer as root with all drives.
 
 **Structure:**
-```
+
+```text
 Computer
 ├── C:\ (Local Disk)
 ├── D:\ (CD Drive)
@@ -750,6 +804,7 @@ Computer
 ```
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.RootMode = FileSystemRootMode.Computer;
 ```
@@ -759,7 +814,8 @@ fileSystemTreeView.RootMode = FileSystemRootMode.Computer;
 Displays all drives directly as root nodes.
 
 **Structure:**
-```
+
+```text
 C:\ (Local Disk)
 D:\ (CD Drive)
 E:\ (Removable Disk)
@@ -767,6 +823,7 @@ E:\ (Removable Disk)
 ```
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.RootMode = FileSystemRootMode.Drives;
 ```
@@ -776,17 +833,20 @@ fileSystemTreeView.RootMode = FileSystemRootMode.Drives;
 Uses the custom `RootPath` property to determine the root directory.
 
 **Structure:**
-```
+
+```text
 [RootPath Directory]
 ├── [Subdirectories]
 └── [Files]
 ```
 
 **Behavior:**
+
 - If `RootPath` is invalid or empty, falls back to `Drives` mode
 - Root node is expanded by default
 
 **Example:**
+
 ```csharp
 fileSystemTreeView.RootMode = FileSystemRootMode.CustomPath;
 fileSystemTreeView.RootPath = @"C:\Users";
@@ -810,17 +870,20 @@ fileSystemTreeView.RootPath = @"C:\Users";
 ### Icon Cache
 
 **Cache Key Format:**
+
 - Directories: `"DIR"`
 - Files: File extension (lowercase), e.g., `".txt"`
 - Drives: `"DRIVE_{DriveType}"` (e.g., `"DRIVE_Fixed"`)
 - Folder Open: `"DIR_OPEN"`
 
 **Cache Benefits:**
+
 - Avoids re-extracting icons for same file types
 - Improves performance when displaying many files
 - Reduces Windows Shell API calls
 
 **Cache Management:**
+
 - Not cleared on `Reload()` (icons persist)
 - Dictionary uses case-insensitive string comparison
 
@@ -1022,6 +1085,7 @@ fileTreeView.FileSystemError += (sender, e) =>
 ### 3. Root Mode Selection
 
 Choose the appropriate root mode for your use case:
+
 - **Desktop**: For Explorer-like interfaces
 - **Computer**: For drive-focused browsing
 - **Drives**: For simple drive listing (default)
@@ -1134,6 +1198,7 @@ Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-dr
 **Symptoms:** Tree view appears empty after creation.
 
 **Solutions:**
+
 - Ensure control handle is created (control is visible)
 - Check `RootMode` and `RootPath` settings
 - Handle `FileSystemError` event for underlying issues
@@ -1144,6 +1209,7 @@ Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-dr
 **Symptoms:** Icons appear as default/gray icons or not at all.
 
 **Solutions:**
+
 - Check Windows Shell API availability
 - Verify icon extraction permissions
 - Check `FileSystemError` event for underlying issues
@@ -1154,6 +1220,7 @@ Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-dr
 **Symptoms:** Slow expansion or UI freezing with large directories.
 
 **Solutions:**
+
 - Use file filters to limit displayed items
 - Set `ShowFiles = false` to show directories only
 - Consider implementing background loading (requires custom implementation)
@@ -1164,6 +1231,7 @@ Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-dr
 **Symptoms:** `NavigateToPath()` returns `false` even for valid paths.
 
 **Solutions:**
+
 - Ensure parent directories are expanded first
 - Verify path exists: `Directory.Exists(path) || File.Exists(path)`
 - Check path format (use `Path.GetFullPath()` if needed)
@@ -1174,6 +1242,7 @@ Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-dr
 **Symptoms:** Computer, Network, Recycle Bin don't show contents.
 
 **Solutions:**
+
 - This is expected behavior for most special folders
 - Only Computer expands to show drives
 - Other CLSID folders don't have file system children
@@ -1184,6 +1253,7 @@ Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-dr
 **Symptoms:** `FileSystemError` event raised with `UnauthorizedAccessException`.
 
 **Solutions:**
+
 - Handle `FileSystemError` event gracefully
 - Check user permissions
 - Use `ShowHiddenFiles` and `ShowSystemFiles` appropriately
@@ -1194,6 +1264,7 @@ Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-dr
 **Symptoms:** Drive icons don't match drive types.
 
 **Solutions:**
+
 - Verify `DriveInfo.DriveType` is correct
 - Check icon cache (may need to clear manually)
 - Ensure `StockIconHelper` is working correctly
@@ -1203,6 +1274,7 @@ Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-dr
 **Symptoms:** Folder icons don't change when expanded/collapsed.
 
 **Solutions:**
+
 - Verify `AfterExpand` and `BeforeCollapse` events are firing
 - Check that `GetFolderOpenIconIndex()` returns valid index
 - Ensure ImageList contains open folder icon
@@ -1224,7 +1296,7 @@ Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-dr
 
 ### Source Code Location
 
-```
+```text
 Source/Krypton Components/Krypton.Utilities/KryptonFileSystemTreeView/
 ├── Controls Toolkit/
 │   └── KryptonFileSystemTreeView.cs

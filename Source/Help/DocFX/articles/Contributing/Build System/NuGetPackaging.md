@@ -4,6 +4,8 @@
 
 The Krypton Toolkit build system creates NuGet packages for all five component libraries across multiple target frameworks and configurations. Packages are automatically configured with appropriate metadata, icons, dependencies, and source linking.
 
+**Output folder**: `PackageOutputPath` is `$(KryptonPackageOutputRoot)$(Configuration)\` from `Source/Krypton Components/Directory.Build.props`. By default that is `Bin/Packages/<Configuration>/`; with `/p:UseArtifactsOutput=true` it is `artifacts/packages/<Configuration>/` (same property chain as CI).
+
 ## Package Structure
 
 ### Core Packages
@@ -53,7 +55,7 @@ msbuild build.proj /t:CleanPackages
 ```
 
 **Actions**:
-- Deletes all `.nupkg` files from `Bin/Packages/<Configuration>/`
+- Deletes all `.nupkg` files from the configuration folder under `$(KryptonPackageOutputRoot)` (legacy: `Bin/Packages/<Configuration>/`; artifacts: `artifacts/packages/<Configuration>/`)
 
 ### 2. Clean Build Artifacts
 
@@ -90,7 +92,7 @@ msbuild build.proj /t:Build /p:TFMs=all
 **Actions**:
 - Compiles all Krypton projects
 - Targets all frameworks specified by `TFMs` property
-- Generates assemblies in `Bin/<Configuration>/<TFM>/`
+- Generates assemblies under `$(KryptonBuildOutputRoot)<Configuration>/<TFM>/` (legacy `Bin/...` or `artifacts/bin/...` when `UseArtifactsOutput=true`)
 
 ### 5. Pack Projects
 
@@ -102,7 +104,7 @@ msbuild build.proj /t:Pack /p:TFMs=all
 - Creates NuGet packages from built assemblies
 - Applies configuration-specific metadata
 - Generates `.nupkg` and optionally `.snupkg` files
-- Outputs to `Bin/Packages/<Configuration>/`
+- Outputs to `$(KryptonPackageOutputRoot)<Configuration>/`
 
 ### Complete Workflow
 
@@ -227,6 +229,8 @@ Krypton.Ribbon → Krypton.Toolkit
 
 ### By Configuration
 
+Default (local scripts) layout:
+
 ```
 Bin/
 ├── Packages/
@@ -245,6 +249,17 @@ Bin/
 │   │   └── ...
 │   └── Installer/
 │       └── ...
+```
+
+With `/p:UseArtifactsOutput=true` (GitHub Actions and optional local builds), the same per-configuration folders appear under:
+
+```
+artifacts/
+└── packages/
+    ├── Release/
+    ├── Canary/
+    ├── Nightly/
+    └── Installer/
 ```
 
 ## Package Content Structure
@@ -321,7 +336,8 @@ publish.cmd
 #### Push Individual Package
 
 ```cmd
-cd Bin/Packages/Release
+cd Bin\Packages\Release
+REM Or: cd artifacts\packages\Release   (if you built with UseArtifactsOutput=true)
 nuget.exe push Krypton.Toolkit.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
 ```
 
@@ -374,7 +390,8 @@ Shows preview of push commands without actually pushing.
 #### Using NuGet CLI
 
 ```cmd
-nuget.exe list Krypton.Toolkit -Source Bin/Packages/Release -AllVersions
+nuget.exe list Krypton.Toolkit -Source Bin\Packages\Release -AllVersions
+REM Use artifacts\packages\Release when packages were built with UseArtifactsOutput=true
 ```
 
 #### Using NuGet Package Explorer
@@ -391,7 +408,8 @@ nuget.exe list Krypton.Toolkit -Source Bin/Packages/Release -AllVersions
 
 ```cmd
 # Extract package (it's a ZIP file)
-cd Bin/Packages/Release
+cd Bin\Packages\Release
+REM Or artifacts\packages\Release for artifacts-mode builds
 mkdir extracted
 tar -xf Krypton.Toolkit.100.25.1.305.nupkg -C extracted
 dir extracted
@@ -570,6 +588,6 @@ Update release notes and changelog before major releases.
 - [Version Management](VersionManagement.md) - Version strategy
 - [MSBuild Project Files](MSBuildProjectFiles.md) - Pack targets
 - [Directory.Build Configuration](DirectoryBuildConfiguration.md) - Package metadata
-- [GitHub Actions Workflows](GitHubActionsWorkflows.md) - Automated publishing
+- [Build workflow](Current/BuildWorkflow.md) and [Release workflow](Current/ReleaseWorkflow.md) - Automated CI publishing paths
 - [Build Scripts](BuildScripts.md) - Packaging commands
 

@@ -20,6 +20,7 @@ This document provides detailed technical information about the internal impleme
 ## Internal Architecture
 
 ### Class Structure
+
 ```csharp
 public class KryptonSystemMenu : IKryptonSystemMenu, IDisposable
 {
@@ -42,8 +43,10 @@ public class KryptonSystemMenu : IKryptonSystemMenu, IDisposable
 ### Key Design Decisions
 
 #### 1. Direct Field References
+
 **Decision**: Use direct field references instead of collection lookups
-**Rationale**: 
+**Rationale**:
+
 - Performance optimization for frequent state updates
 - Eliminates need for string-based searches
 - Provides compile-time safety
@@ -62,8 +65,10 @@ var restoreItem = _contextMenu.Items.OfType<KryptonContextMenuItem>()
 ```
 
 #### 2. Lazy Menu Creation
+
 **Decision**: Create menu items only when needed
 **Rationale**:
+
 - Reduces initial memory footprint
 - Allows for dynamic menu structure
 - Supports conditional item display
@@ -82,8 +87,10 @@ private void CreateBasicMenuItems()
 ```
 
 #### 3. Composition over Inheritance
+
 **Decision**: Use composition with KryptonContextMenu
 **Rationale**:
+
 - Leverages existing KryptonContextMenu functionality
 - Maintains separation of concerns
 - Enables reuse of proven UI components
@@ -91,6 +98,7 @@ private void CreateBasicMenuItems()
 ## Performance Optimizations
 
 ### 1. Efficient State Updates
+
 ```csharp
 private void UpdateMenuItemsState()
 {
@@ -108,6 +116,7 @@ private void UpdateMenuItemsState()
 ```
 
 ### 2. Icon Caching Strategy
+
 ```csharp
 private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
 {
@@ -131,6 +140,7 @@ private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
 ```
 
 ### 3. Smart Positioning Algorithm
+
 ```csharp
 private Point AdjustMenuPosition(Point originalLocation)
 {
@@ -153,6 +163,7 @@ private Point AdjustMenuPosition(Point originalLocation)
 ## Memory Management
 
 ### 1. Resource Disposal Pattern
+
 ```csharp
 protected virtual void Dispose(bool disposing)
 {
@@ -169,6 +180,7 @@ protected virtual void Dispose(bool disposing)
 ```
 
 ### 2. Graphics Resource Management
+
 ```csharp
 private void DrawRestoreIcon(Graphics graphics, int size, Color foregroundColor, Color backgroundColor)
 {
@@ -189,6 +201,7 @@ private void DrawRestoreIcon(Graphics graphics, int size, Color foregroundColor,
 ```
 
 ### 3. Image Processing
+
 ```csharp
 private Image? ProcessImageForTransparency(Image? originalImage)
 {
@@ -211,6 +224,7 @@ private Image? ProcessImageForTransparency(Image? originalImage)
 ## Error Handling Strategy
 
 ### 1. Graceful Degradation
+
 ```csharp
 private void BuildSystemMenu()
 {
@@ -233,6 +247,7 @@ private void BuildSystemMenu()
 ```
 
 ### 2. Fallback Mechanisms
+
 ```csharp
 private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
 {
@@ -254,6 +269,7 @@ private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
 ```
 
 ### 3. Disposal Safety
+
 ```csharp
 public void Show(Point screenLocation)
 {
@@ -277,6 +293,7 @@ private void ThrowIfDisposed()
 ## Theme System Implementation
 
 ### 1. Color-Based Theme Detection
+
 ```csharp
 public string GetCurrentTheme()
 {
@@ -305,6 +322,7 @@ public string GetCurrentTheme()
 ```
 
 ### 2. Color Analysis Algorithms
+
 ```csharp
 private bool IsLightColor(Color color)
 {
@@ -327,6 +345,7 @@ private bool IsVibrantColor(Color color)
 ```
 
 ### 3. Theme Resource Management
+
 ```csharp
 private Image? GetThemeIcon(string theme, SystemMenuIconType iconType)
 {
@@ -354,6 +373,7 @@ private Image? GetThemeIcon(string theme, SystemMenuIconType iconType)
 ## State Management Implementation
 
 ### 1. Form State Integration
+
 ```csharp
 private void UpdateMenuItemsState()
 {
@@ -384,6 +404,7 @@ private void UpdateMenuItemsState()
 ```
 
 ### 2. Conditional Menu Creation
+
 ```csharp
 private void CreateBasicMenuItems()
 {
@@ -447,6 +468,7 @@ private void CreateBasicMenuItems()
 ## Icon System Implementation
 
 ### 1. Icon Loading Strategy
+
 ```csharp
 private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
 {
@@ -477,6 +499,7 @@ private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
 ```
 
 ### 2. Custom Icon Drawing
+
 ```csharp
 private Image? GetDrawnIcon(SystemMenuIconType iconType)
 {
@@ -520,6 +543,7 @@ private Image? GetDrawnIcon(SystemMenuIconType iconType)
 ```
 
 ### 3. Theme Color Integration
+
 ```csharp
 private Color GetThemeForegroundColor()
 {
@@ -559,6 +583,7 @@ private Color GetThemeBackgroundColor()
 ## Event System Implementation
 
 ### 1. Action Execution
+
 ```csharp
 private void ExecuteRestore()
 {
@@ -655,6 +680,7 @@ private void ExecuteClose()
 ```
 
 ### 2. System Command Integration
+
 ```csharp
 private void SendSysCommand(PI.SC_ command)
 {
@@ -668,6 +694,7 @@ private void SendSysCommand(PI.SC_ command)
 ```
 
 ### 3. Keyboard Shortcut Handling
+
 ```csharp
 public bool HandleKeyboardShortcut(Keys keyData)
 {
@@ -698,6 +725,7 @@ public bool HandleKeyboardShortcut(Keys keyData)
 ## Resource Management
 
 ### 1. Disposal Pattern
+
 ```csharp
 public void Dispose()
 {
@@ -724,7 +752,8 @@ protected virtual void Dispose(bool disposing)
 }
 ```
 
-### 2. Graphics Resource Management
+### 2. Icon drawing and graphics cleanup
+
 ```csharp
 private void DrawRestoreIcon(Graphics graphics, int size, Color foregroundColor, Color backgroundColor)
 {
@@ -760,11 +789,13 @@ private void DrawRestoreIcon(Graphics graphics, int size, Color foregroundColor,
 ## Thread Safety Considerations
 
 ### 1. UI Thread Requirements
+
 - All operations must be performed on the UI thread
 - No cross-thread operations are supported
 - Disposal can be called from any thread
 
 ### 2. Disposal Safety
+
 ```csharp
 private void ThrowIfDisposed()
 {
@@ -786,6 +817,7 @@ public void Show(Point screenLocation)
 ```
 
 ### 3. State Consistency
+
 - All state changes are atomic
 - No partial state updates
 - Consistent state maintained across operations

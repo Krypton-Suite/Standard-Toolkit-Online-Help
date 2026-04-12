@@ -4,9 +4,9 @@
 
 ### Installation
 
-`KryptonExceptionDialog` is included in the Krypton.Toolkit package. No additional installation required.
+`KryptonExceptionDialog` is part of the **`Krypton.Utilities`** assembly (delivered via **`Krypton.Standard.Toolkit`** / **`Krypton.Toolkit`** metapackages, depending on how you reference the suite). No separate Utilities-only package is required when you already use the standard suite packages.
 
-**Namespace:** `Krypton.Toolkit`
+**Namespace (V110+):** `Krypton.Utilities` — add `using Krypton.Utilities;`.
 
 ---
 
@@ -141,7 +141,7 @@ catch (Exception ex)
 ## Key Features at a Glance
 
 | Feature | Description | Parameter |
-|---------|-------------|-----------|
+| ------- | ----------- | --------- |
 | **Exception Tree** | Navigate exception hierarchy | Always visible |
 | **Search** | Search exceptions and stack traces | `showSearchBox` |
 | **Copy to Clipboard** | Copy formatted exception details | `showCopyButton` |
@@ -216,6 +216,7 @@ KryptonExceptionHandler.PrintStackTrace(
 ### What Users See
 
 **Left Panel (Exception Tree):**
+
 - Root exception with type and message
 - Stack Trace node (expandable)
   - Each stack frame with file/line info
@@ -225,18 +226,21 @@ KryptonExceptionHandler.PrintStackTrace(
   - Key-value pairs
 
 **Right Panel (Details):**
+
 - Type: Exception type name
 - Message: Exception message
 - Stack Trace: Formatted call stack
 - Inner Exception: Inner exception info or "None"
 
 **Bottom:**
+
 - Copy button (copies all details to clipboard)
 - OK button (closes dialog)
 
 ### Search Functionality
 
 When search is enabled:
+
 1. Type in the search box at the top of the tree panel
 2. Tree automatically filters to matching nodes
 3. Matches are highlighted in **bold** with yellow background
@@ -389,15 +393,18 @@ Task.Run(() =>
 ## Troubleshooting
 
 ### Dialog doesn't appear
+
 - Check if exception is null
 - Verify you're on the UI thread
 - Check if application is in interactive mode
 
 ### Copy button is disabled
+
 - Click on an exception node in the tree (not "Stack Trace" or "Inner Exception" parent nodes)
 - Details panel must have text
 
 ### Search not working
+
 - Ensure `showSearchBox` is explicitly set to `true` (defaults to `false`)
 - Try clicking in the search box
 
@@ -406,10 +413,11 @@ Task.Run(() =>
 ## More Information
 
 For comprehensive API documentation, see:
+
 - [KryptonExceptionDialog Full API Reference](KryptonExceptionDialog.md)
 
 For related components:
+
 - KryptonMessageBox
 - KryptonForm
 - Exception Handling Best Practices
-

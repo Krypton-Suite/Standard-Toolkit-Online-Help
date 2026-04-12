@@ -18,7 +18,7 @@
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
   └─ System.MarshalByRefObject
       └─ System.ComponentModel.Component
@@ -66,7 +66,7 @@ Gets the collection of search history items. This is a read-only collection that
 **Category**: Hidden (Browsable: false)  
 **Type**: `IReadOnlyList<string>`
 
-#### CustomFilter
+#### KryptonSearchBox.CustomFilter
 
 ```csharp
 public Func<string, IEnumerable<object>, IEnumerable<object>>? CustomFilter { get; set; }
@@ -131,13 +131,14 @@ public void PerformSearch()
 ```
 
 Triggers the search event programmatically. If the text is not empty, it will:
+
 - Add the search term to history (if history is enabled)
 - Hide the suggestion popup
 - Raise the `Search` event with the current text
 
 **Usage**: Call this method when you want to programmatically trigger a search without user interaction.
 
-#### SetSearchSuggestions(IEnumerable<string>)
+#### `SetSearchSuggestions(IEnumerable<string>)`
 
 ```csharp
 public void SetSearchSuggestions(IEnumerable<string> suggestions)
@@ -146,9 +147,11 @@ public void SetSearchSuggestions(IEnumerable<string> suggestions)
 Sets the search suggestions from a collection of strings. This replaces all existing string suggestions.
 
 **Parameters**:
+
 - `suggestions`: The collection of suggestion strings. Cannot be null.
 
 **Exceptions**:
+
 - `ArgumentNullException`: Thrown when `suggestions` is null.
 
 #### AddToSearchHistory(string)
@@ -160,6 +163,7 @@ public void AddToSearchHistory(string searchText)
 Adds a search term to the search history. If the term already exists, it is moved to the top. The history is automatically trimmed to the maximum count specified in `SearchBoxValues.SearchHistoryMaxCount`.
 
 **Parameters**:
+
 - `searchText`: The search text to add. If null or whitespace, the method returns without adding.
 
 **Note**: This method respects the `SearchHistoryMaxCount` setting and will remove the oldest items if the limit is exceeded.
@@ -172,21 +176,24 @@ public void ClearSearchHistory()
 
 Clears all search history items.
 
-#### SetRichSuggestions(IEnumerable<object>)
+#### `SetRichSuggestions(IEnumerable<object>)`
 
 ```csharp
 public void SetRichSuggestions(IEnumerable<object> suggestions)
 ```
 
 Sets rich suggestions that support `IContentValues` (icons, descriptions, etc.). This replaces all existing rich suggestions. Rich suggestions can be:
+
 - Strings (converted to text)
 - Objects implementing `IContentValues` (for icons, descriptions, etc.)
 - Any object (converted via `ToString()`)
 
 **Parameters**:
+
 - `suggestions`: Collection of suggestion objects. Cannot be null.
 
 **Exceptions**:
+
 - `ArgumentNullException`: Thrown when `suggestions` is null.
 
 #### AddRichSuggestion(object)
@@ -198,6 +205,7 @@ public void AddRichSuggestion(object suggestion)
 Adds a single rich suggestion item to the collection.
 
 **Parameters**:
+
 - `suggestion`: The suggestion object (string or `IContentValues`). If null, the method returns without adding.
 
 #### ClearRichSuggestions()
@@ -208,7 +216,7 @@ public void ClearRichSuggestions()
 
 Clears all rich suggestions.
 
-#### SetDataGridViewColumns(IEnumerable<SearchSuggestionColumnDefinition>)
+#### `SetDataGridViewColumns(IEnumerable<SearchSuggestionColumnDefinition>)`
 
 ```csharp
 public void SetDataGridViewColumns(IEnumerable<SearchSuggestionColumnDefinition> columns)
@@ -217,9 +225,11 @@ public void SetDataGridViewColumns(IEnumerable<SearchSuggestionColumnDefinition>
 Sets the column definitions for DataGridView suggestion display. This method clears existing columns (including the default "Suggestion" column) and replaces them with the provided definitions. If the suggestion popup already exists, it will be recreated to apply the new columns.
 
 **Parameters**:
+
 - `columns`: The column definitions. Cannot be null.
 
 **Exceptions**:
+
 - `ArgumentNullException`: Thrown when `columns` is null.
 
 ### Events
@@ -231,6 +241,7 @@ public event EventHandler<SearchEventArgs>? Search;
 ```
 
 Occurs when the search is triggered. This event is raised when:
+
 - The user presses Enter (and no suggestion is selected)
 - The user clicks the search button
 - `PerformSearch()` is called programmatically
@@ -246,6 +257,7 @@ public event EventHandler? SearchCleared;
 ```
 
 Occurs when the search text is cleared. This event is raised when:
+
 - The user clicks the clear button
 - The user presses Escape (if `ClearOnEscape` is enabled and suggestions are not visible)
 - `Clear()` is called programmatically
@@ -261,6 +273,7 @@ public event EventHandler<SuggestionSelectedEventArgs>? SuggestionSelected;
 ```
 
 Occurs when a suggestion is selected from the suggestion list. This event is raised when:
+
 - The user clicks on a suggestion
 - The user presses Enter while a suggestion is highlighted
 - A suggestion is selected programmatically
@@ -333,6 +346,7 @@ Gets or sets the type of control used to display suggestions.
 **Default**: `SearchSuggestionDisplayType.ListBox`  
 **Category**: Suggestions  
 **Values**:
+
 - `ListBox`: Display suggestions using a `KryptonListBox`
 - `DataGridView`: Display suggestions using a `KryptonDataGridView`
 
@@ -398,7 +412,7 @@ Gets or sets the placeholder text (watermark) displayed when the text box is emp
 **Category**: Appearance  
 **Localizable**: Yes
 
-#### CustomFilter
+#### SearchBoxValues.CustomFilter
 
 ```csharp
 public Func<string, IEnumerable<object>, IEnumerable<object>>? CustomFilter { get; set; }
@@ -407,6 +421,7 @@ public Func<string, IEnumerable<object>, IEnumerable<object>>? CustomFilter { ge
 Gets or sets a custom filter function for suggestions. If set, this function will be used instead of the default filtering logic. **This is the property that actually controls custom filtering** - use this instead of the class-level `CustomFilter` property.
 
 **Parameters**:
+
 - `string`: The search text (already converted to lowercase)
 - `IEnumerable<object>`: The collection of all suggestions (strings and rich suggestions combined)
 
@@ -421,9 +436,11 @@ Gets or sets a custom filter function for suggestions. If set, this function wil
 Provides data for the `Search` event.
 
 **Properties**:
+
 - `SearchText` (string): Gets the search text that triggered the search.
 
 **Example**:
+
 ```csharp
 private void searchBox_Search(object sender, SearchEventArgs e)
 {
@@ -437,11 +454,13 @@ private void searchBox_Search(object sender, SearchEventArgs e)
 Provides data for the `SuggestionSelected` event.
 
 **Properties**:
+
 - `Index` (int): Gets the index of the selected suggestion.
 - `Suggestion` (string?): Gets the selected suggestion text (for backward compatibility).
 - `SuggestionObject` (object?): Gets the selected suggestion object (can be string or `IContentValues`).
 
 **Example**:
+
 ```csharp
 private void searchBox_SuggestionSelected(object sender, SuggestionSelectedEventArgs e)
 {
@@ -464,6 +483,7 @@ private void searchBox_SuggestionSelected(object sender, SuggestionSelectedEvent
 Represents a column definition for DataGridView suggestion display. Used when `SuggestionDisplayType` is set to `DataGridView`.
 
 **Properties**:
+
 - `Name` (string): Gets or sets the column name.
 - `DataPropertyName` (string): Gets or sets the data property name (for binding).
 - `HeaderText` (string): Gets or sets the header text.
@@ -472,6 +492,7 @@ Represents a column definition for DataGridView suggestion display. Used when `S
 - `ValueExtractor` (Func<object, object?>?): Gets or sets a function to extract the column value from a suggestion object.
 
 **Constructors**:
+
 - `SearchSuggestionColumnDefinition()`: Initializes a new instance with default values.
 - `SearchSuggestionColumnDefinition(string name, string headerText, Func<object, object?>? valueExtractor = null)`: Initializes a new instance with specified values.
 
@@ -551,7 +572,7 @@ var columns = new List<SearchSuggestionColumnDefinition>
 searchBox.SetDataGridViewColumns(columns);
 ```
 
-### Custom Filtering
+### Custom filtering example
 
 ```csharp
 // Implement custom filter function using SearchBoxValues.CustomFilter
@@ -632,9 +653,10 @@ By default, the control filters suggestions using case-insensitive substring mat
 
 The filtering combines string suggestions and rich suggestions, with string suggestions taking priority up to `SuggestionMaxCount`, then rich suggestions filling the remaining slots.
 
-### Custom Filtering
+### Custom filter override
 
 When `SearchBoxValues.CustomFilter` is set, the default filtering logic is bypassed. The custom function receives:
+
 - The search text (already converted to lowercase)
 - All suggestions (strings and rich suggestions combined)
 
@@ -647,6 +669,7 @@ The function should return a filtered and optionally sorted collection. The cont
 ### ListBox Display
 
 When `SuggestionDisplayType` is `ListBox`:
+
 - Suggestions are displayed in a `KryptonListBox`
 - Supports `IContentValues` for rich display (icons, descriptions)
 - Maximum 8 items visible at once (with scrolling)
@@ -655,6 +678,7 @@ When `SuggestionDisplayType` is `ListBox`:
 ### DataGridView Display
 
 When `SuggestionDisplayType` is `DataGridView`:
+
 - Suggestions are displayed in a `KryptonDataGridView`
 - Requires column definitions via `DataGridViewColumns` (a default "Suggestion" column is automatically added)
 - Supports multi-column display
@@ -668,7 +692,7 @@ When `SuggestionDisplayType` is `DataGridView`:
 
 2. **Memory**: Clear suggestions when they're no longer needed, especially for dynamic data sources.
 
-3. **User Experience**: 
+3. **User Experience**:
    - Set appropriate `SuggestionMaxCount` to avoid overwhelming users
    - Use placeholder text to guide users
    - Enable search history for frequently used applications

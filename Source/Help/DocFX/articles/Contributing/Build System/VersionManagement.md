@@ -458,6 +458,6 @@ msbuild build.proj /t:Pack /p:PackageVersion=100.25.1.305-ci.%BUILD_NUMBER%
 
 - [Directory.Build Configuration](DirectoryBuildConfiguration.md) - Version calculation details
 - [NuGet Packaging](NuGetPackaging.md) - Package versioning
-- [GitHub Actions Workflows](GitHubActionsWorkflows.md) - Automated versioning
+- [Build workflow](Current/BuildWorkflow.md) and [Release workflow](Current/ReleaseWorkflow.md) - Automated versioning in CI
 - [MSBuild Project Files](MSBuildProjectFiles.md) - Build orchestration
 

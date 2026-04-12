@@ -2,13 +2,10 @@
 
 Learn more about the capabilities of the `KryptonNavigator` using the following sections.
 
-**Overview**
+## Overview
 
+## Visual Properties
 
-**Visual Properties**
+## Mode Operation
 
-
-**Mode Operation**
-
-
-**Events**
+## Events

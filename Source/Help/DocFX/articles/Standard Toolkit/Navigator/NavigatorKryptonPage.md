@@ -7,7 +7,6 @@ that page is selected inside the navigator. It does however have extra
 properties that allow it to work in conjunction with the navigator to achieve
 the look and feel you need.  
   
-  
 **Text, TextTitle and TextDescription**  
 You can see in Figure 1 that the *KryptonPage* has three text properties
 beginning with the word *Text* that are typically used to provide various types
@@ -19,9 +18,7 @@ appropriate use of this property would be a title for a header. The
 *TextDescription* can contain a very long and detailed description of the page.
 This would be appropriate for appearing on a status bar.  
   
-  
-*   Figure 1 - KryptonPage Appearance Properties*  
-  
+## Figure 1 - KryptonPage Appearance Properties
   
 **ImageLarge, ImageMedium and ImageSmall**  
 Also in Figure 1 you can see that there are three different image properties
@@ -59,7 +56,6 @@ generated from the operating system to ensure uniqueness. As these are not easy
 to remember it is recommended you alter the property to a more meaningful value
 if you intend to make use of the property.  
   
-  
 **Visual Properties**  
 Figure 2 shows the list of properties you can use to override the appearance of
 the page itself and other navigator elements. Use these properties if you to
@@ -67,21 +63,17 @@ alter the look and feel on a per-page basis. For example, you might decide that
 one particular page needs a bright red border to indicate an error condition
 with some of the controls contained on the page.
 
-*   Figure 2 - KryptonPage Visual Properties*
+## Figure 2 - KryptonPage Visual Properties
 
 Figure 3 shows an example where the appearance of the first page has been
 altered so that it shows up in distinct red coloring. All the other pages have
 been left with default settings. The left image shows the first page selected
 and the right image when the second page is selected.  
   
-* *  
-*   Figure 3 - Customized Page Visuals*
-
- 
+## Figure 3 - Customized Page Visuals
 
 Figure 4 shows an example where a button spec has been added to the first page.
 You and can per-page button spec definitions to add extra buttons into any
 navigator page.
 
-   
-*  Figure 4 - Pages with ButtonSpec definitions*
+## Figure 4 - Pages with ButtonSpec definitions

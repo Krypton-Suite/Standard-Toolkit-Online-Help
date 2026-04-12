@@ -1,17 +1,13 @@
 # Docking Persistence Events
 
-## Docking Persistence Events
-  
 Persistence Events:  
+
 * GlobalSaving
 * GlobalLoading
 * PageSaving
 * PageLoading
 * RecreateLoadingPage
 * OrphanedPages
-
-
- 
 
 **GlobalSaving**  
 Called during the save configuration process and allows custom data to be added

@@ -1,14 +1,14 @@
 # Workspace Page Dragging  
   
 Applicable Properties:  
+
 * AllowPageDrag
 * DragPageNotify
 
 Applicable Events:  
+
 * BeginPageDrag
 * AfterPageDrag
-
- 
 
 **AllowPageDrag**  
 A default value of *True* allows the user to drag pages around the workspace in
@@ -18,8 +18,6 @@ appearance. If the cell has been modified to display in a header mode such as
 *HeaderGroup* then you can drag all the pages it contains in one go by dragging
 the primary header of the cell. Setting this property to *False* will prevent
 any user dragging from occuring.
-
- 
 
 **DragPageNotify**  
 When this property is left as the default *null* you can only drag and drop

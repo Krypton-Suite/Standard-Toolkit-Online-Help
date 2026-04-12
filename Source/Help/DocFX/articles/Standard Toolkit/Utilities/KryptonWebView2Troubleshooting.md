@@ -1,6 +1,7 @@
 # KryptonWebView2 Troubleshooting and FAQ
 
 ## Table of Contents
+
 1. [Common Issues](#common-issues)
 2. [Installation Problems](#installation-problems)
 3. [Runtime Errors](#runtime-errors)
@@ -15,6 +16,7 @@
 ### Issue: WebView2 Runtime Not Found
 
 **Symptoms:**
+
 - `WebView2RuntimeNotFoundException` when calling `EnsureCoreWebView2Async()`
 - Control fails to initialize
 - Error message about missing WebView2 runtime
@@ -22,6 +24,7 @@
 **Solutions:**
 
 1. **Install WebView2 Runtime:**
+
    ```csharp
    try
    {
@@ -43,6 +46,7 @@
    ```
 
 2. **Check Runtime Installation:**
+
    ```csharp
    private bool IsWebView2RuntimeInstalled()
    {
@@ -59,6 +63,7 @@
    ```
 
 3. **Use Fixed Version Runtime:**
+
    ```csharp
    var options = new CoreWebView2EnvironmentOptions();
    var environment = await CoreWebView2Environment.CreateAsync(null, null, options);
@@ -68,6 +73,7 @@
 ### Issue: Control Not Appearing in Toolbox
 
 **Symptoms:**
+
 - KryptonWebView2 not visible in Visual Studio toolbox
 - Cannot drag control onto form
 
@@ -78,6 +84,7 @@
    - Verify WebView2 NuGet package is installed
 
 2. **Rebuild Solution:**
+
    ```cmd
    dotnet clean
    dotnet build
@@ -90,18 +97,21 @@
 ### Issue: Designer Errors
 
 **Symptoms:**
+
 - Designer shows errors when WebView2 control is on form
 - Cannot open form in designer
 
 **Solutions:**
 
 1. **Add Designer Support:**
+
    ```csharp
    [Designer(typeof(KryptonWebView2Designer))]
    public class KryptonWebView2 : WebView2
    ```
 
 2. **Handle Designer Mode:**
+
    ```csharp
    public KryptonWebView2()
    {
@@ -118,17 +128,20 @@
 ### Issue: NuGet Package Installation Fails
 
 **Symptoms:**
+
 - `dotnet add package Microsoft.Web.WebView2` fails
 - Package restore errors
 
 **Solutions:**
 
 1. **Clear NuGet Cache:**
+
    ```cmd
    dotnet nuget locals all --clear
    ```
 
 2. **Update NuGet Sources:**
+
    ```cmd
    dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org
    ```
@@ -140,6 +153,7 @@
 ### Issue: Assembly Loading Errors
 
 **Symptoms:**
+
 - `FileNotFoundException` for WebView2 assemblies
 - `BadImageFormatException`
 
@@ -150,6 +164,7 @@
    - Verify platform target matches (x86/x64/AnyCPU)
 
 2. **Copy Assemblies Manually:**
+
    ```csharp
    // Copy WebView2 assemblies to output directory
    <ItemGroup>
@@ -164,12 +179,14 @@
 ### Issue: Navigation Failures
 
 **Symptoms:**
+
 - `NavigationCompleted` event shows `IsSuccess = false`
 - Pages fail to load
 
 **Solutions:**
 
 1. **Handle Navigation Errors:**
+
    ```csharp
    private void OnNavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
    {
@@ -189,6 +206,7 @@
    ```
 
 2. **Retry Failed Navigations:**
+
    ```csharp
    private async Task NavigateWithRetry(string url, int maxRetries = 3)
    {
@@ -217,12 +235,14 @@
 ### Issue: Process Failures
 
 **Symptoms:**
+
 - `ProcessFailed` event fires
 - Browser process exits unexpectedly
 
 **Solutions:**
 
 1. **Handle Process Failures:**
+
    ```csharp
    private void OnProcessFailed(object? sender, CoreWebView2ProcessFailedEventArgs e)
    {
@@ -246,6 +266,7 @@
    ```
 
 2. **Restart WebView2:**
+
    ```csharp
    private async Task RestartWebView2()
    {
@@ -266,12 +287,14 @@
 ### Issue: Slow Initialization
 
 **Symptoms:**
+
 - `EnsureCoreWebView2Async()` takes a long time
 - UI freezes during initialization
 
 **Solutions:**
 
 1. **Async Initialization:**
+
    ```csharp
    private async void Form_Load(object sender, EventArgs e)
    {
@@ -295,6 +318,7 @@
    ```
 
 2. **Preload WebView2:**
+
    ```csharp
    // Initialize WebView2 in background thread
    private async Task PreloadWebView2()
@@ -309,12 +333,14 @@
 ### Issue: High Memory Usage
 
 **Symptoms:**
+
 - Application memory usage increases over time
 - OutOfMemoryException
 
 **Solutions:**
 
 1. **Monitor Memory Usage:**
+
    ```csharp
    private async void MonitorMemoryUsage()
    {
@@ -327,6 +353,7 @@
    ```
 
 2. **Optimize Settings:**
+
    ```csharp
    private void OptimizeForMemory()
    {
@@ -345,12 +372,14 @@
 ### Issue: Theme Not Applied
 
 **Symptoms:**
+
 - WebView2 doesn't reflect Krypton theme changes
 - Inconsistent appearance
 
 **Solutions:**
 
 1. **Force Theme Update:**
+
    ```csharp
    protected override void OnGlobalPaletteChanged(object? sender, EventArgs e)
    {
@@ -375,6 +404,7 @@
    ```
 
 2. **Inject Theme CSS:**
+
    ```csharp
    private async Task InjectThemeCSS()
    {
@@ -403,12 +433,14 @@
 ### Issue: JavaScript Execution Fails
 
 **Symptoms:**
+
 - `ExecuteScriptAsync()` throws exceptions
 - Scripts don't execute
 
 **Solutions:**
 
 1. **Wait for Document Ready:**
+
    ```csharp
    private async Task ExecuteScriptWhenReady(string script)
    {
@@ -430,6 +462,7 @@
    ```
 
 2. **Handle Script Errors:**
+
    ```csharp
    private async Task ExecuteScriptSafely(string script)
    {
@@ -449,12 +482,14 @@
 ### Issue: Web Message Communication Fails
 
 **Symptoms:**
+
 - Messages from JavaScript not received
 - `WebMessageReceived` event doesn't fire
 
 **Solutions:**
 
 1. **Enable Web Messages:**
+
    ```csharp
    private void EnableWebMessages()
    {
@@ -467,6 +502,7 @@
    ```
 
 2. **Setup Message Bridge:**
+
    ```csharp
    private async Task SetupMessageBridge()
    {
@@ -486,12 +522,14 @@
 ### Issue: Custom Context Menu Not Showing
 
 **Symptoms:**
+
 - Right-click shows default WebView2 menu
 - Custom KryptonContextMenu not displayed
 
 **Solutions:**
 
 1. **Disable Default Context Menu:**
+
    ```csharp
    private void SetupCustomContextMenu()
    {
@@ -507,6 +545,7 @@
    ```
 
 2. **Check Message Handling:**
+
    ```csharp
    protected override void WndProc(ref Message m)
    {

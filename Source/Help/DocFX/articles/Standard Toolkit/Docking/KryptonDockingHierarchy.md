@@ -1,14 +1,14 @@
 # Docking Hierarchy
 
-## Docking Hierarchy
-  
+## Overview
+
 **Hierarchy of Docking Elements**  
 The docking system is implemented as a tree of elements where specific
 docking functionality is provided by particular elements. To achieve your
 docking requirements you need to build up the hierarchy of elements to match the
 functionality you require. To make this process as simple as possible a set of
 helper methods starting with the word '*Manage*' are exposed by the docking
-manager. You can see them being used in the [overview](Krypton%20Docking%20Overview.md) section. Understanding the different docking elements
+manager. You can see them being used in the [overview](KryptonDockingOverview.md) section. Understanding the different docking elements
 and how to build them into a tree is a great way to get a full understanding of
 the docking system. It will allow you to perform more complicated tasks such as
 setting up complex arrangements of pages.
@@ -25,9 +25,8 @@ an *IDockingElement* reference as a way to quickly get access to the docking
 element of interest within the hierarchy. Although you will need to cast the
 returned reference to the specific type of element you are accessing.
 
- 
+### KryptonDockingManager
 
-**KryptonDockingManager**  
 The *KryptonDockingManager* component acts as the root of the docking hierarchy.
 Not only does it act as the top element but it also has all the methods and
 properties you need for standard interaction with the docking system. For more
@@ -59,9 +58,8 @@ then interact with the element directly rather than using the general purpose
 methods provided by the docking manager. The rest of this section will describe
 all the different docking elements that are available and how they interrelated.
 
- 
+### KryptonDockingControl
 
-**KryptonDockingControl**  
 This element adds docked and auto hidden docking capabilities to a provided
 control. Typically the control provided will be a *KryptonPanel* but this is not
 a requirement as you can add any control that derives from the *Control* base
@@ -70,24 +68,26 @@ class. The *KryptonDockingControl* element actually adds four child
 *KryptonDockingEdge* instance responsible for one of the control edges. Each
 *KryptonDockingEdge* element will itself add two children to themselves. The
 children are *KryptonDockingEdgeDocked* for handling docked content and
-*KryptonDockingEdgeAutoHidden *for managing auto hidden groups. So creating
+*KryptonDockingEdgeAutoHidden*for managing auto hidden groups. So creating
 a *KryptonDockingControl* instance actually results in the following tree of
 elements...
 
-**  KryptonDockingManager                 ** (Name=DockingManager)  
-      **KryptonDockingControl               ** (Name=Control)  
-          **KryptonDockingEdge**                 (Name=Left)  
-              KryptonDockingEdgeDocked         (Name=Docked)  
-              KryptonDockingEdgeAutoHidden     (Name=AutoHidden)           
-          **KryptonDockingEdge**                 (Name=Right)  
-              KryptonDockingEdgeDocked         (Name=Docked)  
-              KryptonDockingEdgeAutoHidden     (Name=AutoHidden)   
-          **KryptonDockingEdge**                 (Name=Top)  
-              KryptonDockingEdgeDocked         (Name=Docked)  
-              KryptonDockingEdgeAutoHidden     (Name=AutoHidden)   
-          **KryptonDockingEdge**                 (Name=Bottom)  
-              KryptonDockingEdgeDocked         (Name=Docked)  
-              KryptonDockingEdgeAutoHidden          (Name=AutoHidden)     
+```text
+KryptonDockingManager (Name=DockingManager)
+    KryptonDockingControl (Name=Control)
+        KryptonDockingEdge (Name=Left)
+            KryptonDockingEdgeDocked (Name=Docked)
+            KryptonDockingEdgeAutoHidden (Name=AutoHidden)
+        KryptonDockingEdge (Name=Right)
+            KryptonDockingEdgeDocked (Name=Docked)
+            KryptonDockingEdgeAutoHidden (Name=AutoHidden)
+        KryptonDockingEdge (Name=Top)
+            KryptonDockingEdgeDocked (Name=Docked)
+            KryptonDockingEdgeAutoHidden (Name=AutoHidden)
+        KryptonDockingEdge (Name=Bottom)
+            KryptonDockingEdgeDocked (Name=Docked)
+            KryptonDockingEdgeAutoHidden (Name=AutoHidden)
+```
 
 The four children of the docking control have name property values of '*Left*',
 '*Right*', '*Top*' and '*Bottom*' which relate the edge they manage. Then each
@@ -125,7 +125,6 @@ bottom edge...
     KryptonDockingEdge edge = (KryptonDockingEdge)control["Bottom"];  
     KryptonDockingEdgeDocked docked = (KryptonDockingEdgeDocked)edge["Docked"];
 ```
- 
 
 **KryptonDockingEdgeDocked**  
 This element contains a set of child *KryptonDockingDockspace* elements each of
@@ -150,8 +149,6 @@ the outermost dockspace for that edge. Adding a dockspace element does not
 actually cause anything to be displayed as it does not contain any pages by
 default. See the following section for details on how to add pages to the
 dockspace.
-
- 
 
 **KryptonDockingDockspace**  
 This element represents a docked workspace against a control edge. It will
@@ -200,9 +197,9 @@ page to it...
     dockspace.Append(NewPage());
 ```
 
-![](Images/DockD1.png)
+![Figure 1 - Adding a left docked page](Images/DockD1.png)
   
-*Figure 1 - Adding a left docked page*
+### Figure 1 - Adding a left docked page
 
 Both of the above approaches result in the Figure 1 docking layout. *Because the
 KryptonDockingDockspace.DockspaceControl* is a control that derives from
@@ -228,13 +225,10 @@ c3 });
 The output will be as shown in Figure 2. If you need to create complex layouts
 then you recommended to read the documentation [Workspace Layout](../Workspace/WorkspaceLayout.md) and then apply it to the dockspace control.
 
-![](Images/DockD2.png)
+![Figure 2 - Stacked cells within a single dockspace](Images/DockD2.png)
 
-*Figure 2 - Stacked cells within a single dockspace*
+### Figure 2 - Stacked cells within a single dockspace
 
- 
-
-  
 **KryptonDockingEdgeAutoHidden**  
 The *KryptonDockingEdgeAutoHidden* element is used to manage a set of child
 *KryptonDockingAutoHiddenGroup* elements. Each child auto hidden group appears
@@ -253,8 +247,6 @@ The first method does not take a '*name*' parameter and will instead generate a
 GUID and use that as the element name. Adding an auto hidden group element does
 not actually cause anything to be displayed as it does not contain any pages by
 default. See the following section for details on how to add pages to the group.
-
- 
 
 **KryptonDockingAutoHiddenGroup**  
 This element is very simple and only has two methods that are used to manipulate
@@ -286,13 +278,10 @@ add pages to it...
 ```
 
 Both of the above approaches result in the Figure 3 docking layout.  
- 
 
-![](Images/DockD3.png)
+![Figure 3 - Adding a left auto hidden group](Images/DockD3.png)
 
-*Figure 3 - Adding a left auto hidden group*
-
- 
+### Figure 3 - Adding a left auto hidden group
 
 The following hierarchy shows the result of adding the above group to the left
 edge.
@@ -300,11 +289,9 @@ edge.
   **KryptonDockingManager**                     (Name=DockingManager)  
       **KryptonDockingControl**                   (Name=Control)  
           **KryptonDockingEdge**                    (Name=Left)  
-              KryptonDockingEdgeAutoHidden        (Name=AutoHidden)           
-                  KryptonDockingAutoHiddenGroup    
+              KryptonDockingEdgeAutoHidden        (Name=AutoHidden)
+                  KryptonDockingAutoHiddenGroup
 (Name=483CC32A643F4AB7483CC32A643F4AB7)
-
- 
 
 **KryptonDockingFloating**  
 Use this element to manage a collection of floating windows. When first created
@@ -313,8 +300,8 @@ this element contains no children and you would normally used the
 element added. You can however navigate through the hierarchy to this element
 and then use one of its two helper methods to directly manipulate the
 collection...  
- 
-```cs 
+
+```cs
     AddFloatingWindow()  
     AddFloatingWindow(string name)
 ```
@@ -324,8 +311,6 @@ The first method does not take a '*name*' parameter and will instead generate a
 not actually cause anything to be displayed as it does not contain any pages by
 default. See the following section for details on how to add pages to the
 floating window.
-
- 
 
 **KryptonDockingFloatingWindow**  
 This element creates a new top level window that you can access via the
@@ -338,11 +323,9 @@ hierarchy of elements that results from adding a single floating window.
 
   **KryptonDockingManager**                 (Name=DockingManager)  
       **KryptonDockingFloating**               (Name=Floating)  
-         
+
 **KryptonDockingFloatingWindow**        (Name=483CC32A643F4AB7483CC32A643F4AB7)  
               KryptonDockingFloatspace           (Name=Floatspace)
-
- 
 
 **KryptonDockingFloatspace**  
 This element is almost identical to the *KryptonDockingDockspace* element that
@@ -373,15 +356,12 @@ add two pages to it...
     window.FloatspaceElement.Append(new KryptonPage[] { NewPage(), NewPage() })
 ```
 
-The output will be as shown in Figure 4. 
+The output will be as shown in Figure 4.
 
-![](Images/DockC5.png)
+![Figure 4 - Adding a floating window](Images/DockC5.png)
 
-*Figure 4 - Adding a floating window*
+### Figure 4 - Adding a floating window
 
- 
-
-  
 **KryptonDockingWorkspace**  
 This element is different to the others in that it does not create any child
 elements and is used as a wrapper to manage an existing
@@ -409,9 +389,7 @@ Alternatively you can create and add the element directly like this...
 KryptonDockingWorkspace("Workspace", "Filler", kryptonDockableWorkspace1);  
    dockingManager.Add(dockingWorkspace);
 ```
- 
 
-  
 **KryptonDockingNavigator**  
 This element is used to manage an existing *KryptonDockableNavigator* instance.
 A typical docking scenario will include a control as the filler that takes up
@@ -436,4 +414,3 @@ Alternatively you can create and add the element directly like this...
 KryptonDockingWorkspace("Navigator", "Filler", kryptonDockableNavigator1);  
    dockingManager.Add(dockingNavigator);
 ```
- 

@@ -14,12 +14,12 @@ The purpose of this article is to guide developers who might be new to Krypton t
 
 **Step 6:** Close all tabs, then rebuild your projects
 
-![](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/InstallingKrypton.gif?raw=true)
+![Screen recording: installing the Krypton NuGet package in Visual Studio](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/InstallingKrypton.gif?raw=true)
 
-For details on how to install pre-release packages, [click here](HowtoInstallPreReleasePackages.md).
+For details on how to install pre-release packages, see [How to install pre-release packages](HowtoInstallPreReleasePackages.md).
 
 **Stay up-to-date:** [Current Versions](https://github.com/Krypton-Suite/Documentation)
 
-**Need Documentation?** [Click here](https://github.com/Krypton-Suite/Help-Files/releases)
+**Need Documentation?** [Help-Files releases on GitHub](https://github.com/Krypton-Suite/Help-Files/releases)
 
 **Want to try the toolkit out?** [Download Demos](https://github.com/Krypton-Suite/Releases/releases)

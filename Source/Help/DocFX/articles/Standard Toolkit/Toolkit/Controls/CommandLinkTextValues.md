@@ -4,25 +4,28 @@
 
 `CommandLinkTextValues` is a specialized values class that provides heading and description text properties for `KryptonCommandLinkButton` controls. It extends `CaptionValues` to support the two-line text layout characteristic of Windows command link buttons.
 
-**Namespace:** `Krypton.Toolkit`  
-**Assembly:** Krypton.Toolkit  
+**Namespace (V110+):** `Krypton.Utilities`  
+**Assembly (V110+):** `Krypton.Utilities`  
 **Inheritance:** `Object` → `Storage` → `CaptionValues` → `CommandLinkTextValues`
 
 ## Key Features
 
 ### Dual Text Support
+
 - Primary heading text (large, bold)
 - Secondary description text (smaller, explanatory)
 - Independent font control for each
 - Independent alignment control for each
 
 ### Default Styling
+
 - Automatic default values
 - Default arrow icon from Windows shell
 - DPI-aware icon scaling
 - Configurable default image usage
 
 ### Integration
+
 - Seamless integration with `KryptonCommandLinkButton`
 - Palette-aware rendering
 - Automatic paint invalidation
@@ -40,10 +43,12 @@ public CommandLinkTextValues(NeedPaintHandler needPaint, GetDpiFactor getDpiFact
 ```
 
 **Parameters:**
+
 - `needPaint` - Delegate for notifying paint requests
 - `getDpiFactor` - Delegate for retrieving DPI scaling factor
 
 **Default Values:**
+
 - `Heading` = "Krypton Command Link Button"
 - `Description` = "Krypton Command Link Button \"Note Text\""
 - `HeadingFont` = `null` (uses control default)
@@ -61,6 +66,7 @@ public CommandLinkTextValues(NeedPaintHandler needPaint, GetDpiFactor getDpiFact
 ### Text Properties
 
 #### Heading
+
 Gets or sets the primary heading text.
 
 ```csharp
@@ -75,6 +81,7 @@ public string Heading { get; set; }
 **Inherited from:** `CaptionValues`
 
 **Example:**
+
 ```csharp
 commandLinkButton.CommandLinkTextValues.Heading = "Create a new document";
 ```
@@ -82,6 +89,7 @@ commandLinkButton.CommandLinkTextValues.Heading = "Create a new document";
 ---
 
 #### Description
+
 Gets or sets the secondary description text.
 
 ```csharp
@@ -94,6 +102,7 @@ public override string Description { get; set; }
 **Default:** `"Krypton Command Link Button \"Note Text\""`
 
 **Example:**
+
 ```csharp
 commandLinkButton.CommandLinkTextValues.Description = "Start with a blank document or choose from a template";
 ```
@@ -103,6 +112,7 @@ commandLinkButton.CommandLinkTextValues.Description = "Start with a blank docume
 ### Font Properties
 
 #### HeadingFont
+
 Gets or sets the font for the heading text.
 
 ```csharp
@@ -115,10 +125,12 @@ public Font? HeadingFont { get; set; }
 **Default:** `null` (uses control's default heading font)
 
 **Remarks:**
+
 - When `null`, uses the default font for command link headings
 - Typically larger and bolder than description font
 
 **Example:**
+
 ```csharp
 commandLinkButton.CommandLinkTextValues.HeadingFont = new Font("Segoe UI", 14F, FontStyle.Bold);
 ```
@@ -126,6 +138,7 @@ commandLinkButton.CommandLinkTextValues.HeadingFont = new Font("Segoe UI", 14F, 
 ---
 
 #### DescriptionFont
+
 Gets or sets the font for the description text.
 
 ```csharp
@@ -138,10 +151,12 @@ public Font? DescriptionFont { get; set; }
 **Default:** `null` (uses control's default description font)
 
 **Remarks:**
+
 - When `null`, uses the default font for command link descriptions
 - Typically smaller than heading font
 
 **Example:**
+
 ```csharp
 commandLinkButton.CommandLinkTextValues.DescriptionFont = new Font("Segoe UI", 9F, FontStyle.Regular);
 ```
@@ -151,6 +166,7 @@ commandLinkButton.CommandLinkTextValues.DescriptionFont = new Font("Segoe UI", 9
 ### Alignment Properties
 
 #### HeadingTextHAlignment
+
 Gets or sets the horizontal alignment for heading text.
 
 ```csharp
@@ -163,12 +179,14 @@ public PaletteRelativeAlign HeadingTextHAlignment { get; set; }
 **Default:** `PaletteRelativeAlign.Near` (left-aligned)
 
 **Available Values:**
+
 - `Near` - Left-aligned (default)
 - `Center` - Centered
 - `Far` - Right-aligned
 - `Inherit` - Inherit from parent
 
 **Example:**
+
 ```csharp
 commandLinkButton.CommandLinkTextValues.HeadingTextHAlignment = PaletteRelativeAlign.Center;
 ```
@@ -176,6 +194,7 @@ commandLinkButton.CommandLinkTextValues.HeadingTextHAlignment = PaletteRelativeA
 ---
 
 #### HeadingTextVAlignment
+
 Gets or sets the vertical alignment for heading text.
 
 ```csharp
@@ -190,6 +209,7 @@ public PaletteRelativeAlign HeadingTextVAlignment { get; set; }
 ---
 
 #### DescriptionTextHAlignment
+
 Gets or sets the horizontal alignment for description text.
 
 ```csharp
@@ -204,6 +224,7 @@ public PaletteRelativeAlign DescriptionTextHAlignment { get; set; }
 ---
 
 #### DescriptionTextVAlignment
+
 Gets or sets the vertical alignment for description text.
 
 ```csharp
@@ -216,6 +237,7 @@ public PaletteRelativeAlign DescriptionTextVAlignment { get; set; }
 **Default:** `PaletteRelativeAlign.Far` (bottom-aligned)
 
 **Remarks:**
+
 - `Far` positions description below the heading
 - Creates the typical command link two-line layout
 
@@ -224,6 +246,7 @@ public PaletteRelativeAlign DescriptionTextVAlignment { get; set; }
 ### Image Properties
 
 #### UseDefaultImage
+
 Gets or sets whether to use the default command link arrow icon.
 
 ```csharp
@@ -236,12 +259,14 @@ public bool UseDefaultImage { get; set; }
 **Default:** `true`
 
 **Remarks:**
+
 - When `true`, displays the default Windows command link arrow icon
 - Icon is extracted from shell32.dll (icon index 16805)
 - Automatically scaled to 32x32 with DPI awareness
 - Set to `false` to use custom images or no image
 
 **Example:**
+
 ```csharp
 // Use default arrow icon
 commandLinkButton.CommandLinkTextValues.UseDefaultImage = true;
@@ -254,6 +279,7 @@ commandLinkButton.UACShieldIcon.Image = myCustomIcon;
 ---
 
 #### Image
+
 Gets or sets the command link image.
 
 ```csharp
@@ -264,6 +290,7 @@ public Image? Image { get; set; }
 **Inherited from:** `CaptionValues`
 
 **Remarks:**
+
 - Automatically set when `UseDefaultImage = true`
 - Set directly when using custom images
 
@@ -272,6 +299,7 @@ public Image? Image { get; set; }
 ### State Properties
 
 #### IsDefault
+
 Gets whether all values are in their default state.
 
 ```csharp
@@ -283,6 +311,7 @@ public override bool IsDefault { get; }
 **Returns:** `true` if all properties have default values; otherwise `false`.
 
 **Remarks:**
+
 - Used by the designer to determine if serialization is needed
 - Checks all font, alignment, and text properties
 
@@ -291,6 +320,7 @@ public override bool IsDefault { get; }
 ## Methods
 
 ### ResetText()
+
 Resets all text and font properties to their default values.
 
 ```csharp
@@ -298,12 +328,14 @@ public void ResetText()
 ```
 
 **Resets:**
+
 - `Heading` to default heading
 - `Description` to default description
 - `HeadingFont` to `null`
 - `DescriptionFont` to `null`
 
 **Example:**
+
 ```csharp
 commandLinkButton.CommandLinkTextValues.ResetText();
 ```
@@ -311,6 +343,7 @@ commandLinkButton.CommandLinkTextValues.ResetText();
 ---
 
 ### ResetDescription()
+
 Resets the description text to its default value.
 
 ```csharp
@@ -320,6 +353,7 @@ public new void ResetDescription()
 ---
 
 ### ResetHeadingFont()
+
 Resets the heading font to its default value.
 
 ```csharp
@@ -329,6 +363,7 @@ public void ResetHeadingFont()
 ---
 
 ### ResetDescriptionFont()
+
 Resets the description font to its default value.
 
 ```csharp
@@ -338,6 +373,7 @@ public void ResetDescriptionFont()
 ---
 
 ### ResetHeadingTextHAlignment()
+
 Resets the heading horizontal alignment to its default value.
 
 ```csharp
@@ -347,6 +383,7 @@ public void ResetHeadingTextHAlignment()
 ---
 
 ### ResetHeadingTextVAlignment()
+
 Resets the heading vertical alignment to its default value.
 
 ```csharp
@@ -356,6 +393,7 @@ public void ResetHeadingTextVAlignment()
 ---
 
 ### ResetDescriptionTextHAlignment()
+
 Resets the description horizontal alignment to its default value.
 
 ```csharp
@@ -365,6 +403,7 @@ public void ResetDescriptionTextHAlignment()
 ---
 
 ### ResetDescriptionTextVAlignment()
+
 Resets the description vertical alignment to its default value.
 
 ```csharp
@@ -374,6 +413,7 @@ public void ResetDescriptionTextVAlignment()
 ---
 
 ### ResetUseDefaultImage()
+
 Resets the UseDefaultImage property to its default value.
 
 ```csharp
@@ -398,6 +438,7 @@ public bool ShouldSerializeUseDefaultImage()
 ```
 
 **Remarks:**
+
 - Used by the designer/serializer
 - Returns `true` if the property should be serialized
 - Returns `false` if the property has its default value
@@ -619,12 +660,14 @@ var button = CommandLinkBuilder.Create(
 ### Text Guidelines
 
 **Heading:**
+
 - Keep it short (1-5 words)
 - Use action verbs
 - Capitalize first word only (sentence case)
 - No ending punctuation
 
 **Description:**
+
 - Complete sentences with punctuation
 - 1-2 sentences maximum
 - Explain what happens or when to choose
@@ -633,12 +676,14 @@ var button = CommandLinkBuilder.Create(
 **Examples:**
 
 ✅ **Good:**
+
 ```csharp
 Heading: "Create a new project"
 Description: "Start with a blank project and add your own files."
 ```
 
 ❌ **Bad:**
+
 ```csharp
 Heading: "New Project"  // Too terse
 Description: "Create a new project."  // Just restates heading
@@ -649,11 +694,13 @@ Description: "Create a new project."  // Just restates heading
 ### Font Sizing
 
 **Recommended Sizes:**
+
 - Heading: 12-14pt (typically Segoe UI Bold)
 - Description: 9-11pt (typically Segoe UI Regular)
 - Ratio: Heading should be ~1.3-1.5x description size
 
 **DPI Considerations:**
+
 - Fonts scale automatically with system DPI
 - Default image scales automatically
 - Custom images may need manual scaling
@@ -663,6 +710,7 @@ Description: "Create a new project."  // Just restates heading
 ### Alignment Best Practices
 
 **Standard Layout:**
+
 ```csharp
 HeadingTextHAlignment = Near;      // Left
 HeadingTextVAlignment = Center;    // Vertically centered
@@ -671,6 +719,7 @@ DescriptionTextVAlignment = Far;   // Below heading
 ```
 
 **Center Layout:**
+
 ```csharp
 // Both centered - good for single-column dialogs
 HeadingTextHAlignment = Center;
@@ -678,6 +727,7 @@ DescriptionTextHAlignment = Center;
 ```
 
 **Right-to-Left Languages:**
+
 ```csharp
 // Automatically handled when RightToLeft = Yes
 // Near becomes right-aligned
@@ -689,6 +739,7 @@ DescriptionTextHAlignment = Center;
 ### Performance
 
 **Invalidation:**
+
 - Property changes automatically trigger paint requests
 - Multiple changes should be batched when possible
 
@@ -721,4 +772,3 @@ button.ResumeLayout();
 - [KryptonCommandLinkButton](KryptonCommandLinkButton.md) - Parent control
 - [CaptionValues](CaptionValues.md) - Base class
 - [CommandLinkImageValues](CommandLinkImageValues.md) - Image values for command links
-- [PaletteRelativeAlign](../Enumerations/PaletteRelativeAlign.md) - Alignment enumeration

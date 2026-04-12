@@ -65,4 +65,3 @@ See the comprehensive demo in `TestForm/RibbonMergerDemo.cs` for a complete work
 ## Support
 
 For issues, questions, or contributions, please visit the [Krypton Suite GitHub repository](https://github.com/Krypton-Suite/Standard-Toolkit).
-

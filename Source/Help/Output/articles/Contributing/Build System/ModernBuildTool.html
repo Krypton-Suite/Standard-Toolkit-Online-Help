@@ -74,6 +74,9 @@
 <p><strong>Location</strong>: <code>Scripts/ModernBuild/</code></p>
 <p><strong>Technology</strong>: .NET with Terminal.Gui</p>
 <p><strong>Target Frameworks</strong>: net472, net8.0-windows, net9.0-windows, net10.0-windows</p>
+<h2 id="build-output-layout">Build output layout</h2>
+<p>ModernBuild discovers NuGet package folders in a fixed order: <code>artifacts/packages/&lt;Configuration&gt;/</code>, <code>artifacts/packages/Release/</code>, <code>Bin/Packages/&lt;Configuration&gt;/</code>, then <code>Bin/&lt;Configuration&gt;/</code> and <code>Bin/Release/</code>. Push and “Create ZIP” use the first folder that exists. The timestamped package ZIP is always written to the repo root <code>Bin/&lt;yyyyMMdd&gt;_NuGet_Packages.zip</code> (even when packages were produced under <code>artifacts/packages/</code>). F7 <strong>Clean</strong> removes <code>Bin/</code>, per-project <code>obj/</code> folders, and <code>Logs/</code>; it does <strong>not</strong> delete the <code>artifacts/</code> tree—remove that manually if you need a full clean after an artifacts-mode build.</p>
+<p>Local script builds default to legacy <code>Bin/</code> unless you pass <code>/p:UseArtifactsOutput=true</code> to MSBuild (GitHub Actions use that for orchestrated jobs).</p>
 <h2 id="features">Features</h2>
 <ul>
 <li>Interactive keyboard-driven UI</li>
@@ -110,16 +113,16 @@ bin\Release\net10.0-windows\ModernBuild.exe
 <p><strong>Important</strong>: Always run from repository root for correct path detection.</p>
 <h2 id="user-interface">User Interface</h2>
 <h3 id="ui-layout">UI Layout</h3>
-<pre><code>┌─────────────────────────────────────────────────────────────────┐
+<pre><code class="lang-text">┌─────────────────────────────────────────────────────────────────┐
 │ Tasks                  │ Live Output                            │
-│ ┌───────────────────┐  │ ┌───────────────────────────────────┐ │
-│ │ F1: Channel       │  │ │ MSBuild output appears here...    │ │
-│ │ F2: Action        │  │ │ Real-time streaming...            │ │
-│ │ F3: Config        │  │ │                                   │ │
-│ │ F4: Switch Page   │  │ │ Press Enter on a line to copy it  │ │
-│ │ F5: Run/Stop      │  │ └───────────────────────────────────┘ │
-│ │ ESC/F10: Exit     │  │                                       │
-│ └───────────────────┘  │                                       │
+│ ┌───────────────────┐  │ ┌───────────────────────────────────┐  │
+│ │ F1: Channel       │  │ │ MSBuild output appears here...    │  │
+│ │ F2: Action        │  │ │ Real-time streaming...            │  │
+│ │ F3: Config        │  │ │                                   │  │
+│ │ F4: Switch Page   │  │ │ Press Enter on a line to copy it  │  │
+│ │ F5: Run/Stop      │  │ └───────────────────────────────────┘  │
+│ │ ESC/F10: Exit     │  │                                        │
+│ └───────────────────┘  │                                        │
 ├─────────────────────────────────────────────────────────────────┤
 │ Build Settings                                                  │
 │ Project: Scripts/nightly.proj                                   │
@@ -232,7 +235,7 @@ bin\Release\net10.0-windows\ModernBuild.exe
 <tr>
 <td><strong>F7</strong></td>
 <td>Clean</td>
-<td>Delete Bin/, obj/, Logs/</td>
+<td>Delete <code>Bin/</code>, Krypton <code>obj/</code>, <code>Logs/</code> (not <code>artifacts/</code>)</td>
 </tr>
 <tr>
 <td><strong>F8</strong></td>
@@ -329,9 +332,10 @@ bin\Release\net10.0-windows\ModernBuild.exe
 <p>Deletes:</p>
 <ul>
 <li><code>Bin/</code> directory</li>
-<li><code>obj/</code> directories in all Krypton projects</li>
+<li><code>obj/</code> directories in all Krypton component projects</li>
 <li><code>Logs/</code> directory</li>
 </ul>
+<p>The optional <code>artifacts/</code> output tree is not removed by F7.</p>
 <p><strong>Warning</strong>: This is destructive and cannot be undone!</p>
 <h3 id="clear-output-f8">Clear Output (F8)</h3>
 <ul>
@@ -389,7 +393,7 @@ bin\Release\net10.0-windows\ModernBuild.exe
 </tr>
 <tr>
 <td><strong>Create ZIP</strong></td>
-<td>Create <code>Bin/&lt;yyyyMMdd&gt;_NuGet_Packages.zip</code></td>
+<td>Create <code>Bin/&lt;yyyyMMdd&gt;_NuGet_Packages.zip</code> from discovered packages</td>
 <td></td>
 </tr>
 <tr>
@@ -409,7 +413,7 @@ bin\Release\net10.0-windows\ModernBuild.exe
 <p><strong>Push</strong>:</p>
 <ul>
 <li>Publishes existing packages only</li>
-<li>Requires packages in <code>Bin/Packages/&lt;Configuration&gt;/</code></li>
+<li>Requires packages in a discovered folder (<code>artifacts/packages/...</code> or <code>Bin/Packages/...</code>)</li>
 </ul>
 <p><strong>Pack+Push</strong>:</p>
 <ul>
@@ -490,14 +494,15 @@ bin\Release\net10.0-windows\ModernBuild.exe
 <h3 id="create-zip">Create ZIP</h3>
 <p>Creates archive of all NuGet packages:</p>
 <ul>
-<li>Filename: <code>Bin/&lt;yyyyMMdd&gt;_NuGet_Packages.zip</code></li>
-<li>Includes all <code>.nupkg</code> and optionally <code>.snupkg</code> files</li>
+<li>Packages are read from the first existing candidate folder (see <a href="#build-output-layout">Build output layout</a>).</li>
+<li>Output filename: <code>Bin/&lt;yyyyMMdd&gt;_NuGet_Packages.zip</code></li>
+<li>Includes all <code>.nupkg</code> and optionally <code>.snupkg</code> files from that folder</li>
 <li>Useful for offline distribution</li>
 </ul>
 <h3 id="test-mode">TEST Mode</h3>
 <p>Previews <code>nuget.exe push</code> commands without executing:</p>
-<pre><code>nuget.exe push Bin\Packages\Release\Krypton.Toolkit.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
-nuget.exe push Bin\Packages\Release\Krypton.Ribbon.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
+<pre><code>nuget.exe push &lt;packages-folder&gt;\Krypton.Toolkit.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
+nuget.exe push &lt;packages-folder&gt;\Krypton.Ribbon.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
 ...
 </code></pre>
 <p><strong>Use Cases</strong>:</p>
@@ -728,7 +733,7 @@ dotnet run --project Scripts/ModernBuild/ModernBuild.csproj
 <h3 id="6-verify-packages-locally">6. Verify Packages Locally</h3>
 <p>Before publishing:</p>
 <ol>
-<li>Check <code>Bin/Packages/&lt;Configuration&gt;/</code></li>
+<li>Check <code>artifacts/packages/&lt;Configuration&gt;/</code> or <code>Bin/Packages/&lt;Configuration&gt;/</code> (whichever your build produced)</li>
 <li>Verify version numbers</li>
 <li>Inspect with NuGet Package Explorer</li>
 </ol>

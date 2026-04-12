@@ -1,10 +1,10 @@
 # Using IRenderer
 
-**Monitoring the global palette**
+## Monitoring the global palette
 
-In order to get access to a renderer you need to begin with a palette. The recommended way of getting an *IRenderer* reference is to call the *GetReference()* method in the *PaletteBase*. Therefore your custom control should begin by monitoring the global palette so that you can access the associated renderer appropriate for that global palette. You should follow the steps outlined in the Using [PaletteBase](Using%20PaletteBase.md) article in order to add ability.
+In order to get access to a renderer you need to begin with a palette. The recommended way of getting an *IRenderer* reference is to call the *GetReference()* method in the *PaletteBase*. Therefore your custom control should begin by monitoring the global palette so that you can access the associated renderer appropriate for that global palette. You should follow the steps outlined in the Using [PaletteBase](UsingPaletteBase.md) article in order to add ability.
 
-**IRenderer Basics**
+## IRenderer Basics
 
 In order to use the methods exposed by the *IRenderer* we need take a few basic setup steps. In particular we need to create four helper objects that are then used in your interaction with the renderer instance. To begin you should add the following fields to your custom control class.
 
@@ -65,8 +65,7 @@ In order to specify the drawing styles that should be used when recovering palet
 
 Finally comment (6) shows the placeholder location where you would insert your rendering calls. The following sections of the article give details of how to make use of the background, border and content abilities of the renderer.
 
-
-**Drawing a Background**
+## Drawing a Background
 
 To draw a background we use the *PaletteBase.RenderStandardBack.DrawBack* call. The following code provides you will a example usage.
 
@@ -91,7 +90,7 @@ Code block (8) completes the process of creating a *GraphicsPath* that is used t
 
 Finally block (9) performs the actual rendering operation. The second parameter is the rectangle you would like to be drawn and the third parameter a path used to clip the drawing operation. The second to last parameter is the palette state that you should ensure is the same as the call in block (7). The last parameter provides a memento object that is also assigned to as the result of the call. This technique allows performance improvements in the renderer as it allows the renderer to create caching objects and have them supplied again on subsequent calls.
 
-**Drawing a Border**
+## Drawing a Border
 
 Once you know how to draw a background the border drawing is trivial. Here is the code.
 
@@ -106,11 +105,11 @@ Once you know how to draw a background the border drawing is trivial. Here is th
 
 As with drawing the background we being with block (10) which tests to ensure we need to draw the border at all. If we do then we just need to make the call to the *IRenderer.RenderStandardBorder.DrawBorder* with a set of simple parameters, as seen in code block (11). The second parameter is the rectangle that specifies the outside of the border drawing area, the border itself will be drawn to fit completely within this rectangle.
 
-**Drawing a Background/Border Pair**
+## Drawing a Background/Border Pair
 
 In many cases you will be drawing a background and border for the same visual element. So if you control is drawing a button element in the client area then you would want to draw the button area background followed by the button area border. You might think this is achieved by performing the above two sections of code for the same rectangle area. In practice this is not quite the case because of a feature with borders.
 
-It is possible for a border to have rounded corners and so we cannot just draw the background as a rectangle, if we did that then the background would be drawn outside the rounded corners. In order to prevent this we use a slightly modified version of the background drawing code presented above. 
+It is possible for a border to have rounded corners and so we cannot just draw the background as a rectangle, if we did that then the background would be drawn outside the rounded corners. In order to prevent this we use a slightly modified version of the background drawing code presented above.
 
 ```cs
      // Do we need to draw the background?
@@ -127,7 +126,7 @@ It is possible for a border to have rounded corners and so we cannot just draw t
 
 If you look at code block (8) from the previous drawing code then you will note that the clipping path for the background is specified by using a rectangle. Instead we use block (12) above to create a clipping path that is a description of the border. This prevents the background being drawn outside of the border. It uses a call to the *IRenderer.RenderStandardBorder.GetBackPath* to get the clipping path.
 
-**Drawing a Content**
+## Drawing a Content
 
 All Content consists of providing three values, two text strings and an image. In order to provide these values to the renderer an interface is used called *IContentValues*. You can implement this interface in any way that is appropriate for your usage but in our example we will choose the simplest option and implement it on the custom control itself. If you choose to do that same then you first of all need to add it to the class definition in the following way.
 
@@ -181,7 +180,7 @@ The actual *OnLayout* method is very similar to the way that the OnPaint works, 
           base.OnLayout(e);
      }
 ```
- 
+
 Block (13) disposes of any existing memento instance to ensure that any resources that are held by the memento are correctly released.
 
 Block (14) is the actual call to the renderer and parameter four provides the reference to the *IContentValues* interface that provides the content values. As the interface is implemented by the custom control in our example the reference is the this variable. As with all the other calls to the renderer you need to provide the appropriate palette state in place of the *PaletteState.Normal* constant in the examples.
@@ -200,4 +199,3 @@ Finally the actual *OnPaint* code needed to draw the content is presented.
 As always the code checks that the content needs to be drawn all given the provided palette state.
 
 Using the above information and examples it should be possible to experiment and draw whatever elements you need in your custom control in order to leverage the functionality provided in the toolkit as well as remaining faithful to the global palette settings. You should refer to the [*Custom Control using Renderers*](https://github.com/Krypton-Suite/Standard-Toolkit-Demos/tree/master/Source/Krypton%20Toolkit%20Examples/Custom%20Control%20using%20Renderers) example project for a working example of the renderer code in action.
-
