@@ -35,6 +35,7 @@ public class KryptonForm : VisualForm, IContentValues
 ### Window Appearance
 
 #### HeaderStyle
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets and sets the header style.")]
@@ -47,6 +48,7 @@ Gets and sets the header style for the form.
 **Default Value**: `HeaderStyle.Primary`
 
 #### FormTitleAlign
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets and sets the form title alignment.")]
@@ -59,6 +61,7 @@ Gets and sets the alignment of the form title text.
 **Default Value**: `PaletteRelativeAlign.Center`
 
 #### TextExtra
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets and sets the extra text to be displayed in the title bar.")]
@@ -71,6 +74,7 @@ Gets and sets extra text to be displayed in the title bar alongside the main tex
 **Default Value**: `""`
 
 #### AllowFormChrome
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if the form chrome is allowed.")]
@@ -83,6 +87,7 @@ Gets and sets whether the form chrome is allowed to be drawn.
 **Default Value**: `true`
 
 #### AllowStatusStripMerge
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if the status strip can be merged.")]
@@ -97,6 +102,7 @@ Gets and sets whether the status strip can be merged with the form.
 ### Button Specifications
 
 #### ButtonSpecs
+
 ```csharp
 [Category("Visuals")]
 [Description("Collection of button specifications.")]
@@ -107,6 +113,7 @@ public FormButtonSpecCollection ButtonSpecs { get; }
 Gets access to the collection of button specifications for the form.
 
 #### FixedButtonSpecs
+
 ```csharp
 [Category("Visuals")]
 [Description("Collection of fixed button specifications.")]
@@ -119,6 +126,7 @@ Gets access to the collection of fixed button specifications for the form.
 ### State Properties
 
 #### StateCommon
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining common form appearance.")]
@@ -129,6 +137,7 @@ public PaletteFormRedirect StateCommon { get; }
 Gets access to the common state appearance that other states can override.
 
 #### StateDisabled
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining disabled form appearance.")]
@@ -139,6 +148,7 @@ public PaletteFormStates StateDisabled { get; }
 Gets access to the disabled state appearance.
 
 #### StateNormal
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining normal form appearance.")]
@@ -149,6 +159,7 @@ public PaletteFormStates StateNormal { get; }
 Gets access to the normal state appearance.
 
 #### StateActive
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining active form appearance.")]
@@ -161,6 +172,7 @@ Gets access to the active state appearance.
 ### Palette Properties
 
 #### PaletteMode
+
 ```csharp
 [Category("Visuals")]
 [Description("Gets and sets the palette mode.")]
@@ -173,6 +185,7 @@ Gets and sets the palette mode for the form.
 **Default Value**: `PaletteMode.Global`
 
 #### Palette
+
 ```csharp
 [Category("Visuals")]
 [Description("Gets and sets the custom palette.")]
@@ -187,6 +200,7 @@ Gets and sets the custom palette for the form.
 ## Events
 
 ### PaletteChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the palette changes.")]
@@ -196,6 +210,7 @@ public event EventHandler PaletteChanged;
 Occurs when the palette changes.
 
 ### ButtonSpecClick
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when a button specification is clicked.")]
@@ -207,6 +222,7 @@ Occurs when a button specification is clicked.
 ## Methods
 
 ### SetPalette(IPalette palette)
+
 ```csharp
 public void SetPalette(IPalette palette)
 ```
@@ -214,6 +230,7 @@ public void SetPalette(IPalette palette)
 Sets the custom palette for the form.
 
 ### GetPalette()
+
 ```csharp
 public IPalette GetPalette()
 ```
@@ -221,6 +238,7 @@ public IPalette GetPalette()
 Gets the current palette for the form.
 
 ### PerformClose()
+
 ```csharp
 public void PerformClose()
 ```
@@ -228,6 +246,7 @@ public void PerformClose()
 Performs the close action for the form.
 
 ### PerformMinimize()
+
 ```csharp
 public void PerformMinimize()
 ```
@@ -235,6 +254,7 @@ public void PerformMinimize()
 Performs the minimize action for the form.
 
 ### PerformMaximize()
+
 ```csharp
 public void PerformMaximize()
 ```
@@ -242,6 +262,7 @@ public void PerformMaximize()
 Performs the maximize action for the form.
 
 ### PerformRestore()
+
 ```csharp
 public void PerformRestore()
 ```
@@ -251,6 +272,7 @@ Performs the restore action for the form.
 ## Usage Examples
 
 ### Basic Form Setup
+
 ```csharp
 // Create a basic themed form
 KryptonForm form = new KryptonForm();
@@ -261,6 +283,7 @@ form.Show();
 ```
 
 ### Custom Header Style
+
 ```csharp
 // Create a form with custom header style
 KryptonForm form = new KryptonForm();
@@ -270,6 +293,7 @@ form.TextExtra = " - Additional Info";
 ```
 
 ### Custom Button Specifications
+
 ```csharp
 // Create a form with custom button specifications
 KryptonForm form = new KryptonForm();
@@ -283,6 +307,7 @@ form.ButtonSpecs.Add(customButton);
 ```
 
 ### Custom Styling
+
 ```csharp
 // Create a form with custom styling
 KryptonForm form = new KryptonForm();
@@ -298,6 +323,7 @@ form.StateActive.Header.Border.Color1 = Color.Blue;
 ```
 
 ### Palette Integration
+
 ```csharp
 // The form automatically uses the global theme
 KryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;
@@ -308,6 +334,7 @@ form.Palette = new CustomPalette();
 ```
 
 ### Administrator Mode Detection
+
 ```csharp
 // The form automatically detects administrator mode
 // and adjusts appearance accordingly

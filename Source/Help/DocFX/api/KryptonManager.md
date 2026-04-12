@@ -29,6 +29,7 @@ public sealed class KryptonManager : Component
 ## Properties
 
 ### GlobalPaletteMode
+
 ```csharp
 [Category("GlobalPalette")]
 [Description("Easy Set for the theme palette")]
@@ -41,6 +42,7 @@ Gets or sets the global palette mode used for drawing. This property determines 
 **Default Value**: `PaletteMode.Microsoft365Blue`
 
 **Available Modes**:
+
 - `Microsoft365Blue` (default)
 - `Microsoft365Black`
 - `Microsoft365Silver`
@@ -61,6 +63,7 @@ Gets or sets the global palette mode used for drawing. This property determines 
 - `Custom`
 
 ### GlobalCustomPalette
+
 ```csharp
 [Category("GlobalPalette")]
 [Description("Global custom palette applied to drawing.")]
@@ -71,6 +74,7 @@ public KryptonCustomPaletteBase? GlobalCustomPalette { get; set; }
 Gets and sets the global custom palette applied to drawing. When set to a custom palette, the `GlobalPaletteMode` is automatically set to `PaletteMode.Custom`.
 
 ### BaseFont
+
 ```csharp
 [Category("GlobalPalette")]
 [Description("Override the Current global palette font.")]
@@ -80,6 +84,7 @@ public Font BaseFont { get; set; }
 Gets or sets the base font that overrides the current global palette font. This affects the default font used by all Krypton controls.
 
 ### GlobalApplyToolstrips
+
 ```csharp
 [Category("Visuals")]
 [Description("Should the palette colors be applied to the toolstrips.")]
@@ -92,6 +97,7 @@ Gets or sets a value indicating if the palette colors are applied to the toolstr
 **Default Value**: `true`
 
 ### UseKryptonFileDialogs
+
 ```csharp
 [Category("Visuals")]
 [Description("Should use krypton file dialogs for internal openings like CustomPalette Import")]
@@ -104,6 +110,7 @@ Gets or sets a value indicating whether to use Krypton file dialogs for internal
 **Default Value**: `true`
 
 ### GlobalUseThemeFormChromeBorderWidth
+
 ```csharp
 [Category("Visuals")]
 [Description("Should KryptonForm instances be allowed to UseThemeFormChromeBorderWidth.")]
@@ -116,6 +123,7 @@ Gets or sets a value indicating if `KryptonForm` instances are allowed to use th
 **Default Value**: `true`
 
 ### ShowAdministratorSuffix
+
 ```csharp
 [Category("Visuals")]
 [Description("Should the administrator suffix be shown in KryptonForm title bars when running with elevated privileges.")]
@@ -130,6 +138,7 @@ Gets or sets a value indicating if the administrator suffix should be shown in `
 ## Events
 
 ### GlobalPaletteChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the value of the GlobalPalette property is changed.")]
@@ -139,6 +148,7 @@ public static event EventHandler? GlobalPaletteChanged;
 Occurs when the global palette changes. This event is raised whenever the `GlobalPaletteMode` or `GlobalCustomPalette` properties are modified.
 
 ### GlobalUseThemeFormChromeBorderWidthChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the value of the GlobalUseThemeFormChromeBorderWidth property is changed.")]
@@ -150,11 +160,13 @@ Occurs when the `GlobalUseThemeFormChromeBorderWidth` property changes.
 ## Methods
 
 ### Reset()
+
 ```csharp
 public void Reset()
 ```
 
 Resets all global values to their default settings. This method resets:
+
 - GlobalCustomPalette
 - ToolkitColors
 - GlobalApplyToolstrips
@@ -166,6 +178,7 @@ Resets all global values to their default settings. This method resets:
 - GlobalPaletteMode
 
 ### IsDefault
+
 ```csharp
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
@@ -178,6 +191,7 @@ Gets a value indicating whether any of the global values have been modified from
 ## Usage Examples
 
 ### Basic Theme Setup
+
 ```csharp
 // Create a KryptonManager instance
 KryptonManager manager = new KryptonManager();
@@ -190,6 +204,7 @@ manager.GlobalApplyToolstrips = true;
 ```
 
 ### Custom Palette Setup
+
 ```csharp
 // Create a custom palette
 KryptonCustomPaletteBase customPalette = new MyCustomPalette();
@@ -199,6 +214,7 @@ manager.GlobalCustomPalette = customPalette;
 ```
 
 ### Event Handling
+
 ```csharp
 // Subscribe to palette changes
 KryptonManager.GlobalPaletteChanged += (sender, e) =>
@@ -209,6 +225,7 @@ KryptonManager.GlobalPaletteChanged += (sender, e) =>
 ```
 
 ### Form Integration
+
 ```csharp
 // In your form's constructor or Load event
 private void Form1_Load(object sender, EventArgs e)
@@ -221,6 +238,7 @@ private void Form1_Load(object sender, EventArgs e)
 ## Design-Time Support
 
 The `KryptonManager` component includes full design-time support with:
+
 - Toolbox integration
 - Property grid support
 - Designer serialization

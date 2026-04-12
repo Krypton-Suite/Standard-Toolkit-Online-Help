@@ -34,6 +34,7 @@ public class KryptonRibbon : VisualSimple, IMessageFilter
 ### Ribbon Structure
 
 #### RibbonTabs
+
 ```csharp
 [Category("Ribbon")]
 [Description("Collection of ribbon tabs.")]
@@ -44,6 +45,7 @@ public KryptonRibbonTabCollection RibbonTabs { get; }
 Gets access to the collection of ribbon tabs.
 
 #### SelectedTab
+
 ```csharp
 [Category("Ribbon")]
 [Description("Gets and sets the selected tab.")]
@@ -56,6 +58,7 @@ Gets and sets the currently selected tab.
 **Default Value**: `null`
 
 #### SelectedContext
+
 ```csharp
 [Category("Ribbon")]
 [Description("Gets and sets the selected context.")]
@@ -70,6 +73,7 @@ Gets and sets the selected context for contextual tabs.
 ### Quick Access Toolbar
 
 #### QATLocation
+
 ```csharp
 [Category("Quick Access Toolbar")]
 [Description("Gets and sets the location of the quick access toolbar.")]
@@ -82,6 +86,7 @@ Gets and sets the location of the quick access toolbar.
 **Default Value**: `QATLocation.Above`
 
 #### QATUserChange
+
 ```csharp
 [Category("Quick Access Toolbar")]
 [Description("Gets and sets if the user can change the QAT.")]
@@ -94,6 +99,7 @@ Gets and sets whether the user can modify the quick access toolbar.
 **Default Value**: `true`
 
 #### QATVisible
+
 ```csharp
 [Category("Quick Access Toolbar")]
 [Description("Gets and sets if the QAT is visible.")]
@@ -108,6 +114,7 @@ Gets and sets whether the quick access toolbar is visible.
 ### Minimized Mode
 
 #### MinimizedMode
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if the ribbon is in minimized mode.")]
@@ -120,6 +127,7 @@ Gets and sets whether the ribbon is in minimized mode.
 **Default Value**: `false`
 
 #### ShowMinimizeButton
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if the minimize button is shown.")]
@@ -132,6 +140,7 @@ Gets and sets whether the minimize button is shown.
 **Default Value**: `true`
 
 #### HideRibbonSize
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets the size when ribbon is hidden.")]
@@ -146,6 +155,7 @@ Gets and sets the size of the ribbon when it is hidden.
 ### Button Styles
 
 #### GroupButtonStyle
+
 ```csharp
 [Category("Visuals")]
 [Description("Gets and sets the group button style.")]
@@ -158,6 +168,7 @@ Gets and sets the button style for group buttons.
 **Default Value**: `ButtonStyle.LowProfile`
 
 #### GroupClusterButtonStyle
+
 ```csharp
 [Category("Visuals")]
 [Description("Gets and sets the group cluster button style.")]
@@ -170,6 +181,7 @@ Gets and sets the button style for group cluster buttons.
 **Default Value**: `ButtonStyle.LowProfile`
 
 #### GroupDialogButtonStyle
+
 ```csharp
 [Category("Visuals")]
 [Description("Gets and sets the group dialog button style.")]
@@ -182,6 +194,7 @@ Gets and sets the button style for group dialog buttons.
 **Default Value**: `ButtonStyle.LowProfile`
 
 #### QATButtonStyle
+
 ```csharp
 [Category("Visuals")]
 [Description("Gets and sets the QAT button style.")]
@@ -196,6 +209,7 @@ Gets and sets the button style for quick access toolbar buttons.
 ### Appearance
 
 #### BackStyle
+
 ```csharp
 [Category("Visuals")]
 [Description("Gets and sets the background style.")]
@@ -208,6 +222,7 @@ Gets and sets the background style for the ribbon.
 **Default Value**: `PaletteBackStyle.PanelClient`
 
 #### BackInactiveStyle
+
 ```csharp
 [Category("Visuals")]
 [Description("Gets and sets the inactive background style.")]
@@ -222,6 +237,7 @@ Gets and sets the inactive background style for the ribbon.
 ### Button Specifications
 
 #### ButtonSpecs
+
 ```csharp
 [Category("Visuals")]
 [Description("Collection of button specifications.")]
@@ -234,6 +250,7 @@ Gets access to the collection of button specifications for the ribbon.
 ## Events
 
 ### SelectedTabChanged
+
 ```csharp
 [Category("Ribbon")]
 [Description("Occurs when the selected tab changes.")]
@@ -243,6 +260,7 @@ public event EventHandler SelectedTabChanged;
 Occurs when the selected tab changes.
 
 ### MinimizedChanged
+
 ```csharp
 [Category("Behavior")]
 [Description("Occurs when the minimized state changes.")]
@@ -252,6 +270,7 @@ public event EventHandler MinimizedChanged;
 Occurs when the minimized state changes.
 
 ### QATLocationChanged
+
 ```csharp
 [Category("Quick Access Toolbar")]
 [Description("Occurs when the QAT location changes.")]
@@ -261,6 +280,7 @@ public event EventHandler QATLocationChanged;
 Occurs when the quick access toolbar location changes.
 
 ### ButtonSpecClick
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when a button specification is clicked.")]
@@ -272,6 +292,7 @@ Occurs when a button specification is clicked.
 ## Methods
 
 ### MinimizeRibbon()
+
 ```csharp
 public void MinimizeRibbon()
 ```
@@ -279,6 +300,7 @@ public void MinimizeRibbon()
 Minimizes the ribbon to show only the tab headers.
 
 ### RestoreRibbon()
+
 ```csharp
 public void RestoreRibbon()
 ```
@@ -286,6 +308,7 @@ public void RestoreRibbon()
 Restores the ribbon from minimized mode.
 
 ### ToggleMinimizedMode()
+
 ```csharp
 public void ToggleMinimizedMode()
 ```
@@ -293,6 +316,7 @@ public void ToggleMinimizedMode()
 Toggles the minimized mode of the ribbon.
 
 ### ShowContextualTabs(string contextName)
+
 ```csharp
 public void ShowContextualTabs(string contextName)
 ```
@@ -300,6 +324,7 @@ public void ShowContextualTabs(string contextName)
 Shows contextual tabs for the specified context.
 
 ### HideContextualTabs(string contextName)
+
 ```csharp
 public void HideContextualTabs(string contextName)
 ```
@@ -307,6 +332,7 @@ public void HideContextualTabs(string contextName)
 Hides contextual tabs for the specified context.
 
 ### ClearContextualTabs()
+
 ```csharp
 public void ClearContextualTabs()
 ```
@@ -316,6 +342,7 @@ Clears all contextual tabs.
 ## Usage Examples
 
 ### Basic Ribbon Setup
+
 ```csharp
 // Create a basic ribbon
 KryptonRibbon ribbon = new KryptonRibbon();
@@ -333,6 +360,7 @@ homeTab.RibbonGroups.Add(clipboardGroup);
 ```
 
 ### Quick Access Toolbar Configuration
+
 ```csharp
 // Configure the quick access toolbar
 ribbon.QATLocation = QATLocation.Above;
@@ -346,6 +374,7 @@ ribbon.QATButtons.Add(saveButton);
 ```
 
 ### Contextual Tabs
+
 ```csharp
 // Create contextual tabs
 KryptonRibbonContext pictureContext = new KryptonRibbonContext();
@@ -363,7 +392,8 @@ ribbon.RibbonContexts.Add(pictureContext);
 ribbon.ShowContextualTabs("PictureTools");
 ```
 
-### Minimized Mode
+### Minimized mode configuration
+
 ```csharp
 // Configure minimized mode
 ribbon.ShowMinimizeButton = true;
@@ -384,6 +414,7 @@ ribbon.MinimizedChanged += (sender, e) =>
 ```
 
 ### Custom Button Specifications
+
 ```csharp
 // Add custom buttons to the ribbon
 ButtonSpecAny customButton = new ButtonSpecAny();
@@ -394,6 +425,7 @@ ribbon.ButtonSpecs.Add(customButton);
 ```
 
 ### Tab Selection
+
 ```csharp
 // Handle tab selection changes
 ribbon.SelectedTabChanged += (sender, e) =>
@@ -409,6 +441,7 @@ if (ribbon.RibbonTabs.Count > 0)
 ```
 
 ### Custom Styling
+
 ```csharp
 // Customize ribbon appearance
 ribbon.BackStyle = PaletteBackStyle.PanelClient;

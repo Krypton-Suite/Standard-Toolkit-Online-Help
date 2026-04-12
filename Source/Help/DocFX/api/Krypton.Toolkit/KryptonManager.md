@@ -33,6 +33,7 @@ public sealed class KryptonManager : Component
 ### Global Theme Management
 
 #### GlobalPaletteMode
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets and sets the global palette mode.")]
@@ -45,6 +46,7 @@ Gets and sets the global palette mode that affects all Krypton controls.
 **Default Value**: `PaletteMode.Global`
 
 #### GlobalPalette
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets and sets the global palette.")]
@@ -59,6 +61,7 @@ Gets and sets the global palette that affects all Krypton controls.
 ### Global Behavior Settings
 
 #### GlobalApplyToolstrips
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if toolstrips should be themed globally.")]
@@ -71,6 +74,7 @@ Gets and sets whether toolstrips should be themed globally.
 **Default Value**: `true`
 
 #### GlobalUseThemeFormChromeBorderWidth
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if theme form chrome border width should be used.")]
@@ -83,6 +87,7 @@ Gets and sets whether theme form chrome border width should be used.
 **Default Value**: `true`
 
 #### GlobalShowAdministratorSuffix
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if administrator suffix should be shown.")]
@@ -95,6 +100,7 @@ Gets and sets whether administrator suffix should be shown in form titles.
 **Default Value**: `true`
 
 #### GlobalUseKryptonFileDialogs
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if Krypton file dialogs should be used.")]
@@ -109,6 +115,7 @@ Gets and sets whether Krypton file dialogs should be used instead of standard Wi
 ### Base Font Settings
 
 #### BaseFont
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets and sets the base font for the application.")]
@@ -123,6 +130,7 @@ Gets and sets the base font for the application.
 ## Instance Properties
 
 ### PaletteMode
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets and sets the palette mode.")]
@@ -135,6 +143,7 @@ Gets and sets the palette mode for this manager instance.
 **Default Value**: `PaletteMode.Global`
 
 ### Palette
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets and sets the custom palette.")]
@@ -149,6 +158,7 @@ Gets and sets the custom palette for this manager instance.
 ## Events
 
 ### GlobalPaletteChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the global palette changes.")]
@@ -158,6 +168,7 @@ public static event EventHandler GlobalPaletteChanged;
 Occurs when the global palette changes.
 
 ### PaletteChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the palette changes.")]
@@ -169,6 +180,7 @@ Occurs when the palette changes.
 ## Static Methods
 
 ### SetGlobalPalette(IPalette palette)
+
 ```csharp
 public static void SetGlobalPalette(IPalette palette)
 ```
@@ -176,6 +188,7 @@ public static void SetGlobalPalette(IPalette palette)
 Sets the global palette for all Krypton controls.
 
 ### GetGlobalPalette()
+
 ```csharp
 public static IPalette GetGlobalPalette()
 ```
@@ -183,6 +196,7 @@ public static IPalette GetGlobalPalette()
 Gets the current global palette.
 
 ### SetGlobalPaletteMode(PaletteMode mode)
+
 ```csharp
 public static void SetGlobalPaletteMode(PaletteMode mode)
 ```
@@ -190,6 +204,7 @@ public static void SetGlobalPaletteMode(PaletteMode mode)
 Sets the global palette mode.
 
 ### GetGlobalPaletteMode()
+
 ```csharp
 public static PaletteMode GetGlobalPaletteMode()
 ```
@@ -199,6 +214,7 @@ Gets the current global palette mode.
 ## Available Built-in Themes
 
 ### Office 2007 Themes
+
 - `PaletteMode.Office2007Blue` - Office 2007 Blue theme
 - `PaletteMode.Office2007BlueDarkMode` - Office 2007 Blue Dark Mode
 - `PaletteMode.Office2007BlueLightMode` - Office 2007 Blue Light Mode
@@ -211,6 +227,7 @@ Gets the current global palette mode.
 - `PaletteMode.Office2007DarkGray` - Office 2007 Dark Gray theme
 
 ### Office 2010 Themes
+
 - `PaletteMode.Office2010Blue` - Office 2010 Blue theme
 - `PaletteMode.Office2010BlueDarkMode` - Office 2010 Blue Dark Mode
 - `PaletteMode.Office2010BlueLightMode` - Office 2010 Blue Light Mode
@@ -223,11 +240,13 @@ Gets the current global palette mode.
 - `PaletteMode.Office2010DarkGray` - Office 2010 Dark Gray theme
 
 ### Office 2013 Themes
+
 - `PaletteMode.Office2013White` - Office 2013 White theme
 - `PaletteMode.Office2013LightGray` - Office 2013 Light Gray theme
 - `PaletteMode.Office2013DarkGray` - Office 2013 Dark Gray theme
 
 ### Sparkle Themes
+
 - `PaletteMode.SparkleBlue` - Sparkle Blue theme
 - `PaletteMode.SparkleBlueDarkMode` - Sparkle Blue Dark Mode
 - `PaletteMode.SparkleBlueLightMode` - Sparkle Blue Light Mode
@@ -239,6 +258,7 @@ Gets the current global palette mode.
 - `PaletteMode.SparklePurpleLightMode` - Sparkle Purple Light Mode
 
 ### Microsoft 365 Themes
+
 - `PaletteMode.Microsoft365Blue` - Microsoft 365 Blue theme
 - `PaletteMode.Microsoft365BlueDarkMode` - Microsoft 365 Blue Dark Mode
 - `PaletteMode.Microsoft365Black` - Microsoft 365 Black theme
@@ -247,18 +267,21 @@ Gets the current global palette mode.
 - `PaletteMode.Microsoft365DarkGray` - Microsoft 365 Dark Gray theme
 
 ### System Themes
+
 - `PaletteMode.ProfessionalSystem` - Professional System theme
 - `PaletteMode.ProfessionalOffice2003` - Professional Office 2003 theme
 
 ## Usage Examples
 
 ### Basic Theme Setup
+
 ```csharp
 // Set a global theme for the entire application
 KryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;
 ```
 
 ### Custom Palette
+
 ```csharp
 // Create and set a custom palette
 CustomPalette customPalette = new CustomPalette();
@@ -266,6 +289,7 @@ KryptonManager.GlobalPalette = customPalette;
 ```
 
 ### Dynamic Theme Switching
+
 ```csharp
 // Switch themes at runtime
 private void SwitchToDarkTheme()
@@ -279,7 +303,8 @@ private void SwitchToLightTheme()
 }
 ```
 
-### Global Behavior Settings
+### Global behavior configuration
+
 ```csharp
 // Configure global behavior settings
 KryptonManager.GlobalApplyToolstrips = true;
@@ -289,12 +314,14 @@ KryptonManager.GlobalUseKryptonFileDialogs = true;
 ```
 
 ### Base Font Configuration
+
 ```csharp
 // Set a custom base font for the application
 KryptonManager.BaseFont = new Font("Segoe UI", 9f);
 ```
 
 ### Event Handling
+
 ```csharp
 // Subscribe to global palette changes
 KryptonManager.GlobalPaletteChanged += (sender, e) =>
@@ -305,6 +332,7 @@ KryptonManager.GlobalPaletteChanged += (sender, e) =>
 ```
 
 ### Designer Integration
+
 ```csharp
 // Add KryptonManager to a form for design-time configuration
 // The manager will appear in the component tray

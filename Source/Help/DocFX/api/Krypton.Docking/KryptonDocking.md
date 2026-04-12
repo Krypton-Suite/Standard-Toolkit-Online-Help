@@ -15,18 +15,23 @@ Krypton.Docking
 ## Key Components
 
 ### KryptonSpace
+
 The base class for docking spaces that extends `KryptonWorkspace` with docking-specific functionality.
 
 ### KryptonDockspace
+
 A specialized docking space that provides the main docking area for panels.
 
 ### KryptonFloatspace
+
 A floating docking space that allows panels to be docked in floating windows.
 
 ### KryptonAutoHiddenPanel
+
 A panel that can be auto-hidden and shown when needed.
 
 ### KryptonFloatingWindow
+
 A floating window that contains dockable panels.
 
 ## Key Features
@@ -45,6 +50,7 @@ A floating window that contains dockable panels.
 ### Docking Behavior
 
 #### AllowPageDrag
+
 ```csharp
 [Category("Docking")]
 [Description("Gets and sets if page dragging is allowed.")]
@@ -57,6 +63,7 @@ Gets and sets whether page dragging is allowed.
 **Default Value**: `true`
 
 #### AllowPageClose
+
 ```csharp
 [Category("Docking")]
 [Description("Gets and sets if page closing is allowed.")]
@@ -69,6 +76,7 @@ Gets and sets whether page closing is allowed.
 **Default Value**: `true`
 
 #### AllowPageDropDown
+
 ```csharp
 [Category("Docking")]
 [Description("Gets and sets if page dropdown is allowed.")]
@@ -83,6 +91,7 @@ Gets and sets whether page dropdown is allowed.
 ### Auto-Hide Settings
 
 #### AutoHiddenPanel
+
 ```csharp
 [Category("Auto-Hide")]
 [Description("Gets the auto-hidden panel.")]
@@ -92,6 +101,7 @@ public KryptonAutoHiddenPanel AutoHiddenPanel { get; }
 Gets the auto-hidden panel for this docking space.
 
 #### AutoHiddenSlidePanel
+
 ```csharp
 [Category("Auto-Hide")]
 [Description("Gets the auto-hidden slide panel.")]
@@ -103,6 +113,7 @@ Gets the auto-hidden slide panel for this docking space.
 ### Floating Windows
 
 #### FloatingWindows
+
 ```csharp
 [Category("Floating")]
 [Description("Collection of floating windows.")]
@@ -114,6 +125,7 @@ Gets the collection of floating windows.
 ## Events
 
 ### CellGainsFocus
+
 ```csharp
 [Category("DockableWorkspace")]
 [Description("Occurs when the focus moves to be inside the KryptonWorkspaceCell instance.")]
@@ -123,6 +135,7 @@ public event EventHandler<WorkspaceCellEventArgs> CellGainsFocus;
 Occurs when the focus moves to be inside a workspace cell.
 
 ### CellLosesFocus
+
 ```csharp
 [Category("DockableWorkspace")]
 [Description("Occurs when the focus moves away from inside the KryptonWorkspaceCell instance.")]
@@ -132,6 +145,7 @@ public event EventHandler<WorkspaceCellEventArgs> CellLosesFocus;
 Occurs when the focus moves away from inside a workspace cell.
 
 ### CellPageInserting
+
 ```csharp
 [Category("DockableWorkspace")]
 [Description("Occurs when a page is being inserted into a cell.")]
@@ -141,6 +155,7 @@ public event EventHandler<KryptonPageEventArgs> CellPageInserting;
 Occurs when a page is being inserted into a cell.
 
 ### PageCloseRequest
+
 ```csharp
 [Category("Docking")]
 [Description("Occurs when a page requests that it be closed.")]
@@ -150,6 +165,7 @@ public event EventHandler<KryptonPageEventArgs> PageCloseRequest;
 Occurs when a page requests that it be closed.
 
 ### PageDropDownRequest
+
 ```csharp
 [Category("Docking")]
 [Description("Occurs when a page requests a dropdown.")]
@@ -159,6 +175,7 @@ public event EventHandler<KryptonPageEventArgs> PageDropDownRequest;
 Occurs when a page requests a dropdown.
 
 ### AutoHiddenGroupShowing
+
 ```csharp
 [Category("Auto-Hide")]
 [Description("Occurs when an auto-hidden group is showing.")]
@@ -168,6 +185,7 @@ public event EventHandler<KryptonAutoHiddenGroupEventArgs> AutoHiddenGroupShowin
 Occurs when an auto-hidden group is showing.
 
 ### AutoHiddenGroupHiding
+
 ```csharp
 [Category("Auto-Hide")]
 [Description("Occurs when an auto-hidden group is hiding.")]
@@ -179,6 +197,7 @@ Occurs when an auto-hidden group is hiding.
 ## Methods
 
 ### ShowAutoHiddenGroup(KryptonAutoHiddenGroup group)
+
 ```csharp
 public void ShowAutoHiddenGroup(KryptonAutoHiddenGroup group)
 ```
@@ -186,6 +205,7 @@ public void ShowAutoHiddenGroup(KryptonAutoHiddenGroup group)
 Shows the specified auto-hidden group.
 
 ### HideAutoHiddenGroup(KryptonAutoHiddenGroup group)
+
 ```csharp
 public void HideAutoHiddenGroup(KryptonAutoHiddenGroup group)
 ```
@@ -193,6 +213,7 @@ public void HideAutoHiddenGroup(KryptonAutoHiddenGroup group)
 Hides the specified auto-hidden group.
 
 ### CreateFloatingWindow()
+
 ```csharp
 public KryptonFloatingWindow CreateFloatingWindow()
 ```
@@ -200,6 +221,7 @@ public KryptonFloatingWindow CreateFloatingWindow()
 Creates a new floating window.
 
 ### CloseFloatingWindow(KryptonFloatingWindow window)
+
 ```csharp
 public void CloseFloatingWindow(KryptonFloatingWindow window)
 ```
@@ -207,6 +229,7 @@ public void CloseFloatingWindow(KryptonFloatingWindow window)
 Closes the specified floating window.
 
 ### SaveConfigToXml(XmlWriter xmlWriter)
+
 ```csharp
 public void SaveConfigToXml(XmlWriter xmlWriter)
 ```
@@ -214,6 +237,7 @@ public void SaveConfigToXml(XmlWriter xmlWriter)
 Saves the docking configuration to XML.
 
 ### LoadConfigFromXml(XmlReader xmlReader)
+
 ```csharp
 public void LoadConfigFromXml(XmlReader xmlReader)
 ```
@@ -221,6 +245,7 @@ public void LoadConfigFromXml(XmlReader xmlReader)
 Loads the docking configuration from XML.
 
 ### SaveConfigToFile(string filename)
+
 ```csharp
 public void SaveConfigToFile(string filename)
 ```
@@ -228,6 +253,7 @@ public void SaveConfigToFile(string filename)
 Saves the docking configuration to a file.
 
 ### LoadConfigFromFile(string filename)
+
 ```csharp
 public void LoadConfigFromFile(string filename)
 ```
@@ -237,6 +263,7 @@ Loads the docking configuration from a file.
 ## Usage Examples
 
 ### Basic Docking Setup
+
 ```csharp
 // Create a docking space
 KryptonDockspace dockspace = new KryptonDockspace();
@@ -252,6 +279,7 @@ form.Controls.Add(autoHiddenPanel);
 ```
 
 ### Creating Dockable Panels
+
 ```csharp
 // Create a dockable navigator
 KryptonDockableNavigator dockableNavigator = new KryptableNavigator();
@@ -267,6 +295,7 @@ dockspace.AddToWorkspace("Toolbox", dockableNavigator);
 ```
 
 ### Auto-Hide Panels
+
 ```csharp
 // Create auto-hidden group
 KryptonAutoHiddenGroup autoHiddenGroup = new KryptonAutoHiddenGroup();
@@ -292,7 +321,8 @@ dockspace.AutoHiddenGroupHiding += (sender, e) =>
 };
 ```
 
-### Floating Windows
+### Creating floating windows
+
 ```csharp
 // Create a floating window
 KryptonFloatingWindow floatingWindow = dockspace.CreateFloatingWindow();
@@ -311,6 +341,7 @@ floatingWindow.Show();
 ```
 
 ### Docking Events
+
 ```csharp
 // Handle docking events
 dockspace.CellGainsFocus += (sender, e) =>
@@ -331,6 +362,7 @@ dockspace.PageCloseRequest += (sender, e) =>
 ```
 
 ### Layout Persistence
+
 ```csharp
 // Save docking layout
 string layoutFile = "docking_layout.xml";
@@ -341,6 +373,7 @@ dockspace.LoadConfigFromFile(layoutFile);
 ```
 
 ### XML Configuration
+
 ```csharp
 // Save to XML string
 using (StringWriter stringWriter = new StringWriter())
@@ -359,6 +392,7 @@ using (XmlReader xmlReader = XmlReader.Create(stringReader))
 ```
 
 ### Multiple Docking Areas
+
 ```csharp
 // Create multiple docking areas
 KryptonDockspace leftDockspace = new KryptonDockspace();
@@ -377,6 +411,7 @@ form.Controls.Add(bottomDockspace);
 ```
 
 ### Custom Docking Behavior
+
 ```csharp
 // Configure docking behavior
 dockspace.AllowPageDrag = true;

@@ -30,6 +30,7 @@ public class KryptonButton : KryptonDropButton
 ## Properties
 
 ### Text and Content
+
 ```csharp
 [DefaultProperty("Text")]
 public string Text { get; set; }
@@ -38,6 +39,7 @@ public string Text { get; set; }
 Gets or sets the text displayed on the button.
 
 ### Orientation
+
 ```csharp
 [Browsable(true)]
 [Localizable(true)]
@@ -50,6 +52,7 @@ Gets and sets the visual orientation of the control. This affects how the button
 **Default Value**: `VisualOrientation.Top`
 
 ### ShowSplitOption
+
 ```csharp
 [Category("Visuals")]
 [DefaultValue(false)]
@@ -62,6 +65,7 @@ Gets or sets a value indicating whether to show the split/dropdown option. When 
 **Default Value**: `false`
 
 ### ButtonStyle
+
 ```csharp
 [Category("Appearance")]
 [Description("Defines the button style.")]
@@ -72,6 +76,7 @@ public ButtonStyle ButtonStyle { get; set; }
 Gets and sets the button style that defines the visual appearance and behavior.
 
 **Available Styles**:
+
 - `Standalone` - Standard button appearance
 - `Alternate` - Alternative button style
 - `LowProfile` - Low profile button style
@@ -88,6 +93,7 @@ Gets and sets the button style that defines the visual appearance and behavior.
 - `InputControl` - Input control button style
 
 ### DialogResult
+
 ```csharp
 [Category("Behavior")]
 [Description("The dialog result produced in a modal form by clicking the button.")]
@@ -100,6 +106,7 @@ Gets or sets the dialog result that is returned to the parent form when the butt
 **Default Value**: `DialogResult.None`
 
 ### UseMnemonic
+
 ```csharp
 [Category("Behavior")]
 [Description("If true, the first character preceded by an ampersand will be used as the mnemonic key.")]
@@ -112,6 +119,7 @@ Gets or sets a value indicating whether the first character preceded by an amper
 **Default Value**: `true`
 
 ### IsDefault
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets or sets a value indicating whether the button control is the default button.")]
@@ -126,6 +134,7 @@ Gets or sets a value indicating whether the button control is the default button
 ## State Properties
 
 ### StateCommon
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining common button appearance.")]
@@ -136,6 +145,7 @@ public PaletteTripleRedirect StateCommon { get; }
 Gets access to the common state appearance that other states can override.
 
 ### StateDisabled
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining disabled button appearance.")]
@@ -146,6 +156,7 @@ public PaletteTriple StateDisabled { get; }
 Gets access to the disabled state appearance.
 
 ### StateNormal
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining normal button appearance.")]
@@ -156,6 +167,7 @@ public PaletteTriple StateNormal { get; }
 Gets access to the normal state appearance.
 
 ### StateTracking
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining hot tracking button appearance.")]
@@ -166,6 +178,7 @@ public PaletteTriple StateTracking { get; }
 Gets access to the hot tracking state appearance.
 
 ### StatePressed
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining pressed button appearance.")]
@@ -176,6 +189,7 @@ public PaletteTriple StatePressed { get; }
 Gets access to the pressed state appearance.
 
 ### OverrideDefault
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining default button appearance.")]
@@ -186,6 +200,7 @@ public PaletteTripleRedirect OverrideDefault { get; }
 Gets access to the default state appearance overrides.
 
 ### OverrideFocus
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining focus button appearance.")]
@@ -198,6 +213,7 @@ Gets access to the focus state appearance overrides.
 ## Events
 
 ### Click
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the button is clicked.")]
@@ -207,6 +223,7 @@ public event EventHandler Click;
 Occurs when the button is clicked.
 
 ### KryptonCommandChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the value of the KryptonCommand property changes.")]
@@ -218,6 +235,7 @@ Occurs when the value of the KryptonCommand property changes.
 ## Methods
 
 ### PerformClick()
+
 ```csharp
 public void PerformClick()
 ```
@@ -225,6 +243,7 @@ public void PerformClick()
 Generates a Click event for the button, simulating a user click.
 
 ### NotifyDefault(bool value)
+
 ```csharp
 public void NotifyDefault(bool value)
 ```
@@ -234,6 +253,7 @@ Notifies the button whether it is the default button so that it can adjust its a
 ## Usage Examples
 
 ### Basic Button Setup
+
 ```csharp
 // Create a basic themed button
 KryptonButton button = new KryptonButton();
@@ -243,6 +263,7 @@ button.Click += (sender, e) => MessageBox.Show("Button clicked!");
 ```
 
 ### Custom Styling
+
 ```csharp
 // Create a button with custom styling
 KryptonButton customButton = new KryptonButton();
@@ -260,6 +281,7 @@ customButton.StateTracking.Content.ShortText.Color1 = Color.DarkCyan;
 ```
 
 ### Default Button Setup
+
 ```csharp
 // Create a default button
 KryptonButton defaultButton = new KryptonButton();
@@ -269,6 +291,7 @@ defaultButton.IsDefault = true;
 ```
 
 ### Mnemonic Support
+
 ```csharp
 // Create a button with mnemonic support
 KryptonButton mnemonicButton = new KryptonButton();
@@ -277,6 +300,7 @@ mnemonicButton.UseMnemonic = true;
 ```
 
 ### Theme Integration
+
 ```csharp
 // The button automatically uses the global theme
 KryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;

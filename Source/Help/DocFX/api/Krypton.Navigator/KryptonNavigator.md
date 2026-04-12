@@ -34,6 +34,7 @@ public class KryptonNavigator : VisualSimple, IDragTargetProvider
 ### Navigation Mode
 
 #### Mode
+
 ```csharp
 [Category("Navigator")]
 [Description("Gets and sets the navigator mode.")]
@@ -48,6 +49,7 @@ Gets and sets the navigation mode that determines how pages are displayed.
 ### Page Management
 
 #### Pages
+
 ```csharp
 [Category("Navigator")]
 [Description("Collection of navigator pages.")]
@@ -58,6 +60,7 @@ public KryptonPageCollection Pages { get; }
 Gets access to the collection of navigator pages.
 
 #### SelectedPage
+
 ```csharp
 [Category("Navigator")]
 [Description("Gets and sets the selected page.")]
@@ -70,6 +73,7 @@ Gets and sets the currently selected page.
 **Default Value**: `null`
 
 #### SelectedIndex
+
 ```csharp
 [Category("Navigator")]
 [Description("Gets and sets the selected page index.")]
@@ -84,6 +88,7 @@ Gets and sets the index of the currently selected page.
 ### Behavior Settings
 
 #### AllowTabFocus
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if tabs can receive focus.")]
@@ -96,6 +101,7 @@ Gets and sets whether tabs can receive keyboard focus.
 **Default Value**: `true`
 
 #### AllowTabSelect
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if tabs can be selected.")]
@@ -108,6 +114,7 @@ Gets and sets whether tabs can be selected.
 **Default Value**: `true`
 
 #### ControlKryptonFormFeatures
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if KryptonForm features are controlled.")]
@@ -122,6 +129,7 @@ Gets and sets whether the navigator controls KryptonForm features.
 ### Appearance
 
 #### PageBackStyle
+
 ```csharp
 [Category("Visuals")]
 [Description("Gets and sets the page background style.")]
@@ -136,6 +144,7 @@ Gets and sets the background style for pages.
 ### Button Specifications
 
 #### ButtonSpecs
+
 ```csharp
 [Category("Visuals")]
 [Description("Collection of button specifications.")]
@@ -148,6 +157,7 @@ Gets access to the collection of button specifications for the navigator.
 ## Events
 
 ### SelectedPageChanged
+
 ```csharp
 [Category("Navigator Selection")]
 [Description("Occurs when the SelectedPage property is changed.")]
@@ -157,6 +167,7 @@ public event EventHandler SelectedPageChanged;
 Occurs when the selected page changes.
 
 ### Selecting
+
 ```csharp
 [Category("Navigator Selection")]
 [Description("Occurs before a page is selected.")]
@@ -166,6 +177,7 @@ public event EventHandler<KryptonPageCancelEventArgs> Selecting;
 Occurs before a page is selected. Can be cancelled.
 
 ### Selected
+
 ```csharp
 [Category("Navigator Selection")]
 [Description("Occurs after a page is selected.")]
@@ -175,6 +187,7 @@ public event EventHandler<KryptonPageEventArgs> Selected;
 Occurs after a page is selected.
 
 ### Deselecting
+
 ```csharp
 [Category("Navigator Selection")]
 [Description("Occurs before a page is deselected.")]
@@ -184,6 +197,7 @@ public event EventHandler<KryptonPageCancelEventArgs> Deselecting;
 Occurs before a page is deselected. Can be cancelled.
 
 ### Deselected
+
 ```csharp
 [Category("Navigator Selection")]
 [Description("Occurs after a page is deselected.")]
@@ -193,6 +207,7 @@ public event EventHandler<KryptonPageEventArgs> Deselected;
 Occurs after a page is deselected.
 
 ### PreviousAction
+
 ```csharp
 [Category("Navigator")]
 [Description("Occurs when the previous action occurs.")]
@@ -202,6 +217,7 @@ public event EventHandler PreviousAction;
 Occurs when the previous action is triggered.
 
 ### NextAction
+
 ```csharp
 [Category("Navigator")]
 [Description("Occurs when the next action occurs.")]
@@ -211,6 +227,7 @@ public event EventHandler NextAction;
 Occurs when the next action is triggered.
 
 ### CloseAction
+
 ```csharp
 [Category("Navigator")]
 [Description("Occurs when the close action occurs.")]
@@ -220,6 +237,7 @@ public event EventHandler<KryptonPageEventArgs> CloseAction;
 Occurs when the close action is triggered.
 
 ### ContextAction
+
 ```csharp
 [Category("Navigator")]
 [Description("Occurs when the context action occurs.")]
@@ -229,6 +247,7 @@ public event EventHandler<KryptonPageEventArgs> ContextAction;
 Occurs when the context action is triggered.
 
 ### ButtonSpecClick
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when a button specification is clicked.")]
@@ -240,6 +259,7 @@ Occurs when a button specification is clicked.
 ## Methods
 
 ### SelectPage(KryptonPage page)
+
 ```csharp
 public void SelectPage(KryptonPage page)
 ```
@@ -247,6 +267,7 @@ public void SelectPage(KryptonPage page)
 Selects the specified page.
 
 ### SelectPage(int index)
+
 ```csharp
 public void SelectPage(int index)
 ```
@@ -254,6 +275,7 @@ public void SelectPage(int index)
 Selects the page at the specified index.
 
 ### SelectNextPage()
+
 ```csharp
 public void SelectNextPage()
 ```
@@ -261,6 +283,7 @@ public void SelectNextPage()
 Selects the next page in the collection.
 
 ### SelectPreviousPage()
+
 ```csharp
 public void SelectPreviousPage()
 ```
@@ -268,6 +291,7 @@ public void SelectPreviousPage()
 Selects the previous page in the collection.
 
 ### ClosePage(KryptonPage page)
+
 ```csharp
 public void ClosePage(KryptonPage page)
 ```
@@ -275,6 +299,7 @@ public void ClosePage(KryptonPage page)
 Closes the specified page.
 
 ### ClosePage(int index)
+
 ```csharp
 public void ClosePage(int index)
 ```
@@ -282,6 +307,7 @@ public void ClosePage(int index)
 Closes the page at the specified index.
 
 ### ShowContextMenu(Point screenPoint)
+
 ```csharp
 public void ShowContextMenu(Point screenPoint)
 ```
@@ -289,6 +315,7 @@ public void ShowContextMenu(Point screenPoint)
 Shows the context menu at the specified screen point.
 
 ### ShowContextMenu(KryptonPage page, Point screenPoint)
+
 ```csharp
 public void ShowContextMenu(KryptonPage page, Point screenPoint)
 ```
@@ -298,132 +325,164 @@ Shows the context menu for the specified page at the specified screen point.
 ## Available Navigator Modes
 
 ### BarTabGroup
+
 - **Description**: Standard tab bar with group support
 - **Use Case**: Traditional tabbed interface with grouping
 
 ### BarTabOnly
+
 - **Description**: Simple tab bar without grouping
 - **Use Case**: Basic tabbed interface
 
 ### BarRibbonTab
+
 - **Description**: Ribbon-style tab bar
 - **Use Case**: Office-style ribbon interface
 
 ### BarRibbonAppButton
+
 - **Description**: Ribbon with application button
 - **Use Case**: Office-style ribbon with app menu
 
 ### BarCheckButtonGroup
+
 - **Description**: Check button group style
 - **Use Case**: Radio button-style navigation
 
 ### BarCheckButtonGroupOnly
+
 - **Description**: Check button group without header
 - **Use Case**: Simple radio button navigation
 
 ### BarOutlookFull
+
 - **Description**: Full Outlook-style navigation
 - **Use Case**: Outlook-style interface
 
 ### BarOutlookMini
+
 - **Description**: Mini Outlook-style navigation
 - **Use Case**: Compact Outlook-style interface
 
 ### BarOutlookPopup
+
 - **Description**: Popup Outlook-style navigation
 - **Use Case**: Dropdown Outlook-style interface
 
 ### BarHeaderGroup
+
 - **Description**: Header group style
 - **Use Case**: Header-based navigation
 
 ### BarHeaderOnly
+
 - **Description**: Header-only style
 - **Use Case**: Simple header navigation
 
 ### BarHeaderForm
+
 - **Description**: Header form style
 - **Use Case**: Form-based header navigation
 
 ### BarHeaderFormInTitle
+
 - **Description**: Header form in title style
 - **Use Case**: Title bar header navigation
 
 ### BarHeaderCustom1
+
 - **Description**: Custom header style 1
 - **Use Case**: Custom header navigation
 
 ### BarHeaderCustom2
+
 - **Description**: Custom header style 2
 - **Use Case**: Custom header navigation
 
 ### BarHeaderCustom3
+
 - **Description**: Custom header style 3
 - **Use Case**: Custom header navigation
 
 ### StackHeaderGroup
+
 - **Description**: Stacked header group
 - **Use Case**: Vertical header navigation
 
 ### StackHeaderOnly
+
 - **Description**: Stacked header only
 - **Use Case**: Vertical header navigation
 
 ### StackHeaderForm
+
 - **Description**: Stacked header form
 - **Use Case**: Vertical form header navigation
 
 ### StackHeaderFormInTitle
+
 - **Description**: Stacked header form in title
 - **Use Case**: Vertical title bar header navigation
 
 ### StackHeaderCustom1
+
 - **Description**: Custom stacked header 1
 - **Use Case**: Custom vertical header navigation
 
 ### StackHeaderCustom2
+
 - **Description**: Custom stacked header 2
 - **Use Case**: Custom vertical header navigation
 
 ### StackHeaderCustom3
+
 - **Description**: Custom stacked header 3
 - **Use Case**: Custom vertical header navigation
 
 ### ButtonSpecOnly
+
 - **Description**: Button specification only
 - **Use Case**: Button-based navigation
 
 ### ButtonSpecForm
+
 - **Description**: Button specification form
 - **Use Case**: Form-based button navigation
 
 ### ButtonSpecFormInTitle
+
 - **Description**: Button specification form in title
 - **Use Case**: Title bar button navigation
 
 ### ButtonSpecCustom1
+
 - **Description**: Custom button specification 1
 - **Use Case**: Custom button navigation
 
 ### ButtonSpecCustom2
+
 - **Description**: Custom button specification 2
 - **Use Case**: Custom button navigation
 
 ### ButtonSpecCustom3
+
 - **Description**: Custom button specification 3
 - **Use Case**: Custom button navigation
 
 ### Panel
+
 - **Description**: Panel mode
 - **Use Case**: Panel-based navigation
 
 ### Group
+
 - **Description**: Group mode
 - **Use Case**: Group-based navigation
 
 ## Usage Examples
 
 ### Basic Navigator Setup
+
 ```csharp
 // Create a basic navigator
 KryptonNavigator navigator = new KryptonNavigator();
@@ -445,6 +504,7 @@ navigator.Pages.Add(page2);
 ```
 
 ### Tab-Style Navigation
+
 ```csharp
 // Configure for tab-style navigation
 navigator.Mode = NavigatorMode.BarTabOnly;
@@ -459,6 +519,7 @@ navigator.SelectedPageChanged += (sender, e) =>
 ```
 
 ### Outlook-Style Navigation
+
 ```csharp
 // Configure for Outlook-style navigation
 navigator.Mode = NavigatorMode.BarOutlookFull;
@@ -476,6 +537,7 @@ navigator.Pages.Add(calendarPage);
 ```
 
 ### Header-Style Navigation
+
 ```csharp
 // Configure for header-style navigation
 navigator.Mode = NavigatorMode.BarHeaderGroup;
@@ -493,6 +555,7 @@ navigator.Pages.Add(headerPage2);
 ```
 
 ### Programmatic Navigation
+
 ```csharp
 // Navigate programmatically
 navigator.SelectNextPage();
@@ -509,6 +572,7 @@ navigator.ClosePage(navigator.SelectedPage);
 ```
 
 ### Event Handling
+
 ```csharp
 // Handle selection events
 navigator.Selecting += (sender, e) =>
@@ -533,6 +597,7 @@ navigator.CloseAction += (sender, e) =>
 ```
 
 ### Custom Button Specifications
+
 ```csharp
 // Add custom buttons to the navigator
 ButtonSpecAny customButton = new ButtonSpecAny();
@@ -543,6 +608,7 @@ navigator.ButtonSpecs.Add(customButton);
 ```
 
 ### Context Menu Support
+
 ```csharp
 // Show context menu
 navigator.ContextAction += (sender, e) =>

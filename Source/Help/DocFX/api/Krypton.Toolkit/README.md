@@ -18,6 +18,7 @@ The `Krypton.Toolkit` namespace contains the core controls and utilities that fo
 ### Basic Controls
 
 #### Input Controls
+
 - **[KryptonButton](KryptonButton.md)** - Themed button control with multiple states
 - **[KryptonTextBox](KryptonTextBox.md)** - Single-line text input control
 - **`KryptonRichTextBox`** - Multi-line rich text input control
@@ -28,6 +29,7 @@ The `Krypton.Toolkit` namespace contains the core controls and utilities that fo
 - **`KryptonDateTimePicker`** - Date and time picker control
 
 #### Selection Controls
+
 - **`KryptonCheckBox`** - Checkbox control
 - **`KryptonRadioButton`** - Radio button control
 - **`KryptonListBox`** - List selection control
@@ -36,6 +38,7 @@ The `Krypton.Toolkit` namespace contains the core controls and utilities that fo
 - **`KryptonTreeView`** - Tree view control
 
 #### Display Controls
+
 - **`KryptonLabel`** - Text label control
 - **`KryptonPanel`** - Container panel control
 - **`KryptonGroupBox`** - Group box container
@@ -44,6 +47,7 @@ The `Krypton.Toolkit` namespace contains the core controls and utilities that fo
 - **`KryptonBorderEdge`** - Border edge control
 
 #### Advanced Controls
+
 - **`KryptonDataGridView`** - Data grid view control
 - **`KryptonPropertyGrid`** - Property grid control
 - **`KryptonProgressBar`** - Progress bar control
@@ -54,26 +58,32 @@ The `Krypton.Toolkit` namespace contains the core controls and utilities that fo
 - **`KryptonCommandLinkButton`** - Command link button
 
 #### Layout Controls
+
 - **`KryptonSplitContainer`** - Split container control
 - **`KryptonGroup`** - Group container control
 
 ### Utility Components
 
 #### Collections
+
 - **`KryptonControlCollection`** - Collection of Krypton controls
 - **`KryptonReadOnlyControls`** - Read-only control collection
 
 #### ToolStrip Integration
+
 - **`KryptonToolStripComboBox`** - ToolStrip combo box
 - **`KryptonToolStripThemeComboBox`** - Theme selector for ToolStrip
 
 ## Common Features
 
 ### Theming Support
+
 All controls in `Krypton.Toolkit` support the global theming system managed by `KryptonManager`. They automatically adapt to theme changes and provide consistent visual styling.
 
 ### State Management
+
 Controls support multiple visual states:
+
 - **Normal** - Default appearance
 - **Disabled** - When the control is disabled
 - **Hot** - When the mouse is over the control
@@ -82,14 +92,18 @@ Controls support multiple visual states:
 - **Focus** - When the control has keyboard focus
 
 ### Palette Integration
+
 Each control integrates with the palette system to provide:
+
 - Consistent color schemes
 - Theme-aware styling
 - Customizable appearance
 - High contrast support
 
 ### Enhanced Events
+
 Controls provide enhanced event handling with:
+
 - Typed event arguments
 - Additional context information
 - State change notifications
@@ -98,6 +112,7 @@ Controls provide enhanced event handling with:
 ## Usage Examples
 
 ### Basic Control Setup
+
 ```csharp
 // Create a themed button
 KryptonButton button = new KryptonButton();
@@ -111,6 +126,7 @@ textBox.StateCommon.Border.Color1 = Color.Gray;
 ```
 
 ### Theme Integration
+
 ```csharp
 // The controls automatically use the global theme
 KryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;
@@ -119,6 +135,7 @@ KryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;
 ```
 
 ### Custom Styling
+
 ```csharp
 // Customize individual control appearance
 KryptonButton customButton = new KryptonButton();
@@ -130,6 +147,7 @@ customButton.StateCommon.Border.Color1 = Color.DarkRed;
 ## Design-Time Support
 
 All controls include comprehensive design-time support:
+
 - Visual Studio toolbox integration
 - Property grid customization
 - Designer serialization
@@ -153,6 +171,7 @@ All controls include comprehensive design-time support:
 ## Version Compatibility
 
 The controls in `Krypton.Toolkit` are compatible with:
+
 - .NET Framework 4.7.2+
 - .NET 6.0 Windows+
 - .NET 7.0 Windows+

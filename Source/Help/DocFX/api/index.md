@@ -17,14 +17,17 @@ The Krypton Toolkit Suite is a comprehensive set of themed controls for Windows 
 ### Core Components (Krypton.Toolkit)
 
 #### Forms and Management
+
 - [KryptonForm](Krypton.Toolkit/KryptonForm.md) - Themed form with custom window chrome
 - [KryptonManager](Krypton.Toolkit/KryptonManager.md) - Global theme management and settings
 
 #### Input Controls
+
 - [KryptonTextBox](Krypton.Toolkit/KryptonTextBox.md) - Themed text input control
 - [KryptonButton](Krypton.Toolkit/KryptonButton.md) - Themed button control
 
 #### Additional Controls
+
 - `KryptonRichTextBox` - Rich text editing control
 - `KryptonMaskedTextBox` - Text input with format masking
 - `KryptonComboBox` - Dropdown selection control
@@ -64,6 +67,7 @@ The Krypton Toolkit Suite is a comprehensive set of themed controls for Windows 
 ### Ribbon Interface (Krypton.Ribbon)
 
 #### Core Ribbon Components
+
 - [KryptonRibbon](Krypton.Ribbon/KryptonRibbon.md) - Main ribbon control
 - `KryptonRibbonTab` - Individual ribbon tab
 - `KryptonRibbonGroup` - Group of controls within a tab
@@ -73,6 +77,7 @@ The Krypton Toolkit Suite is a comprehensive set of themed controls for Windows 
 - `KryptonGallery` - Gallery control for ribbon
 
 #### Ribbon Controls
+
 - `KryptonRibbonGroupButton` - Button in ribbon group
 - `KryptonRibbonGroupCheckBox` - Check box in ribbon group
 - `KryptonRibbonGroupComboBox` - Combo box in ribbon group
@@ -90,11 +95,13 @@ The Krypton Toolkit Suite is a comprehensive set of themed controls for Windows 
 ### Navigation System (Krypton.Navigator)
 
 #### Core Navigation Components
+
 - [KryptonNavigator](Krypton.Navigator/KryptonNavigator.md) - Main navigation control
 - `KryptonPage` - Individual navigator page
 - `KryptonPageCollection` - Collection of navigator pages
 
 #### Navigation Modes
+
 - **BarTabGroup** - Standard tab bar with group support
 - **BarTabOnly** - Simple tab bar without grouping
 - **BarRibbonTab** - Ribbon-style tab bar
@@ -115,12 +122,14 @@ The Krypton Toolkit Suite is a comprehensive set of themed controls for Windows 
 ### Workspace Management (Krypton.Workspace)
 
 #### Core Workspace Components
+
 - [KryptonWorkspace](Krypton.Workspace/KryptonWorkspace.md) - Main workspace control
 - `KryptonWorkspaceSequence` - Workspace sequence for layout organization
 - `KryptonWorkspaceCell` - Individual workspace cell
 - `KryptonWorkspaceCollection` - Collection of workspace items
 
 #### Workspace Features
+
 - **Flexible Layout System** - Hierarchical layout of navigator instances
 - **Docking Support** - Full docking capabilities for panels
 - **Resizable Panels** - Adjustable panel sizes with splitters
@@ -132,6 +141,7 @@ The Krypton Toolkit Suite is a comprehensive set of themed controls for Windows 
 ### Docking System (Krypton.Docking)
 
 #### Core Docking Components
+
 - [KryptonDocking](Krypton.Docking/KryptonDocking.md) - Main docking system documentation
 - `KryptonDockspace` - Main docking space
 - `KryptonFloatspace` - Floating docking space
@@ -143,6 +153,7 @@ The Krypton Toolkit Suite is a comprehensive set of themed controls for Windows 
 - `KryptonAutoHiddenSlidePanel` - Auto-hidden slide panel
 
 #### Docking Features
+
 - **Advanced Docking** - Full docking capabilities with drag-and-drop support
 - **Floating Windows** - Support for floating dockable panels
 - **Auto-Hide Panels** - Panels that can be auto-hidden and shown on demand
@@ -152,6 +163,7 @@ The Krypton Toolkit Suite is a comprehensive set of themed controls for Windows 
 ## Getting Started
 
 ### Basic Setup
+
 ```csharp
 // Set global theme
 KryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;
@@ -164,6 +176,7 @@ form.Show();
 ```
 
 ### Adding Controls
+
 ```csharp
 // Add themed controls
 KryptonTextBox textBox = new KryptonTextBox();
@@ -178,6 +191,7 @@ form.Controls.Add(button);
 ```
 
 ### Creating a Ribbon Interface
+
 ```csharp
 // Create ribbon
 KryptonRibbon ribbon = new KryptonRibbon();
@@ -196,6 +210,7 @@ form.Controls.Add(ribbon);
 ```
 
 ### Creating a Navigation Interface
+
 ```csharp
 // Create navigator
 KryptonNavigator navigator = new KryptonNavigator();
@@ -211,6 +226,7 @@ form.Controls.Add(navigator);
 ```
 
 ### Creating a Workspace Layout
+
 ```csharp
 // Create workspace
 KryptonWorkspace workspace = new KryptonWorkspace();
@@ -233,33 +249,39 @@ form.Controls.Add(workspace);
 ### Available Themes
 
 #### Office 2007 Themes
+
 - `PaletteMode.Office2007Blue` - Office 2007 Blue theme
 - `PaletteMode.Office2007Silver` - Office 2007 Silver theme
 - `PaletteMode.Office2007Black` - Office 2007 Black theme
 - `PaletteMode.Office2007DarkGray` - Office 2007 Dark Gray theme
 
 #### Office 2010 Themes
+
 - `PaletteMode.Office2010Blue` - Office 2010 Blue theme
 - `PaletteMode.Office2010Silver` - Office 2010 Silver theme
 - `PaletteMode.Office2010Black` - Office 2010 Black theme
 - `PaletteMode.Office2010DarkGray` - Office 2010 Dark Gray theme
 
 #### Office 2013 Themes
+
 - `PaletteMode.Office2013White` - Office 2013 White theme
 - `PaletteMode.Office2013LightGray` - Office 2013 Light Gray theme
 - `PaletteMode.Office2013DarkGray` - Office 2013 Dark Gray theme
 
 #### Sparkle Themes
+
 - `PaletteMode.SparkleBlue` - Sparkle Blue theme
 - `PaletteMode.SparkleOrange` - Sparkle Orange theme
 - `PaletteMode.SparklePurple` - Sparkle Purple theme
 
 #### Microsoft 365 Themes
+
 - `PaletteMode.Microsoft365Blue` - Microsoft 365 Blue theme
 - `PaletteMode.Microsoft365Black` - Microsoft 365 Black theme
 - `PaletteMode.Microsoft365DarkGray` - Microsoft 365 Dark Gray theme
 
 ### Theme Switching
+
 ```csharp
 // Switch themes at runtime
 KryptonManager.GlobalPaletteMode = PaletteMode.Office2010BlackDarkMode;
@@ -314,7 +336,7 @@ The Krypton Toolkit provides full accessibility support:
 - [Documentation](https://github.com/Krypton-Suite/Standard-Toolkit/wiki)
 - [Examples and Samples](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/Source/Krypton%20Components/TestForm)
 - [Community Support](https://github.com/Krypton-Suite/Standard-Toolkit/discussions)
-- Looking for the API reference? Please visit this [link](https://github.com/Krypton-Suite/Help-Files/releases) for the latest version of the documentation.
+- For the latest downloadable API reference, see [Help-Files releases](https://github.com/Krypton-Suite/Help-Files/releases).
 
 ## License
 
