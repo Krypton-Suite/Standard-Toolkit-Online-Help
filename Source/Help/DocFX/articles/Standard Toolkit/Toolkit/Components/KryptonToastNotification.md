@@ -20,7 +20,7 @@ System.Object
 #### ShowBasicNotification Method
 
 ```csharp
-public static void ShowBasicNotification(KryptonBasicToastNotificationData toastNotificationData)
+public static void ShowBasicNotification(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic toast notification
@@ -32,7 +32,7 @@ public static void ShowBasicNotification(KryptonBasicToastNotificationData toast
 #### ShowBasicNotificationWithBooleanReturnValue Method
 
 ```csharp
-public static bool ShowBasicNotificationWithBooleanReturnValue(KryptonBasicToastNotificationData toastNotificationData)
+public static bool ShowBasicNotificationWithBooleanReturnValue(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic toast notification with boolean return value
@@ -44,7 +44,7 @@ public static bool ShowBasicNotificationWithBooleanReturnValue(KryptonBasicToast
 #### ShowBasicNotificationWithCheckStateReturnValue Method
 
 ```csharp
-public static CheckState ShowBasicNotificationWithCheckStateReturnValue(KryptonBasicToastNotificationData toastNotificationData)
+public static CheckState ShowBasicNotificationWithCheckStateReturnValue(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic toast notification with CheckState return value
@@ -58,7 +58,7 @@ public static CheckState ShowBasicNotificationWithCheckStateReturnValue(KryptonB
 #### ShowBasicProgressBarNotification Method
 
 ```csharp
-public static void ShowBasicProgressBarNotification(KryptonBasicToastNotificationData toastNotificationData)
+public static void ShowBasicProgressBarNotification(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic progress bar notification
@@ -70,7 +70,7 @@ public static void ShowBasicProgressBarNotification(KryptonBasicToastNotificatio
 #### ShowBasicProgressBarNotificationWithBooleanReturnValue Method
 
 ```csharp
-public static bool ShowBasicProgressBarNotificationWithBooleanReturnValue(KryptonBasicToastNotificationData toastNotificationData)
+public static bool ShowBasicProgressBarNotificationWithBooleanReturnValue(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic progress bar notification with boolean return value
@@ -82,7 +82,7 @@ public static bool ShowBasicProgressBarNotificationWithBooleanReturnValue(Krypto
 #### ShowBasicProgressBarNotificationWithCheckStateReturnValue Method
 
 ```csharp
-public static CheckState ShowBasicProgressBarNotificationWithCheckStateReturnValue(KryptonBasicToastNotificationData toastNotificationData)
+public static CheckState ShowBasicProgressBarNotificationWithCheckStateReturnValue(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic progress bar notification with CheckState return value
@@ -96,7 +96,7 @@ public static CheckState ShowBasicProgressBarNotificationWithCheckStateReturnVal
 #### ShowNotification Method
 
 ```csharp
-public static object ShowNotification(KryptonUserInputToastNotificationData data)
+public static object ShowNotification(KryptonUserInputToastData data)
 ```
 
 - **Purpose**: Displays a notification with ComboBox for user input
@@ -108,7 +108,7 @@ public static object ShowNotification(KryptonUserInputToastNotificationData data
 #### ShowNotificationWithProgressBar Method
 
 ```csharp
-public static object ShowNotificationWithProgressBar(KryptonUserInputToastNotificationData data)
+public static object ShowNotificationWithProgressBar(KryptonUserInputToastData data)
 ```
 
 - **Purpose**: Displays a notification with progress bar and ComboBox for user input
@@ -116,6 +116,29 @@ public static object ShowNotificationWithProgressBar(KryptonUserInputToastNotifi
   - `data`: Configuration data for the user input notification with progress
 - **Returns**: Object containing the user's selection
 - **Usage**: Progress notifications requiring user input via ComboBox
+
+### Icon Size Customization (Issue #2125)
+
+`KryptonBasicToastData` and `KryptonUserInputToastData` now support:
+
+- `NotificationIconWidth`
+- `NotificationIconHeight`
+
+Use these to reduce or enlarge the icon independently from the default 128x128 size:
+
+```csharp
+var notificationData = new KryptonBasicToastData
+{
+    NotificationTitle = "Information",
+    NotificationContent = "Operation completed successfully!",
+    NotificationIcon = KryptonToastIcon.Information,
+    NotificationIconWidth = 16,
+    NotificationIconHeight = 16,
+    CountDownSeconds = 10
+};
+
+KryptonToast.ShowBasicNotification(notificationData);
+```
 
 ## Advanced Usage Patterns
 

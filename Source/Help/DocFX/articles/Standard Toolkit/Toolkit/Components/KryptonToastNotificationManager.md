@@ -42,6 +42,29 @@ The class is decorated with toolbox attributes:
 - **ToolboxBitmap**: Uses a custom bitmap for toolbox representation
 - **Design-Time**: Full design-time support for configuration
 
+### Toast Data Icon Size Properties (Issue #2125)
+
+When using the manager as an application-level notification service, the toast data models now support explicit icon sizing:
+
+- `KryptonBasicToastData.NotificationIconWidth`
+- `KryptonBasicToastData.NotificationIconHeight`
+- `KryptonUserInputToastData.NotificationIconWidth`
+- `KryptonUserInputToastData.NotificationIconHeight`
+
+```csharp
+var notificationData = new KryptonBasicToastData
+{
+    NotificationTitle = "Application Update",
+    NotificationContent = "A new version is available. Would you like to update now?",
+    NotificationIcon = KryptonToastIcon.Information,
+    NotificationIconWidth = 16,
+    NotificationIconHeight = 16,
+    ShowDoNotShowAgainOption = true
+};
+
+bool doNotShowAgain = KryptonToast.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+```
+
 ## Advanced Usage Patterns
 
 ### Design-Time Component Usage

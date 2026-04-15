@@ -11,9 +11,9 @@ The `Krypton.Ribbon` namespace contains components for creating modern ribbon-st
 ### Main Ribbon Components
 
 - **[KryptonRibbon](KryptonRibbon.md)** - Main ribbon control that hosts tabs and groups
-- **[KryptonRibbonTab](KryptonRibbonTab.md)** - Individual tab within the ribbon
-- **[KryptonRibbonGroup](KryptonRibbonGroup.md)** - Group of related controls within a tab
-- **[KryptonRibbonContext](KryptonRibbonContext.md)** - Contextual tab that appears based on selection
+- **`KryptonRibbonTab`** - Individual tab within the ribbon
+- **`KryptonRibbonGroup`** - Group of related controls within a tab
+- **`KryptonRibbonContext`** - Contextual tab that appears based on selection
 
 ### Ribbon Group Items
 
@@ -51,12 +51,12 @@ The `Krypton.Ribbon` namespace contains components for creating modern ribbon-st
 - **`KryptonRibbonGroupLines`** - Lines container for organizing controls vertically
 - **`KryptonRibbonGroupTriple`** - Triple container for organizing three controls
 
-### Quick Access Toolbar types
+### Quick Access Toolbar (QAT)
 
 - **`KryptonRibbonQATButton`** - Button in the Quick Access Toolbar
 - **`KryptonRibbonQATButtonCollection`** - Collection of QAT buttons
 
-### Recent document types
+### Recent documents code example
 
 - **`KryptonRibbonRecentDoc`** - Recent document entry
 - **`KryptonRibbonRecentDocCollection`** - Collection of recent documents
@@ -76,11 +76,11 @@ The ribbon interface is organized hierarchically:
 - **Groups** - Vertical sections within tabs that contain related controls
 - **Items** - Individual controls within groups
 
-### Quick Access Toolbar (QAT)
+### Quick access toolbar behavior
 
 The QAT provides quick access to frequently used commands and can be positioned above or below the ribbon.
 
-### Contextual tab behavior
+### Contextual tabs example
 
 Contextual tabs appear when specific content is selected, providing relevant commands for the current context.
 
@@ -92,7 +92,7 @@ The ribbon can be minimized to save screen space, showing only the tab headers.
 
 Keyboard navigation support with key tips that appear when the Alt key is pressed.
 
-### Recent documents feature
+### Recent documents example
 
 Built-in support for displaying and managing recent documents.
 
@@ -131,7 +131,7 @@ saveButton.ImageSmall = Properties.Resources.Save16;
 ribbon.QATButtons.Add(saveButton);
 ```
 
-### Contextual tabs example
+### Contextual Tabs
 
 ```csharp
 // Create a contextual tab
@@ -142,7 +142,7 @@ ribbon.RibbonContexts.Add(pictureContext);
 // The contextual tab will appear when a picture is selected
 ```
 
-### Recent documents example
+### Recent Documents
 
 ```csharp
 // Add recent documents

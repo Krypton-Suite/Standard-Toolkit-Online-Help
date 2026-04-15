@@ -178,3 +178,4 @@ The controls in `Krypton.Toolkit` are compatible with:
 - .NET 8.0 Windows+
 - .NET 9.0 Windows+
 - .NET 10.0 Windows+
+- .NET 11.0 Windows+
