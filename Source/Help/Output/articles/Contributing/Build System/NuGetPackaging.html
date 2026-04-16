@@ -71,6 +71,7 @@
 
 <h2 id="overview">Overview</h2>
 <p>The Krypton Toolkit build system creates NuGet packages for all five component libraries across multiple target frameworks and configurations. Packages are automatically configured with appropriate metadata, icons, dependencies, and source linking.</p>
+<p><strong>Output folder</strong>: <code>PackageOutputPath</code> is <code>$(KryptonPackageOutputRoot)$(Configuration)\</code> from <code>Source/Krypton Components/Directory.Build.props</code>. By default that is <code>Bin/Packages/&lt;Configuration&gt;/</code>; with <code>/p:UseArtifactsOutput=true</code> it is <code>artifacts/packages/&lt;Configuration&gt;/</code> (same property chain as CI).</p>
 <h2 id="package-structure">Package Structure</h2>
 <h3 id="core-packages">Core Packages</h3>
 <table>
@@ -143,7 +144,7 @@
 </code></pre>
 <p><strong>Actions</strong>:</p>
 <ul>
-<li>Deletes all <code>.nupkg</code> files from <code>Bin/Packages/&lt;Configuration&gt;/</code></li>
+<li>Deletes all <code>.nupkg</code> files from the configuration folder under <code>$(KryptonPackageOutputRoot)</code> (legacy: <code>Bin/Packages/&lt;Configuration&gt;/</code>; artifacts: <code>artifacts/packages/&lt;Configuration&gt;/</code>)</li>
 </ul>
 <h3 id="2-clean-build-artifacts">2. Clean Build Artifacts</h3>
 <pre><code class="lang-cmd">msbuild build.proj /t:Clean
@@ -177,7 +178,7 @@
 <ul>
 <li>Compiles all Krypton projects</li>
 <li>Targets all frameworks specified by <code>TFMs</code> property</li>
-<li>Generates assemblies in <code>Bin/&lt;Configuration&gt;/&lt;TFM&gt;/</code></li>
+<li>Generates assemblies under <code>$(KryptonBuildOutputRoot)&lt;Configuration&gt;/&lt;TFM&gt;/</code> (legacy <code>Bin/...</code> or <code>artifacts/bin/...</code> when <code>UseArtifactsOutput=true</code>)</li>
 </ul>
 <h3 id="5-pack-projects">5. Pack Projects</h3>
 <pre><code class="lang-cmd">msbuild build.proj /t:Pack /p:TFMs=all
@@ -187,7 +188,7 @@
 <li>Creates NuGet packages from built assemblies</li>
 <li>Applies configuration-specific metadata</li>
 <li>Generates <code>.nupkg</code> and optionally <code>.snupkg</code> files</li>
-<li>Outputs to <code>Bin/Packages/&lt;Configuration&gt;/</code></li>
+<li>Outputs to <code>$(KryptonPackageOutputRoot)&lt;Configuration&gt;/</code></li>
 </ul>
 <h3 id="complete-workflow">Complete Workflow</h3>
 <pre><code class="lang-cmd">cd Scripts
@@ -281,6 +282,7 @@ Krypton.Ribbon → Krypton.Toolkit
 </ul>
 <h2 id="package-output-locations">Package Output Locations</h2>
 <h3 id="by-configuration">By Configuration</h3>
+<p>Default (local scripts) layout:</p>
 <pre><code>Bin/
 ├── Packages/
 │   ├── Release/
@@ -298,6 +300,14 @@ Krypton.Ribbon → Krypton.Toolkit
 │   │   └── ...
 │   └── Installer/
 │       └── ...
+</code></pre>
+<p>With <code>/p:UseArtifactsOutput=true</code> (GitHub Actions and optional local builds), the same per-configuration folders appear under:</p>
+<pre><code>artifacts/
+└── packages/
+    ├── Release/
+    ├── Canary/
+    ├── Nightly/
+    └── Installer/
 </code></pre>
 <h2 id="package-content-structure">Package Content Structure</h2>
 <h3 id="assemblies-lib">Assemblies (lib/)</h3>
@@ -353,7 +363,8 @@ msbuild build.proj /t:Push
 publish.cmd
 </code></pre>
 <h4 id="push-individual-package">Push Individual Package</h4>
-<pre><code class="lang-cmd">cd Bin/Packages/Release
+<pre><code class="lang-cmd">cd Bin\Packages\Release
+REM Or: cd artifacts\packages\Release   (if you built with UseArtifactsOutput=true)
 nuget.exe push Krypton.Toolkit.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
 </code></pre>
 <h4 id="push-with-symbol-package">Push with Symbol Package</h4>
@@ -387,7 +398,8 @@ nuget.exe push Krypton.Toolkit.100.25.1.305.nupkg -Source https://api.nuget.org/
 <h2 id="package-verification">Package Verification</h2>
 <h3 id="inspect-package-contents">Inspect Package Contents</h3>
 <h4 id="using-nuget-cli">Using NuGet CLI</h4>
-<pre><code class="lang-cmd">nuget.exe list Krypton.Toolkit -Source Bin/Packages/Release -AllVersions
+<pre><code class="lang-cmd">nuget.exe list Krypton.Toolkit -Source Bin\Packages\Release -AllVersions
+REM Use artifacts\packages\Release when packages were built with UseArtifactsOutput=true
 </code></pre>
 <h4 id="using-nuget-package-explorer">Using NuGet Package Explorer</h4>
 <ol>
@@ -404,7 +416,8 @@ nuget.exe push Krypton.Toolkit.100.25.1.305.nupkg -Source https://api.nuget.org/
 </ol>
 <h4 id="using-command-line">Using Command Line</h4>
 <pre><code class="lang-cmd"># Extract package (it's a ZIP file)
-cd Bin/Packages/Release
+cd Bin\Packages\Release
+REM Or artifacts\packages\Release for artifacts-mode builds
 mkdir extracted
 tar -xf Krypton.Toolkit.100.25.1.305.nupkg -C extracted
 dir extracted
@@ -527,7 +540,7 @@ Remove-Item $temp -Recurse -Force
 <li><a href="VersionManagement.html">Version Management</a> - Version strategy</li>
 <li><a href="MSBuildProjectFiles.html">MSBuild Project Files</a> - Pack targets</li>
 <li><a href="DirectoryBuildConfiguration.html">Directory.Build Configuration</a> - Package metadata</li>
-<li><a href="GitHubActionsWorkflows.md">GitHub Actions Workflows</a> - Automated publishing</li>
+<li><a href="Current/BuildWorkflow.html">Build workflow</a> and <a href="Current/ReleaseWorkflow.html">Release workflow</a> - Automated CI publishing paths</li>
 <li><a href="BuildScripts.html">Build Scripts</a> - Packaging commands</li>
 </ul>
 

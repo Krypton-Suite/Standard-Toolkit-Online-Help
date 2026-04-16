@@ -70,15 +70,16 @@
 <h1 id="build-scripts">Build Scripts</h1>
 
 <h2 id="overview">Overview</h2>
-<p>The Krypton Toolkit provides Windows Command Prompt (<code>.cmd</code>) batch scripts for convenient building, packaging, and maintenance. These scripts are located in the <code>Scripts/</code> directory and provide user-friendly interfaces to the MSBuild project files.</p>
+<p>The Krypton Toolkit provides Windows Command Prompt (<code>.cmd</code>) batch scripts for convenient building, packaging, and maintenance. Scripts are organized under <code>Scripts/VS2022/</code>, <code>Scripts/Current/</code>, and <code>Scripts/Build/</code>. The root <code>run.cmd</code> launches an interactive menu and invokes these scripts. Each script set uses a <code>build.proj</code> in its directory.</p>
+<p>Orchestrated MSBuild invocations import root <code>Directory.Build.props</code>, so binaries and <code>.nupkg</code> files go to <code>Bin/</code> and <code>Bin/Packages/</code> by default. To match CI, you can pass <code>/p:UseArtifactsOutput=true</code>, which redirects outputs to <code>artifacts/bin/</code> and <code>artifacts/packages/</code>. Script <code>.proj</code> Clean/Push/archive targets follow <code>$(KryptonBuildOutputRoot)</code> and <code>$(KryptonPackageOutputRoot)</code> automatically.</p>
 <h2 id="core-build-scripts">Core Build Scripts</h2>
-<p><a id="build-stable-cmd"></a></p>
 <h3 id="build-stablecmd">build-stable.cmd</h3>
 <p><strong>Purpose</strong>: Builds stable/release packages interactively</p>
 <p><strong>Usage</strong>:</p>
-<pre><code class="lang-cmd">cd Scripts
+<pre><code class="lang-cmd">cd Scripts\VS2022
 build-stable.cmd [target]
 </code></pre>
+<p>Or via the interactive menu: run <code>run.cmd</code> from the repository root, select the Visual Studio target, then choose the build option.</p>
 <p><strong>Parameters</strong>:</p>
 <ul>
 <li><code>target</code> (optional) - MSBuild target to execute (default: <code>Build</code>)</li>
@@ -115,7 +116,7 @@ build-stable.cmd Clean     # Clean only
 <h3 id="build-canarycmd">build-canary.cmd</h3>
 <p><strong>Purpose</strong>: Builds canary (beta) pre-release packages</p>
 <p><strong>Usage</strong>:</p>
-<pre><code class="lang-cmd">cd Scripts
+<pre><code class="lang-cmd">cd Scripts\VS2022
 build-canary.cmd [target]
 </code></pre>
 <p><strong>Parameters</strong>:</p>
@@ -127,7 +128,7 @@ build-canary.cmd [target]
 <li>Same Visual Studio detection as build-stable.cmd</li>
 <li>Builds using <code>canary.proj</code></li>
 <li>Outputs to <code>../Logs/canary-build-log.log</code> and <code>.binlog</code></li>
-<li>Packages go to <code>Bin/Packages/Canary/</code></li>
+<li>Packages go to <code>Bin/Packages/Canary/</code> unless the build used <code>UseArtifactsOutput=true</code> (<code>artifacts/packages/Canary/</code>)</li>
 <li>Interactive menu integration</li>
 </ul>
 <p><strong>Examples</strong>:</p>
@@ -137,7 +138,7 @@ build-canary.cmd Pack      # Pack canary packages
 <h3 id="build-nightlycmd">build-nightly.cmd</h3>
 <p><strong>Purpose</strong>: Builds nightly (alpha) bleeding-edge packages</p>
 <p><strong>Usage</strong>:</p>
-<pre><code class="lang-cmd">cd Scripts
+<pre><code class="lang-cmd">cd Scripts\VS2022
 build-nightly.cmd [target]
 </code></pre>
 <p><strong>Parameters</strong>:</p>
@@ -148,7 +149,7 @@ build-nightly.cmd [target]
 <ul>
 <li>Uses <code>nightly.proj</code></li>
 <li>Outputs to <code>../Logs/nightly-build-log.log</code> and <code>.binlog</code></li>
-<li>Packages go to <code>Bin/Packages/Nightly/</code></li>
+<li>Packages go to <code>Bin/Packages/Nightly/</code> by default, or <code>artifacts/packages/Nightly/</code> with <code>UseArtifactsOutput=true</code></li>
 <li>Interactive menu integration</li>
 </ul>
 <p><strong>Examples</strong>:</p>
@@ -164,7 +165,7 @@ build-nightly.cmd Pack     # Pack nightly packages
 <h3 id="buildsolutioncmd">buildsolution.cmd</h3>
 <p><strong>Purpose</strong>: Interactive solution builder with VS 2019/2022 support</p>
 <p><strong>Usage</strong>:</p>
-<pre><code class="lang-cmd">cd Scripts
+<pre><code class="lang-cmd">cd Scripts\VS2022
 buildsolution.cmd [target]
 </code></pre>
 <p><strong>Features</strong>:</p>
@@ -190,7 +191,6 @@ buildsolution.cmd [target]
 <pre><code class="lang-cmd">buildsolution.cmd          # Interactive build
 buildsolution.cmd Rebuild  # Interactive rebuild
 </code></pre>
-<p><a id="purge-cmd"></a></p>
 <h3 id="purgecmd">purge.cmd</h3>
 <p><strong>Purpose</strong>: Cleans build artifacts and intermediate files</p>
 <p><strong>Usage</strong>:</p>
@@ -198,11 +198,11 @@ buildsolution.cmd Rebuild  # Interactive rebuild
 purge.cmd
 </code></pre>
 <p><strong>Interactive Prompts</strong>:</p>
-<pre><code>You are about to delete the Bin folder; do you want to continue? (Y/N)
+<pre><code class="lang-text">You are about to delete the Bin folder; do you want to continue? (Y/N)
 </code></pre>
 <p><strong>Deletes</strong>:</p>
 <ul>
-<li><code>Bin/</code> - All build outputs</li>
+<li><code>Bin/</code> - Default build outputs (does not remove <code>artifacts/</code>; delete that folder manually if used)</li>
 <li><code>Source/Krypton Components/Krypton.Docking/obj/</code></li>
 <li><code>Source/Krypton Components/Krypton.Navigator/obj/</code></li>
 <li><code>Source/Krypton Components/Krypton.Ribbon/obj/</code></li>
@@ -210,6 +210,7 @@ purge.cmd
 <li><code>Source/Krypton Components/Krypton.Workspace/obj/</code></li>
 <li><code>Logs/</code> (if exists)</li>
 </ul>
+<p><strong>Note</strong>: Does not delete <code>Krypton.Utilities</code> or <code>Krypton.Standard.Toolkit</code> obj folders. Run from <code>Scripts/VS2022</code>, <code>Scripts/Current</code>, or <code>Scripts/Build</code>.</p>
 <p><strong>Warning</strong>: This operation is destructive and cannot be undone!</p>
 <p><strong>Use Cases</strong>:</p>
 <ul>
@@ -226,13 +227,13 @@ publish.cmd
 </code></pre>
 <p><strong>Workflow</strong>:</p>
 <ol>
-<li>Executes <code>build.cmd Pack</code></li>
-<li>Executes <code>build.cmd Push</code></li>
+<li>Executes <code>build-stable.cmd Pack</code></li>
+<li>Executes <code>build-stable.cmd Push</code></li>
 </ol>
 <p><strong>Prerequisites</strong>:</p>
 <ul>
 <li>NuGet API key must be configured</li>
-<li>Packages must exist in <code>Bin/Packages/Release/</code></li>
+<li>Packages must exist under <code>Bin/Packages/Release/</code> (default) or <code>artifacts/packages/Release/</code> if you packed with <code>UseArtifactsOutput=true</code></li>
 </ul>
 <p><strong>Configuration</strong>:
 Set API key once:</p>
@@ -247,9 +248,9 @@ main-menu.cmd
 <p><strong>Features</strong>:</p>
 <ul>
 <li>Changes directory to parent (<code>cd ..</code>)</li>
-<li>Executes <code>run.cmd</code> (main menu launcher)</li>
+<li>Executes <code>run.cmd</code> (main menu launcher in repository root)</li>
 </ul>
-<p><strong>Note</strong>: This assumes a <code>run.cmd</code> exists in the root directory.</p>
+<p><strong>Note</strong>: Assumes <code>run.cmd</code> exists in the repository root. The main-menu script is in <code>Scripts/</code>.</p>
 <h2 id="script-patterns">Script Patterns</h2>
 <h3 id="visual-studio-detection-pattern">Visual Studio Detection Pattern</h3>
 <p>All build scripts use this pattern:</p>
@@ -358,12 +359,13 @@ build-stable.cmd Build
 <p><strong>Cause</strong>: Visual Studio 2022 not found</p>
 <p><strong>Solutions</strong>:</p>
 <ol>
-<li>Install Visual Studio 2022</li>
-<li>Verify installation path:
+<li><p>Install Visual Studio 2022</p>
+</li>
+<li><p>Verify installation path:</p>
 <pre><code class="lang-cmd">dir &quot;%ProgramFiles%\Microsoft Visual Studio\2022\&quot;
 </code></pre>
 </li>
-<li>Manual MSBuild invocation:
+<li><p>Manual MSBuild invocation:</p>
 <pre><code class="lang-cmd">&quot;C:\Path\To\MSBuild.exe&quot; /t:Build build.proj
 </code></pre>
 </li>
@@ -371,11 +373,11 @@ build-stable.cmd Build
 <h3 id="build-hangs-or-stalls">Build Hangs or Stalls</h3>
 <p><strong>Solutions</strong>:</p>
 <ol>
-<li>Kill MSBuild processes:
+<li><p>Kill MSBuild processes:</p>
 <pre><code class="lang-cmd">taskkill /F /IM MSBuild.exe
 </code></pre>
 </li>
-<li>Clean and retry:
+<li><p>Clean and retry:</p>
 <pre><code class="lang-cmd">purge.cmd
 build-stable.cmd Build
 </code></pre>
@@ -406,7 +408,7 @@ build-stable.cmd Build
 </code></pre>
 <h3 id="3-verify-before-publishing">3. Verify Before Publishing</h3>
 <pre><code class="lang-cmd">build-stable.cmd Pack
-# Manually inspect Bin/Packages/Release/
+REM Manually inspect Bin/Packages/Release/ or artifacts/packages/Release/
 build-stable.cmd Push
 </code></pre>
 <h3 id="4-use-binary-logs-for-complex-issues">4. Use Binary Logs for Complex Issues</h3>

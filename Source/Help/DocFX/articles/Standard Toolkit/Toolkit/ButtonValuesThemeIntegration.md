@@ -36,7 +36,7 @@ public IconSelectionStrategy IconSelectionStrategy
 When using `ThemeBased` strategy, UAC shield icons are selected based on your current Krypton theme:
 
 | Theme Category | Windows Icon Style | Example Themes |
-|----------------|-------------------|----------------|
+| -------------- | ------------------ | -------------- |
 | **Professional/Office 2007/Sparkle** | Windows Vista | ProfessionalSystem, Office2007Blue, SparkleBlue |
 | **Office 2010/2013** | Windows 7/8.x | Office2010Blue, Office2013White, VisualStudio2010Render2010 |
 | **Microsoft 365/Material** | Windows 10/11 | Microsoft365Blue, MaterialLight, MaterialDark |
@@ -102,7 +102,7 @@ public class ThemeAwareButton : KryptonButton
 The new theme-aware system integrates seamlessly with existing `ButtonValues` properties:
 
 | Property | Description | Theme-Aware Support |
-|----------|-------------|-------------------|
+| -------- | ----------- | ------------------- |
 | `UseAsUACElevationButton` | Enables UAC shield functionality | ✅ Full support |
 | `IconSize` | Sets predefined icon sizes | ✅ Full support |
 | `CustomIconSize` | Sets custom icon dimensions | ✅ Full support |
@@ -388,7 +388,7 @@ button.Values.IconSize = IconSize.Medium;
 button.Values.IconSelectionStrategy = IconSelectionStrategy.ThemeBased;
 ```
 
-### Backward Compatibility
+### Optional `IconSelectionStrategy` (no migration required)
 
 The new property is optional, so existing code continues to work:
 
@@ -409,21 +409,25 @@ button.Values.IconSelectionStrategy = IconSelectionStrategy.OSBased;
 ## Benefits
 
 ### 1. Visual Consistency
+
 - UAC shield icons match your application's theme
 - Professional, cohesive appearance
 - Better user experience
 
 ### 2. Flexibility
+
 - Choose between OS-based and theme-based selection
 - Automatic adaptation to theme changes
 - Backward compatibility maintained
 
 ### 3. Performance
+
 - Efficient icon loading with caching
 - Memory management best practices
 - Seamless integration with existing code
 
 ### 4. Developer Experience
+
 - Simple property-based configuration
 - Clear theme mapping documentation
 - Comprehensive examples and best practices

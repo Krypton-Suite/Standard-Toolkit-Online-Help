@@ -1,14 +1,11 @@
 # Docking Persistence
 
-## Docking Persistence
-
 Applicable Methods:  
+
 * SaveConfigToArray, LoadConfigFromArray
 * SaveConfigToFile, LoadConfigFromFile
 * SaveConfigToXml, LoadConfigFromXml
 * SaveConfigToStream, LoadConfigFromStream
-
-  
   
 **Persistence Formats**  
 You can save and load the docking configuration in a variety of different
@@ -31,7 +28,7 @@ The dynamic contents of the docking hierarchy are saved into the configuration
 but the static elements are not. So if your docking hierarchy has a floating
 capability at save time but that docking element is not present at the reload
 then the floating ability is not recreated. This is because the
-*KryptonDockingFloating* is a static element that manages a capability and is 
+*KryptonDockingFloating* is a static element that manages a capability and is
 only ever created by the programmer. Floating windows are dynamic content and
 details of each floating window are saved into the configuration. On reload the
 floating windows will be recreated as long an appropriate
@@ -49,7 +46,7 @@ event and create the page so it can be positioned.
 You may need to store additional application specific data along with the
 configuration for use when reloading. You can do this quite easily by hooking
 into the *GlobalSaving* and *GlobalLoading* events. The saving event will
-provide an *XmlWriter *reference that should be used to save your extra
+provide an *XmlWriter* reference that should be used to save your extra
 information. Create additional XML elements with whatever information you need
 to persist. Loading provides an *XmlReader* that can be used to traverse and
 load back that same information.

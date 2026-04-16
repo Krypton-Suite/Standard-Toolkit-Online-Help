@@ -95,7 +95,7 @@
 <h2 id="overview">Overview</h2>
 <p><code>KryptonFormTitleBar</code> is a non-visual <code>Component</code> that embeds a toolbar of <code>ButtonSpecAny</code> items directly inside the <code>KryptonForm</code> title bar (caption area), to the left of the form title text. It provides a DevExpress ToolbarForm-style experience where quick-action buttons, toggles, or drop-down triggers live in the chrome itself rather than consuming client area space.</p>
 <h3 id="what-it-looks-like">What it looks like</h3>
-<pre><code>┌─────────────────────────────────────────────────────────────────────┐
+<pre><code class="lang-text">┌─────────────────────────────────────────────────────────────────────┐
 │ [Icon]        My Application    [⬡][★][⚙][File▼][Edit▼]  [─][□][✕] │  ← title bar
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                     │
@@ -116,7 +116,7 @@ In <strong>RTL</strong> layout they mirror to the left of the title text — ide
 <li><strong>Safe lifecycle</strong> — attach/detach at any time; disposing either the component or the form cleans up correctly</li>
 </ul>
 <h3 id="class-hierarchy">Class Hierarchy</h3>
-<pre><code>System.Object
+<pre><code class="lang-text">System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
         └── Krypton.Toolkit.KryptonFormTitleBar
@@ -152,7 +152,7 @@ In <strong>RTL</strong> layout they mirror to the left of the title text — ide
 </ol>
 <p>This means all rendering, hit-testing, mouse tracking, tooltip display, and palette change propagation work through exactly the same infrastructure as the rest of the form chrome.</p>
 <h3 id="caption-layout-order-ltr">Caption Layout Order (LTR)</h3>
-<pre><code>_drawHeading (ViewDrawDocker)
+<pre><code class="lang-text">_drawHeading (ViewDrawDocker)
   ├─ [Fill]  _drawContent (form icon + title text)
   ├─ [Right] _titleBarDocker  ← injected by KryptonFormTitleBar (to the right of the icon)
   │             └─ ButtonSpecAny buttons (managed by _titleBarButtonManager)
@@ -249,7 +249,7 @@ public KryptonForm? OwnerForm { get; }
 </code></pre>
 <p>Returns the <code>KryptonForm</code> that this component is currently attached to, or <code>null</code> if not attached. This property is set automatically by <code>KryptonForm</code> when the <code>TitleBar</code> property is assigned; do not set it directly.</p>
 <hr>
-<h3 id="methods">Methods</h3>
+<h3 id="instance-methods">Instance methods</h3>
 <h4 id="insertstandarditems"><code>InsertStandardItems()</code></h4>
 <pre><code class="lang-csharp">public void InsertStandardItems()
 </code></pre>
@@ -352,7 +352,7 @@ var fileMenu = (KryptonContextMenu)myTitleBar.ButtonSpecs[0].KryptonContextMenu!
 </tbody>
 </table>
 <hr>
-<h3 id="methods-1">Methods</h3>
+<h3 id="method-summary">Method summary</h3>
 <table>
 <thead>
 <tr>
@@ -926,7 +926,7 @@ saveCommand.Enabled = false;
 <li>When <code>RightToLeftLayout</code> changes at runtime, <code>KryptonForm.OnRightToLeftLayoutChanged</code> calls <code>_titleBarButtonManager.RecreateButtons()</code> in addition to the standard <code>_buttonManager.RecreateButtons()</code>, ensuring the title bar buttons reposition correctly.</li>
 </ol>
 <h3 id="caption-layout--rtl">Caption Layout — RTL</h3>
-<pre><code>_drawHeading (LTR):  [Icon][Title text fill][TitleBarButtons][Min][Max][Close]
+<pre><code class="lang-text">_drawHeading (LTR):  [Icon][Title text fill][TitleBarButtons][Min][Max][Close]
 _drawHeading (RTL):  [Close][Max][Min][TitleBarButtons][Title text fill][Icon]
 </code></pre>
 <p>No developer action is required to support RTL.</p>
@@ -987,7 +987,7 @@ this.PaletteMode = PaletteMode.SparkleBlue;
 <h2 id="interaction-with-kryptonribbon">Interaction with KryptonRibbon</h2>
 <p>A <code>KryptonRibbon</code> at <code>Location = Point.Empty</code> on a <code>KryptonForm</code> also injects view elements into the caption via <code>InjectViewElement</code>. The title bar toolbar and the ribbon can coexist, but <strong>not simultaneously</strong>. The ribbon's injection takes over the <code>ViewDockStyle.Fill</code> slot (replacing the title text with ribbon context tabs), while the title bar toolbar occupies <code>ViewDockStyle.Right</code> (to the right of the form icon and title).</p>
 <p>In practice, a form with both a <code>KryptonRibbon</code> and a <code>KryptonFormTitleBar</code> will show:</p>
-<pre><code>[Icon] [TitleBarButtons] [Ribbon QAT][AppButton][Context tabs] [Min][Max][Close]
+<pre><code class="lang-text">[Icon] [TitleBarButtons] [Ribbon QAT][AppButton][Context tabs] [Min][Max][Close]
 </code></pre>
 <p>This is valid and tested. The button specs from both the ribbon QAT and the title bar toolbar are independent.</p>
 <p><strong>Do not</strong> attach a <code>KryptonFormTitleBar</code> to a form that uses <code>KryptonRibbon</code> if the ribbon is in integrated mode, as the <code>ViewDockStyle.Left</code> slots will stack and may produce unexpected spacing. In that scenario, use the ribbon's own QAT (<code>ribbon.QuickAccessToolbarButtons</code>) instead.</p>
@@ -1189,7 +1189,6 @@ this.PaletteMode = PaletteMode.SparkleBlue;
 <ul>
 <li>Hot-reload in .NET may reinitialise <code>InitializeComponent()</code> without disposing the previous title bar. If this is a concern, explicitly null <code>this.TitleBar</code> before hot-reload and re-assign after.</li>
 </ul>
-<p><a id="related-components"></a></p>
 <h2 id="related-components">Related Components</h2>
 <ul>
 <li><strong>KryptonForm</strong> — Hosts the title bar via the <code>TitleBar</code> property</li>

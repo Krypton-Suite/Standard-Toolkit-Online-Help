@@ -1,11 +1,15 @@
 # Krypton Exception Handling Documentation
 
-This directory contains comprehensive documentation for the Krypton Toolkit exception handling features.
+**V110+:** The public **`KryptonExceptionDialog`** API is implemented in **`Krypton.Utilities`**. The canonical quick start and API reference are under **[Utilities/KryptonExceptionDialogQuickStart.md](../../Utilities/KryptonExceptionDialogQuickStart.md)** and **[Utilities/KryptonExceptionDialog.md](../../Utilities/KryptonExceptionDialog.md)**. The files in this folder are legacy copies; prefer the Utilities topics when links are updated.
+
+This directory contains documentation for the Krypton Toolkit exception handling features.
 
 ## Documentation Files
 
-### 1. [KryptonExceptionDialog](KryptonExceptionDialog.md)
+### 1. [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md)
+
 **Full API Reference Documentation** - Comprehensive, in-depth documentation covering:
+
 - Complete API reference for all classes and methods
 - Detailed feature descriptions
 - Architecture and component hierarchy
@@ -17,14 +21,17 @@ This directory contains comprehensive documentation for the Krypton Toolkit exce
 - Common scenarios and patterns
 
 **Recommended for:**
+
 - Understanding the complete API surface
 - Advanced customization scenarios
 - Integration planning
 - Architecture reviews
 - Reference during development
 
-### 2. [KryptonExceptionDialog QuickStart](KryptonExceptionDialogQuickStart.md)
+### 2. [KryptonExceptionDialog QuickStart](../../Utilities/KryptonExceptionDialogQuickStart.md)
+
 **Quick Start Guide** - Get up and running in 5 minutes:
+
 - Basic usage examples
 - Common patterns
 - Quick reference tables
@@ -32,6 +39,7 @@ This directory contains comprehensive documentation for the Krypton Toolkit exce
 - Troubleshooting basics
 
 **Recommended for:**
+
 - First-time users
 - Quick implementation
 - Code snippets and examples
@@ -40,13 +48,17 @@ This directory contains comprehensive documentation for the Krypton Toolkit exce
 ## Components Overview
 
 ### KryptonExceptionDialog
+
 Static API for displaying rich exception details in a modal dialog.
 
 ```csharp
+using Krypton.Utilities;
+// ...
 KryptonExceptionDialog.Show(exception, showCopyButton: true, showSearchBox: true);
 ```
 
 ### KryptonExceptionHandler
+
 High-level exception handling utilities with automatic caller context capture.
 
 ```csharp
@@ -54,9 +66,11 @@ KryptonExceptionHandler.CaptureException(exception, title: "Error", showStackTra
 ```
 
 ### VisualExceptionDialogForm
+
 Internal form implementation (not for direct use).
 
 ### Supporting Components
+
 - `InternalSearchableExceptionTreeView` - Searchable tree view control
 - `InternalExceptionTreeView` - Exception parsing and display
 - `KryptonExceptionDialogStrings` - Localization strings
@@ -64,6 +78,7 @@ Internal form implementation (not for direct use).
 ## Quick Examples
 
 ### Basic Exception Display
+
 ```csharp
 try
 {
@@ -76,6 +91,7 @@ catch (Exception ex)
 ```
 
 ### With Auto-Context Capture
+
 ```csharp
 try
 {
@@ -88,6 +104,7 @@ catch (Exception ex)
 ```
 
 ### Log and Display
+
 ```csharp
 try
 {
@@ -114,6 +131,7 @@ catch (Exception ex)
 ## When to Use
 
 ### ✅ Recommended
+
 - Development and debugging
 - Admin/diagnostic interfaces
 - Technical support tools
@@ -121,6 +139,7 @@ catch (Exception ex)
 - Logging and error reporting systems
 
 ### ❌ Not Recommended
+
 - Production user-facing errors (too technical)
 - Expected validation errors
 - Recoverable errors that don't need investigation
@@ -128,11 +147,12 @@ catch (Exception ex)
 
 ## Navigation
 
-- **[Start Here: Quick Start Guide →](KryptonExceptionDialogQuickStart.md)**
-- **[Full API Reference →](KryptonExceptionDialog.md)**
+- **[Start Here: Quick Start Guide →](../../Utilities/KryptonExceptionDialogQuickStart.md)**
+- **[Full API Reference →](../../Utilities/KryptonExceptionDialog.md)**
 
 ## Support
 
 For issues, questions, or feature requests:
+
 - [GitHub Issues](https://github.com/Krypton-Suite/Standard-Toolkit/issues)
 - [GitHub Discussions](https://github.com/Krypton-Suite/Standard-Toolkit/discussions)

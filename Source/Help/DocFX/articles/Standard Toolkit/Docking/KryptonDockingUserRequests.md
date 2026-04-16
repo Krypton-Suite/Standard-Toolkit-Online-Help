@@ -1,8 +1,7 @@
 # Docking User Requests Events
 
-## Docking User Requests Events
-
 User Request Events:  
+
 * PageCloseRequest
 * PageDockedRequest
 * PageAutoHiddenRequest
@@ -11,10 +10,6 @@ User Request Events:
 * PageWorkspaceRequest
 * ShowPageContextMenu
 * ShowWorkspacePageContextMenu
-
- 
-
- 
 
 **PageCloseRequest**  
 This event is fired from within the *KryptonDockingManager.CloseRequest* method
@@ -27,15 +22,15 @@ is generated. The *PageCloseRequest.CloseRequest* property can be updated by the
 developers event handler in order to instruct the docking system what action
 should be taken. Possible values are as follows...
 
--   **None** -no action is performed and so the close request is ignored
+* **None** -no action is performed and so the close request is ignored
 
--   **RemovePage** - removes the page from the docking system but does not
+* **RemovePage** - removes the page from the docking system but does not
     dispose it, so the page could be added back again later
 
--   **RemovePageAndDispose** - removes the page and also calls Dispose so the
+* **RemovePageAndDispose** - removes the page and also calls Dispose so the
     page could not be added back again later
 
--   **Hide** - leaves the page in the docking system but hides it from display
+* **Hide** - leaves the page in the docking system but hides it from display
 
 **PageDockedRequest**  
 Fired by two different user actions. First is using the docking context menu to

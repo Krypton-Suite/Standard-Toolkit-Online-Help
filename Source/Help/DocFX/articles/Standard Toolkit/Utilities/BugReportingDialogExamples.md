@@ -257,6 +257,7 @@ public class ConfigManager
 ```
 
 **App.config:**
+
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <configuration>
@@ -317,6 +318,7 @@ public class JsonConfigManager
 ```
 
 **config.json:**
+
 ```json
 {
   "SmtpServer": "smtp.example.com",
@@ -455,7 +457,7 @@ public class ConditionalBugReporter
         else
         {
             // Show without bug reporting in development
-            Krypton.Toolkit.KryptonExceptionDialog.Show(ex);
+            Krypton.Utilities.KryptonExceptionDialog.Show(ex);
         }
     }
     
@@ -739,6 +741,5 @@ public class EnvironmentConfigManager
 ## See Also
 
 - [Full Documentation](BugReportingDialog.md)
-- [API Reference](BugReportingDialog-API.md)
-- [Quick Reference](BugReportingDialog-QuickReference.md)
-
+- [API Reference](BugReportingDialogAPI.md)
+- [Quick Reference](BugReportingDialogQuickReference.md)

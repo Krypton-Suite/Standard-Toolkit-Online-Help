@@ -35,6 +35,7 @@ public static class KryptonManager
 **Thread Safety:** This property is thread-safe for reading. Modifications should be performed on the UI thread.
 
 **Example:**
+
 ```csharp
 var strings = KryptonManager.Strings;
 string okText = strings.GeneralStrings.OK;
@@ -52,12 +53,12 @@ public class KryptonGlobalToolkitStrings : GlobalId
 **Inheritance:** `GlobalId`  
 **Type Converter:** `ExpandableObjectConverter` (enables designer support)
 
-#### Properties
+#### String category properties
 
 All string category properties follow this pattern:
 
 | Property | Type | Description | Access |
-|----------|------|-------------|--------|
+| --- | --- | --- | --- |
 | `GeneralStrings` | `GeneralToolkitStrings` | Common button and UI strings | `KryptonManager.Strings.GeneralStrings` |
 | `CustomStrings` | `CustomToolkitStrings` | Custom action and navigation strings | `KryptonManager.Strings.CustomStrings` |
 | `RibbonStrings` | `GeneralRibbonStrings` | Ribbon component strings | `KryptonManager.Strings.RibbonStrings` |
@@ -69,9 +70,12 @@ All string category properties follow this pattern:
 | `ToolBarStrings` | `IntegratedToolBarStrings` | Toolbar strings | `KryptonManager.Strings.ToolBarStrings` |
 | `ColorStrings` | `GlobalColorStrings` | Color name strings | `KryptonManager.Strings.ColorStrings` |
 
-#### Methods
+**V110+:** Some components that consume these strings (for example **`KryptonAboutBox`**, **`KryptonToast`**) live in **`Krypton.Utilities`**. The **`KryptonManager.Strings`** API remains in **`Krypton.Toolkit`** as the usual localization entry point.
 
-##### Reset()
+#### KryptonGlobalToolkitStrings methods
+
+##### Reset() (all categories)
+
 ```csharp
 public void Reset()
 ```
@@ -79,6 +83,7 @@ public void Reset()
 **Description:** Resets all string categories to their default English values.
 
 **Example:**
+
 ```csharp
 // Reset all strings to default
 KryptonManager.Strings.Reset();
@@ -86,7 +91,8 @@ KryptonManager.Strings.Reset();
 
 #### Instance Properties
 
-##### IsDefault
+##### IsDefault (KryptonGlobalToolkitStrings)
+
 ```csharp
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
@@ -97,6 +103,7 @@ public bool IsDefault { get; }
 **Description:** Returns `true` if all string categories contain only default values; otherwise `false`.
 
 **Example:**
+
 ```csharp
 if (KryptonManager.Strings.IsDefault)
 {
@@ -114,16 +121,17 @@ if (KryptonManager.Strings.IsDefault)
 **Type:** `GeneralToolkitStrings`  
 **Purpose:** Common button and message box strings used throughout the toolkit
 
-#### Class Definition
+#### GeneralToolkitStrings class definition
 
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public class GeneralToolkitStrings : GlobalId
 ```
 
-#### Properties
+#### GeneralToolkitStrings properties
 
 ##### OK
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -138,12 +146,14 @@ public string OK { get; set; }
 **Used In:** KryptonMessageBox, button controls
 
 **Example:**
+
 ```csharp
 // Spanish
 KryptonManager.Strings.GeneralStrings.OK = "&Aceptar"; // Alt+A
 ```
 
 ##### Cancel
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -158,6 +168,7 @@ public string Cancel { get; set; }
 **Used In:** KryptonMessageBox, dialog controls
 
 ##### Yes
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -172,6 +183,7 @@ public string Yes { get; set; }
 **Used In:** KryptonMessageBox with Yes/No buttons
 
 ##### No
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -186,6 +198,7 @@ public string No { get; set; }
 **Used In:** KryptonMessageBox with Yes/No buttons
 
 ##### Abort
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -200,6 +213,7 @@ public string Abort { get; set; }
 **Used In:** KryptonMessageBox with Abort/Retry/Ignore buttons
 
 ##### Retry
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -214,6 +228,7 @@ public string Retry { get; set; }
 **Used In:** KryptonMessageBox with retry operations
 
 ##### Ignore
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -228,6 +243,7 @@ public string Ignore { get; set; }
 **Used In:** KryptonMessageBox with Abort/Retry/Ignore buttons
 
 ##### Close
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -242,6 +258,7 @@ public string Close { get; set; }
 **Used In:** Dialogs, forms, and close operations
 
 ##### Today
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -256,6 +273,7 @@ public string Today { get; set; }
 **Used In:** KryptonMonthCalendar, date picker controls
 
 ##### Help
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -270,6 +288,7 @@ public string Help { get; set; }
 **Used In:** KryptonMessageBox with Help button
 
 ##### Continue
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -283,6 +302,7 @@ public string Continue { get; set; }
 **Used In:** KryptonMessageBox (requires .NET 6 or newer)
 
 ##### TryAgain
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -295,9 +315,10 @@ public string TryAgain { get; set; }
 **Accelerator Key:** I (Alt+I)  
 **Used In:** KryptonMessageBox (requires .NET 6 or newer)
 
-#### Methods
+#### GeneralToolkitStrings methods
 
-##### Reset()
+##### Reset() (GeneralToolkitStrings)
+
 ```csharp
 public void Reset()
 ```
@@ -305,13 +326,14 @@ public void Reset()
 **Description:** Resets all properties to their default English values.
 
 ##### ToString()
+
 ```csharp
 public override string ToString()
 ```
 
 **Returns:** `"Modified"` if any property has been changed; otherwise empty string.
 
-#### Complete Usage Example
+#### GeneralToolkitStrings complete example
 
 ```csharp
 // Configure Spanish localization for message boxes
@@ -344,16 +366,17 @@ KryptonMessageBox.Show("¿Desea continuar?", "Confirmar",
 **Type:** `CustomToolkitStrings`  
 **Purpose:** Custom strings for specialized scenarios like navigation, editing, and application-specific actions
 
-#### Class Definition
+#### CustomToolkitStrings class definition
 
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public class CustomToolkitStrings : GlobalId
 ```
 
-#### Properties
+#### CustomToolkitStrings properties
 
 ##### Apply
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -367,6 +390,7 @@ public string Apply { get; set; }
 **Used In:** Property dialogs, settings windows
 
 ##### Back
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -380,6 +404,7 @@ public string Back { get; set; }
 **Used In:** Navigation controls, wizard dialogs
 
 ##### Collapse
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -393,6 +418,7 @@ public string Collapse { get; set; }
 **Used In:** Expandable panels, collapsible regions
 
 ##### Expand
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -406,6 +432,7 @@ public string Expand { get; set; }
 **Used In:** Expandable panels, collapsible regions
 
 ##### Exit
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -419,6 +446,7 @@ public string Exit { get; set; }
 **Used In:** Application exit buttons, close operations
 
 ##### Finish
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -432,6 +460,7 @@ public string Finish { get; set; }
 **Used In:** Wizard completion, multi-step dialogs
 
 ##### Next
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -445,6 +474,7 @@ public string Next { get; set; }
 **Used In:** Wizard navigation, multi-step dialogs
 
 ##### Previous
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -458,6 +488,7 @@ public string Previous { get; set; }
 **Used In:** Wizard navigation, multi-step dialogs
 
 ##### Cut
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -471,6 +502,7 @@ public string Cut { get; set; }
 **Used In:** Context menus, edit operations
 
 ##### Copy
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -484,6 +516,7 @@ public string Copy { get; set; }
 **Used In:** Context menus, edit operations
 
 ##### Paste
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -497,6 +530,7 @@ public string Paste { get; set; }
 **Used In:** Context menus, edit operations
 
 ##### SelectAll
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -510,6 +544,7 @@ public string SelectAll { get; set; }
 **Used In:** Context menus, edit operations
 
 ##### ClearClipboard
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -523,6 +558,7 @@ public string ClearClipboard { get; set; }
 **Used In:** Clipboard operations
 
 ##### YesToAll
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -536,6 +572,7 @@ public string YesToAll { get; set; }
 **Used In:** Batch operations, confirmation dialogs
 
 ##### NoToAll
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -549,6 +586,7 @@ public string NoToAll { get; set; }
 **Used In:** Batch operations, confirmation dialogs
 
 ##### OkToAll
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -562,6 +600,7 @@ public string OkToAll { get; set; }
 **Used In:** Batch operations, confirmation dialogs
 
 ##### Reset
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -575,6 +614,7 @@ public string Reset { get; set; }
 **Used In:** Settings dialogs, form reset operations
 
 ##### SystemInformation
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -588,6 +628,7 @@ public string SystemInformation { get; set; }
 **Used In:** About boxes, system dialogs
 
 ##### CurrentTheme
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -599,7 +640,8 @@ public string CurrentTheme { get; set; }
 **Default Value:** `"Current Theme"`  
 **Used In:** Theme selection dialogs
 
-##### DoNotShowAgain
+##### DoNotShowAgain (CustomToolkitStrings)
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -612,16 +654,18 @@ public string DoNotShowAgain { get; set; }
 **Accelerator Key:** D (Alt+D)  
 **Used In:** Message boxes with "don't show again" option
 
-#### Methods
+#### CustomToolkitStrings methods
 
 ##### ResetValues()
+
 ```csharp
 public void ResetValues()
 ```
 
 **Description:** Resets all properties to their default English values.
 
-##### IsDefault
+##### IsDefault (CustomToolkitStrings)
+
 ```csharp
 [Browsable(false)]
 public bool IsDefault { get; }
@@ -629,7 +673,7 @@ public bool IsDefault { get; }
 
 **Description:** Returns `true` if all properties are at default values.
 
-#### Complete Usage Example
+#### CustomToolkitStrings complete example
 
 ```csharp
 // Configure French localization for custom strings
@@ -661,9 +705,10 @@ custom.DoNotShowAgain = "&Ne plus afficher ce message";
 **Type:** `GeneralRibbonStrings`  
 **Purpose:** Strings specific to KryptonRibbon components
 
-#### Properties
+#### GeneralRibbonStrings properties
 
 ##### AppButtonText
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -677,6 +722,7 @@ public string AppButtonText { get; set; }
 **Used In:** Application button in ribbon controls
 
 ##### AppButtonKeyTip
+
 ```csharp
 [Localizable(true)]
 [Category("Values")]
@@ -691,6 +737,7 @@ public string AppButtonKeyTip { get; set; }
 **Used In:** Keyboard navigation in ribbon
 
 ##### CustomizeQuickAccessToolbar
+
 ```csharp
 [Localizable(true)]
 [Category("Values")]
@@ -704,6 +751,7 @@ public string CustomizeQuickAccessToolbar { get; set; }
 **Used In:** QAT customization menu
 
 ##### Minimize
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -717,6 +765,7 @@ public string Minimize { get; set; }
 **Used In:** Ribbon minimize/maximize options
 
 ##### MoreColors
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -730,6 +779,7 @@ public string MoreColors { get; set; }
 **Used In:** Color picker dialogs
 
 ##### NoColor
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -743,6 +793,7 @@ public string NoColor { get; set; }
 **Used In:** Color picker dialogs
 
 ##### RecentDocuments
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -756,6 +807,7 @@ public string RecentDocuments { get; set; }
 **Used In:** Application menu recent items
 
 ##### RecentColors
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -769,6 +821,7 @@ public string RecentColors { get; set; }
 **Used In:** Color picker recent colors section
 
 ##### ShowAboveRibbon
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -782,6 +835,7 @@ public string ShowAboveRibbon { get; set; }
 **Used In:** QAT positioning menu
 
 ##### ShowBelowRibbon
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -795,6 +849,7 @@ public string ShowBelowRibbon { get; set; }
 **Used In:** QAT positioning menu
 
 ##### ShowQATAboveRibbon
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -808,6 +863,7 @@ public string ShowQATAboveRibbon { get; set; }
 **Used In:** QAT positioning menu
 
 ##### ShowQATBelowRibbon
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -821,6 +877,7 @@ public string ShowQATBelowRibbon { get; set; }
 **Used In:** QAT positioning menu
 
 ##### StandardColors
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -834,6 +891,7 @@ public string StandardColors { get; set; }
 **Used In:** Color picker standard colors section
 
 ##### ThemeColors
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -846,7 +904,7 @@ public string ThemeColors { get; set; }
 **Default Value:** `"Theme Colors"`  
 **Used In:** Color picker theme colors section
 
-#### Usage Example
+#### GeneralRibbonStrings usage example
 
 ```csharp
 // Configure German localization for ribbon
@@ -872,9 +930,10 @@ ribbon.ThemeColors = "Designfarben";
 **Type:** `KryptonAboutBoxStrings`  
 **Purpose:** Label strings for KryptonAboutBox component
 
-#### Properties
+#### KryptonAboutBoxStrings properties
 
 ##### About
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -886,6 +945,7 @@ public string About { get; set; }
 **Default Value:** `"About"`
 
 ##### Title
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -897,6 +957,7 @@ public string Title { get; set; }
 **Default Value:** `"Title"`
 
 ##### Copyright
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -908,6 +969,7 @@ public string Copyright { get; set; }
 **Default Value:** `"Copyright"`
 
 ##### Description
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -919,6 +981,7 @@ public string Description { get; set; }
 **Default Value:** `"Description"`
 
 ##### Company
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -930,6 +993,7 @@ public string Company { get; set; }
 **Default Value:** `"Company"`
 
 ##### Product
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -941,6 +1005,7 @@ public string Product { get; set; }
 **Default Value:** `"Product"`
 
 ##### Trademark
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -952,6 +1017,7 @@ public string Trademark { get; set; }
 **Default Value:** `"Trademark"`
 
 ##### Version
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -963,6 +1029,7 @@ public string Version { get; set; }
 **Default Value:** `"Version"`
 
 ##### BuildDate
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -974,6 +1041,7 @@ public string BuildDate { get; set; }
 **Default Value:** `"Build Date"`
 
 ##### ImageRuntimeVersion
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -985,6 +1053,7 @@ public string ImageRuntimeVersion { get; set; }
 **Default Value:** `"Image Runtime Version"`
 
 ##### LoadedFromGlobalAssemblyCache
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -995,7 +1064,7 @@ public string LoadedFromGlobalAssemblyCache { get; set; }
 
 **Default Value:** `"Loaded from GAC"`
 
-#### Usage Example
+#### KryptonAboutBoxStrings usage example
 
 ```csharp
 // Configure Japanese localization for about box
@@ -1022,9 +1091,10 @@ aboutBox.LoadedFromGlobalAssemblyCache = "GACから読み込まれました";
 **Type:** `KryptonToastNotificationStrings`  
 **Purpose:** Strings for toast notification components
 
-#### Properties
+#### KryptonToastNotificationStrings properties
 
-##### DoNotShowAgain
+##### DoNotShowAgain (toast notifications)
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -1037,6 +1107,7 @@ public string DoNotShowAgain { get; set; }
 **Accelerator Key:** N (Alt+N)
 
 ##### Dismiss
+
 ```csharp
 [Localizable(true)]
 [Category("Visuals")]
@@ -1048,7 +1119,7 @@ public string Dismiss { get; set; }
 **Default Value:** `"&Dismiss"`  
 **Accelerator Key:** D (Alt+D)
 
-#### Usage Example
+#### KryptonToastNotificationStrings usage example
 
 ```csharp
 // Configure Chinese localization for toast notifications
@@ -1107,6 +1178,7 @@ All localizable string properties use these attributes:
 #### 3. Accelerator Keys
 
 Strings containing `&` character define keyboard accelerators:
+
 - `"&OK"` - Alt+O
 - `"Cance&l"` - Alt+L
 - `"&Yes"` - Alt+Y
@@ -1116,18 +1188,21 @@ Strings containing `&` character define keyboard accelerators:
 ### Access Patterns
 
 #### Static Access
+
 ```csharp
 // Direct static access to string categories
 string ok = KryptonGlobalToolkitStrings.GeneralToolkitStrings.OK;
 ```
 
 #### Instance Access
+
 ```csharp
 // Access through KryptonManager instance
 string ok = KryptonManager.Strings.GeneralStrings.OK;
 ```
 
 #### Designer Access
+
 1. Add `KryptonManager` to form
 2. Expand `ToolkitStrings` property
 3. Expand desired string category
@@ -1152,7 +1227,7 @@ string ok = KryptonManager.Strings.GeneralStrings.OK;
 
 ### Inheritance Hierarchy
 
-```
+```text
 Object
     └── GlobalId
         └── KryptonGlobalToolkitStrings
@@ -1185,6 +1260,7 @@ public class StringCategory : GlobalId
 ```
 
 This enables:
+
 - Expandable nodes in Visual Studio designer
 - Nested property display
 - Designer serialization support
@@ -1198,6 +1274,7 @@ String categories support designer serialization:
 ```
 
 This allows:
+
 - Saving modified strings to .resx files
 - Language-specific resource generation
 - Automatic resource loading
@@ -1212,6 +1289,7 @@ public string PropertyName { get; set; }
 ```
 
 This triggers:
+
 - Property grid refresh when changed
 - Dependent property updates
 - UI synchronization
@@ -1228,6 +1306,7 @@ public string OK { get; set; }
 ```
 
 Benefits:
+
 - Type-safe default values
 - Easy maintenance
 - Consistent reset behavior
@@ -1245,6 +1324,7 @@ public bool IsDefault =>
 ```
 
 This enables:
+
 - Detecting modifications
 - Conditional serialization
 - Designer support
@@ -1253,7 +1333,6 @@ This enables:
 
 ## See Also
 
-- [Localization and String Management Guide](LocalizationGuide.md)
-- [ExceptionHandler API Documentation](ExceptionHandlerAPIDocumentation.md)
+- [Localization and string management guide](../Utilities/LocalizationGuide.md)
+- [ExceptionHandler API documentation](../Utilities/ExceptionHandlerAPIDocumentation.md)
 - [.NET Globalization Documentation](https://docs.microsoft.com/en-us/dotnet/standard/globalization-localization/)
-

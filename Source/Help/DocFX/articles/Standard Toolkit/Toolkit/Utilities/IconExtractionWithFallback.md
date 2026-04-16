@@ -7,6 +7,7 @@ The `ExtractIconFromImageres` method provides a robust icon extraction system th
 ## How It Works
 
 ### Primary Method: imageres.dll
+
 The method first attempts to extract icons directly from Windows' `imageres.dll`:
 
 ```csharp
@@ -15,6 +16,7 @@ var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shi
 ```
 
 ### Fallback System: Embedded Resources
+
 If `imageres.dll` is unavailable or the icon extraction fails, the system automatically falls back to embedded resources:
 
 ```csharp
@@ -26,14 +28,16 @@ var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIcon
 ## Available Fallback Icons
 
 ### Currently Supported Icons
+
 - **Shield** (`PI.ImageresIconID.Shield`) - UAC shield icon
 - **ShieldAlt** (`PI.ImageresIconID.ShieldAlt`) - Alternative UAC shield icon
 
 ### OS-Specific Resources
+
 The fallback system uses OS-specific embedded resources:
 
 | Windows Version | Resource File | Available Sizes |
-|----------------|---------------|-----------------|
+| --- | --- | --- |
 | Windows 11 | `Windows11UACShieldIconResources` | 16x16, 20x20, 24x24, 32x32, 40x40, 48x48, 64x64, 256x256 |
 | Windows 10 | `Windows10UACShieldIconResources` | 16x16, 20x20, 24x24, 32x32, 40x40, 48x48, 64x64, 256x256 |
 | Windows 7/8.x | `Windows7And8xUACShieldIconResources` | 8x8, 16x16, 24x24, 32x32, 48x48, 64x64, 128x128, 256x256 |
@@ -42,6 +46,7 @@ The fallback system uses OS-specific embedded resources:
 ## Size Mapping
 
 ### Exact Size Matching
+
 The system first tries to find an exact size match in the embedded resources:
 
 ```csharp
@@ -50,6 +55,7 @@ var icon32 = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.S
 ```
 
 ### Size Approximation
+
 If an exact size isn't available, the system uses the closest available size:
 
 ```csharp
@@ -62,7 +68,7 @@ If an exact size isn't available, the system uses the closest available size:
 ### Size Mapping Table
 
 | Requested Size | Windows 11/10 | Windows 7/8.x | Windows Vista |
-|----------------|----------------|---------------|---------------|
+| --- | --- | --- | --- |
 | 8x8 | 16x16 (scaled) | 8x8 | 8x8 |
 | 16x16 | 16x16 | 16x16 | 16x16 |
 | 20x20 | 20x20 | 24x24 (scaled) | 24x24 (scaled) |
@@ -79,6 +85,7 @@ If an exact size isn't available, the system uses the closest available size:
 ## Usage Examples
 
 ### Basic Usage (Automatic Fallback)
+
 ```csharp
 // This will work regardless of imageres.dll availability
 var shieldIcon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield, IconSize.Medium);
@@ -92,6 +99,7 @@ if (shieldIcon != null)
 ```
 
 ### Error Handling
+
 ```csharp
 public Image? GetSafeShieldIcon(IconSize size = IconSize.Medium)
 {
@@ -109,6 +117,7 @@ public Image? GetSafeShieldIcon(IconSize size = IconSize.Medium)
 ```
 
 ### OS-Aware Usage
+
 ```csharp
 // The fallback automatically uses the correct OS-specific icon
 var shieldIcon = GraphicsExtensions.ExtractIconFromImageres(PI.ImageresIconID.Shield);
@@ -122,11 +131,13 @@ var shieldIcon = GraphicsExtensions.ExtractIconFromImageres(PI.ImageresIconID.Sh
 ## Performance Considerations
 
 ### Resource Loading
+
 - **Embedded resources** are loaded from the assembly, not from disk
 - **No network access** required for fallback icons
 - **Fast loading** compared to disk-based resources
 
 ### Memory Management
+
 ```csharp
 // Always dispose of icons when done
 using var icon = GraphicsExtensions.ExtractIconFromImageres(PI.ImageresIconID.Shield);
@@ -138,6 +149,7 @@ if (icon != null)
 ```
 
 ### Caching Strategy
+
 ```csharp
 private static readonly Dictionary<IconSize, Image> _iconCache = new();
 
@@ -156,6 +168,7 @@ public static Image? GetCachedShieldIcon(IconSize size)
 ## Common Scenarios
 
 ### UAC Shield Buttons
+
 ```csharp
 // Create an "Run as Administrator" button
 var adminButton = new KryptonButton();
@@ -171,6 +184,7 @@ if (shieldIcon != null)
 ```
 
 ### Security Dialogs
+
 ```csharp
 // Use shield icon for security dialogs
 var securityForm = new KryptonForm();
@@ -183,6 +197,7 @@ if (shieldIcon != null)
 ```
 
 ### Toolbar Icons
+
 ```csharp
 // Add shield icon to toolbar
 var toolbar = new KryptonToolStrip();
@@ -201,6 +216,7 @@ toolbar.Items.Add(shieldButton);
 ## Troubleshooting
 
 ### Icon Not Found
+
 ```csharp
 // Check if icon extraction failed
 var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
@@ -213,6 +229,7 @@ if (icon == null)
 ```
 
 ### Size Not Available
+
 ```csharp
 // Check available sizes for debugging
 var sizes = UACShieldHelper.GetAvailableImageresSizes();
@@ -220,6 +237,7 @@ Debug.WriteLine($"Available imageres.dll sizes: {string.Join(", ", sizes.Select(
 ```
 
 ### Performance Issues
+
 ```csharp
 // For frequently used icons, cache them
 private static Image? _cachedShieldIcon;
@@ -239,6 +257,7 @@ public static Image GetShieldIcon()
 ## Best Practices
 
 ### 1. Always Check for Null
+
 ```csharp
 var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
 if (icon != null)
@@ -255,6 +274,7 @@ else
 ```
 
 ### 2. Dispose Icons Properly
+
 ```csharp
 // Use using statement for automatic disposal
 using var icon = GraphicsExtensions.ExtractIconFromImageres((int)PI.ImageresIconID.Shield);
@@ -265,6 +285,7 @@ if (icon != null)
 ```
 
 ### 3. Cache Frequently Used Icons
+
 ```csharp
 // Cache icons to avoid repeated extraction
 private static readonly Dictionary<IconSize, Image> _shieldIconCache = new();
@@ -283,6 +304,7 @@ public static Image GetShieldIcon(IconSize size)
 ```
 
 ### 4. Handle Theme Changes
+
 ```csharp
 // Clear cache when theme changes
 KryptonManager.GlobalPaletteChanged += (sender, e) =>
@@ -295,21 +317,25 @@ KryptonManager.GlobalPaletteChanged += (sender, e) =>
 ## Benefits
 
 ### 1. Reliability
+
 - **Always works** - No dependency on external files
 - **Graceful degradation** - Falls back automatically
 - **Cross-platform** - Works in different deployment scenarios
 
 ### 2. Performance
+
 - **Fast loading** - Embedded resources load quickly
 - **No disk access** - Resources are in memory
 - **Efficient caching** - Can cache frequently used icons
 
 ### 3. Consistency
+
 - **OS-specific** - Uses appropriate design for each Windows version
 - **Theme-aware** - Integrates with Krypton theming system
 - **Professional appearance** - Maintains visual quality
 
 ### 4. Developer Experience
+
 - **Simple API** - Same method call regardless of fallback
 - **Automatic handling** - No manual fallback logic needed
 - **Comprehensive documentation** - Clear usage guidelines

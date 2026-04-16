@@ -1,6 +1,5 @@
 # Workspace Compacting
 
-  
 **Compacting Flags**  
 One of the unique features of the KryptonWorkspace is the hierarchical structure
 of the layout definition. It means you can quickly and easily create complex
@@ -12,8 +11,6 @@ to resolve a potential inefficiency. The flags are exposed via the
 *KryptonWorkspace.CompactFlags* property. Each of the flags is explained below
 with an example of how they change the layout definition.
 
- 
-
 **RemoveEmptyCells**  
 Using drag and drop you can transfer a page from one cell to another. If you
 remove the last page in the cell you are left with a cell that has no pages.
@@ -22,8 +19,6 @@ to be automatically removed as an empty cell is redundant. When this flag is set
 the compacting phase will search for any cells that have no pages defined and
 remove them from the definition.
 
- 
-
 **RemoveEmptySequences**  
 Removing empty cells can result in a workspace sequence existing that has no
 child elements. Once all the cells contained in the sequence have been removed
@@ -31,8 +26,6 @@ we are left with a redundant sequence. The user will not see the sequence as it
 is likely to be zero sized but it still exists in the hierarchy. During
 compacting this flag will search for sequences that have no children and
 automatically remove them.
-
- 
 
 **PromoteLeafs**  
 A more subtle scenario involves a sequence that contains just a single child. If
@@ -44,8 +37,6 @@ with a sequence that contains a single sequence child that contains yet another
 single sequence child and so forth. Although you would not see any visual impact
 it is clearly inefficient to have long chains of single sequences.
 
- 
-
 **AtLeastOneVisibleCell**  
 Use this flag to ensure you always have at least one visible cell in the
 workspace. If the user deletes the last showing page in the last showing cell
@@ -53,8 +44,6 @@ then the *RemoveEmptyCells* flag above would remove the last cell and leave the
 workspace area blank. Some applications require that there is always at least
 one cell showing even if it has no pages in it. This flag will ensure that is
 the case.
-
- 
 
 **Example**  
 Imagine we have the following workspace definition in place when compacting
@@ -73,8 +62,7 @@ occurs.
           Sequence    (Vertical)  
                 Cell  (1 Page)  
           Sequence    (Vertical)  
-  
-  
+
 *RemoveEmptySequences* removes empty sequences giving.
 
     Sequence       (Horizontal)  

@@ -1,7 +1,5 @@
 # KryptonWrapLabel
 
- 
-
 Use the *KryptonWrapLabel* control when you need to functionality of the
 standard *Windows.Forms.Label* control but with the text color and font of the
 *Krypton* palette system. Unlike the *KryptonLabel* control this
@@ -11,9 +9,7 @@ text onto multiple lines. This is the one circumstance for which this control is
 recommended instead of the *KryptonLabel* control. If you need text to span
 multiple lines then this is the control to use.
 
- 
-
-**Appearance** 
+## Appearance
 
 The *LabelStyle* property is used to define the top level styling required for
 the appearance of the *KryptonWrapLabel* control. The four standard values are
@@ -42,9 +38,7 @@ a *KryptonPalette* for situations where you need to create variations on the
 styles already provided. Custom styles are named simply *Custom1*, *Custom2* and
 *Custom3*.
 
- 
-
-**Two States** 
+## Two States
 
 Only two possible states of *Disabled* and *Normal* are used by the wrap label
 control. In order to customize the appearance use the corresponding
@@ -53,9 +47,7 @@ are provided. You can only customize the text color, text font and rendering
 hint. These are also the only three values that are inherited from the palette
 that defines the default properties. Also note that the background color cannot
 be set as the background is always transparent and so shows the background of
-the parent control. 
-
- 
+the parent control.
 
 To speed up the customization process an extra *StateCommon* property has been
 provided. The settings from this are used if no override has been defined for

@@ -12,7 +12,7 @@ The `ExceptionHandler` class is a comprehensive exception management system with
 
 The exception handling system consists of several interconnected components:
 
-```
+```text
 ExceptionHandler (internal)
     ↓
 KryptonExceptionHandler (public API)
@@ -31,14 +31,17 @@ The core exception handling class that provides the fundamental exception manage
 **Location:** `Source/Krypton Components/Krypton.Toolkit/Tooling/ExceptionHandler.cs`
 
 #### Constructor
+
 ```csharp
 public ExceptionHandler()
 ```
+
 Creates a new instance of the ExceptionHandler class.
 
-#### Methods
+#### ExceptionHandler methods
 
-##### CaptureException
+##### CaptureException (ExceptionHandler)
+
 ```csharp
 public static void CaptureException(
     Exception exception, 
@@ -55,6 +58,7 @@ public static void CaptureException(
 **Purpose:** Captures and displays exceptions with comprehensive debugging information.
 
 **Parameters:**
+
 - `exception` (Exception): The exception to capture and display
 - `title` (string): Title for the exception dialog (default: "Exception Caught")
 - `callerFilePath` (string): Automatically populated with the calling file path using `[CallerFilePath]`
@@ -66,12 +70,14 @@ public static void CaptureException(
 - `showExceptionDialogSearchBox` (bool?): Whether to show search functionality in the dialog (default: false)
 
 **Behavior:**
+
 - If `useExceptionDialog` is true (default), displays the exception using `KryptonExceptionDialog.Show()`
 - If `useExceptionDialog` is false, displays a simple message box with formatted exception details
 - Automatically captures caller information using C# compiler attributes
 - Provides fallback error handling for any exceptions during the capture process
 
 **Example Usage:**
+
 ```csharp
 try
 {
@@ -84,7 +90,8 @@ catch (Exception ex)
 }
 ```
 
-##### PrintStackTrace
+##### PrintStackTrace (ExceptionHandler)
+
 ```csharp
 public static void PrintStackTrace(Exception exception, string fileName)
 ```
@@ -92,16 +99,19 @@ public static void PrintStackTrace(Exception exception, string fileName)
 **Purpose:** Writes exception details and stack trace to a file.
 
 **Parameters:**
+
 - `exception` (Exception): The exception to log
 - `fileName` (string): Path to the file where the exception details will be written
 
 **Behavior:**
+
 - Creates the file if it doesn't exist
 - Writes both `exception.ToString()` and `exception.StackTrace` to the file
 - Properly disposes of file resources
 - If file operations fail, calls `CaptureException` with stack trace enabled
 
 **Example Usage:**
+
 ```csharp
 try
 {
@@ -113,7 +123,8 @@ catch (Exception ex)
 }
 ```
 
-##### PrintExceptionStackTrace
+##### PrintExceptionStackTrace (ExceptionHandler)
+
 ```csharp
 public static void PrintExceptionStackTrace(Exception exception, string fileName)
 ```
@@ -121,10 +132,12 @@ public static void PrintExceptionStackTrace(Exception exception, string fileName
 **Purpose:** Writes only the stack trace portion of an exception to a file.
 
 **Parameters:**
+
 - `exception` (Exception): The exception whose stack trace to log
 - `fileName` (string): Path to the file where the stack trace will be written
 
 **Behavior:**
+
 - Similar to `PrintStackTrace` but only writes `exception.StackTrace`
 - Useful when you only need the call stack without the full exception details
 - Includes proper error handling and resource disposal
@@ -135,9 +148,10 @@ A public wrapper that provides access to the internal ExceptionHandler functiona
 
 **Location:** `Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonExceptionHandler.cs`
 
-#### Methods
+#### KryptonExceptionHandler methods
 
-##### CaptureException
+##### CaptureException (KryptonExceptionHandler)
+
 ```csharp
 public static void CaptureException(Exception exception,
     string title = "Exception Caught",
@@ -152,14 +166,16 @@ public static void CaptureException(Exception exception,
 
 **Note:** This method has fewer parameters than the internal version, focusing on the most commonly used options.
 
-##### PrintStackTrace
+##### PrintStackTrace (KryptonExceptionHandler)
+
 ```csharp
 public static void PrintStackTrace(Exception exception, string fileName)
 ```
 
 **Purpose:** Public interface to the internal stack trace printing functionality.
 
-##### PrintExceptionStackTrace
+##### PrintExceptionStackTrace (KryptonExceptionHandler)
+
 ```csharp
 public static void PrintExceptionStackTrace(Exception exception, string fileName)
 ```
@@ -170,11 +186,12 @@ public static void PrintExceptionStackTrace(Exception exception, string fileName
 
 A static class that provides access to the advanced exception dialog UI.
 
-**Location:** `Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonExceptionDialog.cs`
+**Public API location (V110+):** `Source/Krypton Components/Krypton.Utilities/Components/KryptonExceptionDialog/Controls Toolkit/KryptonExceptionDialog.cs` (internal forwarding remains in `Krypton.Toolkit`)
 
-#### Methods
+#### KryptonExceptionDialog methods
 
 ##### Show
+
 ```csharp
 public static void Show(Exception exception, bool? showCopyButton, bool? showSearchBox)
 ```
@@ -182,6 +199,7 @@ public static void Show(Exception exception, bool? showCopyButton, bool? showSea
 **Purpose:** Displays an exception using the advanced VisualExceptionDialogForm.
 
 **Parameters:**
+
 - `exception` (Exception): The exception to display
 - `showCopyButton` (bool?): Whether to show the copy button (default: true)
 - `showSearchBox` (bool?): Whether to show the search functionality (default: true)
@@ -193,6 +211,7 @@ The actual Windows Forms dialog that displays exception information in a user-fr
 **Location:** `Source/Krypton Components/Krypton.Toolkit/Controls Visuals/VisualExceptionDialogForm.cs`
 
 #### Features
+
 - **Tree View Display:** Shows exception hierarchy with inner exceptions
 - **Search Functionality:** Allows searching through exception details
 - **Copy to Clipboard:** One-click copying of exception details
@@ -201,10 +220,11 @@ The actual Windows Forms dialog that displays exception information in a user-fr
 - **Localized Strings:** Uses KryptonManager.Strings for internationalization
 
 #### Key Properties
+
 - `_showCopyButton` (bool?): Controls copy button visibility
 - `_showSearchBox` (bool?): Controls search functionality visibility
 - `_exception` (Exception?): The exception being displayed
-- `_originalNodes` (List<TreeNode>): Backup of original tree nodes for search functionality
+- `_originalNodes` (`List<TreeNode>`): Backup of original tree nodes for search functionality
 
 ## Configuration and Dependencies
 
@@ -235,6 +255,7 @@ The exception dialog supports localization through `KryptonManager.Strings.Excep
 ## Usage Patterns
 
 ### Basic Exception Handling
+
 ```csharp
 try
 {
@@ -248,6 +269,7 @@ catch (Exception ex)
 ```
 
 ### Advanced Exception Handling with Custom Title
+
 ```csharp
 try
 {
@@ -260,6 +282,7 @@ catch (InvalidOperationException ex)
 ```
 
 ### File-Based Exception Logging
+
 ```csharp
 try
 {
@@ -276,6 +299,7 @@ catch (Exception ex)
 ```
 
 ### Custom Exception Dialog Configuration
+
 ```csharp
 try
 {
@@ -307,15 +331,19 @@ The ExceptionHandler includes comprehensive error handling:
 ## Integration Points
 
 ### With KryptonMessageBox
+
 When `useExceptionDialog` is false, the ExceptionHandler uses `KryptonMessageBox.Show()` to display exception information in a simple message box format.
 
 ### With KryptonManager
+
 The exception dialog integrates with the KryptonManager for:
+
 - String localization
 - Theme management
 - Global configuration
 
 ### With GlobalStaticValues
+
 Uses global constants for default behavior configuration.
 
 ## Best Practices
@@ -365,8 +393,8 @@ Potential areas for future development:
 
 ## Related Documentation
 
-- [KryptonExceptionDialog](../Components/KryptonExceptionDialog.md) - Practical tutorials and recipes ⭐ **Start Here**
-- [KryptonExceptionDialog Quick Start](../Components/KryptonExceptionDialogQuickStart.md) - Complete API documentation
+- [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md) - API reference (V110+: `Krypton.Utilities`) ⭐ **Start Here**
+- [KryptonExceptionDialog Quick Start](../../Utilities/KryptonExceptionDialogQuickStart.md) - Quick start
 - [Exception Handling Guide](ExceptionHandler.md) - Comprehensive exception handling guide  
 - [Localization and String Management](LocalizationGuide.md) - For localizing exception messages
 - [GlobalStaticValues Reference](GlobalStaticValuesReference.md) - Global configuration values

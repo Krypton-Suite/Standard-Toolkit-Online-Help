@@ -109,7 +109,7 @@
 </li>
 <li><a href="#creating-backstage-pages">Creating Backstage Pages</a>
 <ul>
-<li>[See also: <a href="Ribbon-BackstageView-CreatingPages.md">Creating Backstage Pages - In-Depth Guide</a>](#see-also-creating-backstage-pages---in-depth-guide)</li>
+<li>[See also: <a href="KryptonRibbonBackstageViewCreatingPages.html">Creating Backstage Pages - In-Depth Guide</a>](#see-also-creating-backstage-pages---in-depth-guide)</li>
 </ul>
 </li>
 <li><a href="#new-features">New Features</a></li>
@@ -292,18 +292,18 @@
 <h3 id="backstage-page-kryptonbackstagepage">Backstage page (<code>KryptonBackstagePage</code>)</h3>
 <p><code>KryptonBackstagePage</code> is a <code>KryptonPanel</code> used as a page container. Since it inherits from <code>KryptonPanel</code>, it supports all standard panel properties and can host any Windows Forms controls.</p>
 <p>Key API:</p>
-<h4 id="string-text"><code>string Text</code></h4>
+<h4 id="string-text-page"><code>string Text</code> (page)</h4>
 <ul>
 <li>Display text shown in the navigation list for this page.</li>
 <li>Inherited from <code>Control.Text</code>.</li>
 </ul>
-<h4 id="image-image"><code>Image? Image</code></h4>
+<h4 id="image-image-page"><code>Image? Image</code> (page)</h4>
 <ul>
 <li>Image shown in the navigation list alongside the text.</li>
 <li>Images are automatically scaled to fit (16px for Small items, 32px for Large items).</li>
 <li>Optional; can be set to provide visual identification in the navigation list.</li>
 </ul>
-<h4 id="backstageitemsize-itemsize"><code>BackstageItemSize ItemSize</code></h4>
+<h4 id="backstageitemsize-itemsize-page"><code>BackstageItemSize ItemSize</code> (page)</h4>
 <ul>
 <li>Size of this item in the navigation list.</li>
 <li><strong>Values</strong>:
@@ -314,13 +314,13 @@
 </li>
 <li><strong>Default</strong>: <code>Small</code></li>
 </ul>
-<h4 id="bool-visibleinnavigation"><code>bool VisibleInNavigation</code></h4>
+<h4 id="bool-visibleinnavigation-page"><code>bool VisibleInNavigation</code> (page)</h4>
 <ul>
 <li>If <code>false</code>, the page remains in the collection but is not listed in the navigation.</li>
 <li>Useful for programmatically accessible pages that shouldn't appear in the navigation list.</li>
 <li>Default: <code>true</code></li>
 </ul>
-<h4 id="event-eventhandler-navigationpropertychanged"><code>event EventHandler NavigationPropertyChanged</code></h4>
+<h4 id="event-eventhandler-navigationpropertychanged-page"><code>event EventHandler NavigationPropertyChanged</code> (page)</h4>
 <ul>
 <li>Raised when <code>Text</code>, <code>Image</code>, <code>ItemSize</code>, or <code>VisibleInNavigation</code> changes (used to refresh navigation).</li>
 </ul>
@@ -337,17 +337,17 @@
 <h3 id="backstage-command-kryptonbackstagecommand">Backstage command (<code>KryptonBackstageCommand</code>)</h3>
 <p><code>KryptonBackstageCommand</code> represents a command-only item in the navigation list that executes an action when clicked, without showing a page.</p>
 <p>Key API:</p>
-<h4 id="string-text-1"><code>string Text</code></h4>
+<h4 id="string-text-command"><code>string Text</code> (command)</h4>
 <ul>
 <li>Display text shown in the navigation list for this command.</li>
 </ul>
-<h4 id="image-image-1"><code>Image? Image</code></h4>
+<h4 id="image-image-command"><code>Image? Image</code> (command)</h4>
 <ul>
 <li>Image shown in the navigation list alongside the text.</li>
 <li>Images are automatically scaled to fit (16px for Small items, 32px for Large items).</li>
 <li>Optional; can be set to provide visual identification.</li>
 </ul>
-<h4 id="backstageitemsize-itemsize-1"><code>BackstageItemSize ItemSize</code></h4>
+<h4 id="backstageitemsize-itemsize-command"><code>BackstageItemSize ItemSize</code> (command)</h4>
 <ul>
 <li>Size of this item in the navigation list.</li>
 <li><strong>Values</strong>:
@@ -358,7 +358,7 @@
 </li>
 <li><strong>Default</strong>: <code>Small</code></li>
 </ul>
-<h4 id="bool-visibleinnavigation-1"><code>bool VisibleInNavigation</code></h4>
+<h4 id="bool-visibleinnavigation-command"><code>bool VisibleInNavigation</code> (command)</h4>
 <ul>
 <li>If <code>false</code>, the command remains in the collection but is not listed in the navigation.</li>
 <li>Default: <code>true</code></li>
@@ -368,7 +368,7 @@
 <li>Occurs when the command is clicked.</li>
 <li>Use this event to execute the command's action.</li>
 </ul>
-<h4 id="event-eventhandler-navigationpropertychanged-1"><code>event EventHandler NavigationPropertyChanged</code></h4>
+<h4 id="event-eventhandler-navigationpropertychanged-command"><code>event EventHandler NavigationPropertyChanged</code> (command)</h4>
 <ul>
 <li>Raised when <code>Text</code>, <code>Image</code>, <code>ItemSize</code>, or <code>VisibleInNavigation</code> changes (used to refresh navigation).</li>
 </ul>
@@ -413,8 +413,8 @@ backstage.Commands.Add(exitCommand);
 <h4 id="managing-pages">Managing Pages</h4>
 <pre><code class="lang-csharp">var backstage = new KryptonBackstageView();
 
-var page = new KryptonBackstagePage 
-{ 
+var page = new KryptonBackstagePage
+{
     Text = &quot;Save&quot;,
     Image = Properties.Resources.SaveIcon,
     ItemSize = BackstageItemSize.Large
@@ -481,14 +481,14 @@ backstage.Commands.Remove(command);
 <pre><code class="lang-csharp">var backstage = new KryptonBackstageView { Dock = DockStyle.Fill };
 
 // Add pages with images and sizes
-backstage.Pages.Add(new KryptonBackstagePage 
-{ 
+backstage.Pages.Add(new KryptonBackstagePage
+{
     Text = &quot;Info&quot;,
     Image = Properties.Resources.InfoIcon,
     ItemSize = BackstageItemSize.Large
 });
-backstage.Pages.Add(new KryptonBackstagePage 
-{ 
+backstage.Pages.Add(new KryptonBackstagePage
+{
     Text = &quot;Save&quot;,
     Image = Properties.Resources.SaveIcon,
     ItemSize = BackstageItemSize.Small
@@ -720,7 +720,6 @@ backstage.OverlayMode = BackstageOverlayMode.BelowRibbon;
 <li>✅ <strong>Overlay coverage</strong>: Support for both full client area and &quot;below ribbon only&quot; overlay modes</li>
 </ul>
 <p><strong>Current Status</strong>: The Backstage View feature is feature-complete with all planned enhancements implemented.</p>
-<p><a id="files-and-key-types"></a></p>
 <h2 id="files-and-key-types">Files and Key Types</h2>
 <p>Key types used in the Backstage View implementation:</p>
 <table>

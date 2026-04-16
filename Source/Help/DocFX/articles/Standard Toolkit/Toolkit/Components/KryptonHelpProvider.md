@@ -67,6 +67,7 @@
 ### Basic Setup
 
 1. **Add to Form**
+
    ```csharp
    // Drag KryptonHelpProvider from toolbox onto your form
    // Or create programmatically:
@@ -74,16 +75,19 @@
    ```
 
 2. **Set Container Control** (Required for tooltips)
+
    ```csharp
    helpProvider.ContainerControl = this; // 'this' is your form
    ```
 
 3. **Enable Tooltips**
+
    ```csharp
    helpProvider.ToolTipValues.EnableToolTips = true;
    ```
 
 4. **Configure Help for Controls**
+
    ```csharp
    helpProvider.SetShowHelp(myTextBox, true);
    helpProvider.SetHelpString(myTextBox, "Enter your name here");
@@ -153,6 +157,7 @@ public partial class MyForm : KryptonForm
 ### Properties
 
 #### `PaletteMode`
+
 - **Type**: `PaletteMode`
 - **Default**: `PaletteMode.Global`
 - **Category**: Visuals
@@ -163,6 +168,7 @@ helpProvider.PaletteMode = PaletteMode.Office2010Blue;
 ```
 
 **Available Modes**:
+
 - `Global` - Uses the global palette from `KryptonManager`
 - `ProfessionalSystem` - System-based professional appearance
 - `ProfessionalOffice2003` - Office 2003 style
@@ -174,6 +180,7 @@ helpProvider.PaletteMode = PaletteMode.Office2010Blue;
 - `Custom` - Use a custom palette
 
 #### `Palette`
+
 - **Type**: `PaletteBase?`
 - **Default**: `null`
 - **Category**: Visuals
@@ -185,6 +192,7 @@ helpProvider.Palette = myCustomPalette;
 ```
 
 #### `HelpNamespace`
+
 - **Type**: `string`
 - **Default**: `""` (empty string)
 - **Category**: Behavior
@@ -199,6 +207,7 @@ helpProvider.HelpNamespace = @"C:\Help\MyApp.chm";
 ```
 
 #### `ContainerControl`
+
 - **Type**: `ContainerControl?`
 - **Default**: `null`
 - **Category**: Behavior
@@ -209,11 +218,13 @@ helpProvider.ContainerControl = this; // 'this' is your form
 ```
 
 #### `ToolTipValues`
+
 - **Type**: `ToolTipValues`
 - **Category**: Appearance
 - **Description**: Gets the tooltip values object for customizing tooltip appearance and behavior.
 
 **ToolTipValues Properties**:
+
 - `EnableToolTips` (bool) - Enable or disable tooltip display
 - `ToolTipStyle` (LabelStyle) - Style of the tooltip (e.g., `LabelStyle.ToolTip`, `LabelStyle.SuperTip`)
 - `ToolTipShadow` (bool) - Whether to show shadow on tooltip
@@ -230,6 +241,7 @@ helpProvider.ToolTipValues.CloseIntervalDelay = 10000;
 ```
 
 #### `HelpProvider`
+
 - **Type**: `HelpProvider?`
 - **Browsable**: `false`
 - **Description**: Gets the underlying Windows Forms `HelpProvider` instance. Useful for advanced scenarios requiring direct access to the base provider.
@@ -239,85 +251,105 @@ helpProvider.ToolTipValues.CloseIntervalDelay = 10000;
 ### Methods
 
 #### `SetShowHelp(Control ctl, bool value)`
+
 Specifies whether Help is displayed for the specified control.
 
 **Parameters**:
+
 - `ctl` (Control) - The control for which Help is turned on or off
 - `value` (bool) - `true` to enable help, `false` to disable
 
 **Example**:
+
 ```csharp
 helpProvider.SetShowHelp(textBox1, true);
 ```
 
 #### `GetShowHelp(Control ctl)`
+
 Returns a value indicating whether Help is displayed for the specified control.
 
 **Parameters**:
+
 - `ctl` (Control) - The control to check
 
 **Returns**: `true` if help is enabled, otherwise `false`
 
 **Example**:
+
 ```csharp
 bool hasHelp = helpProvider.GetShowHelp(textBox1);
 ```
 
 #### `SetHelpString(Control ctl, string? helpString)`
+
 Specifies the Help string associated with the specified control. This string is displayed as a tooltip when hovering over the control (if tooltips are enabled) and when F1 is pressed.
 
 **Parameters**:
+
 - `ctl` (Control) - The control to associate the help string with
 - `helpString` (string?) - The help string to display. Use `null` or empty string to remove help.
 
 **Example**:
+
 ```csharp
 helpProvider.SetHelpString(textBox1, "Enter your name in this field");
 helpProvider.SetHelpString(textBox1, null); // Remove help
 ```
 
 #### `GetHelpString(Control ctl)`
+
 Returns the Help string for the specified control.
 
 **Parameters**:
+
 - `ctl` (Control) - The control to retrieve the help string from
 
 **Returns**: The help string, or `null` if not set
 
 **Example**:
+
 ```csharp
 string? helpText = helpProvider.GetHelpString(textBox1);
 ```
 
 #### `SetHelpKeyword(Control ctl, string? keyword)`
+
 Specifies a Help keyword for the specified control. Used with HTML help files to navigate to specific topics.
 
 **Parameters**:
+
 - `ctl` (Control) - The control to associate the keyword with
 - `keyword` (string?) - The help keyword (topic ID) in the HTML help file
 
 **Example**:
+
 ```csharp
 helpProvider.HelpNamespace = @"C:\Help\MyApp.chm";
 helpProvider.SetHelpKeyword(button1, "button_help_topic");
 ```
 
 #### `GetHelpKeyword(Control ctl)`
+
 Returns the current Help keyword for the specified control.
 
 **Parameters**:
+
 - `ctl` (Control) - The control to retrieve the keyword from
 
 **Returns**: The help keyword, or `null` if not set
 
 #### `SetHelpNavigator(Control ctl, HelpNavigator navigator)`
+
 Specifies the Help command to use when the user invokes Help for the specified control.
 
 **Parameters**:
+
 - `ctl` (Control) - The control for which to set the help command
 - `navigator` (HelpNavigator) - One of the `HelpNavigator` values
 
 **HelpNavigator Values**:
+
 - `TableOfContents` - Show table of contents
 - `Index` - Show index
 - `Find` - Show find dialog
@@ -326,14 +358,17 @@ Specifies the Help command to use when the user invokes Help for the specified c
 - `AssociateIndex` - Show associate index
 
 **Example**:
+
 ```csharp
 helpProvider.SetHelpNavigator(button1, HelpNavigator.Topic);
 ```
 
 #### `GetHelpNavigator(Control ctl)`
+
 Returns the current Help navigation type for the specified control.
 
 **Parameters**:
+
 - `ctl` (Control) - The control to retrieve the navigator from
 
 **Returns**: The `HelpNavigator` value (default: `TableOfContents`)
@@ -343,18 +378,22 @@ Returns the current Help navigation type for the specified control.
 ### Events
 
 #### `HelpRequested`
+
 Occurs when the user requests help for a control (typically by pressing F1).
 
 **Event Handler Signature**:
+
 ```csharp
 void HelpRequested(object? sender, HelpEventArgs e)
 ```
 
 **Parameters**:
+
 - `sender` - The `KryptonHelpProvider` instance
 - `e` - `HelpEventArgs` containing event data
 
 **Example**:
+
 ```csharp
 helpProvider.HelpRequested += (sender, e) =>
 {
@@ -381,7 +420,7 @@ helpProvider.HelpRequested += (sender, e) =>
 
 ## Tooltip Functionality
 
-### Overview
+### Tooltip overview
 
 `KryptonHelpProvider` can display help strings as styled tooltips when users hover over controls. This provides immediate context-sensitive help without requiring the F1 key.
 
@@ -757,7 +796,9 @@ helpProvider.SetHelpKeyword(control, "topic_id");
 **Problem**: Tooltips don't appear when hovering over controls.
 
 **Solutions**:
+
 1. Check that `ContainerControl` is set:
+
    ```csharp
    if (helpProvider.ContainerControl == null)
    {
@@ -766,6 +807,7 @@ helpProvider.SetHelpKeyword(control, "topic_id");
    ```
 
 2. Verify tooltips are enabled:
+
    ```csharp
    if (!helpProvider.ToolTipValues.EnableToolTips)
    {
@@ -774,6 +816,7 @@ helpProvider.SetHelpKeyword(control, "topic_id");
    ```
 
 3. Ensure help is enabled for the control:
+
    ```csharp
    if (!helpProvider.GetShowHelp(control))
    {
@@ -782,6 +825,7 @@ helpProvider.SetHelpKeyword(control, "topic_id");
    ```
 
 4. Verify help string is set:
+
    ```csharp
    string? helpString = helpProvider.GetHelpString(control);
    if (string.IsNullOrEmpty(helpString))
@@ -806,12 +850,15 @@ helpProvider.PaletteMode = kryptonManager1.GlobalPaletteMode;
 **Problem**: Pressing F1 doesn't show help.
 
 **Solutions**:
+
 1. Ensure help is enabled for the control:
+
    ```csharp
    helpProvider.SetShowHelp(control, true);
    ```
 
 2. Set a help string or keyword:
+
    ```csharp
    helpProvider.SetHelpString(control, "Help text");
    // OR for HTML help:
@@ -819,6 +866,7 @@ helpProvider.PaletteMode = kryptonManager1.GlobalPaletteMode;
    ```
 
 3. Check if `HelpRequested` event is handling it:
+
    ```csharp
    // If e.Handled = true, default behavior is prevented
    helpProvider.HelpRequested += (sender, e) =>
@@ -833,7 +881,9 @@ helpProvider.PaletteMode = kryptonManager1.GlobalPaletteMode;
 **Problem**: HTML help file doesn't open when F1 is pressed.
 
 **Solutions**:
+
 1. Verify file path is correct:
+
    ```csharp
    if (File.Exists(helpProvider.HelpNamespace))
    {
@@ -842,11 +892,13 @@ helpProvider.PaletteMode = kryptonManager1.GlobalPaletteMode;
    ```
 
 2. Ensure `HelpNamespace` is set:
+
    ```csharp
    helpProvider.HelpNamespace = @"C:\Help\MyApp.chm";
    ```
 
 3. Check help keyword is set (if using Topic navigation):
+
    ```csharp
    helpProvider.SetHelpKeyword(control, "valid_topic_id");
    helpProvider.SetHelpNavigator(control, HelpNavigator.Topic);
@@ -857,17 +909,21 @@ helpProvider.PaletteMode = kryptonManager1.GlobalPaletteMode;
 **Problem**: Application feels sluggish when tooltips are enabled.
 
 **Solutions**:
+
 1. Increase `ShowIntervalDelay` to reduce tooltip frequency:
+
    ```csharp
    helpProvider.ToolTipValues.ShowIntervalDelay = 1000; // Wait 1 second
    ```
 
 2. Disable tooltips for controls that don't need them:
+
    ```csharp
    helpProvider.SetShowHelp(control, false);
    ```
 
 3. Only set `ContainerControl` when needed:
+
    ```csharp
    // Don't set if tooltips aren't needed
    if (enableTooltips)
@@ -987,4 +1043,3 @@ For more information, see the [Krypton Toolkit Online Help](https://krypton-suit
 **Version**: 1.0  
 **Last Updated**: 2026  
 **Krypton Toolkit Version**: 100.00+
-

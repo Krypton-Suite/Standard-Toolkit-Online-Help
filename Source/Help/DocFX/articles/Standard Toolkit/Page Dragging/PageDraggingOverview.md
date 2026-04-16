@@ -83,6 +83,6 @@ attached directly to the Navigator and Workspace controls like so:-
 ```cs
       kryptonNavigator1.DragPageNotify = dm;  
       kryptonWorkspace1.DragPageNotify = dm;  
-``` 
- 
+```
+
 For more detailed information see the [DragManager](DragManager.md) section.

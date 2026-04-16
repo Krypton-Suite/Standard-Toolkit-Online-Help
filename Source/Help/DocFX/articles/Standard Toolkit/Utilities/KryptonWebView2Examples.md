@@ -1,6 +1,7 @@
 # KryptonWebView2 Examples and Use Cases
 
 ## Table of Contents
+
 1. [Basic Web Browser](#basic-web-browser)
 2. [Custom Context Menu](#custom-context-menu)
 3. [Theme Integration](#theme-integration)

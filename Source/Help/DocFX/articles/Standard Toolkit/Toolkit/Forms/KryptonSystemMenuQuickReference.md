@@ -19,6 +19,7 @@ protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 ## Common Tasks
 
 ### Show Menu at Different Locations
+
 ```csharp
 // Top-left corner (native behavior)
 systemMenu.ShowAtFormTopLeft();
@@ -35,6 +36,7 @@ systemMenu.Show(center);
 ```
 
 ### Enable/Disable Menu Features
+
 ```csharp
 // Enable/disable entire menu
 systemMenu.Enabled = false;
@@ -46,6 +48,7 @@ systemMenu.ShowOnAltSpace = true;
 ```
 
 ### Theme Management
+
 ```csharp
 // Get current theme
 var theme = systemMenu.CurrentIconTheme;
@@ -61,6 +64,7 @@ systemMenu.RefreshThemeIcons();
 ```
 
 ### State Management
+
 ```csharp
 // Refresh menu states
 systemMenu.Refresh();
@@ -74,15 +78,15 @@ if (systemMenu.HasMenuItems)
 
 ## Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Alt+F4` | Close form |
-| `Alt+Space` | Show system menu |
+| Shortcut    | Action               |
+| ----------- | -------------------- |
+| `Alt+F4`    | Close form           |
+| `Alt+Space` | Show system menu     |
 
 ## Supported Themes
 
 | Theme Name | Description |
-|------------|-------------|
+| --- | --- |
 | `Office2013` | Default, modern theme |
 | `Office2010` | Classic Office 2010 |
 | `Office2007` | Office 2007 style |
@@ -94,7 +98,7 @@ if (systemMenu.HasMenuItems)
 ## ThemeType Mappings
 
 | ThemeType | Icon Theme |
-|-----------|------------|
+| --- | --- |
 | `Black` | Office2013 |
 | `Blue` | Office2010 |
 | `Silver` | Office2013 |
@@ -106,7 +110,7 @@ if (systemMenu.HasMenuItems)
 ## Menu Items
 
 | Item | Icon | Enabled When |
-|------|------|--------------|
+| --- | --- | --- |
 | **Restore** | ✓ | Window not in Normal state |
 | **Move** | - | Resizable form |
 | **Size** | - | Resizable form |
@@ -117,6 +121,7 @@ if (systemMenu.HasMenuItems)
 ## Troubleshooting
 
 ### Menu Not Showing
+
 ```csharp
 // Check these conditions
 if (!systemMenu.Enabled) return;
@@ -127,6 +132,7 @@ systemMenu.ShowAtFormTopLeft();
 ```
 
 ### Icons Missing
+
 ```csharp
 // Force icon refresh
 systemMenu.RefreshThemeIcons();
@@ -137,6 +143,7 @@ Debug.WriteLine($"Theme: {theme}");
 ```
 
 ### Menu Items Not Working
+
 ```csharp
 // Check form properties
 Debug.WriteLine($"MinimizeBox: {_form.MinimizeBox}");
@@ -151,6 +158,7 @@ systemMenu.Refresh();
 ## Best Practices
 
 ### 1. Always Check for Null
+
 ```csharp
 if (systemMenu?.Enabled == true)
 {
@@ -159,6 +167,7 @@ if (systemMenu?.Enabled == true)
 ```
 
 ### 2. Proper Disposal
+
 ```csharp
 // Using statement (recommended)
 using (var systemMenu = new KryptonSystemMenu(form))
@@ -171,6 +180,7 @@ systemMenu?.Dispose();
 ```
 
 ### 3. Theme Integration
+
 ```csharp
 // Refresh icons when theme changes
 kryptonManager.GlobalPalette = newPalette;
@@ -178,6 +188,7 @@ systemMenu?.RefreshThemeIcons();
 ```
 
 ### 4. Error Handling
+
 ```csharp
 try
 {
@@ -196,6 +207,7 @@ catch (Exception ex)
 ## Integration Patterns
 
 ### Basic Form Integration
+
 ```csharp
 public partial class MainForm : KryptonForm
 {
@@ -225,6 +237,7 @@ public partial class MainForm : KryptonForm
 ```
 
 ### Theme Change Integration
+
 ```csharp
 private void OnThemeChanged(object sender, EventArgs e)
 {
@@ -233,6 +246,7 @@ private void OnThemeChanged(object sender, EventArgs e)
 ```
 
 ### Window State Integration
+
 ```csharp
 protected override void OnWindowStateChanged(EventArgs e)
 {
@@ -251,6 +265,7 @@ protected override void OnWindowStateChanged(EventArgs e)
 ## Common Mistakes
 
 ❌ **Don't create multiple instances**
+
 ```csharp
 // Bad
 var menu1 = new KryptonSystemMenu(form);
@@ -258,18 +273,21 @@ var menu2 = new KryptonSystemMenu(form);
 ```
 
 ✅ **Create once and reuse**
+
 ```csharp
 // Good
 var systemMenu = new KryptonSystemMenu(form);
 ```
 
 ❌ **Don't forget disposal**
+
 ```csharp
 // Bad - memory leak
 var systemMenu = new KryptonSystemMenu(form);
 ```
 
 ✅ **Always dispose**
+
 ```csharp
 // Good
 using (var systemMenu = new KryptonSystemMenu(form))
@@ -279,12 +297,14 @@ using (var systemMenu = new KryptonSystemMenu(form))
 ```
 
 ❌ **Don't ignore theme changes**
+
 ```csharp
 // Bad - icons won't update
 kryptonManager.GlobalPalette = newPalette;
 ```
 
 ✅ **Refresh after theme changes**
+
 ```csharp
 // Good
 kryptonManager.GlobalPalette = newPalette;

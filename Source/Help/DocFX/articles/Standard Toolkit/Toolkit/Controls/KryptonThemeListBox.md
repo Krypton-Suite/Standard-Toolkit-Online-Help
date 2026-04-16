@@ -12,18 +12,21 @@
 ## Key Features
 
 ### Automatic Theme Management
+
 - Auto-populates with all available Krypton themes
 - Handles theme switching automatically
 - Synchronizes with global palette changes
 - No manual theme list management required
 
 ### Seamless Integration
+
 - Responds to external theme changes
 - Updates selection when theme changes programmatically
 - Coordinates with ThemeChangeCoordinator
 - Prevents circular update loops
 
 ### Built-in Themes
+
 - Professional System themes
 - Office 2003, 2007, 2010, 2013 themes
 - Office 365 variants
@@ -43,6 +46,7 @@ public KryptonThemeListBox()
 ```
 
 **Initialization:**
+
 - Populates Items with all available themes
 - Sets initial selection based on current global palette
 - Attaches to global palette change events
@@ -52,6 +56,7 @@ public KryptonThemeListBox()
 ## Properties
 
 ### DefaultPalette
+
 Gets or sets the default palette mode.
 
 ```csharp
@@ -65,10 +70,12 @@ public PaletteMode DefaultPalette { get; set; }
 **Default:** `PaletteMode.Global`
 
 **Remarks:**
+
 - Sets the initial theme when control is first created
 - Automatically selects corresponding item in list
 
 **Example:**
+
 ```csharp
 kryptonThemeListBox1.DefaultPalette = PaletteMode.Office2010Blue;
 ```
@@ -76,6 +83,7 @@ kryptonThemeListBox1.DefaultPalette = PaletteMode.Office2010Blue;
 ---
 
 ### KryptonCustomPalette
+
 Gets or sets the custom assigned palette.
 
 ```csharp
@@ -88,6 +96,7 @@ public KryptonCustomPaletteBase? KryptonCustomPalette { get; set; }
 ```
 
 **Remarks:**
+
 - Deprecated - use ThemeManager.ApplyTheme() instead
 - Will be removed in version 110
 - Provided for backward compatibility only
@@ -99,6 +108,7 @@ public KryptonCustomPaletteBase? KryptonCustomPalette { get; set; }
 The following base properties are hidden as they're managed automatically:
 
 #### Items
+
 ```csharp
 [Browsable(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -106,6 +116,7 @@ public new ListBox.ObjectCollection Items { get; }
 ```
 
 **Remarks:**
+
 - Automatically populated with theme names
 - Should not be modified manually
 - Read-only at design time
@@ -113,6 +124,7 @@ public new ListBox.ObjectCollection Items { get; }
 ---
 
 #### SelectedIndex
+
 ```csharp
 [Browsable(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -120,12 +132,14 @@ public new int SelectedIndex { get; set; }
 ```
 
 **Remarks:**
+
 - Managed automatically by theme selection
 - Reflects current active theme
 
 ---
 
 #### Text
+
 ```csharp
 [Browsable(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -135,6 +149,7 @@ public override string Text { get; set; }
 ---
 
 #### FormatString
+
 ```csharp
 [Browsable(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -146,6 +161,7 @@ public new string FormatString { get; set; }
 ## Methods
 
 ### ResetDefaultPalette()
+
 Resets the DefaultPalette property to its default value.
 
 ```csharp
@@ -153,6 +169,7 @@ public void ResetDefaultPalette()
 ```
 
 **Example:**
+
 ```csharp
 kryptonThemeListBox1.ResetDefaultPalette(); // Sets to PaletteMode.Global
 ```
@@ -160,6 +177,7 @@ kryptonThemeListBox1.ResetDefaultPalette(); // Sets to PaletteMode.Global
 ---
 
 ### ShouldSerializeDefaultPalette()
+
 Determines whether the DefaultPalette property should be serialized.
 
 ```csharp
@@ -171,6 +189,7 @@ private bool ShouldSerializeDefaultPalette()
 ## Events
 
 ### SelectedIndexChanged
+
 Occurs when the selected theme changes.
 
 ```csharp
@@ -178,11 +197,13 @@ protected override void OnSelectedIndexChanged(EventArgs e)
 ```
 
 **Remarks:**
+
 - Automatically applies the selected theme
 - Updates global palette
 - Prevents circular updates from external theme changes
 
 **Example:**
+
 ```csharp
 kryptonThemeListBox1.SelectedIndexChanged += (s, e) =>
 {
@@ -478,6 +499,7 @@ public class CustomThemeSelector : KryptonThemeListBox
 ### Automatic Updates
 
 The control automatically handles:
+
 1. **Initial Population:** Themes are loaded on construction
 2. **External Changes:** Selection updates when theme changes from code
 3. **User Selection:** Theme applies when user selects an item
@@ -487,7 +509,7 @@ The control automatically handles:
 
 ### Update Flow
 
-```
+```text
 User Selection → SelectedIndexChanged → Apply Theme → Global Palette Changed
                                                       ↓
                                                    Update Selection (suppressed)
@@ -631,7 +653,7 @@ public class SplashScreen : Form
 
 - **Target Frameworks:** `net472`, `net48`, `net481`, `net8.0-windows`, `net9.0-windows`, `net10.0-windows`
 - **Windows Forms:** Required
-- **Dependencies:** 
+- **Dependencies:**
   - Krypton.Toolkit core components
   - CommonHelperThemeSelectors utility class
   - ThemeChangeCoordinator
@@ -643,12 +665,14 @@ public class SplashScreen : Form
 ### vs Manual ListBox Population
 
 **KryptonThemeListBox:**
+
 - ✅ Auto-populates themes
 - ✅ Handles theme switching
 - ✅ Synchronizes with external changes
 - ✅ No code required
 
 **Manual ListBox:**
+
 - ❌ Must populate manually
 - ❌ Must write switch/apply logic
 - ❌ Must handle external sync
@@ -659,12 +683,14 @@ public class SplashScreen : Form
 ### vs KryptonThemeComboBox
 
 **ListBox:**
+
 - ✅ Shows all themes at once
 - ✅ Better for settings dialogs
 - ✅ Easier theme browsing
 - ❌ Takes more space
 
 **ComboBox:**
+
 - ✅ Compact dropdown
 - ✅ Better for toolbars
 - ✅ Saves space
@@ -688,12 +714,14 @@ public class SplashScreen : Form
 The `KryptonCustomPalette` property is deprecated:
 
 **Old Code:**
+
 ```csharp
 var customPalette = new KryptonPalette();
 kryptonThemeListBox1.KryptonCustomPalette = customPalette;
 ```
 
 **New Code:**
+
 ```csharp
 ThemeManager.ApplyTheme("MyCustomTheme", customPalette);
 // KryptonThemeListBox will automatically include the new theme
@@ -703,10 +731,7 @@ ThemeManager.ApplyTheme("MyCustomTheme", customPalette);
 
 ## See Also
 
-- [KryptonThemeComboBox](KryptonThemeComboBox.md) - Dropdown variant
-- [ThemeManager](../Core/ThemeManager.md) - Theme management system
-- [PaletteMode Enumeration](../Enumerations/PaletteMode.md) - Available palette modes
-- [IKryptonThemeSelectorBase](../Interfaces/IKryptonThemeSelectorBase.md) - Theme selector interface
+- [KryptonThemeComboBox](KryptonThemeComboBox.md) — dropdown variant
 
 ---
 
@@ -715,12 +740,14 @@ ThemeManager.ApplyTheme("MyCustomTheme", customPalette);
 ### When to Use
 
 **Use KryptonThemeListBox when:**
+
 - Creating settings/preferences dialogs
 - Building theme selection screens
 - Allowing users to preview themes
 - You have vertical space available
 
 **Use alternatives when:**
+
 - Space is limited (use KryptonThemeComboBox)
 - Theme selection is rarely changed (use menu)
 - You need custom theme filtering (subclass or use manual ListBox)

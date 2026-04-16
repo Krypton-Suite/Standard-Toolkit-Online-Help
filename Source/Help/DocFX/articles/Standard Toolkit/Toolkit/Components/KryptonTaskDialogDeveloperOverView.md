@@ -1,6 +1,7 @@
 # KryptonTaskDialog Developer Documentation
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Architecture](#architecture)
 3. [Getting Started](#getting-started)
@@ -31,6 +32,7 @@
 ### Design Philosophy
 
 Unlike traditional dialogs that use static configurations, `KryptonTaskDialog` uses a **builder pattern** where you:
+
 1. Create a `KryptonTaskDialog` instance
 2. Configure individual elements through their properties
 3. Show the dialog when ready
@@ -42,7 +44,7 @@ Unlike traditional dialogs that use static configurations, `KryptonTaskDialog` u
 
 ### Component Hierarchy
 
-```
+```text
 KryptonTaskDialog (main class)
 ├── KryptonTaskDialogKryptonForm (specialized form)
 │   └── TableLayoutPanel (vertical stack layout)
@@ -66,7 +68,9 @@ KryptonTaskDialog (main class)
 ### Core Design Patterns
 
 #### 1. Element Base Class Pattern
+
 All elements derive from `KryptonTaskDialogElementBase`, which provides:
+
 - Visibility management
 - Background color control (with gradient support)
 - Height calculation
@@ -75,7 +79,9 @@ All elements derive from `KryptonTaskDialogElementBase`, which provides:
 - Disposal pattern
 
 #### 2. Interface-Based Feature Extension
+
 Elements implement specific interfaces to expose features:
+
 - `IKryptonTaskDialogElementText`: Text property
 - `IKryptonTaskDialogElementIconType`: Icon support
 - `IKryptonTaskDialogElementForeColor`: Text color control
@@ -83,7 +89,9 @@ Elements implement specific interfaces to expose features:
 - `IKryptonTaskDialogElementHeight`: Custom height control
 
 #### 3. Property Change Notification
+
 Elements use action delegates for change notifications:
+
 - `VisibleChanged`: Notifies when visibility changes
 - `SizeChanged`: Notifies when size changes
 - Custom events for element-specific changes
@@ -142,10 +150,10 @@ KryptonTaskDialog taskDialog = new KryptonTaskDialog(800);
 
 The main class that orchestrates all dialog functionality.
 
-#### Properties
+#### KryptonTaskDialog properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Dialog` | `KryptonTaskDialogFormProperties` | Access to form and global properties |
 | `Heading` | `KryptonTaskDialogElementHeading` | Dialog heading element |
 | `Content` | `KryptonTaskDialogElementContent` | Main content element |
@@ -160,7 +168,7 @@ The main class that orchestrates all dialog functionality.
 | `ProgresBar` | `KryptonTaskDialogElementProgresBar` | Progress bar element |
 | `FooterBar` | `KryptonTaskDialogElementFooterBar` | Footer with buttons and expander control |
 
-#### Methods
+#### KryptonTaskDialog methods
 
 ```csharp
 // Show the dialog modally (blocks until closed)
@@ -185,7 +193,7 @@ Provides centralized access to form-level and global settings.
 Access via `taskDialog.Dialog.Form`:
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Text` | `string` | Title bar text |
 | `Icon` | `Icon?` | Form icon |
 | `StartPosition` | `FormStartPosition` | Window positioning |
@@ -206,7 +214,7 @@ Access via `taskDialog.Dialog.Form`:
 Access via `taskDialog.Dialog.Globals`:
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `BackColor1` | `Color` | First background color for all elements |
 | `BackColor2` | `Color` | Second background color for gradient |
 | `ForeColor` | `Color` | Text color for all elements |
@@ -223,7 +231,7 @@ Access via `taskDialog.Dialog.DialogResult` after the dialog closes.
 All elements share common base properties:
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Visible` | `bool` | Show/hide the element |
 | `BackColor1` | `Color` | First background color |
 | `BackColor2` | `Color` | Second background color (for gradient) |
@@ -234,10 +242,10 @@ All elements share common base properties:
 
 Displays a prominent heading with optional icon.
 
-#### Properties
+#### KryptonTaskDialogElementHeading properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Text` | `string` | Heading text |
 | `IconType` | `KryptonTaskDialogIconType` | Icon to display |
 | `TextAlignmentHorizontal` | `PaletteRelativeAlign` | Text alignment (Near/Center/Far) |
@@ -246,6 +254,7 @@ Displays a prominent heading with optional icon.
 #### Icon Types
 
 Available in `KryptonTaskDialogIconType` enum:
+
 - `None` - No icon
 - `ShieldError` - Red error shield
 - `ShieldWarning` - Yellow warning shield
@@ -261,7 +270,7 @@ Available in `KryptonTaskDialogIconType` enum:
 - `ArrowGrayDown` - Down arrow
 - `ArrowGrayUp` - Up arrow
 
-#### Example
+#### KryptonTaskDialogElementHeading example
 
 ```csharp
 taskDialog.Heading.Visible = true;
@@ -275,10 +284,10 @@ taskDialog.Heading.ForeColor = Color.DarkGreen;
 
 Displays text content with optional image. Can be used for both main content and expander content.
 
-#### Properties
+#### KryptonTaskDialogElementContent properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Text` | `string` | Content text (supports line breaks) |
 | `ForeColor` | `Color` | Text color |
 | `ContentImage` | `ContentImageStorage` | Image configuration |
@@ -286,13 +295,13 @@ Displays text content with optional image. Can be used for both main content and
 #### ContentImageStorage Properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Image` | `Image` | Image to display |
 | `Size` | `Size` | Image size (0 for original) |
 | `Visible` | `bool` | Show/hide image |
 | `PositionedLeft` | `bool` | true = left, false = right |
 
-#### Example
+#### KryptonTaskDialogElementContent example
 
 ```csharp
 taskDialog.Content.Visible = true;
@@ -309,7 +318,7 @@ An expandable content area controlled by the footer bar's expander button.
 
 Uses the same properties as `KryptonTaskDialogElementContent`. Typically hidden by default and toggled via the footer expander button.
 
-#### Example
+#### KryptonTaskDialogElementExpander example
 
 ```csharp
 // Configure expander content
@@ -326,10 +335,10 @@ taskDialog.FooterBar.Footer.ExpanderCollapsedText = "Hide Details";
 
 Provides common buttons, footer text, and expander control.
 
-#### Properties
+#### KryptonTaskDialogElementFooterBar properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `CommonButtons` | `CommonButtonProperties` | Button configuration |
 | `Footer` | `FooterProperties` | Footer text and expander |
 | `ForeColor` | `Color` | Text color |
@@ -338,7 +347,7 @@ Provides common buttons, footer text, and expander control.
 #### CommonButtonProperties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Buttons` | `KryptonTaskDialogCommonButtonTypes` | Buttons to show (flags enum) |
 | `AcceptButton` | `KryptonTaskDialogCommonButtonTypes` | Default accept button |
 | `CancelButton` | `KryptonTaskDialogCommonButtonTypes` | Default cancel button |
@@ -346,7 +355,7 @@ Provides common buttons, footer text, and expander control.
 #### FooterProperties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `FootNoteText` | `string` | Footer text |
 | `IconType` | `KryptonTaskDialogIconType` | Footer icon |
 | `EnableExpanderControls` | `bool` | Show expander button |
@@ -370,7 +379,7 @@ public enum KryptonTaskDialogCommonButtonTypes
 }
 ```
 
-#### Example
+#### KryptonTaskDialogElementFooterBar example
 
 ```csharp
 // Configure buttons
@@ -396,16 +405,16 @@ taskDialog.FooterBar.Footer.ExpanderCollapsedText = "Less Info";
 
 Displays a collection of command link buttons.
 
-#### Properties
+#### KryptonTaskDialogElementCommandLinkButtons properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Buttons` | `ObservableCollection<KryptonCommandLinkButton>` | Button collection |
 | `RoundedCorners` | `bool` | Round button corners |
 | `ShowFlowDirection` | `bool` | Show flow direction toggle button |
 | `FlowDirection` | `FlowDirection` | Button flow direction |
 
-#### Example
+#### KryptonTaskDialogElementCommandLinkButtons example
 
 ```csharp
 taskDialog.CommandLinkButtons.Visible = true;
@@ -430,15 +439,15 @@ taskDialog.CommandLinkButtons.RoundedCorners = true;
 
 Displays a checkbox.
 
-#### Properties
+#### KryptonTaskDialogElementCheckBox properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Text` | `string` | Checkbox text |
 | `Checked` | `bool` | Checked state |
 | `ForeColor` | `Color` | Text color |
 
-#### Example
+#### KryptonTaskDialogElementCheckBox example
 
 ```csharp
 taskDialog.CheckBox.Visible = true;
@@ -456,10 +465,10 @@ if (taskDialog.CheckBox.Checked)
 
 Displays a combo box with optional description.
 
-#### Properties
+#### KryptonTaskDialogElementComboBox properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Items` | `ComboBox.ObjectCollection` | Items collection |
 | `SelectedIndex` | `int` | Selected item index (read-only) |
 | `SelectedItem` | `object?` | Selected item (read-only) |
@@ -471,13 +480,13 @@ Displays a combo box with optional description.
 | `ForeColor` | `Color` | Description text color |
 | `RoundedCorners` | `bool` | Round combo box corners |
 
-#### Events
+#### KryptonTaskDialogElementComboBox events
 
 ```csharp
 event Action<object?> SelectedItemChanged;
 ```
 
-#### Example
+#### KryptonTaskDialogElementComboBox example
 
 ```csharp
 taskDialog.ComboBox.Visible = true;
@@ -502,22 +511,22 @@ object? selected = taskDialog.ComboBox.SelectedItem;
 
 Displays a clickable hyperlink with optional description.
 
-#### Properties
+#### KryptonTaskDialogElementHyperLink properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Url` | `string` | URL text to display |
 | `Description` | `string` | Description text above link |
 | `ShowDescription` | `bool` | Show/hide description |
 | `ForeColor` | `Color` | Description text color |
 
-#### Events
+#### KryptonTaskDialogElementHyperLink events
 
 ```csharp
 event Action LinkClicked;
 ```
 
-#### Example
+#### KryptonTaskDialogElementHyperLink example
 
 ```csharp
 taskDialog.HyperLink.Visible = true;
@@ -539,10 +548,10 @@ taskDialog.HyperLink.LinkClicked += () =>
 
 Displays a progress bar with optional description.
 
-#### Properties
+#### KryptonTaskDialogElementProgresBar properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `ProgressBar` | `KryptonTaskDialogElementProgresBarProperties` | Progress bar configuration |
 | `Description` | `string` | Description text above progress bar |
 | `ShowDescription` | `bool` | Show/hide description |
@@ -552,13 +561,14 @@ Displays a progress bar with optional description.
 #### ProgressBarProperties
 
 Access via `taskDialog.ProgresBar.ProgressBar`:
+
 - `Value` - Current value
 - `Minimum` - Minimum value
 - `Maximum` - Maximum value
 - `Style` - Block, Continuous, or Marquee
 - Many other KryptonProgressBar properties
 
-#### Example
+#### KryptonTaskDialogElementProgresBar example
 
 ```csharp
 taskDialog.ProgresBar.Visible = true;
@@ -574,10 +584,10 @@ taskDialog.ProgresBar.RoundedCorners = true;
 
 Displays a rich text box for formatted text input/display.
 
-#### Properties
+#### KryptonTaskDialogElementRichTextBox properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `Text` | `string` | Plain text content |
 | `Enabled` | `bool` | Enable/disable control |
 | `ReadOnly` | `bool` | Read-only mode |
@@ -586,7 +596,7 @@ Displays a rich text box for formatted text input/display.
 | `EnableContextMenu` | `bool` | Show context menu |
 | `RoundedCorners` | `bool` | Round corners |
 
-#### Example
+#### KryptonTaskDialogElementRichTextBox example
 
 ```csharp
 taskDialog.RichTextBox.Visible = true;
@@ -602,14 +612,14 @@ taskDialog.RichTextBox.RoundedCorners = true;
 
 Provides a `FlowLayoutPanel` for hosting custom controls.
 
-#### Properties
+#### KryptonTaskDialogElementFreeWheeler1 properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `FlowLayoutPanel` | `FlowLayoutPanel` | Panel to add controls to |
 | `ElementHeight` | `int` | Control height |
 
-#### Example
+#### KryptonTaskDialogElementFreeWheeler1 example
 
 ```csharp
 taskDialog.FreeWheeler1.Visible = true;
@@ -1142,11 +1152,13 @@ finally
 ### 2. Modal vs. Modeless
 
 Use modal dialogs for:
+
 - Decisions requiring immediate user input
 - Confirmation dialogs
 - Input dialogs
 
 Use modeless dialogs for:
+
 - Progress indicators
 - Status updates
 - Non-blocking notifications
@@ -1166,6 +1178,7 @@ taskDialog.FooterBar.CommonButtons.CancelButton = KryptonTaskDialogCommonButtonT
 ### 4. Element Organization
 
 Show elements in logical order (top to bottom):
+
 1. Heading (title/main message)
 2. Content (detailed information)
 3. Interactive elements (checkboxes, combo boxes, etc.)
@@ -1185,6 +1198,7 @@ taskDialog.Content.Text = "First line\nSecond line\nThird line";
 ### 6. Icon Usage
 
 Choose appropriate icons for context:
+
 - **ShieldError**: Critical errors, failures
 - **ShieldWarning**: Warnings, cautions
 - **ShieldInformation**: General information
@@ -1302,6 +1316,7 @@ catch (Exception ex)
 **Problem**: Dialog doesn't appear when calling `Show()` or `ShowDialog()`
 
 **Solutions**:
+
 - Ensure at least one element is visible
 - Check that `Dialog.Form.StartPosition` is set correctly
 - Verify parent form handle is valid if passing owner
@@ -1311,6 +1326,7 @@ catch (Exception ex)
 **Problem**: Configured elements don't appear in dialog
 
 **Solutions**:
+
 ```csharp
 // Make sure element is visible
 taskDialog.Content.Visible = true;
@@ -1324,12 +1340,16 @@ taskDialog.Content.Visible = true;
 **Problem**: Dialog is too small or doesn't show all content
 
 **Solutions**:
+
 - Dialog height is automatically calculated based on visible elements
 - If using custom controls in FreeWheeler, set `ElementHeight`:
+
 ```csharp
 taskDialog.FreeWheeler1.ElementHeight = 300;
 ```
+
 - For wider dialogs, specify width in constructor:
+
 ```csharp
 KryptonTaskDialog taskDialog = new KryptonTaskDialog(800);
 ```
@@ -1339,6 +1359,7 @@ KryptonTaskDialog taskDialog = new KryptonTaskDialog(800);
 **Problem**: Dialog doesn't use current theme
 
 **Solutions**:
+
 - Ensure `KryptonManager.CurrentGlobalPalette` is set before creating dialog
 - Theme changes during dialog lifetime are automatically detected
 - To force theme update, recreate the dialog instance
@@ -1348,6 +1369,7 @@ KryptonTaskDialog taskDialog = new KryptonTaskDialog(800);
 **Problem**: Updating modeless dialog from background thread causes exceptions
 
 **Solutions**:
+
 ```csharp
 // Use Invoke to update from background thread
 Task.Run(() =>
@@ -1414,6 +1436,7 @@ Icons are automatically cached by `KryptonTaskDialogIconController`, so repeated
 ### From MessageBox to KryptonTaskDialog
 
 **Before (MessageBox)**:
+
 ```csharp
 DialogResult result = MessageBox.Show(
     "Are you sure?",
@@ -1423,6 +1446,7 @@ DialogResult result = MessageBox.Show(
 ```
 
 **After (KryptonTaskDialog)**:
+
 ```csharp
 using (KryptonTaskDialog taskDialog = new KryptonTaskDialog())
 {
@@ -1441,6 +1465,7 @@ using (KryptonTaskDialog taskDialog = new KryptonTaskDialog())
 ### From KryptonMessageBox to KryptonTaskDialog
 
 **Before (KryptonMessageBox)**:
+
 ```csharp
 KryptonMessageBox.Show(
     "Operation complete!",
@@ -1450,6 +1475,7 @@ KryptonMessageBox.Show(
 ```
 
 **After (KryptonTaskDialog)**:
+
 ```csharp
 using (KryptonTaskDialog taskDialog = new KryptonTaskDialog())
 {
@@ -1472,6 +1498,7 @@ using (KryptonTaskDialog taskDialog = new KryptonTaskDialog())
 `KryptonTaskDialog` provides a flexible, themeable, and feature-rich dialog system for Windows Forms applications using the Krypton toolkit. Its element-based architecture allows developers to build complex dialogs that can be reused and updated dynamically.
 
 Key advantages:
+
 - **Flexibility**: Compose dialogs from reusable elements
 - **Themeable**: Full integration with Krypton themes
 - **Reusable**: Show the same dialog instance multiple times
@@ -1485,4 +1512,3 @@ For additional help or to report issues, please refer to the Krypton Toolkit Sta
 **Document Version**: 1.0  
 **Last Updated**: October 2025  
 **Compatible With**: Krypton Toolkit v100.x.x+
-

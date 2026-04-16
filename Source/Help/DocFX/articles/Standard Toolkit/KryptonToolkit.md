@@ -1,6 +1,5 @@
 # Krypton Toolkit
 
-
 Learn more about each of the individual controls and components that appear in
 the toolbox.
 
@@ -27,7 +26,7 @@ the toolbox.
 * [KryptonLinkLabel](Toolkit/Controls/KryptonLinkLabel.md)  
 * [KryptonListBox](Toolkit/Controls/KryptonListBox.md)
 * [KryptonListView](Toolkit/Controls/KryptonListView.md)
-* [KryptonMaskedTextBox](Toolkit/Controls/KryptonMaskedTextBox.md) 
+* [KryptonMaskedTextBox](Toolkit/Controls/KryptonMaskedTextBox.md)
 * [KryptonMenuStrip](Toolkit/Controls/KryptonMenuStrip.md)
 * [KryptonMonthCalendar](Toolkit/Controls/KryptonMonthCalendar.md)  
 * [KryptonNumericUpDown](Toolkit/Controls/KryptonNumericUpDown.md)
@@ -54,15 +53,16 @@ the toolbox.
 * [KryptonTrackBar](Toolkit/Controls/KryptonTrackBar.md)  
 * [KryptonTreeView](Toolkit/Controls/KryptonTreeView.md)  
 * [KryptonWebBrowser](Toolkit/Controls/KryptonWebBrowser.md)
-* [KryptonWebView2](Toolkit/Controls/KryptonWebView2.md)
+* [KryptonWebView2](Utilities/KryptonWebView2.md)
 * [KryptonWrapLabel](Toolkit/Controls/KryptonWrapLabel.md)
 
 ## Components  
-* [KryptonAboutBox](Toolkit/Components/KryptonAboutBox.md)
+
+* [KryptonAboutBox](Toolkit/Components/KryptonAboutBox.md) (`Krypton.Utilities` from V110+)
 * [KryptonCheckSet](Toolkit/Components/KryptonCheckSet.md)  
 * [KryptonCommand](Toolkit/Components/KryptonCommand.md)  
 * [KryptonContextMenu](Toolkit/Components/KryptonContextMenu.md)  
-* [KryptonCustomPaletteBase](Toolkit/Components/KryptonCustomPaletteBase.md) 
+* [KryptonCustomPaletteBase](Toolkit/Components/KryptonCustomPaletteBase.md)
 * [KryptonColorDialog](Toolkit/Components/KryptonColorDialog.md)
 * [KryptonFileSystemWatcher](Toolkit/Components/KryptonFileSystemWatcher.md)
 * [KryptonErrorProvider](Toolkit/Components/KryptonErrorProvider.md)
@@ -72,7 +72,7 @@ the toolbox.
 * [KryptonInputBox](Toolkit/Components/KryptonInputBox.md)  
 * [KryptonIntegratedToolBarManager](Toolkit/Components/KryptonIntegratedToolBarManager.md)
 * [KryptonManager](Toolkit/Components/KryptonManager.md)  
-    * [Touchscreen Support](Toolkit/Components/TouchscreenSupport.md)
+  * [Touchscreen Support](Toolkit/Components/TouchscreenSupport.md)
 * [KryptonMessageBox](Toolkit/Components/KryptonMessageBox.md)  
 * [KryptonNotifyIcon](Toolkit/Components/KryptonNotifyIcon.md)
 * [KryptonOpenFileDialog](Toolkit/Components/KryptonOpenFileDialog.md)
@@ -82,15 +82,17 @@ the toolbox.
 * [KryptonTaskDialog](Toolkit/Components/KryptonTaskDialog.md)
 * [KryptonThemeBrowser](Toolkit/Components/KryptonThemeBrowser.md)
 * [KryptonTimer](Toolkit/Components/KryptonTimer.md)
-* [KryptonToastNotification](Toolkit/Components/KryptonToastNotification.md)
-    
-**Forms**  
+* [KryptonToast / toast notifications](Toolkit/Components/KryptonToastNotification.md) (`Krypton.Utilities.KryptonToast` from V110+; see topic)
+
+## Forms
+
 * [KryptonForm](Toolkit/Forms/KryptonForm.md)
-    * [AdministratorSuffixFeatureforKryptonForm](Toolkit/Forms/AdministratorSuffixFeatureforKryptonForm.md)
-    * [KryptonThemedSystemMenu](Toolkit/Forms/KryptonThemedSystemMenu.md)
-    * [KryptonFormTitleBar](Toolkit/Forms/KryptonFormTitleBar.md)
-  
-**Utilities**
-* [ExceptionHandler](Toolkit/ExceptionHandler.md)
-* [IconExtraction](Toolkit/IconExtraction.md)
-* [IconExtractionWithFallback](Toolkit/IconExtractionWithFallback.md)
+  * [AdministratorSuffixFeatureforKryptonForm](Toolkit/Forms/AdministratorSuffixFeatureforKryptonForm.md)
+  * [Krypton system menu (theming)](Toolkit/Forms/KryptonFormSystemMenuOverview.md)
+  * [KryptonFormTitleBar](Toolkit/Forms/KryptonFormTitleBar.md)
+
+## Utilities
+
+* [ExceptionHandler](Toolkit/Utilities/ExceptionHandler.md)
+* [IconExtraction](Toolkit/Utilities/IconExtractionIndex.md)
+* [IconExtractionWithFallback](Toolkit/Utilities/IconExtractionWithFallback.md)

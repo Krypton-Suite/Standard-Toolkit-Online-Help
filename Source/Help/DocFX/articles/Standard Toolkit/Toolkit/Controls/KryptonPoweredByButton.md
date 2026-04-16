@@ -6,7 +6,7 @@
 2. [Features](#features)
 3. [Class Hierarchy](#class-hierarchy)
 4. [API Reference](#api-reference)
-   - [KryptonPoweredByButton](#kryptonpoweredbybutton)
+   - [KryptonPoweredByButton](#kryptonpoweredbybutton-class-reference)
    - [PoweredByButtonValues](#poweredbybuttonvalues)
    - [ToolkitSupportType Enumeration](#toolkitsupporttype-enumeration)
 5. [Usage Examples](#usage-examples)
@@ -62,7 +62,7 @@ Krypton.Toolkit.dll
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
   └─ System.ComponentModel.Component
       └─ System.Windows.Forms.Control
@@ -75,7 +75,7 @@ System.Object
 
 ## API Reference
 
-### KryptonPoweredByButton
+### KryptonPoweredByButton class reference
 
 #### Class Declaration
 
@@ -97,11 +97,13 @@ public KryptonPoweredByButton()
 **Description**: Initializes a new instance of the `KryptonPoweredByButton` class with default settings.
 
 **Default Values**:
+
 - Text: "Powered By Krypton" (localized)
 - Image: Krypton Stable button icon
 - Size: 153 x 25 pixels
 
 **Example**:
+
 ```csharp
 var poweredByButton = new KryptonPoweredByButton();
 Controls.Add(poweredByButton);
@@ -123,11 +125,13 @@ public PoweredByButtonValues ButtonValues { get; set; }
 **Returns**: `PoweredByButtonValues` - The button configuration values.
 
 **Remarks**:
+
 - Automatically instantiated if accessed before being set
 - Raises property changed events when modified
 - Controls icon display and dialog features
 
 **Example**:
+
 ```csharp
 poweredByButton.ButtonValues.ToolkitSupportType = ToolkitSupportType.Canary;
 poweredByButton.ButtonValues.ShowChangeLogButton = true;
@@ -147,7 +151,8 @@ public override string Text { get; set; }
 
 **Default Value**: "Powered By Krypton" (localized)
 
-**Remarks**: 
+**Remarks**:
+
 - Hidden from designer to prevent user modification
 - Text is managed internally by the control
 - Value is localized through `KryptonManager.Strings`
@@ -174,12 +179,14 @@ public void ResetButtonValues()
 
 **Description**: Resets the `ButtonValues` property to its default state.
 
-**Remarks**: 
+**Remarks**:
+
 - Resets support type to `Stable`
 - Hides changelog and readme buttons
 - Can be called from designer or code
 
 **Example**:
+
 ```csharp
 poweredByButton.ResetButtonValues();
 ```
@@ -197,6 +204,7 @@ public new event EventHandler Click
 **Description**: Occurs when the button is clicked. This event is hidden from the designer and IntelliSense.
 
 **Remarks**:
+
 - Shadowed to discourage external handlers
 - Internal click behavior shows version information dialog
 - External handlers can still be added but are not recommended
@@ -215,9 +223,11 @@ protected override void OnClick(EventArgs e)
 **Description**: Raises the Click event and displays the toolkit version information dialog.
 
 **Parameters**:
+
 - `e` (`EventArgs`): An EventArgs that contains the event data.
 
 **Behavior**:
+
 1. Creates and displays `VisualToolkitBinaryInformationForm`
 2. Passes support type, changelog visibility, and readme visibility to the form
 3. Shows the form as a modal dialog
@@ -227,7 +237,7 @@ protected override void OnClick(EventArgs e)
 
 ### PoweredByButtonValues
 
-#### Class Declaration
+#### PoweredByButtonValues class declaration
 
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
@@ -236,18 +246,19 @@ public class PoweredByButtonValues : GlobalId, INotifyPropertyChanged
 
 **Description**: Encapsulates configuration settings for the `KryptonPoweredByButton` control.
 
-#### Constructor
+#### PoweredByButtonValues constructor
 
 ```csharp
 public PoweredByButtonValues(KryptonPoweredByButton poweredByButton)
 ```
 
 **Parameters**:
+
 - `poweredByButton` (`KryptonPoweredByButton`): The parent button control.
 
 **Description**: Initializes a new instance with a reference to the parent button and resets to default values.
 
-#### Properties
+#### PoweredByButtonValues properties
 
 ##### ShowChangeLogButton
 
@@ -267,6 +278,7 @@ public bool ShowChangeLogButton { get; set; }
 **Remarks**: When `true`, the version dialog will display a button that opens the appropriate changelog URL based on the `ToolkitSupportType`.
 
 **Changelog URLs by Type**:
+
 - **Stable**: `https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Documents/Changelog/Changelog.md`
 - **Canary**: `https://github.com/Krypton-Suite/Standard-Toolkit/blob/canary/Documents/Changelog/Changelog.md`
 - **Nightly**: `https://github.com/Krypton-Suite/Standard-Toolkit/blob/alpha/Documents/Changelog/Changelog.md`
@@ -290,6 +302,7 @@ public bool ShowReadmeButton { get; set; }
 **Remarks**: When `true`, the version dialog will display a button that opens the appropriate readme URL based on the `ToolkitSupportType`.
 
 **Readme URLs by Type**:
+
 - **Stable**: `https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/README.md`
 - **Canary**: `https://github.com/Krypton-Suite/Standard-Toolkit/blob/canary/README.md`
 - **Nightly**: `https://github.com/Krypton-Suite/Standard-Toolkit/blob/alpha/README.md`
@@ -309,12 +322,14 @@ public ToolkitSupportType ToolkitSupportType { get; set; }
 
 **Default Value**: `ToolkitSupportType.Stable`
 
-**Remarks**: 
+**Remarks**:
+
 - Automatically updates the button icon when changed
 - Affects the dialog title and icon
 - Determines which documentation URLs are used
 
 **Icon Mapping**:
+
 - **Canary**: `ButtonImageResources.Krypton_Canary_Button`
 - **Nightly**: `ButtonImageResources.Krypton_Nightly_Button`
 - **LongTermSupport**: `ButtonImageResources.Krypton_Long_Term_Stable_Button`
@@ -333,11 +348,12 @@ public bool IsDefault { get; }
 **Returns**: `bool` - `true` if all properties are default; otherwise, `false`.
 
 **Default Condition**:
+
 - `ShowChangeLogButton == false`
 - `ShowReadmeButton == false`
 - `ToolkitSupportType == ToolkitSupportType.Stable`
 
-#### Methods
+#### PoweredByButtonValues methods
 
 ##### Reset
 
@@ -348,6 +364,7 @@ public void Reset()
 **Description**: Resets all properties to their default values.
 
 **Behavior**:
+
 - Sets `ShowChangeLogButton` to `false`
 - Sets `ShowReadmeButton` to `false`
 - Sets `ToolkitSupportType` to `Stable`
@@ -360,11 +377,12 @@ public override string ToString()
 
 **Description**: Returns a string representation of the current state.
 
-**Returns**: 
+**Returns**:
+
 - `"Modified"` if any properties differ from defaults
 - Empty string if all properties are at default values
 
-#### Events
+#### PoweredByButtonValues events
 
 ##### PropertyChanged
 
@@ -399,6 +417,7 @@ Canary = 0
 **Description**: The canary version is the latest development version, which may contain new features and bug fixes that are not yet available in the stable version.
 
 **Characteristics**:
+
 - Bleeding-edge features
 - Highest risk of instability
 - Most frequent updates
@@ -413,6 +432,7 @@ Nightly = 1
 **Description**: The nightly version is a pre-release version that is built every night and may contain new features and bug fixes that are not yet available in the stable version.
 
 **Characteristics**:
+
 - Daily builds
 - Pre-release quality
 - Contains recent changes
@@ -427,6 +447,7 @@ Stable = 2
 **Description**: The stable version is a tested and stable version that is suitable for production use.
 
 **Characteristics**:
+
 - Production-ready
 - Thoroughly tested
 - Recommended for most applications
@@ -441,6 +462,7 @@ LongTermSupport = 3
 **Description**: The long-term support version is a version that is supported for an extended period of time, typically with security updates and critical bug fixes.
 
 **Characteristics**:
+
 - Extended support period
 - Security updates and critical fixes
 - Minimal feature changes
@@ -676,7 +698,7 @@ public partial class MainForm : KryptonForm
 ### Properties Visible in Designer
 
 | Property Category | Property Name | Type | Default Value |
-|------------------|---------------|------|---------------|
+| ----------------- | ------------- | ---- | ------------- |
 | Visuals | ButtonValues.ToolkitSupportType | ToolkitSupportType | Stable |
 | Visuals | ButtonValues.ShowChangeLogButton | bool | false |
 | Visuals | ButtonValues.ShowReadmeButton | bool | false |
@@ -719,10 +741,12 @@ When the button is clicked, the following sequence occurs:
 The dialog displays the following information:
 
 #### Header
+
 - Toolkit logo (varies by support type)
 - Title: "Toolkit Information: [Support Type]"
 
 #### Version Information
+
 - **Krypton Docking**: File version or "File not found"
 - **Krypton Navigator**: File version or "File not found"
 - **Krypton Ribbon**: File version or "File not found"
@@ -730,6 +754,7 @@ The dialog displays the following information:
 - **Krypton Workspace**: File version or "File not found"
 
 #### Optional Buttons
+
 - **Changelog**: Opens appropriate changelog URL in default browser
 - **Readme**: Opens appropriate readme URL in default browser
 - **OK**: Closes the dialog
@@ -750,6 +775,7 @@ The control automatically detects installed Krypton Toolkit component versions b
 ### When to Use
 
 ✅ **Recommended Uses**:
+
 - About dialog boxes
 - Application status bars
 - Help or support forms
@@ -758,6 +784,7 @@ The control automatically detects installed Krypton Toolkit component versions b
 - Application footer areas
 
 ❌ **Not Recommended**:
+
 - Repeated placement on multiple forms
 - Primary navigation elements
 - Critical user workflows
@@ -786,12 +813,14 @@ button.ButtonValues.ToolkitSupportType = ToolkitSupportType.LongTermSupport;
 #### 2. Documentation Links
 
 Enable documentation links for:
+
 - Developer-facing applications
 - Beta/testing distributions
 - Open-source projects
 - When users might need support information
 
 Disable documentation links for:
+
 - End-user production applications
 - Embedded/simplified UIs
 - Kiosk or limited-access applications
@@ -809,12 +838,14 @@ button.ButtonValues.ShowReadmeButton = false;
 #### 3. Sizing and Placement
 
 **Default Size** (153 x 25):
+
 ```csharp
 var button = new KryptonPoweredByButton();
 // Size is 153 x 25 by default
 ```
 
 **Compact Size** (for status bars):
+
 ```csharp
 var button = new KryptonPoweredByButton
 {
@@ -825,6 +856,7 @@ var button = new KryptonPoweredByButton
 **Placement Strategies**:
 
 Bottom-right corner (recommended):
+
 ```csharp
 button.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 button.Location = new Point(
@@ -834,6 +866,7 @@ button.Location = new Point(
 ```
 
 About dialog center-bottom:
+
 ```csharp
 button.Location = new Point(
     (ClientSize.Width - button.Width) / 2,
@@ -844,6 +877,7 @@ button.Location = new Point(
 #### 4. Avoiding Common Mistakes
 
 **Don't override the Click event**:
+
 ```csharp
 // ❌ BAD: This interferes with built-in functionality
 button.Click += MyCustomHandler;
@@ -853,6 +887,7 @@ button.Click += MyCustomHandler;
 ```
 
 **Don't modify the Text property**:
+
 ```csharp
 // ❌ BAD: Text is managed by the control
 button.Text = "My Custom Text";
@@ -862,6 +897,7 @@ button.Text = "My Custom Text";
 ```
 
 **Do check IsDefault before serializing**:
+
 ```csharp
 // ✅ GOOD: Only serialize if modified
 if (!button.ButtonValues.IsDefault)
@@ -929,6 +965,7 @@ var button = new KryptonPoweredByButton();
 **Internal class** that displays the version information dialog.
 
 **Features**:
+
 - Displays all Krypton component versions
 - Shows appropriate icon and title for support type
 - Optional changelog and readme buttons
@@ -948,6 +985,7 @@ The `KryptonPoweredByButton` inherits all features from `KryptonButton`:
 - Focus and keyboard navigation
 
 **Example of inherited functionality**:
+
 ```csharp
 var button = new KryptonPoweredByButton();
 
@@ -1004,7 +1042,7 @@ KryptonManager.Strings.MiscellaneousStrings.FileNotFoundText
 ### Component File Locations
 
 | Component | File Path |
-|-----------|-----------|
+| --------- | --------- |
 | KryptonPoweredByButton | `Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonPoweredByButton.cs` |
 | PoweredByButtonValues | `Source/Krypton Components/Krypton.Toolkit/Values/PoweredByButtonValues.cs` |
 | VisualToolkitBinaryInformationForm | `Source/Krypton Components/Krypton.Toolkit/Controls Visuals/VisualToolkitBinaryInformationForm.cs` |

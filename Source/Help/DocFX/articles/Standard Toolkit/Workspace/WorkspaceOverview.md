@@ -1,12 +1,9 @@
-# Workspace Overview  
-  
-**Workspace Properties**  
-The *KryptonWorkspace* specific properties are shown in Figure 1.  
-  
-  
-*   Figure 1 - Workspace properties*
+# Workspace Overview
 
- 
+**Workspace Properties**  
+The *KryptonWorkspace* specific properties are shown in Figure 1.
+
+Figure 1 — Workspace properties.
 
 **AllowPageDrag**  
 A boolean property that determines if the user is allowed to drag pages in order
@@ -77,7 +74,7 @@ button whilst over the separator then it enters the *Pressed* state. If the
 workspace control has been disabled then each separator is also placed in the
 *Disabled* state.
 
-**Common State**    
+**Common State**  
 To speed up the customization process an extra *StateCommon* property has been
 provided. The settings from this are used if no override has been defined for
 the state specific entry. Note that the specific state values always take

@@ -1,5 +1,7 @@
 # KryptonExceptionDialog API Reference
 
+**V110+:** **`Krypton.Utilities.KryptonExceptionDialog`** — add `using Krypton.Utilities;`. Related strings may still be exposed via `KryptonManager.Strings` in `Krypton.Toolkit`.
+
 ## Overview
 
 The `KryptonExceptionDialog` provides a sophisticated, user-friendly visual interface for displaying exception details in Windows Forms applications using the Krypton Toolkit. It offers developers a modern alternative to traditional exception message boxes, with advanced features like hierarchical exception browsing, searchable stack traces, and formatted exception details.
@@ -20,7 +22,7 @@ The `KryptonExceptionDialog` provides a sophisticated, user-friendly visual inte
 
 ### Component Hierarchy
 
-```
+```text
 KryptonExceptionDialog (Public API)
     └── VisualExceptionDialogForm (Internal Form)
         ├── InternalSearchableExceptionTreeView (Tree View with Search)
@@ -28,7 +30,7 @@ KryptonExceptionDialog (Public API)
         └── RichTextBox (Details Display)
 ```
 
-### Related Classes
+### Related classes (architecture)
 
 - **KryptonExceptionDialog**: Static public API for displaying exception dialogs
 - **KryptonExceptionHandler**: High-level exception handling utilities with context capture
@@ -44,63 +46,76 @@ KryptonExceptionDialog (Public API)
 
 ### KryptonExceptionDialog Class
 
-**Namespace**: `Krypton.Toolkit`
+**Namespace (V110+):** `Krypton.Utilities`
 
-#### Methods
+#### KryptonExceptionDialog methods
 
 ##### Show Method Overloads
 
 The `Show` method has multiple overloads to accommodate different use cases:
 
-**Overload 1: Simple Display**
+###### Overload 1: Simple Display
+
 ```csharp
 public static void Show(Exception exception)
 ```
+
 Displays an exception dialog with default settings (no copy button, no search box, default highlight color).
 
-**Overload 2: With Highlight Color**
+###### Overload 2: With Highlight Color
+
 ```csharp
 public static void Show(Exception exception, Color? highlightColor)
 ```
+
 Displays an exception dialog with a custom highlight color for search matches.
 
 **Parameters:**
+
 - `exception` - The exception to display. Cannot be null.
 - `highlightColor` - Optional color used to highlight key information. If `null`, defaults to `Color.LightYellow`.
 
-**Overload 3: With Copy and Search Controls**
+###### Overload 3: With Copy and Search Controls
+
 ```csharp
 public static void Show(Exception exception, bool? showCopyButton, bool? showSearchBox)
 ```
+
 Displays an exception dialog with optional copy button and search box controls.
 
 **Parameters:**
 
 | Parameter | Type | Description |
-|-----------|------|-------------|
+| ----------- | ---- | ----------- |
 | `exception` | `Exception` | The exception to display. Cannot be null. |
 | `showCopyButton` | `bool?` | Controls the visibility of the "Copy" button. If `null`, defaults to `false`. |
 | `showSearchBox` | `bool?` | Controls the visibility of the search functionality. If `null`, defaults to `false`. |
 
-**Overload 4: With Highlight Color and Controls**
+###### Overload 4: With Highlight Color and Controls
+
 ```csharp
 public static void Show(Exception exception, Color? highlightColor, bool? showCopyButton, bool? showSearchBox)
 ```
+
 Displays an exception dialog with custom highlight color and optional copy/search controls.
 
 **Parameters:**
+
 - `exception` - The exception to display. Cannot be null.
 - `highlightColor` - Optional color used to highlight key information. If `null`, defaults to `Color.LightYellow`.
 - `showCopyButton` - Controls the visibility of the "Copy" button. If `null`, defaults to `false`.
 - `showSearchBox` - Controls the visibility of the search functionality. If `null`, defaults to `false`.
 
-**Overload 5: Full Featured (with Bug Report)**
+###### Overload 5: Full Featured (with Bug Report)
+
 ```csharp
 public static void Show(Exception exception, Color? highlightColor, bool? showCopyButton, bool? showSearchBox, Action<Exception>? bugReportCallback)
 ```
+
 Displays an exception dialog with all features including bug reporting capability.
 
 **Parameters:**
+
 - `exception` - The exception to display. Cannot be null.
 - `highlightColor` - Optional color used to highlight key information. If `null`, defaults to `Color.LightYellow`.
 - `showCopyButton` - Controls the visibility of the "Copy" button. If `null`, defaults to `false`.
@@ -108,6 +123,7 @@ Displays an exception dialog with all features including bug reporting capabilit
 - `bugReportCallback` - Optional callback that will be invoked when the user clicks the "Report Bug" button. If provided, a "Report Bug" button will be shown in the dialog.
 
 **Behavior (All Overloads):**
+
 - Displays a modal dialog showing the exception hierarchy
 - Automatically expands all tree nodes
 - Adjusts form dimensions based on screen resolution (900×650 for 1080p, 1108×687 for higher resolutions)
@@ -119,11 +135,11 @@ Displays an exception dialog with all features including bug reporting capabilit
 
 ### KryptonExceptionHandler Class
 
-**Namespace**: `Krypton.Toolkit`
+**Namespace (V110+):** `Krypton.Utilities`
 
 This class provides higher-level exception handling utilities with automatic caller information capture.
 
-#### Methods
+#### KryptonExceptionHandler methods
 
 ##### CaptureException Method
 
@@ -143,7 +159,7 @@ Captures and displays an exception with automatic caller context information.
 **Parameters:**
 
 | Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
+| ----------- | ---- | --------- | ----------- |
 | `exception` | `Exception` | *required* | The exception to handle |
 | `title` | `string` | `"Exception Caught"` | Dialog title text |
 | `callerFilePath` | `string` | *auto-captured* | Automatically captured via `[CallerFilePath]` |
@@ -153,6 +169,7 @@ Captures and displays an exception with automatic caller context information.
 | `useExceptionDialog` | `bool?` | `true` | If `true`, uses `KryptonExceptionDialog`; if `false`, uses `KryptonMessageBox` |
 
 **Behavior:**
+
 - When `useExceptionDialog` is `true` (default), displays the rich exception dialog
 - When `useExceptionDialog` is `false`, displays a traditional message box with caller information
 - Automatically captures caller file path, line number, and method name for debugging
@@ -171,11 +188,12 @@ Writes the complete exception information and stack trace to a file.
 **Parameters:**
 
 | Parameter | Type | Description |
-|-----------|------|-------------|
+| ----------- | ---- | ----------- |
 | `exception` | `Exception` | The exception to log |
 | `fileName` | `string` | The file path where the exception will be written |
 
 **Behavior:**
+
 - Creates the file if it doesn't exist
 - Writes both `exception.ToString()` and `exception.StackTrace`
 - If file writing fails, captures that exception using `CaptureException`
@@ -191,11 +209,12 @@ Writes only the stack trace portion of an exception to a file.
 **Parameters:**
 
 | Parameter | Type | Description |
-|-----------|------|-------------|
+| ----------- | ---- | ----------- |
 | `exception` | `Exception` | The exception whose stack trace to log |
 | `fileName` | `string` | The file path where the stack trace will be written |
 
 **Behavior:**
+
 - Similar to `PrintStackTrace` but writes only `exception.StackTrace`
 - Creates the file if it doesn't exist
 - If file writing fails, captures that exception using `CaptureException`
@@ -434,7 +453,7 @@ When the search box is visible (controlled by `showSearchBox` parameter):
 
 The right panel displays formatted exception information:
 
-```
+```text
 Type: ArgumentOutOfRangeException
 Message: Index was out of range...
 
@@ -454,7 +473,7 @@ When visible (controlled by `showCopyButton` parameter):
 - **Default State**: Hidden by default (`showCopyButton` defaults to `false`)
 - **Enabled State**: Only enabled when exception details text is present
 - **Functionality**: Copies the entire formatted exception details to clipboard
-- **Use Cases**: 
+- **Use Cases**:
   - Pasting into bug reports
   - Sharing exception details with support teams
   - Logging to external systems
@@ -539,6 +558,7 @@ KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = "Buscar...";
 ### When to Use KryptonExceptionDialog
 
 **✅ Recommended Use Cases:**
+
 - Development and debugging scenarios
 - Applications with detailed logging requirements
 - Technical support tools where full exception details are valuable
@@ -546,6 +566,7 @@ KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = "Buscar...";
 - Applications where users may need to report detailed error information
 
 **❌ Not Recommended For:**
+
 - Production user-facing errors (use simpler, user-friendly messages)
 - Expected validation errors (use specific validation messages)
 - Recoverable errors that don't require detailed exception information
@@ -554,6 +575,7 @@ KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = "Buscar...";
 ### Best Practices
 
 1. **Production vs. Development**
+
    ```csharp
    #if DEBUG
        KryptonExceptionDialog.Show(ex, true, true);
@@ -570,6 +592,7 @@ KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = "Buscar...";
    ```
 
 2. **Always Log Exceptions**
+
    ```csharp
    catch (Exception ex)
    {
@@ -582,6 +605,7 @@ KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = "Buscar...";
    ```
 
 3. **Wrap in Try-Catch for Critical Operations**
+
    ```csharp
    try
    {
@@ -603,6 +627,7 @@ KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = "Buscar...";
    ```
 
 4. **Use Appropriate Titles and Context**
+
    ```csharp
    catch (Exception ex)
    {
@@ -615,6 +640,7 @@ KryptonManager.Strings.ExceptionDialogStrings.SearchBoxCueText = "Buscar...";
    ```
 
 5. **Consider User Technical Level**
+
    ```csharp
    if (AppSettings.UserMode == UserMode.Advanced)
    {
@@ -698,7 +724,7 @@ Task.Run(() =>
 ### KryptonExceptionDialog vs. KryptonMessageBox
 
 | Feature | KryptonExceptionDialog | KryptonMessageBox |
-|---------|----------------------|-------------------|
+| ------- | ---------------------- | ----------------- |
 | Purpose | Detailed exception inspection | General messaging |
 | Stack Trace | Hierarchical, searchable tree | Text only (if shown) |
 | Inner Exceptions | Full nested tree | Not displayed |
@@ -711,7 +737,7 @@ Task.Run(() =>
 ### KryptonExceptionDialog vs. Standard Exception.ToString()
 
 | Feature | KryptonExceptionDialog | Exception.ToString() |
-|---------|----------------------|-------------------|
+| ------- | ---------------------- | -------------------- |
 | Presentation | Visual, interactive tree | Plain text |
 | Navigation | Click nodes to explore | Manual text search |
 | Search | Real-time filtering | Manual Ctrl+F in viewer |
@@ -783,11 +809,13 @@ private async void btnProcess_Click(object sender, EventArgs e)
 ### Issue: Dialog doesn't appear
 
 **Possible Causes:**
+
 - Called from a background thread without `Invoke`
 - Exception parameter is `null`
 - Application is in a non-interactive state
 
 **Solution:**
+
 ```csharp
 if (exception == null)
 {
@@ -807,11 +835,13 @@ else
 ### Issue: Search not working
 
 **Possible Causes:**
+
 - `showSearchBox` parameter set to `false` or not provided (defaults to `false`)
 - Search control not initialized properly
 
 **Solution:**
 Ensure `showSearchBox` is explicitly set to `true`:
+
 ```csharp
 KryptonExceptionDialog.Show(ex, true, true);  // ✅ Search enabled
 KryptonExceptionDialog.Show(ex);              // ❌ Search disabled (default)
@@ -832,6 +862,7 @@ KryptonExceptionDialog.Show(ex, true, false); // ❌ Search disabled
 **Cause:** Localization strings not set or set incorrectly.
 
 **Solution:** Set localization strings at application startup:
+
 ```csharp
 // In Main() or Form_Load
 KryptonManager.Strings.ExceptionDialogStrings.Reset(); // Reset to defaults
@@ -846,6 +877,7 @@ KryptonManager.Strings.ExceptionDialogStrings.WindowTitle = "Your Title";
 This component was introduced in **Krypton Toolkit v100** (2024-2025) as part of enhanced exception handling capabilities.
 
 ### Related Features Added in v100
+
 - `KryptonExceptionDialog` (public API)
 - `KryptonExceptionHandler` (utility wrapper)
 - `InternalSearchableExceptionTreeView` (searchable tree control)
@@ -856,7 +888,8 @@ This component was introduced in **Krypton Toolkit v100** (2024-2025) as part of
 
 ## See Also
 
-### Related Classes
+### Related classes (references)
+
 - `System.Exception`
 - `System.Diagnostics.StackTrace`
 - `KryptonMessageBox`
@@ -866,6 +899,7 @@ This component was introduced in **Krypton Toolkit v100** (2024-2025) as part of
 **Krypton.Utilities:** The `Krypton.Utilities` assembly exposes a public `KryptonExceptionDialog` with an additional overload that supports GitHub issue reporting (`githubSecretKey`, `githubConfigPath`). Use that overload when integrating with the encrypted GitHub bug-report config.
 
 ### Related Patterns
+
 - Exception Handling Best Practices
 - Logging Strategies
 - User Error Communication

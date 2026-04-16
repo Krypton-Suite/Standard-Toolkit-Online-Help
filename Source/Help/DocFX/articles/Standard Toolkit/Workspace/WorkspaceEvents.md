@@ -1,6 +1,7 @@
 # Workspace Events  
   
 Applicable Events:  
+
 * WorkspaceCellAdding
 * WorkspaceCellRemoved
 * ActiveCellChanged
@@ -17,8 +18,6 @@ Applicable Events:
 * PagesUnmatched
 * CellCountChanged
 * CellVisibleCountChanged
-
- 
 
 **WorkspaceCellAdding**  
 Each time a new *KryptonWorkspaceCell* is added to the workspace controls
@@ -73,13 +72,11 @@ handler can cleanup and reverse any actions they took during the
 *BeginPageDrap*. It provides a property indicating if the drop was completed
 with success, so the drop occurred, or if the operation was cancelled.
 
-  
 **PageDrop**  
 This event is fired when a page is being dropped into the navigator instance.
 You can use this event to cancel the drop or alter the provided page reference
 in order to alter the page actually dropped.
 
-  
 **GlobalSaving**  
 Called during the save layout process and allows custom data to be added into
 the persisted data. You are provided with an *XmlWriter* reference that should
@@ -125,7 +122,6 @@ be removed from the workspace. Use this event if you want to prevent some or all
 of these pages being removed. You must use code to add them back into the
 workspace hierarchy and into a cell in order for them to be retained not
 automatically removed.  
-  
   
 **CellCountChanged**  
 At the end of the workspace layout phase this event is fired if the number of

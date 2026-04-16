@@ -24,7 +24,7 @@ public enum IconSelectionStrategy
 When using `ThemeBased` strategy, icons are selected based on your current Krypton theme:
 
 | Theme Category | Windows Icon Style | Example Themes |
-|----------------|-------------------|----------------|
+| -------------- | ------------------ | -------------- |
 | **Professional/Office 2007/Sparkle** | Windows Vista | ProfessionalSystem, Office2007Blue, SparkleBlue |
 | **Office 2010/2013** | Windows 7/8.x | Office2010Blue, Office2013White, VisualStudio2010Render2010 |
 | **Microsoft 365/Material** | Windows 10/11 | Microsoft365Blue, MaterialLight, MaterialDark |
@@ -59,6 +59,7 @@ var themeBasedIcon = GraphicsExtensions.ExtractIconFromImageres(
 ## Theme Compatibility Guide
 
 ### Windows Vista Compatible Themes
+
 These themes use Windows Vista-style icons for a classic, professional look:
 
 ```csharp
@@ -90,6 +91,7 @@ PaletteMode.SparklePurpleLightMode
 ```
 
 ### Windows 7/8.x Compatible Themes
+
 These themes use Windows 7/8.x-style icons for a modern, refined appearance:
 
 ```csharp
@@ -115,6 +117,7 @@ PaletteMode.VisualStudio2010Render365
 ```
 
 ### Windows 10/11 Compatible Themes
+
 These themes use Windows 10/11-style icons for a contemporary, sleek appearance:
 
 ```csharp
@@ -518,21 +521,25 @@ var icon = GraphicsExtensions.ExtractIconFromImageres(
 ## Benefits
 
 ### 1. Visual Consistency
+
 - Icons match your application's theme
 - Professional, cohesive appearance
 - Better user experience
 
 ### 2. Flexibility
+
 - Choose between OS-based and theme-based selection
 - Automatic adaptation to theme changes
 - Backward compatibility maintained
 
 ### 3. Performance
+
 - Efficient caching strategies
 - Lazy loading support
 - Memory management best practices
 
 ### 4. Developer Experience
+
 - Simple API with optional parameters
 - Clear theme mapping documentation
 - Comprehensive examples and best practices

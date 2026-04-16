@@ -6,7 +6,7 @@ The `KryptonInputBox` class provides a static utility for displaying input dialo
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── Krypton.Toolkit.KryptonInputBox
 ```

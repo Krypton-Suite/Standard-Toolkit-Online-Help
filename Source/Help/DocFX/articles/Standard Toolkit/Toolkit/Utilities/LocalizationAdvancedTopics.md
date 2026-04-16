@@ -21,7 +21,7 @@ This document covers advanced localization topics, implementation strategies, an
 
 ### String Management System Components
 
-```
+```text
 Application Layer
     └── KryptonManager (Entry Point)
         └── KryptonGlobalToolkitStrings (Container)
@@ -98,17 +98,20 @@ Debug.Assert(value1 == value2); // True
 ### Memory and Performance Characteristics
 
 **Memory Footprint:**
+
 - Base overhead: ~50 KB for all string categories
 - Each modified string: ~50-200 bytes depending on length
 - Total application impact: < 1 MB for fully localized application
 
 **Performance:**
+
 - String access: O(1) - direct property access
 - Reset operation: O(n) where n = number of properties
 - No caching overhead
 - No dictionary lookups
 
 **Thread Safety:**
+
 - Read operations: Thread-safe
 - Write operations: Not thread-safe (require UI thread)
 - Recommendation: Configure strings during application startup
@@ -560,7 +563,7 @@ public class JapaneseLocalization
 
 Create `.resx` files for each language in your project:
 
-```
+```text
 Resources/
     Strings.resx         (default/English)
     Strings.es.resx      (Spanish)
@@ -572,6 +575,7 @@ Resources/
 #### Step 2: Resource File Structure
 
 **Strings.resx** (English - Default):
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -589,6 +593,7 @@ Resources/
 ```
 
 **Strings.es.resx** (Spanish):
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -1685,7 +1690,7 @@ public class CachedLocalizationManager
 
 For large applications, consider using satellite assemblies for each language:
 
-```
+```text
 YourApp.exe
 YourApp.resources.dll (English resources)
 es/
@@ -1705,6 +1710,7 @@ The .NET runtime automatically loads the appropriate satellite assembly based on
 Create language configuration files (JSON/XML):
 
 **localization.es.json**:
+
 ```json
 {
   "General": {
@@ -1722,6 +1728,7 @@ Create language configuration files (JSON/XML):
 ```
 
 Load and apply at runtime:
+
 ```csharp
 public class JsonLocalizationLoader
 {
@@ -1742,4 +1749,3 @@ public class JsonLocalizationLoader
 - [Localization and String Management Guide](LocalizationGuide.md)
 - [KryptonManager.Strings API Reference](../Components/KryptonManagerStringsAPIReference.md)
 - [ExceptionHandler API Documentation](ExceptionHandlerAPIDocumentation.md)
-

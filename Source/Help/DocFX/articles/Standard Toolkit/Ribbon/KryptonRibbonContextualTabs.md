@@ -19,22 +19,22 @@ To associate a ribbon tab so it is displayed only in the context of a particular
 
 Figure 1 shows the properties available for a ribbon context instance.
 
-![](Images/RibbonContextProps.png)
+![KryptonRibbonContext properties in the Visual Studio Properties window](Images/RibbonContextProps.png)
 
-*Figure 1 - Ribbon Context Properties*
+Figure 1 - Ribbon Context Properties.
 
-**ContextColor**
+### ContextColor
 
 When the context is being displayed this is the color used to draw the context indication area at the top of the ribbon control. If the ribbon control is integrated into the caption area of the form then this color will be seen in the caption area.
 
-**ContextName**
+### ContextName
 
 The *ContextName* is used to associate the individual tabs with the context instance. To associate a tab with this context you should set the *KryptonRibbonTab.ContextName* to the same value as this property.
 
-**ContextTitle**
+### ContextTitle
 
 This is the title text that is drawn over the *ContextColor* background color. You should use a short string to reduce the chances of it being truncated and a string that reflects the context usage, good examples would be *Picture*, *Table* and *Chart*.
 
-**Tag**
+### Tag
 
 Associate application specific information with the object instance by using this property.

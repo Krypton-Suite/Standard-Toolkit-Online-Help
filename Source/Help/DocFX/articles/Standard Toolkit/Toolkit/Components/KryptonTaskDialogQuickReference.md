@@ -17,12 +17,14 @@ using (KryptonTaskDialog taskDialog = new KryptonTaskDialog())
 ## Core Concepts
 
 ### Constructor
+
 ```csharp
 new KryptonTaskDialog()      // Default width: 600px
 new KryptonTaskDialog(800)   // Custom width: 800px
 ```
 
 ### Display Methods
+
 ```csharp
 DialogResult ShowDialog(IWin32Window? owner = null);  // Modal
 void Show(IWin32Window? owner = null);                // Modeless
@@ -33,6 +35,7 @@ void HideAllElements();                               // Hide all elements
 ## Dialog Properties
 
 ### Form Properties (taskDialog.Dialog.Form)
+
 ```csharp
 Text                    // Title bar text
 Icon                    // Form icon
@@ -50,6 +53,7 @@ RoundedCorners          // bool
 ```
 
 ### Global Properties (taskDialog.Dialog.Globals)
+
 ```csharp
 BackColor1              // Color (applies to all elements)
 BackColor2              // Color (applies to all elements)
@@ -58,6 +62,7 @@ RoundedCorners          // bool (applies to all elements)
 ```
 
 ### Dialog Result
+
 ```csharp
 taskDialog.Dialog.DialogResult  // Get after closing
 taskDialog.Dialog.Visible       // Is dialog visible?
@@ -68,6 +73,7 @@ taskDialog.Dialog.Visible       // Is dialog visible?
 ### Common Element Properties
 
 Every element has these base properties:
+
 ```csharp
 Visible         // bool
 BackColor1      // Color
@@ -103,6 +109,7 @@ taskDialog.Content.Visible = true;
 ### 3. Expander
 
 Same as Content. Controlled by FooterBar expander button:
+
 ```csharp
 taskDialog.Expander.Text = "Detailed info...";
 taskDialog.Expander.Visible = false; // Initially hidden
@@ -248,6 +255,7 @@ Same as FreeWheeler1 but uses TableLayoutPanel instead.
 ## Common Patterns
 
 ### Simple Confirmation
+
 ```csharp
 using (var dlg = new KryptonTaskDialog())
 {
@@ -266,6 +274,7 @@ using (var dlg = new KryptonTaskDialog())
 ```
 
 ### Progress Dialog
+
 ```csharp
 var dlg = new KryptonTaskDialog();
 dlg.Dialog.Form.Text = "Processing";
@@ -293,6 +302,7 @@ dlg.Dispose();
 ```
 
 ### Input Dialog
+
 ```csharp
 using (var dlg = new KryptonTaskDialog())
 {
@@ -318,6 +328,7 @@ using (var dlg = new KryptonTaskDialog())
 ```
 
 ### Dialog Reuse
+
 ```csharp
 using (var dlg = new KryptonTaskDialog())
 {
@@ -365,6 +376,7 @@ taskDialog.Dialog.Globals.RoundedCorners = true;
 ## Common Mistakes
 
 ### ❌ Don't
+
 ```csharp
 // Don't show without making elements visible
 var dlg = new KryptonTaskDialog();
@@ -380,6 +392,7 @@ Task.Run(() => dlg.Content.Text = "Update"); // Exception!
 ```
 
 ### ✅ Do
+
 ```csharp
 // Make elements visible
 using (var dlg = new KryptonTaskDialog())
@@ -399,6 +412,7 @@ Task.Run(() =>
 ## Cheat Sheet
 
 ### Element Visibility Toggle
+
 ```csharp
 dlg.HideAllElements();
 dlg.Heading.Visible = true;
@@ -407,6 +421,7 @@ dlg.FooterBar.Visible = true;
 ```
 
 ### Gradient Background
+
 ```csharp
 element.BackColor1 = Color.LightBlue; // Top
 element.BackColor2 = Color.White;     // Bottom
@@ -414,6 +429,7 @@ element.BackColor2 = Color.White;     // Bottom
 ```
 
 ### Positioning
+
 ```csharp
 // Center on screen (default)
 dlg.Dialog.Form.StartPosition = FormStartPosition.CenterScreen;
@@ -428,6 +444,7 @@ dlg.Dialog.Form.Location = new Point(100, 100);
 ```
 
 ### Prevent Close
+
 ```csharp
 dlg.Dialog.Form.CloseBox = false;
 dlg.Dialog.Form.IgnoreAltF4 = true;
@@ -437,4 +454,3 @@ dlg.Dialog.Form.IgnoreAltF4 = true;
 
 **For detailed documentation, see**:
 [KryptonTaskDialogDeveloperOverView](KryptonTaskDialogDeveloperOverView.md)
-

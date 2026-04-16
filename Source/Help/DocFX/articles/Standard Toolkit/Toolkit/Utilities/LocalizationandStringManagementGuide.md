@@ -1,6 +1,7 @@
 # Localization and String Management Guide
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [String Management Architecture](#string-management-architecture)
 3. [KryptonLanguageManager](#kryptonlanguagemanager)
@@ -26,7 +27,7 @@ The Krypton Toolkit Suite provides comprehensive localization and string managem
 
 ### Core Components
 
-```
+```text
 KryptonLanguageManager (New System)
     ↓
 String Collection Classes
@@ -39,12 +40,14 @@ UI Controls
 ### Legacy vs New System
 
 **Legacy System (Deprecated):**
+
 ```csharp
 // OLD - Deprecated
 KryptonManager.Strings.GeneralStrings.OK
 ```
 
 **New System (Recommended):**
+
 ```csharp
 // NEW - Current approach
 KryptonLanguageManager.Strings.GeneralStrings.OK
@@ -176,15 +179,15 @@ public class CustomToolkitStrings
 
 2. **Configure Culture**: Set the application culture in your startup code.
 
-```csharp
-// Set specific culture
-Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-FR");
-Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-FR");
+   ```csharp
+   // Set specific culture
+   Thread.CurrentThread.CurrentCulture = new CultureInfo("fr-FR");
+   Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr-FR");
 
-// Or use system culture
-Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
-Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
-```
+   // Or use system culture
+   Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
+   Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
+   ```
 
 3. **Load Localized Strings**: The system automatically loads strings based on the current culture.
 
@@ -218,6 +221,7 @@ public partial class MainForm : KryptonForm
 ### Resource File Structure
 
 **Strings.resx (Default/English):**
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -231,6 +235,7 @@ public partial class MainForm : KryptonForm
 ```
 
 **Strings.fr-FR.resx (French):**
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <root>
@@ -249,66 +254,66 @@ public partial class MainForm : KryptonForm
 
 1. **Define Your String Class**:
 
-```csharp
-public class MyApplicationStrings : GlobalId
-{
-    private const string DEFAULT_SAVE = "&Save";
-    private const string DEFAULT_LOAD = "&Load";
-    private const string DEFAULT_EXIT = "E&xit";
-    
-    public string Save { get; set; } = DEFAULT_SAVE;
-    public string Load { get; set; } = DEFAULT_LOAD;
-    public string Exit { get; set; } = DEFAULT_EXIT;
-    
-    public bool IsDefault => Save.Equals(DEFAULT_SAVE) && 
-                            Load.Equals(DEFAULT_LOAD) && 
-                            Exit.Equals(DEFAULT_EXIT);
-    
-    public void Reset()
-    {
-        Save = DEFAULT_SAVE;
-        Load = DEFAULT_LOAD;
-        Exit = DEFAULT_EXIT;
-    }
-}
-```
+   ```csharp
+   public class MyApplicationStrings : GlobalId
+   {
+       private const string DEFAULT_SAVE = "&Save";
+       private const string DEFAULT_LOAD = "&Load";
+       private const string DEFAULT_EXIT = "E&xit";
+       
+       public string Save { get; set; } = DEFAULT_SAVE;
+       public string Load { get; set; } = DEFAULT_LOAD;
+       public string Exit { get; set; } = DEFAULT_EXIT;
+       
+       public bool IsDefault => Save.Equals(DEFAULT_SAVE) && 
+                               Load.Equals(DEFAULT_LOAD) && 
+                               Exit.Equals(DEFAULT_EXIT);
+       
+       public void Reset()
+       {
+           Save = DEFAULT_SAVE;
+           Load = DEFAULT_LOAD;
+           Exit = DEFAULT_EXIT;
+       }
+   }
+   ```
 
 2. **Register with Language Manager**:
 
-```csharp
-public static class MyLanguageManager
-{
-    public static MyApplicationStrings ApplicationStrings { get; } = new MyApplicationStrings();
-    
-    public static void LoadCustomStrings()
-    {
-        // Load from resource files or configuration
-        ApplicationStrings.Save = Properties.Resources.SaveButtonText;
-        ApplicationStrings.Load = Properties.Resources.LoadButtonText;
-        ApplicationStrings.Exit = Properties.Resources.ExitButtonText;
-    }
-}
-```
+   ```csharp
+   public static class MyLanguageManager
+   {
+       public static MyApplicationStrings ApplicationStrings { get; } = new MyApplicationStrings();
+       
+       public static void LoadCustomStrings()
+       {
+           // Load from resource files or configuration
+           ApplicationStrings.Save = Properties.Resources.SaveButtonText;
+           ApplicationStrings.Load = Properties.Resources.LoadButtonText;
+           ApplicationStrings.Exit = Properties.Resources.ExitButtonText;
+       }
+   }
+   ```
 
 3. **Use in Your Application**:
 
-```csharp
-public partial class MyForm : KryptonForm
-{
-    public MyForm()
-    {
-        InitializeComponent();
-        LoadCustomStrings();
-    }
-    
-    private void LoadCustomStrings()
-    {
-        saveButton.Text = MyLanguageManager.ApplicationStrings.Save;
-        loadButton.Text = MyLanguageManager.ApplicationStrings.Load;
-        exitButton.Text = MyLanguageManager.ApplicationStrings.Exit;
-    }
-}
-```
+   ```csharp
+   public partial class MyForm : KryptonForm
+   {
+       public MyForm()
+       {
+           InitializeComponent();
+           LoadCustomStrings();
+       }
+       
+       private void LoadCustomStrings()
+       {
+           saveButton.Text = MyLanguageManager.ApplicationStrings.Save;
+           loadButton.Text = MyLanguageManager.ApplicationStrings.Load;
+           exitButton.Text = MyLanguageManager.ApplicationStrings.Exit;
+       }
+   }
+   ```
 
 ### Dynamic String Loading
 
@@ -387,7 +392,7 @@ public class MyStrings : GlobalId
 
 Organize resource files by functionality:
 
-```
+```text
 Resources/
 ├── Strings.resx (Default)
 ├── Strings.fr-FR.resx (French)
@@ -424,19 +429,19 @@ public static string GetLocalizedString(string key, string defaultValue = "")
 
 1. **Identify Usage**: Find all instances of `KryptonManager.Strings` in your code.
 
-```csharp
-// Find these patterns
-KryptonManager.Strings.GeneralStrings.OK
-KryptonManager.Strings.MessageBoxStrings.ErrorTitle
-```
+   ```csharp
+   // Find these patterns
+   KryptonManager.Strings.GeneralStrings.OK
+   KryptonManager.Strings.MessageBoxStrings.ErrorTitle
+   ```
 
 2. **Replace with New System**:
 
-```csharp
-// Replace with
-KryptonLanguageManager.Strings.GeneralStrings.OK
-KryptonLanguageManager.Strings.MessageBoxStrings.ErrorTitle
-```
+   ```csharp
+   // Replace with
+   KryptonLanguageManager.Strings.GeneralStrings.OK
+   KryptonLanguageManager.Strings.MessageBoxStrings.ErrorTitle
+   ```
 
 3. **Update Designer Files**: If you have designer-generated code using the old system, update it manually or regenerate.
 

@@ -6,7 +6,7 @@ The `KryptonFolderBrowserDialog` class provides a Krypton-themed wrapper around 
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── Krypton.Toolkit.ShellDialogWrapper (abstract)
     └── Krypton.Toolkit.KryptonFolderBrowserDialog
@@ -19,6 +19,7 @@ public KryptonFolderBrowserDialog()
 ```
 
 The constructor initializes the appropriate internal dialog implementation based on the target framework version:
+
 - **.NET 8.0 or later**: Uses the modern `FolderBrowserDialog` class
 - **Earlier frameworks**: Uses the custom `ShellBrowserDialogTFM` implementation
 
@@ -38,6 +39,7 @@ public string SelectedPath { get; set; }
 - **Localizable**: Yes
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonFolderBrowserDialog
 {
@@ -57,6 +59,7 @@ public Environment.SpecialFolder RootFolder { get; set; }
 - **Category**: FolderBrowsing
 
 **Available Root Folders:**
+
 - `Desktop` (default)
 - `MyComputer`
 - `Favorites`
@@ -76,6 +79,7 @@ public Environment.SpecialFolder RootFolder { get; set; }
 - `Templates`
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonFolderBrowserDialog
 {
@@ -96,6 +100,7 @@ public override string Title { get; set; }
 - **Localizable**: Yes
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonFolderBrowserDialog
 {
@@ -129,6 +134,7 @@ public override Guid? ClientGuid { get; set; }
 - **Use Cases**: Different dialog instances can have separate persisted states (position, size, last visited folder)
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonFolderBrowserDialog
 {
@@ -146,12 +152,13 @@ public DialogResult ShowDialog(IWin32Window? owner)
 ```
 
 - **Purpose**: Displays the folder browser dialog
-- **Overloads**: 
+- **Overloads**:
   - Non-modal (no owner window)
   - Modal with parent window
 - **Returns**: `DialogResult` enumeration value
 
 **Usage Examples:**
+
 ```csharp
 // Simple usage
 var dialog = new KryptonFolderBrowserDialog();
@@ -177,6 +184,7 @@ public override void Reset()
 - **Usage**: Clears customization and returns dialog to initial state
 
 **Usage Example:**
+
 ```csharp
 dialog.Reset(); // Clears all custom settings
 ```
@@ -201,6 +209,7 @@ public void Dispose()
 - **Note**: Important for proper resource management, though not strictly required for dialog objects
 
 **Usage Example:**
+
 ```csharp
 using (var dialog = new KryptonFolderBrowserDialog())
 {
@@ -214,6 +223,7 @@ using (var dialog = new KryptonFolderBrowserDialog())
 ### Display Behavior
 
 The dialog automatically handles:
+
 - **Theme Integration**: Uses Krypton styling instead of Windows native appearance
 - **DPI Scaling**: Automatically adapts to different display scaling factors
 - **Window Management**: Ensures proper parent-child relationships and window state
@@ -231,12 +241,14 @@ The dialog automatically handles:
 ### Target Framework Behavior
 
 #### .NET 8.0 and Later
+
 - Uses modern `System.Windows.Forms.FolderBrowserDialog`
 - Supports `ClientGuid` for state persistence
 - Includes `InitialDirectory` property
 - Native folder picker with enhanced UX
 
 #### Earlier Frameworks
+
 - Uses custom `ShellBrowserDialogTFM` wrapper
 - Based on `OpenFileDialog` with folder selection modifications
 - Customized button text ("Select Folder" instead of "Open")
@@ -245,6 +257,7 @@ The dialog automatically handles:
 ### Theme Integration
 
 The dialog integrates with Krypton themING through:
+
 - **ShellDialogWrapper**: Base class provides theme-aware window management
 - **Window Hooking**: Custom window procedures for styling injection
 - **DPI Handling**: Automatic scaling for high-DPI displays
@@ -377,6 +390,7 @@ var dialog = new KryptonFolderBrowserDialog();
 ### Feature Parity Migration
 
 Most `System.Windows.Forms.FolderBrowserDialog` APIs have direct equivalents:
+
 - `SelectedPath` → `SelectedPath`
 - `RootFolder` → `RootFolder`
 - `Description` → Not available (by design)

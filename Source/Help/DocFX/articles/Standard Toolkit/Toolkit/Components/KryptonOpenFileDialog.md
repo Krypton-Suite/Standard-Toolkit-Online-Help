@@ -6,7 +6,7 @@ The `KryptonOpenFileDialog` class provides a Krypton-themed wrapper around the s
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── Krypton.Toolkit.ShellDialogWrapper (abstract)
     └── Krypton.Toolkit.FileDialogWrapper (abstract)
@@ -20,6 +20,7 @@ public KryptonOpenFileDialog()
 ```
 
 The constructor initializes:
+
 - **Internal Dialog**: Creates `OpenFileDialog` instance for native functionality
 - **ShellDialogWrapper**: Sets up Krypton theming and window management
 - **Dispose Support**: Implements proper resource cleanup
@@ -39,6 +40,7 @@ public bool Multiselect { get; set; }
 - **Affects**: `FileNames` collection vs `FileName` string
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonOpenFileDialog
 {
@@ -68,6 +70,7 @@ public bool ReadOnlyChecked { get; set; }
 - **Note**: Read-only checkbox is only shown when `ShowReadOnly` is enabled
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonOpenFileDialog
 {
@@ -85,6 +88,7 @@ public bool ShowReadOnly { get; set; }
 ```
 
 **Important**: This property throws `InvalidConstraintException` when accessed
+
 - **Purpose**: Intentionally disabled to maintain modern dialog experience
 - **Reason**: Windows 10+ doesn't support read-only checkbox in modern file dialogs
 - **Alternative**: Handle read-only checking in your application logic
@@ -102,6 +106,7 @@ public string SafeFileName { get; }
 - **Usage**: Safe for display or logging purposes
 
 **Usage Example:**
+
 ```csharp
 if (dialog.ShowDialog() == DialogResult.OK)
 {
@@ -198,6 +203,7 @@ public Stream OpenFile()
 - **Usage**: Convenient method for immediate file access
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonOpenFileDialog
 {

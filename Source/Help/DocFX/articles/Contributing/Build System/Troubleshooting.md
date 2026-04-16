@@ -78,6 +78,23 @@ Or edit to use available SDK:
 }
 ```
 
+### Packages or DLLs “not found” after a CI-style build
+
+**Symptoms**:
+
+- Workflow or script reports no `.nupkg` under `Bin/Packages/...`
+- `Krypton.Toolkit.dll` not found at `Bin/Release/...`
+
+**Cause**:
+
+- Orchestrated builds with `/p:UseArtifactsOutput=true` write to `artifacts/packages/` and `artifacts/bin/` instead of `Bin/`.
+
+**Solutions**:
+
+1. Look under `artifacts/packages/<Configuration>/` and `artifacts/bin/<Configuration>/`.
+2. For local builds, omit `UseArtifactsOutput` (default) if you want outputs only under `Bin/`.
+3. In ModernBuild, package discovery checks `artifacts/` before `Bin/`; F7 Clean does not delete `artifacts/`—remove that folder manually when switching layouts.
+
 ### Long Path Errors
 
 **Symptoms**:
@@ -766,6 +783,6 @@ If problem persists:
 
 - [Build System Overview](BuildSystemOverview.md) - System architecture
 - [Build Scripts](BuildScripts.md) - Build commands
-- [GitHub Actions Workflows](GitHubActionsWorkflows.md) - CI/CD
+- [Build workflow](Current/BuildWorkflow.md) and [Release workflow](Current/ReleaseWorkflow.md) - CI/CD
 - [NuGet Packaging](NuGetPackaging.md) - Package troubleshooting
 

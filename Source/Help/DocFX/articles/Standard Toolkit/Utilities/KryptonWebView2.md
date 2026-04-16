@@ -7,7 +7,8 @@ This documentation suite provides comprehensive guidance for developers using th
 ## Documentation Structure
 
 ### 📚 [Developer Guide](KryptonWebView2DeveloperGuide.md)
-**Complete developer documentation covering all aspects of the control**
+
+Complete developer documentation covering all aspects of the control.
 
 - **Quick Start**: Get up and running in minutes
 - **Architecture Overview**: Understand the control's design and components
@@ -20,7 +21,8 @@ This documentation suite provides comprehensive guidance for developers using th
 - **Best Practices**: Recommended patterns and approaches
 
 ### 🔧 [API Reference](KryptonWebView2APIReference.md)
-**Comprehensive API documentation with detailed signatures and examples**
+
+Comprehensive API documentation with detailed signatures and examples.
 
 - **Class Hierarchy**: Complete inheritance structure
 - **Constructors**: Initialization methods and parameters
@@ -32,7 +34,8 @@ This documentation suite provides comprehensive guidance for developers using th
 - **Related Types**: Associated Krypton Toolkit classes
 
 ### 💡 [Examples and Use Cases](KryptonWebView2Examples.md)
-**Practical, real-world examples demonstrating various usage scenarios**
+
+Practical, real-world examples demonstrating various usage scenarios.
 
 - **Basic Web Browser**: Complete browser implementation
 - **Custom Context Menu**: Advanced context menu with submenus
@@ -43,7 +46,8 @@ This documentation suite provides comprehensive guidance for developers using th
 - **Performance Optimization**: Memory management and performance tuning
 
 ### 🛠️ [Troubleshooting and FAQ](KryptonWebView2Troubleshooting.md)
-**Common issues, solutions, and frequently asked questions**
+
+Common issues, solutions, and frequently asked questions.
 
 - **Common Issues**: WebView2 runtime problems, toolbox issues, designer errors
 - **Installation Problems**: NuGet package issues, assembly loading errors
@@ -57,12 +61,14 @@ This documentation suite provides comprehensive guidance for developers using th
 ## Quick Navigation
 
 ### By Task
+
 - **Getting Started**: [Developer Guide - Quick Start](KryptonWebView2DeveloperGuide.md#quick-start)
 - **API Lookup**: [API Reference](KryptonWebView2APIReference.md)
 - **Code Examples**: [Examples and Use Cases](KryptonWebView2Examples.md)
 - **Problem Solving**: [Troubleshooting and FAQ](KryptonWebView2Troubleshooting.md)
 
 ### By Feature
+
 - **Basic Usage**: [Developer Guide - Quick Start](KryptonWebView2DeveloperGuide.md#quick-start)
 - **Context Menus**: [Developer Guide - Context Menu System](KryptonWebView2DeveloperGuide.md#context-menu-system)
 - **Theming**: [Developer Guide - Theming Integration](KryptonWebView2DeveloperGuide.md#theming-integration)
@@ -71,6 +77,7 @@ This documentation suite provides comprehensive guidance for developers using th
 - **Error Handling**: [Examples - Error Handling](KryptonWebView2Examples.md#error-handling)
 
 ### By Experience Level
+
 - **Beginner**: Start with [Developer Guide - Quick Start](KryptonWebView2DeveloperGuide.md#quick-start)
 - **Intermediate**: Review [Examples and Use Cases](KryptonWebView2Examples.md)
 - **Advanced**: Explore [API Reference](KryptonWebView2APIReference.md) and [Performance Considerations](KryptonWebView2DeveloperGuide.md#performance-considerations)
@@ -78,30 +85,35 @@ This documentation suite provides comprehensive guidance for developers using th
 ## Key Features Covered
 
 ### 🎨 **Theming Integration**
+
 - Automatic palette system integration
 - Dynamic theme updates
 - Custom theme injection into web content
 - Consistent appearance with other Krypton controls
 
 ### 🖱️ **Context Menu System**
+
 - Customizable right-click menus
 - KryptonContextMenu integration
 - Dynamic menu generation
 - Keyboard and mouse activation support
 
 ### 🌐 **WebView2 Integration**
+
 - Modern web rendering engine
 - Full WebView2 API access
 - JavaScript execution and communication
 - Navigation control and error handling
 
 ### ⚡ **Performance Optimization**
+
 - Async initialization patterns
 - Memory management strategies
 - Resource optimization techniques
 - Error handling and recovery
 
 ### 🔧 **Developer Experience**
+
 - Visual Studio designer support
 - Toolbox integration
 - Comprehensive error handling
@@ -120,17 +132,20 @@ Before using KryptonWebView2, ensure you have:
 ## Getting Help
 
 ### Documentation Resources
+
 1. **Start Here**: [Developer Guide - Quick Start](KryptonWebView2DeveloperGuide.md#quick-start)
 2. **Find Examples**: [Examples and Use Cases](KryptonWebView2Examples.md)
 3. **Look Up APIs**: [API Reference](KryptonWebView2APIReference.md)
 4. **Solve Problems**: [Troubleshooting and FAQ](KryptonWebView2Troubleshooting.md)
 
 ### External Resources
+
 - [Microsoft WebView2 Documentation](https://docs.microsoft.com/en-us/microsoft-edge/webview2/)
 - [Krypton Toolkit GitHub](https://github.com/Krypton-Suite/Standard-Toolkit)
 - [WebView2 Runtime Download](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)
 
 ### Community Support
+
 - **GitHub Issues**: Report bugs and request features
 - **Discussions**: Ask questions and share solutions
 - **Pull Requests**: Contribute improvements and fixes
@@ -140,8 +155,9 @@ Before using KryptonWebView2, ensure you have:
 This documentation covers KryptonWebView2 as part of the Krypton Toolkit Suite. The control is conditionally compiled and only available when `WEBVIEW2_AVAILABLE` is defined **and** the target framework is .NET 8.0 or greater (`NET8_0_OR_GREATER`).
 
 ### Compatibility Matrix
-| Framework | WebView2 Runtime | Status |
-|-----------|------------------|--------|
-| .NET 8.0+ | 1.0.3485.44+     | ✅ Supported |
+
+| Framework | WebView2 Runtime | Supported |
+| --------- | ---------------- | --------- |
+| .NET 8.0+ | 1.0.3485.44+     | Yes       |
 
 **Note:** This control is only available for .NET 8.0 and later. It is not available for .NET Framework versions.

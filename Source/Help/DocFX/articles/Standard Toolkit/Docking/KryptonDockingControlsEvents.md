@@ -1,12 +1,11 @@
 # Docking Controls Events
 
-## Docking Controls Events
+## Event lists
 
-**Control Resizing Events:**  
+**Control Resizing Events:**
+
 * AutoHiddenSeparatorResize
 * DockspaceSeparatorResize
-
- 
 
 **AutoHiddenSeparatorResize**  
 When an auto hidden slides out to be displayed there is a resize bar displayed
@@ -20,7 +19,8 @@ resize bar this event is fired and allows you to modify the limits of the
 resizing operation. So you can restrict the resizing action to whatever is
 appropriate for your application needs.
 
-**Control Adding/Removing Events:**  
+**Control Adding/Removing Events:**
+
 * AutoHiddenGroupAdding
 * AutoHiddenGroupRemoved
 * AutoHiddenGroupPanelAdding
@@ -44,8 +44,6 @@ appropriate for your application needs.
 * FloatingWindowAdding
 * FloatingWindowRemoved
 
- 
-
 **xxxxAdding**  
 There are many different custom controls involved in the docking system. Each
 type of custom control has an event that is fired when that control type is
@@ -64,5 +62,3 @@ adding event. If you hooked into the adding event you should careful consider if
 you also need to hook the removing event as well. Ensure that any actions you
 perform are appropriately reversed in the removing event to prevent memory leaks
 occuring.
-
- 

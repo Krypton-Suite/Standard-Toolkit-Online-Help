@@ -92,7 +92,7 @@
 </ul>
 <h2 id="string-management-architecture">String Management Architecture</h2>
 <h3 id="core-components">Core Components</h3>
-<pre><code>KryptonLanguageManager (New System)
+<pre><code class="lang-text">KryptonLanguageManager (New System)
     ↓
 String Collection Classes
     ↓
@@ -207,8 +207,6 @@ public static void Main()
 <li><p><strong>Create Resource Files</strong>: Create <code>.resx</code> files for each language you want to support.</p>
 </li>
 <li><p><strong>Configure Culture</strong>: Set the application culture in your startup code.</p>
-</li>
-</ol>
 <pre><code class="lang-csharp">// Set specific culture
 Thread.CurrentThread.CurrentCulture = new CultureInfo(&quot;fr-FR&quot;);
 Thread.CurrentThread.CurrentUICulture = new CultureInfo(&quot;fr-FR&quot;);
@@ -217,8 +215,9 @@ Thread.CurrentThread.CurrentUICulture = new CultureInfo(&quot;fr-FR&quot;);
 Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
 Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
 </code></pre>
-<ol start="3">
-<li><strong>Load Localized Strings</strong>: The system automatically loads strings based on the current culture.</li>
+</li>
+<li><p><strong>Load Localized Strings</strong>: The system automatically loads strings based on the current culture.</p>
+</li>
 </ol>
 <h3 id="example-localization-setup">Example Localization Setup</h3>
 <pre><code class="lang-csharp">public partial class MainForm : KryptonForm
@@ -270,22 +269,21 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
 <h2 id="custom-string-management">Custom String Management</h2>
 <h3 id="creating-custom-string-collections">Creating Custom String Collections</h3>
 <ol>
-<li><strong>Define Your String Class</strong>:</li>
-</ol>
+<li><p><strong>Define Your String Class</strong>:</p>
 <pre><code class="lang-csharp">public class MyApplicationStrings : GlobalId
 {
     private const string DEFAULT_SAVE = &quot;&amp;Save&quot;;
     private const string DEFAULT_LOAD = &quot;&amp;Load&quot;;
     private const string DEFAULT_EXIT = &quot;E&amp;xit&quot;;
-    
+
     public string Save { get; set; } = DEFAULT_SAVE;
     public string Load { get; set; } = DEFAULT_LOAD;
     public string Exit { get; set; } = DEFAULT_EXIT;
-    
+
     public bool IsDefault =&gt; Save.Equals(DEFAULT_SAVE) &amp;&amp; 
                             Load.Equals(DEFAULT_LOAD) &amp;&amp; 
                             Exit.Equals(DEFAULT_EXIT);
-    
+
     public void Reset()
     {
         Save = DEFAULT_SAVE;
@@ -294,13 +292,12 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
     }
 }
 </code></pre>
-<ol start="2">
-<li><strong>Register with Language Manager</strong>:</li>
-</ol>
+</li>
+<li><p><strong>Register with Language Manager</strong>:</p>
 <pre><code class="lang-csharp">public static class MyLanguageManager
 {
     public static MyApplicationStrings ApplicationStrings { get; } = new MyApplicationStrings();
-    
+
     public static void LoadCustomStrings()
     {
         // Load from resource files or configuration
@@ -310,9 +307,8 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
     }
 }
 </code></pre>
-<ol start="3">
-<li><strong>Use in Your Application</strong>:</li>
-</ol>
+</li>
+<li><p><strong>Use in Your Application</strong>:</p>
 <pre><code class="lang-csharp">public partial class MyForm : KryptonForm
 {
     public MyForm()
@@ -320,7 +316,7 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
         InitializeComponent();
         LoadCustomStrings();
     }
-    
+
     private void LoadCustomStrings()
     {
         saveButton.Text = MyLanguageManager.ApplicationStrings.Save;
@@ -329,6 +325,8 @@ Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
     }
 }
 </code></pre>
+</li>
+</ol>
 <h3 id="dynamic-string-loading">Dynamic String Loading</h3>
 <pre><code class="lang-csharp">public class DynamicStringManager
 {
@@ -388,7 +386,7 @@ public string Quit { get; set; }
 </code></pre>
 <h3 id="4-resource-file-organization">4. Resource File Organization</h3>
 <p>Organize resource files by functionality:</p>
-<pre><code>Resources/
+<pre><code class="lang-text">Resources/
 ├── Strings.resx (Default)
 ├── Strings.fr-FR.resx (French)
 ├── Strings.de-DE.resx (German)
@@ -416,20 +414,18 @@ public string Quit { get; set; }
 <h2 id="migration-from-kryptonmanagerstrings">Migration from KryptonManager.Strings</h2>
 <h3 id="step-by-step-migration">Step-by-Step Migration</h3>
 <ol>
-<li><strong>Identify Usage</strong>: Find all instances of <code>KryptonManager.Strings</code> in your code.</li>
-</ol>
+<li><p><strong>Identify Usage</strong>: Find all instances of <code>KryptonManager.Strings</code> in your code.</p>
 <pre><code class="lang-csharp">// Find these patterns
 KryptonManager.Strings.GeneralStrings.OK
 KryptonManager.Strings.MessageBoxStrings.ErrorTitle
 </code></pre>
-<ol start="2">
-<li><strong>Replace with New System</strong>:</li>
-</ol>
+</li>
+<li><p><strong>Replace with New System</strong>:</p>
 <pre><code class="lang-csharp">// Replace with
 KryptonLanguageManager.Strings.GeneralStrings.OK
 KryptonLanguageManager.Strings.MessageBoxStrings.ErrorTitle
 </code></pre>
-<ol start="3">
+</li>
 <li><p><strong>Update Designer Files</strong>: If you have designer-generated code using the old system, update it manually or regenerate.</p>
 </li>
 <li><p><strong>Test Thoroughly</strong>: Ensure all strings display correctly after migration.</p>

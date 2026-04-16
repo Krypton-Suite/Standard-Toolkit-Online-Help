@@ -83,7 +83,7 @@
 </ul>
 <hr>
 <h2 id="overview">Overview</h2>
-<p>The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple release channels. The system consists of three specialized workflows that handle continuous integration, manual releases, and automated nightly builds.</p>
+<p>The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple release channels. The system includes workflows for continuous integration (<code>build.yml</code>), manual releases (<code>release.yml</code>), automated nightly builds (<code>nightly.yml</code>), a standalone Canary release workflow (<code>canary.yml</code>) on push to the Canary branch, and a <strong>Canary LTS Release</strong> workflow (<code>canary-lts-release.yml</code>) that publishes Canary packages from the V105-LTS branch.</p>
 <h3 id="key-features">Key Features</h3>
 <p>✅ <strong>Automated NuGet Publishing</strong> - Push packages to nuget.org automatically<br>
 ✅ <strong>Branch-Specific Configurations</strong> - Different builds for different release types<br>
@@ -143,14 +143,26 @@
 <td>Daily at midnight</td>
 <td>Packages (if version changed)</td>
 </tr>
+<tr>
+<td><strong>canary.yml</strong></td>
+<td>Canary release</td>
+<td>Push to Canary branch</td>
+<td>Canary packages (alternative to release.yml's release-canary job)</td>
+</tr>
+<tr>
+<td><strong>canary-lts-release.yml</strong></td>
+<td>Canary LTS</td>
+<td>Push to V105-LTS branch</td>
+<td>Canary packages built from LTS branch (see <a href="Workflows/CanaryLTSReleaseWorkflow.html">CanaryLTSReleaseWorkflow</a>)</td>
+</tr>
 </tbody>
 </table>
 <hr>
 <h2 id="buildyml---continuous-integration">build.yml - Continuous Integration</h2>
 <p><strong>File</strong>: <code>.github/workflows/build.yml</code></p>
-<h3 id="purpose">Purpose</h3>
+<h3 id="purpose-buildyml">Purpose (build.yml)</h3>
 <p>Fast validation that code compiles correctly across all target frameworks. Provides quick feedback for pull requests and commits.</p>
-<h3 id="triggers">Triggers</h3>
+<h3 id="triggers-buildyml">Triggers (build.yml)</h3>
 <pre><code class="lang-yaml">on:
   pull_request:
     branches: ['**']  # All PRs
@@ -194,7 +206,7 @@
 - .NET 10       → For master/canary/alpha (net10.0-windows)
 </code></pre>
 <p><strong>Why all SDKs?</strong>: Single build job must handle PRs from any branch</p>
-<h3 id="execution-time">Execution Time</h3>
+<h3 id="execution-time-buildyml">Execution Time (build.yml)</h3>
 <p>⚡ <strong>~3-5 minutes</strong> (optimized for speed)</p>
 <h3 id="when-to-check">When to Check</h3>
 <ul>
@@ -205,9 +217,9 @@
 <hr>
 <h2 id="releaseyml---manual-releases">release.yml - Manual Releases</h2>
 <p><strong>File</strong>: <code>.github/workflows/release.yml</code></p>
-<h3 id="purpose-1">Purpose</h3>
+<h3 id="purpose-releaseyml">Purpose (release.yml)</h3>
 <p>Creates and publishes releases when code is pushed to specific branches. Each branch gets its own specialized job with appropriate configuration.</p>
-<h3 id="triggers-1">Triggers</h3>
+<h3 id="triggers-releaseyml">Triggers (release.yml)</h3>
 <pre><code class="lang-yaml">on:
   push:
     branches:
@@ -259,15 +271,15 @@
 </table>
 <hr>
 <h3 id="job-release-master">Job: <code>release-master</code></h3>
-<p><strong>Stable production releases</strong></p>
-<h4 id="configuration">Configuration</h4>
+<h4 id="stable-production-releases">Stable production releases</h4>
+<h4 id="configuration-release-master">Configuration (release-master)</h4>
 <ul>
-<li><strong>Build Script</strong>: <code>Scripts/build.proj</code></li>
+<li><strong>Build Script</strong>: <code>Scripts/Build/build.proj</code></li>
 <li><strong>Configuration</strong>: <code>Release</code></li>
-<li><strong>Target Frameworks</strong>: net472, net48, net481, net8.0, net9.0, net10.0</li>
+<li><strong>Target Frameworks</strong>: net472, net48, net481, net8.0-windows, net9.0-windows, net10.0-windows, net11.0-windows</li>
 <li><strong>Output</strong>: <code>Bin/Packages/Release/</code></li>
 </ul>
-<h4 id="steps">Steps</h4>
+<h4 id="steps-release-master">Steps (release-master)</h4>
 <ol>
 <li><p><strong>Setup Environment</strong></p>
 <pre><code class="lang-yaml">- Setup .NET 9, 10
@@ -278,7 +290,7 @@
 </li>
 <li><p><strong>Build and Package</strong></p>
 <pre><code class="lang-yaml">- Restore solution
-- Build (Scripts/build.proj)
+- Build (Scripts/Build/build.proj)
 - Pack (creates lite + full packages)
 </code></pre>
 </li>
@@ -328,7 +340,7 @@
 </code></pre>
 </li>
 </ol>
-<h4 id="unique-features">Unique Features</h4>
+<h4 id="unique-features-release-master">Unique Features (release-master)</h4>
 <ul>
 <li>✅ Only job that creates GitHub releases</li>
 <li>✅ Creates both lite (5 TFMs) and full (6 TFMs) packages</li>
@@ -336,12 +348,12 @@
 <li>✅ Diagnostics step for troubleshooting</li>
 <li>✅ Idempotent release creation</li>
 </ul>
-<h4 id="execution-time-1">Execution Time</h4>
+<h4 id="execution-time-release-master">Execution Time (release-master)</h4>
 <p>🕐 <strong>~12-15 minutes</strong></p>
 <hr>
 <h3 id="job-release-v85-lts">Job: <code>release-v85-lts</code></h3>
-<p><strong>Long-Term Support releases</strong></p>
-<h4 id="configuration-1">Configuration</h4>
+<h4 id="long-term-support-releases">Long-Term Support releases</h4>
+<h4 id="configuration-release-v85-lts">Configuration (release-v85-lts)</h4>
 <ul>
 <li><strong>Build Script</strong>: <code>Scripts/longtermstable.proj</code></li>
 <li><strong>Configuration</strong>: <code>Release</code></li>
@@ -355,7 +367,7 @@
 - .NET 8 (LTS)  → net8.0-windows + .NET Framework targets
 </code></pre>
 <p><strong>No .NET 9 or 10</strong> - LTS focuses on stability</p>
-<h4 id="steps-1">Steps</h4>
+<h4 id="steps-release-v85-lts">Steps (release-v85-lts)</h4>
 <ol>
 <li>Setup .NET 6, 7, 8</li>
 <li>Restore → Build → Pack</li>
@@ -363,73 +375,74 @@
 <li>Get Version from assembly</li>
 <li>Discord notification (if packages published)</li>
 </ol>
-<h4 id="unique-features-1">Unique Features</h4>
+<h4 id="unique-features-release-v85-lts">Unique Features (release-v85-lts)</h4>
 <ul>
 <li>✅ Broadest framework support (9 target frameworks)</li>
 <li>✅ Separate package identities (*.LTS suffix)</li>
 <li>✅ Legacy framework support (net462 - 2015 vintage)</li>
 <li>✅ Stable SDK versions only (no previews)</li>
 </ul>
-<h4 id="execution-time-2">Execution Time</h4>
+<h4 id="execution-time-release-v85-lts">Execution Time (release-v85-lts)</h4>
 <p>🕐 <strong>~15-18 minutes</strong> (more target frameworks)</p>
 <hr>
 <h3 id="job-release-canary">Job: <code>release-canary</code></h3>
-<p><strong>Pre-release feature testing</strong></p>
-<h4 id="configuration-2">Configuration</h4>
+<h4 id="pre-release-feature-testing">Pre-release feature testing</h4>
+<p><strong>Note</strong>: A standalone <code>canary.yml</code> workflow also exists; it runs on push to the Canary branch. See <code>.github/workflows/canary.yml</code>.</p>
+<h4 id="configuration-release-canary">Configuration (release-canary)</h4>
 <ul>
-<li><strong>Build Script</strong>: <code>Scripts/canary.proj</code></li>
+<li><strong>Build Script</strong>: <code>Scripts/Build/canary.proj</code></li>
 <li><strong>Configuration</strong>: <code>Canary</code></li>
-<li><strong>Target Frameworks</strong>: net472, net48, net481, net8.0, net9.0, net10.0</li>
+<li><strong>Target Frameworks</strong>: net472, net48, net481, net8.0, net9.0, net10.0, net11.0</li>
 <li><strong>Output</strong>: <code>Bin/Packages/Canary/</code></li>
 </ul>
-<h4 id="steps-2">Steps</h4>
+<h4 id="steps-release-canary">Steps (release-canary)</h4>
 <ol>
-<li>Setup .NET 9, 10</li>
+<li>Setup .NET 9, 10, 11</li>
 <li>Restore → Build → Pack</li>
 <li>Push canary packages to NuGet</li>
 <li>Get Version</li>
 <li>Discord notification (if packages published)</li>
 </ol>
-<h4 id="unique-features-2">Unique Features</h4>
+<h4 id="unique-features-release-canary">Unique Features (release-canary)</h4>
 <ul>
 <li>✅ Pre-release versioning</li>
 <li>✅ Yellow Discord embeds (warning color)</li>
 <li>✅ For early adopters and beta testers</li>
 </ul>
-<h4 id="execution-time-3">Execution Time</h4>
+<h4 id="execution-time-release-canary">Execution Time (release-canary)</h4>
 <p>🕐 <strong>~10-12 minutes</strong></p>
 <hr>
 <h3 id="job-release-alpha">Job: <code>release-alpha</code></h3>
-<p><strong>Manual alpha/nightly releases</strong></p>
-<h4 id="configuration-3">Configuration</h4>
+<h4 id="manual-alphanightly-releases">Manual alpha/nightly releases</h4>
+<h4 id="configuration-release-alpha">Configuration (release-alpha)</h4>
 <ul>
-<li><strong>Build Script</strong>: <code>Scripts/nightly.proj</code></li>
+<li><strong>Build Script</strong>: <code>Scripts/Build/nightly.proj</code></li>
 <li><strong>Configuration</strong>: <code>Nightly</code></li>
-<li><strong>Target Frameworks</strong>: net472, net48, net481, net8.0, net9.0, net10.0</li>
+<li><strong>Target Frameworks</strong>: net472, net48, net481, net8.0, net9.0, net10.0, net11.0</li>
 <li><strong>Output</strong>: <code>Bin/Packages/Nightly/</code></li>
 </ul>
-<h4 id="steps-3">Steps</h4>
+<h4 id="steps-release-alpha">Steps (release-alpha)</h4>
 <ol>
-<li>Setup .NET 9, 10</li>
+<li>Setup .NET 9, 10, 11</li>
 <li>Restore → Build → Pack</li>
 <li>Push nightly packages to NuGet</li>
 <li>Get Version</li>
 <li>Discord notification (if packages published)</li>
 </ol>
-<h4 id="unique-features-3">Unique Features</h4>
+<h4 id="unique-features-release-alpha">Unique Features (release-alpha)</h4>
 <ul>
 <li>✅ Manual trigger only (scheduled runs use <code>nightly.yml</code>)</li>
 <li>✅ Purple Discord embeds</li>
 <li>✅ For developers and bleeding-edge testing</li>
 </ul>
-<h4 id="execution-time-4">Execution Time</h4>
+<h4 id="execution-time-release-alpha">Execution Time (release-alpha)</h4>
 <p>🕐 <strong>~10-12 minutes</strong></p>
 <hr>
 <h2 id="nightlyyml---automated-nightly-builds">nightly.yml - Automated Nightly Builds</h2>
 <p><strong>File</strong>: <code>.github/workflows/nightly.yml</code></p>
-<h3 id="purpose-2">Purpose</h3>
+<h3 id="purpose-nightlyyml">Purpose (nightly.yml)</h3>
 <p>Automatically build and publish nightly packages from the alpha branch every day at midnight UTC.</p>
-<h3 id="triggers-2">Triggers</h3>
+<h3 id="triggers-nightlyyml">Triggers (nightly.yml)</h3>
 <pre><code class="lang-yaml">on:
   schedule:
     - cron: '0 0 * * *'  # Midnight UTC daily
@@ -450,12 +463,12 @@
 <li>Always checks out and builds <code>alpha</code> branch</li>
 <li>This is how scheduled workflows work in GitHub Actions</li>
 </ul>
-<h3 id="steps-4">Steps</h3>
+<h3 id="steps">Steps</h3>
 <ol>
 <li><strong>Checkout</strong> alpha branch (explicitly)</li>
 <li><strong>Setup</strong> .NET 9 + 10 SDKs</li>
 <li><strong>Restore</strong> NuGet packages</li>
-<li><strong>Build</strong> using <code>Scripts/nightly.proj</code></li>
+<li><strong>Build</strong> using <code>Scripts/Build/nightly.proj</code></li>
 <li><strong>Pack</strong> NuGet packages</li>
 <li><strong>Push</strong> to nuget.org (with smart detection)</li>
 <li><strong>Get Version</strong> from compiled assembly</li>
@@ -522,7 +535,7 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 </tbody>
 </table>
 <p><strong>Benefit</strong>: No Discord spam from nightly builds when version hasn't changed!</p>
-<h3 id="execution-time-5">Execution Time</h3>
+<h3 id="execution-time-nightlyyml">Execution Time (nightly.yml)</h3>
 <p>🕐 <strong>~10-12 minutes</strong></p>
 <h3 id="testing-nightly-workflow">Testing Nightly Workflow</h3>
 <p><strong>Manual Trigger</strong>:</p>
@@ -666,12 +679,12 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 <h2 id="discord-notifications">Discord Notifications</h2>
 <h3 id="notification-content">Notification Content</h3>
 <p>All Discord notifications use rich embeds with this structure:</p>
-<pre><code>┌────────────────────────────────────────────────────┐
+<pre><code class="lang-plaintext">┌────────────────────────────────────────────────────┐
 │ 🎉 Krypton Toolkit Stable Release                  | 
 │ A new stable release is now available!             │
 ├────────────────────────────────────────────────────┤
 │ 📌 Version                                         │
-│ 100.25.1.1                                         │
+│ 110.26.1.1                                         │
 │                                                    │
 │ 📦 NuGet Packages                                  │
 │ - Krypton.Toolkit                                  │
@@ -687,6 +700,7 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 │ • .NET 8.0                                         │
 │ • .NET 9.0                                         │
 │ • .NET 10.0                                        │
+│ • .NET 11.0                                        │
 │                                                    │
 │ 🔗 NuGet Packages                                  │
 │ • Toolkit  • Ribbon  • Navigator                   │
@@ -751,7 +765,7 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 <li>Testing without secrets</li>
 </ul>
 <h3 id="testing-discord-notifications">Testing Discord Notifications</h3>
-<p><strong>Method 1: Manual Webhook Test</strong></p>
+<h4 id="method-1-manual-webhook-test">Method 1: Manual Webhook Test</h4>
 <pre><code class="lang-powershell"># PowerShell test script
 $webhook = &quot;YOUR_WEBHOOK_URL_HERE&quot;
 
@@ -773,7 +787,7 @@ $payload = @{
 
 Invoke-RestMethod -Uri $webhook -Method Post -Body $payload -ContentType &quot;application/json&quot;
 </code></pre>
-<p><strong>Method 2: Trigger Nightly Workflow</strong></p>
+<h4 id="method-2-trigger-nightly-workflow">Method 2: Trigger Nightly Workflow</h4>
 <ol>
 <li>Ensure alpha branch has different version than what's on nuget.org</li>
 <li>GitHub → Actions → Nightly Release → Run workflow</li>
@@ -827,7 +841,7 @@ if ($LASTEXITCODE -eq 0) {
 <hr>
 <h3 id="issue-discord-shows-empty-version">Issue: Discord Shows Empty Version</h3>
 <p><strong>Symptoms</strong>:</p>
-<pre><code>📌 Version
+<pre><code class="lang-plaintext">📌 Version
 ``
 </code></pre>
 <p><strong>Cause</strong>: <code>Get Version</code> step missing or failed</p>
@@ -844,8 +858,8 @@ if ($LASTEXITCODE -eq 0) {
 </li>
 </ol>
 <p><strong>Check logs for</strong>:</p>
-<pre><code>Got version from assembly: 100.25.1.1
-Final determined version: 100.25.1.1
+<pre><code class="lang-text">Got version from assembly: 110.26.1.1
+Final determined version: 110.26.1.1
 </code></pre>
 <hr>
 <h3 id="issue-no-discord-notification">Issue: No Discord Notification</h3>
@@ -858,7 +872,7 @@ Final determined version: 100.25.1.1
 </ul>
 </li>
 <li><p><strong>Check condition</strong>:</p>
-<pre><code>if: steps.push_nuget.outputs.packages_published == 'True'
+<pre><code class="lang-yaml">if: steps.push_nuget.outputs.packages_published == 'True'
 </code></pre>
 <ul>
 <li>Log shows: <code>packages_published=false</code> → Notification skipped (expected)</li>
@@ -918,7 +932,7 @@ ls .github/workflows/nightly.yml  # Should exist
 <hr>
 <h3 id="issue-packages-skipped-already-exist">Issue: Packages Skipped (Already Exist)</h3>
 <p><strong>Log shows</strong>:</p>
-<pre><code>Package Krypton.Toolkit.100.25.1.1.nupkg already exists - skipped
+<pre><code class="lang-text">Package Krypton.Toolkit.110.26.1.1.nupkg already exists - skipped
 </code></pre>
 <p><strong>This is EXPECTED if</strong>:</p>
 <ul>
@@ -1272,18 +1286,21 @@ ls .github/workflows/nightly.yml  # Should exist
 </tbody>
 </table>
 <h3 id="workflow-file-locations">Workflow File Locations</h3>
-<pre><code>.github/
+<pre><code class="lang-text">.github/
 └── workflows/
-    ├── build.yml      (194 lines)
-    ├── release.yml    (866 lines)
-    └── nightly.yml    (208 lines)
+    ├── build.yml           (CI validation)
+    ├── release.yml         (multi-channel releases)
+    ├── nightly.yml         (scheduled nightly builds)
+    ├── canary.yml            (standalone Canary branch release)
+    ├── canary-lts-release.yml (Canary packages from V105-LTS)
+    └── ...                   (alpha-backup-sync, auto-assign, auto-label)
 </code></pre>
 <h3 id="common-commands">Common Commands</h3>
 <p><strong>View workflow runs</strong>:</p>
-<pre><code>GitHub → Actions tab
+<pre><code class="lang-text">GitHub → Actions tab
 </code></pre>
 <p><strong>Manually trigger nightly</strong>:</p>
-<pre><code>Actions → Nightly Release → Run workflow
+<pre><code class="lang-text">Actions → Nightly Release → Run workflow
 </code></pre>
 <p><strong>Check workflow status from CLI</strong>:</p>
 <pre><code class="lang-cmd">gh run list --workflow=release.yml

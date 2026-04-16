@@ -5,6 +5,7 @@
 `KryptonPrintPreviewDialog` is a component that provides a themed print preview dialog box for Windows Forms applications. It wraps a `KryptonPrintPreviewControl` within a `KryptonForm` to deliver a fully integrated print preview experience with Krypton theming support.
 
 This class extends the standard .NET `PrintPreviewDialog` functionality by providing:
+
 - Full Krypton palette theming integration
 - Consistent visual appearance with other Krypton controls
 - Anti-aliasing support for improved rendering quality
@@ -18,7 +19,7 @@ using Krypton.Toolkit;
 
 ## Class Hierarchy
 
-```
+```text
 Component
 └── KryptonPrintPreviewDialog
 ```
@@ -48,6 +49,7 @@ Component
 Initializes a new instance of the `KryptonPrintPreviewDialog` class.
 
 **Example:**
+
 ```csharp
 var previewDialog = new KryptonPrintPreviewDialog();
 ```
@@ -64,12 +66,14 @@ Gets or sets the `KryptonPrintDocument` to preview.
 - **Description**: The PrintDocument to preview.
 
 **Example:**
+
 ```csharp
 var document = new KryptonPrintDocument();
 previewDialog.Document = document;
 ```
 
 **Notes:**
+
 - Must be set before calling `ShowDialog()`
 - Setting this property updates the preview form if it's already created
 - Throws `ArgumentNullException` if `null` when showing the dialog
@@ -86,6 +90,7 @@ Gets the `KryptonPrintPreviewControl` contained in this dialog.
 - **Returns**: The themed print preview control, or `null` if the dialog hasn't been shown yet
 
 **Example:**
+
 ```csharp
 var control = previewDialog.PrintPreviewControl;
 if (control != null)
@@ -96,6 +101,7 @@ if (control != null)
 ```
 
 **Notes:**
+
 - Returns `null` until `ShowDialog()` is called
 - Use this property to access advanced preview control features
 
@@ -111,6 +117,7 @@ Gets the underlying standard `PrintPreviewControl` for compatibility.
 - **Returns**: The base .NET `PrintPreviewControl`, or `null` if the dialog hasn't been shown yet
 
 **Example:**
+
 ```csharp
 var baseControl = previewDialog.PrintPreviewControlBase;
 if (baseControl != null)
@@ -121,6 +128,7 @@ if (baseControl != null)
 ```
 
 **Notes:**
+
 - Provided for compatibility with code expecting the standard control
 - Returns `null` until `ShowDialog()` is called
 
@@ -136,11 +144,13 @@ Gets or sets a value indicating whether printing uses anti-aliasing.
 - **Description**: Indicates whether printing uses anti-aliasing.
 
 **Example:**
+
 ```csharp
 previewDialog.UseAntiAlias = true; // Enable smooth rendering
 ```
 
 **Notes:**
+
 - Anti-aliasing improves visual quality but may impact performance
 - Setting this property updates the preview form if it's already created
 
@@ -156,11 +166,13 @@ Gets or sets the icon for the form.
 - **Description**: The icon for the form.
 
 **Example:**
+
 ```csharp
 previewDialog.Icon = SystemIcons.Application;
 ```
 
 **Notes:**
+
 - If `null`, the form uses the default icon
 - Setting this property updates the preview form if it's already created
 
@@ -177,11 +189,13 @@ Gets or sets the text associated with this control (window title).
 - **Description**: The text associated with this control.
 
 **Example:**
+
 ```csharp
 previewDialog.Text = "Document Preview - My Application";
 ```
 
 **Notes:**
+
 - This becomes the window title bar text
 - Setting this property updates the preview form if it's already created
 - Supports localization
@@ -198,16 +212,19 @@ Gets or sets the form's window state.
 - **Description**: The form's window state.
 
 **Example:**
+
 ```csharp
 previewDialog.WindowState = FormWindowState.Maximized;
 ```
 
 **Valid Values:**
+
 - `FormWindowState.Normal`: Normal window size
 - `FormWindowState.Minimized`: Minimized window
 - `FormWindowState.Maximized`: Maximized window
 
 **Notes:**
+
 - Applied when the dialog is shown
 - Useful for restoring previous window state
 
@@ -218,9 +235,11 @@ previewDialog.WindowState = FormWindowState.Maximized;
 Runs a print preview dialog box.
 
 **Returns:**
+
 - `DialogResult`: One of the `DialogResult` values indicating how the dialog was closed.
 
 **Example:**
+
 ```csharp
 var result = previewDialog.ShowDialog();
 if (result == DialogResult.OK)
@@ -230,6 +249,7 @@ if (result == DialogResult.OK)
 ```
 
 **Notes:**
+
 - Creates a new `VisualPrintPreviewForm` instance each time it's called
 - Disposes any previously created preview form
 - Throws `ArgumentNullException` if `Document` is `null`
@@ -241,17 +261,21 @@ if (result == DialogResult.OK)
 Runs a print preview dialog box with the specified owner.
 
 **Parameters:**
+
 - `owner` (`IWin32Window?`): Any object that implements `IWin32Window` that represents the top-level window that will own the modal dialog box.
 
 **Returns:**
+
 - `DialogResult`: One of the `DialogResult` values indicating how the dialog was closed.
 
 **Example:**
+
 ```csharp
 var result = previewDialog.ShowDialog(this); // 'this' is a Form
 ```
 
 **Notes:**
+
 - The owner window is disabled while the dialog is shown
 - Passing `null` is equivalent to calling `ShowDialog()` without parameters
 - The dialog is modal, blocking execution until closed
@@ -263,11 +287,13 @@ var result = previewDialog.ShowDialog(this); // 'this' is a Form
 Releases all resources used by the `KryptonPrintPreviewDialog`.
 
 **Example:**
+
 ```csharp
 previewDialog.Dispose();
 ```
 
 **Notes:**
+
 - Implements `IDisposable`
 - Disposes the internal preview form
 - Call this when finished with the component
@@ -279,9 +305,11 @@ previewDialog.Dispose();
 Releases the unmanaged resources used by the component and optionally releases the managed resources.
 
 **Parameters:**
+
 - `isDisposing` (`bool`): `true` to release both managed and unmanaged resources; `false` to release only unmanaged resources.
 
 **Notes:**
+
 - Protected method following standard disposal pattern
 - Called by public `Dispose()` and finalizer
 
@@ -429,6 +457,7 @@ private void Document_PrintPage(object sender, PrintPageEventArgs e)
 ### Property Grid Support
 
 All properties are visible in the Visual Studio property grid with appropriate categories:
+
 - **Behavior**: `Document`, `UseAntiAlias`
 - **Appearance**: `Icon`, `Text`
 - **Window Style**: `WindowState`
@@ -466,11 +495,13 @@ using (var previewDialog = new KryptonPrintPreviewDialog())
 ### Common Exceptions
 
 **`ArgumentNullException`**
+
 - **When**: `Document` is `null` when calling `ShowDialog()`
 - **Message**: "Document must be set before showing the dialog."
 - **Solution**: Ensure `Document` is set before showing the dialog
 
 **Example:**
+
 ```csharp
 try
 {

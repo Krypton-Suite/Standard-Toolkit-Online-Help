@@ -1,19 +1,17 @@
 # Navigator Outlook Modes  
   
 Applicable Modes:  
+
 * Outlook - Full
 * Outlook - Mini
-
- 
 
 **Outlook Mode Properties**  
 The set of properties associated with the *Outlook* modes can be seen in Figure
 1 as they appear in the properties window.  
   
-![](Images/NavOutlookProps.png)
+![Figure 1 - Outlook Mode Properties](Images/NavBarFigure1.bmp)
 
-*Figure 1 - Outlook Mode Properties*  
-  
+## Figure 1 - Outlook Mode Properties
   
 **BorderEdgeStyle**  
 A border edge is drawn between each of the stack items in order to provide a
@@ -21,7 +19,6 @@ consistent looking border around all elements of the control. If you are
 altering the associated *CheckButtonStyle* then you will likely also want to
 alter this property so that the border edge drawing is consistent with the
 updated check button style.  
-  
   
 **CheckButtonStyle**  
 By default this property has a value of *Navigator Stack* that is defined
@@ -47,28 +44,24 @@ when the stack is horizontal the stack content would be drawn vertically. This
 is the purpose of the default *Auto* property value. You can change this
 property to fix the content orientation to a constant setting.
 
-  
 **Orientation**  
 You can alter the default *Vertical* orientation to *Horizontal* and you can see
 the change in figure 2. Notice that although the stacking items and the overflow
 bar are repositioned the primary header is not moved.  
   
-![](Images/OutlookOrientation.bmp)
+![Figure 2, Orientation = Vertical and Horizontal](Images/OutlookOrientation.bmp)
 
-*Figure 2, Orientation = Vertical and Horizontal*
+## Figure 2, Orientation = Vertical and Horizontal
 
-  
 **OverflowButtonStyle**  
 By default this property has a value of *Navigator Overflow* that is defined
 specifically for use in the overflow bar at the bottom of the outlook modes. The
 pages that are on the overflow bar as well as the drop down button are drawn
 using this style.  
   
-  
 **ShowDropDownButton**  
 If you want to prevent the drop down button from appearing on the overflow bar
 then you just set this property to be *False*.  
-  
   
 **TextAddRemoveButtons + TextFewerButtons + TextMoreButtons**  
 When you click the drop down button on the overflow bar you will see the menu as
@@ -77,16 +70,14 @@ that is displayed for each of the three menu items. This does not change the
 functionality of the menu items but it allows you to localize the displayed
 string because the three properties are marked with the *Localizable* attribute.
 
-![](Images/OutlookDropDownText.bmp)
-  
-*Figure 3, Drop down button menu*  
+![Figure 3, Drop down button menu](Images/OutlookDropDownText.bmp)
+
+## Figure 3, Drop down button menu
   
 To customize the contents of the drop down menu you should hook into the
 *KryptonNavigator.OutlookDropDown* event. The event provides a reference to the
 *ContextMenuStrip* that is about to be displayed, this allows you to
 add/remove/modify the menu items as you pleas.
-
- 
 
 **Outlook Full - Mode Properties**  
 The set of properties that are specific to the *Outlook Full* mode are contained
@@ -94,10 +85,9 @@ below the *Full* property that is listed in Figure 1 above. Figure 2 shows the
 child properties where the *Full* property is expanded inside the properties
 window.
 
-![](Images/NavOutlookPropsFull.png)
+![Figure 2 - Outlook Full - Mode Properties](Images/NavBarFigure2.bmp)
 
-*Figure 2 - Outlook Full - Mode Properties*  
-  
+## Figure 2 - Outlook Full - Mode Properties
   
 **OverflowMapExtraText + OverflowMapImage + OverflowText**  
 The overflow mapping properties are used to map between KryptonPage values and
@@ -119,12 +109,11 @@ variations exist so you can specify a preference for what text is shown.
 Stack*MapExtraText* works in the same way but maps to the secondary overflow
 text and defaults to *None*.  
   
-  
 **StackMapExtraText + StackMapImage + StackMapText**  
 The stack mapping properties are used to map between KryptonPage values and the
 stack item contents.  
   
-*StackMapImage *is used to recover an image from the page. To prevent any image
+*StackMapImage* is used to recover an image from the page. To prevent any image
 from being shown assign the *None* value. To show the *ImageSmall* form the page
 assign *Small* to the *MapImage*. More complex mappings are possible, for
 example a value of *LargeMediumSmall* indicates that the *ImageLarge* property
@@ -140,18 +129,14 @@ variations exist so you can specify a preference for what text is shown.
 *StackMapExtraText* works in the same way but maps to the secondary stack item
 text and defaults to *None*.  
   
-  
 **Outlook Mini - Mode Properties**  
 The set of properties that are specific to the *Outlook Mini* mode are contained
 below the *Mini* property that is listed in Figure 1 above. Figure 2 shows the
 child properties where the *Mini* property is expanded inside the properties
 window.  
 
-![](Images/NavOutlookPropsMini.png)
-  
-*Figure 3 - Outlook Mini - Mode Properties*
+## Figure 3 - Outlook Mini - Mode Properties
 
-  
 **MiniButtonStyle**  
 In *Outlook Mini* mode you will see that the client area of the layout does not
 show the contents of the selected KryptonPage. Instead the area is filled with a
@@ -160,12 +145,11 @@ show a pop up window with the contents of the associated KryptonPage. This
 property is used to define the button style that is applied to the drawing of
 that client area button.
 
-  
 **MiniMapExtraText + MiniMapImage + MiniMapText**  
 The mini mapping properties are used to map between KryptonPage values and the
 mini button used in the client area of the control.  
   
-*MiniMapImage *is used to recover an image from the page. To prevent any image
+*MiniMapImage* is used to recover an image from the page. To prevent any image
 from being shown assign the *None* value. To show the *ImageSmall* form the page
 assign *Small* to the *MapImage*. More complex mappings are possible, for
 example a value of *LargeMediumSmall* indicates that the *ImageLarge* property
@@ -180,7 +164,6 @@ empty in which case the *TextTitle* property is used. Other variations exist so
 you can specify a preference for what text is shown. *MiniMapExtraText* works in
 the same way but maps to the secondary stack item text and defaults to *None*.
 
-  
 **StackMapExtraText + StackMapImage + StackMapText**  
 The stack mapping properties are used to map between KryptonPage values and the
 stack item contents. See the above description of the properties.

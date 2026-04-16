@@ -47,7 +47,7 @@ This applies to both **XML** and **binary** (byte-array) formats, because “bin
 ## Quick reference
 
 | Task | Code |
-|------|------|
+| --- | --- |
 | Set display name before export | `palette.SetPaletteName("My Theme Name");` |
 | Get display name after load | `string name = palette.GetPaletteName();` |
 | Get current theme name for UI (including custom) | `string name = ThemeManager.ReturnPaletteModeAsString(kryptonManager);` |
@@ -80,7 +80,7 @@ This applies to both **XML** and **binary** (byte-array) formats, because “bin
 ### Components involved
 
 | Component | Role |
-|----------|------|
+| --- | --- |
 | **KryptonCustomPaletteBase** | Holds `PaletteName`; exposes `SetPaletteName` / `GetPaletteName`; reads and writes the `Name` attribute in XML during import/export. |
 | **ThemeManager** | `ReturnPaletteModeAsString(KryptonManager)` returns the custom palette’s name when applicable. |
 | **KryptonManager** | Holds `GlobalCustomPalette` and `GlobalPaletteMode`; no direct awareness of “display name” (name is resolved via ThemeManager). |
@@ -155,7 +155,7 @@ The exported document has a root element `KryptonPalette` with required and opti
 ```
 
 | Attribute | Required | Description |
-|-----------|----------|-------------|
+| --- | --- | --- |
 | **Version** | Yes | Palette format version (integer). Must be ≥ current supported version to import. |
 | **Generated** | Yes | Creation timestamp (informational). |
 | **Name** | No | Display name of the theme. Omitted when `PaletteName` is null or whitespace. |
@@ -219,7 +219,8 @@ Do **not** rely only on `manager.GlobalPaletteMode` and convert it to string you
 1. **Create or load your palette**  
    Use a `KryptonCustomPaletteBase` (e.g. `KryptonPalette`) and configure colours, fonts, etc.
 
-2. **Set the display name before export**  
+2. **Set the display name before export**
+
    ```csharp
    palette.SetPaletteName("My Company Dark Theme");
    ```
@@ -320,7 +321,7 @@ So any UI that uses this method will show the bundled name for custom palettes w
 ## Edge cases and behaviour
 
 | Scenario | Result |
-|----------|--------|
+| --- | --- |
 | Export with `PaletteName == null` or whitespace | No `Name` attribute written. |
 | Export with `PaletteName == " "` | Treated as whitespace; no `Name` attribute (consistent with `string.IsNullOrWhiteSpace`). |
 | Import XML with no `Name` from file | Name set to filename (without path). |
@@ -365,18 +366,23 @@ So any UI that uses this method will show the bundled name for custom palettes w
 
 ## Troubleshooting
 
-**Theme still shows "Custom" after loading a file that has a name.**  
-- Ensure the XML root has a `Name` attribute (e.g. `<KryptonPalette Version="..." Name="My Theme">`).  
+**Theme still shows "Custom" after loading a file that has a name.**
+
+- Ensure the XML root has a `Name` attribute (e.g. `<KryptonPalette Version="..." Name="My Theme">`).
 - Ensure you are using `ThemeManager.ReturnPaletteModeAsString(kryptonManager)` for the display string, not a hard-coded "Custom" or only the mode enum.
 
-**Name is the full file path instead of a friendly name.**  
+**Name is the full file path instead of a friendly name.**
+
 - You are loading from file and the file does not contain a `Name` attribute (e.g. old format). Set the name before export with `SetPaletteName("...")` and re-export, or set it after load with `SetPaletteName("...")` if you do not control the file.
 
-**After loading from stream/bytes, GetPaletteName() is empty.**  
+**After loading from stream/bytes, GetPaletteName() is empty.**
+
 - Stream and byte-array import do not have a filename fallback. The XML must include a root `Name` attribute for the palette to get a name. Re-export the theme with `SetPaletteName("...")` called before export so the attribute is written.
 
-**Export does not write a Name attribute.**  
+**Export does not write a Name attribute.**
+
 - Only a non-empty `PaletteName` is written. Call `SetPaletteName("Your Name")` before calling `Export(...)`.
 
-**Old theme files fail to load.**  
+**Old theme files fail to load.**
+
 - The feature does not change version requirements or required elements. Ensure the file has the required `KryptonPalette` root with `Version` and the `Properties` and `Images` elements. The `Name` attribute is optional and can be added or omitted without affecting load.

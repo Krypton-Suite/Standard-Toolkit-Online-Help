@@ -71,8 +71,8 @@
 
 <h2 id="overview">Overview</h2>
 <p><code>CaptionValues</code> provides storage for caption text and images used in group boxes, panels, and other controls that display a heading with an optional description. It serves as the base class for more specialized caption value classes like <code>CommandLinkTextValues</code>.</p>
-<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
-<strong>Assembly:</strong> Krypton.Toolkit<br>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code>
+<strong>Assembly:</strong> Krypton.Toolkit
 <strong>Inheritance:</strong> <code>Object</code> → <code>Storage</code> → <code>HeaderValuesBase</code> → <code>CaptionValues</code></p>
 <h2 id="key-features">Key Features</h2>
 <h3 id="caption-storage">Caption Storage</h3>
@@ -251,13 +251,13 @@ groupBox1.CaptionValues.Description = Resources.SettingsDescription;
             groupBox.CaptionValues.Description = &quot;Name, email, and contact details&quot;;
             groupBox.CaptionValues.Image = Resources.UserIcon;
             break;
-            
+
         case &quot;Preferences&quot;:
             groupBox.CaptionValues.Heading = &quot;Preferences&quot;;
             groupBox.CaptionValues.Description = &quot;Application settings and options&quot;;
             groupBox.CaptionValues.Image = Resources.SettingsIcon;
             break;
-            
+
         case &quot;Security&quot;:
             groupBox.CaptionValues.Heading = &quot;Security&quot;;
             groupBox.CaptionValues.Description = &quot;Password and privacy settings&quot;;
@@ -306,13 +306,13 @@ CaptionBuilder.SetCaption(
 {
     private CultureInfo currentCulture;
     private Dictionary&lt;string, (string heading, string description)&gt; captions;
-    
+
     public LocalizedCaptions()
     {
         currentCulture = CultureInfo.CurrentUICulture;
         LoadCaptions();
     }
-    
+
     private void LoadCaptions()
     {
         captions = new Dictionary&lt;string, (string, string)&gt;
@@ -323,7 +323,7 @@ CaptionBuilder.SetCaption(
             [&quot;de-DE&quot;] = (&quot;Einstellungen&quot;, &quot;Anwendungsoptionen konfigurieren&quot;)
         };
     }
-    
+
     public void ApplyCaption(CaptionValues caption, string key)
     {
         var culture = currentCulture.Name;
@@ -359,16 +359,16 @@ CaptionBuilder.SetCaption(
 <pre><code class="lang-csharp">public class WizardStep
 {
     private KryptonPanel panel;
-    
+
     public WizardStep(string heading, string description, Image icon = null)
     {
         panel = new KryptonPanel();
-        
+
         // If the panel has caption values, set them
         // (This is illustrative - actual implementation depends on control)
         SetCaption(heading, description, icon);
     }
-    
+
     private void SetCaption(string heading, string description, Image icon)
     {
         // Set up header
@@ -376,7 +376,7 @@ CaptionBuilder.SetCaption(
         headerGroup.CaptionValues.Heading = heading;
         headerGroup.CaptionValues.Description = description;
         headerGroup.CaptionValues.Image = icon;
-        
+
         panel.Controls.Add(headerGroup);
     }
 }
@@ -410,25 +410,25 @@ private void UpdateStatusCaption(ProcessStatus status)
             &quot;Ready to Start&quot;,
             &quot;Click the button below to begin&quot;,
             Resources.InfoIcon),
-            
+
         ProcessStatus.InProgress =&gt; (
             &quot;Processing...&quot;,
             &quot;Please wait while the operation completes&quot;,
             Resources.SpinnerIcon),
-            
+
         ProcessStatus.Completed =&gt; (
             &quot;Completed Successfully&quot;,
             &quot;All operations finished without errors&quot;,
             Resources.SuccessIcon),
-            
+
         ProcessStatus.Error =&gt; (
             &quot;Error Occurred&quot;,
             &quot;An error prevented completion&quot;,
             Resources.ErrorIcon),
-            
+
         _ =&gt; (&quot;Unknown&quot;, &quot;&quot;, null)
     };
-    
+
     groupBox.CaptionValues.Heading = heading;
     groupBox.CaptionValues.Description = description;
     groupBox.CaptionValues.Image = icon;
@@ -440,25 +440,25 @@ private void UpdateStatusCaption(ProcessStatus status)
 {
     private KryptonHeaderGroup headerGroup;
     private bool isExpanded = true;
-    
+
     public CollapsibleSection(string heading, string description)
     {
         headerGroup = new KryptonHeaderGroup();
         headerGroup.CaptionValues.Heading = heading;
         headerGroup.CaptionValues.Description = description;
-        
+
         UpdateIcon();
-        
+
         headerGroup.Click += (s, e) =&gt; Toggle();
     }
-    
+
     private void Toggle()
     {
         isExpanded = !isExpanded;
         headerGroup.Panel.Visible = isExpanded;
         UpdateIcon();
     }
-    
+
     private void UpdateIcon()
     {
         headerGroup.CaptionValues.Image = isExpanded
@@ -515,7 +515,7 @@ Description: &quot;Network settings&quot;  // Redundant with heading
 </ul>
 <hr>
 <h3 id="inheritance-hierarchy">Inheritance Hierarchy</h3>
-<pre><code>Storage
+<pre><code class="lang-text">Storage
   └─ HeaderValuesBase
       └─ CaptionValues
           └─ CommandLinkTextValues (specialized)
@@ -533,9 +533,9 @@ Description: &quot;Network settings&quot;  // Redundant with heading
         : base(needPaint, dpi)
     {
     }
-    
+
     protected override string GetHeadingDefault() =&gt; &quot;Custom Default&quot;;
-    
+
     protected override string GetDescriptionDefault() =&gt; &quot;Custom description&quot;;
 }
 </code></pre>
@@ -594,7 +594,7 @@ kryptonHeaderGroup1.ValuesSecondary.Heading = &quot;Secondary Header&quot;;
 <pre><code class="lang-csharp">public class CustomPanel : KryptonPanel
 {
     public CaptionValues CaptionValues { get; }
-    
+
     public CustomPanel()
     {
         CaptionValues = new CaptionValues(OnNeedPaint, GetDpiFactor);

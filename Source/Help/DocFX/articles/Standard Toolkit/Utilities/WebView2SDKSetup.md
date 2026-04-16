@@ -13,14 +13,15 @@ The KryptonWebView2 control requires the Microsoft WebView2 SDK assemblies to be
 ### Option 1: Manual Download (Recommended)
 
 1. **Download WebView2 SDK**
-   - Visit: https://developer.microsoft.com/en-us/microsoft-edge/webview2/
+   - Visit: [Microsoft Edge WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)
    - Download the latest WebView2 SDK
    - Extract the downloaded package
 
 2. **Copy Required Assemblies**
    - Create a `WebView2SDK` folder at the repository root (same level as `Source` folder)
    - Copy the following files from the extracted SDK to `WebView2SDK`:
-     ```
+
+     ```text
      WebView2SDK/
      ├── Microsoft.Web.WebView2.Core.dll
      ├── Microsoft.Web.WebView2.WinForms.dll
@@ -36,6 +37,7 @@ The KryptonWebView2 control requires the Microsoft WebView2 SDK assemblies to be
 If you want to quickly get the assemblies without manual download:
 
 1. **Install NuGet Package**
+
    ```cmd
    dotnet add package Microsoft.Web.WebView2
    ```
@@ -51,28 +53,35 @@ If you want to quickly get the assemblies without manual download:
    - Remove the NuGet package reference if desired
 
 3. **Clean Up**
+
    ```cmd
    dotnet remove package Microsoft.Web.WebView2
    ```
 
 ### Option 3: Using Setup Script (Recommended)
 
-#### Method A: Through Build System Menu
+#### Method A: Through Build System Menu (initial setup)
+
 1. **Run the Build System**
+
    ```cmd
    run.cmd
    ```
+
 2. **Select Option 7**: "WebView2 SDK Tools"
 3. **Select Option 1**: "Setup WebView2 SDK"
 4. **Follow the automated process**
 
-#### Method B: Direct Script Execution
+#### Method B: Direct Script Execution (initial setup)
+
 Run the provided setup script directly:
+
 ```cmd
 Setup-WebView2SDK.cmd
 ```
 
 Both methods will:
+
 - Check if WebView2 SDK is already installed
 - Automatically detect the latest stable WebView2 SDK version
 - Download and install WebView2 SDK via NuGet (if needed)
@@ -86,22 +95,28 @@ Both methods will:
 
 If you already have WebView2 SDK installed and want to update to the latest version:
 
-#### Method A: Through Build System Menu
+#### Method A: Through Build System Menu (update)
+
 1. **Run the Build System**
+
    ```cmd
    run.cmd
    ```
+
 2. **Select Option 7**: "WebView2 SDK Tools"
 3. **Select Option 2**: "Update WebView2 SDK"
 4. **Follow the automated update process**
 
-#### Method B: Direct Script Execution
+#### Method B: Direct Script Execution (update)
+
 Run the update script directly:
+
 ```cmd
 Scripts\Update-WebView2SDK.cmd
 ```
 
 Both methods will:
+
 - Detect the latest stable WebView2 SDK version
 - Download the latest assemblies
 - Dynamically locate and copy assemblies to the WebView2SDK directory (handles different package structures)
@@ -112,7 +127,8 @@ Both methods will:
 ## File Structure After Setup
 
 Your repository should look like this:
-```
+
+```text
 Standard-Toolkit/
 ├── Source/
 │   └── Krypton Components/
@@ -137,6 +153,7 @@ Standard-Toolkit/
 After setup, verify that the KryptonWebView2 control compiles:
 
 1. **Build the Solution**
+
    ```cmd
    dotnet build "Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln"
    ```
@@ -149,23 +166,28 @@ After setup, verify that the KryptonWebView2 control compiles:
 ## Troubleshooting
 
 ### "WebView2 types not found" Error
+
 - Ensure the WebView2SDK folder exists at the repository root
 - Verify all three DLL files are present in WebView2SDK
 - Check that the project file references point to the correct paths
 - Rebuild the solution completely
 
 ### Assembly Loading Errors
+
 - Ensure the DLLs are the correct architecture (AnyCPU or x64)
 - Check that the DLLs are not corrupted
 - Verify the file permissions allow reading
 
 ### Designer Issues
+
 - Reset the Visual Studio toolbox
 - Close and reopen Visual Studio
 - Ensure the control compiles without errors first
 
 ### GitHub Actions Build Failures
+
 If you encounter WebView2 SDK setup failures in GitHub Actions:
+
 - The workflow now uses dynamic assembly discovery to handle different package structures
 - Ensure the workflow has internet access to download the latest WebView2 SDK
 - Check that the NuGet cache is properly restored before the WebView2 setup step
@@ -177,13 +199,13 @@ Remember that end users need the WebView2 Runtime installed:
 
 - **Evergreen Distribution**: Users install from Microsoft's website
 - **Fixed Version**: Bundle with your application
-- **Download**: https://developer.microsoft.com/en-us/microsoft-edge/webview2/
+- **Download**: [Microsoft Edge WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)
 
 ## Support
 
 If you encounter issues:
 
-1. Check the WebView2 documentation: https://docs.microsoft.com/en-us/microsoft-edge/webview2/
+1. Check the [WebView2 documentation](https://docs.microsoft.com/en-us/microsoft-edge/webview2/)
 2. Verify your setup matches the requirements
 3. Test with the provided KryptonWebView2Test form
 4. Report issues to the Krypton Toolkit repository

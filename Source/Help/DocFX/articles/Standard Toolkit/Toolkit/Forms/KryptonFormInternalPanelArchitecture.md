@@ -18,7 +18,7 @@ The InternalPanel (`_internalKryptonPanel`) is essential for several reasons:
 
 ### Architectural Benefits
 
-```
+```text
 Standard WinForms Form                KryptonForm with InternalPanel
 ┌─────────────────────────┐          ┌─────────────────────────┐
 │ Form (Client Area)      │          │ KryptonForm             │
@@ -54,16 +54,19 @@ _internalKryptonPanel = new KryptonPanel
 ### Key Properties
 
 #### Name
+
 - **Value**: `"InternalKryptonPanel"`
 - **Purpose**: Identification in designer and debugging
 - **Visibility**: Not directly visible to users
 
 #### Docking
+
 - **Value**: `DockStyle.Fill`
 - **Purpose**: Automatically fills the form's client area
 - **Behavior**: Resizes with form, maintains proper layout
 
 #### TabStop
+
 - **Value**: `false`
 - **Purpose**: Panel itself should not receive focus
 - **Behavior**: Focus goes to child controls, not the panel
@@ -77,6 +80,7 @@ _internalKryptonPanel.ControlAdded += (s, e) => OnControlAdded(e);
 ```
 
 **Why This Is Needed:**
+
 - Form needs to know when controls are added/removed
 - Enables proper event handling for form-level operations
 - Maintains compatibility with standard Form behavior
@@ -160,6 +164,7 @@ if (_internalKryptonPanel.Controls.Count == 0)
 ```
 
 **Purpose:**
+
 - Ensures InternalPanel always matches form's client area
 - Handles form resizing automatically
 - Maintains proper control layout
@@ -172,6 +177,7 @@ return base.IsMdiContainer ? base.Controls : _internalKryptonPanel.Controls;
 ```
 
 **MDI Behavior:**
+
 - **Normal Forms**: Use InternalPanel for themed client area
 - **MDI Container Forms**: Use base controls collection for MDI child windows
 - **Automatic Switching**: Behavior changes when `IsMdiContainer` is set
@@ -181,11 +187,13 @@ return base.IsMdiContainer ? base.Controls : _internalKryptonPanel.Controls;
 ### Previous Issues (Now Resolved)
 
 **Problem:**
+
 - InternalPanel was selectable in designer
 - Clicking form client area selected InternalPanel instead of form
 - Interfered with drag and drop operations
 
 **Solution:**
+
 - System menu disabled entirely in design mode
 - No special InternalPanel logic needed
 - Standard KryptonPanel behavior in designer
@@ -211,6 +219,7 @@ public KryptonPanel InternalPanel => _internalKryptonPanel;
 ### Usage Scenarios
 
 #### Advanced Customization
+
 ```csharp
 // Direct access for advanced scenarios
 var internalPanel = form.InternalPanel;
@@ -221,6 +230,7 @@ internalPanel.StateCommon.Border.Rounding = 5;
 ```
 
 #### Control Management
+
 ```csharp
 // Direct control manipulation (rarely needed)
 var controls = form.InternalPanel.Controls;
@@ -231,6 +241,7 @@ foreach (Control control in controls)
 ```
 
 #### Layout Customization
+
 ```csharp
 // Customize panel layout behavior
 form.InternalPanel.AutoScroll = true;
@@ -240,16 +251,19 @@ form.InternalPanel.Padding = new Padding(10);
 ## Performance Characteristics
 
 ### Memory Usage
+
 - **Single Instance**: One InternalPanel per KryptonForm
 - **Lightweight**: Standard KryptonPanel with minimal overhead
 - **Efficient**: No complex designer logic running
 
 ### Initialization Time
+
 - **Fast Creation**: Standard panel creation
 - **No Overhead**: No complex initialization logic
 - **Designer Optimized**: No interference with designer operations
 
 ### Runtime Performance
+
 - **Standard Behavior**: Performs like any KryptonPanel
 - **No Hot Path Logic**: No special processing in frequently-called methods
 - **Efficient Layout**: Standard WinForms layout engine
@@ -284,6 +298,7 @@ int y = Math.Max(0, _internalKryptonPanel.ClientSize.Height - size);
 ### Common Debug Scenarios
 
 #### Checking InternalPanel State
+
 ```csharp
 public void DiagnoseInternalPanel(KryptonForm form)
 {
@@ -298,6 +313,7 @@ public void DiagnoseInternalPanel(KryptonForm form)
 ```
 
 #### Verifying Control Routing
+
 ```csharp
 public void VerifyControlRouting(KryptonForm form)
 {
@@ -321,6 +337,7 @@ public void VerifyControlRouting(KryptonForm form)
 ### Visual Debugging
 
 #### InternalPanel Visibility
+
 ```csharp
 // Temporarily make InternalPanel visible for debugging
 form.InternalPanel.BackColor = Color.LightBlue; // Temporary
@@ -332,6 +349,7 @@ form.InternalPanel.BorderStyle = BorderStyle.FixedSingle; // Temporary
 ## Best Practices
 
 ### 1. Use Form Properties, Not Direct Panel Access
+
 ```csharp
 // Preferred
 form.BackgroundImage = myImage;
@@ -343,12 +361,14 @@ form.InternalPanel.Controls.Add(myControl);
 ```
 
 ### 2. Respect the Abstraction
+
 ```csharp
 // The InternalPanel is an implementation detail
 // Use the form's public API instead of accessing InternalPanel directly
 ```
 
 ### 3. Handle MDI Correctly
+
 ```csharp
 // Check MDI status when working with controls
 if (form.IsMdiContainer)
@@ -364,6 +384,7 @@ else
 ```
 
 ### 4. Designer Considerations
+
 ```csharp
 // InternalPanel is hidden from designer
 // Don't try to access it in designer code
@@ -373,6 +394,7 @@ else
 ## Advanced Scenarios
 
 ### Custom InternalPanel Behavior
+
 ```csharp
 // If you need to customize InternalPanel behavior
 protected override void OnLoad(EventArgs e)
@@ -387,6 +409,7 @@ protected override void OnLoad(EventArgs e)
 ```
 
 ### Control Layout Customization
+
 ```csharp
 // Custom layout logic using InternalPanel
 private void CustomizeLayout()
@@ -403,6 +426,7 @@ private void CustomizeLayout()
 ```
 
 ### Integration with Custom Renderers
+
 ```csharp
 // InternalPanel automatically uses form's renderer
 // No special configuration needed
@@ -412,6 +436,7 @@ private void CustomizeLayout()
 ## Relationship to System Menu
 
 ### Independence
+
 - **InternalPanel**: Provides client area functionality
 - **System Menu**: Provides title bar menu functionality
 - **Separation**: These are independent concerns
@@ -429,9 +454,11 @@ private void CustomizeLayout()
 ### Common Problems
 
 #### Controls Not Appearing
+
 **Symptom**: Added controls don't show on form
 **Cause**: Layout or sizing issues
 **Solution**:
+
 ```csharp
 // Force layout update
 form.InternalPanel.PerformLayout();
@@ -443,9 +470,11 @@ Console.WriteLine($"Form Client Size: {form.ClientSize}");
 ```
 
 #### Layout Problems
+
 **Symptom**: Controls positioned incorrectly
 **Cause**: InternalPanel sizing issues
 **Solution**:
+
 ```csharp
 // Ensure panel fills client area
 form.InternalPanel.Dock = DockStyle.Fill;
@@ -455,9 +484,11 @@ form.InternalPanel.Anchor = AnchorStyles.None; // Reset if needed
 ```
 
 #### Background Not Showing
+
 **Symptom**: Form background image/color not visible
 **Cause**: InternalPanel covering background
 **Solution**:
+
 ```csharp
 // Set background on form (routes to InternalPanel)
 form.BackgroundImage = myImage; // Correct approach
@@ -468,7 +499,7 @@ form.InternalPanel.StateCommon.Image = myImage; // Direct approach
 
 ## Related Documentation
 
-- [KryptonForm System Menu Overview](KryptonForm-SystemMenu-Overview.md)
-- [Designer Mode Implementation](KryptonForm-DesignerMode-Implementation.md)
-- [API Reference](KryptonSystemMenu-API-Reference.md)
-- [Troubleshooting Guide](KryptonForm-Troubleshooting.md)
+- [KryptonForm System Menu Overview](KryptonFormSystemMenuOverview.md)
+- [Designer Mode Implementation](KryptonFormDesignerModeImplementation.md)
+- [API Reference](KryptonSystemMenuAPIReference.md)
+- [Troubleshooting Guide](KryptonFormTroubleshooting.md)

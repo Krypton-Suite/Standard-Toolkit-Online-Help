@@ -1,14 +1,14 @@
 # Navigator Page Dragging  
   
 Applicable Properties:  
+
 * AllowPageDrag
 * DragPageNotify
 
 Applicable Events:  
+
 * BeginPageDrag
 * AfterPageDrag
-
- 
 
 **AllowPageDrag**  
 A default value of *False* prevents the user from dragging pages away from the
@@ -39,8 +39,8 @@ dragged between them you can use the following simple code:-
 ```
 
 For a more detailed explanation for how page dragging occurs within Krypton you
-should read the top-level [Page Dragging](../PageDragging/PageDraggingOverview.md) section.
+should read the top-level [Page Dragging](../Page%20Dragging/PageDraggingOverview.md) section.
 
 **BeginPageDrag, AfterPageDrag**  
 These events are fired before and after the page drag operation. For more
-details see [Other Events](Navigator OtherEvents.md).
+details see [Other Events](NavigatorOtherEvents.md).

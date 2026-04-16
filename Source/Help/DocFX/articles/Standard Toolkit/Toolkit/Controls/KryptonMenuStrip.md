@@ -22,7 +22,7 @@
 
 ## Class Hierarchy
 
-```
+```text
 System.Windows.Forms.Control
   └── System.Windows.Forms.ToolStrip
       └── System.Windows.Forms.MenuStrip
@@ -38,30 +38,35 @@ System.Windows.Forms.Control
 ## Key Features
 
 ### 1. **Krypton Palette Integration**
-   - Automatic theme synchronization with the global Krypton palette
-   - Support for built-in palette modes (Office 2007, Office 2013, Microsoft 365, etc.)
-   - Custom palette support for application-specific theming
-   - Dynamic palette switching at runtime
+
+- Automatic theme synchronization with the global Krypton palette
+- Support for built-in palette modes (Office 2007, Office 2013, Microsoft 365, etc.)
+- Custom palette support for application-specific theming
+- Dynamic palette switching at runtime
 
 ### 2. **Automatic Font Management**
-   - Font automatically synchronized with palette's `ToolStripFont`
-   - Responds to global palette `BaseFont` changes
-   - Updates when palette changes occur
+
+- Font automatically synchronized with palette's `ToolStripFont`
+- Responds to global palette `BaseFont` changes
+- Updates when palette changes occur
 
 ### 3. **Visual State Customization**
-   - Per-state appearance overrides (Common, Disabled, Normal)
-   - Background color, gradient, and image support
-   - Inheritance-based styling system
+
+- Per-state appearance overrides (Common, Disabled, Normal)
+- Background color, gradient, and image support
+- Inheritance-based styling system
 
 ### 4. **Professional Rendering**
-   - Uses `ToolStripRenderMode.ManagerRenderMode` for Krypton renderer integration
-   - Consistent appearance with other Krypton controls
-   - Theme-aware color table integration
+
+- Uses `ToolStripRenderMode.ManagerRenderMode` for Krypton renderer integration
+- Consistent appearance with other Krypton controls
+- Theme-aware color table integration
 
 ### 5. **Event-Driven Updates**
-   - Automatic repainting on palette changes
-   - Layout updates when visual properties change
-   - Global palette change notifications
+
+- Automatic repainting on palette changes
+- Layout updates when visual properties change
+- Global palette change notifications
 
 ---
 
@@ -70,26 +75,31 @@ System.Windows.Forms.Control
 ### Core Components
 
 #### 1. **Palette Management**
+
 The control maintains references to:
+
 - `_palette`: The active palette instance (can be global or custom)
 - `_hookedPalette`: The palette currently subscribed to for paint events
 - `_hookedGlobalPalette`: The global palette subscribed to for BaseFont changes
 - `_paletteMode`: The current palette mode (Global, Custom, or specific theme)
 
 #### 2. **Visual State Storage**
+
 Three `PaletteBack` instances provide state-specific styling:
+
 - `_stateCommon`: Base appearance inherited by all states
 - `_stateDisabled`: Appearance when the control is disabled
 - `_stateNormal`: Appearance in the normal (enabled) state
 
 #### 3. **Inheritance Chain**
+
 - `PaletteBackInheritMenuStrip`: Bridges palette ColorTable to PaletteBack interface
 - Retrieves colors from `KryptonColorTable.MenuStripGradientBegin/End`
 - Provides inheritance chain for state-specific overrides
 
 ### Data Flow
 
-```
+```text
 KryptonManager (Global Palette)
     ↓
 PaletteBase (Theme-specific palette)
@@ -114,6 +124,7 @@ KryptonMenuStrip (Visual rendering)
 Initializes a new instance of the `KryptonMenuStrip` class.
 
 **Behavior:**
+
 - Sets `RenderMode` to `ToolStripRenderMode.ManagerRenderMode`
 - Initializes palette mode to `PaletteMode.Global`
 - Creates visual state storage instances
@@ -121,6 +132,7 @@ Initializes a new instance of the `KryptonMenuStrip` class.
 - Sets initial font from palette
 
 **Example:**
+
 ```csharp
 var menuStrip = new KryptonMenuStrip();
 ```
@@ -138,16 +150,19 @@ Gets or sets the palette mode used for rendering.
 **Description:** Sets the palette mode.
 
 **Values:**
+
 - `PaletteMode.Global`: Uses the current global palette from `KryptonManager`
 - `PaletteMode.Custom`: Uses a custom palette (requires `Palette` property to be set)
 - Other values: Uses built-in theme palettes (e.g., `PaletteMode.Office2007Blue`, `PaletteMode.Microsoft365Blue`)
 
 **Behavior:**
+
 - When set to a built-in mode, automatically retrieves the corresponding palette
 - When set to `PaletteMode.Custom`, does nothing until `Palette` is assigned
 - Triggers palette event re-hooking, inheritance updates, appearance refresh, and font update
 
 **Example:**
+
 ```csharp
 // Use Office 2007 Blue theme
 menuStrip.PaletteMode = PaletteMode.Office2007Blue;
@@ -161,6 +176,7 @@ menuStrip.Palette = myCustomPalette;
 ```
 
 **Serialization:**
+
 - Only serialized if not equal to `PaletteMode.Global`
 - Can be reset using `ResetPaletteMode()` method
 
@@ -175,6 +191,7 @@ Gets or sets the custom palette implementation.
 **Description:** Sets the custom palette to be used.
 
 **Behavior:**
+
 - Returns `null` unless `PaletteMode` is `PaletteMode.Custom`
 - When set to a non-null value:
   - Sets `_palette` to the provided value
@@ -185,6 +202,7 @@ Gets or sets the custom palette implementation.
   - Uses `KryptonManager.CurrentGlobalPalette`
 
 **Example:**
+
 ```csharp
 // Create and assign custom palette
 var customPalette = new KryptonCustomPaletteBase();
@@ -198,6 +216,7 @@ menuStrip.Palette = null; // Automatically switches to Global mode
 ```
 
 **Serialization:**
+
 - Only serialized when `PaletteMode == PaletteMode.Custom && _palette != null`
 - Can be reset using `ResetPalette()` method
 
@@ -212,6 +231,7 @@ Gets access to the common menu strip appearance that other states can override.
 **Designer Serialization:** Content (expanded in designer)
 
 **Properties Available:**
+
 - `Draw` (InheritBool): Whether to draw the background
 - `GraphicsHint` (PaletteGraphicsHint): Graphics rendering hint
 - `Color1` (Color): First background color (gradient start)
@@ -224,6 +244,7 @@ Gets access to the common menu strip appearance that other states can override.
 - `ImageAlign` (PaletteRectangleAlign): Image alignment
 
 **Example:**
+
 ```csharp
 // Override common background to use a solid color
 menuStrip.StateCommon.Color1 = Color.FromArgb(240, 240, 240);
@@ -232,6 +253,7 @@ menuStrip.StateCommon.ColorStyle = PaletteColorStyle.Solid;
 ```
 
 **Serialization:**
+
 - Only serialized if not in default state (`!IsDefault`)
 
 ---
@@ -245,10 +267,12 @@ Gets access to the disabled menu strip appearance.
 **Designer Serialization:** Content (expanded in designer)
 
 **Inheritance:**
+
 - Inherits from `StateCommon`
 - Only properties explicitly set override the common state
 
 **Example:**
+
 ```csharp
 // Customize disabled state appearance
 menuStrip.StateDisabled.Color1 = Color.FromArgb(220, 220, 220);
@@ -257,6 +281,7 @@ menuStrip.StateDisabled.ColorStyle = PaletteColorStyle.Solid;
 ```
 
 **Serialization:**
+
 - Only serialized if not in default state (`!IsDefault`)
 
 ---
@@ -270,10 +295,12 @@ Gets access to the normal menu strip appearance.
 **Designer Serialization:** Content (expanded in designer)
 
 **Inheritance:**
+
 - Inherits from `StateCommon`
 - Only properties explicitly set override the common state
 
 **Example:**
+
 ```csharp
 // Customize normal state appearance
 menuStrip.StateNormal.Color1 = Color.FromArgb(250, 250, 250);
@@ -283,6 +310,7 @@ menuStrip.StateNormal.ColorAngle = 90f; // Vertical gradient
 ```
 
 **Serialization:**
+
 - Only serialized if not in default state (`!IsDefault`)
 
 ---
@@ -294,9 +322,11 @@ menuStrip.StateNormal.ColorAngle = 90f; // Vertical gradient
 Cleans up resources used by the control.
 
 **Parameters:**
+
 - `disposing` (bool): `true` if managed resources should be disposed; otherwise, `false`.
 
 **Behavior:**
+
 - Unhooks from `KryptonManager.GlobalPaletteChanged` event
 - Unhooks from palette `PalettePaintInternal` events
 - Unhooks from global palette `PalettePaintInternal` events
@@ -311,9 +341,11 @@ Cleans up resources used by the control.
 Raises the `RendererChanged` event.
 
 **Parameters:**
+
 - `e` (EventArgs): Event data
 
 **Behavior:**
+
 - Calls base implementation
 - Invalidates the control to trigger repaint
 
@@ -335,18 +367,21 @@ The control inherits all standard `MenuStrip` events. Additionally, it responds 
 ### How Palette Selection Works
 
 1. **Global Mode (Default)**
+
    ```csharp
    menuStrip.PaletteMode = PaletteMode.Global;
    // Uses KryptonManager.CurrentGlobalPalette
    ```
 
 2. **Built-in Theme Mode**
+
    ```csharp
    menuStrip.PaletteMode = PaletteMode.Office2007Blue;
    // Uses KryptonManager.GetPaletteForMode(PaletteMode.Office2007Blue)
    ```
 
 3. **Custom Mode**
+
    ```csharp
    menuStrip.PaletteMode = PaletteMode.Custom;
    menuStrip.Palette = myCustomPalette;
@@ -389,7 +424,7 @@ This allows the control to use theme-specific colors while maintaining the flexi
 
 ### State Hierarchy
 
-```
+```text
 StateCommon (base)
     ├── StateDisabled (inherits from Common)
     └── StateNormal (inherits from Common)
@@ -415,7 +450,8 @@ Properties in `PaletteBack` use an inheritance model:
 - **Explicit Value**: Overrides parent state
 
 Example inheritance chain:
-```
+
+```text
 Palette ColorTable (default)
     ↓
 StateCommon (can override)
@@ -473,6 +509,7 @@ private void UpdateFont()
 ```
 
 **Key Points:**
+
 - Uses try-catch to handle cases where ColorTable may not be initialized
 - Only updates Font if it differs from palette font (prevents unnecessary updates)
 - Checks `IsDisposed` to avoid operations on disposed controls
@@ -480,6 +517,7 @@ private void UpdateFont()
 ### Font Source
 
 The font comes from the palette's `ColorTable.ToolStripFont` property, which typically:
+
 - Defaults to `SystemInformation.MenuFont`
 - Can be customized in custom palettes
 - Updates when palette `BaseFont` changes
@@ -493,18 +531,21 @@ The font comes from the palette's `ColorTable.ToolStripFont` property, which typ
 The control subscribes to several events for automatic updates:
 
 #### 1. **KryptonManager.GlobalPaletteChanged**
+
 - **Subscribed:** In constructor
 - **Unsubscribed:** In `Dispose(bool disposing)`
 - **Handler:** `OnGlobalPaletteChanged`
 - **Purpose:** React to global palette changes
 
 #### 2. **Palette.PalettePaintInternal**
+
 - **Subscribed:** Via `HookPaletteEvents()` when palette changes
 - **Unsubscribed:** Via `HookPaletteEvents()` when switching palettes
 - **Handler:** `OnPalettePaint`
 - **Purpose:** React to palette paint events (e.g., BaseFont changes)
 
 #### 3. **GlobalPalette.PalettePaintInternal**
+
 - **Subscribed:** Via `HookGlobalPaletteEvents()` in constructor
 - **Unsubscribed:** In `Dispose(bool disposing)`
 - **Handler:** `OnGlobalPalettePaint`
@@ -538,6 +579,7 @@ private void OnGlobalPaletteChanged(object? sender, EventArgs e)
 ```
 
 **Behavior:**
+
 - Always re-hooks global palette events (instance may have changed)
 - If using Global mode: Full update (palette, hooks, inheritance, appearance, font)
 - If using other modes: Only updates font (BaseFont changes are global)
@@ -555,6 +597,7 @@ private void OnPalettePaint(object? sender, PaletteLayoutEventArgs e)
 ```
 
 **Behavior:**
+
 - Updates font when palette paint events occur
 - Checks `IsDisposed` before updating
 
@@ -571,6 +614,7 @@ private void OnGlobalPalettePaint(object? sender, PaletteLayoutEventArgs e)
 ```
 
 **Behavior:**
+
 - Updates font when global palette BaseFont changes
 - Ensures font stays synchronized even when not using Global mode
 
@@ -712,6 +756,7 @@ In the Visual Studio designer:
 ### Render Mode
 
 The control uses `ToolStripRenderMode.ManagerRenderMode`, which:
+
 - Uses the renderer specified by `KryptonManager`
 - Integrates with Krypton's professional renderer system
 - Provides theme-aware rendering via `KryptonColorTable`
@@ -742,7 +787,8 @@ _stateNormal = new PaletteBack(_stateCommon, OnNeedPaint);
 ```
 
 **Chain:**
-```
+
+```text
 PaletteBase.ColorTable
     ↓
 PaletteBackInheritMenuStrip (_inherit)
@@ -755,6 +801,7 @@ PaletteBack (_stateDisabled / _stateNormal)
 ### NeedPaint Event Handling
 
 The `OnNeedPaint` handler:
+
 - Checks if control is disposed
 - Performs layout if `NeedLayout` is true
 - Invalidates the control to trigger repaint
@@ -764,6 +811,7 @@ This ensures the control updates when palette properties change.
 ### Error Handling
 
 The `UpdateFont()` method uses try-catch to handle:
+
 - `ColorTable` not being initialized yet
 - Palette access errors during initialization
 - Prevents exceptions from breaking control initialization
@@ -807,6 +855,7 @@ This documentation applies to the current implementation. Key implementation det
 **Problem:** Font doesn't change when palette BaseFont changes.
 
 **Solutions:**
+
 - Ensure control is not disposed
 - Check that palette events are properly hooked
 - Verify `ColorTable.ToolStripFont` is accessible
@@ -816,6 +865,7 @@ This documentation applies to the current implementation. Key implementation det
 **Problem:** Visual appearance doesn't change when palette changes.
 
 **Solutions:**
+
 - Call `Invalidate()` if making manual changes
 - Ensure `PaletteMode` or `Palette` is set correctly
 - Check that state overrides aren't blocking palette values
@@ -825,6 +875,7 @@ This documentation applies to the current implementation. Key implementation det
 **Problem:** Control causes memory leaks.
 
 **Solutions:**
+
 - Always call `Dispose()` when removing control
 - Ensure form properly disposes child controls
 - Check for circular references in event handlers

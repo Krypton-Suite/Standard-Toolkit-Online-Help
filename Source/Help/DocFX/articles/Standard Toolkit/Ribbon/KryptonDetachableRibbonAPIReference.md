@@ -20,10 +20,10 @@ bool isDetached = kryptonRibbon.IsDetached;
 
 ## API Summary
 
-### Properties
+### Ribbon properties
 
 | Property | Type | Default | Description |
-|----------|------|---------|-------------|
+| --- | --- | --- | --- |
 | `AllowDetach` | `bool` | `false` | Enables/disables detach functionality |
 | `IsDetached` | `bool` | `false` | Read-only: indicates if ribbon is currently detached |
 | `FloatingWindowText` | `string` | `"Ribbon"` | Text displayed in the floating window title bar |
@@ -33,16 +33,16 @@ bool isDetached = kryptonRibbon.IsDetached;
 ### Methods
 
 | Method | Returns | Description |
-|--------|---------|-------------|
+| --- | --- | --- |
 | `Detach()` | `bool` | Detaches ribbon into floating window |
 | `Reattach()` | `bool` | Reattaches ribbon to original parent |
 | `SaveDetachPreferences()` | `void` | Saves current detach preferences (raises event) |
 | `LoadDetachPreferences(bool, Point?)` | `bool` | Loads and restores saved preferences |
 
-### Events
+### Ribbon events
 
 | Event | Type | Description |
-|-------|------|-------------|
+| --- | --- | --- |
 | `RibbonDetached` | `EventHandler` | Raised when ribbon is detached |
 | `RibbonReattached` | `EventHandler` | Raised when ribbon is reattached |
 | `DetachPreferencesChanged` | `EventHandler<DetachPreferencesEventArgs>` | Raised when preferences should be saved |
@@ -56,12 +56,14 @@ bool isDetached = kryptonRibbon.IsDetached;
 **Returns**: `true` if successful, `false` otherwise
 
 **Preconditions**:
+
 - `AllowDetach == true`
 - Ribbon has a parent
 - Ribbon is not already detached
 - Parent is in a Form
 
 **What it does**:
+
 1. Stores original state (parent, location, size, dock)
 2. Creates floating window
 3. Moves ribbon to floating window
@@ -73,10 +75,12 @@ bool isDetached = kryptonRibbon.IsDetached;
 **Returns**: `true` if successful, `false` otherwise
 
 **Preconditions**:
+
 - `IsDetached == true`
 - Original parent still exists
 
 **What it does**:
+
 1. Removes ribbon from floating window
 2. Restores original state
 3. Re-enables form integration
@@ -203,6 +207,7 @@ if (!kryptonRibbon.Reattach())
 ### Preserved State
 
 When detached, the following is preserved:
+
 - Original parent control
 - Original location (Point)
 - Original size (Size)
@@ -218,19 +223,19 @@ When detached, the following is preserved:
 
 ## VisualRibbonFloatingWindow
 
-### Properties
+### Floating window properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `Ribbon` | `KryptonRibbon?` | Read-only: access to hosted ribbon |
-| `InternalPanel` | `KryptonPanel` | Access to the internal panel for hosting controls |
+| Property        | Type             | Description                                         |
+| --------------- | ---------------- | --------------------------------------------------- |
+| `Ribbon`        | `KryptonRibbon?` | Read-only: access to hosted ribbon                  |
+| `InternalPanel` | `KryptonPanel`   | Access to the internal panel for hosting controls   |
 
-### Events
+### Floating window events
 
-| Event | Type | Description |
-|-------|------|-------------|
-| `WindowClosing` | `EventHandler` | Raised when window is closing |
-| `TitleBarDoubleClick` | `EventHandler` | Raised when title bar is double-clicked (reattaches ribbon) |
+| Event                 | Type           | Description                                                         |
+| --------------------- | -------------- | ------------------------------------------------------------------- |
+| `WindowClosing`       | `EventHandler` | Raised when window is closing                                       |
+| `TitleBarDoubleClick` | `EventHandler` | Raised when title bar is double-clicked (reattaches ribbon)         |
 
 ### Window Characteristics
 
@@ -245,12 +250,12 @@ When detached, the following is preserved:
 
 ## DetachPreferencesEventArgs
 
-### Properties
+### DetachPreferencesEventArgs properties
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `IsDetached` | `bool` | Indicates whether the ribbon is currently detached |
-| `FloatingWindowPosition` | `Point?` | The saved position of the floating window, or null if not saved |
+| Property                 | Type     | Description                                                         |
+| ------------------------ | -------- | ------------------------------------------------------------------- |
+| `IsDetached`             | `bool`   | Indicates whether the ribbon is currently detached                  |
+| `FloatingWindowPosition` | `Point?` | The saved position of the floating window, or null if not saved     |
 
 ### Usage
 

@@ -1,6 +1,7 @@
 # KryptonTaskDialog Technical Architecture
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Class Hierarchy](#class-hierarchy)
 3. [Design Patterns](#design-patterns)
@@ -36,7 +37,7 @@
 
 ### Core Classes
 
-```
+```text
 KryptonTaskDialog
 ├── Implements: IDisposable
 ├── Contains: KryptonTaskDialogKryptonForm
@@ -67,7 +68,7 @@ KryptonTaskDialogElementBase (abstract)
 
 All elements derive from `KryptonTaskDialogElementBase`:
 
-```
+```text
 KryptonTaskDialogElementBase (abstract)
 │
 ├── KryptonTaskDialogElementHeading
@@ -255,6 +256,7 @@ dialog.ShowDialog();
 ### KryptonTaskDialog
 
 **Responsibilities:**
+
 - Orchestrate all elements
 - Manage form lifecycle
 - Calculate total dialog height
@@ -262,6 +264,7 @@ dialog.ShowDialog();
 - Coordinate theme changes
 
 **Key Fields:**
+
 ```csharp
 private KryptonTaskDialogKryptonForm _form;
 private TableLayoutPanel _tableLayoutPanel;
@@ -272,6 +275,7 @@ private KryptonPanel _fillerPanel;  // Border compensation
 ```
 
 **Key Methods:**
+
 ```csharp
 private void SetupForm()
 private void SetupTableLayoutPanel()
@@ -285,6 +289,7 @@ private void UpdateFormPosition(IWin32Window? owner)
 ### KryptonTaskDialogElementBase
 
 **Responsibilities:**
+
 - Manage element visibility
 - Provide background color control
 - Track layout state
@@ -292,6 +297,7 @@ private void UpdateFormPosition(IWin32Window? owner)
 - Notify of changes
 
 **Key Fields:**
+
 ```csharp
 private KryptonTaskDialogKryptonPanel _panel;  // Host panel
 private bool _panelVisible;                     // Visibility state
@@ -301,6 +307,7 @@ internal bool LayoutDirty;                      // Needs layout
 ```
 
 **Key Virtual Methods:**
+
 ```csharp
 internal virtual void PerformLayout()
     // Called before dialog is shown to ensure layout is current
@@ -319,18 +326,21 @@ protected virtual void OnGlobalPaletteChanged(object? sender, EventArgs e)
 ### KryptonTaskDialogKryptonPanel
 
 **Responsibilities:**
+
 - Host element controls
 - Draw separator lines
 - React to theme changes
 - Provide themed background
 
 **Key Features:**
+
 - Derives from `KryptonPanel`
 - Overrides `OnPaint` to draw separator
 - Calculates separator colors based on background
 - Subscribes to theme changes
 
 **Separator Algorithm:**
+
 ```csharp
 private (Color, Color) GetSeparatorColors()
 {
@@ -361,11 +371,13 @@ private (Color, Color) GetSeparatorColors()
 ### KryptonTaskDialogKryptonForm
 
 **Responsibilities:**
+
 - Provide specialized form behavior
 - Handle Alt+F4 interception
 - Hide instead of close for reusability
 
 **Key Overrides:**
+
 ```csharp
 protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 {
@@ -387,12 +399,14 @@ protected override void OnFormClosing(FormClosingEventArgs e)
 ### KryptonTaskDialogIconController
 
 **Responsibilities:**
+
 - Load icons from resources
 - Resize icons to requested size
 - Cache resized icons
 - Manage icon disposal
 
 **Cache Structure:**
+
 ```csharp
 // Key: IconType + Size
 public class ImageItem : IEquatable<ImageItem>
@@ -406,6 +420,7 @@ private Dictionary<ImageItem, Image> _imageCache;
 ```
 
 **Icon Loading:**
+
 ```csharp
 public Image GetImage(KryptonTaskDialogIconType icontype, int size)
 {
@@ -437,7 +452,7 @@ public Image GetImage(KryptonTaskDialogIconType icontype, int size)
 
 Elements are stacked vertically using `TableLayoutPanel`:
 
-```
+```text
 ┌────────────────────────────────┐
 │ Filler Panel (border fix)      │ ← Top border compensation
 ├────────────────────────────────┤
@@ -477,7 +492,7 @@ _tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
 Each element contains a panel that hosts its controls:
 
-```
+```text
 Element
 └── KryptonTaskDialogKryptonPanel (Panel property)
     ├── Padding: PanelPadding1 (10, 10, 10, 10)
@@ -538,7 +553,7 @@ _form.ClientSize = new Size(
 
 ### Dialog Creation
 
-```
+```text
 1. new KryptonTaskDialog()
    ├── Create KryptonTaskDialogDefaults
    ├── Create KryptonTaskDialogKryptonForm
@@ -560,7 +575,7 @@ _form.ClientSize = new Size(
 
 ### Showing Dialog
 
-```
+```text
 1. ShowDialog() or Show()
    ├── UpdateFormSizing()
    │   └── GetVisibleElementsHeight()
@@ -574,7 +589,7 @@ _form.ClientSize = new Size(
 
 ### Element Visibility Change
 
-```
+```text
 1. element.Visible = true
    ├── _panelVisible = true
    ├── _panel.Visible = true
@@ -586,7 +601,7 @@ _form.ClientSize = new Size(
 
 ### Element Size Change
 
-```
+```text
 1. element.Text = "New text"
    ├── Update internal control
    ├── LayoutDirty = true
@@ -601,7 +616,7 @@ _form.ClientSize = new Size(
 
 ### Theme Change
 
-```
+```text
 1. KryptonManager.CurrentGlobalPalette changed
    └── KryptonManager.GlobalPaletteChanged event fires
        └── For each element:
@@ -821,7 +836,7 @@ public class KryptonTaskDialogElementCustom : KryptonTaskDialogElementBase
 }
 ```
 
-2. **Implement Relevant Interfaces**:
+1. **Implement Relevant Interfaces**:
 
 ```csharp
 public class KryptonTaskDialogElementCustom : 
@@ -836,7 +851,7 @@ public class KryptonTaskDialogElementCustom :
 }
 ```
 
-3. **Override Layout Methods if Needed**:
+1. **Override Layout Methods if Needed**:
 
 ```csharp
 protected override void OnSizeChanged(bool performLayout = false)
@@ -858,7 +873,7 @@ internal override void PerformLayout()
 }
 ```
 
-4. **Add to KryptonTaskDialog**:
+1. **Add to KryptonTaskDialog**:
 
 ```csharp
 public class KryptonTaskDialog : IDisposable
@@ -1010,4 +1025,3 @@ The `KryptonTaskDialog` architecture provides:
 - **Reusability**: Forms can be shown multiple times
 
 This design allows for easy extension and maintenance while providing excellent performance and user experience.
-

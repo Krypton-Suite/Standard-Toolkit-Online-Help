@@ -68,12 +68,14 @@ The manager supports three distinct integration modes:
 Used for container controls like `Panel`, `GroupBox`, and `HeaderGroup` that use `AutoScroll`.
 
 **Characteristics**:
+
 - Manages scrolling of child controls within the container
 - Tracks child control positions and calculates scroll extents
 - Disables native `AutoScroll` and provides manual scrolling
 - Stores original child control positions for scroll offset calculation
 
 **Use Cases**:
+
 - `KryptonPanel` with multiple child controls
 - `KryptonGroup` with scrollable content
 - `KryptonGroupBox` with overflow content
@@ -83,6 +85,7 @@ Used for container controls like `Panel`, `GroupBox`, and `HeaderGroup` that use
 Used for controls with native scrollbars like `TextBox`, `RichTextBox`, `ListBox`, etc.
 
 **Characteristics**:
+
 - Wraps native scrollbar functionality
 - Hides native scrollbars via window styles or control properties
 - Synchronizes with native scroll positions using Win32 API
@@ -90,6 +93,7 @@ Used for controls with native scrollbars like `TextBox`, `RichTextBox`, `ListBox
 - Maintains scroll position parity with native control
 
 **Use Cases**:
+
 - `KryptonTextBox` with `ScrollBars` property
 - `KryptonRichTextBox` with `ScrollBars` property
 - `KryptonListBox`, `KryptonListView`, `KryptonTreeView`
@@ -100,6 +104,7 @@ Used for controls with native scrollbars like `TextBox`, `RichTextBox`, `ListBox
 Reserved for future use or custom implementations where the control manages its own scrolling logic.
 
 **Characteristics**:
+
 - No automatic scrollbar management
 - Control is responsible for scrollbar creation and management
 - Useful for specialized scrolling requirements
@@ -117,6 +122,7 @@ kryptonManager1.GlobalUseKryptonScrollbars = true;
 ```
 
 **Behavior**:
+
 - When set globally, all supported controls use Krypton scrollbars by default
 - Individual controls can override the global setting
 - Controls that haven't explicitly set the property inherit the global value
@@ -139,6 +145,7 @@ public KryptonScrollbarManager(Control targetControl, ScrollbarManagerMode mode 
 ```
 
 **Parameters**:
+
 - `targetControl`: The control to attach scrollbars to
 - `mode`: The integration mode (Container, NativeWrapper, or Custom)
 
@@ -199,10 +206,12 @@ public void Attach(Control targetControl, ScrollbarManagerMode mode = ScrollbarM
 Attaches the manager to a control. If already attached to a different control, detaches first.
 
 **Parameters**:
+
 - `targetControl`: The control to attach to (must not be null)
 - `mode`: The integration mode to use
 
 **Exceptions**:
+
 - `ArgumentNullException`: Thrown if `targetControl` is null
 
 ##### Detach
@@ -265,6 +274,7 @@ Gets or sets whether to use Krypton-themed scrollbars. If not explicitly set, us
 **Default**: Inherits from `KryptonManager.UseKryptonScrollbars` (default: `false`)
 
 **Designer Support**:
+
 - `ShouldSerializeUseKryptonScrollbars()`: Returns `true` only if explicitly set
 - `ResetUseKryptonScrollbars()`: Resets to use global value
 
@@ -312,6 +322,7 @@ KryptonManager.UseKryptonScrollbars = true;
 ```
 
 Or via the designer:
+
 1. Add a `KryptonManager` component to your form
 2. Set `GlobalUseKryptonScrollbars` to `true` in the Properties window
 
@@ -488,13 +499,14 @@ void AddContent()
 
 - **Global Setting**: `KryptonManager.UseKryptonScrollbars = false`
 - **Per-Control**: Inherits global value unless explicitly set
-- **Integration Mode**: 
+- **Integration Mode**:
   - Container controls: `Container` mode
   - Native scrollbar controls: `NativeWrapper` mode
 
 ### Synchronization Settings
 
 For `NativeWrapper` mode, the manager uses:
+
 - **Sync Timer Interval**: 50ms (hardcoded, not configurable)
 - **Scroll Position Sync**: Automatic via Win32 API calls
 - **Native Scrollbar Hiding**: Automatic based on control type
@@ -502,6 +514,7 @@ For `NativeWrapper` mode, the manager uses:
 ### Scrollbar Sizing
 
 Scrollbars use system metrics:
+
 - **Vertical Scrollbar Width**: `SystemInformation.VerticalScrollBarWidth`
 - **Horizontal Scrollbar Height**: `SystemInformation.HorizontalScrollBarHeight`
 
@@ -516,11 +529,13 @@ These values are automatically used for positioning and sizing.
 **Symptoms**: Both native and Krypton scrollbars are visible simultaneously.
 
 **Causes**:
+
 1. `HideNativeScrollbars()` method not working for the control type
 2. Control doesn't support scrollbar hiding via properties
 3. Handle not created when hiding is attempted
 
 **Solutions**:
+
 - Ensure the control's handle is created before enabling scrollbars
 - For `RichTextBox`, ensure `ScrollBars` property is set correctly
 - For `TextBox`, ensure `ScrollBars` property is set correctly
@@ -531,12 +546,14 @@ These values are automatically used for positioning and sizing.
 **Symptoms**: Krypton scrollbars don't appear even when enabled.
 
 **Causes**:
+
 1. Content doesn't require scrolling
 2. Manager not properly initialized
 3. Control handle not created
 4. Manager disabled
 
 **Solutions**:
+
 - Verify content extends beyond control bounds
 - Check `ScrollbarManager` property is not null
 - Ensure control handle is created (check `IsHandleCreated`)
@@ -548,11 +565,13 @@ These values are automatically used for positioning and sizing.
 **Symptoms**: Scrollbars are cut off or positioned outside visible area.
 
 **Causes**:
+
 1. Client area calculation issues
 2. Padding/borders not accounted for
 3. Anchor styles conflicting with manual positioning
 
 **Solutions**:
+
 - The `PositionScrollbars()` method includes bounds checking
 - For native wrapper mode, anchors are not used (manual positioning)
 - For container mode, anchors are used for automatic resizing
@@ -563,11 +582,13 @@ These values are automatically used for positioning and sizing.
 **Symptoms**: Krypton scrollbar position doesn't match native scroll position.
 
 **Causes**:
+
 1. Sync timer not running
 2. Native scroll position changed externally
 3. `_suppressScrollEvents` flag preventing updates
 
 **Solutions**:
+
 - Verify manager is in `NativeWrapper` mode
 - Check sync timer is started (automatic in `NativeWrapper` mode)
 - Ensure `UpdateNativeWrapperScrollbars()` is being called
@@ -578,11 +599,13 @@ These values are automatically used for positioning and sizing.
 **Symptoms**: UI lag or high CPU usage with scrollbars enabled.
 
 **Causes**:
+
 1. Sync timer running too frequently
 2. Too many layout updates
 3. Scrollbar updates on every resize/layout
 
 **Solutions**:
+
 - Sync timer interval is 50ms (fixed)
 - Layout updates are throttled with `_isUpdating` flag
 - Consider disabling scrollbars for controls with frequent updates
@@ -593,11 +616,13 @@ These values are automatically used for positioning and sizing.
 **Symptoms**: Scrollbars don't match current Krypton theme.
 
 **Causes**:
+
 1. Scrollbars use default Krypton styling
 2. Theme changed after scrollbars created
 3. Palette not applied correctly
 
 **Solutions**:
+
 - Scrollbars automatically use current global palette
 - Recreate scrollbars after theme change (detach/reattach)
 - Verify `KryptonManager.GlobalPaletteMode` is set correctly

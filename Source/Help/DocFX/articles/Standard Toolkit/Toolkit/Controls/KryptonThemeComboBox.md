@@ -6,7 +6,7 @@ The `KryptonThemeComboBox` class provides a Krypton-themed ComboBox control that
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -23,6 +23,7 @@ public KryptonThemeComboBox()
 ```
 
 The constructor initializes enhanced features:
+
 - **KryptonManager Integration**: Creates local KryptonManager instance for theme management
 - **Theme Population**: Automatically populates with available themes using `CommonHelperThemeSelectors.GetThemesArray()`
 - **Initial Selection**: Sets initial selected index based on current global palette

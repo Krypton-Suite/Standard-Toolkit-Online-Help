@@ -6,7 +6,7 @@ The `KryptonSaveFileDialog` class provides a Krypton-themed wrapper around the s
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -24,6 +24,7 @@ public KryptonSaveFileDialog()
 ```
 
 The constructor initializes enhanced features:
+
 - **Internal `SaveFileDialog`**: Creates and manages the contained `SaveFileDialog` instance
 - **Theme Integration**: Automatic Krypton theming through FileSaveDialogWrapper
 - **Full Compatibility**: All standard `SaveFileDialog` properties and methods are proxied

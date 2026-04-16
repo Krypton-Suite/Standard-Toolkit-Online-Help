@@ -38,7 +38,7 @@ The GitHub Bug Reporting feature in Krypton.Utilities allows your application to
 ## Key Features
 
 | Feature | Description |
-|---------|-------------|
+| ------- | ----------- |
 | **Encrypted Configuration** | AES-256-CBC encryption for config file; SHA-256 key derivation |
 | **Zero User Configuration** | End users never see Owner, Repository, or PAT fields |
 | **Simple Issue Format** | Generic title + body; no repository-specific template |
@@ -154,16 +154,16 @@ Configuration for the target GitHub repository and authentication.
 
 **Location**: `Krypton.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubConfig.cs`
 
-#### Properties
+#### BugReportGitHubConfig properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| ---------- | ---- | ----------- |
 | `Owner` | `string` | GitHub repository owner (e.g. `"Krypton-Suite"`) |
 | `RepositoryName` | `string` | Repository name (e.g. `"Standard-Toolkit"`) |
 | `PersonalAccessToken` | `string` | GitHub PAT with `repo` or `public_repo` scope |
 | `IsValid` | `bool` | `true` if Owner, RepositoryName, and PersonalAccessToken are all non-null and non-whitespace |
 
-#### Example
+#### BugReportGitHubConfig example
 
 ```csharp
 var config = new BugReportGitHubConfig
@@ -187,23 +187,23 @@ Static class for encrypting and decrypting the config file. Uses AES-256-CBC wit
 
 **Location**: `Krypton.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubConfigEncryption.cs`
 
-#### Methods
+#### BugReportGitHubConfigEncryption methods
 
 | Method | Description |
-|--------|-------------|
+| ------ | ----------- |
 | `SaveEncryptedConfig(config, filePath, secretKey)` | Encrypts config and writes to file |
 | `LoadEncryptedConfig(filePath, secretKey)` | Loads and decrypts; throws on failure |
 | `TryLoadEncryptedConfig(filePath, secretKey, out config)` | Safe load; returns `true` on success |
 | `GetDefaultConfigFilePath()` | Returns `{AppBaseDirectory}\github-issue-config.enc` |
 
-#### Exceptions
+#### BugReportGitHubConfigEncryption exceptions
 
 - `ArgumentNullException`: Null or empty parameter
 - `InvalidOperationException`: Config not valid (for Save)
 - `FileNotFoundException`: Config file not found (for Load)
 - `CryptographicException`: Wrong key or corrupted file (for Load)
 
-#### Example
+#### BugReportGitHubConfigEncryption example
 
 ```csharp
 // Save (development)
@@ -227,17 +227,17 @@ Static class providing the user-facing bug report dialog. Loads config from the 
 
 **Location**: `Krypton.Utilities` → `Components/KryptonBugReportingDialog/Controls Toolkit/KryptonGitHubIssueReportDialog.cs`
 
-#### Methods
+#### KryptonGitHubIssueReportDialog methods
 
 | Method | Description |
-|--------|-------------|
+| ------ | ----------- |
 | `Show(owner, secretKey)` | Loads from default config file; shows dialog |
 | `Show(owner, secretKey, configFilePath)` | Loads from specified config file; shows dialog |
 | `Show(owner, secretKey, configFilePath, initialDescription)` | Loads from file; shows dialog with optional pre-filled description |
 | `Show(owner, config)` | Uses provided config directly (no file) |
 | `Show(owner, config, initialDescription)` | Uses provided config; shows dialog with optional pre-filled description |
 
-#### Parameters
+#### KryptonGitHubIssueReportDialog parameters
 
 - `owner`: `IWin32Window?` — Parent window (e.g. your form); can be `null`
 - `secretKey`: `string` — Key for decrypting the config file
@@ -245,12 +245,12 @@ Static class providing the user-facing bug report dialog. Loads config from the 
 - `initialDescription`: `string?` — Optional pre-filled text for the issue description (e.g. exception details)
 - `config`: `BugReportGitHubConfig` — Pre-loaded configuration
 
-#### Returns
+#### KryptonGitHubIssueReportDialog returns
 
 - `DialogResult.OK` — Issue created successfully; browser opened to the new issue
 - `DialogResult.Cancel` — User cancelled, or config load failed, or API error
 
-#### Exceptions
+#### KryptonGitHubIssueReportDialog exceptions
 
 - `ArgumentNullException` — `secretKey` is null or empty; or `config` is null (when using config overloads)
 - `InvalidOperationException` — `config` is not valid (when using config overloads)
@@ -259,7 +259,7 @@ Static class providing the user-facing bug report dialog. Loads config from the 
 
 If the encrypted config cannot be loaded (missing file, wrong key, corrupted data), a `KryptonMessageBox` is shown with an error message and `DialogResult.Cancel` is returned. The dialog is not shown.
 
-#### Example
+#### KryptonGitHubIssueReportDialog example
 
 ```csharp
 // From encrypted file (default path)
@@ -290,21 +290,21 @@ Service for creating GitHub issues programmatically (without showing the dialog)
 #### Methods (Public API – Title + Body)
 
 | Method | Description |
-|--------|-------------|
+| ------ | ----------- |
 | `CreateIssue(config, title, body)` | Creates a generic issue (sync) |
 | `CreateIssueAsync(config, title, body)` | Creates a generic issue (async) |
 
-#### Parameters
+#### BugReportGitHubService parameters
 
 - `config`: `BugReportGitHubConfig` — Valid configuration
 - `title`: `string` — Issue title
 - `body`: `string` — Issue body (markdown supported)
 
-#### Returns
+#### BugReportGitHubService returns
 
 - `BugReportGitHubResult` — Struct with `Success`, `IssueUrl`, `ErrorMessage`
 
-#### Example
+#### BugReportGitHubService example
 
 ```csharp
 var service = new BugReportGitHubService();
@@ -328,10 +328,10 @@ Read-only struct representing the outcome of an issue creation attempt.
 
 **Location**: `Krypton.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubResult.cs`
 
-#### Properties
+#### BugReportGitHubResult properties
 
 | Property | Type | Description |
-|----------|------|-------------|
+| ---------- | ---- | ----------- |
 | `Success` | `bool` | `true` if the issue was created |
 | `IssueUrl` | `string?` | URL of the created issue (when successful) |
 | `ErrorMessage` | `string?` | Error message (when failed) |
@@ -339,7 +339,7 @@ Read-only struct representing the outcome of an issue creation attempt.
 #### Static Factory Methods
 
 | Method | Description |
-|--------|-------------|
+| ------ | ----------- |
 | `SuccessResult(issueUrl)` | Creates a successful result |
 | `FailureResult(errorMessage)` | Creates a failed result |
 
@@ -423,7 +423,7 @@ public partial class AboutForm : KryptonForm
 
 ### Example 5: Unhandled Exception Handler
 
-```csharp
+````csharp
 Application.ThreadException += (sender, e) =>
 {
     var ex = e.Exception;
@@ -446,7 +446,7 @@ Application.ThreadException += (sender, e) =>
         }
     }
 };
-```
+````
 
 ### Example 6: Build-Time Config Generation (CI/CD)
 
@@ -476,7 +476,7 @@ public void GenerateEncryptedConfig()
 ### Secret Key Storage
 
 | Approach | Security | Recommendation |
-|----------|----------|----------------|
+| -------- | -------- | -------------- |
 | Hardcoded in source | Very low | Never use |
 | App.config / appsettings.json | Low | Avoid for production |
 | Environment variable | Medium | Acceptable for many scenarios |
@@ -511,6 +511,7 @@ public void GenerateEncryptedConfig()
 **Causes**: Config file missing, wrong path, wrong secret key, or corrupted file.
 
 **Solutions**:
+
 - Verify the `.enc` file exists at the expected path
 - Use `GetDefaultConfigFilePath()` to check the default path
 - Ensure the secret key matches the one used when saving
@@ -521,6 +522,7 @@ public void GenerateEncryptedConfig()
 **Causes**: Invalid or expired PAT, or insufficient scope.
 
 **Solutions**:
+
 - Regenerate the PAT in GitHub
 - Ensure scope includes `repo` or `public_repo`
 - Update the config file with the new PAT
@@ -530,6 +532,7 @@ public void GenerateEncryptedConfig()
 **Causes**: Invalid Owner or RepositoryName, or no access to the repository.
 
 **Solutions**:
+
 - Verify Owner and RepositoryName are correct (case-sensitive)
 - Ensure the PAT has access to the repository
 
@@ -538,6 +541,7 @@ public void GenerateEncryptedConfig()
 **Causes**: Config load failed before the dialog could be shown.
 
 **Solutions**:
+
 - Check that `TryLoadEncryptedConfig` would succeed before calling `Show`
 - Handle `DialogResult.Cancel` and inspect any message box that was shown
 

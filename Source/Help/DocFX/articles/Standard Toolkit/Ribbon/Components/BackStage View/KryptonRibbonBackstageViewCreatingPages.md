@@ -69,6 +69,7 @@
    - Arrange and configure controls as needed
 
 5. **Link to the ribbon**
+
    ```csharp
    kryptonRibbon.RibbonFileAppTab.UseBackstageView = true;
    kryptonRibbon.RibbonFileAppTab.BackstageView = kryptonBackstageView1;
@@ -170,16 +171,19 @@ backstage.Pages.Clear();
 ### Navigation Properties
 
 #### `string Text`
+
 - **Purpose**: Display text in the navigation list
 - **Default**: Empty string
 - **Example**: `page.Text = "Information"`
 
 #### `Image? Image`
+
 - **Purpose**: Optional image/icon for navigation (future enhancement)
 - **Default**: `null`
 - **Example**: `page.Image = Properties.Resources.InfoIcon`
 
 #### `bool VisibleInNavigation`
+
 - **Purpose**: Control whether the page appears in the navigation list
 - **Default**: `true`
 - **Use Case**: Hide pages that should be accessible programmatically but not via navigation
@@ -190,14 +194,17 @@ backstage.Pages.Clear();
 Since `KryptonBackstagePage` inherits from `KryptonPanel`, you have access to:
 
 #### `PaletteBackStyle PanelBackStyle`
+
 - Control the background style of the page
 - **Example**: `page.PanelBackStyle = PaletteBackStyle.PanelClient`
 
 #### `Padding Padding`
+
 - Internal spacing for the page content
 - **Example**: `page.Padding = new Padding(20)`
 
 #### Standard Control Properties
+
 - `BackColor`, `ForeColor`, `Font`, `Enabled`, `Visible`, `Dock`, `Anchor`, etc.
 
 ---
@@ -531,6 +538,7 @@ dataGrid.Columns.Add("Value", "Value");
 ### Theme Integration
 
 All Krypton controls automatically:
+
 - Adapt to the active theme
 - Use consistent colors and styles
 - Support theme switching at runtime
@@ -736,5 +744,4 @@ private KryptonBackstagePage CreateRecentFilesPage()
 - Leverage Krypton controls for theme-aware, consistent UI
 - Follow best practices for organization, performance, and user experience
 
-For more information, see the main [Ribbon Backstage View](Ribbon-BackstageView.md) documentation.
-
+For more information, see the main [Ribbon Backstage View](KryptonRibbonBackstageView.md) documentation.

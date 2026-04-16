@@ -36,10 +36,12 @@ kryptonRibbon.AllowDetach = false;
 ```
 
 **Behavior**:
+
 - When set to `false` while the ribbon is detached, the ribbon will automatically reattach to its original parent
 - This property must be `true` before calling `Detach()`
 
 **Design Considerations**:
+
 - Set this property at design time or during form initialization
 - Consider user preferences and application requirements before enabling
 
@@ -75,6 +77,7 @@ kryptonRibbon.FloatingWindowText = KryptonManager.Strings.MiscellaneousStrings.R
 ```
 
 **Usage Notes**:
+
 - This property is used when the ribbon is detached into a floating window
 - The text appears in the floating window's title bar
 - Defaults to "Ribbon" if not set
@@ -100,6 +103,7 @@ kryptonRibbon.SavePreferencesOnStateChange = false;
 ```
 
 **Usage Notes**:
+
 - When `true`, preferences are automatically saved when the ribbon is detached or reattached
 - When `true`, preferences are also saved when the floating window position changes
 - Set to `false` if you want to manually control when preferences are saved
@@ -120,6 +124,7 @@ else
 ```
 
 **Usage Notes**:
+
 - This property is automatically maintained by the ribbon control
 - Use this property to update UI elements that depend on ribbon state
 - Always check this property before calling `Reattach()` to avoid unnecessary operations
@@ -137,12 +142,14 @@ Detaches the ribbon from its current parent and moves it into a floating window.
 **Returns**: `true` if the ribbon was successfully detached; otherwise, `false`
 
 **Preconditions**:
+
 - `AllowDetach` must be `true`
 - Ribbon must have a valid parent control
 - Ribbon must not already be detached
 - Parent must be contained within a `Form` instance
 
 **Postconditions**:
+
 - Ribbon is removed from original parent
 - Ribbon is added to a new `VisualRibbonFloatingWindow`
 - Original state (parent, location, size, dock) is preserved
@@ -150,6 +157,7 @@ Detaches the ribbon from its current parent and moves it into a floating window.
 - `RibbonDetached` event is raised
 
 **Example**:
+
 ```csharp
 // Enable detach and detach the ribbon
 kryptonRibbon.AllowDetach = true;
@@ -165,12 +173,14 @@ else
 ```
 
 **Error Handling**:
+
 - Returns `false` if any precondition fails
 - Automatically attempts to restore state if an error occurs during detachment
 - Throws no exceptions; all errors are handled gracefully
 
 **State Preservation**:
 The following properties are automatically preserved and restored during reattachment:
+
 - Original parent control reference
 - Original `Location` (Point)
 - Original `Size` (Size)
@@ -187,11 +197,13 @@ Reattaches the ribbon to its original parent, closing the floating window.
 **Returns**: `true` if the ribbon was successfully reattached; otherwise, `false`
 
 **Preconditions**:
+
 - Ribbon must currently be detached (`IsDetached == true`)
 - Original parent must still be valid
 - Floating window must exist and be accessible
 
 **Postconditions**:
+
 - Ribbon is removed from floating window
 - Ribbon is added back to original parent
 - Original state (location, size, dock) is restored
@@ -200,6 +212,7 @@ Reattaches the ribbon to its original parent, closing the floating window.
 - `RibbonReattached` event is raised
 
 **Example**:
+
 ```csharp
 if (kryptonRibbon.IsDetached)
 {
@@ -215,18 +228,21 @@ if (kryptonRibbon.IsDetached)
 ```
 
 **Error Handling**:
+
 - Returns `false` if ribbon is not currently detached
 - Returns `false` if original parent is no longer valid
 - All errors are handled gracefully without exceptions
 
 **Automatic Reattachment**:
 The ribbon automatically reattaches when:
+
 - The floating window is closed by the user
 - The floating window's title bar is double-clicked
 - The floating window is disposed
 - `AllowDetach` is set to `false` while detached
 
 **User Interaction**:
+
 - **Double-Click Title Bar**: Double-clicking the floating window's title bar reattaches the ribbon
 - **Double-Click Caption Area**: When attached, double-clicking the ribbon's caption area detaches it (if `AllowDetach` is enabled)
 
@@ -239,11 +255,13 @@ The ribbon automatically reattaches when:
 Saves the current detach preferences (detached state and window position).
 
 **Remarks**:
+
 - This method raises the `DetachPreferencesChanged` event, allowing applications to persist the preferences using their preferred storage mechanism (Settings, Registry, file, etc.)
 - Automatically called when `SavePreferencesOnStateChange` is `true` and the state changes
 - Can be called manually to save preferences at any time
 
 **Example**:
+
 ```csharp
 // Manually save preferences
 kryptonRibbon.SaveDetachPreferences();
@@ -258,18 +276,21 @@ kryptonRibbon.SaveDetachPreferences();
 Loads and restores the detach preferences (detached state and window position).
 
 **Parameters**:
+
 - `isDetached`: The saved detached state
 - `floatingWindowPosition`: The saved floating window position, or `null` if not saved
 
 **Returns**: `true` if preferences were successfully loaded; otherwise `false`
 
 **Remarks**:
+
 - Call this method during form initialization to restore the previous state
 - If `isDetached` is `true`, the ribbon will be detached after the form is loaded
 - If `floatingWindowPosition` is provided, the floating window will be positioned at that location
 - The position is automatically validated to ensure it's on a visible screen (multi-monitor support)
 
 **Example**:
+
 ```csharp
 // Load saved preferences
 bool wasDetached = Properties.Settings.Default.RibbonDetached;
@@ -300,6 +321,7 @@ Raised when the ribbon is successfully detached into a floating window.
 **Event Arguments**: `EventArgs` (empty)
 
 **Usage**:
+
 ```csharp
 kryptonRibbon.RibbonDetached += OnRibbonDetached;
 
@@ -317,6 +339,7 @@ private void OnRibbonDetached(object? sender, EventArgs e)
 ```
 
 **When to Use**:
+
 - Update UI elements that depend on ribbon state
 - Save user preferences
 - Log user actions
@@ -324,6 +347,7 @@ private void OnRibbonDetached(object? sender, EventArgs e)
 - Trigger other UI updates
 
 **Best Practices**:
+
 - Keep event handlers lightweight
 - Avoid blocking operations
 - Use for UI updates and preference saving
@@ -341,6 +365,7 @@ Raised when the ribbon is successfully reattached to its original parent.
 **Event Arguments**: `EventArgs` (empty)
 
 **Usage**:
+
 ```csharp
 kryptonRibbon.RibbonReattached += OnRibbonReattached;
 
@@ -361,6 +386,7 @@ private void OnRibbonReattached(object? sender, EventArgs e)
 ```
 
 **When to Use**:
+
 - Update UI elements that depend on ribbon state
 - Save user preferences
 - Log user actions
@@ -368,6 +394,7 @@ private void OnRibbonReattached(object? sender, EventArgs e)
 - Restore form state
 
 **Best Practices**:
+
 - Perform layout updates after reattachment
 - Save user preferences for persistence
 - Update any dependent UI elements
@@ -385,6 +412,7 @@ Occurs when preferences should be saved (detached state and window position).
 **Event Arguments**: `DetachPreferencesEventArgs`
 
 **Usage**:
+
 ```csharp
 kryptonRibbon.DetachPreferencesChanged += OnDetachPreferencesChanged;
 
@@ -402,16 +430,19 @@ private void OnDetachPreferencesChanged(object? sender, DetachPreferencesEventAr
 ```
 
 **When to Use**:
+
 - Persist user preferences across application sessions
 - Save detached state and window position
 - Implement custom storage mechanisms (Registry, file, database, etc.)
 
 **Best Practices**:
+
 - Handle this event to save preferences to your preferred storage mechanism
 - The event is automatically raised when state changes if `SavePreferencesOnStateChange` is `true`
 - You can also call `SaveDetachPreferences()` manually to trigger this event
 
 **Event Arguments**:
+
 - `IsDetached`: Indicates whether the ribbon is currently detached
 - `FloatingWindowPosition`: The saved position of the floating window, or `null` if not saved
 
@@ -419,11 +450,11 @@ private void OnDetachPreferencesChanged(object? sender, DetachPreferencesEventAr
 
 ## VisualRibbonFloatingWindow Class
 
-### Overview
+### About VisualRibbonFloatingWindow
 
 `VisualRibbonFloatingWindow` is a specialized form class that hosts detached ribbons. It extends `KryptonForm` and provides a floating window specifically designed for ribbon controls.
 
-### Properties
+### Floating window properties
 
 #### `Ribbon`
 
@@ -440,7 +471,7 @@ if (floatingWindow.Ribbon != null)
 }
 ```
 
-### Events
+### Floating window events
 
 #### `WindowClosing`
 
@@ -450,6 +481,7 @@ if (floatingWindow.Ribbon != null)
 Occurs when the floating window is closing, allowing the ribbon to be reattached before the window is disposed.
 
 **Usage**:
+
 ```csharp
 floatingWindow.WindowClosing += (sender, e) =>
 {
@@ -470,6 +502,7 @@ floatingWindow.WindowClosing += (sender, e) =>
 Occurs when the floating window's title bar is double-clicked, allowing the ribbon to be reattached.
 
 **Usage**:
+
 ```csharp
 floatingWindow.TitleBarDoubleClick += (sender, e) =>
 {
@@ -492,6 +525,7 @@ floatingWindow.TitleBarDoubleClick += (sender, e) =>
 ### Window Sizing
 
 The floating window automatically sizes itself to fit the ribbon:
+
 - Minimum width: 400 pixels
 - Height: Ribbon height + caption bar height
 - Width: Ribbon width (if > 400px) or 400px minimum
@@ -507,6 +541,7 @@ The detachable ribbons feature maintains comprehensive state information:
 #### Preserved State
 
 When detaching, the following state is preserved:
+
 ```csharp
 _originalParent    // Control reference
 _originalLocation  // Point
@@ -517,6 +552,7 @@ _originalDock      // DockStyle
 #### Form Integration
 
 The ribbon's form integration is automatically managed:
+
 - **When Detached**: `CaptionArea.PreventIntegration = true`
 - **When Reattached**: `CaptionArea.PreventIntegration = false`
 
@@ -994,6 +1030,7 @@ private void DetachAllRibbons()
 **Problem**: `Detach()` returns `false`
 
 **Possible Causes**:
+
 1. `AllowDetach` is `false`
    - **Solution**: Set `kryptonRibbon.AllowDetach = true`
 
@@ -1011,6 +1048,7 @@ private void DetachAllRibbons()
 **Problem**: `Reattach()` returns `false`
 
 **Possible Causes**:
+
 1. Ribbon is not currently detached
    - **Solution**: Check `IsDetached` property
 
@@ -1025,6 +1063,7 @@ private void DetachAllRibbons()
 **Problem**: Floating window is too small or too large
 
 **Possible Causes**:
+
 1. Ribbon size not calculated correctly
    - **Solution**: Ensure ribbon has been laid out before detaching
 
@@ -1032,6 +1071,7 @@ private void DetachAllRibbons()
    - **Solution**: Check DPI awareness settings
 
 **Workaround**:
+
 ```csharp
 // Force layout before detaching
 kryptonRibbon.PerformLayout();
@@ -1043,6 +1083,7 @@ kryptonRibbon.Detach();
 **Problem**: Ribbon doesn't integrate with form caption after reattachment
 
 **Possible Causes**:
+
 1. Form integration was manually disabled
    - **Solution**: The feature automatically manages integration; avoid manual changes
 
@@ -1080,11 +1121,13 @@ kryptonRibbon.Detach();
 If you're adding detachable ribbons to an existing application:
 
 1. **Enable the Feature**:
+
    ```csharp
    kryptonRibbon.AllowDetach = true;
    ```
 
 2. **Handle Events** (Optional):
+
    ```csharp
    kryptonRibbon.RibbonDetached += OnRibbonDetached;
    kryptonRibbon.RibbonReattached += OnRibbonReattached;

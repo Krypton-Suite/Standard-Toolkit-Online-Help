@@ -888,5 +888,5 @@ private void AddCustomHelpButton()
 ## See Also
 
 - [Full Documentation](KryptonDetachableRibbon.md) - Comprehensive feature documentation
-- [API Reference](KryptonDetachableRibbonsAPIReference.md) - Quick API reference
+- [API Reference](KryptonDetachableRibbonAPIReference.md) - Quick API reference
 - [Issue #595](https://github.com/Krypton-Suite/Standard-Toolkit/issues/595) - Original feature request

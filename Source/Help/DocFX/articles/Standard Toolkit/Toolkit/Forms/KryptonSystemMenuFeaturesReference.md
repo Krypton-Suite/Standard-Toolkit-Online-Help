@@ -21,16 +21,18 @@ The `KryptonSystemMenu` is a comprehensive themed system menu implementation tha
 ## Core Features
 
 ### 1. Themed System Menu Replacement
+
 - **Complete Native Replacement**: Fully replaces the native Windows system menu
 - **KryptonContextMenu Integration**: Built on top of KryptonContextMenu for consistent theming
 - **Seamless Integration**: Works with existing KryptonForm infrastructure
 - **Cross-Platform Compatibility**: Designed for Windows Forms applications
 
 ### 2. Standard Menu Items Support
+
 The system supports all standard Windows system menu items:
 
 | Menu Item | Description | Icon Support | State Management |
-|-----------|-------------|--------------|------------------|
+| --- | --- | --- | --- |
 | **Restore** | Restore window to normal size | ✅ | Dynamic enable/disable |
 | **Move** | Allow window dragging | ❌ | Based on form border style |
 | **Size** | Allow window resizing | ❌ | Based on form border style |
@@ -39,6 +41,7 @@ The system supports all standard Windows system menu items:
 | **Close** | Close the window | ✅ | Based on ControlBox property |
 
 ### 3. Dynamic Menu Structure
+
 - **Conditional Item Display**: Menu items appear/disappear based on form state and properties
 - **Separator Management**: Automatic separator insertion between logical groups
 - **Keyboard Shortcuts**: Support for Alt+F4 (Close) and Alt+Space (Show menu)
@@ -47,6 +50,7 @@ The system supports all standard Windows system menu items:
 ## Menu Item Management
 
 ### 1. Menu Item Creation and Management
+
 ```csharp
 // Direct field references for efficient access
 private KryptonContextMenuItem? _menuItemRestore;
@@ -58,9 +62,11 @@ private KryptonContextMenuItem? _menuItemClose;
 ```
 
 ### 2. Conditional Menu Item Logic
+
 The system implements sophisticated logic for when to show each menu item:
 
 #### Restore Item
+
 ```csharp
 // Only show if window is not in normal state and either minimize or maximize is enabled
 if (_form.WindowState != FormWindowState.Normal && (_form.MinimizeBox || _form.MaximizeBox))
@@ -70,6 +76,7 @@ if (_form.WindowState != FormWindowState.Normal && (_form.MinimizeBox || _form.M
 ```
 
 #### Move and Size Items
+
 ```csharp
 // Only add if the window is resizable
 if (_form.FormBorderStyle != FormBorderStyle.FixedSingle && 
@@ -81,6 +88,7 @@ if (_form.FormBorderStyle != FormBorderStyle.FixedSingle &&
 ```
 
 #### Separator Logic
+
 ```csharp
 // Add separator if we have items before it and either minimize or maximize is enabled
 if (_contextMenu.Items.Count > 0 && (_form.MinimizeBox || _form.MaximizeBox))
@@ -90,6 +98,7 @@ if (_contextMenu.Items.Count > 0 && (_form.MinimizeBox || _form.MaximizeBox))
 ```
 
 ### 3. Menu Item State Management
+
 Dynamic enable/disable based on current form state:
 
 ```csharp
@@ -134,10 +143,11 @@ private void UpdateMenuItemsState()
 ## Icon System
 
 ### 1. Multi-Theme Icon Support
+
 The system supports 7 different icon themes:
 
 | Theme | Description | Icon Style |
-|-------|-------------|------------|
+| --- | --- | --- |
 | **Office2013** | Modern, clean icons | Flat, minimal design |
 | **Office2010** | Classic Office 2010 | Traditional Windows style |
 | **Office2007** | Office 2007 style | Ribbon-era design |
@@ -147,6 +157,7 @@ The system supports 7 different icon themes:
 | **Office2003** | Classic Office 2003 | Legacy Windows style |
 
 ### 2. Automatic Theme Detection
+
 ```csharp
 public string GetCurrentTheme()
 {
@@ -168,9 +179,11 @@ public string GetCurrentTheme()
 ```
 
 ### 3. Color-Based Theme Detection
+
 The system uses sophisticated color analysis to determine the appropriate theme:
 
 #### Light Color Detection
+
 ```csharp
 private bool IsLightColor(Color color)
 {
@@ -180,6 +193,7 @@ private bool IsLightColor(Color color)
 ```
 
 #### Blue Tone Detection
+
 ```csharp
 private bool IsBlueTone(Color color)
 {
@@ -188,6 +202,7 @@ private bool IsBlueTone(Color color)
 ```
 
 #### Dark Blue Tone Detection
+
 ```csharp
 private bool IsDarkBlueTone(Color color)
 {
@@ -196,6 +211,7 @@ private bool IsDarkBlueTone(Color color)
 ```
 
 ### 4. Fallback Icon Generation
+
 When theme-specific icons are unavailable, the system generates custom drawn icons:
 
 ```csharp
@@ -234,9 +250,11 @@ private Image? GetDrawnIcon(SystemMenuIconType iconType)
 ```
 
 ### 5. Custom Icon Drawing
+
 The system includes custom drawing methods for each icon type:
 
 #### Restore Icon
+
 ```csharp
 private void DrawRestoreIcon(Graphics graphics, int size, Color foregroundColor, Color backgroundColor)
 {
@@ -264,6 +282,7 @@ private void DrawRestoreIcon(Graphics graphics, int size, Color foregroundColor,
 ```
 
 #### Minimize Icon
+
 ```csharp
 private void DrawMinimizeIcon(Graphics graphics, int size, Color foregroundColor)
 {
@@ -275,6 +294,7 @@ private void DrawMinimizeIcon(Graphics graphics, int size, Color foregroundColor
 ```
 
 #### Maximize Icon
+
 ```csharp
 private void DrawMaximizeIcon(Graphics graphics, int size, Color foregroundColor)
 {
@@ -286,6 +306,7 @@ private void DrawMaximizeIcon(Graphics graphics, int size, Color foregroundColor
 ```
 
 #### Close Icon
+
 ```csharp
 private void DrawCloseIcon(Graphics graphics, int size, Color foregroundColor)
 {
@@ -299,6 +320,7 @@ private void DrawCloseIcon(Graphics graphics, int size, Color foregroundColor)
 ## Theme Integration
 
 ### 1. Palette Integration
+
 The system integrates deeply with the Krypton palette system:
 
 ```csharp
@@ -324,6 +346,7 @@ private Color GetThemeBackgroundColor()
 ```
 
 ### 2. Theme Change Handling
+
 ```csharp
 public void RefreshThemeIcons()
 {
@@ -359,6 +382,7 @@ public void SetThemeType(ThemeType themeType)
 ## Positioning and Display
 
 ### 1. Smart Positioning
+
 The system includes intelligent positioning logic to ensure menus stay within screen bounds:
 
 ```csharp
@@ -396,11 +420,13 @@ private Point AdjustMenuPosition(Point originalLocation)
 ```
 
 ### 2. Multiple Display Methods
+
 - **Show(Point)**: Show at specific screen coordinates
 - **ShowAtFormTopLeft()**: Show at form's top-left corner (native behavior)
 - **Automatic positioning**: Adjusts position to stay within screen bounds
 
 ### 3. Screen Awareness
+
 ```csharp
 public void Show(Point screenLocation)
 {
@@ -415,6 +441,7 @@ public void Show(Point screenLocation)
 ## State Management
 
 ### 1. Form State Integration
+
 The system monitors and responds to form state changes:
 
 ```csharp
@@ -428,10 +455,11 @@ public void Refresh()
 ```
 
 ### 2. Property-Based State Management
+
 Menu items are enabled/disabled based on form properties:
 
 | Form Property | Affects | Logic |
-|---------------|---------|-------|
+| --- | --- | --- |
 | `MinimizeBox` | Minimize item | Must be true to enable minimize |
 | `MaximizeBox` | Maximize item | Must be true to enable maximize |
 | `ControlBox` | Close item | Must be true to show close |
@@ -439,6 +467,7 @@ Menu items are enabled/disabled based on form properties:
 | `WindowState` | All items | Current state affects availability |
 
 ### 3. Dynamic State Updates
+
 ```csharp
 private void UpdateMenuItemsState()
 {
@@ -456,6 +485,7 @@ private void UpdateMenuItemsState()
 ## Event Handling
 
 ### 1. Menu Item Click Events
+
 Each menu item has dedicated event handlers:
 
 ```csharp
@@ -466,9 +496,11 @@ private void OnCloseItemOnClick(object? sender, EventArgs e) => ExecuteClose();
 ```
 
 ### 2. Action Execution
+
 Each action is implemented with proper fallback mechanisms:
 
 #### Restore Action
+
 ```csharp
 private void ExecuteRestore()
 {
@@ -491,6 +523,7 @@ private void ExecuteRestore()
 ```
 
 #### Move Action
+
 ```csharp
 private void ExecuteMove()
 {
@@ -506,6 +539,7 @@ private void ExecuteMove()
 ```
 
 #### Size Action
+
 ```csharp
 private void ExecuteSize()
 {
@@ -521,6 +555,7 @@ private void ExecuteSize()
 ```
 
 ### 3. System Command Integration
+
 ```csharp
 private void SendSysCommand(PI.SC_ command)
 {
@@ -533,12 +568,14 @@ private void SendSysCommand(PI.SC_ command)
 ## Performance Features
 
 ### 1. Efficient Resource Management
+
 - **Direct Field References**: Uses direct field references for menu items instead of searching collections
 - **Icon Caching**: Icons are cached and only regenerated when themes change
 - **Lazy Loading**: Menu items are created only when needed
 - **Memory Management**: Proper disposal of graphics resources
 
 ### 2. Optimized State Updates
+
 ```csharp
 private void UpdateMenuItemsState()
 {
@@ -552,6 +589,7 @@ private void UpdateMenuItemsState()
 ```
 
 ### 3. Smart Refresh Logic
+
 ```csharp
 public void Refresh()
 {
@@ -565,6 +603,7 @@ public void Refresh()
 ## Error Handling
 
 ### 1. Comprehensive Exception Handling
+
 ```csharp
 private void BuildSystemMenu()
 {
@@ -586,6 +625,7 @@ private void BuildSystemMenu()
 ```
 
 ### 2. Graceful Degradation
+
 ```csharp
 private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
 {
@@ -611,6 +651,7 @@ private Image? GetSystemMenuIcon(SystemMenuIconType iconType)
 ```
 
 ### 3. Disposal Safety
+
 ```csharp
 public void Show(Point screenLocation)
 {
@@ -634,6 +675,7 @@ private void ThrowIfDisposed()
 ## Resource Management
 
 ### 1. IDisposable Implementation
+
 ```csharp
 public void Dispose()
 {
@@ -660,6 +702,7 @@ protected virtual void Dispose(bool disposing)
 ```
 
 ### 2. Graphics Resource Management
+
 ```csharp
 private void DrawRestoreIcon(Graphics graphics, int size, Color foregroundColor, Color backgroundColor)
 {
@@ -683,6 +726,7 @@ private void DrawRestoreIcon(Graphics graphics, int size, Color foregroundColor,
 ```
 
 ### 3. Image Processing
+
 ```csharp
 private Image? ProcessImageForTransparency(Image? originalImage)
 {
@@ -717,6 +761,7 @@ private Image? ProcessImageForTransparency(Image? originalImage)
 ## Advanced Features
 
 ### 1. Keyboard Shortcut Handling
+
 ```csharp
 public bool HandleKeyboardShortcut(Keys keyData)
 {
@@ -745,6 +790,7 @@ public bool HandleKeyboardShortcut(Keys keyData)
 ```
 
 ### 2. Icon Type Detection
+
 ```csharp
 private SystemMenuIconType? GetIconTypeFromText(string text)
 {
@@ -765,6 +811,7 @@ private SystemMenuIconType? GetIconTypeFromText(string text)
 ```
 
 ### 3. Theme Resource Management
+
 ```csharp
 private Image? GetOffice2013Icon(SystemMenuIconType iconType)
 {
@@ -792,6 +839,7 @@ private Image? GetOffice2013Icon(SystemMenuIconType iconType)
 ```
 
 ### 4. Multi-Screen Support
+
 The positioning system is aware of multiple screens and adjusts menu position accordingly:
 
 ```csharp
@@ -805,18 +853,21 @@ private Point AdjustMenuPosition(Point originalLocation)
 ## Configuration Options
 
 ### 1. Behavior Configuration
+
 - `Enabled`: Enable/disable the entire system menu
 - `ShowOnLeftClick`: Control left-click behavior
 - `ShowOnRightClick`: Control right-click behavior  
 - `ShowOnAltSpace`: Control Alt+Space behavior
 
 ### 2. Theme Configuration
+
 - `CurrentIconTheme`: Get current theme name
 - `SetIconTheme(string)`: Set specific theme
 - `SetThemeType(ThemeType)`: Set theme by type
 - `RefreshThemeIcons()`: Force icon refresh
 
 ### 3. State Configuration
+
 - `MenuItemCount`: Get number of menu items
 - `HasMenuItems`: Check if menu has items
 - `Refresh()`: Force complete refresh
@@ -824,16 +875,19 @@ private Point AdjustMenuPosition(Point originalLocation)
 ## Integration Points
 
 ### 1. KryptonForm Integration
+
 - Direct integration through form properties
 - Automatic state synchronization
 - Theme inheritance from form palette
 
 ### 2. KryptonContextMenu Integration
+
 - Built on top of KryptonContextMenu
 - Inherits all context menu features
 - Consistent theming and behavior
 
 ### 3. Palette System Integration
+
 - Automatic theme detection
 - Color-based theme selection
 - Dynamic icon adaptation

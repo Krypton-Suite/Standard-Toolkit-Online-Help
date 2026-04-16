@@ -10,7 +10,7 @@ The Acrylic themes provide Windows 10 Fluent Design-inspired semi-transparent su
 
 The Acrylic themes follow the Material palette structure pattern:
 
-```
+```text
 PaletteAcrylicBase (Abstract)
 ├── PaletteAcrylicLight
 └── PaletteAcrylicDark
@@ -22,6 +22,7 @@ PaletteAcrylicDark_BaseScheme (Color Scheme)
 ### Key Components
 
 #### 1. PaletteAcrylicBase
+
 - **Location**: `Source/Krypton Components/Krypton.Toolkit/Palette Builtin/Acrylic/Bases/PaletteAcrylicBase.cs`
 - **Purpose**: Abstract base class providing common acrylic functionality
 - **Inherits**: `PaletteMicrosoft365Base`
@@ -31,6 +32,7 @@ PaletteAcrylicDark_BaseScheme (Color Scheme)
   - Renderer assignment (`KryptonManager.RenderAcrylic`)
 
 #### 2. PaletteAcrylicLight & PaletteAcrylicDark
+
 - **Location**: `Source/Krypton Components/Krypton.Toolkit/Palette Builtin/Acrylic/`
 - **Purpose**: Concrete theme implementations
 - **Features**:
@@ -39,12 +41,14 @@ PaletteAcrylicDark_BaseScheme (Color Scheme)
   - Context menu glyph support
 
 #### 3. Color Schemes
+
 - **Location**: `Source/Krypton Components/Krypton.Toolkit/Palette Builtin/Acrylic/Schemes/`
 - **Purpose**: Explicit color definitions
 - **Pattern**: Inherit from `KryptonColorSchemeBase` and override all 250+ color properties
 - **Transparency**: Colors use alpha values (120-180 range) for semi-transparency
 
 #### 4. RenderAcrylic
+
 - **Location**: `Source/Krypton Components/Krypton.Toolkit/Rendering/RenderAcrylic.cs`
 - **Purpose**: Custom renderer for acrylic effects
 - **Key Method**: `EvalTransparentPaint()` - Always returns `true` to enable transparency
@@ -92,12 +96,14 @@ public bool IsAcrylicTheme()
 ## Color Characteristics
 
 ### Transparency Values
+
 - **Background Colors**: Alpha 120-180 (semi-transparent)
 - **Border Colors**: Alpha 80-120 (more transparent)
 - **Text Colors**: Alpha 255 (fully opaque for readability)
 
 ### Color Palette
-- **Light Theme**: 
+
+- **Light Theme**:
   - Primary: `Color.FromArgb(180, 255, 255, 255)` (semi-transparent white)
   - Accent: `Color.FromArgb(255, 0, 120, 215)` (Microsoft blue)
 - **Dark Theme**:
@@ -107,6 +113,7 @@ public bool IsAcrylicTheme()
 ## Integration Points
 
 ### PaletteMode Enum
+
 ```csharp
 public enum PaletteMode
 {
@@ -118,12 +125,14 @@ public enum PaletteMode
 ```
 
 ### PaletteModeStrings
+
 ```csharp
 internal const string DEFAULT_PALETTE_ACRYLIC_LIGHT = @"Acrylic - Light";
 internal const string DEFAULT_PALETTE_ACRYLIC_DARK = @"Acrylic - Dark";
 ```
 
 ### KryptonManager Integration
+
 ```csharp
 public static PaletteAcrylicLight PaletteAcrylicLight => _paletteAcrylicLight ??= new PaletteAcrylicLight();
 public static PaletteAcrylicDark PaletteAcrylicDark => _paletteAcrylicDark ??= new PaletteAcrylicDark();
@@ -137,6 +146,7 @@ public static RenderAcrylic RenderAcrylic => _renderAcrylic ??= new RenderAcryli
 To create custom acrylic variants:
 
 1. **Create Custom Base Scheme**:
+
 ```csharp
 public sealed class PaletteAcrylicCustom_BaseScheme : KryptonColorSchemeBase
 {
@@ -145,7 +155,8 @@ public sealed class PaletteAcrylicCustom_BaseScheme : KryptonColorSchemeBase
 }
 ```
 
-2. **Create Custom Palette**:
+1. **Create Custom Palette**:
+
 ```csharp
 public class PaletteAcrylicCustom : PaletteAcrylicBase
 {
@@ -155,7 +166,8 @@ public class PaletteAcrylicCustom : PaletteAcrylicBase
 }
 ```
 
-3. **Register in PaletteMode**:
+1. **Register in PaletteMode**:
+
 ```csharp
 public enum PaletteMode
 {
@@ -179,11 +191,13 @@ public override Color ButtonNormalBorder { get; set; } = Color.FromArgb(150, 220
 ## Performance Considerations
 
 ### Transparency Impact
+
 - **CPU Usage**: Semi-transparent surfaces require additional compositing
 - **Memory**: Alpha blending increases memory usage
 - **Rendering**: May impact performance on older hardware
 
 ### Optimization Tips
+
 - Use acrylic themes selectively (not for all UI elements)
 - Consider disabling transparency on low-end devices
 - Test performance on target hardware
@@ -219,18 +233,22 @@ public void DebugAcrylicTheme()
 ## Future Enhancements
 
 ### Planned Features
+
 - Windows API integration for true acrylic blur effects
 - Dynamic transparency based on system settings
 - Hardware acceleration support
 - Custom blur intensity controls
 
 ### Windows API Integration
+
 Future versions may integrate with:
+
 - `SetWindowCompositionAttribute` API
 - DirectComposition for hardware acceleration
 - Windows 10+ Fluent Design APIs
 
 ## Related Documentation
-- [Mica Themes Documentation](../Mica/README.md)
-- [Material Themes Documentation](../Material/README.md)
-- [Krypton Toolkit Palette System](../../../Documents/palette-mechanics-intro.md)
+
+- [Mica theme (overview)](MicaTheme.md)
+- [Fluent Design developer guide](FluentDesignDeveloperGuide.md)
+- [Krypton Toolkit palette system](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Documents/palette-mechanics-intro.md)

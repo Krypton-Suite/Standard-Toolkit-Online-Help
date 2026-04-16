@@ -1,6 +1,7 @@
 # Navigator Tooltips Properties  
   
 Applicable Modes:  
+
 * Bar - Tab - Group
 * Bar - Tab - Only
 * Bar - RibbonTab - Group
@@ -18,16 +19,14 @@ Applicable Modes:
 * Outlook - Mini
 * HeaderGroup
 * HeaderGroup - Tab
- 
 
 **Tooltips Properties**  
 The set of properties associated with the showing of tool tips can be seen in
 Figure 1 as they appear in the properties window.  
 
-![](Images/NavTooltipsProps.png)
+![Figure 1 - Tooltips Properties](Images/NavTooltipsProps.png)
   
-*Figure 1 - Tooltips Properties*  
-  
+## Figure 1 - Tooltips Properties
   
 **AllowButtonSpecTooltips**  
 A simple boolean property that determines if tooltips are displayed when the
@@ -35,7 +34,6 @@ mouse hovers over a button specification. This allows the the pre-defined butto
 specifications such as the *Close/Context/Next/Previous* buttons as well as user
 defined specification via the *Button.ButtonSpecs* collection property.
 
-  
 **AllowPageTooltips**  
 Determines if tooltips are displayed when the mouse hovers over a *KryptonPage*
 header item. A header item can be a check button, tab header, tab ribbon header,
@@ -43,13 +41,11 @@ stack item or overflow item depending on the how the mode displays pages. Note
 that the default value for this property is *False* and so by default no
 tooltips will be displayed.
 
- 
-
 **MapExtraText + MapText + MapImage**  
 The mapping properties are used to describe how to map the *KryptonPage* values
 to the tool tip display values.  
   
-*MapImage *is used to recover an image from the page. To prevent any image from
+*MapImage*is used to recover an image from the page. To prevent any image from
 being shown assign the *None* value. To show the *ImageSmall* form the page
 assign *Small* to the *MapImage*. More complex mappings are possible, for
 example a value of *LargeMediumSmall* indicates that the *ImageLarge* property

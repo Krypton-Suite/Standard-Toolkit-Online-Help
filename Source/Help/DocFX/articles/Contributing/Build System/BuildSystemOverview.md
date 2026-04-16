@@ -13,6 +13,7 @@ The Krypton Toolkit Suite uses a sophisticated MSBuild-based build system design
 - **Archive Generation**: Creates ZIP and TAR.GZ distribution archives
 - **CI/CD Integration**: Full GitHub Actions workflow support
 - **Modern Build Tool**: Optional Terminal UI tool for interactive builds
+- **Artifacts output layout (optional)**: MSBuild can place binaries under `artifacts/bin/<Configuration>/` and packages under `artifacts/packages/<Configuration>/` when `UseArtifactsOutput=true` (default is legacy `Bin/`). Script `.proj` files and GitHub Actions use the shared path properties so both layouts work.
 
 ## Build System Components
 
@@ -39,9 +40,9 @@ Located in `Scripts/`:
 
 ### 3. Directory.Build Files
 
-- `Directory.Build.props` (root) - Global build properties and versioning
-- `Source/Krypton Components/Directory.Build.props` - Component-specific properties
-- `Source/Krypton Components/Directory.Build.targets` - Component-specific targets
+- `Directory.Build.props` (root) - Global build properties, versioning, and shared output roots (`KryptonBuildOutputRoot`, `KryptonPackageOutputRoot`, `UseArtifactsOutput`)
+- `Source/Krypton Components/Directory.Build.props` - Component-specific properties (including `PackageOutputPath` derived from `KryptonPackageOutputRoot`)
+- `Source/Krypton Components/Directory.Build.targets` - Component-specific targets (optional `OutputPath` override when `UseArtifactsOutput=true`)
 
 ### 4. GitHub Actions Workflows
 
@@ -98,12 +99,15 @@ Standard-Toolkit/
 │       ├── Krypton.Navigator/
 │       ├── Krypton.Workspace/
 │       └── Krypton.Docking/
-├── Bin/                 # Build outputs
+├── Bin/                 # Default build outputs (when UseArtifactsOutput is false or unset)
 │   ├── Debug/
 │   ├── Release/
 │   ├── Canary/
 │   ├── Nightly/
 │   └── Packages/        # NuGet packages
+├── artifacts/           # Optional outputs when UseArtifactsOutput=true
+│   ├── bin/             # Per-configuration binaries (mirrors Bin/<Configuration>/ layout)
+│   └── packages/        # NuGet packages (mirrors Bin/Packages/<Configuration>/)
 ├── Logs/                # Build logs
 └── Documents/
     └── Workflows/       # Build documentation
@@ -111,18 +115,22 @@ Standard-Toolkit/
 
 ## Build Outputs
 
-### Binary Outputs
+### Binary outputs
 
-Location: `Bin/<Configuration>/`
+**Default (legacy)**: `Bin/<Configuration>/`
+
+**Artifacts mode**: `artifacts/bin/<Configuration>/` when building with `/p:UseArtifactsOutput=true`
 
 Each configuration produces outputs for all target frameworks in separate subdirectories:
 
 - `net472/`, `net48/`, `net481/`
 - `net8.0-windows/`, `net9.0-windows/`, `net10.0-windows/`, `net11.0-windows/`
 
-### NuGet Packages
+### NuGet packages
 
-Location: `Bin/Packages/<Configuration>/`
+**Default (legacy)**: `Bin/Packages/<Configuration>/`
+
+**Artifacts mode**: `artifacts/packages/<Configuration>/` when `UseArtifactsOutput=true`
 
 Generated packages:
 
@@ -133,9 +141,9 @@ Generated packages:
 - `Krypton.Docking[.Suffix].<version>.nupkg`
 - Symbol packages: `*.snupkg` (for Canary and Nightly)
 
-### Distribution Archives
+### Distribution archives
 
-Location: `Bin/<Configuration>/Zips/`
+Location: under the active binary root, e.g. `Bin/<Configuration>/Zips/` or `artifacts/bin/<Configuration>/Zips/`.
 
 Generated archives:
 
@@ -238,7 +246,7 @@ For detailed information about specific aspects of the build system:
 - [Directory.Build Configuration](DirectoryBuildConfiguration.md) - MSBuild configuration
 - [Version Management](VersionManagement.md) - Versioning strategy
 - [NuGet Packaging](NuGetPackaging.md) - Package creation and publishing
-- [GitHub Actions Workflows](GitHubActionsWorkflows.md) - CI/CD documentation
+- [Build workflow (build.yml)](Current/BuildWorkflow.md) and [Release workflow (release.yml)](Current/ReleaseWorkflow.md) - CI/CD documentation
 - [ModernBuild Tool](ModernBuildTool.md) - Interactive build tool
 - [Troubleshooting](Troubleshooting.md) - Common issues and solutions
 

@@ -32,7 +32,7 @@ This aligns QAT behavior with `KryptonFormTitleBar` ButtonSpecs and the integrat
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │  KryptonRibbon.QATButtons (KryptonRibbonQATButtonCollection)    │
 │  ┌─────────────────────────────────────────────────────────────┐│
@@ -69,7 +69,7 @@ This aligns QAT behavior with `KryptonFormTitleBar` ButtonSpecs and the integrat
 ### KryptonRibbonQATButton
 
 | Member | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | **Type** | `PaletteButtonSpecStyle` | Button spec style for themed icons. Default: `Generic`. When non-Generic, palette provides icon, color map, and default tooltip. |
 | **Image** | `Image?` | Custom image. Used only when `Type == Generic`. Must be 16×16 or smaller. |
 | **Text** | `string` | Display text (used in customize menu, key tips). Default: `"QAT Button"`. |
@@ -93,7 +93,7 @@ This aligns QAT behavior with `KryptonFormTitleBar` ButtonSpecs and the integrat
 All QAT button sources must implement this interface. The following member was added for ButtonSpec styles:
 
 | Member | Return Type | Description |
-|--------|-------------|-------------|
+| --- | --- | --- |
 | **GetButtonSpecType()** | `PaletteButtonSpecStyle` | Returns the button spec style. `Generic` means use custom image/tooltip. |
 
 Existing members remain: `GetImage()`, `GetText()`, `GetEnabled()`, `GetVisible()`, `GetToolTipTitle()`, `GetToolTipBody()`, `GetShortcutKeys()`, etc.
@@ -103,14 +103,14 @@ Existing members remain: `GetImage()`, `GetText()`, `GetEnabled()`, `GetVisible(
 ### KryptonRibbon
 
 | Member | Type | Description |
-|--------|------|-------------|
+| --- | --- | --- |
 | **QATButtons** | `KryptonRibbonQATButtonCollection` | Collection of QAT buttons. |
 | **InsertStandardQATItems()** | `void` | Clears `QATButtons` and adds a standard set (New, Open, Save, Cut, Copy, Paste, etc.). |
 
 **Internal (designer use):**
 
 | Member | Return Type | Description |
-|--------|-------------|-------------|
+| --- | --- | --- |
 | **CreateStandardQATButtons()** | `KryptonRibbonQATButton[]` | Creates template buttons for the standard set. Uses `KryptonManager.Strings.ToolBarStrings` for text. |
 
 ---
@@ -118,7 +118,7 @@ Existing members remain: `GetImage()`, `GetText()`, `GetEnabled()`, `GetVisible(
 ### KryptonRibbonDesigner
 
 | Verb | Description |
-|------|-------------|
+| --- | --- |
 | **Insert Standard Items** | Clears existing QAT buttons and inserts the standard set. Wrapped in a designer transaction for undo/redo. |
 
 ---
@@ -130,7 +130,7 @@ Defined in `Krypton.Toolkit` (`PaletteDefinitions.cs`). Styles suitable for QAT 
 ### File operations
 
 | Value | Description |
-|-------|-------------|
+| --- | --- |
 | `New` | New document/file |
 | `Open` | Open file |
 | `Save` | Save |
@@ -140,7 +140,7 @@ Defined in `Krypton.Toolkit` (`PaletteDefinitions.cs`). Styles suitable for QAT 
 ### Edit operations
 
 | Value | Description |
-|-------|-------------|
+| --- | --- |
 | `Cut` | Cut |
 | `Copy` | Copy |
 | `Paste` | Paste |
@@ -152,7 +152,7 @@ Defined in `Krypton.Toolkit` (`PaletteDefinitions.cs`). Styles suitable for QAT 
 ### Print operations
 
 | Value | Description |
-|-------|-------------|
+| --- | --- |
 | `PageSetup` | Page setup |
 | `PrintPreview` | Print preview |
 | `Print` | Print |
@@ -161,7 +161,7 @@ Defined in `Krypton.Toolkit` (`PaletteDefinitions.cs`). Styles suitable for QAT 
 ### Navigation / UI
 
 | Value | Description |
-|-------|-------------|
+| --- | --- |
 | `Previous` | Previous |
 | `Next` | Next |
 | `ArrowLeft` | Left arrow |
@@ -175,7 +175,7 @@ Defined in `Krypton.Toolkit` (`PaletteDefinitions.cs`). Styles suitable for QAT 
 ### Form / ribbon
 
 | Value | Description |
-|-------|-------------|
+| --- | --- |
 | `FormClose` | Form close |
 | `FormMin` | Form minimize |
 | `FormMax` | Form maximize |

@@ -18,62 +18,72 @@ The `Krypton.Toolkit` namespace contains the core controls and utilities that fo
 ### Basic Controls
 
 #### Input Controls
+
 - **[KryptonButton](KryptonButton.md)** - Themed button control with multiple states
 - **[KryptonTextBox](KryptonTextBox.md)** - Single-line text input control
-- **[KryptonRichTextBox](KryptonRichTextBox.md)** - Multi-line rich text input control
-- **[KryptonMaskedTextBox](KryptonMaskedTextBox.md)** - Text input with format masking
-- **[KryptonComboBox](KryptonComboBox.md)** - Dropdown selection control
-- **[KryptonDomainUpDown](KryptonDomainUpDown.md)** - Domain up/down control
-- **[KryptonNumericUpDown](KryptonNumericUpDown.md)** - Numeric up/down control
-- **[KryptonDateTimePicker](KryptonDateTimePicker.md)** - Date and time picker control
+- **`KryptonRichTextBox`** - Multi-line rich text input control
+- **`KryptonMaskedTextBox`** - Text input with format masking
+- **`KryptonComboBox`** - Dropdown selection control
+- **`KryptonDomainUpDown`** - Domain up/down control
+- **`KryptonNumericUpDown`** - Numeric up/down control
+- **`KryptonDateTimePicker`** - Date and time picker control
 
 #### Selection Controls
-- **[KryptonCheckBox](KryptonCheckBox.md)** - Checkbox control
-- **[KryptonRadioButton](KryptonRadioButton.md)** - Radio button control
-- **[KryptonListBox](KryptonListBox.md)** - List selection control
-- **[KryptonCheckedListBox](KryptonCheckedListBox.md)** - Checked list box control
-- **[KryptonListView](KryptonListView.md)** - List view control
-- **[KryptonTreeView](KryptonTreeView.md)** - Tree view control
+
+- **`KryptonCheckBox`** - Checkbox control
+- **`KryptonRadioButton`** - Radio button control
+- **`KryptonListBox`** - List selection control
+- **`KryptonCheckedListBox`** - Checked list box control
+- **`KryptonListView`** - List view control
+- **`KryptonTreeView`** - Tree view control
 
 #### Display Controls
-- **[KryptonLabel](KryptonLabel.md)** - Text label control
-- **[KryptonPanel](KryptonPanel.md)** - Container panel control
-- **[KryptonGroupBox](KryptonGroupBox.md)** - Group box container
-- **[KryptonHeaderGroup](KryptonHeaderGroup.md)** - Header group container
-- **[KryptonSeparator](KryptonSeparator.md)** - Visual separator control
-- **[KryptonBorderEdge](KryptonBorderEdge.md)** - Border edge control
+
+- **`KryptonLabel`** - Text label control
+- **`KryptonPanel`** - Container panel control
+- **`KryptonGroupBox`** - Group box container
+- **`KryptonHeaderGroup`** - Header group container
+- **`KryptonSeparator`** - Visual separator control
+- **`KryptonBorderEdge`** - Border edge control
 
 #### Advanced Controls
-- **[KryptonDataGridView](KryptonDataGridView.md)** - Data grid view control
-- **[KryptonPropertyGrid](KryptonPropertyGrid.md)** - Property grid control
-- **[KryptonProgressBar](KryptonProgressBar.md)** - Progress bar control
-- **[KryptonScrollBar](KryptonScrollBar.md)** - Scroll bar control
-- **[KryptonToggleSwitch](KryptonToggleSwitch.md)** - Toggle switch control
-- **[KryptonColorButton](KryptonColorButton.md)** - Color selection button
-- **[KryptonDropButton](KryptonDropButton.md)** - Dropdown button control
-- **[KryptonCommandLinkButton](KryptonCommandLinkButton.md)** - Command link button
+
+- **`KryptonDataGridView`** - Data grid view control
+- **`KryptonPropertyGrid`** - Property grid control
+- **`KryptonProgressBar`** - Progress bar control
+- **`KryptonScrollBar`** - Scroll bar control
+- **`KryptonToggleSwitch`** - Toggle switch control
+- **`KryptonColorButton`** - Color selection button
+- **`KryptonDropButton`** - Dropdown button control
+- **`KryptonCommandLinkButton`** - Command link button
 
 #### Layout Controls
-- **[KryptonSplitContainer](KryptonSplitContainer.md)** - Split container control
-- **[KryptonGroup](KryptonGroup.md)** - Group container control
+
+- **`KryptonSplitContainer`** - Split container control
+- **`KryptonGroup`** - Group container control
 
 ### Utility Components
 
 #### Collections
-- **[KryptonControlCollection](KryptonControlCollection.md)** - Collection of Krypton controls
-- **[KryptonReadOnlyControls](KryptonReadOnlyControls.md)** - Read-only control collection
+
+- **`KryptonControlCollection`** - Collection of Krypton controls
+- **`KryptonReadOnlyControls`** - Read-only control collection
 
 #### ToolStrip Integration
-- **[KryptonToolStripComboBox](KryptonToolStripComboBox.md)** - ToolStrip combo box
-- **[KryptonToolStripThemeComboBox](KryptonToolStripThemeComboBox.md)** - Theme selector for ToolStrip
+
+- **`KryptonToolStripComboBox`** - ToolStrip combo box
+- **`KryptonToolStripThemeComboBox`** - Theme selector for ToolStrip
 
 ## Common Features
 
 ### Theming Support
+
 All controls in `Krypton.Toolkit` support the global theming system managed by `KryptonManager`. They automatically adapt to theme changes and provide consistent visual styling.
 
 ### State Management
+
 Controls support multiple visual states:
+
 - **Normal** - Default appearance
 - **Disabled** - When the control is disabled
 - **Hot** - When the mouse is over the control
@@ -82,14 +92,18 @@ Controls support multiple visual states:
 - **Focus** - When the control has keyboard focus
 
 ### Palette Integration
+
 Each control integrates with the palette system to provide:
+
 - Consistent color schemes
 - Theme-aware styling
 - Customizable appearance
 - High contrast support
 
 ### Enhanced Events
+
 Controls provide enhanced event handling with:
+
 - Typed event arguments
 - Additional context information
 - State change notifications
@@ -98,6 +112,7 @@ Controls provide enhanced event handling with:
 ## Usage Examples
 
 ### Basic Control Setup
+
 ```csharp
 // Create a themed button
 KryptonButton button = new KryptonButton();
@@ -111,6 +126,7 @@ textBox.StateCommon.Border.Color1 = Color.Gray;
 ```
 
 ### Theme Integration
+
 ```csharp
 // The controls automatically use the global theme
 KryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;
@@ -119,6 +135,7 @@ KryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;
 ```
 
 ### Custom Styling
+
 ```csharp
 // Customize individual control appearance
 KryptonButton customButton = new KryptonButton();
@@ -130,6 +147,7 @@ customButton.StateCommon.Border.Color1 = Color.DarkRed;
 ## Design-Time Support
 
 All controls include comprehensive design-time support:
+
 - Visual Studio toolbox integration
 - Property grid customization
 - Designer serialization
@@ -153,9 +171,11 @@ All controls include comprehensive design-time support:
 ## Version Compatibility
 
 The controls in `Krypton.Toolkit` are compatible with:
+
 - .NET Framework 4.7.2+
 - .NET 6.0 Windows+
 - .NET 7.0 Windows+
 - .NET 8.0 Windows+
 - .NET 9.0 Windows+
 - .NET 10.0 Windows+
+- .NET 11.0 Windows+

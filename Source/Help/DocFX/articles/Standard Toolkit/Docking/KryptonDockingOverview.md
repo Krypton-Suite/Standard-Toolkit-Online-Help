@@ -1,8 +1,5 @@
 # Docking - Getting Started
 
-## Docking - Getting Started
-
-  
 **How To Add Docking To Your Application**  
 This tutorial is going to explain how the docking system works by walking you
 through the process of adding docking capabilities to a new application. At the
@@ -24,15 +21,10 @@ with three pages named '*Page 5*', '*Page 6*' and '*Page 7*' and finally a
 single floating window is displayed to the bottom right of Figure 1 containing
 two more pages titled '*Page 8*' and '*Page 9*'.
 
-![](Images/DockTutorial1.png)
+![Figure 1 - Tutorial end result](Images/DockTutorial1.png)
 
-*Figure 1 - Tutorial end result*
+## Figure 1 - Tutorial end result
 
- 
-
- 
-
-  
 **Design Time Actions**  
 Begin by creating a new windows forms project that results in an empty *Form*
 instance. Drag and drop a *KryptonPanel* onto the form and position it to take
@@ -42,11 +34,9 @@ a *KryptonManager* instance onto the *Form* followed by dropping a
 *KryptonDockingManager* will be added to the icon tray area of the design
 surface. The result of these actions can be seen in Figure 2.
 
-![](Images/DockTutorial2.png)
+![Figure 2 - KryptonPanel and icon tray components](Images/DockTutorial2.png)
 
-*Figure 2 - KrytonPanel and icon tray components*
-
- 
+## Figure 2 - KryptonPanel and icon tray components
 
 Our final design time task is to setup the panel filler control. Drag a
 *KryptonDockableWorkspace* from the *Toolbox* and drop it onto the
@@ -64,8 +54,6 @@ your own control into the panel but remember to set the *Dock* property to
 *Fill*. Alternatively you might not want any control to act as the panel filler
 in which case ignore this step entirely. The docking system is perfectly capable
 of working when there is no filler control taking up the remainder space.
-
- 
 
 **Referencing Krypton Assemblies**  
 Dragging and dropping the various *Krypton* components and controls above will
@@ -88,7 +76,6 @@ the form code file and add the following statements to the existing entries...
     using Krypton.Workspace;  
     using Krypton.Docking;
 ```
- 
 
 **Creating Pages**  
 Now we need to add some simple code that creates *KryptonPage* instances that
@@ -129,7 +116,6 @@ Copy the following code into your form code file for use later on.
         return page;  
     }
 ```
- 
 
 **Adding Dock capabilities**  
 We are now ready to actually add some docking specific code. At design time you
@@ -148,7 +134,6 @@ capabilities in this example. Add the following lines to the load event...
         dockingManager.ManageFloating("Floating", this);
     }
 ```
- 
 
 All three methods begin with '*Manage*' and this indicates that they add docking
 capabilities based on the passed in *Control* or *Form* instance. Our first
@@ -189,8 +174,6 @@ main form.
 
 These three methods are all you need to setup the majority of docking scenarios.
 
- 
-
 **Creating Initial Pages**  
 Now we have docking capabilities setup we want to actually add some pages. In
 our tutorial we will add all the pages inside the *Form.Load* event but you
@@ -205,7 +188,6 @@ pages seen in configuration seen in Figure 1...
         dockingManager.AddFloatingWindow("Floating", new KryptonPage[] { NewPage(), NewPage() });  
     }
 ```
- 
 
 All four methods begin with '*Add*' and this indicates that they are adding
 pages into the relevant docking elements. Our first method is slightly different
@@ -239,8 +221,6 @@ You can see the created floating window at the bottom right corner of Figure 1.
 
 You can now compile and run the application.
 
- 
-
 **Panel Filler Alternatives**  
 If you prefer to use a navigator instead of the workspace as the panel filler
 you can replace the *KryptonDockableWorkspace* instance with the
@@ -253,7 +233,6 @@ following similar code...
     KryptonDockingNavigator n = dockingManager.ManageNavigator("Navigator", kryptonDockableNavigator1);  
     dockingManager.ManageControl("Control", kryptonPanel1, n);
 ```
- 
 
 Then later on you would use the following *AddToNavigator* instead of the
 *AddToWorkspace*...
@@ -261,7 +240,6 @@ Then later on you would use the following *AddToNavigator* instead of the
 ```cs
     dockingManager.AddToWorkspace("Navigator", new KryptonPage[] { NewPage(), NewPage() });
 ```
- 
 
 Note that you can even omit the use of a navigator or workspace in which case
 you would remove the first line of *Form.Load* event code and remove the third

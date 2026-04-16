@@ -73,11 +73,12 @@ The `KryptonBindingNavigator` control simplifies the implementation of data navi
 
 The control arranges elements horizontally in the following order:
 
-```
+```text
 [|<] [<] [Position] [of N] [>] [>|] [++] [×]
 ```
 
 With appropriate spacing between groups:
+
 - Navigation buttons grouped together
 - Position display grouped together
 - Add/Delete buttons grouped together
@@ -98,12 +99,14 @@ public BindingSource? BindingSource { get; set; }
 **Description**: Gets or sets the `BindingSource` component that is the source of data.
 
 **Remarks**:
+
 - Setting this property automatically subscribes to `BindingSource` events
 - When set to `null`, all navigation controls are disabled
 - Changing the `BindingSource` automatically refreshes the control state
 - The control listens to `PositionChanged`, `CurrentChanged`, and `ListChanged` events
 
 **Example**:
+
 ```csharp
 var bindingSource = new BindingSource { DataSource = myList };
 kryptonBindingNavigator1.BindingSource = bindingSource;
@@ -122,11 +125,13 @@ public bool AddNewItemEnabled { get; set; }
 **Description**: Gets or sets a value indicating whether the Add New button is enabled.
 
 **Remarks**:
+
 - When `false`, the Add New button is disabled regardless of `BindingSource.AllowNew`
 - When `true`, the button state depends on `BindingSource.AllowNew` and data availability
 - This provides an additional layer of control beyond the `BindingSource` settings
 
 **Example**:
+
 ```csharp
 // Disable Add New functionality
 kryptonBindingNavigator1.AddNewItemEnabled = false;
@@ -145,11 +150,13 @@ public bool DeleteItemEnabled { get; set; }
 **Description**: Gets or sets a value indicating whether the Delete button is enabled.
 
 **Remarks**:
+
 - When `false`, the Delete button is disabled regardless of `BindingSource.AllowRemove`
 - When `true`, the button state depends on `BindingSource.AllowRemove` and data availability
 - The button is also disabled when there are no items in the data source
 
 **Example**:
+
 ```csharp
 // Disable Delete functionality
 kryptonBindingNavigator1.DeleteItemEnabled = false;
@@ -167,12 +174,14 @@ public KryptonButton? MoveFirstItem { get; }
 **Description**: Gets the Move First button control.
 
 **Remarks**:
+
 - Returns `null` if the button hasn't been initialized
 - Use this property to customize the button appearance or behavior
 - The button text is set to `"|<"` by default
 - Button size is fixed at 30x25 pixels
 
 **Example**:
+
 ```csharp
 if (kryptonBindingNavigator1.MoveFirstItem != null)
 {
@@ -193,6 +202,7 @@ public KryptonButton? MovePreviousItem { get; }
 **Description**: Gets the Move Previous button control.
 
 **Remarks**:
+
 - Returns `null` if the button hasn't been initialized
 - Button text is set to `"<"` by default
 - Button size is fixed at 30x25 pixels
@@ -209,6 +219,7 @@ public KryptonButton? MoveNextItem { get; }
 **Description**: Gets the Move Next button control.
 
 **Remarks**:
+
 - Returns `null` if the button hasn't been initialized
 - Button text is set to `">"` by default
 - Button size is fixed at 30x25 pixels
@@ -225,6 +236,7 @@ public KryptonButton? MoveLastItem { get; }
 **Description**: Gets the Move Last button control.
 
 **Remarks**:
+
 - Returns `null` if the button hasn't been initialized
 - Button text is set to `">|"` by default
 - Button size is fixed at 30x25 pixels
@@ -241,6 +253,7 @@ public KryptonButton? AddNewItem { get; }
 **Description**: Gets the Add New button control.
 
 **Remarks**:
+
 - Returns `null` if the button hasn't been initialized
 - Button text is set to `"+"` by default
 - Button size is fixed at 30x25 pixels
@@ -258,6 +271,7 @@ public KryptonButton? DeleteItem { get; }
 **Description**: Gets the Delete button control.
 
 **Remarks**:
+
 - Returns `null` if the button hasn't been initialized
 - Button text is set to `"×"` by default
 - Button size is fixed at 30x25 pixels
@@ -275,6 +289,7 @@ public KryptonTextBox? PositionItem { get; }
 **Description**: Gets the position textbox control.
 
 **Remarks**:
+
 - Returns `null` if the textbox hasn't been initialized
 - Width is fixed at 50 pixels, height matches button height (25 pixels)
 - Displays 1-based position (user-friendly)
@@ -282,6 +297,7 @@ public KryptonTextBox? PositionItem { get; }
 - Automatically restores valid position if invalid input is entered
 
 **Example**:
+
 ```csharp
 if (kryptonBindingNavigator1.PositionItem != null)
 {
@@ -302,12 +318,14 @@ public KryptonLabel? CountItem { get; }
 **Description**: Gets the count label control.
 
 **Remarks**:
+
 - Returns `null` if the label hasn't been initialized
 - Displays text in format `"of N"` where N is the total count
 - Uses `LabelStyle.NormalControl` by default
 - AutoSize is enabled
 
 **Example**:
+
 ```csharp
 if (kryptonBindingNavigator1.CountItem != null)
 {
@@ -328,6 +346,7 @@ public void RefreshItemsInternal()
 **Description**: Refreshes the state of all navigator items to reflect the current state of the data.
 
 **Remarks**:
+
 - This method is called automatically when:
   - The `BindingSource` changes
   - The position changes (`PositionChanged` event)
@@ -338,6 +357,7 @@ public void RefreshItemsInternal()
 - Updates button states, position textbox, and count label
 
 **Example**:
+
 ```csharp
 // Force a refresh after programmatic data changes
 myBindingSource.Add(newItem);
@@ -358,12 +378,14 @@ public event EventHandler? RefreshItems;
 **Description**: Occurs when `RefreshItemsInternal()` is called to refresh the state of the items.
 
 **Remarks**:
+
 - Raised before the UI is updated
 - Use this event to perform custom actions when the navigator refreshes
 - The event is raised even when there's no `BindingSource` assigned
 - Useful for updating related UI elements or performing validation
 
 **Example**:
+
 ```csharp
 kryptonBindingNavigator1.RefreshItems += (sender, e) =>
 {
@@ -598,24 +620,28 @@ kryptonBindingNavigator1.RefreshItems += (sender, e) =>
 The navigator works with various data source types:
 
 - **Generic Lists** (`List<T>`)
+
   ```csharp
   var list = new List<Person>();
   bindingSource.DataSource = list;
   ```
 
 - **Arrays**
+
   ```csharp
   var array = new Person[10];
   bindingSource.DataSource = array;
   ```
 
 - **DataTables**
+
   ```csharp
   var table = new DataTable();
   bindingSource.DataSource = table;
   ```
 
 - **Collections**
+
   ```csharp
   var collection = new BindingList<Person>();
   bindingSource.DataSource = collection;
@@ -654,6 +680,7 @@ All these events cause `RefreshItemsInternal()` to be called, updating the UI.
 The control uses a custom layout algorithm in `OnLayout()`. To customize spacing or positioning, you can:
 
 1. **Adjust Padding**: Modify the control's `Padding` property
+
    ```csharp
    kryptonBindingNavigator1.Padding = new Padding(10, 5, 10, 5);
    ```
@@ -829,11 +856,13 @@ numericAge.DataBindings.Add("Value", _bindingSource, "Age");
 **Symptom**: All navigation buttons are disabled.
 
 **Possible Causes**:
+
 1. `BindingSource` is `null`
 2. `BindingSource.DataSource` is `null` or empty
 3. `BindingSource.Count` is 0
 
 **Solution**:
+
 ```csharp
 // Check BindingSource
 if (kryptonBindingNavigator1.BindingSource == null)
@@ -855,11 +884,13 @@ if (bindingSource.Count == 0)
 **Symptom**: Add New button is disabled or doesn't add items.
 
 **Possible Causes**:
+
 1. `AddNewItemEnabled` is `false`
 2. `BindingSource.AllowNew` is `false`
 3. Data source doesn't support adding items
 
 **Solution**:
+
 ```csharp
 // Enable AddNewItemEnabled
 kryptonBindingNavigator1.AddNewItemEnabled = true;
@@ -878,12 +909,14 @@ bindingSource.AllowNew = true;
 **Symptom**: Delete button is disabled or doesn't remove items.
 
 **Possible Causes**:
+
 1. `DeleteItemEnabled` is `false`
 2. `BindingSource.AllowRemove` is `false` (read-only)
 3. Data source doesn't support removal
 4. No items in the list
 
 **Solution**:
+
 ```csharp
 // Enable DeleteItemEnabled
 kryptonBindingNavigator1.DeleteItemEnabled = true;
@@ -906,10 +939,12 @@ if (bindingSource.Count > 0)
 **Symptom**: Position textbox shows incorrect value or doesn't update.
 
 **Possible Causes**:
+
 1. `BindingSource` events not firing
 2. Manual position changes not triggering refresh
 
 **Solution**:
+
 ```csharp
 // Manually refresh after programmatic changes
 bindingSource.Position = newPosition;
@@ -923,11 +958,13 @@ kryptonBindingNavigator1.RefreshItemsInternal();
 **Symptom**: Count label always shows "of 0" even when there are items.
 
 **Possible Causes**:
+
 1. `BindingSource` is `null`
 2. `BindingSource.DataSource` is `null`
 3. `BindingSource.Count` is actually 0
 
 **Solution**:
+
 ```csharp
 // Verify BindingSource has data
 if (bindingSource?.Count > 0)
@@ -945,11 +982,13 @@ if (bindingSource?.Count > 0)
 **Symptom**: Clicking navigation buttons doesn't change position.
 
 **Possible Causes**:
+
 1. `BindingSource` is `null`
 2. Event handlers not connected
 3. Data source issues
 
 **Solution**:
+
 ```csharp
 // Verify BindingSource is set
 if (kryptonBindingNavigator1.BindingSource == null)
@@ -971,6 +1010,7 @@ if (bindingSource.Count == 0)
 1. **Large Datasets**: The navigator performs well with large datasets. Navigation is O(1) operation.
 
 2. **Frequent Updates**: If you're making many rapid changes, consider batching updates:
+
    ```csharp
    // Suspend updates temporarily
    bindingSource.SuspendBinding();
@@ -981,6 +1021,7 @@ if (bindingSource.Count == 0)
    ```
 
 3. **Event Handling**: The `RefreshItems` event fires frequently. Keep handlers lightweight:
+
    ```csharp
    // Good - lightweight handler
    kryptonBindingNavigator1.RefreshItems += (s, e) => UpdateLabel();

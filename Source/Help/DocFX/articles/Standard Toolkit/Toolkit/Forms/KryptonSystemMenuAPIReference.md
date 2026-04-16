@@ -1,20 +1,24 @@
 # KryptonSystemMenu API Reference
 
 ## Namespace
+
 `Krypton.Toolkit`
 
 ## Class Declaration
+
 ```csharp
 public class KryptonSystemMenu : IKryptonSystemMenu, IDisposable
 ```
 
 ## Interfaces Implemented
+
 - `IKryptonSystemMenu`
 - `IDisposable`
 
 ## Constructors
 
 ### KryptonSystemMenu(KryptonForm form)
+
 ```csharp
 public KryptonSystemMenu(KryptonForm form)
 ```
@@ -22,12 +26,15 @@ public KryptonSystemMenu(KryptonForm form)
 **Description**: Initializes a new instance of the KryptonSystemMenu class.
 
 **Parameters**:
+
 - `form` (KryptonForm): The KryptonForm to attach the themed system menu to.
 
 **Exceptions**:
+
 - `ArgumentNullException`: Thrown when `form` parameter is null.
 
 **Example**:
+
 ```csharp
 var systemMenu = new KryptonSystemMenu(myKryptonForm);
 ```
@@ -35,6 +42,7 @@ var systemMenu = new KryptonSystemMenu(myKryptonForm);
 ## Properties
 
 ### ContextMenu
+
 ```csharp
 [Browsable(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -50,6 +58,7 @@ public KryptonContextMenu ContextMenu { get; }
 **Notes**: This property provides access to the underlying menu for advanced customization.
 
 ### Enabled
+
 ```csharp
 [Category(@"Behavior")]
 [Description(@"Enables or disables the themed system menu.")]
@@ -66,6 +75,7 @@ public bool Enabled { get; set; }
 **Notes**: When disabled, the menu will not respond to show requests.
 
 ### MenuItemCount
+
 ```csharp
 [Category(@"Appearance")]
 [Description(@"The number of items currently in the themed system menu.")]
@@ -81,6 +91,7 @@ public int MenuItemCount { get; }
 **Access**: Read-only
 
 ### HasMenuItems
+
 ```csharp
 [Category(@"Appearance")]
 [Description(@"Indicates whether the themed system menu contains any items.")]
@@ -96,6 +107,7 @@ public bool HasMenuItems { get; }
 **Access**: Read-only
 
 ### ShowOnLeftClick
+
 ```csharp
 [Browsable(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -109,6 +121,7 @@ public bool ShowOnLeftClick { get; set; }
 **Default Value**: `true`
 
 ### ShowOnRightClick
+
 ```csharp
 [Browsable(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -122,6 +135,7 @@ public bool ShowOnRightClick { get; set; }
 **Default Value**: `true`
 
 ### ShowOnAltSpace
+
 ```csharp
 [Browsable(false)]
 [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -135,6 +149,7 @@ public bool ShowOnAltSpace { get; set; }
 **Default Value**: `true`
 
 ### CurrentIconTheme
+
 ```csharp
 [Category(@"Appearance")]
 [Description(@"The current theme name being used for system menu icons.")]
@@ -149,9 +164,10 @@ public string CurrentIconTheme { get; }
 
 **Access**: Read-only
 
-**Return Values**: 
+**Return Values**:
+
 - "Office2013"
-- "Office2010" 
+- "Office2010"
 - "Office2007"
 - "Sparkle"
 - "Professional"
@@ -161,6 +177,7 @@ public string CurrentIconTheme { get; }
 ## Methods
 
 ### Show(Point screenLocation)
+
 ```csharp
 public void Show(Point screenLocation)
 ```
@@ -168,6 +185,7 @@ public void Show(Point screenLocation)
 **Description**: Shows the themed system menu at the specified screen location.
 
 **Parameters**:
+
 - `screenLocation` (Point): The screen coordinates where to show the menu.
 
 **Returns**: `void`
@@ -175,11 +193,13 @@ public void Show(Point screenLocation)
 **Notes**: The position is automatically adjusted to ensure the menu stays within screen bounds.
 
 **Example**:
+
 ```csharp
 systemMenu.Show(new Point(100, 100));
 ```
 
 ### ShowAtFormTopLeft()
+
 ```csharp
 public void ShowAtFormTopLeft()
 ```
@@ -191,11 +211,13 @@ public void ShowAtFormTopLeft()
 **Notes**: Mimics the native system menu behavior.
 
 **Example**:
+
 ```csharp
 systemMenu.ShowAtFormTopLeft();
 ```
 
 ### Refresh()
+
 ```csharp
 public void Refresh()
 ```
@@ -207,11 +229,13 @@ public void Refresh()
 **Notes**: This method rebuilds the menu structure, updates menu item states, and refreshes icons.
 
 **Example**:
+
 ```csharp
 systemMenu.Refresh();
 ```
 
 ### HandleKeyboardShortcut(Keys keyData)
+
 ```csharp
 public bool HandleKeyboardShortcut(Keys keyData)
 ```
@@ -219,15 +243,18 @@ public bool HandleKeyboardShortcut(Keys keyData)
 **Description**: Handles keyboard shortcuts for system menu actions.
 
 **Parameters**:
+
 - `keyData` (Keys): The key combination pressed.
 
 **Returns**: `bool` - `true` if the shortcut was handled; otherwise `false`.
 
 **Supported Shortcuts**:
+
 - `Alt+F4`: Close the form
 - `Alt+Space`: Show the system menu (if enabled)
 
 **Example**:
+
 ```csharp
 if (systemMenu.HandleKeyboardShortcut(Keys.Alt | Keys.F4))
 {
@@ -236,6 +263,7 @@ if (systemMenu.HandleKeyboardShortcut(Keys.Alt | Keys.F4))
 ```
 
 ### GetCurrentTheme()
+
 ```csharp
 public string GetCurrentTheme()
 ```
@@ -245,12 +273,14 @@ public string GetCurrentTheme()
 **Returns**: `string` - The current theme name.
 
 **Example**:
+
 ```csharp
 var theme = systemMenu.GetCurrentTheme();
 Console.WriteLine($"Current theme: {theme}");
 ```
 
 ### RefreshThemeIcons()
+
 ```csharp
 public void RefreshThemeIcons()
 ```
@@ -262,11 +292,13 @@ public void RefreshThemeIcons()
 **Notes**: Call this method when the application theme changes.
 
 **Example**:
+
 ```csharp
 systemMenu.RefreshThemeIcons();
 ```
 
 ### SetIconTheme(string themeName)
+
 ```csharp
 public void SetIconTheme(string themeName)
 ```
@@ -274,6 +306,7 @@ public void SetIconTheme(string themeName)
 **Description**: Manually sets the theme for icon selection.
 
 **Parameters**:
+
 - `themeName` (string): The theme name to use for icons.
 
 **Returns**: `void`
@@ -281,11 +314,13 @@ public void SetIconTheme(string themeName)
 **Notes**: If `themeName` is null or empty, the method returns without action.
 
 **Example**:
+
 ```csharp
 systemMenu.SetIconTheme("Office2010");
 ```
 
 ### SetThemeType(ThemeType themeType)
+
 ```csharp
 public void SetThemeType(ThemeType themeType)
 ```
@@ -293,11 +328,13 @@ public void SetThemeType(ThemeType themeType)
 **Description**: Sets the theme based on specific theme types.
 
 **Parameters**:
+
 - `themeType` (ThemeType): The theme type to use.
 
 **Returns**: `void`
 
 **ThemeType Values**:
+
 - `ThemeType.Black` → "Office2013"
 - `ThemeType.Blue` → "Office2010"
 - `ThemeType.Silver` → "Office2013"
@@ -307,6 +344,7 @@ public void SetThemeType(ThemeType themeType)
 - `ThemeType.ClassicSilver` → "Office2007"
 
 **Example**:
+
 ```csharp
 systemMenu.SetThemeType(ThemeType.Office2010Blue);
 ```
@@ -317,14 +355,16 @@ The `KryptonSystemMenu` implements the `IKryptonSystemMenu` interface, which def
 
 ### Interface Members
 
-#### Properties
+#### Interface properties
+
 - `bool Enabled { get; set; }`
 - `bool ShowOnLeftClick { get; set; }`
 - `bool ShowOnRightClick { get; set; }`
 - `bool ShowOnAltSpace { get; set; }`
 - `string CurrentIconTheme { get; }`
 
-#### Methods
+#### Interface methods
+
 - `void Show(Point screenLocation)`
 - `void ShowAtFormTopLeft()`
 - `void Refresh()`
@@ -335,6 +375,7 @@ The `KryptonSystemMenu` implements the `IKryptonSystemMenu` interface, which def
 The `KryptonSystemMenu` implements `IDisposable` for proper resource management.
 
 ### Dispose()
+
 ```csharp
 public void Dispose()
 ```
@@ -342,6 +383,7 @@ public void Dispose()
 **Description**: Releases all resources used by the KryptonSystemMenu.
 
 **Example**:
+
 ```csharp
 using (var systemMenu = new KryptonSystemMenu(form))
 {
@@ -351,6 +393,7 @@ using (var systemMenu = new KryptonSystemMenu(form))
 ```
 
 ### Dispose(bool disposing)
+
 ```csharp
 protected virtual void Dispose(bool disposing)
 ```
@@ -358,11 +401,13 @@ protected virtual void Dispose(bool disposing)
 **Description**: Releases the unmanaged resources used by the KryptonSystemMenu and optionally releases the managed resources.
 
 **Parameters**:
+
 - `disposing` (bool): True to release both managed and unmanaged resources; false to release only unmanaged resources.
 
 ## Enumerations
 
 ### SystemMenuIconType
+
 ```csharp
 public enum SystemMenuIconType
 {
@@ -378,6 +423,7 @@ public enum SystemMenuIconType
 **Description**: Defines the types of system menu icons.
 
 ### ThemeType
+
 ```csharp
 public enum ThemeType
 {
@@ -412,11 +458,13 @@ private void OnCloseItemOnClick(object? sender, EventArgs e)
 ## Dependencies
 
 ### Required Assemblies
+
 - `Krypton.Toolkit.dll`
 - `System.Drawing.dll`
 - `System.Windows.Forms.dll`
 
 ### Required Types
+
 - `KryptonForm`
 - `KryptonContextMenu`
 - `SystemMenuImageResources`
@@ -430,4 +478,4 @@ The `KryptonSystemMenu` class is not thread-safe. All operations must be perform
 
 - [KryptonSystemMenu Developer Guide](./KryptonSystemMenuDeveloperGuide.md)
 - [KryptonForm Class Reference](./KryptonFormAPIReference.md)
-- [KryptonContextMenu Class Reference](./KryptonContextMenuAPIReference.md)
+- [KryptonContextMenu class reference](../Components/KryptonContextMenu.md)

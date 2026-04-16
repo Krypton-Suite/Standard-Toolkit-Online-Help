@@ -30,6 +30,7 @@ public class KryptonNotifyIcon : Component
 ### Palette Properties
 
 #### `PaletteMode`
+
 ```csharp
 [Category("Visuals")]
 [Description("Sets the palette mode.")]
@@ -40,6 +41,7 @@ public PaletteMode PaletteMode { get; set; }
 Gets or sets the palette mode. See `KryptonToolStripContainer` documentation for available palette modes.
 
 #### `Palette`
+
 ```csharp
 [Category("Visuals")]
 [Description("Sets the custom palette to be used.")]
@@ -52,6 +54,7 @@ Gets or sets a custom palette implementation.
 ### NotifyIcon Properties
 
 #### `Icon`
+
 ```csharp
 [Category("Appearance")]
 [Description("The icon to display in the notification area.")]
@@ -62,6 +65,7 @@ public Icon? Icon { get; set; }
 Gets or sets the icon displayed in the notification area. The icon is automatically disposed when the component is disposed.
 
 #### `Text`
+
 ```csharp
 [Category("Appearance")]
 [Description("The ToolTip text displayed when the mouse pointer rests on a notification area icon.")]
@@ -73,6 +77,7 @@ public string Text { get; set; }
 Gets or sets the ToolTip text displayed when the mouse pointer rests on the notification area icon.
 
 #### `Visible`
+
 ```csharp
 [Category("Behavior")]
 [Description("Indicates whether the icon is visible in the notification area.")]
@@ -83,6 +88,7 @@ public bool Visible { get; set; }
 Gets or sets a value indicating whether the icon is visible in the notification area.
 
 #### `BalloonTipText`
+
 ```csharp
 [Category("Appearance")]
 [Description("The text to display on the BalloonTip.")]
@@ -94,6 +100,7 @@ public string BalloonTipText { get; set; }
 Gets or sets the text to display on the BalloonTip associated with the NotifyIcon.
 
 #### `BalloonTipTitle`
+
 ```csharp
 [Category("Appearance")]
 [Description("The title to display on the BalloonTip.")]
@@ -105,6 +112,7 @@ public string BalloonTipTitle { get; set; }
 Gets or sets the title to display on the BalloonTip.
 
 #### `BalloonTipIcon`
+
 ```csharp
 [Category("Appearance")]
 [Description("The icon to display on the BalloonTip.")]
@@ -113,12 +121,14 @@ public ToolTipIcon BalloonTipIcon { get; set; }
 ```
 
 Gets or sets the icon to display on the BalloonTip. Valid values:
+
 - `ToolTipIcon.None` - No icon
 - `ToolTipIcon.Info` - Information icon
 - `ToolTipIcon.Warning` - Warning icon
 - `ToolTipIcon.Error` - Error icon
 
 #### `ContextMenuStrip`
+
 ```csharp
 [Category("Behavior")]
 [Description("The context menu to display when the icon is right-clicked.")]
@@ -130,7 +140,8 @@ Gets or sets the context menu to display when the icon is right-clicked.
 
 ## Methods
 
-### `ShowBalloonTip`
+### `ShowBalloonTip(int timeout)`
+
 ```csharp
 public void ShowBalloonTip(int timeout)
 ```
@@ -138,14 +149,17 @@ public void ShowBalloonTip(int timeout)
 Displays a balloon tip in the taskbar for the specified time period.
 
 **Parameters:**
+
 - `timeout` - The time period, in milliseconds, the balloon tip should display
 
 **Example:**
+
 ```csharp
 notifyIcon.ShowBalloonTip(5000);
 ```
 
-### `ShowBalloonTip`
+### `ShowBalloonTip(int timeout, string tipTitle, string tipText, ToolTipIcon tipIcon)`
+
 ```csharp
 public void ShowBalloonTip(int timeout, string tipTitle, string tipText, ToolTipIcon tipIcon)
 ```
@@ -153,12 +167,14 @@ public void ShowBalloonTip(int timeout, string tipTitle, string tipText, ToolTip
 Displays a balloon tip with the specified title, text, and icon in the taskbar for the specified time period.
 
 **Parameters:**
+
 - `timeout` - The time period, in milliseconds, the balloon tip should display
 - `tipTitle` - The title to display on the balloon tip
 - `tipText` - The text to display on the balloon tip
 - `tipIcon` - One of the `ToolTipIcon` values that specifies the icon to display
 
 **Example:**
+
 ```csharp
 notifyIcon.ShowBalloonTip(5000, "Update Available", "A new version is ready to install.", ToolTipIcon.Info);
 ```
@@ -166,6 +182,7 @@ notifyIcon.ShowBalloonTip(5000, "Update Available", "A new version is ready to i
 ## Events
 
 ### `Click`
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the user clicks the icon in the notification area.")]
@@ -175,6 +192,7 @@ public event EventHandler? Click;
 Occurs when the user clicks the icon in the notification area.
 
 ### `DoubleClick`
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the user double-clicks the icon in the notification area.")]
@@ -184,6 +202,7 @@ public event EventHandler? DoubleClick;
 Occurs when the user double-clicks the icon in the notification area.
 
 ### `MouseClick`
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the user clicks a mouse button while the pointer is over the icon.")]
@@ -193,6 +212,7 @@ public event MouseEventHandler? MouseClick;
 Occurs when the user clicks a mouse button while the pointer is over the icon in the notification area.
 
 ### `MouseDoubleClick`
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the user double-clicks the icon with the mouse.")]
@@ -202,6 +222,7 @@ public event MouseEventHandler? MouseDoubleClick;
 Occurs when the user double-clicks the icon in the notification area with the mouse.
 
 ### `MouseMove`
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the user moves the mouse over the icon.")]
@@ -211,6 +232,7 @@ public event MouseEventHandler? MouseMove;
 Occurs when the user moves the mouse over the icon in the notification area.
 
 ### `MouseDown`
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the user presses a mouse button while the pointer is over the icon.")]
@@ -220,6 +242,7 @@ public event MouseEventHandler? MouseDown;
 Occurs when the user presses a mouse button while the pointer is over the icon in the notification area.
 
 ### `MouseUp`
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the user releases a mouse button while the pointer is over the icon.")]
@@ -229,6 +252,7 @@ public event MouseEventHandler? MouseUp;
 Occurs when the user releases a mouse button while the pointer is over the icon in the notification area.
 
 ### `BalloonTipClicked`
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the BalloonTip is clicked.")]
@@ -238,6 +262,7 @@ public event EventHandler? BalloonTipClicked;
 Occurs when the BalloonTip is clicked.
 
 ### `BalloonTipClosed`
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the BalloonTip is closed by the user.")]
@@ -247,6 +272,7 @@ public event EventHandler? BalloonTipClosed;
 Occurs when the BalloonTip is closed by the user.
 
 ### `BalloonTipShown`
+
 ```csharp
 [Category("Action")]
 [Description("Occurs when the BalloonTip is displayed on the screen.")]
@@ -420,4 +446,3 @@ While the system tray icon itself uses standard Windows rendering, the component
 - `KryptonContextMenu` - For context menus
 - `KryptonToolTip` - For tooltips
 - Standard WinForms `NotifyIcon` documentation
-

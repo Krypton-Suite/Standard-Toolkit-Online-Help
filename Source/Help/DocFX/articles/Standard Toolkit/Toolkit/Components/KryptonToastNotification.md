@@ -1,14 +1,16 @@
-# KryptonToastNotification
+# KryptonToast (toast notifications)
+
+**File:** `KryptonToastNotification.md` (historic name). **V110+:** The public static API was renamed to `KryptonToast` and moved to the `Krypton.Utilities` assembly and namespace. The content below describes the same feature set; replace `KryptonToastNotification` with `KryptonToast` and use `using Krypton.Utilities;` (or fully qualified names) in new code.
 
 ## Overview
 
-The `KryptonToastNotification` class provides a static utility for displaying toast notifications with Krypton theming. It offers a centralized way to show various types of toast notifications including basic notifications, progress bar notifications, and user input notifications with customizable return values and "Do not show again" options.
+The `KryptonToast` class (formerly `KryptonToastNotification`) provides a static utility for displaying toast notifications with Krypton theming. It offers a centralized way to show various types of toast notifications including basic notifications, progress bar notifications, and user input notifications with customizable return values and "Do not show again" options.
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
-└── Krypton.Toolkit.KryptonToastNotification
+└── Krypton.Utilities.KryptonToast
 ```
 
 ## Key Methods
@@ -18,7 +20,7 @@ System.Object
 #### ShowBasicNotification Method
 
 ```csharp
-public static void ShowBasicNotification(KryptonBasicToastNotificationData toastNotificationData)
+public static void ShowBasicNotification(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic toast notification
@@ -30,7 +32,7 @@ public static void ShowBasicNotification(KryptonBasicToastNotificationData toast
 #### ShowBasicNotificationWithBooleanReturnValue Method
 
 ```csharp
-public static bool ShowBasicNotificationWithBooleanReturnValue(KryptonBasicToastNotificationData toastNotificationData)
+public static bool ShowBasicNotificationWithBooleanReturnValue(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic toast notification with boolean return value
@@ -42,7 +44,7 @@ public static bool ShowBasicNotificationWithBooleanReturnValue(KryptonBasicToast
 #### ShowBasicNotificationWithCheckStateReturnValue Method
 
 ```csharp
-public static CheckState ShowBasicNotificationWithCheckStateReturnValue(KryptonBasicToastNotificationData toastNotificationData)
+public static CheckState ShowBasicNotificationWithCheckStateReturnValue(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic toast notification with CheckState return value
@@ -56,7 +58,7 @@ public static CheckState ShowBasicNotificationWithCheckStateReturnValue(KryptonB
 #### ShowBasicProgressBarNotification Method
 
 ```csharp
-public static void ShowBasicProgressBarNotification(KryptonBasicToastNotificationData toastNotificationData)
+public static void ShowBasicProgressBarNotification(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic progress bar notification
@@ -68,7 +70,7 @@ public static void ShowBasicProgressBarNotification(KryptonBasicToastNotificatio
 #### ShowBasicProgressBarNotificationWithBooleanReturnValue Method
 
 ```csharp
-public static bool ShowBasicProgressBarNotificationWithBooleanReturnValue(KryptonBasicToastNotificationData toastNotificationData)
+public static bool ShowBasicProgressBarNotificationWithBooleanReturnValue(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic progress bar notification with boolean return value
@@ -80,7 +82,7 @@ public static bool ShowBasicProgressBarNotificationWithBooleanReturnValue(Krypto
 #### ShowBasicProgressBarNotificationWithCheckStateReturnValue Method
 
 ```csharp
-public static CheckState ShowBasicProgressBarNotificationWithCheckStateReturnValue(KryptonBasicToastNotificationData toastNotificationData)
+public static CheckState ShowBasicProgressBarNotificationWithCheckStateReturnValue(KryptonBasicToastData toastNotificationData)
 ```
 
 - **Purpose**: Displays a basic progress bar notification with CheckState return value
@@ -94,7 +96,7 @@ public static CheckState ShowBasicProgressBarNotificationWithCheckStateReturnVal
 #### ShowNotification Method
 
 ```csharp
-public static object ShowNotification(KryptonUserInputToastNotificationData data)
+public static object ShowNotification(KryptonUserInputToastData data)
 ```
 
 - **Purpose**: Displays a notification with ComboBox for user input
@@ -106,7 +108,7 @@ public static object ShowNotification(KryptonUserInputToastNotificationData data
 #### ShowNotificationWithProgressBar Method
 
 ```csharp
-public static object ShowNotificationWithProgressBar(KryptonUserInputToastNotificationData data)
+public static object ShowNotificationWithProgressBar(KryptonUserInputToastData data)
 ```
 
 - **Purpose**: Displays a notification with progress bar and ComboBox for user input
@@ -114,6 +116,29 @@ public static object ShowNotificationWithProgressBar(KryptonUserInputToastNotifi
   - `data`: Configuration data for the user input notification with progress
 - **Returns**: Object containing the user's selection
 - **Usage**: Progress notifications requiring user input via ComboBox
+
+### Icon Size Customization (Issue #2125)
+
+`KryptonBasicToastData` and `KryptonUserInputToastData` now support:
+
+- `NotificationIconWidth`
+- `NotificationIconHeight`
+
+Use these to reduce or enlarge the icon independently from the default 128x128 size:
+
+```csharp
+var notificationData = new KryptonBasicToastData
+{
+    NotificationTitle = "Information",
+    NotificationContent = "Operation completed successfully!",
+    NotificationIcon = KryptonToastIcon.Information,
+    NotificationIconWidth = 16,
+    NotificationIconHeight = 16,
+    CountDownSeconds = 10
+};
+
+KryptonToast.ShowBasicNotification(notificationData);
+```
 
 ## Advanced Usage Patterns
 
@@ -129,7 +154,7 @@ public void ShowBasicToast()
         Icon = MessageBoxIcon.Information
     };
 
-    KryptonToastNotification.ShowBasicNotification(notificationData);
+    KryptonToast.ShowBasicNotification(notificationData);
 }
 ```
 
@@ -148,7 +173,7 @@ public class NotificationManager
             ShowDoNotShowAgain = true
         };
 
-        bool doNotShowAgain = KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+        bool doNotShowAgain = KryptonToast.ShowBasicNotificationWithBooleanReturnValue(notificationData);
         
         if (doNotShowAgain)
         {
@@ -180,7 +205,7 @@ public class ProgressNotificationManager
             ProgressMaximum = 100
         };
 
-        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        KryptonToast.ShowBasicProgressBarNotification(notificationData);
     }
 
     public void ShowProgressWithPreference()
@@ -195,7 +220,7 @@ public class ProgressNotificationManager
             ShowDoNotShowAgain = true
         };
 
-        CheckState doNotShowAgain = KryptonToastNotification.ShowBasicProgressBarNotificationWithCheckStateReturnValue(notificationData);
+        CheckState doNotShowAgain = KryptonToast.ShowBasicProgressBarNotificationWithCheckStateReturnValue(notificationData);
         
         switch (doNotShowAgain)
         {
@@ -228,7 +253,7 @@ public class UserInputNotificationManager
             SelectedIndex = 0
         };
 
-        object result = KryptonToastNotification.ShowNotification(inputData);
+        object result = KryptonToast.ShowNotification(inputData);
         
         if (result != null)
         {
@@ -249,7 +274,7 @@ public class UserInputNotificationManager
             ProgressMaximum = 100
         };
 
-        object result = KryptonToastNotification.ShowNotificationWithProgressBar(inputData);
+        object result = KryptonToast.ShowNotificationWithProgressBar(inputData);
         
         if (result != null)
         {
@@ -307,7 +332,7 @@ public class CustomActionNotificationManager
             ShowDoNotShowAgain = true
         };
 
-        bool doNotShowAgain = KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+        bool doNotShowAgain = KryptonToast.ShowBasicNotificationWithBooleanReturnValue(notificationData);
         
         if (doNotShowAgain)
         {
@@ -328,7 +353,7 @@ public class CustomActionNotificationManager
             SelectedIndex = 2
         };
 
-        object result = KryptonToastNotification.ShowNotification(inputData);
+        object result = KryptonToast.ShowNotification(inputData);
         
         if (result != null)
         {
@@ -381,7 +406,7 @@ public class ApplicationNotificationSystem
             ShowDoNotShowAgain = true
         };
 
-        bool doNotShowAgain = KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+        bool doNotShowAgain = KryptonToast.ShowBasicNotificationWithBooleanReturnValue(notificationData);
         
         if (doNotShowAgain)
         {
@@ -401,7 +426,7 @@ public class ApplicationNotificationSystem
             ProgressMaximum = 100
         };
 
-        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        KryptonToast.ShowBasicProgressBarNotification(notificationData);
     }
 
     public void ShowErrorNotification(string errorMessage)
@@ -413,7 +438,7 @@ public class ApplicationNotificationSystem
             Icon = MessageBoxIcon.Error
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 
     private bool ShouldShowNotification(string notificationKey)
@@ -450,7 +475,7 @@ public class FileOperationNotificationManager
             ProgressMaximum = maximum
         };
 
-        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        KryptonToast.ShowBasicProgressBarNotification(notificationData);
     }
 
     public void ShowFileOperationComplete(string fileName, bool success)
@@ -462,7 +487,7 @@ public class FileOperationNotificationManager
             Icon = success ? MessageBoxIcon.Information : MessageBoxIcon.Error
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 
     public void ShowFileConflictResolution(string fileName)
@@ -475,7 +500,7 @@ public class FileOperationNotificationManager
             SelectedIndex = 0
         };
 
-        object result = KryptonToastNotification.ShowNotification(inputData);
+        object result = KryptonToast.ShowNotification(inputData);
         
         if (result != null)
         {
@@ -524,7 +549,7 @@ var notificationData = new KryptonBasicToastNotificationData
     // Ensure all required properties are set
 };
 
-KryptonToastNotification.ShowBasicNotification(notificationData);
+KryptonToast.ShowBasicNotification(notificationData);
 ```
 
 ### Progress Bar Not Updating
@@ -541,7 +566,7 @@ var notificationData = new KryptonBasicToastNotificationData
     ProgressMaximum = 100  // Maximum progress
 };
 
-KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+KryptonToast.ShowBasicProgressBarNotification(notificationData);
 ```
 
 ### User Input Not Working
@@ -558,7 +583,7 @@ var inputData = new KryptonUserInputToastNotificationData
     SelectedIndex = 0  // Default selection
 };
 
-object result = KryptonToastNotification.ShowNotification(inputData);
+object result = KryptonToast.ShowNotification(inputData);
 ```
 
 ## Design-Time Integration
@@ -591,7 +616,7 @@ var notificationData = new KryptonBasicToastNotificationData
     Message = "Message",
     Icon = MessageBoxIcon.Information
 };
-KryptonToastNotification.ShowBasicNotification(notificationData);
+KryptonToast.ShowBasicNotification(notificationData);
 ```
 
 ### From Custom Toast Systems
@@ -607,7 +632,7 @@ var notificationData = new KryptonBasicToastNotificationData
     Message = "Message",
     Icon = MessageBoxIcon.Information
 };
-KryptonToastNotification.ShowBasicNotification(notificationData);
+KryptonToast.ShowBasicNotification(notificationData);
 ```
 
 ## Real-World Integration Examples
@@ -638,7 +663,7 @@ public class ApplicationUpdateManager
             ShowDoNotShowAgain = true
         };
 
-        bool doNotShowAgain = KryptonToastNotification.ShowBasicNotificationWithBooleanReturnValue(notificationData);
+        bool doNotShowAgain = KryptonToast.ShowBasicNotificationWithBooleanReturnValue(notificationData);
         
         if (doNotShowAgain)
         {
@@ -660,7 +685,7 @@ public class ApplicationUpdateManager
             SelectedIndex = 0
         };
 
-        object result = KryptonToastNotification.ShowNotification(inputData);
+        object result = KryptonToast.ShowNotification(inputData);
         
         if (result != null)
         {
@@ -728,7 +753,7 @@ public class BackupSystemNotificationManager
             ProgressMaximum = maximum
         };
 
-        KryptonToastNotification.ShowBasicProgressBarNotification(notificationData);
+        KryptonToast.ShowBasicProgressBarNotification(notificationData);
     }
 
     public void ShowBackupComplete(string backupName, bool success)
@@ -740,7 +765,7 @@ public class BackupSystemNotificationManager
             Icon = success ? MessageBoxIcon.Information : MessageBoxIcon.Error
         };
 
-        KryptonToastNotification.ShowBasicNotification(notificationData);
+        KryptonToast.ShowBasicNotification(notificationData);
     }
 
     public void ShowBackupConflict(string backupName)
@@ -753,7 +778,7 @@ public class BackupSystemNotificationManager
             SelectedIndex = 1
         };
 
-        object result = KryptonToastNotification.ShowNotification(inputData);
+        object result = KryptonToast.ShowNotification(inputData);
         
         if (result != null)
         {

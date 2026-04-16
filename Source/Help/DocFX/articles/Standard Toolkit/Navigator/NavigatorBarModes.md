@@ -1,6 +1,7 @@
 # Navigator Bar Modes  
   
 Applicable Modes:  
+
 * Bar - Tab - Group
 * Bar - Tab - Only
 * Bar - RibbonTab - Group
@@ -10,14 +11,13 @@ Applicable Modes:
 * Bar - CheckButton - Group - Only
 * Bar - CheckButton - Only
   
-  
 **Bar Mode Properties**  
 The set of properties associated with *Bar* and *HeaderBar* modes can be seen
 below as they appear in the properties window.
 
-![](Images/NavBarProperties.png)
-  
-*Figure 1 - Button Mode Properties*
+![Figure 1 - Button Mode Properties](Images/NavBarFigure1.bmp)
+
+## Figure 1 - Button Mode Properties
 
 **BarAnimation**  
 When the user selects a page that is not fully visible on the bar the page can
@@ -37,18 +37,17 @@ of your application. BarLastItemInset is likewise used to set the inset distan
 on the far edge and allows you to specify a minimum distance between the last
 tab and the buttons/control edge.  
 
-![](Images/NavFirstItemInset.png)  
+![Figure 2 - BarFirstItemInset = 0 and 10](Images/NavBarFigure2.bmp)
 
-*Figure 2 - BarFirstItemInset = 0 & 10*
+## Figure 2 - BarFirstItemInset = 0 & 10
 
-  
 **BarMapExtraText + BarMapText + BarMapImage**  
 Each visible *KrytonPage* is represented by a single bar header item, but the
 *KryptonPage* has three different text properties and three image properties.
 The mapping properties are used to describe how to map the bar item contents
 from the values stored in each *KrytonPage* instance.  
   
-*BarMapImage *is used to recover an image from the page. To prevent any image
+*BarMapImage*is used to recover an image from the page. To prevent any image
 from being shown assign the *None* value. To show the *ImageSmall* form the page
 assign *Small* to the *MapImage*. More complex mappings are possible, for
 example a value of *LargeMediumSmall* indicates that the *ImageLarge* property
@@ -64,7 +63,6 @@ variations exist so you can specify a preference for what text is shown.
 *BarMapExtraText* works in the same way but maps to the secondary bar item
 text and defaults to *None*.
 
-  
 **BarMinimumHeight**  
 The height of the bar area is calculated by discovering the height of the
 tallest item on the bar. This could be an individual tab header or one of the
@@ -85,10 +83,9 @@ ensure they are all visible. Finally *Expandline* will only expand the size of
 items if they do not fill up the entire line display area. Figure 3 shows all
 five options for the same set of items.
 
-![](Images/NavBarMultiline.png)
+![Figure 3 - All possible BarMultiline settings](Images/NavBarFigure3.bmp)
 
-*Figure 3 - All possible BarMultiline settings*  
-  
+## Figure 3 - All possible BarMultiline settings
   
 **BarOrientation**  
 By default the bar is positioned at the top of the navigator control as can be
@@ -96,16 +93,13 @@ seen in Figure 4. You can alter the orientation to any of the three other values
 *Left*, *Right* and *Bottom*. Figure 5 shows the orientation changed to each of
 the other options for a range of different *Bar* modes.  
   
-![](Images/NavBarFigure1.bmp)
+![Figure 4 - BarOrientation = Top](Images/NavBarFigure4.bmp)
 
-*Figure 4 - BarOrientation = Top*  
+## Figure 4 - BarOrientation = Top
   
-  
-![](Images/NavBarFigure2.png)
+![Figure 5 - BarOrientation = Left, Bottom and Right](Images/NavBarFigure5.bmp)
 
-*Figure 5 - BarOrientation = Left, Bottom and Right*
-
- 
+## Figure 5 - BarOrientation = Left, Bottom and Right
 
 **CheckButtonStyle**  
 When showing the page headers as *CheckButton* items this property is used to
@@ -113,11 +107,9 @@ specify the button style that should be used for the appearance of each item.
 The default is the *Standalone* button style but you can change this to any of
 the other styles such as *LowProfile*, as can be seen in Figure 6.
 
-![](Images/NavBarFigure3.bmp)
+![Figure 6 - CheckButtonStyle = LowProfile](Images/NavBarFigure6.bmp)
 
-*Figure 6 - CheckButtonStyle = LowProfile*
-
- 
+## Figure 6 - CheckButtonStyle = LowProfile
 
 **ItemAlignment**  
 By default the alignment of items on the bar is to the *Near* side. On a
@@ -126,15 +118,13 @@ can see in Figure 7 and 8 the alternative property values of *Center* and *Far
 The navigator does honor the *RightToLeft* setting and so when defined the
 *Near* and *Far* values will produce the opposite arrangement.  
   
-![](Images/NavBarFigure4.bmp)
+![Figure 7 - ItemAlignment = Center](Images/NavBarFigure7.bmp)
 
-*Figure 7 - ItemAlignment = Center*  
+## Figure 7 - ItemAlignment = Center
   
-![](Images/NavBarFigure5.bmp)
+![Figure 8 - ItemAlignment = Far](Images/NavBarFigure8.bmp)
 
-*Figure 8 - ItemAlignment = Far*
-
- 
+## Figure 8 - ItemAlignment = Far
 
 **ItemMaximumSize + ItemMinimumSize**  
 Use these two properties to prevent strange looking items under two scenarios.
@@ -144,8 +134,6 @@ prevent very small items from being created you should use the *ItemMinimumSize*
 to set a lower limit on header items. The opposite case is where the text and/or
 image for a page are very large and would create an extremely large header item.
 Use the *ItemMaximumSize* to set an upper limit on header items.
-
- 
 
 **ItemOrientation**  
 In most cases you will want the orientation of header items to automatically
@@ -157,11 +145,9 @@ show vertical text as seen in Figure 4. This is the purpose of the default
 orientation. Figure 9 shows the the bar at the top but with the item orientation
 defined as *FixedLeft*, *FixedBottom* and *FixedRight.*
 
-![](Images/NavBarFigure6.bmp)
+![Figure 9 - ItemOrientation = FixedLeft + FixedBottom + FixedRight](Images/NavModeBTG.bmp)
 
-*Figure 9 - ItemOrientation = FixedLeft + FixedBottom + FixedRight*
-
- 
+## Figure 9 - ItemOrientation = FixedLeft + FixedBottom + FixedRight
 
 **ItemSizing**  
 Each bar item is sizing according to the width and height needed to display the
@@ -170,31 +156,29 @@ applied using the *ItemMaximumSize* and *ItemMinimumSize* properties. The
 *ItemSizing* property specifies the algorithm to apply across all the bar header
 items.
 
--   *Individual Sizing*  
+* *Individual Sizing*  
     Every bar item is left to be whatever size it needs.
 
--   *All Same Height*  
+* *All Same Height*  
     Once the size of every item has been calculated all of them are set to the
     same height as the tallest item.
 
--   *All Same Width*  
+* *All Same Width*  
     Once the size of every item has been calculated all of them are set to the
     same width as the widest item.
 
--   *All Same Width + Height*  
+* *All Same Width + Height*  
     Combines the *All Same Width* and *All Same Height* options.
 
 **TabBorderStyle**  
 Showing the page headers as *Tab* items this property is used to specify the
-shape of the tab header. The default is the *Rounded Outsize Medium * style but
+shape of the tab header. The default is the *Rounded Outsize Medium* style but
 you can change this to any of the other styles such as *OneNote*, as can be seen
 in Figure 10.  
 
-![](Images/NavBarFigure7.bmp)  
-  
-*Figure 10 - TabBorderStyle = OneNote*  
-  
-  
+![Figure 10 - TabBorderStyle = OneNote](Images/NavBarFigure3.bmp)
+
+## Figure 10 - TabBorderStyle = OneNote
   
 **TabStyle**  
 When showing the page headers as *Tab* header items this property is used to
@@ -202,6 +186,6 @@ specify the tab style that should be used for the appearance of each item. The
 default is the *High Profile* style but you can change this to any of the other
 styles such as *Low Profile,* as can be seen in Figure 11.  
   
-![](Images/NavBarFigure8.bmp)  
+![Figure 11 - TabStyle = Low Profile](Images/NavBarFigure4.bmp)
 
-*Figure 11 - TabStyle = Low Profile*
+## Figure 11 - TabStyle = Low Profile

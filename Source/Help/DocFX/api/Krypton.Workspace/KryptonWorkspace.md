@@ -35,6 +35,7 @@ public class KryptonWorkspace : VisualContainerControl, IDragTargetProvider
 ### Workspace Structure
 
 #### Root
+
 ```csharp
 [Category("Workspace")]
 [Description("Gets and sets the root workspace sequence.")]
@@ -45,6 +46,7 @@ public KryptonWorkspaceSequence Root { get; set; }
 Gets and sets the root workspace sequence that defines the layout hierarchy.
 
 #### ActiveCell
+
 ```csharp
 [Category("Workspace")]
 [Description("Gets and sets the active workspace cell.")]
@@ -57,6 +59,7 @@ Gets and sets the currently active workspace cell.
 **Default Value**: `null`
 
 #### MaximizedCell
+
 ```csharp
 [Category("Workspace")]
 [Description("Gets and sets the maximized workspace cell.")]
@@ -71,6 +74,7 @@ Gets and sets the currently maximized workspace cell.
 ### Behavior Settings
 
 #### AllowResizing
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if resizing is allowed.")]
@@ -83,6 +87,7 @@ Gets and sets whether panel resizing is allowed.
 **Default Value**: `true`
 
 #### ShowMaximizeButton
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets if maximize buttons are shown.")]
@@ -95,6 +100,7 @@ Gets and sets whether maximize buttons are shown on panels.
 **Default Value**: `true`
 
 #### SplitterWidth
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets the width of splitters.")]
@@ -109,6 +115,7 @@ Gets and sets the width of splitters between panels.
 ### Appearance
 
 #### SeparatorStyle
+
 ```csharp
 [Category("Visuals")]
 [Description("Gets and sets the separator style.")]
@@ -121,6 +128,7 @@ Gets and sets the style of separators between panels.
 **Default Value**: `SeparatorStyle.LowProfile`
 
 #### CompactFlags
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets and sets the compact flags.")]
@@ -135,6 +143,7 @@ Gets and sets the compact flags that control workspace behavior.
 ## Events
 
 ### WorkspaceCellAdded
+
 ```csharp
 [Category("Workspace")]
 [Description("Occurs when a workspace cell is added.")]
@@ -144,6 +153,7 @@ public event EventHandler<KryptonWorkspaceCellEventArgs> WorkspaceCellAdded;
 Occurs when a workspace cell is added to the workspace.
 
 ### WorkspaceCellRemoved
+
 ```csharp
 [Category("Workspace")]
 [Description("Occurs when a workspace cell is removed.")]
@@ -153,6 +163,7 @@ public event EventHandler<KryptonWorkspaceCellEventArgs> WorkspaceCellRemoved;
 Occurs when a workspace cell is removed from the workspace.
 
 ### ActiveCellChanged
+
 ```csharp
 [Category("Workspace")]
 [Description("Occurs when the active cell changes.")]
@@ -162,6 +173,7 @@ public event EventHandler ActiveCellChanged;
 Occurs when the active cell changes.
 
 ### MaximizedCellChanged
+
 ```csharp
 [Category("Workspace")]
 [Description("Occurs when the maximized cell changes.")]
@@ -171,6 +183,7 @@ public event EventHandler MaximizedCellChanged;
 Occurs when the maximized cell changes.
 
 ### PageCloseRequest
+
 ```csharp
 [Category("Workspace")]
 [Description("Occurs when a page close is requested.")]
@@ -180,6 +193,7 @@ public event EventHandler<KryptonPageEventArgs> PageCloseRequest;
 Occurs when a page close is requested.
 
 ### PageDropDown
+
 ```csharp
 [Category("Workspace")]
 [Description("Occurs when a page dropdown is requested.")]
@@ -189,6 +203,7 @@ public event EventHandler<KryptonPageEventArgs> PageDropDown;
 Occurs when a page dropdown is requested.
 
 ### CellDropDown
+
 ```csharp
 [Category("Workspace")]
 [Description("Occurs when a cell dropdown is requested.")]
@@ -198,6 +213,7 @@ public event EventHandler<KryptonWorkspaceCellEventArgs> CellDropDown;
 Occurs when a cell dropdown is requested.
 
 ### WorkspaceDropDown
+
 ```csharp
 [Category("Workspace")]
 [Description("Occurs when a workspace dropdown is requested.")]
@@ -209,6 +225,7 @@ Occurs when a workspace dropdown is requested.
 ## Methods
 
 ### MaximizeCell(KryptonWorkspaceCell cell)
+
 ```csharp
 public void MaximizeCell(KryptonWorkspaceCell cell)
 ```
@@ -216,6 +233,7 @@ public void MaximizeCell(KryptonWorkspaceCell cell)
 Maximizes the specified workspace cell.
 
 ### RestoreCell(KryptonWorkspaceCell cell)
+
 ```csharp
 public void RestoreCell(KryptonWorkspaceCell cell)
 ```
@@ -223,6 +241,7 @@ public void RestoreCell(KryptonWorkspaceCell cell)
 Restores the specified workspace cell from maximized state.
 
 ### CloseCell(KryptonWorkspaceCell cell)
+
 ```csharp
 public void CloseCell(KryptonWorkspaceCell cell)
 ```
@@ -230,6 +249,7 @@ public void CloseCell(KryptonWorkspaceCell cell)
 Closes the specified workspace cell.
 
 ### CloseAllCells()
+
 ```csharp
 public void CloseAllCells()
 ```
@@ -237,6 +257,7 @@ public void CloseAllCells()
 Closes all workspace cells.
 
 ### CloseAllCellsButThis(KryptonWorkspaceCell cell)
+
 ```csharp
 public void CloseAllCellsButThis(KryptonWorkspaceCell cell)
 ```
@@ -244,6 +265,7 @@ public void CloseAllCellsButThis(KryptonWorkspaceCell cell)
 Closes all workspace cells except the specified one.
 
 ### ShowContextMenu(Point screenPoint)
+
 ```csharp
 public void ShowContextMenu(Point screenPoint)
 ```
@@ -251,6 +273,7 @@ public void ShowContextMenu(Point screenPoint)
 Shows the context menu at the specified screen point.
 
 ### ShowContextMenu(KryptonWorkspaceCell cell, Point screenPoint)
+
 ```csharp
 public void ShowContextMenu(KryptonWorkspaceCell cell, Point screenPoint)
 ```
@@ -258,6 +281,7 @@ public void ShowContextMenu(KryptonWorkspaceCell cell, Point screenPoint)
 Shows the context menu for the specified cell at the specified screen point.
 
 ### SaveConfigToXml(XmlWriter xmlWriter)
+
 ```csharp
 public void SaveConfigToXml(XmlWriter xmlWriter)
 ```
@@ -265,6 +289,7 @@ public void SaveConfigToXml(XmlWriter xmlWriter)
 Saves the workspace configuration to XML.
 
 ### LoadConfigFromXml(XmlReader xmlReader)
+
 ```csharp
 public void LoadConfigFromXml(XmlReader xmlReader)
 ```
@@ -272,6 +297,7 @@ public void LoadConfigFromXml(XmlReader xmlReader)
 Loads the workspace configuration from XML.
 
 ### SaveConfigToFile(string filename)
+
 ```csharp
 public void SaveConfigToFile(string filename)
 ```
@@ -279,6 +305,7 @@ public void SaveConfigToFile(string filename)
 Saves the workspace configuration to a file.
 
 ### LoadConfigFromFile(string filename)
+
 ```csharp
 public void LoadConfigFromFile(string filename)
 ```
@@ -288,6 +315,7 @@ Loads the workspace configuration from a file.
 ## Usage Examples
 
 ### Basic Workspace Setup
+
 ```csharp
 // Create a basic workspace
 KryptonWorkspace workspace = new KryptonWorkspace();
@@ -306,6 +334,7 @@ rootSequence.Children.Add(rightCell);
 ```
 
 ### Horizontal Layout
+
 ```csharp
 // Create a horizontal layout
 KryptonWorkspaceSequence horizontalSequence = new KryptonWorkspaceSequence(Orientation.Horizontal);
@@ -324,6 +353,7 @@ workspace.Root = horizontalSequence;
 ```
 
 ### Vertical Layout
+
 ```csharp
 // Create a vertical layout
 KryptonWorkspaceSequence verticalSequence = new KryptonWorkspaceSequence(Orientation.Vertical);
@@ -342,6 +372,7 @@ workspace.Root = verticalSequence;
 ```
 
 ### Complex Layout
+
 ```csharp
 // Create a complex layout with nested sequences
 KryptonWorkspaceSequence rootSequence = new KryptonWorkspaceSequence(Orientation.Horizontal);
@@ -367,6 +398,7 @@ workspace.Root = rootSequence;
 ```
 
 ### Adding Navigators to Cells
+
 ```csharp
 // Add navigators to workspace cells
 KryptonNavigator leftNavigator = new KryptonNavigator();
@@ -390,6 +422,7 @@ rightCell.Pages.Add(rightNavigator);
 ```
 
 ### Maximized Mode
+
 ```csharp
 // Handle maximized mode
 workspace.MaximizedCellChanged += (sender, e) =>
@@ -412,6 +445,7 @@ workspace.RestoreCell(leftCell);
 ```
 
 ### Active Cell Management
+
 ```csharp
 // Handle active cell changes
 workspace.ActiveCellChanged += (sender, e) =>
@@ -424,6 +458,7 @@ workspace.ActiveCell = rightCell;
 ```
 
 ### Context Menus
+
 ```csharp
 // Handle context menu requests
 workspace.CellDropDown += (sender, e) =>
@@ -440,6 +475,7 @@ workspace.PageDropDown += (sender, e) =>
 ```
 
 ### Workspace Persistence
+
 ```csharp
 // Save workspace configuration
 string configFile = "workspace_config.xml";
@@ -450,6 +486,7 @@ workspace.LoadConfigFromFile(configFile);
 ```
 
 ### XML Configuration
+
 ```csharp
 // Save to XML string
 using (StringWriter stringWriter = new StringWriter())
@@ -468,6 +505,7 @@ using (XmlReader xmlReader = XmlReader.Create(stringReader))
 ```
 
 ### Cell Management
+
 ```csharp
 // Close specific cell
 workspace.CloseCell(leftCell);

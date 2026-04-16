@@ -3,6 +3,7 @@
 ## Quick Start
 
 ### Basic Usage
+
 ```csharp
 // Create a KryptonForm with themed system menu
 var form = new KryptonForm();
@@ -18,6 +19,7 @@ form.Controls.Add(button); // Goes to InternalPanel automatically
 ```
 
 ### Designer Usage
+
 1. **Add KryptonForm** to your project
 2. **Open in Visual Studio designer**
 3. **Drag controls** from toolbox onto form
@@ -27,6 +29,7 @@ form.Controls.Add(button); // Goes to InternalPanel automatically
 ## Common Development Patterns
 
 ### 1. Form with Custom System Menu
+
 ```csharp
 public partial class MainForm : KryptonForm
 {
@@ -68,6 +71,7 @@ public partial class MainForm : KryptonForm
 ```
 
 ### 2. Theme-Aware Application
+
 ```csharp
 public partial class ThemedForm : KryptonForm
 {
@@ -103,6 +107,7 @@ public partial class ThemedForm : KryptonForm
 ```
 
 ### 3. Configuration-Driven System Menu
+
 ```csharp
 public partial class ConfigurableForm : KryptonForm
 {
@@ -153,6 +158,7 @@ public partial class ConfigurableForm : KryptonForm
 ## Advanced Techniques
 
 ### 1. Dynamic Menu Updates
+
 ```csharp
 private void UpdateMenuBasedOnState()
 {
@@ -180,6 +186,7 @@ private void UpdateMenuBasedOnState()
 ```
 
 ### 2. Context-Sensitive Menus
+
 ```csharp
 private void UpdateMenuForContext(ApplicationContext context)
 {
@@ -219,6 +226,7 @@ private void RebuildMenuForContext(ApplicationContext context)
 ```
 
 ### 3. Integration with Application Framework
+
 ```csharp
 public abstract class BaseKryptonForm : KryptonForm
 {
@@ -276,6 +284,7 @@ public partial class DocumentForm : BaseKryptonForm
 ## Testing Strategies
 
 ### Unit Testing
+
 ```csharp
 [Test]
 public void SystemMenu_InDesignMode_ShouldBeNull()
@@ -302,6 +311,7 @@ public void SystemMenu_AtRuntime_ShouldBeAvailable()
 ```
 
 ### Integration Testing
+
 ```csharp
 [Test]
 public void CustomMenuItem_ShouldAppearInMenu()
@@ -324,6 +334,7 @@ public void CustomMenuItem_ShouldAppearInMenu()
 ```
 
 ### Designer Testing
+
 ```csharp
 // Manual testing in Visual Studio designer:
 // 1. Open KryptonForm in designer
@@ -338,6 +349,7 @@ public void CustomMenuItem_ShouldAppearInMenu()
 ### Best Practices
 
 #### 1. Minimize System Menu Operations
+
 ```csharp
 // Batch operations together
 var systemMenu = KryptonSystemMenu;
@@ -353,6 +365,7 @@ if (systemMenu != null)
 ```
 
 #### 2. Cache System Menu Reference
+
 ```csharp
 public partial class OptimizedForm : KryptonForm
 {
@@ -383,6 +396,7 @@ public partial class OptimizedForm : KryptonForm
 ```
 
 #### 3. Efficient Event Handling
+
 ```csharp
 // Use lightweight event handlers
 private void OnQuickAction(object sender, EventArgs e)
@@ -411,25 +425,28 @@ private async void OnComplexAction(object sender, EventArgs e)
 ## Deployment Considerations
 
 ### Distribution
+
 - **No Special Requirements**: System menu is part of Krypton.Toolkit
 - **Theme Resources**: Icons embedded in assembly
 - **Dependencies**: Standard Krypton.Toolkit dependencies only
 
 ### Configuration
+
 - **App.config**: No special configuration required
 - **Registry**: No registry dependencies
 - **User Settings**: Can store SystemMenuValues preferences
 
 ### Compatibility
+
 - **Windows Versions**: Works on all supported Windows versions
 - **.NET Versions**: Supports all Krypton.Toolkit target frameworks
 - **DPI Awareness**: Automatically handles high-DPI scenarios
 
 ## Related Documentation
 
-- [System Menu Overview](KryptonForm-SystemMenu-Overview.md)
-- [API Reference](KryptonSystemMenu-API-Reference.md)
-- [Service Documentation](KryptonSystemMenuService-Documentation.md)
-- [Troubleshooting Guide](KryptonForm-Troubleshooting.md)
-- [Migration Guide](KryptonForm-Migration-Guide.md)
-- [InternalPanel Architecture](KryptonForm-InternalPanel-Architecture.md)
+- [System Menu Overview](KryptonFormSystemMenuOverview.md)
+- [API Reference](KryptonSystemMenuAPIReference.md)
+- [Service Documentation](KryptonSystemMenuDeveloperGuide.md)
+- [Troubleshooting Guide](KryptonFormTroubleshooting.md)
+- [Migration Guide](KryptonFormMigrationGuide.md)
+- [InternalPanel Architecture](KryptonFormInternalPanelArchitecture.md)

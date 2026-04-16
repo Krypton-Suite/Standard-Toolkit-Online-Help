@@ -1,6 +1,7 @@
 # Navigator Other Events  
   
 Applicable Events:  
+
 * TabCountChanged
 * TabVisibleCountChanged
 * TabDoubleClicked
@@ -18,8 +19,6 @@ Applicable Events:
 * CtrlTabStart
 * CtrlTabWrap
 * TabClicked
-
- 
 
 **TabCountChanged**  
 Fired when the number of pages in the control has changed.  

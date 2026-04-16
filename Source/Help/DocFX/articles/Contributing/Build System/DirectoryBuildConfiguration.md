@@ -29,7 +29,21 @@ Each Krypton.*.csproj
 
 **Location**: `Directory.Build.props`
 
-**Purpose**: Global version calculation and conditional compilation symbols
+**Purpose**: Global version calculation, conditional compilation symbols, and shared build output roots.
+
+### Build output roots (`UseArtifactsOutput`)
+
+The root props define where binaries and NuGet packages are written. Script `.proj` files under `Scripts/` import this file and use `$(KryptonBuildOutputRoot)` and `$(KryptonPackageOutputRoot)` so Clean/Push/archive targets stay aligned with component projects.
+
+| Property | Default (`UseArtifactsOutput` false) | When `UseArtifactsOutput=true` |
+| --- | --- | --- |
+| `KryptonBuildOutputRoot` | `Bin\` (repo root) | `artifacts\bin\` |
+| `KryptonPackageOutputRoot` | `Bin\Packages\` | `artifacts\packages\` |
+
+- **`UseArtifactsOutput`**: MSBuild property; defaults to `false` for local/script compatibility.
+- **CI**: GitHub Actions workflows pass `/p:UseArtifactsOutput=true` on orchestrated `msbuild` steps; push/version steps resolve packages and `Krypton.Toolkit.dll` from `artifacts/*` first, then fall back to `Bin/*`.
+
+Individual `.csproj` files still set a default `<OutputPath>` under `Bin/`; when `UseArtifactsOutput=true`, `Source/Krypton Components/Directory.Build.targets` overrides `OutputPath` to `$(KryptonBuildOutputRoot)$(Configuration)\`.
 
 ### Version Calculation
 
@@ -224,19 +238,19 @@ Imports the root `Directory.Build.props` first, ensuring version properties are 
 
 Uses `LibraryVersion` from root `Directory.Build.props`.
 
-### Package Output Directory
+### Package output directory
 
 ```xml
 <PropertyGroup>
-    <PackageOutputPath>$(MSBuildThisFileDirectory)..\..\Bin\Packages\$(Configuration)\</PackageOutputPath>
+    <PackageOutputPath>$(KryptonPackageOutputRoot)$(Configuration)\</PackageOutputPath>
 </PropertyGroup>
 ```
 
-**Result**: Packages go to `Bin/Packages/<Configuration>/`
+**Result**: Packages go to `$(KryptonPackageOutputRoot)<Configuration>/` (legacy: `Bin/Packages/<Configuration>/`; artifacts mode: `artifacts/packages/<Configuration>/`).
 
-- `Bin/Packages/Release/`
-- `Bin/Packages/Canary/`
-- `Bin/Packages/Nightly/`
+- Release: `.../Release/`
+- Canary: `.../Canary/`
+- Nightly: `.../Nightly/`
 
 ### Configuration-Specific Package Metadata
 
@@ -325,7 +339,19 @@ Similar to Canary, but uses `Krypton Nightly.png` icon.
 
 **Location**: `Source/Krypton Components/Directory.Build.targets`
 
-**Purpose**: Advanced versioning, assembly metadata, and package ID customization
+**Purpose**: Advanced versioning, assembly metadata, package ID customization, and optional unified output path when artifacts mode is enabled.
+
+### Artifacts `OutputPath` override
+
+When `UseArtifactsOutput` is `true`, targets set:
+
+```xml
+<PropertyGroup Condition="'$(UseArtifactsOutput)' == 'true'">
+    <OutputPath>$(KryptonBuildOutputRoot)$(Configuration)\</OutputPath>
+</PropertyGroup>
+```
+
+This overrides the per-project `<OutputPath>` that points at `Bin/` so binaries match script and CI expectations in artifacts layout.
 
 ### Version Properties by Configuration
 

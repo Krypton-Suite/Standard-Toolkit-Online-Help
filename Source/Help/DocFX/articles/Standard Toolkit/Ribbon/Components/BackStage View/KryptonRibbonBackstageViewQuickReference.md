@@ -59,7 +59,7 @@ kryptonRibbon.BackstageClosed += (_, __) => { };
 - Right click → **Add Page** / **Remove Page** / **Clear Pages**.
 - Select a `KryptonBackstagePage` and design it like a normal panel.
 
-**See also**: [Creating Backstage Pages - In-Depth Guide](Ribbon-BackstageView-CreatingPages.md) for comprehensive examples and best practices.
+**See also**: [Creating Backstage Pages - In-Depth Guide](KryptonRibbonBackstageViewCreatingPages.md) for comprehensive examples and best practices.
 
 ## Customize colors
 
@@ -82,5 +82,3 @@ backstage.CloseRequested += (sender, e) =>
     }
 };
 ```
-
-

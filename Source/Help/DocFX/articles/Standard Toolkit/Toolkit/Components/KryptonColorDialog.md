@@ -6,7 +6,7 @@ The `KryptonColorDialog` class provides a Krypton-themed wrapper around the stan
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.ComponentModel.Component
     └── System.Windows.Forms.CommonDialog
@@ -21,6 +21,7 @@ public KryptonColorDialog()
 ```
 
 The constructor initializes all the enhanced components:
+
 - **CommonDialogHandler**: Manages Krypton theming and window behavior
 - **Alpha Components**: Creates alpha slider, label, and preview panel for transparency support
 - **Timer**: Handles real-time alpha value updates
@@ -40,6 +41,7 @@ public string Title { get; set; }
 - **Designer Visible**: Yes
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonColorDialog
 {
@@ -59,6 +61,7 @@ public Icon Icon { get; set; }
 - **Designer Visible**: Yes
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonColorDialog
 {
@@ -78,6 +81,7 @@ public bool ShowIcon { get; set; }
 - **Default Value**: `false`
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonColorDialog
 {
@@ -99,12 +103,14 @@ public bool ShowAlphaSlider { get; set; }
 - **Side Effects**: Automatically enables `AllowFullOpen` and `FullOpen` when set to `true`
 
 **Important Notes:**
+
 - When enabled, forces the dialog into full-open mode
 - Adds a vertical alpha slider with real-time preview
 - Updates the `Color` property to include alpha values
 - Displays alpha values as tooltips and labels
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonColorDialog
 {
@@ -125,6 +131,7 @@ public new Color Color { get; set; }
 - **Side Effects**: Updates alpha slider value when color is set programmatically
 
 **Alpha-Aware Behavior:**
+
 ```csharp
 dialog.ShowAlphaSlider = true;
 dialog.Color = Color.FromArgb(180, Color.Blue);
@@ -152,19 +159,23 @@ The dialog inherits all standard `ColorDialog` properties with full compatibilit
 ## Display Behavior and Layout
 
 ### Compact Mode (FullOpen = false)
+
 - Displays basic color palette
 - Customizable window title and icon
 - Optimized layout size (automatically calculated)
 - Alpha slider available if enabled
 
 ### Full Open Mode (FullOpen = true)
+
 - Shows advanced color selection controls
 - RGB editing fields
 - Custom color definition area
 - Alpha slider integrated seamlessly (when enabled)
 
 ### Alpha Slider Integration
+
 When `ShowAlphaSlider` is enabled:
+
 - **Vertical Slider**: Positioned to right of RGB fields
 - **Range**: 0-255 (fully transparent to fully opaque)
 - **Real-time Preview**: Updates color preview panel
@@ -199,6 +210,7 @@ public void SelectColorWithTransparency()
 ### Theme Integration
 
 The dialog automatically applies Krypton theming through:
+
 - **CommonDialogHandler**: Provides window management and styling
 - **DPI Scaling**: Automatic scaling for high-DPI displays
 - **Palette Support**: Respects global Krypton palette settings

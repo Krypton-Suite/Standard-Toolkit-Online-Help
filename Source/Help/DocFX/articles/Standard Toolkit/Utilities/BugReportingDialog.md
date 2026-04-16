@@ -8,7 +8,7 @@ The `KryptonBugReportingDialog` is a comprehensive bug reporting tool that exten
 
 - **Configurable Email Integration**: Full SMTP support with configurable server settings
 - **Exception Details Collection**: Automatically captures and includes exception information
-- **User Input Fields**: 
+- **User Input Fields**:
   - Email address (with validation)
   - Bug description (pre-populated with exception details when available)
   - Steps to reproduce
@@ -37,13 +37,14 @@ using Krypton.Utilities;
 
 The main public API class for displaying the bug reporting dialog.
 
-#### Methods
+#### KryptonBugReportingDialog methods
 
 ##### `Show(Exception? exception, BugReportEmailConfig emailConfig)`
 
 Displays the bug reporting dialog with an optional exception.
 
 **Parameters:**
+
 - `exception` (`Exception?`): Optional exception to include in the bug report. If provided, exception details will be pre-populated in the bug description field.
 - `emailConfig` (`BugReportEmailConfig`): Required email configuration for sending the bug report.
 
@@ -52,6 +53,7 @@ Displays the bug reporting dialog with an optional exception.
 **Throws:** `ArgumentNullException` if `emailConfig` is null.
 
 **Example:**
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -74,11 +76,13 @@ if (result == DialogResult.OK)
 Displays the bug reporting dialog without an exception.
 
 **Parameters:**
+
 - `emailConfig` (`BugReportEmailConfig`): Required email configuration for sending the bug report.
 
 **Returns:** `DialogResult.OK` if the bug report was sent successfully; otherwise, `DialogResult.Cancel`.
 
 **Example:**
+
 ```csharp
 var emailConfig = new BugReportEmailConfig { /* ... */ };
 KryptonBugReportingDialog.Show(emailConfig);
@@ -88,10 +92,10 @@ KryptonBugReportingDialog.Show(emailConfig);
 
 Configuration class for SMTP email settings.
 
-#### Properties
+#### BugReportEmailConfig properties
 
 | Property | Type | Description | Default |
-|----------|------|-------------|---------|
+| ---------- | ------ | ------------- | --------- |
 | `SmtpServer` | `string` | SMTP server address (e.g., "smtp.gmail.com") | `string.Empty` |
 | `SmtpPort` | `int` | SMTP server port (commonly 25, 465, or 587) | `587` |
 | `UseSsl` | `bool` | Whether to use SSL/TLS encryption | `true` |
@@ -122,13 +126,14 @@ var emailConfig = new BugReportEmailConfig
 
 Service class for sending bug report emails. Typically used internally by the dialog, but can be used directly if needed.
 
-#### Methods
+#### BugReportEmailService methods
 
 ##### `SendBugReport(BugReportEmailConfig config, string subject, string body, List<string>? attachments = null)`
 
 Sends a bug report email.
 
 **Parameters:**
+
 - `config` (`BugReportEmailConfig`): Email configuration
 - `subject` (`string`): Email subject line
 - `body` (`string`): Email body content
@@ -137,10 +142,12 @@ Sends a bug report email.
 **Returns:** `true` if the email was sent successfully; otherwise, `false`.
 
 **Throws:**
+
 - `ArgumentNullException` if `config` is null
 - `InvalidOperationException` if SMTP server or recipient email is not configured
 
 **Example:**
+
 ```csharp
 var service = new BugReportEmailService();
 var success = service.SendBugReport(
@@ -155,13 +162,14 @@ var success = service.SendBugReport(
 
 Helper class for integrating bug reporting with exception dialogs.
 
-#### Methods
+#### BugReportingHelper methods
 
 ##### `ShowExceptionWithBugReporting(Exception exception, BugReportEmailConfig emailConfig, Color? highlightColor = null, bool? showCopyButton = null, bool? showSearchBox = null)`
 
 Shows an exception dialog with integrated bug reporting capability.
 
 **Parameters:**
+
 - `exception` (`Exception`): The exception to display
 - `emailConfig` (`BugReportEmailConfig`): Email configuration for bug reporting
 - `highlightColor` (`Color?`): Optional highlight color for the exception dialog
@@ -169,6 +177,7 @@ Shows an exception dialog with integrated bug reporting capability.
 - `showSearchBox` (`bool?`): Optional flag to show the search box
 
 **Example:**
+
 ```csharp
 try
 {
@@ -184,7 +193,7 @@ catch (Exception ex)
 
 Localizable string resources for the bug reporting dialog.
 
-#### Properties
+#### KryptonBugReportingDialogStrings properties
 
 All properties are localizable and can be customized:
 
@@ -235,7 +244,7 @@ catch (Exception ex)
 {
     var emailConfig = new BugReportEmailConfig { /* ... */ };
     
-    Krypton.Toolkit.KryptonExceptionDialog.Show(
+    Krypton.Utilities.KryptonExceptionDialog.Show(
         ex, 
         highlightColor: null,
         showCopyButton: true,
@@ -265,6 +274,7 @@ KryptonBugReportingDialog.Show(exception, emailConfig);
 ### Common SMTP Settings
 
 #### Gmail
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -279,6 +289,7 @@ var emailConfig = new BugReportEmailConfig
 ```
 
 #### Outlook/Hotmail
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -293,6 +304,7 @@ var emailConfig = new BugReportEmailConfig
 ```
 
 #### Office 365
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -307,6 +319,7 @@ var emailConfig = new BugReportEmailConfig
 ```
 
 #### Custom SMTP Server
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -338,6 +351,7 @@ private static BugReportEmailConfig LoadEmailConfig()
 ```
 
 **App.config example:**
+
 ```xml
 <appSettings>
   <add key="BugReportSmtpServer" value="smtp.example.com" />
@@ -482,7 +496,7 @@ var success = service.SendBugReport(emailConfig, subject, body, attachments);
 
 The bug reporting dialog automatically formats the email body as follows:
 
-```
+```text
 Bug Report
 ==========
 
@@ -518,6 +532,7 @@ log.txt
 ### Screenshots
 
 The dialog includes a "Add Screenshot" button that captures the entire primary screen. Screenshots are:
+
 - Saved as PNG files in the system temp directory
 - Automatically attached to the email
 - Automatically cleaned up after the dialog is closed (if sending fails or is cancelled)
@@ -526,6 +541,7 @@ The dialog includes a "Add Screenshot" button that captures the entire primary s
 ### File Attachments
 
 Users can attach multiple files using the "Add File" button:
+
 - Files are validated to ensure they exist before attachment
 - Multiple files can be selected in a single operation
 - Files are displayed as thumbnails in a visual grid layout
@@ -540,15 +556,19 @@ Users can attach multiple files using the "Add File" button:
 The bug reporting dialog displays visual thumbnails for attachments:
 
 **Supported Image Formats:**
+
 - JPG/JPEG, PNG, GIF, BMP, TIFF, ICO, WEBP
 
 **Supported Video Formats:**
+
 - MP4, AVI, MOV, WMV, FLV, MKV, WEBM, M4V, 3GP
 
 **Other File Types:**
+
 - Displays the Windows file icon as a thumbnail
 
 **Thumbnail Features:**
+
 - Thumbnails are automatically generated when files are added
 - Thumbnails are cached to improve performance
 - Image thumbnails are scaled maintaining aspect ratio
@@ -680,13 +700,12 @@ private bool TestEmailConfiguration(BugReportEmailConfig config)
 
 - **.NET Framework**: 4.7.2 or later
 - **.NET**: 8.0 or later
-- **Dependencies**: 
+- **Dependencies**:
   - `Krypton.Toolkit` (referenced by `Krypton.Utilities`)
   - `System.Net.Mail` (included in .NET Framework/.NET)
 
 ## See Also
 
-- [KryptonExceptionDialog Documentation](ExceptionDialog.md)
-- [Krypton.Utilities Namespace Reference](../API/Krypton.Utilities.md)
+- [KryptonExceptionDialog documentation](KryptonExceptionDialog.md)
+- [Krypton.Utilities source](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/Source/Krypton%20Components/Krypton.Utilities)
 - [Email Configuration Best Practices](EmailConfiguration.md)
-

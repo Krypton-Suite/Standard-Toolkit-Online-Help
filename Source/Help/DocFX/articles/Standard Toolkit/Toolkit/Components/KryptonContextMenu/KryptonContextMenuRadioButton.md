@@ -1,87 +1,77 @@
-KryptonContextMenuRadioButton
+# KryptonContextMenuRadioButton
 
-*Figure 1 shows the list of properties exposed by the
-KryptonContextMenuRadioButton component.*  
-* *
+Figure 1 shows the list of properties exposed by the KryptonContextMenuRadioButton component.
 
-   
-* Figure 1 - KryptonContextMenuRadioButton properties* 
+Figure 1 - KryptonContextMenuRadioButton properties
 
-**Checked**
+## Checked
 
-A boolean property that determines if the radio button should be displayed as
+A boolean property that determines if the radio button should be displayed as
 checked.
 
- 
-
-**ExtraText**
+## ExtraText
 
 Optional extra text that can appear in addition to the main *Text* property.
 
- 
-
-**Image**
+## Image
 
 Optional image to draw with the text and extra text.
 
- 
-
-**ImageTransparentColor**
+## ImageTransparentColor
 
 If you provide an *Image* then this property is used to specify which image
 color to consider transparent.
 
- 
+## Text
 
-**Text**  
-This is the standard text that appears as the radio button description.
+This is the standard text that appears as the radio button description.
 
- 
+## AutoCheck
 
-**AutoCheck**  
 Should clicking the item cause the checked state to be toggled.
 
- 
+## AutoClose
 
-**AutoClose**  
-Determines if pressing this radio button should cause the context menu to be
+Determines if pressing this radio button should cause the context menu to be
 closed.
 
- 
+## Enabled
 
-**Enabled**  
-Should the check button be displayed as enabled and allow interaction with the
+Should the radio button be displayed as enabled and allow interaction with the
 user. Note that if the *KryptonContextMenu* component has its own *Enabled*
 property defined as *False* then the item will be disabled regardless of the
 individual menu item *Enabled* state.
 
- 
+## Visible
 
-**Visible**  
 Define this as *False* if you do not want the collection of items to be
 displayed.
 
-**Tag**  
-Use the *Tag* to assign your application specific information with the component
-instance. 
+## Tag
 
-**Images**  
-Set of images to use for drawing the radio box instead of the default palette
+Use the *Tag* to assign your application specific information with the component
+instance.
+
+## Images
+
+Set of images to use for drawing the radio box instead of the default palette
 entries.
 
-**ImageStyle**  
+## ImageStyle
+
 Drawing style applied to the text, extra text and image content.
 
-**OverrideFocus, StateCommon, StateDisabled, StateNormal**  
+## OverrideFocus, StateCommon, StateDisabled, StateNormal
+
 Overrides for changing how the item is drawn in various states.
 
- 
+## Events
 
-Events
+## Click
 
-**Click**  
 Occurs when the user selects the item.
 
-**CheckedChanged**  
-Occurs when the value of the *Checked* property changes, usually because the
-user clicked the item at runtime.
+## CheckedChanged
+
+Occurs when the value of the *Checked* property changes, usually because the
+user clicked the item at runtime.

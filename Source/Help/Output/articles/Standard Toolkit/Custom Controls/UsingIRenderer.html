@@ -69,9 +69,9 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="using-irenderer">Using IRenderer</h1>
 
-<p><strong>Monitoring the global palette</strong></p>
-<p>In order to get access to a renderer you need to begin with a palette. The recommended way of getting an <em>IRenderer</em> reference is to call the <em>GetReference()</em> method in the <em>PaletteBase</em>. Therefore your custom control should begin by monitoring the global palette so that you can access the associated renderer appropriate for that global palette. You should follow the steps outlined in the Using <a href="Using%20PaletteBase.md">PaletteBase</a> article in order to add ability.</p>
-<p><strong>IRenderer Basics</strong></p>
+<h2 id="monitoring-the-global-palette">Monitoring the global palette</h2>
+<p>In order to get access to a renderer you need to begin with a palette. The recommended way of getting an <em>IRenderer</em> reference is to call the <em>GetReference()</em> method in the <em>PaletteBase</em>. Therefore your custom control should begin by monitoring the global palette so that you can access the associated renderer appropriate for that global palette. You should follow the steps outlined in the Using <a href="UsingPaletteBase.html">PaletteBase</a> article in order to add ability.</p>
+<h2 id="irenderer-basics">IRenderer Basics</h2>
 <p>In order to use the methods exposed by the <em>IRenderer</em> we need take a few basic setup steps. In particular we need to create four helper objects that are then used in your interaction with the renderer instance. To begin you should add the following fields to your custom control class.</p>
 <pre><code class="lang-cs">    private PaletteRedirect _paletteRedirect;
     private PaletteBackInheritRedirect _paletteBack;
@@ -118,7 +118,7 @@
 <p>Code block (3) is used to grab the renderer that is associated with the palette we are using. We do not cache the renderer reference as we have already cached and tracked the global palette, so we only need to request the renderer when it is needed. Block (4) is used to create an instance of the <em>RenderContext</em> type that is passed into all renderer calls. We use this object in order to package up common values and so reduce the number of parameters passed into each renderer call.</p>
 <p>In order to specify the drawing styles that should be used when recovering palette values we use block (5). In our example we are setting these values in every call to the <em>OnPaint</em> call as an illustration. In your own application you might prefer to set these values just once in the constructor because you know the style values are not going to change. On the other hand you might need to alter the style settings between renderer calls in order to draw different styles of elements within your custom control.</p>
 <p>Finally comment (6) shows the placeholder location where you would insert your rendering calls. The following sections of the article give details of how to make use of the background, border and content abilities of the renderer.</p>
-<p><strong>Drawing a Background</strong></p>
+<h2 id="drawing-a-background">Drawing a Background</h2>
 <p>To draw a background we use the <em>PaletteBase.RenderStandardBack.DrawBack</em> call. The following code provides you will a example usage.</p>
 <pre><code class="lang-cs">    // (7) Do we need to draw the background?
      if (_paletteBack.GetBackDraw(PaletteState.Normal) == InheritBool.True)
@@ -136,7 +136,7 @@
 <p>First we test to ensure that the palette specifies that the background is allowed to be drawn for the state we are requesting, as can be seen in code block (7). In this and all other examples in the article we provide the fixed <em>PaletteState.Normal</em> enumeration value. You should however provide the appropriate state for your control. Even the simplest control will need to provide one of two possible values, <em>PaletteState.Normal</em> when enabled and <em>PaletteState.Disabled</em> otherwise. If you need to provide more extensive feedback then you should consider supplying <em>PaletteState.Tracking</em> when the house is over the rendering element and <em>PaletteState.Pressed</em> when the mouse is also pressed down.</p>
 <p>Code block (8) completes the process of creating a <em>GraphicsPath</em> that is used to clip the area of background drawn. In our case we want to draw the entire client area of the control and so set the path to the ClientRectangle, but you could create any path you like in order render complex shapes.</p>
 <p>Finally block (9) performs the actual rendering operation. The second parameter is the rectangle you would like to be drawn and the third parameter a path used to clip the drawing operation. The second to last parameter is the palette state that you should ensure is the same as the call in block (7). The last parameter provides a memento object that is also assigned to as the result of the call. This technique allows performance improvements in the renderer as it allows the renderer to create caching objects and have them supplied again on subsequent calls.</p>
-<p><strong>Drawing a Border</strong></p>
+<h2 id="drawing-a-border">Drawing a Border</h2>
 <p>Once you know how to draw a background the border drawing is trivial. Here is the code.</p>
 <pre><code class="lang-cs">     // (10) Do we need to draw the border?
      if (_paletteBorder.GetBorderDraw(PaletteState.Normal) == InheritBool.True)
@@ -146,7 +146,7 @@
      }
 </code></pre>
 <p>As with drawing the background we being with block (10) which tests to ensure we need to draw the border at all. If we do then we just need to make the call to the <em>IRenderer.RenderStandardBorder.DrawBorder</em> with a set of simple parameters, as seen in code block (11). The second parameter is the rectangle that specifies the outside of the border drawing area, the border itself will be drawn to fit completely within this rectangle.</p>
-<p><strong>Drawing a Background/Border Pair</strong></p>
+<h2 id="drawing-a-backgroundborder-pair">Drawing a Background/Border Pair</h2>
 <p>In many cases you will be drawing a background and border for the same visual element. So if you control is drawing a button element in the client area then you would want to draw the button area background followed by the button area border. You might think this is achieved by performing the above two sections of code for the same rectangle area. In practice this is not quite the case because of a feature with borders.</p>
 <p>It is possible for a border to have rounded corners and so we cannot just draw the background as a rectangle, if we did that then the background would be drawn outside the rounded corners. In order to prevent this we use a slightly modified version of the background drawing code presented above.</p>
 <pre><code class="lang-cs">     // Do we need to draw the background?
@@ -161,7 +161,7 @@
      }
 </code></pre>
 <p>If you look at code block (8) from the previous drawing code then you will note that the clipping path for the background is specified by using a rectangle. Instead we use block (12) above to create a clipping path that is a description of the border. This prevents the background being drawn outside of the border. It uses a call to the <em>IRenderer.RenderStandardBorder.GetBackPath</em> to get the clipping path.</p>
-<p><strong>Drawing a Content</strong></p>
+<h2 id="drawing-a-content">Drawing a Content</h2>
 <p>All Content consists of providing three values, two text strings and an image. In order to provide these values to the renderer an interface is used called <em>IContentValues</em>. You can implement this interface in any way that is appropriate for your usage but in our example we will choose the simplest option and implement it on the custom control itself. If you choose to do that same then you first of all need to add it to the class definition in the following way.</p>
 <pre><code class="lang-cs">     public class MyUserControl : UserControl, IContentValues
 </code></pre>

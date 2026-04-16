@@ -6,7 +6,7 @@ The `KryptonPrintDialog` class provides a Krypton-themed wrapper around the stan
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.ComponentModel.Component
     └── System.Windows.Forms.CommonDialog
@@ -20,6 +20,7 @@ public KryptonPrintDialog()
 ```
 
 The constructor initializes enhanced features:
+
 - **CommonDialogHandler**: Creates handler with embedding support enabled
 - **Default Icon**: Sets `DialogImageResources.Printer_V10` for printer icon
 - **Click Callback**: Handles radio button interactions for print range selection
@@ -73,6 +74,7 @@ public PrintDocument? Document { get; set; }
 - **Side Effects**: Automatically configures `PrinterSettings` when document is provided
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonPrintDialog
 {
@@ -110,6 +112,7 @@ public bool AllowSelection { get; set; }
 ```
 
 **Page Range Control Properties:**
+
 - **AllowCurrentPage**: Enables current page printing option
 - **AllowSomePages**: Enables page range specification (FROM...TO)
 - **AllowPrintToFile**: Shows print-to-file checkbox
@@ -129,6 +132,7 @@ public bool ShowNetwork { get; set; }
 ```
 
 **Print Configuration Properties:**
+
 - **PrintToFile**: Whether print-to-file checkbox is checked
 - **ShowHelp**: Whether Help button is displayed
 - **ShowNetwork**: Whether Network button is displayed
@@ -157,7 +161,7 @@ public void ShowPrintDialog(PrintDocument document)
 }
 ```
 
-### Advanced Print Configuration
+### Advanced print dialog example
 
 ```csharp
 public void ConfigureAdvancedPrinting()

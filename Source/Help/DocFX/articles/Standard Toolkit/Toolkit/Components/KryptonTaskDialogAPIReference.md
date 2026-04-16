@@ -3,6 +3,7 @@
 Complete API reference for the KryptonTaskDialog component.
 
 ## Namespace
+
 ```csharp
 Krypton.Toolkit
 ```
@@ -13,7 +14,8 @@ Krypton.Toolkit
 
 Main class for creating and displaying task dialogs.
 
-### Inheritance
+### Inheritance (KryptonTaskDialog)
+
 ```csharp
 System.Object
   └─ KryptonTaskDialog : IDisposable
@@ -22,15 +24,19 @@ System.Object
 ### Constructor
 
 #### KryptonTaskDialog()
+
 ```csharp
 public KryptonTaskDialog(int dialogWidth = 0)
 ```
+
 Creates a new instance of KryptonTaskDialog.
 
 **Parameters:**
+
 - `dialogWidth` - Width of the dialog in pixels. Default is 600 if 0 or less.
 
 **Example:**
+
 ```csharp
 var dialog = new KryptonTaskDialog();        // 600px width
 var wideDialog = new KryptonTaskDialog(800); // 800px width
@@ -38,97 +44,123 @@ var wideDialog = new KryptonTaskDialog(800); // 800px width
 
 ---
 
-### Properties
+### KryptonTaskDialog properties
 
 #### Dialog
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogFormProperties Dialog { get; }
 ```
+
 Gets the dialog form properties container.
 
 #### Heading
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementHeading Heading { get; }
 ```
+
 Gets the heading element properties.
 
 #### Content
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementContent Content { get; }
 ```
+
 Gets the main content element properties.
 
 #### Expander
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementContent Expander { get; }
 ```
+
 Gets the expandable content element properties. Controlled by footer expander button.
 
 #### RichTextBox
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementRichTextBox RichTextBox { get; }
 ```
+
 Gets the rich text box element properties.
 
 #### FreeWheeler1
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementFreeWheeler1 FreeWheeler1 { get; }
 ```
+
 Gets the FlowLayoutPanel container element for custom controls.
 
 #### FreeWheeler2
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementFreeWheeler2 FreeWheeler2 { get; }
 ```
+
 Gets the TableLayoutPanel container element for custom controls.
 
 #### CommandLinkButtons
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementCommandLinkButtons CommandLinkButtons { get; }
 ```
+
 Gets the command link buttons collection element.
 
 #### CheckBox
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementCheckBox CheckBox { get; }
 ```
+
 Gets the checkbox element properties.
 
 #### ComboBox
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementComboBox ComboBox { get; }
 ```
+
 Gets the combo box element properties.
 
 #### HyperLink
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementHyperLink HyperLink { get; }
 ```
+
 Gets the hyperlink element properties.
 
 #### ProgresBar
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementProgresBar ProgresBar { get; }
 ```
+
 Gets the progress bar element properties.
 
 #### FooterBar
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementFooterBar FooterBar { get; }
 ```
+
 Gets the footer bar element properties.
 
 ---
@@ -136,17 +168,21 @@ Gets the footer bar element properties.
 ### Methods
 
 #### ShowDialog
+
 ```csharp
 public DialogResult ShowDialog(IWin32Window? owner = null)
 ```
+
 Shows the dialog as a modal dialog (blocks until closed).
 
 **Parameters:**
+
 - `owner` - The parent window that owns this dialog.
 
 **Returns:** The DialogResult indicating how the dialog was closed.
 
 **Example:**
+
 ```csharp
 DialogResult result = taskDialog.ShowDialog(this);
 if (result == DialogResult.OK)
@@ -156,27 +192,34 @@ if (result == DialogResult.OK)
 ```
 
 #### Show
+
 ```csharp
 public void Show(IWin32Window? owner = null)
 ```
+
 Shows the dialog as a modeless dialog (non-blocking).
 
 **Parameters:**
+
 - `owner` - The parent window that launched this dialog.
 
 **Example:**
+
 ```csharp
 taskDialog.Show(this);
 // Continue execution while dialog is visible
 ```
 
 #### CloseDialog
+
 ```csharp
 public void CloseDialog()
 ```
+
 Closes a modeless dialog. Has no effect if dialog is not visible.
 
 **Example:**
+
 ```csharp
 taskDialog.Show();
 // ... do work ...
@@ -184,12 +227,15 @@ taskDialog.CloseDialog();
 ```
 
 #### HideAllElements
+
 ```csharp
 public void HideAllElements()
 ```
+
 Hides all dialog elements at once.
 
 **Example:**
+
 ```csharp
 taskDialog.HideAllElements();
 taskDialog.Heading.Visible = true;
@@ -197,9 +243,11 @@ taskDialog.Content.Visible = true;
 ```
 
 #### Dispose
+
 ```csharp
 public void Dispose()
 ```
+
 Releases all resources used by the KryptonTaskDialog.
 
 ---
@@ -208,32 +256,40 @@ Releases all resources used by the KryptonTaskDialog.
 
 Provides access to form-level and global properties.
 
-### Properties
+### KryptonTaskDialogFormProperties properties
 
 #### Form
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public FormInstance Form { get; }
 ```
+
 Gets the form properties.
 
 #### Globals
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public GlobalInstance Globals { get; }
 ```
+
 Gets the global properties that apply to all elements.
 
-#### Visible
+#### Visible (KryptonTaskDialogFormProperties)
+
 ```csharp
 public bool Visible { get; }
 ```
+
 Gets whether the dialog is currently visible.
 
 #### DialogResult
+
 ```csharp
 public DialogResult DialogResult { get; }
 ```
+
 Gets the dialog result after the dialog has been closed.
 
 ---
@@ -242,101 +298,131 @@ Gets the dialog result after the dialog has been closed.
 
 Form-level properties.
 
-### Properties
+### KryptonTaskDialogFormProperties.FormInstance properties
 
 #### Location
+
 ```csharp
 public Point Location { get; set; }
 ```
+
 Gets or sets the dialog position. Set StartPosition to Manual first.
 
 #### StartPosition
+
 ```csharp
 public FormStartPosition StartPosition { get; set; }
 ```
+
 Gets or sets the dialog start position.
 
 **Values:**
+
 - `FormStartPosition.Manual` - Use Location property
 - `FormStartPosition.CenterScreen` - Center on primary screen
 - `FormStartPosition.CenterParent` - Center on owner window
 - `FormStartPosition.WindowsDefaultLocation` - Windows default
 
-#### Text
+#### Text (KryptonTaskDialogFormProperties.FormInstance)
+
 ```csharp
 public string Text { get; set; }
 ```
+
 Gets or sets the title bar text.
 
 #### Icon
+
 ```csharp
 public Icon? Icon { get; set; }
 ```
+
 Gets or sets the form icon.
 
 #### TopMost
+
 ```csharp
 public bool TopMost { get; set; }
 ```
+
 Gets or sets whether the dialog stays on top of other windows.
 
 #### ControlBox
+
 ```csharp
 public bool ControlBox { get; set; }
 ```
+
 Gets or sets whether the system menu button is shown.
 
 #### CloseBox
+
 ```csharp
 public bool CloseBox { get; set; }
 ```
+
 Gets or sets whether the close button is shown.
 
 #### MinimizeBox
+
 ```csharp
 public bool MinimizeBox { get; set; }
 ```
+
 Gets or sets whether the minimize button is shown.
 
 #### MaximizeBox
+
 ```csharp
 public bool MaximizeBox { get; set; }
 ```
+
 Gets or sets whether the maximize button is shown.
 
 #### ShowInTaskBar
+
 ```csharp
 public bool ShowInTaskBar { get; set; }
 ```
+
 Gets or sets whether the dialog shows in the Windows taskbar. Only works with Show(), not ShowDialog().
 
 #### IgnoreAltF4
+
 ```csharp
 public bool IgnoreAltF4 { get; set; }
 ```
+
 Gets or sets whether Alt+F4 is disabled.
 
 #### FormTitleAlign
+
 ```csharp
 public PaletteRelativeAlign FormTitleAlign { get; set; }
 ```
+
 Gets or sets the title bar text alignment.
 
 **Values:**
+
 - `PaletteRelativeAlign.Near` - Left-aligned
 - `PaletteRelativeAlign.Center` - Centered
 - `PaletteRelativeAlign.Far` - Right-aligned
 
-#### RoundedCorners
+#### RoundedCorners (KryptonTaskDialogFormProperties.FormInstance)
+
 ```csharp
 public bool RoundedCorners { get; set; }
 ```
+
 Gets or sets whether the form has rounded corners.
 
 #### AutoScaleMode
+
 ```csharp
 public AutoScaleMode AutoScaleMode { get; set; }
 ```
+
 Gets or sets the DPI scaling mode.
 
 ---
@@ -345,30 +431,38 @@ Gets or sets the DPI scaling mode.
 
 Global properties that apply to all elements.
 
-### Properties
+### KryptonTaskDialogFormProperties.GlobalInstance properties
 
-#### BackColor1
+#### BackColor1 (KryptonTaskDialogFormProperties.GlobalInstance)
+
 ```csharp
 public Color BackColor1 { get; set; }
 ```
+
 Sets the first background color for all elements.
 
-#### BackColor2
+#### BackColor2 (KryptonTaskDialogFormProperties.GlobalInstance)
+
 ```csharp
 public Color BackColor2 { get; set; }
 ```
+
 Sets the second background color for gradient for all elements.
 
-#### ForeColor
+#### ForeColor (KryptonTaskDialogFormProperties.GlobalInstance)
+
 ```csharp
 public Color ForeColor { get; set; }
 ```
+
 Sets the text color for all elements that support it.
 
-#### RoundedCorners
+#### RoundedCorners (KryptonTaskDialogFormProperties.GlobalInstance)
+
 ```csharp
 public bool RoundedCorners { get; set; }
 ```
+
 Sets rounded corners for all elements that support it.
 
 ---
@@ -377,30 +471,38 @@ Sets rounded corners for all elements that support it.
 
 Base interface implemented by all elements.
 
-### Properties
+### IKryptonTaskDialogElementBase members
 
-#### Visible
+#### Visible (IKryptonTaskDialogElementBase)
+
 ```csharp
 public bool Visible { get; set; }
 ```
+
 Gets or sets whether the element is visible in the dialog.
 
-#### BackColor1
+#### BackColor1 (IKryptonTaskDialogElementBase)
+
 ```csharp
 public Color BackColor1 { get; set; }
 ```
+
 Gets or sets the first background color. Overrides theme color.
 
-#### BackColor2
+#### BackColor2 (IKryptonTaskDialogElementBase)
+
 ```csharp
 public Color BackColor2 { get; set; }
 ```
+
 Gets or sets the second background color for gradient. Overrides theme color.
 
 #### Height
+
 ```csharp
 public int Height { get; }
 ```
+
 Gets the element height. Returns 0 when not visible.
 
 ---
@@ -409,7 +511,8 @@ Gets the element height. Returns 0 when not visible.
 
 Heading element with text and icon.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementHeading)
+
 ```csharp
 KryptonTaskDialogElementBase
   └─ KryptonTaskDialogElementHeading
@@ -419,21 +522,26 @@ KryptonTaskDialogElementBase
       : IKryptonTaskDialogElementText
 ```
 
-### Properties
+### KryptonTaskDialogElementHeading properties
 
-#### Text
+#### Text (KryptonTaskDialogElementHeading)
+
 ```csharp
 public string Text { get; set; }
 ```
+
 Gets or sets the heading text.
 
-#### IconType
+#### IconType (KryptonTaskDialogElementHeading)
+
 ```csharp
 public KryptonTaskDialogIconType IconType { get; set; }
 ```
+
 Gets or sets the icon type.
 
 **Values:**
+
 - `None` - No icon
 - `ArrowGrayDown` - Down arrow
 - `ArrowGrayUp` - Up arrow
@@ -450,20 +558,25 @@ Gets or sets the icon type.
 - `ShieldWarning` - Yellow warning shield
 
 #### TextAlignmentHorizontal
+
 ```csharp
 public PaletteRelativeAlign TextAlignmentHorizontal { get; set; }
 ```
+
 Gets or sets the horizontal text alignment.
 
 **Values:**
+
 - `PaletteRelativeAlign.Near` - Left-aligned
 - `PaletteRelativeAlign.Center` - Centered
 - `PaletteRelativeAlign.Far` - Right-aligned
 
-#### ForeColor
+#### ForeColor (KryptonTaskDialogElementHeading)
+
 ```csharp
 public Color ForeColor { get; set; }
 ```
+
 Gets or sets the text color.
 
 ---
@@ -472,7 +585,8 @@ Gets or sets the text color.
 
 Content element with text and optional image.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementContent)
+
 ```csharp
 KryptonTaskDialogElementBase
   └─ KryptonTaskDialogElementContent
@@ -480,25 +594,31 @@ KryptonTaskDialogElementBase
       : IKryptonTaskDialogElementForeColor
 ```
 
-### Properties
+### KryptonTaskDialogElementContent properties
 
-#### Text
+#### Text (KryptonTaskDialogElementContent)
+
 ```csharp
 public string Text { get; set; }
 ```
+
 Gets or sets the content text. Supports line breaks.
 
-#### ForeColor
+#### ForeColor (KryptonTaskDialogElementContent)
+
 ```csharp
 public Color ForeColor { get; set; }
 ```
+
 Gets or sets the text color.
 
 #### ContentImage
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public ContentImageStorage ContentImage { get; }
 ```
+
 Gets the image configuration.
 
 ---
@@ -507,30 +627,38 @@ Gets the image configuration.
 
 Image configuration for content elements.
 
-### Properties
+### KryptonTaskDialogElementContent.ContentImageStorage properties
 
 #### Image
+
 ```csharp
 public Image? Image { get; set; }
 ```
+
 Gets or sets the image to display.
 
 #### Size
+
 ```csharp
 public Size Size { get; set; }
 ```
+
 Gets or sets the image size. Use (0, 0) for original size.
 
-#### Visible
+#### Visible (KryptonTaskDialogElementContent.ContentImageStorage)
+
 ```csharp
 public bool Visible { get; set; }
 ```
+
 Gets or sets whether the image is visible.
 
 #### PositionedLeft
+
 ```csharp
 public bool PositionedLeft { get; set; }
 ```
+
 Gets or sets whether the image is positioned left (true) or right (false) of text.
 
 ---
@@ -539,7 +667,8 @@ Gets or sets whether the image is positioned left (true) or right (false) of tex
 
 Footer bar with buttons, notes, and expander control.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementFooterBar)
+
 ```csharp
 KryptonTaskDialogElementBase
   └─ KryptonTaskDialogElementFooterBar
@@ -547,32 +676,40 @@ KryptonTaskDialogElementBase
       : IKryptonTaskDialogElementRoundedCorners
 ```
 
-### Properties
+### KryptonTaskDialogElementFooterBar properties
 
 #### CommonButtons
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementFooterBarCommonButtonProperties CommonButtons { get; }
 ```
+
 Gets the common button configuration.
 
 #### Footer
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementFooterBarFooterProperties Footer { get; }
 ```
+
 Gets the footer properties (note text and expander).
 
-#### ForeColor
+#### ForeColor (KryptonTaskDialogElementFooterBar)
+
 ```csharp
 public Color ForeColor { get; set; }
 ```
+
 Gets or sets the text color for footer text and expander text.
 
-#### RoundedCorners
+#### RoundedCorners (KryptonTaskDialogElementFooterBar)
+
 ```csharp
 public bool RoundedCorners { get; set; }
 ```
+
 Gets or sets whether buttons have rounded corners.
 
 ---
@@ -581,15 +718,18 @@ Gets or sets whether buttons have rounded corners.
 
 Common button configuration.
 
-### Properties
+### KryptonTaskDialogElementFooterBarCommonButtonProperties properties
 
-#### Buttons
+#### Buttons (KryptonTaskDialogElementFooterBarCommonButtonProperties)
+
 ```csharp
 public KryptonTaskDialogCommonButtonTypes Buttons { get; set; }
 ```
+
 Gets or sets which buttons to display (flags enum).
 
 **Values:**
+
 - `None` - No buttons
 - `OK` - OK button
 - `Cancel` - Cancel button
@@ -600,6 +740,7 @@ Gets or sets which buttons to display (flags enum).
 - `Ignore` - Ignore button
 
 **Example:**
+
 ```csharp
 CommonButtons.Buttons = 
     KryptonTaskDialogCommonButtonTypes.Yes | 
@@ -608,15 +749,19 @@ CommonButtons.Buttons =
 ```
 
 #### AcceptButton
+
 ```csharp
 public KryptonTaskDialogCommonButtonTypes AcceptButton { get; set; }
 ```
+
 Gets or sets which button is the default accept button (Enter key).
 
 #### CancelButton
+
 ```csharp
 public KryptonTaskDialogCommonButtonTypes CancelButton { get; set; }
 ```
+
 Gets or sets which button is the default cancel button (Escape key).
 
 ---
@@ -625,36 +770,46 @@ Gets or sets which button is the default cancel button (Escape key).
 
 Footer note and expander configuration.
 
-### Properties
+### KryptonTaskDialogElementFooterBarFooterProperties properties
 
 #### FootNoteText
+
 ```csharp
 public string FootNoteText { get; set; }
 ```
+
 Gets or sets the footer note text.
 
-#### IconType
+#### IconType (KryptonTaskDialogElementFooterBarFooterProperties)
+
 ```csharp
 public KryptonTaskDialogIconType IconType { get; set; }
 ```
+
 Gets or sets the footer note icon.
 
 #### EnableExpanderControls
+
 ```csharp
 public bool EnableExpanderControls { get; set; }
 ```
+
 Gets or sets whether the expander button and text are shown.
 
 #### ExpanderExpandedText
+
 ```csharp
 public string ExpanderExpandedText { get; set; }
 ```
+
 Gets or sets the text shown when the expander is collapsed (to expand it).
 
 #### ExpanderCollapsedText
+
 ```csharp
 public string ExpanderCollapsedText { get; set; }
 ```
+
 Gets or sets the text shown when the expander is expanded (to collapse it).
 
 ---
@@ -663,7 +818,8 @@ Gets or sets the text shown when the expander is expanded (to collapse it).
 
 Command link buttons collection.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementCommandLinkButtons)
+
 ```csharp
 KryptonTaskDialogElementBase
   └─ KryptonTaskDialogElementCommandLinkButtons
@@ -671,16 +827,19 @@ KryptonTaskDialogElementBase
       : IKryptonTaskDialogElementFlowDirection
 ```
 
-### Properties
+### KryptonTaskDialogElementCommandLinkButtons properties
 
-#### Buttons
+#### Buttons (KryptonTaskDialogElementCommandLinkButtons)
+
 ```csharp
 [Editor(typeof(ButtonsCollectionEditor), typeof(UITypeEditor))]
 public ObservableCollection<KryptonCommandLinkButton> Buttons { get; }
 ```
+
 Gets the command link button collection.
 
 **Example:**
+
 ```csharp
 var button = new KryptonCommandLinkButton();
 button.Text = "Option 1";
@@ -689,25 +848,32 @@ button.DialogResult = DialogResult.Yes;
 CommandLinkButtons.Buttons.Add(button);
 ```
 
-#### RoundedCorners
+#### RoundedCorners (KryptonTaskDialogElementCommandLinkButtons)
+
 ```csharp
 public bool RoundedCorners { get; set; }
 ```
+
 Gets or sets whether buttons have rounded corners.
 
 #### ShowFlowDirection
+
 ```csharp
 public bool ShowFlowDirection { get; set; }
 ```
+
 Gets or sets whether the flow direction toggle button is shown.
 
 #### FlowDirection
+
 ```csharp
 public FlowDirection FlowDirection { get; set; }
 ```
+
 Gets or sets the button layout direction.
 
 **Values:**
+
 - `FlowDirection.LeftToRight`
 - `FlowDirection.TopDown`
 - `FlowDirection.RightToLeft`
@@ -719,31 +885,38 @@ Gets or sets the button layout direction.
 
 Checkbox element.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementCheckBox)
+
 ```csharp
 KryptonTaskDialogElementSingleLineControlBase
   └─ KryptonTaskDialogElementCheckBox
       : IKryptonTaskDialogElementText
 ```
 
-### Properties
+### KryptonTaskDialogElementCheckBox properties
 
-#### Text
+#### Text (KryptonTaskDialogElementCheckBox)
+
 ```csharp
 public string Text { get; set; }
 ```
+
 Gets or sets the checkbox text.
 
 #### Checked
+
 ```csharp
 public bool Checked { get; set; }
 ```
+
 Gets or sets the checked state.
 
-#### ForeColor
+#### ForeColor (KryptonTaskDialogElementCheckBox)
+
 ```csharp
 public Color ForeColor { get; set; }
 ```
+
 Gets or sets the text color.
 
 ---
@@ -752,7 +925,8 @@ Gets or sets the text color.
 
 ComboBox element with optional description.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementComboBox)
+
 ```csharp
 KryptonTaskDialogElementSingleLineControlBase
   └─ KryptonTaskDialogElementComboBox
@@ -760,86 +934,110 @@ KryptonTaskDialogElementSingleLineControlBase
       : IKryptonTaskDialogElementRoundedCorners
 ```
 
-### Properties
+### KryptonTaskDialogElementComboBox properties
 
 #### Items
+
 ```csharp
 [Editor("System.Windows.Forms.Design.ListControlStringCollectionEditor, ...", typeof(UITypeEditor))]
 public ComboBox.ObjectCollection Items { get; }
 ```
+
 Gets the items collection.
 
 **Example:**
+
 ```csharp
 ComboBox.Items.Add("Option 1");
 ComboBox.Items.Add("Option 2");
 ```
 
 #### SelectedIndex
+
 ```csharp
 public int SelectedIndex { get; }
 ```
+
 Gets the selected item index. Returns -1 if no selection.
 
 #### SelectedItem
+
 ```csharp
 public object? SelectedItem { get; }
 ```
+
 Gets the selected item. Returns null if no selection.
 
 #### ComboxWidth
+
 ```csharp
 [DefaultValue(250)]
 public int ComboxWidth { get; set; }
 ```
+
 Gets or sets the combo box width.
 
 #### DropDownWidth
+
 ```csharp
 public int DropDownWidth { get; set; }
 ```
+
 Gets or sets the drop-down list width.
 
 #### DropDownStyle
+
 ```csharp
 public InternalComboBoxStyle DropDownStyle { get; set; }
 ```
+
 Gets or sets the combo box style.
 
 **Values:**
+
 - `InternalComboBoxStyle.DropDown` - Editable
 - `InternalComboBoxStyle.DropDownList` - Selection only
 
-#### Description
+#### Description (KryptonTaskDialogElementComboBox)
+
 ```csharp
 public string Description { get; set; }
 ```
+
 Gets or sets the description text above the combo box.
 
-#### ShowDescription
+#### ShowDescription (KryptonTaskDialogElementComboBox)
+
 ```csharp
 public bool ShowDescription { get; set; }
 ```
+
 Gets or sets whether the description is visible.
 
-#### ForeColor
+#### ForeColor (KryptonTaskDialogElementComboBox)
+
 ```csharp
 public Color ForeColor { get; set; }
 ```
+
 Gets or sets the description text color.
 
-#### RoundedCorners
+#### RoundedCorners (KryptonTaskDialogElementComboBox)
+
 ```csharp
 public bool RoundedCorners { get; set; }
 ```
+
 Gets or sets whether the combo box has rounded corners.
 
-### Events
+### Events (KryptonTaskDialogElementComboBox)
 
 #### SelectedItemChanged
+
 ```csharp
 public event Action<object?> SelectedItemChanged;
 ```
+
 Raised when the selected item changes.
 
 ---
@@ -848,7 +1046,8 @@ Raised when the selected item changes.
 
 Hyperlink element with optional description.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementHyperLink)
+
 ```csharp
 KryptonTaskDialogElementSingleLineControlBase
   └─ KryptonTaskDialogElementHyperLink
@@ -856,38 +1055,48 @@ KryptonTaskDialogElementSingleLineControlBase
       : IKryptonTaskDialogElementUrl
 ```
 
-### Properties
+### KryptonTaskDialogElementHyperLink properties
 
 #### Url
+
 ```csharp
 public string Url { get; set; }
 ```
+
 Gets or sets the URL text to display.
 
-#### Description
+#### Description (KryptonTaskDialogElementHyperLink)
+
 ```csharp
 public string Description { get; set; }
 ```
+
 Gets or sets the description text above the link.
 
-#### ShowDescription
+#### ShowDescription (KryptonTaskDialogElementHyperLink)
+
 ```csharp
 public bool ShowDescription { get; set; }
 ```
+
 Gets or sets whether the description is visible.
 
-#### ForeColor
+#### ForeColor (KryptonTaskDialogElementHyperLink)
+
 ```csharp
 public Color ForeColor { get; set; }
 ```
+
 Gets or sets the description text color.
 
-### Events
+### Events (KryptonTaskDialogElementHyperLink)
 
 #### LinkClicked
+
 ```csharp
 public event Action LinkClicked;
 ```
+
 Raised when the link is clicked.
 
 ---
@@ -896,7 +1105,8 @@ Raised when the link is clicked.
 
 Progress bar element with optional description.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementProgresBar)
+
 ```csharp
 KryptonTaskDialogElementSingleLineControlBase
   └─ KryptonTaskDialogElementProgresBar
@@ -904,42 +1114,53 @@ KryptonTaskDialogElementSingleLineControlBase
       : IKryptonTaskDialogElementRoundedCorners
 ```
 
-### Properties
+### KryptonTaskDialogElementProgresBar properties
 
 #### ProgressBar
+
 ```csharp
 [TypeConverter(typeof(ExpandableObjectConverter))]
 public KryptonTaskDialogElementProgresBarProperties ProgressBar { get; }
 ```
+
 Gets the progress bar configuration. Exposes most KryptonProgressBar properties including:
+
 - `Value` - Current value
 - `Minimum` - Minimum value
 - `Maximum` - Maximum value
 - `Style` - Block, Continuous, or Marquee
 - Many other KryptonProgressBar properties
 
-#### Description
+#### Description (KryptonTaskDialogElementProgresBar)
+
 ```csharp
 public string Description { get; set; }
 ```
+
 Gets or sets the description text above the progress bar.
 
-#### ShowDescription
+#### ShowDescription (KryptonTaskDialogElementProgresBar)
+
 ```csharp
 public bool ShowDescription { get; set; }
 ```
+
 Gets or sets whether the description is visible.
 
-#### ForeColor
+#### ForeColor (KryptonTaskDialogElementProgresBar)
+
 ```csharp
 public Color ForeColor { get; set; }
 ```
+
 Gets or sets the description text color.
 
-#### RoundedCorners
+#### RoundedCorners (KryptonTaskDialogElementProgresBar)
+
 ```csharp
 public bool RoundedCorners { get; set; }
 ```
+
 Gets or sets whether the progress bar has rounded corners.
 
 ---
@@ -948,7 +1169,8 @@ Gets or sets whether the progress bar has rounded corners.
 
 Rich text box element.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementRichTextBox)
+
 ```csharp
 KryptonTaskDialogElementBase
   └─ KryptonTaskDialogElementRichTextBox
@@ -957,33 +1179,42 @@ KryptonTaskDialogElementBase
       : IKryptonTaskDialogElementRoundedCorners
 ```
 
-### Properties
+### KryptonTaskDialogElementRichTextBox properties
 
-#### Text
+#### Text (KryptonTaskDialogElementRichTextBox)
+
 ```csharp
 public string Text { get; set; }
 ```
+
 Gets or sets the plain text content.
 
 #### Enabled
+
 ```csharp
 public bool Enabled { get; set; }
 ```
+
 Gets or sets whether the control is enabled.
 
 #### ReadOnly
+
 ```csharp
 public bool ReadOnly { get; set; }
 ```
+
 Gets or sets whether the text is read-only.
 
 #### ScrollBars
+
 ```csharp
 public RichTextBoxScrollBars ScrollBars { get; set; }
 ```
+
 Gets or sets which scrollbars are enabled.
 
 **Values:**
+
 - `RichTextBoxScrollBars.None`
 - `RichTextBoxScrollBars.Horizontal`
 - `RichTextBoxScrollBars.Vertical`
@@ -992,22 +1223,28 @@ Gets or sets which scrollbars are enabled.
 - `RichTextBoxScrollBars.ForcedVertical`
 - `RichTextBoxScrollBars.ForcedBoth`
 
-#### ElementHeight
+#### ElementHeight (KryptonTaskDialogElementRichTextBox)
+
 ```csharp
 public int ElementHeight { get; set; }
 ```
+
 Gets or sets the element height.
 
 #### EnableContextMenu
+
 ```csharp
 public bool EnableContextMenu { get; set; }
 ```
+
 Gets or sets whether the context menu (Copy/Cut/Paste) is enabled.
 
-#### RoundedCorners
+#### RoundedCorners (KryptonTaskDialogElementRichTextBox)
+
 ```csharp
 public bool RoundedCorners { get; set; }
 ```
+
 Gets or sets whether the control has rounded corners.
 
 ---
@@ -1016,22 +1253,26 @@ Gets or sets whether the control has rounded corners.
 
 FlowLayoutPanel container for custom controls.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementFreeWheeler1)
+
 ```csharp
 KryptonTaskDialogElementSingleLineControlBase
   └─ KryptonTaskDialogElementFreeWheeler1
       : IKryptonTaskDialogElementHeight
 ```
 
-### Properties
+### KryptonTaskDialogElementFreeWheeler1 properties
 
 #### FlowLayoutPanel
+
 ```csharp
 public FlowLayoutPanel FlowLayoutPanel { get; }
 ```
+
 Gets the internal FlowLayoutPanel to add controls to.
 
 **Example:**
+
 ```csharp
 var label = new Label { Text = "Name:" };
 var textBox = new TextBox();
@@ -1039,10 +1280,12 @@ FreeWheeler1.FlowLayoutPanel.Controls.Add(label);
 FreeWheeler1.FlowLayoutPanel.Controls.Add(textBox);
 ```
 
-#### ElementHeight
+#### ElementHeight (KryptonTaskDialogElementFreeWheeler1)
+
 ```csharp
 public int ElementHeight { get; set; }
 ```
+
 Gets or sets the element height.
 
 ---
@@ -1051,25 +1294,30 @@ Gets or sets the element height.
 
 TableLayoutPanel container for custom controls.
 
-### Inheritance
+### Inheritance (KryptonTaskDialogElementFreeWheeler2)
+
 ```csharp
 KryptonTaskDialogElementSingleLineControlBase
   └─ KryptonTaskDialogElementFreeWheeler2
       : IKryptonTaskDialogElementHeight
 ```
 
-### Properties
+### KryptonTaskDialogElementFreeWheeler2 properties
 
 #### TableLayoutPanel
+
 ```csharp
 public TableLayoutPanel TableLayoutPanel { get; }
 ```
+
 Gets the internal TableLayoutPanel to add controls to.
 
-#### ElementHeight
+#### ElementHeight (KryptonTaskDialogElementFreeWheeler2)
+
 ```csharp
 public int ElementHeight { get; set; }
 ```
+
 Gets or sets the element height.
 
 ---
@@ -1120,6 +1368,7 @@ public enum KryptonTaskDialogCommonButtonTypes
 ```
 
 **Example:**
+
 ```csharp
 // Single button
 Buttons = KryptonTaskDialogCommonButtonTypes.OK;

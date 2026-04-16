@@ -2,7 +2,7 @@
 
 If you are experiencing issues with the Krypton TreeGrid View, a solution might be found in the following article. If you can't find what you are looking for, please raise a [new support ticket](../ReportingaIssue.md).
 
-### KryptonTreeGridview it shows expand button on every column
+## KryptonTreeGridview it shows expand button on every column
 
 A solution has been found by [blackholeearth](https://github.com/blackholeearth). The fix is as follows:-
 
@@ -22,4 +22,4 @@ A solution has been found by [blackholeearth](https://github.com/blackholeearth)
 
 Which results in
 
-![](KryptonTreeGridNodes.png)
+![Krypton TreeGrid with a tree column and plain text columns](KryptonTreeGridNodes.png)

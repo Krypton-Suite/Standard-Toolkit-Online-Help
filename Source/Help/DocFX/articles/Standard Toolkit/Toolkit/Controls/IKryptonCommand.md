@@ -14,12 +14,15 @@ public interface IKryptonCommand
 ## Key Concepts
 
 ### Command Pattern
+
 The interface implements the Command pattern, separating:
+
 - **What** the command does (Execute event)
 - **How** it appears (Text, Image properties)
 - **When** it's available (Enabled property)
 
 ### Benefits
+
 - **Centralized Logic**: One command, many controls
 - **Consistent State**: All controls update together
 - **Easy Maintenance**: Change once, affects all
@@ -30,6 +33,7 @@ The interface implements the Command pattern, separating:
 ## Events
 
 ### Execute
+
 Occurs when the command needs executing.
 
 ```csharp
@@ -37,11 +41,13 @@ event EventHandler? Execute
 ```
 
 **Remarks:**
+
 - Raised by `PerformExecute()` method
 - Implement actual command logic in this event handler
 - Called when any bound control is activated
 
 **Example:**
+
 ```csharp
 var saveCommand = new KryptonCommand();
 saveCommand.Execute += (s, e) =>
@@ -54,6 +60,7 @@ saveCommand.Execute += (s, e) =>
 ---
 
 ### PropertyChanged
+
 Occurs when a property has changed value.
 
 ```csharp
@@ -61,11 +68,13 @@ event PropertyChangedEventHandler? PropertyChanged
 ```
 
 **Remarks:**
+
 - Part of `INotifyPropertyChanged` pattern
 - Automatically raised when properties change
 - Allows controls to update when command changes
 
 **Example:**
+
 ```csharp
 var command = new KryptonCommand();
 command.PropertyChanged += (s, e) =>
@@ -84,6 +93,7 @@ command.PropertyChanged += (s, e) =>
 ### State Properties
 
 #### Enabled
+
 Gets or sets the enabled state of the command.
 
 ```csharp
@@ -91,11 +101,13 @@ bool Enabled { get; set; }
 ```
 
 **Remarks:**
+
 - When `false`, all bound controls are disabled
 - When `true`, all bound controls are enabled
 - Synchronizes across all controls using this command
 
 **Example:**
+
 ```csharp
 saveCommand.Enabled = document.IsModified;
 // All buttons bound to saveCommand update automatically
@@ -104,6 +116,7 @@ saveCommand.Enabled = document.IsModified;
 ---
 
 #### Checked
+
 Gets or sets the checked state of the command.
 
 ```csharp
@@ -111,11 +124,13 @@ bool Checked { get; set; }
 ```
 
 **Remarks:**
+
 - Used for toggle-style buttons
 - Affects visual appearance of bound controls
 - Useful for state-based commands (e.g., Bold, Italic)
 
 **Example:**
+
 ```csharp
 boldCommand.Checked = editor.SelectionIsBold;
 ```
@@ -123,6 +138,7 @@ boldCommand.Checked = editor.SelectionIsBold;
 ---
 
 #### CheckState
+
 Gets or sets the check state of the command.
 
 ```csharp
@@ -130,15 +146,18 @@ CheckState CheckState { get; set; }
 ```
 
 **Values:**
+
 - `CheckState.Unchecked` - Not checked
 - `CheckState.Checked` - Fully checked
 - `CheckState.Indeterminate` - Indeterminate state
 
 **Remarks:**
+
 - Provides three-state support
 - Useful for commands affecting multiple items
 
 **Example:**
+
 ```csharp
 if (selectedItems.All(i => i.IsEnabled))
     enableCommand.CheckState = CheckState.Checked;
@@ -153,6 +172,7 @@ else
 ### Text Properties
 
 #### Text
+
 Gets or sets the command text.
 
 ```csharp
@@ -160,11 +180,13 @@ string Text { get; set; }
 ```
 
 **Remarks:**
+
 - Primary text displayed on controls
 - Supports mnemonics (e.g., "&Save")
 - Updates all bound controls automatically
 
 **Example:**
+
 ```csharp
 saveCommand.Text = "&Save";
 // All buttons show "Save" with underlined 'S'
@@ -173,6 +195,7 @@ saveCommand.Text = "&Save";
 ---
 
 #### ExtraText
+
 Gets or sets the command extra text.
 
 ```csharp
@@ -180,11 +203,13 @@ string ExtraText { get; set; }
 ```
 
 **Remarks:**
+
 - Secondary text (e.g., tooltip, description)
 - Usage varies by control type
 - May appear as tooltip or sub-text
 
 **Example:**
+
 ```csharp
 saveCommand.ExtraText = "Save the current document";
 ```
@@ -192,6 +217,7 @@ saveCommand.ExtraText = "Save the current document";
 ---
 
 #### TextLine1
+
 Gets or sets the command text line 1 for use in KryptonRibbon.
 
 ```csharp
@@ -199,11 +225,13 @@ string TextLine1 { get; set; }
 ```
 
 **Remarks:**
+
 - Specific to ribbon controls
 - First line of button text in ribbon
 - Ignored by non-ribbon controls
 
 **Example:**
+
 ```csharp
 saveCommand.TextLine1 = "Save";
 ```
@@ -211,6 +239,7 @@ saveCommand.TextLine1 = "Save";
 ---
 
 #### TextLine2
+
 Gets or sets the command text line 2 for use in KryptonRibbon.
 
 ```csharp
@@ -218,11 +247,13 @@ string TextLine2 { get; set; }
 ```
 
 **Remarks:**
+
 - Specific to ribbon controls
 - Second line of button text in ribbon
 - Ignored by non-ribbon controls
 
 **Example:**
+
 ```csharp
 saveCommand.TextLine2 = "Document";
 // Ribbon button shows:
@@ -235,6 +266,7 @@ saveCommand.TextLine2 = "Document";
 ### Image Properties
 
 #### ImageSmall
+
 Gets or sets the command small image.
 
 ```csharp
@@ -242,11 +274,13 @@ Image? ImageSmall { get; set; }
 ```
 
 **Remarks:**
+
 - Typically 16x16 pixels
 - Used in menus, toolbars, small buttons
 - Should be DPI-aware for high-DPI displays
 
 **Example:**
+
 ```csharp
 saveCommand.ImageSmall = Properties.Resources.Save16;
 ```
@@ -254,6 +288,7 @@ saveCommand.ImageSmall = Properties.Resources.Save16;
 ---
 
 #### ImageLarge
+
 Gets or sets the command large image.
 
 ```csharp
@@ -261,11 +296,13 @@ Image? ImageLarge { get; set; }
 ```
 
 **Remarks:**
+
 - Typically 32x32 or 48x48 pixels
 - Used in ribbons, large buttons
 - Should be DPI-aware for high-DPI displays
 
 **Example:**
+
 ```csharp
 saveCommand.ImageLarge = Properties.Resources.Save32;
 ```
@@ -273,6 +310,7 @@ saveCommand.ImageLarge = Properties.Resources.Save32;
 ---
 
 #### ImageTransparentColor
+
 Gets or sets the command image transparent color.
 
 ```csharp
@@ -280,11 +318,13 @@ Color ImageTransparentColor { get; set; }
 ```
 
 **Remarks:**
+
 - Color to treat as transparent in images
 - Typically magenta (Color.Magenta) for legacy images
 - Modern PNG images with alpha channel don't need this
 
 **Example:**
+
 ```csharp
 saveCommand.ImageTransparentColor = Color.Magenta;
 ```
@@ -294,6 +334,7 @@ saveCommand.ImageTransparentColor = Color.Magenta;
 ### Command Type
 
 #### CommandType
+
 Gets or sets the type of the command.
 
 ```csharp
@@ -301,10 +342,12 @@ KryptonCommandType CommandType { get; set; }
 ```
 
 **Values:**
+
 - `KryptonCommandType.General` - Standard command
 - Additional types defined by `KryptonCommandType` enum
 
 **Remarks:**
+
 - Allows categorization of commands
 - May affect behavior in some contexts
 
@@ -313,6 +356,7 @@ KryptonCommandType CommandType { get; set; }
 ## Methods
 
 ### PerformExecute()
+
 Generates an Execute event for the command.
 
 ```csharp
@@ -320,11 +364,13 @@ void PerformExecute()
 ```
 
 **Remarks:**
+
 - Programmatically executes the command
 - Raises the `Execute` event
 - Useful for keyboard shortcuts, external triggers
 
 **Example:**
+
 ```csharp
 // Execute from code
 saveCommand.PerformExecute();
@@ -341,6 +387,7 @@ if (e.KeyCode == Keys.S && e.Control)
 ## Implementation
 
 ### KryptonCommand Class
+
 The primary implementation of `IKryptonCommand`:
 
 ```csharp
@@ -353,6 +400,7 @@ public class KryptonCommand : Component, IKryptonCommand, INotifyPropertyChanged
 ```
 
 **Usage:**
+
 ```csharp
 var command = new KryptonCommand
 {
@@ -803,26 +851,31 @@ public class CompositeCommand : KryptonCommand
 ## Best Practices
 
 ### Command Naming
+
 - Use clear, action-oriented names: "Save", "Open", "Delete"
 - Include mnemonics: "&Save", "&Open"
 - Be consistent across application
 
 ### State Management
+
 - Update `Enabled` based on application state
 - Use `Checked` for toggle states
 - Use `CheckState.Indeterminate` for mixed selections
 
 ### Image Guidelines
+
 - Provide both small (16x16) and large (32x32) images
 - Use consistent icon style across commands
 - Consider high-DPI displays
 
 ### Event Handling
+
 - Keep Execute handlers lightweight
 - Use async/await for long-running operations
 - Provide user feedback (progress, completion)
 
 ### Testing
+
 - Commands centralize logic - easier to test
 - Mock commands for UI testing
 - Test enabled state logic separately
@@ -839,7 +892,7 @@ public class CompositeCommand : KryptonCommand
 
 ## See Also
 
-- [KryptonCommand](KryptonCommand.md) - Concrete implementation
-- [KryptonButton](KryptonButton.md) - Control using commands
-- [KryptonRibbon](KryptonRibbon.md) - Ribbon command support
+- [KryptonCommand](../Components/KryptonCommand.md) — concrete implementation
+- [KryptonButton](KryptonButton.md) — control using commands
+- [Krypton ribbon overview](../../Ribbon/KryptonRibbonOverview.md) — ribbon command support
 - [INotifyPropertyChanged](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.inotifypropertychanged) - Property change notification

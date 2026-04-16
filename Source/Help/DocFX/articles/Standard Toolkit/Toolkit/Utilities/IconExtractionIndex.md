@@ -8,7 +8,8 @@ Complete documentation for the Windows System Icon Extraction feature in Krypton
 
 ### For Developers
 
-#### 1. [Icon Extraction API Reference](IconExtractionAPIReference.md) 
+#### 1. [Icon Extraction API Reference](IconExtractionAPIReference.md)
+
 **Comprehensive API Documentation** ⭐ Primary developer reference
 
 - Complete API reference for all methods
@@ -28,6 +29,7 @@ Complete documentation for the Windows System Icon Extraction feature in Krypton
 ---
 
 #### 2. [Icon Extraction Quick Reference](IconExtractionQuickReference.md)
+
 **Quick Reference Cheat Sheet** ⚡ Fast lookup
 
 - One-page cheat sheet
@@ -44,6 +46,7 @@ Complete documentation for the Windows System Icon Extraction feature in Krypton
 ---
 
 #### 3. [System Icons](SystemIcons.md)
+
 **Feature Overview and Summary** 📋 High-level overview
 
 - Feature summary and benefits
@@ -61,6 +64,7 @@ Complete documentation for the Windows System Icon Extraction feature in Krypton
 ### For End Users
 
 #### 4. [System Icons - Comprehensive Guide](SystemIconsComprehensiveGuide.md)
+
 **Complete User Guide** 📖 Full user documentation
 
 - Overview of all icon sources
@@ -79,6 +83,7 @@ Complete documentation for the Windows System Icon Extraction feature in Krypton
 ---
 
 #### 5. [Icon Extraction Example](IconExtractionExample.md)
+
 **Basic Usage Examples** 🎯 Getting started
 
 - Simple usage examples
@@ -95,23 +100,28 @@ Complete documentation for the Windows System Icon Extraction feature in Krypton
 ## 🗺️ Documentation Map by Use Case
 
 ### "I want to understand what this feature does"
+
 1. Start with: [System Icons](SystemIcons.md)
 2. Then read: [System Icons - Comprehensive Guide](SystemIconsComprehensiveGuide.md)
 
 ### "I want to integrate this into my app"
+
 1. Start with: [Icon Extraction Example](IconExtractionExample.md)
 2. Reference: [Icon Extraction Quick Reference](IconExtractionQuickReference.md)
 3. Deep dive: [Icon Extraction API Reference](IconExtractionAPIReference.md)
 
 ### "I need a specific icon"
+
 1. Check: [Icon Extraction Quick Reference](IconExtractionQuickReference.md) - Common icons section
 2. Browse: Enum definitions in code or comprehensive guide
 
 ### "I want to extend this feature"
+
 1. Read: [Icon Extraction API Reference](IconExtractionAPIReference.md) - Extension Guidelines section
 2. Study: Existing implementation in source files
 
 ### "I have a problem"
+
 1. Check: [Icon Extraction Quick Reference](IconExtractionQuickReference.md) - Troubleshooting section
 2. Review: [Icon Extraction API Reference](IconExtractionAPIReference.md) - Error Handling section
 
@@ -122,7 +132,7 @@ Complete documentation for the Windows System Icon Extraction feature in Krypton
 ### Core Implementation
 
 | File | Location | Lines | Purpose |
-|------|----------|-------|---------|
+| --- | --- | --- | --- |
 | `GraphicsExtensions.cs` | `Krypton.Toolkit/Utilities/` | 795 | Public API and extraction logic |
 | `ImageNativeMethods.cs` | `Krypton.Toolkit/Utilities/` | 34 | P/Invoke declarations |
 | `Definitions.cs` | `Krypton.Toolkit/General/` | 5193 | Icon ID enumerations |
@@ -131,17 +141,20 @@ Complete documentation for the Windows System Icon Extraction feature in Krypton
 ### Key Code Sections
 
 **GraphicsExtensions.cs:**
+
 - Lines 136-182: `ExtractIcon()` - Core extraction method
 - Lines 364-390: `ExtractIconFromImageres()` methods
 - Lines 689-706: `ExtractIconFromShell32()` methods
 - Lines 708-791: Additional DLL extraction methods
 
 **Definitions.cs:**
+
 - Lines 3311-4362: `ImageresIconID` enum (~300 icons)
 - Lines 4366-4843: `Shell32IconID` enum (~300 icons)
 - Lines 4847-5131: Additional DLL enums
 
 **PlatformInvoke.cs:**
+
 - Lines 60-128: `Libraries` class with DLL constants
 
 ---
@@ -149,6 +162,7 @@ Complete documentation for the Windows System Icon Extraction feature in Krypton
 ## 🎯 Quick Start
 
 ### Absolute Beginner
+
 ```csharp
 // Extract a folder icon
 var icon = GraphicsExtensions.ExtractIconFromShell32(
@@ -163,8 +177,9 @@ if (icon != null)
 ```
 
 ### Where to Learn More
-2. Read [Icon Extraction Example](IconExtractionExample.md)
-3. Refer to [Icon Extraction Quick Reference](IconExtractionQuickReference.md)
+
+1. Read [Icon Extraction Example](IconExtractionExample.md)
+2. Refer to [Icon Extraction Quick Reference](IconExtractionQuickReference.md)
 
 ---
 
@@ -183,11 +198,13 @@ if (icon != null)
 ## 🔗 Related Resources
 
 ### Internal Links
+
 - Main Krypton Toolkit documentation
 - Control reference guides
 - Theme system documentation
 
 ### External Resources
+
 - [Windows Icon Resources](https://docs.microsoft.com/en-us/windows/win32/menurc/icons)
 - [ExtractIconEx API Documentation](https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-extracticonexw)
 
@@ -196,7 +213,7 @@ if (icon != null)
 ## 🆘 Support
 
 For questions or issues:
+
 1. Check the [troubleshooting section](IconExtractionQuickReference.md#-troubleshooting)
 2. Review the [API reference](IconExtractionAPIReference.md)
-4. Consult the Krypton Toolkit repository
-
+3. Consult the Krypton Toolkit repository

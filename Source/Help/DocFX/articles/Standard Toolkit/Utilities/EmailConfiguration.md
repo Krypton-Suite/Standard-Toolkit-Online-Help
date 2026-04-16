@@ -15,7 +15,7 @@ using Krypton.Utilities;
 ### Properties
 
 | Property | Type | Required | Default | Description |
-|----------|------|----------|---------|-------------|
+| ---------- | ---- | ---------- | ------- | ----------- |
 | `SmtpServer` | `string` | Yes | `string.Empty` | SMTP server address (e.g., "smtp.gmail.com") |
 | `SmtpPort` | `int` | Yes | `587` | SMTP server port (commonly 25, 465, or 587) |
 | `UseSsl` | `bool` | No | `true` | Whether to use SSL/TLS encryption |
@@ -34,6 +34,7 @@ public BugReportEmailConfig()
 ```
 
 Creates a new instance with default values:
+
 - `SmtpPort`: 587
 - `UseSsl`: true
 - All string properties: `string.Empty`
@@ -45,6 +46,7 @@ Creates a new instance with default values:
 Gmail requires an App Password (not your regular password) for SMTP access.
 
 **Steps to Enable:**
+
 1. Enable 2-Step Verification in your Google Account
 2. Generate an App Password:
    - Go to Google Account → Security → 2-Step Verification → App passwords
@@ -52,6 +54,7 @@ Gmail requires an App Password (not your regular password) for SMTP access.
    - Copy the generated 16-character password
 
 **Configuration:**
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -66,6 +69,7 @@ var emailConfig = new BugReportEmailConfig
 ```
 
 **Alternative (Port 465):**
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -82,6 +86,7 @@ var emailConfig = new BugReportEmailConfig
 ### Outlook/Hotmail
 
 **Configuration:**
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -98,6 +103,7 @@ var emailConfig = new BugReportEmailConfig
 ### Office 365
 
 **Configuration:**
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -114,6 +120,7 @@ var emailConfig = new BugReportEmailConfig
 ### Yahoo Mail
 
 **Configuration:**
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -130,6 +137,7 @@ var emailConfig = new BugReportEmailConfig
 ### Custom SMTP Server
 
 **Configuration:**
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -144,6 +152,7 @@ var emailConfig = new BugReportEmailConfig
 ```
 
 **Without Authentication:**
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -161,7 +170,7 @@ var emailConfig = new BugReportEmailConfig
 Common SMTP ports:
 
 | Port | Protocol | Description |
-|------|----------|-------------|
+| ---- | -------- | ----------- |
 | 25 | SMTP | Standard SMTP (often blocked by ISPs) |
 | 465 | SMTPS | SMTP over SSL (legacy, but still used) |
 | 587 | SMTP + STARTTLS | Modern standard, recommended |
@@ -173,6 +182,7 @@ Common SMTP ports:
 ### 1. Never Hardcode Credentials
 
 ❌ **Bad:**
+
 ```csharp
 var emailConfig = new BugReportEmailConfig
 {
@@ -181,6 +191,7 @@ var emailConfig = new BugReportEmailConfig
 ```
 
 ✅ **Good:**
+
 ```csharp
 // Load from secure configuration
 var emailConfig = LoadEmailConfigFromSecureStorage();
@@ -193,6 +204,7 @@ For providers that support it (Gmail, Yahoo), use App Passwords instead of your 
 ### 3. Store Configuration Securely
 
 **Options:**
+
 - Encrypted configuration files
 - Windows Credential Manager
 - Environment variables (for server deployments)
@@ -244,6 +256,7 @@ public static BugReportEmailConfig LoadEmailConfigFromEnvironment()
 **Symptoms:** Email sending fails with authentication error.
 
 **Solutions:**
+
 - Verify username and password are correct
 - For Gmail/Yahoo, ensure you're using an App Password, not your regular password
 - Check if 2-Step Verification is enabled (required for App Passwords)
@@ -254,6 +267,7 @@ public static BugReportEmailConfig LoadEmailConfigFromEnvironment()
 **Symptoms:** Email sending times out.
 
 **Solutions:**
+
 - Check firewall settings
 - Verify SMTP server address is correct
 - Try different port (587 vs 465)
@@ -264,6 +278,7 @@ public static BugReportEmailConfig LoadEmailConfigFromEnvironment()
 **Symptoms:** SSL handshake fails.
 
 **Solutions:**
+
 - Verify `UseSsl` matches server requirements
 - For port 587, use `UseSsl = true` (STARTTLS)
 - For port 465, use `UseSsl = true` (implicit SSL)
@@ -274,6 +289,7 @@ public static BugReportEmailConfig LoadEmailConfigFromEnvironment()
 **Symptoms:** Cannot connect to SMTP server.
 
 **Solutions:**
+
 - Try port 587 instead of 25 (most ISPs block port 25)
 - Check corporate firewall settings
 - Verify SMTP server allows connections from your IP
@@ -336,7 +352,6 @@ if (result == DialogResult.OK)
 ## Related Documentation
 
 - [Bug Reporting Dialog Documentation](BugReportingDialog.md)
-- [Bug Reporting Dialog API Reference](BugReportingDialog-API.md)
-- [Bug Reporting Dialog Examples](BugReportingDialog-Examples.md)
-- [Bug Reporting Dialog Quick Reference](BugReportingDialog-QuickReference.md)
-
+- [Bug Reporting Dialog API Reference](BugReportingDialogAPI.md)
+- [Bug Reporting Dialog Examples](BugReportingDialogExamples.md)
+- [Bug Reporting Dialog Quick Reference](BugReportingDialogQuickReference.md)

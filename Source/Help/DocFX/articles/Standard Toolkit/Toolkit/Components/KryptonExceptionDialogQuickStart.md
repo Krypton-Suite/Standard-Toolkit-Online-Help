@@ -1,10 +1,12 @@
 # KryptonExceptionDialog - Quick Start Guide
 
+**V110+:** Use **`using Krypton.Utilities;`**. Canonical copy: **[Utilities/KryptonExceptionDialogQuickStart.md](../../Utilities/KryptonExceptionDialogQuickStart.md)**.
+
 ## Overview
 
 `KryptonExceptionDialog` is a static utility class that displays exception information in a user-friendly dialog with searchable tree views, copy-to-clipboard functionality, and optional bug reporting integration.
 
-**Namespace:** `Krypton.Toolkit`  
+**Namespace (V110+):** `Krypton.Utilities`  
 **Type:** `public static class`
 
 ---
@@ -14,7 +16,7 @@
 ### Basic Usage
 
 ```csharp
-using Krypton.Toolkit;
+using Krypton.Utilities;
 
 try
 {
@@ -29,6 +31,7 @@ catch (Exception ex)
 ```
 
 That's it! The dialog will display with:
+
 - ✅ Exception tree view (left panel)
 - ✅ Detailed exception information (right panel)
 - ✅ Copy button (to clipboard)
@@ -120,7 +123,7 @@ private void ReportBug(Exception ex)
 ### Method Overloads
 
 | Method | Parameters | Use Case |
-|--------|-----------|----------|
+| --- | --- | --- |
 | `Show(Exception)` | `exception` | Basic usage, all defaults |
 | `Show(Exception, Color?)` | `exception`, `highlightColor` | Custom highlight color |
 | `Show(Exception, bool?, bool?)` | `exception`, `showCopyButton`, `showSearchBox` | Control feature visibility |
@@ -173,7 +176,7 @@ All strings customizable via `KryptonManager.Strings.ExceptionDialogStrings`
 
 The dialog displays exceptions hierarchically:
 
-```
+```text
 ExceptionType: Message
 ├── Stack Trace
 │   ├── at Namespace.Class.Method() in File.cs:line 42
@@ -262,7 +265,7 @@ catch (Exception ex)
 
 ## UI Layout
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │           Exception Caught                           │
 ├──────────────┬──────────┬───────────────────────────┤
@@ -336,7 +339,7 @@ KryptonExceptionDialog.Show(ex,
 
 ## Related Documentation
 
-- **[Full API Documentation](./krypton-exception-dialog-api.md)** - Comprehensive reference with all details
+- **[Full API documentation](KryptonExceptionDialog.md)** — comprehensive reference (this folder)
 - **KryptonBugReportingDialog** - Integrated bug reporting dialog
 - **KryptonManager** - String localization and theming
 
@@ -381,7 +384,7 @@ KryptonExceptionDialog.Show(ex, bugReportCallback: exception => {
 1. **Try the basic example** - Start with `KryptonExceptionDialog.Show(ex)`
 2. **Customize for your needs** - Add highlight color or hide features
 3. **Integrate bug reporting** - Add callback for production apps
-4. **Read full documentation** - See [krypton-exception-dialog-api.md](./krypton-exception-dialog-api.md) for complete details
+4. **Read full documentation** — see [KryptonExceptionDialog.md](KryptonExceptionDialog.md) for complete details
 
 ---
 

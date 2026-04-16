@@ -42,7 +42,7 @@ The notification bar consists of three main components:
 
 ## Quick Start
 
-### Basic Usage
+### Basic Usage (Quick Start)
 
 ```csharp
 using Krypton.Ribbon;
@@ -114,6 +114,7 @@ public event EventHandler<RibbonNotificationBarEventArgs>? NotificationBarButton
 #### Visibility and Type
 
 ##### `Visible` (bool)
+
 - **Default**: `false`
 - **Category**: Appearance
 - **Description**: Determines whether the notification bar is visible.
@@ -124,6 +125,7 @@ kryptonRibbon.NotificationBar.Visible = true;
 ```
 
 ##### `Type` (RibbonNotificationBarType)
+
 - **Default**: `RibbonNotificationBarType.Information`
 - **Category**: Appearance
 - **Description**: The type of notification bar, which determines default colors.
@@ -136,6 +138,7 @@ kryptonRibbon.NotificationBar.Type = RibbonNotificationBarType.Warning;
 #### Content Properties
 
 ##### `Text` (string)
+
 - **Default**: `""`
 - **Category**: Appearance
 - **Localizable**: Yes
@@ -147,6 +150,7 @@ kryptonRibbon.NotificationBar.Text = "Your document has been saved successfully.
 ```
 
 ##### `Title` (string)
+
 - **Default**: `""`
 - **Category**: Appearance
 - **Localizable**: Yes
@@ -159,6 +163,7 @@ kryptonRibbon.NotificationBar.Text = "Updates for Office are ready to be applied
 ```
 
 ##### `Icon` (Image?)
+
 - **Default**: `null`
 - **Category**: Appearance
 - **Description**: The icon image displayed in the notification bar.
@@ -169,6 +174,7 @@ kryptonRibbon.NotificationBar.Icon = SystemIcons.Information.ToBitmap();
 ```
 
 ##### `ShowIcon` (bool)
+
 - **Default**: `true`
 - **Category**: Appearance
 - **Description**: Determines whether to show the icon.
@@ -181,6 +187,7 @@ kryptonRibbon.NotificationBar.ShowIcon = true;
 #### Button Properties
 
 ##### `ShowCloseButton` (bool)
+
 - **Default**: `true`
 - **Category**: Appearance
 - **Description**: Determines whether to show the close button (X).
@@ -191,6 +198,7 @@ kryptonRibbon.NotificationBar.ShowCloseButton = true;
 ```
 
 ##### `ShowActionButtons` (bool)
+
 - **Default**: `true`
 - **Category**: Appearance
 - **Description**: Determines whether to show action buttons.
@@ -201,6 +209,7 @@ kryptonRibbon.NotificationBar.ShowActionButtons = true;
 ```
 
 ##### `ActionButtonTexts` (string[])
+
 - **Default**: `new[] { "Update now" }`
 - **Category**: Appearance
 - **Localizable**: Yes
@@ -213,6 +222,7 @@ kryptonRibbon.NotificationBar.ActionButtonTexts = new[] { "OK", "Cancel", "Retry
 ```
 
 ##### `ActionButtonImages` (Image[]?)
+
 - **Default**: `null`
 - **Category**: Appearance
 - **Description**: The array of action button images (optional).
@@ -228,6 +238,7 @@ kryptonRibbon.NotificationBar.ActionButtonImages = new Image[]
 ```
 
 ##### `ActionButtonCommands` (IKryptonCommand[]?)
+
 - **Default**: `null`
 - **Category**: Behavior
 - **Description**: The array of KryptonCommand objects for action buttons. If provided, these will be used instead of `ActionButtonTexts`.
@@ -243,6 +254,7 @@ kryptonRibbon.NotificationBar.ActionButtonCommands = new[] { command1 };
 #### Custom Styling Properties
 
 ##### `CustomBackColor` (Color)
+
 - **Default**: `Color.FromArgb(255, 242, 204)`
 - **Category**: Appearance
 - **Description**: The custom background color (used when Type is Custom).
@@ -254,6 +266,7 @@ kryptonRibbon.NotificationBar.CustomBackColor = Color.FromArgb(240, 248, 255);
 ```
 
 ##### `CustomForeColor` (Color)
+
 - **Default**: `Color.Black`
 - **Category**: Appearance
 - **Description**: The custom foreground color (used when Type is Custom).
@@ -264,6 +277,7 @@ kryptonRibbon.NotificationBar.CustomForeColor = Color.FromArgb(25, 25, 112);
 ```
 
 ##### `CustomBorderColor` (Color)
+
 - **Default**: `Color.FromArgb(255, 192, 0)`
 - **Category**: Appearance
 - **Description**: The custom border color (used when Type is Custom).
@@ -276,6 +290,7 @@ kryptonRibbon.NotificationBar.CustomBorderColor = Color.FromArgb(70, 130, 180);
 #### Layout Properties
 
 ##### `Padding` (Padding)
+
 - **Default**: `new Padding(12, 8, 12, 8)`
 - **Category**: Layout
 - **Description**: The padding around the notification bar content.
@@ -286,6 +301,7 @@ kryptonRibbon.NotificationBar.Padding = new Padding(16, 10, 16, 10);
 ```
 
 ##### `Height` (int)
+
 - **Default**: `0` (auto-calculate)
 - **Category**: Layout
 - **Description**: The height of the notification bar (0 = auto-calculate based on content).
@@ -299,6 +315,7 @@ kryptonRibbon.NotificationBar.Height = 0;  // Auto-calculate
 #### Behavior Properties
 
 ##### `AutoDismissSeconds` (int)
+
 - **Default**: `0` (never auto-dismiss)
 - **Category**: Behavior
 - **Description**: The number of seconds before the notification bar automatically dismisses (0 = never).
@@ -400,7 +417,7 @@ public enum RibbonNotificationBarType
 Each notification type has predefined colors:
 
 | Type | Background Color | Border Color |
-|------|----------------|--------------|
+| --- | --- | --- |
 | **Information** | `#D9ECFF` (217, 236, 255) | `#5B9BD5` (91, 155, 213) |
 | **Warning** | `#FFF2CC` (255, 242, 204) | `#FFC000` (255, 192, 0) |
 | **Error** | `#FFCCCC` (255, 204, 204) | `#C00000` (192, 0, 0) |
@@ -470,7 +487,7 @@ The notification bar supports using `KryptonCommand` objects for action buttons,
 - **Reusability**: Commands can be shared across multiple UI elements
 - **Command Pattern**: Follows the standard Krypton command pattern
 
-### Basic Usage
+### Basic Usage (KryptonCommand)
 
 ```csharp
 // Create commands
@@ -629,6 +646,7 @@ kryptonRibbon.NotificationBar.Visible = true;
 ```
 
 **Important Notes**:
+
 - The auto-dismiss timer stops if any button is clicked
 - Setting `AutoDismissSeconds` to `0` disables auto-dismiss
 - The timer is automatically cleaned up when the notification bar is hidden
@@ -1139,6 +1157,7 @@ public partial class MainForm : KryptonForm
 **Problem**: Setting `Visible = true` doesn't show the notification bar.
 
 **Solutions**:
+
 1. Ensure the `Text` property is not empty
 2. Check that the ribbon control is properly initialized
 3. Verify the ribbon is visible and has sufficient space
@@ -1158,6 +1177,7 @@ if (!kryptonRibbon.NotificationBar.Visible)
 **Problem**: Action buttons or close button don't respond to clicks.
 
 **Solutions**:
+
 1. Ensure buttons are enabled (when using `KryptonCommand`, check `Enabled` property)
 2. Verify event handlers are properly subscribed
 3. Check for overlapping controls
@@ -1179,6 +1199,7 @@ if (kryptonRibbon.NotificationBar.ActionButtonCommands != null)
 **Problem**: Notification bar doesn't auto-dismiss after specified seconds.
 
 **Solutions**:
+
 1. Verify `AutoDismissSeconds` is set to a positive value
 2. Check that the timer isn't being stopped prematurely
 3. Ensure the notification bar remains visible (not hidden by other code)
@@ -1194,6 +1215,7 @@ Debug.WriteLine($"AutoDismissSeconds: {kryptonRibbon.NotificationBar.AutoDismiss
 **Problem**: `KryptonCommand.Execute` event doesn't fire when button is clicked.
 
 **Solutions**:
+
 1. Verify `ActionButtonCommands` is set (not null)
 2. Ensure `ActionButtonTexts` is not set (it takes precedence)
 3. Check that the command's `Enabled` property is `true`
@@ -1212,6 +1234,7 @@ kryptonRibbon.NotificationBar.ActionButtonTexts = null; // Important!
 **Problem**: Custom colors don't appear when using `Custom` type.
 
 **Solutions**:
+
 1. Ensure `Type` is set to `RibbonNotificationBarType.Custom`
 2. Verify custom color properties are set after setting the type
 3. Check that colors are valid (not `Color.Empty`)
@@ -1229,6 +1252,7 @@ kryptonRibbon.NotificationBar.CustomBorderColor = Color.FromArgb(70, 130, 180);
 **Problem**: Notification bar is visible but text doesn't appear.
 
 **Solutions**:
+
 1. Verify `Text` property is not empty or null
 2. Check that foreground color contrasts with background
 3. Ensure text is not being clipped (check `Padding` and `Height`)
@@ -1246,6 +1270,7 @@ Debug.WriteLine($"ShowIcon: {kryptonRibbon.NotificationBar.ShowIcon}");
 **Problem**: Memory leaks when using `KryptonCommand` objects.
 
 **Solutions**:
+
 1. Unsubscribe from `Execute` events when done
 2. Dispose `KryptonCommand` objects if they implement `IDisposable`
 3. Clear `ActionButtonCommands` when hiding notification

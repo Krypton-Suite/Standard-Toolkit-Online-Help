@@ -5,7 +5,7 @@ The Krypton Toolkit now provides access to **1500+ Windows system icons** from m
 ## Overview of Icon Sources
 
 | DLL | Approx. Icons | Description | Enum | Method |
-|-----|--------------|-------------|------|--------|
+| --- | ------------- | ----------- | ---- | ------ |
 | **imageres.dll** | ~300 | Modern Windows icons (Vista+) | `ImageresIconID` | `ExtractIconFromImageres()` |
 | **shell32.dll** | ~300 | Classic Windows shell icons | `Shell32IconID` | `ExtractIconFromShell32()` |
 | **ieframe.dll** | ~200 | Internet Explorer & web icons | `IeFrameIconID` | `ExtractIconFromIeFrame()` |
@@ -224,6 +224,7 @@ treeView1.ImageList = imageList;
 ## Icon Categories by DLL
 
 ### imageres.dll Categories
+
 - System security (shields, locks, keys)
 - User accounts
 - Files and folders
@@ -233,6 +234,7 @@ treeView1.ImageList = imageList;
 - Applications and tools
 
 ### shell32.dll Categories
+
 - Basic files and folders (0-4)
 - Drives and storage (5-12)
 - Network and computers (13-21)
@@ -246,6 +248,7 @@ treeView1.ImageList = imageList;
 - Windows features (240-269)
 
 ### ieframe.dll Categories
+
 - Browser navigation
 - Favorites and bookmarks
 - Security and privacy
@@ -254,6 +257,7 @@ treeView1.ImageList = imageList;
 - Internet settings
 
 ### moricons.dll Categories
+
 - Legacy DOS/Windows icons
 - Document types
 - Archive files
@@ -261,18 +265,21 @@ treeView1.ImageList = imageList;
 - Media files
 
 ### compstui.dll Categories
+
 - Printer icons
 - Print settings
 - Device configuration
 - UI components
 
 ### setupapi.dll Categories
+
 - Hardware devices
 - Device drivers
 - System devices
 - Installation icons
 
 ### netshell.dll Categories
+
 - Network connections
 - Wireless networks
 - VPN connections
@@ -368,6 +375,7 @@ See `IconExtractionTest.cs` in the TestForm project for a complete working examp
 ## Summary
 
 You now have access to **1500+ Windows system icons** across 7 different DLLs:
+
 - ✅ imageres.dll (~300 icons)
 - ✅ shell32.dll (~300 icons)
 - ✅ ieframe.dll (~200 icons)
@@ -377,4 +385,3 @@ You now have access to **1500+ Windows system icons** across 7 different DLLs:
 - ✅ netshell.dll (~40 icons)
 
 Each DLL provides specialized icons for different system functions, giving you comprehensive access to the Windows icon library without needing to embed custom resources.
-

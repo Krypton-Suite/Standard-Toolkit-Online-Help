@@ -6,7 +6,7 @@ The `KryptonPropertyGrid` class provides a Krypton-themed wrapper around the sta
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -22,6 +22,7 @@ public KryptonPropertyGrid
 ```
 
 The constructor initializes enhanced features:
+
 - **Internal PropertyGrid**: Creates and manages the contained `PropertyGrid` instance
 - **Visual States**: Sets up Common, Normal, Disabled, and Active palette states
 - **Event Delegation**: Proper event routing to the contained control

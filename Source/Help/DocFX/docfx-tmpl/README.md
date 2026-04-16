@@ -1,9 +1,11 @@
 # docfx-tmpl
+
 A DocFX Template patching the Default template.
 
 Supported DocFX version: [v2.17.4](https://github.com/dotnet/docfx/releases/tag/v2.17.4)
 
 ## Changes from Default Template
+
 - Full Width (uses container-fluid instead of container).
 - Affix sidebar styled like Bootstrap Documentation.
 - Thinner TOC toggle button on mobiles.
@@ -15,6 +17,7 @@ Supported DocFX version: [v2.17.4](https://github.com/dotnet/docfx/releases/tag/
 - Different colors.
 
 ## How to use
+
 The template is contained in the source folder.
 
 **Clone or Download**  
@@ -36,15 +39,14 @@ In docfx.json (showing only relevant portion):
 }
 ```
 
-**OR**
+Alternatively, from the command line:
 
-In Command-line:
-
-```
+```cmd
 docfx -t default,docfx-tmpl/src
 ```
 
 ## ScreenShots
+
 ![Large](screenshots/1.png)
 
 ![Small](screenshots/2.png)

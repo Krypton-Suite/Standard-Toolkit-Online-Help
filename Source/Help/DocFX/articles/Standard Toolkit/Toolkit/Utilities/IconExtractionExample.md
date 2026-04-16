@@ -82,7 +82,7 @@ if (folderIcon != null)
 The `IconSize` enum provides standard sizes:
 
 | Size | Dimensions |
-|------|------------|
+| --- | --- |
 | `IconSize.Tiny` | 8x8 |
 | `IconSize.ExtraSmall` | 16x16 |
 | `IconSize.Small` | 20x20 |
@@ -114,12 +114,14 @@ Some commonly used icons from imageres.dll:
 The `Shell32IconID` enum now contains **300+ icons** organized into categories:
 
 ### Basic Icons
+
 - `Shell32IconID.Folder` - Folder (closed)
 - `Shell32IconID.FolderOpen` - Folder (open)
 - `Shell32IconID.Document` - Default document
 - `Shell32IconID.Application` - Executable/Application
 
 ### Storage and Drives
+
 - `Shell32IconID.HardDrive` - Hard disk drive
 - `Shell32IconID.CDRom` - CD/DVD drive
 - `Shell32IconID.RemovableDrive` - Removable drive
@@ -127,12 +129,14 @@ The `Shell32IconID` enum now contains **300+ icons** organized into categories:
 - `Shell32IconID.Floppy35` - 3.5" floppy disk
 
 ### Network and Computers
+
 - `Shell32IconID.Computer` - Computer/workstation
 - `Shell32IconID.Network` - Network
 - `Shell32IconID.Server` - Server
 - `Shell32IconID.NetworkNeighborhood` - Network neighborhood
 
 ### System Utilities
+
 - `Shell32IconID.Search` - Search/find
 - `Shell32IconID.RecycleBinEmpty` - Empty recycle bin
 - `Shell32IconID.RecycleBinFull` - Full recycle bin
@@ -142,6 +146,7 @@ The `Shell32IconID` enum now contains **300+ icons** organized into categories:
 - `Shell32IconID.Run` - Run/Execute
 
 ### Actions
+
 - `Shell32IconID.Cut` - Cut (scissors)
 - `Shell32IconID.Copy` - Copy
 - `Shell32IconID.Paste` - Paste
@@ -150,6 +155,7 @@ The `Shell32IconID` enum now contains **300+ icons** organized into categories:
 - `Shell32IconID.Print` - Print
 
 ### Hardware & Devices
+
 - `Shell32IconID.Keyboard` - Keyboard
 - `Shell32IconID.Mouse` - Mouse
 - `Shell32IconID.Monitor` - Monitor
@@ -159,12 +165,14 @@ The `Shell32IconID` enum now contains **300+ icons** organized into categories:
 - `Shell32IconID.Laptop` - Laptop
 
 ### User Accounts
+
 - `Shell32IconID.UserAccount` - User account
 - `Shell32IconID.Administrator` - Administrator
 - `Shell32IconID.Guest` - Guest
 - `Shell32IconID.UserGroup` - User group
 
 ### Special Folders
+
 - `Shell32IconID.MyDocuments` - My Documents
 - `Shell32IconID.MyPictures` - My Pictures
 - `Shell32IconID.MyMusic` - My Music
@@ -172,6 +180,7 @@ The `Shell32IconID` enum now contains **300+ icons** organized into categories:
 - `Shell32IconID.Recent` - Recent documents
 
 ### Windows Features
+
 - `Shell32IconID.WindowsUpdate` - Windows Update
 - `Shell32IconID.WindowsDefender` - Windows Defender
 - `Shell32IconID.WindowsFirewall` - Windows Firewall
@@ -270,4 +279,3 @@ treeView1.ImageList = imageList;
 - `Shell32IconID` enum - Full list of shell32.dll icon IDs  
 - `GraphicsExtensions` class - Icon extraction methods
 - `IconSize` enum - Standard icon sizes
-

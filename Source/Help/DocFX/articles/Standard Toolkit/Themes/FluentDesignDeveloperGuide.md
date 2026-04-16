@@ -22,7 +22,7 @@ This guide provides comprehensive documentation for the Fluent Design-inspired t
 
 The Fluent Design themes follow a consistent architecture pattern:
 
-```
+```text
 Abstract Base Class (PaletteXXXBase)
 ├── Light Theme Implementation
 └── Dark Theme Implementation
@@ -45,16 +45,19 @@ Custom Renderer (RenderXXX)
 
 ## Acrylic Themes
 
-### Overview
+### Acrylic themes overview
+
 Acrylic themes provide Windows 10 Fluent Design-inspired semi-transparent surfaces with pronounced blur effects. These themes create bold visual hierarchy through transparency and layered backgrounds.
 
-### Key Features
+### Acrylic theme features
+
 - **Semi-transparent backgrounds** (Alpha 120-180)
 - **Enhanced visual depth** through layering
 - **Microsoft 365 integration** for consistent iconography
 - **Custom renderer** for transparency support
 
-### Quick Start
+### Acrylic quick start
+
 ```csharp
 // Apply Acrylic Light theme
 KryptonManager.GlobalPaletteMode = PaletteMode.AcrylicLight;
@@ -63,8 +66,9 @@ KryptonManager.GlobalPaletteMode = PaletteMode.AcrylicLight;
 KryptonManager.GlobalPaletteMode = PaletteMode.AcrylicDark;
 ```
 
-### Files Structure
-```
+### Acrylic file layout
+
+```text
 Palette Builtin/Acrylic/
 ├── Bases/
 │   └── PaletteAcrylicBase.cs
@@ -78,16 +82,19 @@ Palette Builtin/Acrylic/
 
 ## Mica Themes
 
-### Overview
+### Mica themes overview
+
 Mica themes provide Windows 11 Fluent Design-inspired subtle transparency effects. These themes offer better performance than Acrylic while maintaining modern visual appeal through subtle transparency and depth.
 
-### Key Features
+### Mica theme features
+
 - **Subtle transparency** (Alpha 80-120)
 - **Better performance** than Acrylic
 - **Modern appearance** with minimal visual impact
 - **Hardware-friendly** rendering
 
-### Quick Start
+### Mica quick start
+
 ```csharp
 // Apply Mica Light theme
 KryptonManager.GlobalPaletteMode = PaletteMode.MicaLight;
@@ -96,8 +103,9 @@ KryptonManager.GlobalPaletteMode = PaletteMode.MicaLight;
 KryptonManager.GlobalPaletteMode = PaletteMode.MicaDark;
 ```
 
-### Files Structure
-```
+### Mica file layout
+
+```text
 Palette Builtin/Mica/
 ├── Bases/
 │   └── PaletteMicaBase.cs
@@ -114,6 +122,7 @@ Palette Builtin/Mica/
 ### Base Classes
 
 #### PaletteAcrylicBase & PaletteMicaBase
+
 - **Inherit from**: `PaletteMicrosoft365Base`
 - **Purpose**: Provide common functionality for theme variants
 - **Key Methods**:
@@ -122,6 +131,7 @@ Palette Builtin/Mica/
   - `BlendOverlayColor()`
 
 #### Color Schemes
+
 - **Inherit from**: `KryptonColorSchemeBase`
 - **Pattern**: Explicit override of all 250+ color properties
 - **Transparency**: Alpha values for semi-transparent effects
@@ -129,6 +139,7 @@ Palette Builtin/Mica/
 ### Custom Renderers
 
 #### RenderAcrylic & RenderMica
+
 - **Inherit from**: `RenderMicrosoft365`
 - **Key Method**: `EvalTransparentPaint()` - Always returns `true`
 - **Purpose**: Enable transparency for theme-specific effects
@@ -136,6 +147,7 @@ Palette Builtin/Mica/
 ### Integration Points
 
 #### PaletteMode Enum
+
 ```csharp
 public enum PaletteMode
 {
@@ -148,7 +160,8 @@ public enum PaletteMode
 }
 ```
 
-#### KryptonManager Properties
+#### KryptonManager static members
+
 ```csharp
 public static PaletteAcrylicLight PaletteAcrylicLight { get; }
 public static PaletteAcrylicDark PaletteAcrylicDark { get; }
@@ -313,7 +326,7 @@ public class CustomAcrylicPalette : PaletteAcrylicBase
 ### Transparency Impact
 
 | Theme | Transparency Level | Performance Impact | Use Case |
-|-------|-------------------|-------------------|----------|
+| --- | --- | --- | --- |
 | Acrylic | High (120-180 alpha) | Moderate | Desktop applications |
 | Mica | Subtle (80-120 alpha) | Low | Performance-critical apps |
 
@@ -363,22 +376,28 @@ public class PerformanceTester
 ### Common Issues
 
 #### 1. Theme Not Applying
+
 **Symptoms**: UI doesn't change when switching themes
 **Solutions**:
+
 - Verify `KryptonManager.GlobalPaletteMode` is set correctly
 - Check that the palette is properly registered
 - Ensure the application is using Krypton controls
 
 #### 2. Transparency Not Working
+
 **Symptoms**: Surfaces appear opaque instead of transparent
 **Solutions**:
+
 - Verify `RenderAcrylic.EvalTransparentPaint()` returns `true`
 - Check that colors have alpha values < 255
 - Ensure the renderer is properly assigned
 
 #### 3. Performance Issues
+
 **Symptoms**: Slow rendering or high CPU usage
 **Solutions**:
+
 - Switch to Mica theme for better performance
 - Reduce transparency levels
 - Test on target hardware
@@ -420,16 +439,16 @@ public static class ThemeDebugger
 ### PaletteMode Enum Values
 
 | Value | Description |
-|-------|-------------|
+| --- | --- |
 | `AcrylicLight` | Acrylic theme with light colors |
 | `AcrylicDark` | Acrylic theme with dark colors |
 | `MicaLight` | Mica theme with light colors |
 | `MicaDark` | Mica theme with dark colors |
 
-### KryptonManager Properties
+### KryptonManager property reference
 
 | Property | Type | Description |
-|----------|------|-------------|
+| --- | --- | --- |
 | `PaletteAcrylicLight` | `PaletteAcrylicLight` | Acrylic light theme instance |
 | `PaletteAcrylicDark` | `PaletteAcrylicDark` | Acrylic dark theme instance |
 | `PaletteMicaLight` | `PaletteMicaLight` | Mica light theme instance |
@@ -439,17 +458,20 @@ public static class ThemeDebugger
 
 ### Key Methods
 
-#### PaletteAcrylicBase & PaletteMicaBase
+#### PaletteAcrylicBase and PaletteMicaBase methods
+
 - `GetAcrylicSurfaceColor()` / `GetMicaSurfaceColor()`: Get theme-specific surface colors
 - `IsDarkSurface()`: Determine if surface should use dark colors
 - `BlendOverlayColor()`: Blend colors with transparency
 
-#### RenderAcrylic & RenderMica
+#### RenderAcrylic and RenderMica methods
+
 - `EvalTransparentPaint()`: Always returns `true` to enable transparency
 
 ## Future Enhancements
 
 ### Planned Features
+
 - Windows API integration for true blur effects
 - Dynamic transparency based on system settings
 - Hardware acceleration support
@@ -457,14 +479,17 @@ public static class ThemeDebugger
 - Desktop wallpaper integration
 
 ### Windows API Integration
+
 Future versions may integrate with:
+
 - `SetWindowCompositionAttribute` API
 - DirectComposition for hardware acceleration
 - Windows 10+ Fluent Design APIs
 - Windows 11 Mica APIs
 
 ## Related Documentation
-- [Acrylic Themes Documentation](./Acrylic/README.md)
-- [Mica Themes Documentation](./Mica/README.md)
-- [Material Themes Documentation](./Material/README.md)
-- [Krypton Toolkit Palette System](../../Documents/palette-mechanics-intro.md)
+
+- [Acrylic theme (overview)](AcrylicTheme.md)
+- [Mica theme (overview)](MicaTheme.md)
+- [Fluent Design quick reference](FluentDesignQuickReference.md)
+- [Krypton Toolkit palette system](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Documents/palette-mechanics-intro.md)

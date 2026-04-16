@@ -7,12 +7,14 @@ This guide helps developers understand the changes made to the KryptonForm syste
 ## What Changed
 
 ### Before (Previous Implementation)
+
 - System menu interfered with Visual Studio designer
 - Inconsistent drag and drop behavior
 - Complex workarounds needed for designer support
 - Performance overhead from repeated designer checks
 
 ### After (Current Implementation)
+
 - Complete designer transparency
 - Robust multi-method design mode detection
 - Performance optimized with conditional service creation
@@ -21,12 +23,15 @@ This guide helps developers understand the changes made to the KryptonForm syste
 ## Breaking Changes
 
 ### ⚠️ Minimal Breaking Changes
+
 The implementation was designed to maintain backward compatibility. Most existing code will continue to work without modification.
 
 ### Potential Impact Areas
 
 #### 1. Direct SystemMenuService Access
+
 **Before:**
+
 ```csharp
 // This would always return a service instance
 var service = form.SystemMenuService;
@@ -34,6 +39,7 @@ service.UseSystemMenu = true; // Could cause issues in designer
 ```
 
 **After:**
+
 ```csharp
 // Service may be null in design mode
 var service = form.SystemMenuService;
@@ -44,20 +50,25 @@ if (service != null) // Add null check
 ```
 
 #### 2. System Menu Property Access
+
 **Before:**
+
 ```csharp
 // Direct access without null checks
 form.KryptonSystemMenu.Show(point);
 ```
 
 **After:**
+
 ```csharp
 // Add null checks for design mode compatibility
 form.KryptonSystemMenu?.Show(point);
 ```
 
 #### 3. Early Initialization
+
 **Before:**
+
 ```csharp
 public MyForm()
 {
@@ -70,6 +81,7 @@ public MyForm()
 ```
 
 **After:**
+
 ```csharp
 public MyForm()
 {
@@ -92,6 +104,7 @@ protected override void OnLoad(EventArgs e)
 ## Migration Steps
 
 ### Step 1: Add Null Checks
+
 Update any code that directly accesses system menu components:
 
 ```csharp
@@ -108,6 +121,7 @@ if (form.SystemMenuService != null)
 ```
 
 ### Step 2: Move Initialization to OnLoad
+
 If you have system menu customization in constructors, consider moving to `OnLoad`:
 
 ```csharp
@@ -132,6 +146,7 @@ private void InitializeSystemMenu()
 ```
 
 ### Step 3: Update Event Handlers
+
 Ensure event handlers are defensive:
 
 ```csharp
@@ -143,6 +158,7 @@ private void OnFormPropertyChanged()
 ```
 
 ### Step 4: Review Designer Code
+
 Check that designer-generated code doesn't conflict:
 
 ```csharp
@@ -156,6 +172,7 @@ this.SystemMenuValues.ShowOnRightClick = true;
 ## New Features Available
 
 ### Enhanced Designer Support
+
 ```csharp
 // These now work reliably in Visual Studio designer:
 // - Drag and drop controls from toolbox
@@ -165,6 +182,7 @@ this.SystemMenuValues.ShowOnRightClick = true;
 ```
 
 ### Robust Design Mode Detection
+
 ```csharp
 // Multiple detection methods ensure reliability:
 // 1. LicenseManager.UsageMode (primary)
@@ -173,6 +191,7 @@ this.SystemMenuValues.ShowOnRightClick = true;
 ```
 
 ### Performance Improvements
+
 ```csharp
 // System menu service not created in design mode
 // Reduced memory usage and faster initialization
@@ -182,6 +201,7 @@ this.SystemMenuValues.ShowOnRightClick = true;
 ## Testing Your Migration
 
 ### Designer Tests
+
 1. **Open KryptonForm in Visual Studio designer**
 2. **Verify no red rectangle appears**
 3. **Test drag and drop from toolbox**
@@ -189,6 +209,7 @@ this.SystemMenuValues.ShowOnRightClick = true;
 5. **Check Properties window shows KryptonForm, not InternalPanel**
 
 ### Runtime Tests
+
 1. **Right-click title bar** - Should show themed menu
 2. **Alt+Space** - Should show menu at top-left
 3. **Custom menu items** - Should appear and function
@@ -208,7 +229,7 @@ this.SystemMenuValues.ShowOnRightClick = true;
 ### Supported Scenarios
 
 | Scenario | Before | After | Notes |
-|----------|--------|-------|-------|
+| --- | --- | --- | --- |
 | Runtime Usage | ✅ | ✅ | Full compatibility maintained |
 | Designer Drag/Drop | ❌ | ✅ | Major improvement |
 | Custom Menu Items | ✅ | ✅ | Full compatibility |
@@ -219,7 +240,7 @@ this.SystemMenuValues.ShowOnRightClick = true;
 ### Design Mode Behavior
 
 | Component | Before | After |
-|-----------|--------|-------|
+| --- | --- | --- |
 | SystemMenuService | Created (interfered) | Not created (clean) |
 | KryptonSystemMenu | Available (problematic) | Null (transparent) |
 | SystemMenuValues | Available | Available (minimal) |
@@ -228,6 +249,7 @@ this.SystemMenuValues.ShowOnRightClick = true;
 ## Code Examples
 
 ### Before Migration
+
 ```csharp
 public partial class MyKryptonForm : KryptonForm
 {
@@ -251,6 +273,7 @@ public partial class MyKryptonForm : KryptonForm
 ```
 
 ### After Migration
+
 ```csharp
 public partial class MyKryptonForm : KryptonForm
 {
@@ -297,19 +320,23 @@ public partial class MyKryptonForm : KryptonForm
 If you need to rollback changes (not recommended):
 
 ### 1. Revert Designer Mode Detection
+
 Remove or comment out the design mode checks in:
+
 - `KryptonForm` constructor
 - `WndProc` methods
 - `ShowSystemMenu` methods
 - `WindowChromeHitTest` method
 
 ### 2. Force Service Creation
+
 ```csharp
 // Force creation regardless of design mode (not recommended)
 _systemMenuService = new KryptonSystemMenuService(this);
 ```
 
 ### 3. Remove Null Checks
+
 Remove the null-conditional operators added for safety.
 
 **⚠️ Warning:** Rollback will restore the designer interference issues.
@@ -317,12 +344,15 @@ Remove the null-conditional operators added for safety.
 ## Support and Resources
 
 ### Getting Help
-- Check the [Troubleshooting Guide](KryptonForm-Troubleshooting.md)
-- Review the [API Reference](KryptonSystemMenu-API-Reference.md)
-- Consult the [Overview Documentation](KryptonForm-SystemMenu-Overview.md)
+
+- Check the [Troubleshooting Guide](KryptonFormTroubleshooting.md)
+- Review the [API Reference](KryptonSystemMenuAPIReference.md)
+- Consult the [Overview Documentation](KryptonFormSystemMenuOverview.md)
 
 ### Reporting Migration Issues
+
 When reporting migration problems, include:
+
 1. **Code Before/After**: Show the code that worked before and fails after
 2. **Error Messages**: Include full exception details
 3. **Usage Context**: Designer vs runtime, initialization timing
@@ -330,6 +360,7 @@ When reporting migration problems, include:
 5. **Expected Behavior**: What should happen vs what actually happens
 
 ### Community Support
+
 - [Krypton Toolkit GitHub](https://github.com/Krypton-Suite/Standard-Toolkit)
 - [Issues and Discussions](https://github.com/Krypton-Suite/Standard-Toolkit/issues)
 - [Wiki Documentation](https://github.com/Krypton-Suite/Standard-Toolkit/wiki)
@@ -337,10 +368,12 @@ When reporting migration problems, include:
 ## Future Considerations
 
 ### Planned Enhancements
+
 - Additional theme support
 - More customization options
 - Enhanced accessibility features
 - Performance optimizations
 
 ### API Stability
+
 The current API is considered stable. Future changes will maintain backward compatibility where possible, with proper deprecation notices for any breaking changes.

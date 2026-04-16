@@ -10,22 +10,26 @@
 
 ## Key Features
 
-### Palette Integration
+### Palette integration features
+
 - Integrates with Krypton palette system
 - Automatic renderer creation
 - Theme-aware context menus
 
 ### Context Menu Support
+
 - Native `KryptonContextMenu` support
 - Theme-aware `ContextMenuStrip` rendering
 - Right-click and keyboard activation
 
 ### Rich Text Editing
+
 - Can be used as a WYSIWYG HTML editor
 - Full WebBrowser functionality
 - Document manipulation
 
 ### Double Buffering
+
 - Optimized rendering
 - Reduced flicker
 - Smooth resizing
@@ -43,6 +47,7 @@ public KryptonWebBrowser()
 ```
 
 **Initialization:**
+
 - Enables double buffering
 - Sets up palette integration
 - Connects to current global palette
@@ -52,6 +57,7 @@ public KryptonWebBrowser()
 ## Properties
 
 ### KryptonContextMenu
+
 Gets or sets the KryptonContextMenu to show when right-clicked.
 
 ```csharp
@@ -62,6 +68,7 @@ public KryptonContextMenu? KryptonContextMenu { get; set; }
 ```
 
 **Example:**
+
 ```csharp
 var contextMenu = new KryptonContextMenu();
 var menuItems = contextMenu.Items.Add(new KryptonContextMenuItems());
@@ -74,6 +81,7 @@ kryptonWebBrowser1.KryptonContextMenu = contextMenu;
 ---
 
 ### ContextMenuStrip
+
 Gets or sets the Windows Forms ContextMenuStrip (themed automatically).
 
 ```csharp
@@ -84,10 +92,12 @@ public override ContextMenuStrip? ContextMenuStrip { get; set; }
 ```
 
 **Remarks:**
+
 - Automatically applies Krypton renderer when shown
 - Consider using `KryptonContextMenu` for better integration
 
 **Example:**
+
 ```csharp
 var contextMenu = new ContextMenuStrip();
 contextMenu.Items.Add("Copy", null, OnCopy);
@@ -104,6 +114,7 @@ kryptonWebBrowser1.ContextMenuStrip = contextMenu;
 All standard `WebBrowser` properties are available:
 
 #### DocumentText
+
 Gets or sets the HTML content displayed in the control.
 
 ```csharp
@@ -113,6 +124,7 @@ public string DocumentText { get; set; }
 ---
 
 #### Url
+
 Gets or sets the URL of the current document.
 
 ```csharp
@@ -122,6 +134,7 @@ public Uri Url { get; set; }
 ---
 
 #### Document
+
 Gets the HtmlDocument representing the page currently displayed.
 
 ```csharp
@@ -132,6 +145,7 @@ public HtmlDocument Document { get; }
 ---
 
 #### AllowNavigation
+
 Gets or sets whether navigation to other pages is allowed.
 
 ```csharp
@@ -142,6 +156,7 @@ public bool AllowNavigation { get; set; }
 ---
 
 #### AllowWebBrowserDrop
+
 Gets or sets whether drag-and-drop operations are allowed.
 
 ```csharp
@@ -152,6 +167,7 @@ public bool AllowWebBrowserDrop { get; set; }
 ---
 
 #### IsWebBrowserContextMenuEnabled
+
 Gets or sets whether the default browser context menu is enabled.
 
 ```csharp
@@ -160,11 +176,13 @@ public bool IsWebBrowserContextMenuEnabled { get; set; }
 ```
 
 **Remarks:**
+
 - Set to `false` when using `KryptonContextMenu` or `ContextMenuStrip`
 
 ---
 
 #### WebBrowserShortcutsEnabled
+
 Gets or sets whether shortcuts are enabled.
 
 ```csharp
@@ -175,6 +193,7 @@ public bool WebBrowserShortcutsEnabled { get; set; }
 ---
 
 #### ScriptErrorsSuppressed
+
 Gets or sets whether script error dialogs are suppressed.
 
 ```csharp
@@ -185,6 +204,7 @@ public bool ScriptErrorsSuppressed { get; set; }
 ---
 
 #### ScrollBarsEnabled
+
 Gets or sets whether scroll bars are displayed.
 
 ```csharp
@@ -199,6 +219,7 @@ public bool ScrollBarsEnabled { get; set; }
 ### Navigation Methods
 
 #### Navigate(string)
+
 Navigates to the specified URL.
 
 ```csharp
@@ -206,6 +227,7 @@ public void Navigate(string urlString)
 ```
 
 **Example:**
+
 ```csharp
 kryptonWebBrowser1.Navigate("https://www.example.com");
 ```
@@ -213,6 +235,7 @@ kryptonWebBrowser1.Navigate("https://www.example.com");
 ---
 
 #### Navigate(Uri)
+
 Navigates to the specified URI.
 
 ```csharp
@@ -222,6 +245,7 @@ public void Navigate(Uri url)
 ---
 
 #### GoBack()
+
 Navigates to the previous page in the history.
 
 ```csharp
@@ -231,6 +255,7 @@ public bool GoBack()
 ---
 
 #### GoForward()
+
 Navigates to the next page in the history.
 
 ```csharp
@@ -240,6 +265,7 @@ public bool GoForward()
 ---
 
 #### GoHome()
+
 Navigates to the user's home page.
 
 ```csharp
@@ -249,6 +275,7 @@ public void GoHome()
 ---
 
 #### Refresh()
+
 Reloads the current page.
 
 ```csharp
@@ -258,6 +285,7 @@ public override void Refresh()
 ---
 
 #### Stop()
+
 Cancels any pending navigation.
 
 ```csharp
@@ -269,6 +297,7 @@ public void Stop()
 ### Document Methods
 
 #### ShowPrintDialog()
+
 Opens the print dialog.
 
 ```csharp
@@ -278,6 +307,7 @@ public void ShowPrintDialog()
 ---
 
 #### ShowPrintPreviewDialog()
+
 Opens the print preview dialog.
 
 ```csharp
@@ -287,6 +317,7 @@ public void ShowPrintPreviewDialog()
 ---
 
 #### ShowPropertiesDialog()
+
 Opens the page properties dialog.
 
 ```csharp
@@ -296,6 +327,7 @@ public void ShowPropertiesDialog()
 ---
 
 #### ShowSaveAsDialog()
+
 Opens the save file dialog.
 
 ```csharp
@@ -307,6 +339,7 @@ public void ShowSaveAsDialog()
 ### Palette Methods
 
 #### GetResolvedPalette()
+
 Gets the resolved palette being used for rendering.
 
 ```csharp
@@ -318,6 +351,7 @@ public PaletteBase GetResolvedPalette()
 ---
 
 #### CreateToolStripRenderer()
+
 Creates a ToolStripRenderer appropriate for the current palette.
 
 ```csharp
@@ -327,6 +361,7 @@ public ToolStripRenderer? CreateToolStripRenderer()
 ```
 
 **Remarks:**
+
 - Used internally to theme ContextMenuStrip
 - Can be used to theme other ToolStrips
 
@@ -337,6 +372,7 @@ public ToolStripRenderer? CreateToolStripRenderer()
 ### Navigation Events
 
 #### Navigating
+
 Occurs before navigation to a new page.
 
 ```csharp
@@ -344,6 +380,7 @@ public event WebBrowserNavigatingEventHandler Navigating
 ```
 
 **Example:**
+
 ```csharp
 kryptonWebBrowser1.Navigating += (s, e) =>
 {
@@ -358,6 +395,7 @@ kryptonWebBrowser1.Navigating += (s, e) =>
 ---
 
 #### Navigated
+
 Occurs after navigation to a new page.
 
 ```csharp
@@ -365,6 +403,7 @@ public event WebBrowserNavigatedEventHandler Navigated
 ```
 
 **Example:**
+
 ```csharp
 kryptonWebBrowser1.Navigated += (s, e) =>
 {
@@ -375,6 +414,7 @@ kryptonWebBrowser1.Navigated += (s, e) =>
 ---
 
 #### DocumentCompleted
+
 Occurs when the document finishes loading.
 
 ```csharp
@@ -382,6 +422,7 @@ public event WebBrowserDocumentCompletedEventHandler DocumentCompleted
 ```
 
 **Example:**
+
 ```csharp
 kryptonWebBrowser1.DocumentCompleted += (s, e) =>
 {
@@ -393,6 +434,7 @@ kryptonWebBrowser1.DocumentCompleted += (s, e) =>
 ---
 
 #### ProgressChanged
+
 Occurs when the download progress changes.
 
 ```csharp
@@ -800,7 +842,7 @@ The control intercepts `WM_CONTEXTMENU` and `WM_PARENTNOTIFY` messages to show t
 
 ---
 
-### Palette Integration
+### Palette integration behavior
 
 - Connects to current global palette on construction
 - Creates themed renderers for ContextMenuStrip
@@ -812,6 +854,7 @@ The control intercepts `WM_CONTEXTMENU` and `WM_PARENTNOTIFY` messages to show t
 ### WebBrowser Limitations
 
 Inherits standard `WebBrowser` control limitations:
+
 - Uses Internet Explorer rendering engine
 - Limited HTML5/CSS3 support on older Windows versions
 - Security restrictions on local file access
@@ -924,9 +967,9 @@ public class LicenseDialog : KryptonForm
 
 ## Compatibility
 
-- **Target Frameworks:** `net472`, `net48`, `net481`, `net8.0-windows`, `net9.0-windows`, `net10.0-windows`
+- **Target Frameworks:** `net472`, `net48`, `net481`, `net8.0-windows`, `net9.0-windows`, `net10.0-windows`, `net11.0-windows`
 - **Windows Forms:** Required
-- **Dependencies:** 
+- **Dependencies:**
   - Krypton.Toolkit core
   - Internet Explorer (WebBrowser uses IE rendering engine)
 
@@ -956,12 +999,14 @@ await newBrowser.EnsureCoreWebView2Async();
 ```
 
 **WebView2 Advantages:**
+
 - Modern Chromium rendering
 - Better HTML5/CSS3/JavaScript support
 - Regular updates
 - Better performance
 
 **KryptonWebBrowser Advantages:**
+
 - No additional dependencies
 - Simpler for basic HTML
 - Works on all Windows versions
@@ -971,8 +1016,8 @@ await newBrowser.EnsureCoreWebView2Async();
 
 ## See Also
 
-- [KryptonContextMenu](KryptonContextMenu.md) - Context menu control
-- [KryptonRichTextBox](KryptonRichTextBox.md) - Alternative for rich text
-- [WebView2](https://docs.microsoft.com/en-us/microsoft-edge/webview2/) - Modern browser control
-- [KryptonWebView2](KryptonWebView2.md)
+- [KryptonContextMenu](../Components/KryptonContextMenu.md) — context menu control
+- [KryptonRichTextBox](KryptonRichTextBox.md) — alternative for rich text
+- [WebView2](https://docs.microsoft.com/en-us/microsoft-edge/webview2/) — modern browser control
+- [KryptonWebView2](../../Utilities/KryptonWebView2.md)
 - [HtmlDocument](https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.htmldocument) - Document manipulation

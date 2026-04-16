@@ -10,7 +10,7 @@ Open Visual Studio 2022
 
 Create a new, or open an existing project
 
-**Step 3:** 
+**Step 3:**
 
 In Solution Explorer, right click your project, then click Manage NuGet Packages
 
@@ -24,10 +24,10 @@ Find the package you require, then click Install (Note: You may need to accept s
 
 **Step 6:** Close all tabs, then rebuild your projects
 
-![](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/InstallingKrypton.gif?raw=true)
+![Animated walkthrough: install Krypton.Toolkit from NuGet in Visual Studio 2022](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/InstallingKrypton.gif?raw=true)
 
 **Stay up-to-date:** [Current Versions](https://github.com/Krypton-Suite/Documentation)
 
-**Need Documentation?** [Click here](https://github.com/Krypton-Suite/Help-Files/releases)
+**Need Documentation?** [Krypton Suite help files on GitHub Releases](https://github.com/Krypton-Suite/Help-Files/releases)
 
 **Want to try the toolkit out?** [Download Demos](https://github.com/Krypton-Suite/Releases/releases)

@@ -72,12 +72,14 @@ However, when a control is wrapped:
 ### Example Scenario
 
 **Before Implementation:**
-```
+
+```text
 Narrator: "Edit, no name specified"
 ```
 
 **After Implementation:**
-```
+
+```text
 Narrator: "Test TextBox, edit, type in text"
 ```
 
@@ -95,7 +97,7 @@ Narrator: "Test TextBox, edit, type in text"
 
 ### Architecture Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                    KryptonTextBox                       │
 │  ┌───────────────────────────────────────────────────┐  │
@@ -131,7 +133,7 @@ Narrator: "Test TextBox, edit, type in text"
 
 ### Class Hierarchy
 
-```
+```text
 Control.ControlAccessibleObject (base class)
     │
     ├── KryptonTextBoxAccessibleObject
@@ -154,11 +156,13 @@ Control.ControlAccessibleObject (base class)
 #### 1. AccessibleObject Classes
 
 Each Krypton control has a corresponding `AccessibleObject` class located in:
-```
+
+```text
 Source/Krypton Components/Krypton.Toolkit/Utilities/Accessibility/
 ```
 
 **Structure:**
+
 ```csharp
 internal class KryptonTextBoxAccessibleObject : Control.ControlAccessibleObject
 {
@@ -553,11 +557,13 @@ public override string? Name
 ### Modern TFMs (net8.0-windows, net9.0-windows, net10.0-windows)
 
 **Features:**
+
 - Built-in UIA providers for standard controls
 - Rich accessibility information
 - Full UIA pattern support
 
 **Implementation:**
+
 - Directly delegates to internal control's UIA providers
 - Leverages all .NET 6+ accessibility enhancements
 - No additional work required
@@ -565,11 +571,13 @@ public override string? Name
 ### Legacy TFMs (net472, net48, net481)
 
 **Limitations:**
+
 - No built-in UIA providers
 - Basic `AccessibilityObject` instances only
 - Limited accessibility information
 
 **Implementation:**
+
 - Delegates to internal control's basic `AccessibilityObject`
 - Provides explicit `AccessibleRole` fallbacks
 - Ensures consistent behavior across TFMs
@@ -577,7 +585,7 @@ public override string? Name
 ### Role Fallback Mapping
 
 | Control Type | Fallback Role |
-|--------------|---------------|
+| ------------ | ------------- |
 | TextBox | `AccessibleRole.Text` |
 | RichTextBox | `AccessibleRole.Text` |
 | ComboBox | `AccessibleRole.ComboBox` |
@@ -610,6 +618,7 @@ return AccessibleRole.Text;  // Fallback
 ```
 
 **Benefits:**
+
 - Single codebase for all TFMs
 - Easier maintenance
 - Consistent behavior
@@ -626,7 +635,8 @@ If you need to add UIA provider support for a new Krypton control that wraps a s
 #### Step 1: Create the AccessibleObject Class
 
 1. Create a new file in `Utilities/Accessibility/`:
-   ```
+
+   ```text
    Krypton[ControlName]AccessibleObject.cs
    ```
 
@@ -643,6 +653,7 @@ If you need to add UIA provider support for a new Krypton control that wraps a s
 2. Find the `#region Protected Overrides` section
 
 3. Add:
+
    ```csharp
    /// <summary>
    /// Creates the accessibility object for the Krypton[ControlName] control.
@@ -733,12 +744,14 @@ The `AccessibilityTest` form in the TestForm project provides automated property
 **Location:** `Source/Krypton Components/TestForm/AccessibilityTest.cs`
 
 **Features:**
+
 - Tests all 9 implemented controls
 - Validates Name, Description, Role, State, Value
 - Checks navigation capabilities
 - Displays comprehensive test results
 
 **Usage:**
+
 1. Run TestForm application
 2. Select "Accessibility Test (UIA Providers)"
 3. Click "Test Accessibility Properties"
@@ -747,6 +760,7 @@ The `AccessibilityTest` form in the TestForm project provides automated property
 ### Manual Testing with Narrator
 
 **Windows Narrator:**
+
 1. Enable Narrator: `Win + Ctrl + Enter`
 2. Navigate to the test form
 3. Use `Tab` to navigate between controls
@@ -758,7 +772,8 @@ The `AccessibilityTest` form in the TestForm project provides automated property
    - Control is interactive
 
 **Expected Output:**
-```
+
+```text
 "Test TextBox, edit, type in text"
 "Test ComboBox, combo box, Option 1, collapsed"
 "Test ListBox, list, Item 1, 1 of 5"
@@ -802,6 +817,7 @@ For each control:
 ### Framework-Specific Testing
 
 Test on each TFM:
+
 - net472
 - net48
 - net481
@@ -810,6 +826,7 @@ Test on each TFM:
 - net10.0-windows
 
 **Key Differences to Verify:**
+
 - Role fallbacks work on legacy TFMs
 - UIA providers work on modern TFMs
 - No regressions in functionality
@@ -823,15 +840,18 @@ Test on each TFM:
 #### Issue: AccessibleObject is null
 
 **Symptoms:**
+
 - `AccessibilityObject` returns null
 - Tests fail with null reference exceptions
 
 **Causes:**
+
 - Internal control not initialized
 - Control not added to a form
 - Control handle not created
 
 **Solutions:**
+
 ```csharp
 // Ensure internal control exists
 if (_owner.TextBox == null)
@@ -849,13 +869,16 @@ if (!_owner.IsHandleCreated)
 #### Issue: Role returns Default or None
 
 **Symptoms:**
+
 - `Role` property returns `AccessibleRole.Default` or `AccessibleRole.None`
 - Screen readers don't announce control type correctly
 
 **Solutions:**
+
 - This is expected on legacy TFMs
 - Our implementation provides fallback roles
 - Verify fallback logic is working:
+
   ```csharp
   if (role != AccessibleRole.Default && role != AccessibleRole.None)
   {
@@ -867,19 +890,26 @@ if (!_owner.IsHandleCreated)
 #### Issue: Name property returns null
 
 **Symptoms:**
+
 - Screen readers don't announce control name
 - `Name` property returns null
 
 **Solutions:**
+
 - Set `AccessibleName` on the control:
+
   ```csharp
   kryptonTextBox1.AccessibleName = "User Name Input";
   ```
+
 - Or set `Name` property:
+
   ```csharp
   kryptonTextBox1.Name = "txtUserName";
   ```
+
 - Verify fallback logic:
+
   ```csharp
   return base.Name ?? _owner.Name;
   ```
@@ -887,10 +917,12 @@ if (!_owner.IsHandleCreated)
 #### Issue: Navigation doesn't work
 
 **Symptoms:**
+
 - Screen reader navigation skips controls
 - `Navigate()` returns null
 
 **Solutions:**
+
 - Ensure controls are properly parented
 - Verify `GetChild()` and `GetChildCount()` work correctly
 - Check that controls are in the tab order
@@ -934,6 +966,7 @@ if (_owner.TextBox == null)
 #### Test with UI Automation Spy
 
 Use UI Automation Spy to inspect the accessibility tree:
+
 1. Launch UI Automation Spy
 2. Point to control
 3. Inspect properties
@@ -946,11 +979,13 @@ Use UI Automation Spy to inspect the accessibility tree:
 ### Overhead Analysis
 
 **Delegation Pattern:**
+
 - Property access: ~1-2 property lookups + null checks
 - Method calls: ~1 method call + null check
 - **Estimated overhead: < 1 microsecond per call**
 
 **Memory:**
+
 - One `AccessibleObject` instance per control
 - Minimal memory footprint (~100 bytes per instance)
 
@@ -959,6 +994,7 @@ Use UI Automation Spy to inspect the accessibility tree:
 #### 1. Cache Internal Accessibility Object
 
 **Current Implementation:**
+
 ```csharp
 public override string? Name
 {
@@ -971,6 +1007,7 @@ public override string? Name
 ```
 
 **Optimized (if needed):**
+
 ```csharp
 private AccessibleObject? _cachedInternalAccessible;
 
@@ -992,6 +1029,7 @@ private AccessibleObject? InternalAccessible
 #### 2. Lazy Initialization
 
 Accessibility objects are created on-demand when first accessed:
+
 ```csharp
 // Created when AccessibilityObject property is first accessed
 var accessible = control.AccessibilityObject;
@@ -1002,6 +1040,7 @@ This is already handled by the framework - no changes needed.
 ### Performance Best Practices
 
 1. **Avoid unnecessary property access**
+
    ```csharp
    // ❌ Bad: Multiple property accesses
    if (_owner.TextBox != null && _owner.TextBox.AccessibilityObject != null)
@@ -1018,6 +1057,7 @@ This is already handled by the framework - no changes needed.
    ```
 
 2. **Use null-conditional operators**
+
    ```csharp
    // ✅ Efficient and safe
    return _owner.TextBox?.AccessibilityObject?.Name ?? base.Name;
@@ -1042,6 +1082,7 @@ This is already handled by the framework - no changes needed.
    - Keep classes `internal` (not public API)
 
 3. **Region Organization**
+
    ```csharp
    #region Instance Fields
    #endregion
@@ -1056,6 +1097,7 @@ This is already handled by the framework - no changes needed.
 ### Implementation Guidelines
 
 1. **Always Provide Fallbacks**
+
    ```csharp
    // ✅ Good: Always has a fallback
    return internalAccessible?.Name ?? base.Name ?? _owner.Name;
@@ -1065,6 +1107,7 @@ This is already handled by the framework - no changes needed.
    ```
 
 2. **Handle Null Cases**
+
    ```csharp
    // ✅ Good: Null-safe
    var internalAccessible = _owner.TextBox?.AccessibilityObject;
@@ -1083,6 +1126,7 @@ This is already handled by the framework - no changes needed.
    - Don't use `Default` or `None` as fallbacks
 
 4. **Document Special Cases**
+
    ```csharp
    /// <summary>
    /// Gets the accessible role of the control.

@@ -2,13 +2,13 @@
 
 ## Overview
 
-The `KryptonManager` class is the central component that manages global settings affecting all Krypton controls in your application. It provides a unified way to control themes, palettes, fonts, toolstrip rendering, and other global behaviors across the entire application. 
+The `KryptonManager` class is the central component that manages global settings affecting all Krypton controls in your application. It provides a unified way to control themes, palettes, fonts, toolstrip rendering, and other global behaviors across the entire application.
 
 **Important**: The global settings affect all controls and not just those on the same form as the KryptonManager instance. This means that when you change a global setting, it will impact every Krypton control throughout your entire application, ensuring consistent theming and behavior across all forms and dialogs.
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -70,6 +70,7 @@ public PaletteMode GlobalPaletteMode { get; set; }
 *GlobalPaletteMode* is an enumeration that specifies which palette to use as the global palette. You can either choose one of the built-in palettes such as the *Professional - Office 2003* or specify use of a custom palette.
 
 **Supported Palette Modes:**
+
 - **Professional**: `ProfessionalSystem`, `ProfessionalOffice2003`
 - **Office 2007**: `Office2007Blue`, `Office2007Silver`, `Office2007White`, `Office2007Black` (with Dark/Light mode variants)
 - **Office 2010**: `Office2010Blue`, `Office2010Silver`, `Office2010White`, `Office2010Black` (with Dark/Light mode variants)
@@ -93,7 +94,7 @@ public KryptonCustomPaletteBase? GlobalCustomPalette { get; set; }
 - **Effect**: When set, automatically changes `GlobalPaletteMode` to `Custom`
 - **Usage**: For applications requiring custom color schemes and styling
 
-**GlobalCustomPalette** - If you have loaded a custom palette into a [KryptonCustomPaletteBase](KryptonCustomPaletteBase.md) control, then you will need to assign it to the *GlobalCustomPalette* property. When this property is set to use a *KryptonCustomPaletteBase*, the *GlobalPaletteMode* will automatically be set to *Custom*. 
+**GlobalCustomPalette** - If you have loaded a custom palette into a [KryptonCustomPaletteBase](KryptonCustomPaletteBase.md) control, then you will need to assign it to the *GlobalCustomPalette* property. When this property is set to use a *KryptonCustomPaletteBase*, the *GlobalPaletteMode* will automatically be set to *Custom*.
 
 If the *GlobalCustomPalette* is subsequently reset back to its default value, then the *GlobalPaletteMode* will automatically be set to its default value, which is *Microsoft 365 - Blue*.
 

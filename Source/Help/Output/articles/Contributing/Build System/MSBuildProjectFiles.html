@@ -70,7 +70,8 @@
 <h1 id="msbuild-project-files">MSBuild Project Files</h1>
 
 <h2 id="overview">Overview</h2>
-<p>The Krypton Toolkit build system uses MSBuild project files (<code>.proj</code>) to orchestrate multi-project builds, NuGet package creation, and distribution archive generation. These files are located in the <code>Scripts/</code> directory.</p>
+<p>The Krypton Toolkit build system uses MSBuild project files (<code>.proj</code>) to orchestrate multi-project builds, NuGet package creation, and distribution archive generation. Project files are located under <code>Scripts/Build/</code>, <code>Scripts/VS2022/</code>, and <code>Scripts/Current/</code>; GitHub Actions use <code>Scripts/Build/</code>.</p>
+<p>Each script <code>.proj</code> imports the repo root <code>Directory.Build.props</code>, which defines <code>KryptonBuildOutputRoot</code> and <code>KryptonPackageOutputRoot</code>. Those resolve to legacy <code>Bin\</code> and <code>Bin\Packages\</code> by default, or to <code>artifacts\bin\</code> and <code>artifacts\packages\</code> when MSBuild is invoked with <code>/p:UseArtifactsOutput=true</code> (as in CI). Clean, Push, and archive targets use <code>$(ReleaseSourcePath)</code>, <code>$(ReleasePackagesPath)</code>, and equivalent Canary/Nightly properties so they stay aligned with component <code>OutputPath</code> and <code>PackageOutputPath</code>.</p>
 <h2 id="project-file-structure">Project File Structure</h2>
 <p>All <code>.proj</code> files follow a similar structure:</p>
 <ol>
@@ -83,9 +84,12 @@
 <h2 id="core-project-files">Core Project Files</h2>
 <h3 id="buildproj---stablerelease-builds">build.proj - Stable/Release Builds</h3>
 <p><strong>Purpose</strong>: Builds stable production releases</p>
-<p><strong>Key Properties</strong>:</p>
-<pre><code class="lang-xml">&lt;Configuration&gt;Release&lt;/Configuration&gt;
-&lt;ReleaseBuildPath&gt;..\Bin\Release\Zips&lt;/ReleaseBuildPath&gt;
+<p><strong>Key properties</strong> (from <code>Scripts/Build/build.proj</code>):</p>
+<pre><code class="lang-xml">&lt;Import Project=&quot;..\..\Directory.Build.props&quot; /&gt;
+&lt;Configuration&gt;Release&lt;/Configuration&gt;
+&lt;ReleaseSourcePath&gt;$(KryptonBuildOutputRoot)Release\&lt;/ReleaseSourcePath&gt;
+&lt;ReleasePackagesPath&gt;$(KryptonPackageOutputRoot)Release\&lt;/ReleasePackagesPath&gt;
+&lt;ReleaseBuildPath&gt;$(ReleaseSourcePath)Zips\&lt;/ReleaseBuildPath&gt;
 &lt;ReleaseZipName&gt;Krypton-Release&lt;/ReleaseZipName&gt;
 </code></pre>
 <p><strong>Available Targets</strong>:</p>
@@ -102,7 +106,7 @@
 <pre><code class="lang-cmd">msbuild build.proj /t:Build
 </code></pre>
 <h4 id="cleanpackages">CleanPackages</h4>
-<p>Deletes existing NuGet packages from <code>Bin/Packages/Release/</code>.</p>
+<p>Deletes existing NuGet packages from <code>$(ReleasePackagesPath)</code> (legacy: <code>Bin/Packages/Release/</code>; artifacts: <code>artifacts/packages/Release/</code>).</p>
 <pre><code class="lang-cmd">msbuild build.proj /t:CleanPackages
 </code></pre>
 <h4 id="packlite">PackLite</h4>
@@ -138,7 +142,7 @@ Generates both Lite and full packages.</p>
 <ul>
 <li>Uses 7-Zip if available</li>
 <li>Falls back to PowerShell <code>Compress-Archive</code></li>
-<li>Output: <code>Bin/Release/Zips/Krypton-Release_&lt;yyyyMMdd&gt;.zip</code></li>
+<li>Output: <code>$(ReleaseBuildPath)Krypton-Release_&lt;yyyyMMdd&gt;.zip</code> (under <code>Bin/Release/Zips/</code> or <code>artifacts/bin/Release/Zips/</code>)</li>
 </ul>
 <pre><code class="lang-cmd">msbuild build.proj /t:CreateReleaseZip
 </code></pre>
@@ -148,7 +152,7 @@ Generates both Lite and full packages.</p>
 <li>Tries 7-Zip (recommended)</li>
 <li>Falls back to Windows 10/11 tar command</li>
 <li>Falls back to Git Bash tar</li>
-<li>Output: <code>Bin/Release/Zips/Krypton-Release_&lt;yyyyMMdd&gt;.tar.gz</code></li>
+<li>Output: same <code>Zips</code> folder as ZIP, e.g. <code>.../Release/Zips/Krypton-Release_&lt;yyyyMMdd&gt;.tar.gz</code></li>
 </ul>
 <pre><code class="lang-cmd">msbuild build.proj /t:CreateReleaseTar
 </code></pre>
@@ -158,9 +162,11 @@ Generates both Lite and full packages.</p>
 </code></pre>
 <h3 id="canaryproj---beta-pre-release-builds">canary.proj - Beta Pre-Release Builds</h3>
 <p><strong>Purpose</strong>: Builds beta pre-release packages for early adopters</p>
-<p><strong>Key Properties</strong>:</p>
+<p><strong>Key properties</strong>:</p>
 <pre><code class="lang-xml">&lt;Configuration&gt;Canary&lt;/Configuration&gt;
-&lt;CanaryBuildPath&gt;..\Bin\Canary\Zips&lt;/CanaryBuildPath&gt;
+&lt;CanarySourcePath&gt;$(KryptonBuildOutputRoot)Canary\&lt;/CanarySourcePath&gt;
+&lt;CanaryPackagesPath&gt;$(KryptonPackageOutputRoot)Canary\&lt;/CanaryPackagesPath&gt;
+&lt;CanaryBuildPath&gt;$(CanarySourcePath)Zips\&lt;/CanaryBuildPath&gt;
 &lt;CanaryZipName&gt;Krypton-Canary&lt;/CanaryZipName&gt;
 </code></pre>
 <p><strong>Available Targets</strong>:</p>
@@ -168,7 +174,7 @@ Generates both Lite and full packages.</p>
 <li><code>Clean</code> - Clean Canary configuration</li>
 <li><code>Restore</code> - Restore packages</li>
 <li><code>Build</code> - Build Canary configuration</li>
-<li><code>CleanPackages</code> - Delete packages from <code>Bin/Packages/Canary/</code></li>
+<li><code>CleanPackages</code> - Delete packages from <code>$(CanaryPackagesPath)</code></li>
 <li><code>PackAll</code> - Create Canary packages (all TFMs, no Lite variant)</li>
 <li><code>Pack</code> - Master packaging target (CleanPackages + PackAll)</li>
 <li><code>Push</code> - Publish Canary packages</li>
@@ -180,13 +186,15 @@ Generates both Lite and full packages.</p>
 <ul>
 <li>No <code>PackLite</code> target (Canary always packs all TFMs)</li>
 <li>Packages get <code>-beta</code> suffix in NuGet</li>
-<li>Outputs to <code>Bin/Canary/</code> and <code>Bin/Packages/Canary/</code></li>
+<li>Outputs under <code>$(KryptonBuildOutputRoot)Canary\</code> and <code>$(KryptonPackageOutputRoot)Canary\</code> (legacy <code>Bin/...</code> or <code>artifacts/...</code>)</li>
 </ul>
 <h3 id="nightlyproj---alpha-nightly-builds">nightly.proj - Alpha Nightly Builds</h3>
 <p><strong>Purpose</strong>: Builds bleeding-edge alpha releases for developers and testers</p>
-<p><strong>Key Properties</strong>:</p>
+<p><strong>Key properties</strong>:</p>
 <pre><code class="lang-xml">&lt;Configuration&gt;Nightly&lt;/Configuration&gt;
-&lt;NightlyBuildPath&gt;..\Bin\Nightly\Zips&lt;/NightlyBuildPath&gt;
+&lt;NightlySourcePath&gt;$(KryptonBuildOutputRoot)Nightly\&lt;/NightlySourcePath&gt;
+&lt;NightlyPackagesPath&gt;$(KryptonPackageOutputRoot)Nightly\&lt;/NightlyPackagesPath&gt;
+&lt;NightlyBuildPath&gt;$(NightlySourcePath)Zips\&lt;/NightlyBuildPath&gt;
 &lt;NightlyZipName&gt;Krypton-Nightly&lt;/NightlyZipName&gt;
 </code></pre>
 <p><strong>Available Targets</strong>:</p>
@@ -195,7 +203,7 @@ Generates both Lite and full packages.</p>
 <li><code>Restore</code> - Restore packages</li>
 <li><code>Build</code> - Build Nightly configuration</li>
 <li><code>Rebuild</code> - Clean + Build</li>
-<li><code>CleanPackages</code> - Delete packages from <code>Bin/Packages/Nightly/</code></li>
+<li><code>CleanPackages</code> - Delete packages from <code>$(NightlyPackagesPath)</code></li>
 <li><code>PackAll</code> - Create Nightly packages (all TFMs)</li>
 <li><code>Pack</code> - Master packaging target</li>
 <li><code>Push</code> - Publish Nightly packages</li>
@@ -207,7 +215,7 @@ Generates both Lite and full packages.</p>
 <ul>
 <li>Includes <code>Rebuild</code> target</li>
 <li>Packages get <code>-alpha</code> suffix in NuGet</li>
-<li>Outputs to <code>Bin/Nightly/</code> and <code>Bin/Packages/Nightly/</code></li>
+<li>Outputs under <code>$(KryptonBuildOutputRoot)Nightly\</code> and <code>$(KryptonPackageOutputRoot)Nightly\</code></li>
 </ul>
 <h3 id="debugproj---debug-builds">debug.proj - Debug Builds</h3>
 <p><strong>Purpose</strong>: Local development debug builds</p>
@@ -235,7 +243,7 @@ Generates both Lite and full packages.</p>
 <li><code>Clean</code> - Clean Installer configuration</li>
 <li><code>Restore</code> - Restore packages</li>
 <li><code>Build</code> - Build Installer configuration</li>
-<li><code>CleanPackages</code> - Delete packages from <code>Bin/Packages/Installer/</code></li>
+<li><code>CleanPackages</code> - Delete packages from the Installer folder under <code>$(KryptonPackageOutputRoot)</code></li>
 <li><code>PackAll</code> - Create Installer packages</li>
 <li><code>Pack</code> - Master packaging target</li>
 <li><code>Push</code> - Publish Installer packages</li>
@@ -248,9 +256,9 @@ Generates both Lite and full packages.</p>
 </ul>
 <h2 id="project-file-patterns">Project File Patterns</h2>
 <h3 id="project-selection-pattern">Project Selection Pattern</h3>
-<p>All <code>.proj</code> files use this pattern to select Krypton projects:</p>
+<p>All <code>.proj</code> files under <code>Scripts/Build/</code> use this pattern to select Krypton projects (two levels up to the repo root):</p>
 <pre><code class="lang-xml">&lt;ItemGroup&gt;
-    &lt;Projects Include=&quot;..\Source\Krypton Components\Krypton.*\*.csproj&quot; /&gt;
+    &lt;Projects Include=&quot;..\..\Source\Krypton Components\Krypton.*\*.csproj&quot; /&gt;
 &lt;/ItemGroup&gt;
 </code></pre>
 <p>This selects:</p>
@@ -264,10 +272,10 @@ Generates both Lite and full packages.</p>
 <h3 id="nuget-asset-cleanup-pattern">NuGet Asset Cleanup Pattern</h3>
 <p>Before packing, intermediate NuGet files are deleted:</p>
 <pre><code class="lang-xml">&lt;ItemGroup&gt;
-    &lt;NugetAssets Include=&quot;..\Source\Krypton Components\Krypton.*\obj\*.json&quot; /&gt;
-    &lt;NugetAssets Include=&quot;..\Source\Krypton Components\Krypton.*\obj\*.cache&quot; /&gt;
-    &lt;NugetAssets Include=&quot;..\Source\Krypton Components\Krypton.*\obj\*.g.targets&quot; /&gt;
-    &lt;NugetAssets Include=&quot;..\Source\Krypton Components\Krypton.*\obj\*.g.props&quot; /&gt;
+    &lt;NugetAssets Include=&quot;..\..\Source\Krypton Components\Krypton.*\obj\*.json&quot; /&gt;
+    &lt;NugetAssets Include=&quot;..\..\Source\Krypton Components\Krypton.*\obj\*.cache&quot; /&gt;
+    &lt;NugetAssets Include=&quot;..\..\Source\Krypton Components\Krypton.*\obj\*.g.targets&quot; /&gt;
+    &lt;NugetAssets Include=&quot;..\..\Source\Krypton Components\Krypton.*\obj\*.g.props&quot; /&gt;
 &lt;/ItemGroup&gt;
 &lt;Delete Files=&quot;@(NugetAssets)&quot; /&gt;
 </code></pre>
@@ -290,13 +298,13 @@ Generates both Lite and full packages.</p>
 <li><strong>7-Zip</strong> (preferred): Fast, best compression</li>
 <li><strong>PowerShell Compress-Archive</strong>: Built-in Windows</li>
 </ol>
-<p>Example:</p>
+<p>Example (stable release; sources use <code>$(ReleaseSourcePath)</code> so archives follow the same root as binaries):</p>
 <pre><code class="lang-xml">&lt;!-- 7-Zip method --&gt;
-&lt;Exec Command=&quot;7z.exe a -tzip &amp;quot;$(ReleaseBuildPath)\$(ReleaseZipName)_$(StringDate).zip&amp;quot; &amp;quot;..\Bin\Release\*&amp;quot; -x!*.json -x!*.pdb&quot;
+&lt;Exec Command=&quot;7z.exe a -tzip &amp;quot;$(ReleaseBuildPath)\$(ReleaseZipName)_$(StringDate).zip&amp;quot; &amp;quot;$(ReleaseSourcePath)*&amp;quot; -x!*.json -x!*.pdb&quot;
       Condition=&quot;Exists('C:\Program Files\7-Zip\7z.exe')&quot; /&gt;
 
 &lt;!-- PowerShell fallback --&gt;
-&lt;Exec Command=&quot;powershell.exe -Command &amp;quot;Get-ChildItem '..\Bin\Release\*' -Recurse | Where-Object {$_.Extension -notin '.json','.pdb'} | Compress-Archive -DestinationPath '$(ReleaseBuildPath)\$(ReleaseZipName)_$(StringDate).zip' -Force&amp;quot;&quot;
+&lt;Exec Command=&quot;powershell.exe -Command &amp;quot;Get-ChildItem '$(ReleaseSourcePath)*' -Recurse | Where-Object {$_.Extension -notin '.json','.pdb'} | Compress-Archive -DestinationPath '$(ReleaseBuildPath)\$(ReleaseZipName)_$(StringDate).zip' -Force&amp;quot;&quot;
       Condition=&quot;!Exists('C:\Program Files\7-Zip\7z.exe')&quot; /&gt;
 </code></pre>
 <h3 id="targz-archives">TAR.GZ Archives</h3>
@@ -319,6 +327,9 @@ Generates both Lite and full packages.</p>
 <h3 id="override-tfms">Override TFMs</h3>
 <pre><code class="lang-cmd">msbuild build.proj /t:Build /p:TFMs=lite
 </code></pre>
+<h3 id="artifacts-output-layout-ci--optional-local">Artifacts output layout (CI / optional local)</h3>
+<pre><code class="lang-cmd">msbuild Scripts\Build\build.proj /t:Build /p:UseArtifactsOutput=true
+</code></pre>
 <h3 id="verbose-output">Verbose Output</h3>
 <pre><code class="lang-cmd">msbuild build.proj /t:Build /v:detailed
 </code></pre>
@@ -337,7 +348,7 @@ Generates both Lite and full packages.</p>
 </code></pre>
 <h3 id="3-test-packaging-locally-before-push">3. Test Packaging Locally Before Push</h3>
 <pre><code class="lang-cmd">msbuild build.proj /t:Pack
-# Verify packages in Bin/Packages/Release/
+REM Verify packages under artifacts/packages/Release/ or Bin/Packages/Release/ (depends on UseArtifactsOutput)
 msbuild build.proj /t:Push
 </code></pre>
 <h3 id="4-use-binary-logs-for-troubleshooting">4. Use Binary Logs for Troubleshooting</h3>

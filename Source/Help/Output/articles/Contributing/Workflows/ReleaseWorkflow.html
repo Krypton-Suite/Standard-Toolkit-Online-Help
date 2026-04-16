@@ -120,7 +120,7 @@
 <h3 id="job-1-release-master">Job 1: <code>release-master</code></h3>
 <p><strong>Condition</strong>: <code>github.ref == 'refs/heads/master' &amp;&amp; github.event_name == 'push'</code></p>
 <p><strong>Kill Switch</strong>: <code>RELEASE_DISABLED</code></p>
-<p><strong>Project File</strong>: <code>Scripts/build.proj</code></p>
+<p><strong>Project File</strong>: <code>Scripts/Build/build.proj</code></p>
 <p><strong>Configuration</strong>: <code>Release</code></p>
 <p><strong>Output Location</strong>: <code>Bin/Packages/Release/</code></p>
 <p><strong>Discord Webhook</strong>: <code>DISCORD_WEBHOOK_MASTER</code></p>
@@ -140,7 +140,7 @@
 <h3 id="job-2-release-v105-lts">Job 2: <code>release-v105-lts</code></h3>
 <p><strong>Condition</strong>: <code>github.ref == 'refs/heads/V105-LTS' &amp;&amp; github.event_name == 'push'</code></p>
 <p><strong>Kill Switch</strong>: <code>RELEASE_DISABLED</code></p>
-<p><strong>Project File</strong>: <code>Scripts/build.proj</code></p>
+<p><strong>Project File</strong>: <code>Scripts/Build/build.proj</code></p>
 <p><strong>Configuration</strong>: <code>Release</code></p>
 <p><strong>Output Location</strong>: <code>Bin/Packages/Release/</code></p>
 <p><strong>Discord Webhook</strong>: <code>DISCORD_WEBHOOK_MASTER</code></p>
@@ -150,11 +150,10 @@
 <p><strong>Discord Color</strong>: <code>77dd76</code> (green)</p>
 <p><strong>Changelog</strong>: <code>Documents/Changelog/Changelog.md</code> on V105-LTS branch</p>
 <p><strong>Note</strong>: Uses same webhook as master but different changelog location.</p>
-<p><a id="job-3-release-v85-lts"></a></p>
 <h3 id="job-3-release-v85-lts">Job 3: <code>release-v85-lts</code></h3>
 <p><strong>Condition</strong>: <code>github.ref == 'refs/heads/V85-LTS' &amp;&amp; github.event_name == 'push'</code></p>
 <p><strong>Kill Switch</strong>: <code>LTS_DISABLED</code></p>
-<p><strong>Project File</strong>: <code>Scripts/longtermstable.proj</code></p>
+<p><strong>Project File</strong>: <code>Scripts/Build/longtermstable.proj</code></p>
 <p><strong>Configuration</strong>: <code>Release</code></p>
 <p><strong>Output Location</strong>: <code>Bin/Packages/Release/</code></p>
 <p><strong>Discord Webhook</strong>: <code>DISCORD_WEBHOOK_LTS</code></p>
@@ -175,7 +174,7 @@
 <h3 id="job-4-release-canary">Job 4: <code>release-canary</code></h3>
 <p><strong>Condition</strong>: <code>github.ref == 'refs/heads/canary' &amp;&amp; github.event_name == 'push'</code></p>
 <p><strong>Kill Switch</strong>: <code>CANARY_DISABLED</code></p>
-<p><strong>Project File</strong>: <code>Scripts/canary.proj</code></p>
+<p><strong>Project File</strong>: <code>Scripts/Build/canary.proj</code></p>
 <p><strong>Configuration</strong>: <code>Canary</code></p>
 <p><strong>Output Location</strong>: <code>Bin/Packages/Canary/</code></p>
 <p><strong>Discord Webhook</strong>: <code>DISCORD_WEBHOOK_CANARY</code></p>
@@ -195,7 +194,7 @@
 <h3 id="job-5-release-alpha">Job 5: <code>release-alpha</code></h3>
 <p><strong>Condition</strong>: <code>github.ref == 'refs/heads/alpha' &amp;&amp; github.event_name == 'push'</code></p>
 <p><strong>Kill Switch</strong>: <code>NIGHTLY_DISABLED</code></p>
-<p><strong>Project File</strong>: <code>Scripts/nightly.proj</code></p>
+<p><strong>Project File</strong>: <code>Scripts/Build/nightly.proj</code></p>
 <p><strong>Configuration</strong>: <code>Nightly</code></p>
 <p><strong>Output Location</strong>: <code>Bin/Packages/Nightly/</code> (not published)</p>
 <p><strong>Discord Webhook</strong>: None (publishing handled by nightly.yml)</p>
@@ -270,12 +269,12 @@
 <tbody>
 <tr>
 <td>release-master</td>
-<td><code>Scripts/build.proj</code></td>
+<td><code>Scripts/Build/build.proj</code></td>
 <td>Standard release build</td>
 </tr>
 <tr>
 <td>release-v105-lts</td>
-<td><code>Scripts/build.proj</code></td>
+<td><code>Scripts/Build/build.proj</code></td>
 <td>Standard release build</td>
 </tr>
 <tr>
@@ -285,12 +284,12 @@
 </tr>
 <tr>
 <td>release-canary</td>
-<td><code>Scripts/canary.proj</code></td>
+<td><code>Scripts/Build/canary.proj</code></td>
 <td>Canary-specific build</td>
 </tr>
 <tr>
 <td>release-alpha</td>
-<td><code>Scripts/nightly.proj</code></td>
+<td><code>Scripts/Build/nightly.proj</code></td>
 <td>Nightly/alpha build</td>
 </tr>
 </tbody>
@@ -486,7 +485,6 @@
 <h3 id="wrong-project-file-used">Wrong Project File Used</h3>
 <p><strong>Issue</strong>: Job uses incorrect project file</p>
 <p><strong>Solution</strong>: Verify job condition matches intended branch and update project file reference if needed</p>
-<p><a id="usage-examples"></a></p>
 <h2 id="usage-examples">Usage Examples</h2>
 <ul>
 <li><strong>Create a Stable Release</strong>: Push to <code>master</code>; the release-master job builds, packs, and publishes to NuGet.</li>
@@ -558,7 +556,7 @@
 <li><strong>Documentation</strong>: Update this file when making changes</li>
 </ol>
 <h2 id="workflow-flow-diagram">Workflow Flow Diagram</h2>
-<pre><code>Push to Release Branch
+<pre><code class="lang-text">Push to Release Branch
     │
     ├─&gt; Determine Branch Type
     │   ├─&gt; master → release-master
@@ -609,7 +607,7 @@
 <td>Stable</td>
 <td>master</td>
 <td>RELEASE_DISABLED</td>
-<td>build.proj</td>
+<td>Scripts/Build/build.proj</td>
 <td>Release</td>
 <td>MASTER</td>
 <td>v{version}</td>
@@ -618,7 +616,7 @@
 <td>LTS v105</td>
 <td>V105-LTS</td>
 <td>RELEASE_DISABLED</td>
-<td>build.proj</td>
+<td>Scripts/Build/build.proj</td>
 <td>Release</td>
 <td>MASTER</td>
 <td>v{version}</td>
@@ -636,7 +634,7 @@
 <td>Canary</td>
 <td>canary</td>
 <td>CANARY_DISABLED</td>
-<td>canary.proj</td>
+<td>Scripts/Build/canary.proj</td>
 <td>Canary</td>
 <td>CANARY</td>
 <td>v{version}-canary</td>
@@ -645,7 +643,7 @@
 <td>Alpha</td>
 <td>alpha</td>
 <td>NIGHTLY_DISABLED</td>
-<td>nightly.proj</td>
+<td>Scripts/Build/nightly.proj</td>
 <td>Nightly</td>
 <td>None</td>
 <td>N/A</td>

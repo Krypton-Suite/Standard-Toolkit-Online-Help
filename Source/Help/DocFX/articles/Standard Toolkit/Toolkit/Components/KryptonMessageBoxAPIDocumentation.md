@@ -1,6 +1,7 @@
 # KryptonMessageBox API Documentation
 
 ## Table of Contents
+
 1. [Overview](#overview)
 2. [Basic Usage](#basic-usage)
 3. [Method Overloads](#method-overloads)
@@ -159,6 +160,7 @@ public enum KryptonMessageBoxButtons
 ```
 
 **Usage:**
+
 ```csharp
 // Different button combinations
 KryptonMessageBox.Show("Save changes?", "Save", KryptonMessageBoxButtons.YesNo);
@@ -182,6 +184,7 @@ public enum KryptonMessageBoxIcon
 ```
 
 **Usage:**
+
 ```csharp
 // Different icon types
 KryptonMessageBox.Show("File saved successfully", "Success", KryptonMessageBoxButtons.OK, KryptonMessageBoxIcon.Information);
@@ -203,6 +206,7 @@ public enum KryptonMessageBoxDefaultButton
 ```
 
 **Usage:**
+
 ```csharp
 // Set default button
 KryptonMessageBox.Show("Delete file?", "Delete", KryptonMessageBoxButtons.YesNo, 

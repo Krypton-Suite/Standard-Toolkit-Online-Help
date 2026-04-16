@@ -22,6 +22,7 @@ public KryptonForm()
 ```
 
 **Remarks:**
+
 - Sets default properties including header style, title alignment, and double buffering
 - Creates button specification collections for form control buttons (Min, Max, Close)
 - Initializes palette storage for active, inactive, and common states
@@ -107,6 +108,7 @@ public HeaderStyle HeaderStyle { get; set; }
 ```
 
 **Possible Values:**
+
 - `HeaderStyle.Form` - Standard form header style
 - `HeaderStyle.Primary` - Primary header style
 - `HeaderStyle.Secondary` - Secondary header style
@@ -128,6 +130,7 @@ public PaletteRelativeAlign FormTitleAlign { get; set; }
 ```
 
 **Possible Values:**
+
 - `PaletteRelativeAlign.Near` - Left-aligned
 - `PaletteRelativeAlign.Center` - Center-aligned
 - `PaletteRelativeAlign.Far` - Right-aligned
@@ -144,6 +147,7 @@ public KryptonFormTitleStyle TitleStyle { get; set; }
 ```
 
 **Possible Values:**
+
 - `KryptonFormTitleStyle.Inherit` - Use palette default
 - `KryptonFormTitleStyle.Classic` - Classic left-aligned title
 - `KryptonFormTitleStyle.Modern` - Modern center-aligned title
@@ -413,6 +417,7 @@ public void InjectViewElement(ViewBase element, ViewDockStyle style)
 ```
 
 **Parameters:**
+
 - `element` - Reference to view element to inject
 - `style` - Docking style of the element
 
@@ -428,6 +433,7 @@ public void RevokeViewElement(ViewBase element, ViewDockStyle style)
 ```
 
 **Parameters:**
+
 - `element` - Reference to view element to remove
 - `style` - Docking style of the element
 
@@ -451,6 +457,7 @@ public void UpdateDropShadowDraw(bool useDropShadow)
 ```
 
 **Parameters:**
+
 - `useDropShadow` - Whether to enable drop shadow
 
 **Remarks:** This method is obsolete and only relevant for Windows 7, 8, and 8.1.
@@ -466,6 +473,7 @@ public bool HitTestMinButton(Point pt)
 ```
 
 **Parameters:**
+
 - `pt` - Window-relative point to test
 
 **Returns:** `true` if inside the button; otherwise `false`
@@ -479,6 +487,7 @@ public bool HitTestMaxButton(Point pt)
 ```
 
 **Parameters:**
+
 - `pt` - Window-relative point to test
 
 **Returns:** `true` if inside the button; otherwise `false`
@@ -492,6 +501,7 @@ public bool HitTestCloseButton(Point pt)
 ```
 
 **Parameters:**
+
 - `pt` - Window-relative point to test
 
 **Returns:** `true` if inside the button; otherwise `false`
@@ -517,6 +527,7 @@ public static void SetIsInAdministratorMode(bool value)
 ```
 
 **Parameters:**
+
 - `value` - Administrator mode state
 
 #### GetIsInAdministratorMode()
@@ -540,6 +551,7 @@ public Image? GetImage(PaletteState state)
 ```
 
 **Parameters:**
+
 - `state` - Form state
 
 **Returns:** Image for the title bar icon
@@ -553,6 +565,7 @@ public Color GetImageTransparentColor(PaletteState state)
 ```
 
 **Parameters:**
+
 - `state` - Form state
 
 **Returns:** Transparent color (always returns `GlobalStaticValues.EMPTY_COLOR`)
@@ -674,6 +687,7 @@ protected override void WndProc(ref Message m)
 ```
 
 **Remarks:** Handles custom system menu behavior including:
+
 - Right-click in non-client area
 - Help button (F1)
 - Context menu requests
@@ -715,6 +729,7 @@ protected override IntPtr WindowChromeHitTest(Point pt)
 ```
 
 **Parameters:**
+
 - `pt` - Point in window coordinates
 
 **Returns:** Hit test result code
@@ -728,6 +743,7 @@ protected override void WindowChromePaint(Graphics g, Rectangle bounds)
 ```
 
 **Parameters:**
+
 - `g` - Graphics instance to use for drawing
 - `bounds` - Bounds enclosing the window chrome
 
@@ -740,6 +756,7 @@ protected override bool OnWM_NCLBUTTONDOWN(ref Message m)
 ```
 
 **Parameters:**
+
 - `m` - A Windows-based message
 
 **Returns:** `true` if the message was processed; otherwise `false`
@@ -755,6 +772,7 @@ protected override bool WindowChromeLeftMouseDown(Point windowPoint)
 ```
 
 **Parameters:**
+
 - `windowPoint` - Window coordinate of the mouse down
 
 **Returns:** `true` if event is processed; otherwise `false`
@@ -778,6 +796,7 @@ protected override bool IsInTitleBarArea(Point screenPoint)
 ```
 
 **Parameters:**
+
 - `screenPoint` - The screen coordinates to test
 
 **Returns:** `true` if the point is in the title bar area; otherwise `false`
@@ -791,6 +810,7 @@ protected override bool IsOnControlButtons(Point screenPoint)
 ```
 
 **Parameters:**
+
 - `screenPoint` - The screen coordinates to test
 
 **Returns:** `true` if the point is over control buttons; otherwise `false`
@@ -804,6 +824,7 @@ protected override void ShowSystemMenu(Point screenLocation)
 ```
 
 **Parameters:**
+
 - `screenLocation` - The screen coordinates where the menu should appear
 
 #### ShowSystemMenuAtFormTopLeft()
@@ -823,6 +844,7 @@ protected override bool HandleSystemMenuKeyboardShortcut(Keys keyData)
 ```
 
 **Parameters:**
+
 - `keyData` - The key data to process
 
 **Returns:** `true` if the shortcut was handled; otherwise `false`
@@ -836,6 +858,7 @@ protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 ```
 
 **Parameters:**
+
 - `msg` - A Message, passed by reference, that represents the Win32 message to process
 - `keyData` - One of the Keys values that represents the key to process
 
@@ -854,6 +877,7 @@ public class FormButtonSpecCollection : ButtonSpecCollection<ButtonSpecAny>
 ```
 
 **Constructor:**
+
 ```csharp
 public FormButtonSpecCollection(KryptonForm owner)
 ```
@@ -867,6 +891,7 @@ public class FormFixedButtonSpecCollection : ButtonSpecCollection<ButtonSpecForm
 ```
 
 **Constructor:**
+
 ```csharp
 public FormFixedButtonSpecCollection(KryptonForm owner)
 ```

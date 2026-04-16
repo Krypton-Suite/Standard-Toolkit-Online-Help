@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonAdvancedDataGridView | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonAdvancedDataGridView | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonadvanceddatagridview">KryptonAdvancedDataGridView</h1>
+
+<p>This document describes <strong>KryptonAdvancedDataGridView</strong>, a WinForms grid control in <strong>Krypton.Utilities</strong> that extends <strong>Krypton.Toolkit</strong>’s <code>KryptonDataGridView</code> with Excel-style per-column filtering, multi-column sort composition, optional search UI integration, and localization.</p>
+<p><strong>Primary type:</strong> <code>Krypton.Utilities.KryptonAdvancedDataGridView</code><br>
+<strong>Source:</strong> <code>Source/Krypton Components/Krypton.Utilities/Components/KryptonAdvancedDataGridView/Controls Toolkit/KryptonAdvancedDataGridView.cs</code></p>
+<hr>
+<h2 id="1-purpose-and-positioning">1. Purpose and positioning</h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Base class</strong></td>
+<td><code>KryptonDataGridView</code> → <code>System.Windows.Forms.DataGridView</code></td>
+</tr>
+<tr>
+<td><strong>Assembly</strong></td>
+<td><code>Krypton.Utilities</code> (project reference to <code>Krypton.Toolkit</code>)</td>
+</tr>
+<tr>
+<td><strong>Designer</strong></td>
+<td><code>[DesignerCategory(&quot;code&quot;)]</code> — typical WinForms usage: drop on form or compose in code</td>
+</tr>
+<tr>
+<td><strong>Column headers</strong></td>
+<td>Every column added at runtime gets a custom header cell (<code>KryptonColumnHeaderCell</code>, <strong>internal</strong>) with a filter/sort drop-down button</td>
+</tr>
+</tbody>
+</table>
+<p>The control is intended for <strong>data-bound</strong> scenarios where you can apply <strong>ADO.NET–style filter and sort expressions</strong> to the underlying list. It does not replace server-side querying; it composes <code>Filter</code> / <code>Sort</code> strings and applies them to compatible data sources.</p>
+<hr>
+<h2 id="2-end-user-features-what-the-control-provides">2. End-user features (what the control provides)</h2>
+<h3 id="21-column-header-ui">2.1 Column header UI</h3>
+<ul>
+<li><strong>Filter glyph</strong> on each column header. Columns whose <code>ValueType</code> is <code>Bitmap</code> omit the drop-down by default; set <strong><code>FilterAndSortOnBitmapColumns</code></strong> to <code>true</code> to show it.</li>
+<li><strong>Sort</strong> via the header menu: ascending / descending, plus clear sort.</li>
+<li><strong>Filter</strong> via:
+<ul>
+<li><strong>Checklist filter</strong> — tree of distinct values (with text search, select all, blanks, true/false for booleans, etc.).</li>
+<li><strong>Custom filter</strong> — expression builder (backed by <code>VisualCustomFilterForm</code> and type-specific operators).</li>
+<li><strong>Clear filter</strong> for the column.</li>
+</ul>
+</li>
+<li><strong>Header icons</strong> reflect state: unfiltered, filtered only, sorted only, filtered + sorted, and “loaded” preset (saved filters) where applicable.</li>
+</ul>
+<h3 id="22-multi-column-logic">2.2 Multi-column logic</h3>
+<ul>
+<li><strong>Filters</strong> on multiple columns are combined with <strong><code>AND</code></strong>, in the <strong>order the user applied</strong> them (tracked internally as a filter order list).</li>
+<li><strong>Sort</strong> on multiple columns is combined with <strong>comma-separated</strong> expressions (multi-sort order is tracked similarly).</li>
+</ul>
+<h3 id="23-performance-and-checklist-tuning">2.3 Performance and checklist tuning</h3>
+<p>Large distinct-value lists can be expensive. The implementation (via the internal <code>MenuStrip</code>) supports:</p>
+<ul>
+<li><strong>Maximum checklist nodes</strong> (global or per column).</li>
+<li><strong>Deferred text filtering</strong> in the checklist search box (threshold node count + delay in milliseconds).</li>
+<li><strong>Optional “remove nodes on search”</strong> behavior for the checklist text filter.</li>
+</ul>
+<h3 id="24-optional-not-in-checklist-semantics">2.4 Optional “NOT IN” checklist semantics</h3>
+<p><code>SetMenuStripFilterNotInLogic(bool)</code> toggles logic used for checklist filtering when enabled (applied to all filterable header cells).</p>
+<h3 id="25-search-toolbar-separate-control">2.5 Search toolbar (separate control)</h3>
+<p><code>KryptonAdvancedDataGridViewSearchToolBar</code> is a <code>ToolStrip</code> that raises a <strong><code>Search</code></strong> event. Host code typically calls <code>FindCell</code> on the grid to locate the next match. This is optional and not required for filtering/sorting.</p>
+<hr>
+<h2 id="3-data-binding-requirements-critical">3. Data binding requirements (critical)</h2>
+<p>The grid applies filter and sort by updating the <strong>data source</strong>, not by hiding rows only in the grid.</p>
+<h3 id="31-sort-sortstring">3.1 Sort (<code>SortString</code>)</h3>
+<p>When sort changes, the control sets the <strong>first matching</strong> property:</p>
+<ol>
+<li><strong><code>BindingSource.Sort</code></strong> — if <code>DataSource</code> is a <code>BindingSource</code>.</li>
+<li><strong><code>DataView.Sort</code></strong> — if <code>DataSource</code> is a <code>DataView</code>.</li>
+<li><strong><code>DataTable.DefaultView.Sort</code></strong> — if <code>DataSource</code> is a <code>DataTable</code> (and <code>DefaultView</code> is not null).</li>
+</ol>
+<p>For other list types (for example <code>IList</code> / <code>IBindingList</code> without a <code>BindingSource</code> wrapper), sort is <strong>not</strong> applied automatically; use a <strong><code>BindingSource</code></strong> or handle <strong><code>SortStringChanged</code></strong> yourself.</p>
+<h3 id="32-filter-filterstring">3.2 Filter (<code>FilterString</code>)</h3>
+<p>When filter changes, the control applies the composed filter string to the <strong>first matching</strong> type:</p>
+<ol>
+<li><strong><code>BindingSource</code></strong> → <code>Filter</code> property</li>
+<li><strong><code>DataView</code></strong> → <code>RowFilter</code></li>
+<li><strong><code>DataTable</code></strong> → <code>DefaultView.RowFilter</code> (when <code>DefaultView</code> is not null)</li>
+</ol>
+<p><strong>Implications:</strong></p>
+<ul>
+<li>Filter expressions must be valid for the target type (see <a href="https://learn.microsoft.com/dotnet/api/system.data.dataview.rowfilter">DataView.RowFilter syntax</a>).</li>
+<li>Column names in expressions use the bound field: internally, per-column fragments are formatted with <strong><code>DataGridViewColumn.DataPropertyName</code></strong> (see <code>BuildFilterString</code> / <code>BuildSortString</code> in the source).</li>
+</ul>
+<h3 id="33-canceling-data-source-updates">3.3 Canceling data-source updates</h3>
+<p><code>SortStringChanged</code> and <code>FilterStringChanged</code> expose event args with <strong><code>Cancel</code></strong>. If a handler sets <code>Cancel = true</code>, the control <strong>skips</strong> assigning <code>Sort</code> / <code>Filter</code> / <code>RowFilter</code> for that update. You can use this to drive custom data loading or veto invalid states.</p>
+<h3 id="34-event-ordering-vs-data-source">3.4 Event ordering vs. data source</h3>
+<p>Properties (not serialized by the designer):</p>
+<ul>
+<li><strong><code>SortStringChangedInvokeBeforeDatasourceUpdate</code></strong> (default <code>true</code>)</li>
+<li><strong><code>FilterStringChangedInvokeBeforeDatasourceUpdate</code></strong> (default <code>true</code>)</li>
+</ul>
+<p>When <code>true</code>, the event runs <strong>before</strong> the data source is updated; when <code>false</code>, the event runs <strong>after</strong>. Adjust if handlers need to see the old vs. new binding state.</p>
+<hr>
+<h2 id="4-public-api--kryptonadvanceddatagridview">4. Public API — <code>KryptonAdvancedDataGridView</code></h2>
+<h3 id="41-nested-event-argument-types">4.1 Nested event argument types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Members</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>SortEventArgs</code></strong></td>
+<td><code>SortString</code>, <code>Cancel</code></td>
+<td>Raised when composed sort changes</td>
+</tr>
+<tr>
+<td><strong><code>FilterEventArgs</code></strong></td>
+<td><code>FilterString</code>, <code>Cancel</code></td>
+<td>Raised when composed filter changes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-events">4.2 Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Signature</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>SortStringChanged</code></strong></td>
+<td><code>EventHandler&lt;SortEventArgs&gt;</code></td>
+<td>Fired when aggregate sort string changes</td>
+</tr>
+<tr>
+<td><strong><code>FilterStringChanged</code></strong></td>
+<td><code>EventHandler&lt;FilterEventArgs&gt;</code></td>
+<td>Fired when aggregate filter string changes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-properties">4.3 Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>SortString</code></strong></td>
+<td>Read-only to consumers (private setter). Composed sort expression (e.g. for <code>BindingSource.Sort</code>). Hidden from designer serialization.</td>
+</tr>
+<tr>
+<td><strong><code>FilterString</code></strong></td>
+<td>Same pattern; composed filter expression.</td>
+</tr>
+<tr>
+<td><strong><code>FilterAndSortEnabled</code></strong></td>
+<td>Master switch for new/changed columns defaulting to filter+sort enabled; also used when enabling columns. Hidden from designer serialization.</td>
+</tr>
+<tr>
+<td><strong><code>FilterAndSortOnBitmapColumns</code></strong></td>
+<td>When <code>true</code>, draws the header filter/sort control on <code>Bitmap</code> columns (default <code>false</code>). Hidden from designer serialization.</td>
+</tr>
+<tr>
+<td><strong><code>SortStringChangedInvokeBeforeDatasourceUpdate</code></strong></td>
+<td>Controls event timing relative to applying sort to the data source.</td>
+</tr>
+<tr>
+<td><strong><code>FilterStringChangedInvokeBeforeDatasourceUpdate</code></strong></td>
+<td>Same for filter.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-static-localization">4.4 Static localization</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>Translations</code></strong></td>
+<td><code>Dictionary&lt;string, string&gt;</code> — keys are <code>nameof(TranslationKey.…)</code> entries; values are English defaults. Used by header menus and custom filter UI.</td>
+</tr>
+<tr>
+<td><strong><code>SetTranslations(IDictionary&lt;string, string&gt;?)</code></strong></td>
+<td>Merge overrides into existing keys (unknown keys ignored).</td>
+</tr>
+<tr>
+<td><strong><code>GetTranslations()</code></strong></td>
+<td>Returns the live dictionary.</td>
+</tr>
+<tr>
+<td><strong><code>LoadTranslationsFromFile(string filename)</code></strong></td>
+<td>Loads JSON object map of string→string; merges with known keys; fills missing keys from defaults. Uses <code>JavaScriptSerializer</code> on <strong>.NET Framework</strong> and <code>System.Text.Json</code> on <strong>modern .NET</strong>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Translation keys</strong> are enumerated in <strong><code>TranslationKey</code></strong> (<code>General/Definitions.cs</code>), including filter/sort menu text, operator labels, checklist labels, and <strong>search toolbar</strong> strings (keys prefixed with <code>ADGVSTB…</code>).</p>
+<h3 id="45-filter--sort-control-column-scoped-and-global">4.5 Filter / sort control (column-scoped and global)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>EnableFilterAndSort(DataGridViewColumn)</code></strong> / <strong><code>DisableFilterAndSort(DataGridViewColumn)</code></strong> / <strong><code>SetFilterAndSortEnabled(column, enabled)</code></strong></td>
+<td>Turn per-column header features on/off; may clear grid filter when disabling active column.</td>
+</tr>
+<tr>
+<td><strong><code>SetSortEnabled(column, enabled)</code></strong></td>
+<td>Enable/disable sort UI for a column.</td>
+</tr>
+<tr>
+<td><strong><code>SetFilterEnabled(column, enabled)</code></strong></td>
+<td>Enable/disable filtering for a column.</td>
+</tr>
+<tr>
+<td><strong><code>SetFilterDateAndTimeEnabled(column, enabled)</code></strong></td>
+<td>Toggle date/time specific filter behavior (menu side).</td>
+</tr>
+<tr>
+<td><strong><code>SetFilterChecklistEnabled</code> / <code>Enable</code> / <code>Disable</code></strong></td>
+<td>Checklist section on/off.</td>
+</tr>
+<tr>
+<td><strong><code>SetFilterCustomEnabled</code> / <code>Enable</code> / <code>Disable</code></strong></td>
+<td>Custom filter entry on/off.</td>
+</tr>
+<tr>
+<td><strong><code>SetFilterChecklistNodesMax(column, max)</code></strong> / <strong><code>SetFilterChecklistNodesMax(max)</code></strong></td>
+<td>Cap checklist size (all columns).</td>
+</tr>
+<tr>
+<td><strong><code>EnabledFilterChecklistNodesMax</code> (column/global)</strong></td>
+<td>Enable or disable the max-node cap behavior.</td>
+</tr>
+<tr>
+<td><strong><code>SetFilterChecklistTextFilterTextChangedDelayNodes</code></strong> (column/global)</td>
+<td>Node count threshold before text-change debouncing applies.</td>
+</tr>
+<tr>
+<td><strong><code>SetFilterChecklistTextFilterTextChangedDelayMs</code></strong> (column/global)</td>
+<td>Debounce interval.</td>
+</tr>
+<tr>
+<td><strong><code>SetFilterChecklistTextFilterTextChangedDelayDisabled</code></strong> (column/global)</td>
+<td>Disable debouncing behavior.</td>
+</tr>
+<tr>
+<td><strong><code>SetChecklistTextFilterRemoveNodesOnSearchMode</code></strong></td>
+<td>Checklist search removes non-matching nodes mode.</td>
+</tr>
+<tr>
+<td><strong><code>SetTextFilterRemoveNodesOnSearch</code> / <code>GetTextFilterRemoveNodesOnSearch</code></strong></td>
+<td>Broader text-filter node behavior for a column.</td>
+</tr>
+<tr>
+<td><strong><code>SetMenuStripFilterNotInLogic(bool)</code></strong></td>
+<td>NOT IN style checklist logic for all columns.</td>
+</tr>
+<tr>
+<td><strong><code>CleanFilter(column)</code> / <code>CleanFilter(column, fireEvent)</code></strong></td>
+<td>Clear one column’s filter; optionally raise aggregate filter event.</td>
+</tr>
+<tr>
+<td><strong><code>CleanFilter()</code> / <code>CleanFilter(bool fireEvent)</code></strong></td>
+<td>Clear all column filters.</td>
+</tr>
+<tr>
+<td><strong><code>CleanSort(column)</code> / <code>CleanSort(column, fireEvent)</code></strong></td>
+<td>Clear one column’s sort.</td>
+</tr>
+<tr>
+<td><strong><code>CleanSort()</code> / <code>CleanSort(bool fireEvent)</code></strong></td>
+<td>Clear all sorts.</td>
+</tr>
+<tr>
+<td><strong><code>CleanFilterAndSort()</code></strong></td>
+<td>Full reset of loaded mode, order lists, filter and sort.</td>
+</tr>
+<tr>
+<td><strong><code>LoadFilterAndSort(string? filter, string? sorting)</code></strong></td>
+<td>Apply preset filter/sort strings; puts header cells in <strong>loaded</strong> mode until user changes state.</td>
+</tr>
+<tr>
+<td><strong><code>SortAscending(column)</code> / <code>SortDescending(column)</code></strong></td>
+<td>Programmatic sort from code.</td>
+</tr>
+<tr>
+<td><strong><code>TriggerSortStringChanged()</code></strong> / <strong><code>TriggerFilterStringChanged()</code></strong></td>
+<td>Re-run event + data-source application for current strings.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="46-find--menu">4.6 Find / menu</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>FindCell(valueToFind, columnName, rowIndex, columnIndex, isWholeWordSearch, isCaseSensitive)</code></strong></td>
+<td>Returns next <code>DataGridViewCell</code> matching text in formatted display value; <code>columnName</code> null searches all visible columns.</td>
+</tr>
+<tr>
+<td><strong><code>ShowMenuStrip(DataGridViewColumn)</code></strong></td>
+<td>Programmatically open the column’s filter/sort drop-down.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="47-misc">4.7 Misc</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>SetDoubleBuffered()</code></strong></td>
+<td>Sets <code>DoubleBuffered = true</code> to reduce flicker.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-lifecycle-and-internal-behavior-integration-notes">5. Lifecycle and internal behavior (integration notes)</h2>
+<h3 id="51-column-addremove">5.1 Column add/remove</h3>
+<ul>
+<li><strong><code>OnColumnAdded</code></strong>: Forces <code>SortMode = Programmatic</code>, replaces header with <code>KryptonColumnHeaderCell</code>, wires <strong>SortChanged</strong>, <strong>FilterChanged</strong>, <strong>FilterPopup</strong>, adjusts <code>MinimumWidth</code> / <code>ColumnHeadersHeight</code>.</li>
+<li><strong><code>OnColumnRemoved</code></strong>: Unsubscribes events, cleans menu state; may <strong>defer disposal</strong> of <code>MenuStrip</code> for data-bound columns until handle destroyed or data source changes (avoids leaks during rebinding).</li>
+</ul>
+<h3 id="52-rows-and-cell-edits">5.2 Rows and cell edits</h3>
+<ul>
+<li><strong><code>OnRowsAdded</code> / <code>OnRowsRemoved</code></strong>: Clears internal <strong><code>_filteredColumns</code></strong> cache when row index is valid (distinct values for filters may need refresh).</li>
+<li><strong><code>OnCellValueChanged</code></strong>: Removes that column from <strong><code>_filteredColumns</code></strong> so checklist refresh behavior can update.</li>
+</ul>
+<h3 id="53-cleanup">5.3 Cleanup</h3>
+<ul>
+<li><strong><code>OnHandleDestroyed</code></strong>: Unhooks all header cell handlers and disposes any queued menu strips.</li>
+</ul>
+<hr>
+<h2 id="6-companion-types">6. Companion types</h2>
+<h3 id="61-kryptonadvanceddatagridviewsearchtoolbar">6.1 <code>KryptonAdvancedDataGridViewSearchToolBar</code></h3>
+<ul>
+<li><strong>Inherits:</strong> <code>System.Windows.Forms.ToolStrip</code></li>
+<li><strong>Event:</strong> <code>Search</code> — <code>AdvancedDataGridViewSearchToolBarSearchEventHandler</code></li>
+<li><strong>Event args:</strong> <code>AdvancedDataGridViewSearchToolBarSearchEventArgs</code>
+<ul>
+<li><code>ValueToSearch</code>, <code>ColumnToSearch</code>, <code>CaseSensitive</code>, <code>WholeWord</code>, <code>FromBegin</code></li>
+</ul>
+</li>
+<li><strong><code>SetColumns(DataGridViewColumnCollection)</code></strong> — populates the column combo; item 0 is “all columns” (localized).</li>
+<li><strong>Translations:</strong> separate static <code>Translations</code> / <code>SetTranslations</code> / <code>LoadTranslationsFromFile</code> (same JSON pattern as the grid).</li>
+<li><strong>Close button:</strong> designer constant <code>BUTTON_CLOSE_ENABLED = false</code> removes the close item in the constructor; toolbar uses <code>ToolStripRenderMode.ManagerRenderMode</code>.</li>
+</ul>
+<h3 id="62-filtertype-in-kryptonutilities">6.2 <code>FilterType</code> (in <code>Krypton.Utilities</code>)</h3>
+<p>Public enum in <strong><code>General/Definitions.cs</code></strong> describes <strong>value categories</strong> for filter logic (<code>DateTime</code>, <code>String</code>, <code>Integer</code>, etc.). This is <strong>not</strong> the same as the internal <strong><code>MenuStrip.FilterType</code></strong> (<code>None</code>, <code>Custom</code>, <code>CheckList</code>, <code>Loaded</code>), which describes <strong>which filter mode</strong> is active on a column.</p>
+<h3 id="63-internal-implementation-not-public-api">6.3 Internal implementation (not public API)</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>KryptonColumnHeaderCell</code></strong></td>
+<td>Header painting, filter button hit-test, forwards to <code>MenuStrip</code>.</td>
+</tr>
+<tr>
+<td><strong><code>MenuStrip</code></strong> (<code>ContextMenuStrip</code>)</td>
+<td>Sort/filter UI, checklist, custom filter launch, expression building.</td>
+</tr>
+<tr>
+<td><strong><code>VisualCustomFilterForm</code></strong></td>
+<td>Custom filter dialog.</td>
+</tr>
+<tr>
+<td><strong><code>TreeNodeItemSelector</code></strong></td>
+<td>Checklist node model.</td>
+</tr>
+<tr>
+<td><strong><code>ColumnHeaderCellEventArgs</code></strong></td>
+<td>Internal; carries <code>MenuStrip</code> + <code>Column</code> for header events.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-typical-usage-patterns">7. Typical usage patterns</h2>
+<h3 id="71-minimal-data-bound-setup">7.1 Minimal data-bound setup</h3>
+<pre><code class="lang-csharp">var grid = new KryptonAdvancedDataGridView();
+grid.SetDoubleBuffered();
+
+var table = new DataTable();
+// ... columns and rows ...
+
+var bs = new BindingSource { DataSource = table };
+grid.DataSource = bs;
+</code></pre>
+<p>Use <strong><code>BindingSource</code></strong> if you need <strong><code>SortString</code></strong> applied automatically.</p>
+<h3 id="72-handling-sortfilter-changes">7.2 Handling sort/filter changes</h3>
+<pre><code class="lang-csharp">grid.SortStringChanged += (s, e) =&gt;
+{
+    if (ShouldVeto(e.SortString))
+        e.Cancel = true;
+};
+
+grid.FilterStringChanged += (s, e) =&gt;
+{
+    Debug.WriteLine(e.FilterString);
+};
+</code></pre>
+<h3 id="73-saving-and-restoring-layout">7.3 Saving and restoring layout</h3>
+<p>Persist <strong><code>FilterString</code></strong> and <strong><code>SortString</code></strong> (and any UX state your app needs). Restore with:</p>
+<pre><code class="lang-csharp">grid.LoadFilterAndSort(savedFilter, savedSort);
+</code></pre>
+<p>Use <strong><code>CleanFilterAndSort()</code></strong> to reset before applying a new preset or clearing user state.</p>
+<h3 id="74-search-toolbar--find">7.4 Search toolbar + find</h3>
+<pre><code class="lang-csharp">var toolBar = new KryptonAdvancedDataGridViewSearchToolBar();
+toolBar.SetColumns(grid.Columns);
+
+DataGridViewCell? lastMatch = null;
+
+toolBar.Search += (s, e) =&gt;
+{
+    int row = lastMatch?.RowIndex ?? 0;
+    int col = lastMatch?.ColumnIndex ?? 0;
+    var found = grid.FindCell(
+        e.ValueToSearch,
+        e.ColumnToSearch?.Name,
+        row,
+        col,
+        e.WholeWord,
+        e.CaseSensitive);
+
+    if (found != null)
+    {
+        grid.ClearSelection();
+        grid.CurrentCell = found;
+        found.Selected = true;
+        lastMatch = found;
+    }
+};
+</code></pre>
+<p>Adjust indices for <strong>“find next”</strong> vs <strong>“search from beginning”</strong> using <code>FromBegin</code> on the event args.</p>
+<hr>
+<h2 id="8-localization-checklist">8. Localization checklist</h2>
+<ol>
+<li>Copy keys from <code>KryptonAdvancedDataGridView.Translations</code> (and search toolbar keys if used).</li>
+<li>Provide a JSON map: <code>{ &quot;KryptonAdvancedDataGridViewSortTextAscending&quot;: &quot;...&quot; }</code>.</li>
+<li>Call <strong><code>SetTranslations(LoadTranslationsFromFile(&quot;path&quot;))</code></strong> or merge with <strong><code>SetTranslations</code></strong> at startup.</li>
+<li>For the search toolbar, also update <strong><code>KryptonAdvancedDataGridViewSearchToolBar.Translations</code></strong> (or load a combined JSON that contains both sets of keys).</li>
+</ol>
+<hr>
+<h2 id="9-limitations-and-caveats">9. Limitations and caveats</h2>
+<ul>
+<li><strong>Sort</strong> is auto-applied for <strong><code>BindingSource</code></strong>, <strong><code>DataView</code></strong>, and <strong><code>DataTable</code></strong> (via <code>DefaultView</code>) only. Other <code>DataSource</code> types still require a wrapper or a <strong><code>SortStringChanged</code></strong> handler.</li>
+<li><strong>Filter and sort expressions</strong> use <strong>ADO.NET DataView</strong> syntax and <strong><code>DataGridViewColumn.DataPropertyName</code></strong> in composed fragments — that is by design, not a bug.</li>
+<li><strong>Unbound</strong> columns or unusual <strong><code>ValueType</code></strong> / <strong><code>DataPropertyName</code></strong> setups may still need <strong><code>EnableFilterAndSort</code></strong>, <strong><code>SetFilterEnabled</code></strong>, or <strong><code>SetSortEnabled</code></strong> so expressions match your underlying data.</li>
+<li><strong><code>FilterAndSortOnBitmapColumns</code></strong> can enable the header UI on image columns; filtering/sorting by image values remains limited by what the data layer can express.</li>
+<li>Internal header/menu types remain <strong>non-public</strong> to keep the API surface small; extend via public members, <strong><code>SortStringChanged</code></strong> / <strong><code>FilterStringChanged</code></strong>, and <strong><code>SetTranslations</code></strong>, or fork if you need deep customization.</li>
+</ul>
+<hr>
+<p><em>This guide matches the implementation in the Krypton Standard-Toolkit repository as of the branch that introduced <code>KryptonAdvancedDataGridView</code>. For behavioral details always refer to the source files cited above.</em></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

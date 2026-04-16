@@ -81,7 +81,7 @@
 <tbody>
 <tr>
 <td>Triggers</td>
-<td><code>pull_request</code> (all branches) for open/sync/reopen events, <code>push</code> to <code>master</code>, <code>alpha</code>, <code>canary</code>, <code>gold</code>, <code>V105-LTS</code>, <code>V85-LTS</code></td>
+<td><code>pull_request</code> (all branches) for open/sync/reopen events, <code>push</code> to <code>master</code>, <code>alpha</code>, <code>canary</code>, <code>gold</code>, <code>V105-LTS</code></td>
 </tr>
 <tr>
 <td>Jobs</td>
@@ -89,7 +89,7 @@
 </tr>
 <tr>
 <td>Hosted Images</td>
-<td><code>windows-latest</code> (build), <code>windows-latest</code> (release)</td>
+<td><code>windows-2025-vs2026</code> (build and release jobs)</td>
 </tr>
 <tr>
 <td>Toolchains</td>
@@ -101,7 +101,7 @@
 </tr>
 <tr>
 <td>Build Scripts</td>
-<td><code>Scripts/nightly.proj</code> (build job), <code>Scripts/build.proj</code> (release job)</td>
+<td><code>Scripts/Build/nightly.proj</code> (build job), <code>Scripts/Build/build.proj</code> (release job); both pass <code>/p:UseArtifactsOutput=true</code> on MSBuild</td>
 </tr>
 <tr>
 <td>Secrets/Vars</td>
@@ -142,9 +142,10 @@
 <li><strong>Setup NuGet CLI</strong> to support restore operations not exposed via dotnet.</li>
 <li><strong>Cache NuGet packages</strong> under <code>~/.nuget/packages</code>.</li>
 <li><strong>Restore</strong> the full solution (<code>Krypton Toolkit Suite 2022 - VS2022.sln</code>).</li>
-<li><strong>Build</strong> via <code>msbuild Scripts/nightly.proj /t:Rebuild /p:Configuration=Release /p:Platform=&quot;Any CPU&quot;</code>.
+<li><strong>Build</strong> via <code>msbuild Scripts/Build/nightly.proj /t:Rebuild /p:Configuration=Release /p:Platform=&quot;Any CPU&quot; /p:UseArtifactsOutput=true</code>.
 <ul>
 <li>Script encapsulates multi-project orchestration and ensures parity with nightly builds.</li>
+<li>Binaries land under <code>artifacts/bin/Release/</code> (legacy local builds without the property still use <code>Bin/Release/</code>).</li>
 </ul>
 </li>
 </ol>
@@ -153,12 +154,12 @@
 <ol>
 <li><strong>Checkout + SDK setup + global.json + tooling</strong>: mirrored from the <code>build</code> job to avoid cross-runner drift.</li>
 <li><strong>Restore</strong> solution again (isolated workspace).</li>
-<li><strong>Build Release</strong>: <code>msbuild Scripts/build.proj /t:Build /p:Configuration=Release</code>.</li>
-<li><strong>Pack Release</strong>: <code>msbuild Scripts/build.proj /t:Pack ...</code> creates <code>.nupkg</code> artifacts under <code>Bin/Packages/Release</code>.</li>
+<li><strong>Build Release</strong>: <code>msbuild Scripts/Build/build.proj /t:Build /p:Configuration=Release /p:UseArtifactsOutput=true</code>.</li>
+<li><strong>Pack Release</strong>: <code>msbuild Scripts/Build/build.proj /t:Pack ... /p:UseArtifactsOutput=true</code> creates <code>.nupkg</code> artifacts under <code>artifacts/packages/Release/</code> (local script builds without the property use <code>Bin/Packages/Release/</code>).</li>
 <li><strong>Get Version</strong> (<code>pwsh</code>):
 <ul>
-<li>Runs <code>dotnet build</code> on <code>Krypton.Toolkit.csproj</code> quietly.</li>
-<li>Parses the <code>Version=</code> log line; default fallback <code>100.25.1.1</code>.</li>
+<li>Runs <code>dotnet build</code> on <code>Krypton.Toolkit.csproj</code> quietly (no restore).</li>
+<li>Parses a <code>Version=</code> line from the build log; default fallback <code>100.25.1.1</code>.</li>
 <li>Emits <code>version</code> and <code>tag</code> outputs used downstream (e.g., release notes or notifications).</li>
 </ul>
 </li>

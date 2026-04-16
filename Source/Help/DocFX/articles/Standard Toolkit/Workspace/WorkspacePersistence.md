@@ -1,6 +1,7 @@
 # Workspace Persistence
 
 Applicable Methods:  
+
 * SaveLayoutToArray, LoadLayoutFromArray
 * SaveLayoutToFile, LoadLayoutFromFile
 * SaveLayoutToXml, LoadLayoutFromXml
@@ -51,7 +52,7 @@ need to hook into the *PageSaving* and *PageLoading* events.
 You may need to store additional application specific data along with the layout
 configuration for use when reloading. You can do this quite easily by hooking
 into the *GlobalSaving* and *GlobalLoading* events. The saving event will
-provide an *XmlWriter *reference that should be used to save your extra
+provide an *XmlWriter* reference that should be used to save your extra
 information. Create additional XML elements with whatever information you need
 to persist. Loading provides an *XmlReader* that can be used to traverse and
 load back that same information.

@@ -56,7 +56,7 @@ webView.KryptonContextMenu = contextMenu;
 
 ### Control Hierarchy
 
-```
+```text
 KryptonWebView2 : WebView2
 ├── Palette Integration
 ├── Context Menu System
@@ -84,12 +84,14 @@ The control is wrapped in `#if WEBVIEW2_AVAILABLE && NET8_0_OR_GREATER` directiv
 Initializes a new instance of the KryptonWebView2 class.
 
 **Features Enabled:**
+
 - Double buffering for smooth rendering
 - Resize redraw for proper repainting
 - Krypton palette system initialization
 - Global palette change notifications
 
 **Example:**
+
 ```csharp
 var webView = new KryptonWebView2();
 ```
@@ -108,6 +110,7 @@ public KryptonContextMenu? KryptonContextMenu { get; set; }
 **Description:** Gets and sets the KryptonContextMenu to show when right-clicked.
 
 **Usage:**
+
 ```csharp
 var contextMenu = new KryptonContextMenu();
 contextMenu.Items.Add(new KryptonContextMenuItem("Custom Action"));
@@ -115,6 +118,7 @@ webView.KryptonContextMenu = contextMenu;
 ```
 
 **Behavior:**
+
 - Overrides default WebView2 context menu
 - Shows at mouse position for right-clicks
 - Centers on control for keyboard activation (Menu key)
@@ -135,6 +139,7 @@ public ToolStripRenderer? CreateToolStripRenderer()
 **Returns:** A `ToolStripRenderer` instance that provides Krypton-themed rendering for tool strips, or `null` if no renderer is available.
 
 **Usage:**
+
 ```csharp
 var renderer = webView.CreateToolStripRenderer();
 if (renderer != null)
@@ -434,6 +439,7 @@ private void ConfigureWebView2Performance()
 **Error:** `WebView2 runtime not found`
 
 **Solution:**
+
 ```csharp
 try
 {
@@ -450,6 +456,7 @@ catch (WebView2RuntimeNotFoundException)
 **Error:** `EnsureCoreWebView2Async failed`
 
 **Solution:**
+
 ```csharp
 private async Task<bool> InitializeWebView2WithRetry()
 {
@@ -486,6 +493,7 @@ private async Task<bool> InitializeWebView2WithRetry()
 **Issue:** Custom context menu not appearing
 
 **Solution:**
+
 ```csharp
 // Ensure context menu is properly assigned
 if (webView.KryptonContextMenu == null)

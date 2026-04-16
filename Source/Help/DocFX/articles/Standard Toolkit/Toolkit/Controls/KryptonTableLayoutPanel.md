@@ -6,7 +6,7 @@ The `KryptonTableLayoutPanel` class provides a Krypton-themed replacement for th
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.MarshalByRefObject
     └── System.ComponentModel.Component
@@ -22,6 +22,7 @@ public KryptonTableLayoutPanel()
 ```
 
 The constructor initializes enhanced features:
+
 - **Background Panel**: Creates an internal `KryptonPanel` for enhanced theming
 - **Palette Integration**: Automatic Krypton theme detection and application
 - **Visual States**: Common, Normal, and Disabled state management

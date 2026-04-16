@@ -40,7 +40,7 @@ using Krypton.Utilities;
 
 ### Inheritance Hierarchy
 
-```
+```text
 System.Object
   └─ System.MarshalByRefObject
       └─ System.ComponentModel.Component
@@ -97,7 +97,7 @@ System.Object
 
 ### Component Structure
 
-```
+```text
 KryptonFileSystemListView
 ├── FileSystemListViewValues (expandable properties)
 │   ├── CurrentPath
@@ -153,6 +153,7 @@ public KryptonFileSystemListView()
 ```
 
 Initializes a new instance with default settings:
+
 - View mode: Details
 - FullRowSelect: true
 - GridLines: true
@@ -166,7 +167,7 @@ Initializes a new instance with default settings:
 
 ### Public Properties
 
-#### FileSystemListViewValues
+#### FileSystemListViewValues property
 
 ```csharp
 public FileSystemListViewValues FileSystemListViewValues { get; }
@@ -175,6 +176,7 @@ public FileSystemListViewValues FileSystemListViewValues { get; }
 Gets the file system ListView values object containing all file system-specific properties. This is an expandable object that groups related properties for better PropertyGrid organization.
 
 **Access Pattern:**
+
 ```csharp
 fileSystemListView.FileSystemListViewValues.CurrentPath = @"C:\Users";
 fileSystemListView.FileSystemListViewValues.ShowFiles = true;
@@ -191,6 +193,7 @@ public new View View { get; set; }
 Gets or sets how items are displayed in the control. When set to `View.Details`, columns are automatically set up if they don't exist.
 
 **Supported Values:**
+
 - `View.Details` (default): Shows columns with file information
 - `View.LargeIcon`: Large icon view
 - `View.SmallIcon`: Small icon view
@@ -229,11 +232,13 @@ Gets or sets the current directory path to display in the list view.
 - **Description**: The current directory path to display in the list view.
 
 **Behavior:**
+
 - Setting this property automatically calls `Reload()` to refresh the display
 - Empty string or null values are converted to empty string
 - The path is validated when `NavigateTo()` is called
 
 **Example:**
+
 ```csharp
 fileSystemListView.FileSystemListViewValues.CurrentPath = @"C:\Program Files";
 ```
@@ -252,10 +257,12 @@ Gets or sets a value indicating whether files should be displayed in the list vi
 - **Description**: Indicates whether files should be displayed in the list view.
 
 **Behavior:**
+
 - When `false`, only directories are displayed
 - Changing this property triggers `Reload()`
 
 **Example:**
+
 ```csharp
 // Show only directories
 fileSystemListView.FileSystemListViewValues.ShowFiles = false;
@@ -275,10 +282,12 @@ Gets or sets a value indicating whether hidden files should be displayed.
 - **Description**: Indicates whether hidden files should be displayed.
 
 **Behavior:**
+
 - Files and folders with `FileAttributes.Hidden` are filtered based on this setting
 - Changing this property triggers `Reload()`
 
 **Example:**
+
 ```csharp
 fileSystemListView.FileSystemListViewValues.ShowHiddenFiles = true;
 ```
@@ -297,10 +306,12 @@ Gets or sets a value indicating whether system files should be displayed.
 - **Description**: Indicates whether system files should be displayed.
 
 **Behavior:**
+
 - Files and folders with `FileAttributes.System` are filtered based on this setting
 - Changing this property triggers `Reload()`
 
 **Example:**
+
 ```csharp
 fileSystemListView.FileSystemListViewValues.ShowSystemFiles = true;
 ```
@@ -319,16 +330,19 @@ Gets or sets the file filter to apply when showing files.
 - **Description**: The file filter to apply when showing files (e.g., "*.txt" or "*.txt;*.doc").
 
 **Filter Syntax:**
+
 - Single pattern: `"*.txt"` - shows only .txt files
 - Multiple patterns: `"*.txt;*.doc;*.pdf"` - shows files matching any pattern
 - All files: `"*.*"` - shows all files
 
 **Behavior:**
+
 - Used with `Directory.GetFiles(directoryPath, filter)`
 - Changing this property triggers `Reload()` only if `ShowFiles` is `true`
 - Null values are converted to `"*.*"`
 
 **Examples:**
+
 ```csharp
 // Show only text files
 fileSystemListView.FileSystemListViewValues.FileFilter = "*.txt";
@@ -354,12 +368,14 @@ Gets or sets a value indicating whether to use large icons (32x32) instead of sm
 - **Description**: Indicates whether to use large icons (32x32) instead of small icons (16x16).
 
 **Behavior:**
+
 - When `true`, ImageList size is set to 32x32 pixels
 - When `false`, ImageList size is set to 16x16 pixels
 - Changing this property clears the icon cache and reloads icons
 - Icons are re-extracted at the new size
 
 **Example:**
+
 ```csharp
 fileSystemListView.FileSystemListViewValues.UseLargeIcons = true;
 ```
@@ -379,6 +395,7 @@ public void Reload()
 Reloads the list view from the current path.
 
 **Behavior:**
+
 - Clears all items, icon cache, and ImageList images
 - Adds default folder icon
 - Loads directory contents if `CurrentPath` is valid
@@ -386,12 +403,14 @@ Reloads the list view from the current path.
 - Raises `FileSystemError` event on exceptions
 
 **Example:**
+
 ```csharp
 // Refresh the current directory
 fileSystemListView.Reload();
 ```
 
 **When to Use:**
+
 - After changing filter or visibility settings programmatically
 - To refresh the display after external file system changes
 - After modifying `FileSystemListViewValues` properties directly
@@ -405,9 +424,11 @@ public void NavigateTo(string path)
 Navigates to the specified path in the list view.
 
 **Parameters:**
+
 - `path` (string): The directory path to navigate to.
 
 **Behavior:**
+
 - Validates that the path exists and is a directory
 - Sets `CurrentPath` property
 - Calls `Reload()` to refresh display
@@ -416,9 +437,11 @@ Navigates to the specified path in the list view.
 - Returns early if path is null or empty
 
 **Exceptions:**
+
 - Raises `FileSystemError` event (does not throw) if directory not found
 
 **Example:**
+
 ```csharp
 try
 {
@@ -439,17 +462,20 @@ public void AddDefaultIcon()
 Adds a default folder icon to the image list.
 
 **Behavior:**
+
 - Attempts to get stock folder icon via `StockIconHelper`
 - Falls back to a simple gray bitmap if icon retrieval fails
 - Creates bitmap at current ImageList size (16x16 or 32x32)
 - Adds icon at index 0 (used as fallback)
 
 **When Called:**
+
 - Automatically called during construction
 - Called when `UseLargeIcons` changes
 - Called during `Reload()` to reset icon list
 
 **Example:**
+
 ```csharp
 // Manually add default icon (usually not needed)
 fileSystemListView.AddDefaultIcon();
@@ -464,12 +490,14 @@ public void AutoResizeAllColumns()
 Auto-resizes all columns to fit their content.
 
 **Behavior:**
+
 - Only works in Details view
 - Uses `ColumnHeaderAutoResizeStyle.ColumnContent`
 - Resizes all columns to fit the widest item content
 - No effect if not in Details view or no columns exist
 
 **Example:**
+
 ```csharp
 fileSystemListView.AutoResizeAllColumns();
 ```
@@ -483,12 +511,14 @@ public void AutoResizeColumnHeaders()
 Auto-resizes all columns to fit the header text.
 
 **Behavior:**
+
 - Only works in Details view
 - Uses `ColumnHeaderAutoResizeStyle.HeaderSize`
 - Resizes all columns to fit header text width
 - Useful when content is empty
 
 **Example:**
+
 ```csharp
 fileSystemListView.AutoResizeColumnHeaders();
 ```
@@ -506,6 +536,7 @@ protected virtual void OnPathChanged(EventArgs e)
 Raises the `PathChanged` event.
 
 **Parameters:**
+
 - `e`: An `EventArgs` containing the event data.
 
 **Usage:**
@@ -520,6 +551,7 @@ protected virtual void OnFileSystemError(FileSystemErrorEventArgs e)
 Raises the `FileSystemError` event.
 
 **Parameters:**
+
 - `e`: A `FileSystemErrorEventArgs` containing the event data.
 
 **Usage:**
@@ -532,6 +564,7 @@ Override to add custom error handling or logging.
 #### SetupColumns()
 
 Sets up default columns for Details view:
+
 - **Name**: 250px width, left-aligned
 - **Type**: 100px width, left-aligned
 - **Size**: 100px width, right-aligned
@@ -542,6 +575,7 @@ Column headers use localized strings from `KryptonManager.Strings.FileSystemList
 #### LoadDirectory(string directoryPath)
 
 Loads directory contents:
+
 1. Adds parent directory item ("..")
 2. Adds subdirectories (filtered by hidden/system settings)
 3. Adds files (if `ShowFiles` is true, filtered by `FileFilter` and hidden/system settings)
@@ -551,6 +585,7 @@ Loads directory contents:
 #### CreateDirectoryItem(string name, string fullPath)
 
 Creates a `ListViewItem` for a directory:
+
 - Sets `Tag` to full path
 - Sets icon index via `GetIconIndex()`
 - Adds sub-items: Type ("File folder"), Size (empty), Date Modified
@@ -558,6 +593,7 @@ Creates a `ListViewItem` for a directory:
 #### CreateFileItem(FileInfo fileInfo)
 
 Creates a `ListViewItem` for a file:
+
 - Sets `Tag` to full path
 - Sets icon index via `GetIconIndex()`
 - Adds sub-items: Type (from `GetFileTypeDescription()`), Size (from `FormatFileSize()`), Date Modified
@@ -565,6 +601,7 @@ Creates a `ListViewItem` for a file:
 #### GetIconIndex(string path, bool isDirectory)
 
 Gets or creates icon index for a path:
+
 1. Creates cache key (extension for files, `"__DIRECTORY__"` for folders)
 2. Checks cache
 3. Extracts icon via `FileSystemIconHelper` with fallbacks
@@ -575,6 +612,7 @@ Gets or creates icon index for a path:
 #### GetFileTypeDescription(string extension)
 
 Returns human-readable file type description:
+
 - Maps common extensions to descriptions (e.g., ".txt" → "Text Document")
 - Returns "File" for empty extension
 - Returns "{EXT} File" for unknown extensions
@@ -582,6 +620,7 @@ Returns human-readable file type description:
 #### FormatFileSize(long bytes)
 
 Formats file size with appropriate units:
+
 - Formats as B, KB, MB, GB, or TB
 - Uses 0 decimal places for bytes, 2 for others
 - Example: "1.5 MB", "1024 B"
@@ -589,6 +628,7 @@ Formats file size with appropriate units:
 #### CreateBitmapForImageList(Bitmap sourceBitmap)
 
 Creates a properly sized bitmap for ImageList:
+
 - Creates bitmap at ImageList size
 - Uses high-quality bicubic interpolation
 - Returns null on failure
@@ -610,10 +650,12 @@ Occurs when the current path changes.
 **Event Data:** `EventArgs` (no additional data)
 
 **Raised When:**
+
 - `NavigateTo()` successfully changes the path
 - `CurrentPath` property is set and path is valid
 
 **Example:**
+
 ```csharp
 fileSystemListView.PathChanged += (sender, e) =>
 {
@@ -632,16 +674,19 @@ public event EventHandler<FileSystemErrorEventArgs>? FileSystemError;
 Occurs when an error occurs while loading the file system.
 
 **Event Data:** `FileSystemErrorEventArgs`
+
 - `Path` (string): The path where the error occurred
 - `Exception` (Exception): The exception that occurred
 
 **Raised When:**
+
 - Directory not found during `NavigateTo()`
 - Access denied when reading directory contents
 - General exceptions during directory loading
 - Icon extraction failures (swallowed, not raised)
 
 **Example:**
+
 ```csharp
 fileSystemListView.FileSystemError += (sender, e) =>
 {
@@ -655,6 +700,7 @@ fileSystemListView.FileSystemError += (sender, e) =>
 ```
 
 **Common Exception Types:**
+
 - `DirectoryNotFoundException`: Path doesn't exist
 - `UnauthorizedAccessException`: Insufficient permissions
 - `IOException`: General I/O errors
@@ -663,13 +709,14 @@ fileSystemListView.FileSystemError += (sender, e) =>
 
 ## Related Classes
 
-### FileSystemListViewValues
+### FileSystemListViewValues class
 
 Groups file system-specific properties for PropertyGrid display.
 
 **Location:** `Krypton.Utilities.FileSystemListViewValues`
 
 **Properties:**
+
 - `CurrentPath` (string)
 - `ShowFiles` (bool)
 - `ShowHiddenFiles` (bool)
@@ -678,6 +725,7 @@ Groups file system-specific properties for PropertyGrid display.
 - `UseLargeIcons` (bool)
 
 **Features:**
+
 - Expandable object converter for PropertyGrid
 - Automatic `Reload()` on property changes
 - Inherits from `Storage` base class
@@ -689,10 +737,12 @@ Provides data for the `FileSystemError` event.
 **Location:** `Krypton.Toolkit.FileSystemErrorEventArgs`
 
 **Properties:**
+
 - `Path` (string, read-only): The path where the error occurred
 - `Exception` (Exception, read-only): The exception that occurred
 
 **Constructor:**
+
 ```csharp
 public FileSystemErrorEventArgs(string path, Exception exception)
 ```
@@ -704,11 +754,13 @@ Helper class for extracting file and folder icons from Windows Shell.
 **Location:** `Krypton.Toolkit.FileSystemIconHelper` (internal)
 
 **Methods:**
+
 - `GetFileSystemIcon(string path, bool largeIcon)`: Gets icon for file/folder
 - `GetFolderIcon(bool largeIcon)`: Gets generic folder icon
 - `GetFileIcon(string extension, bool largeIcon)`: Gets icon for file extension
 
 **Implementation:**
+
 - Uses Windows Shell API (`SHGetFileInfo`)
 - Returns disposable `Icon` objects
 - Returns `null` on failure
@@ -720,9 +772,11 @@ Provides fallback stock icons when file-specific icons cannot be retrieved.
 **Location:** `Krypton.Toolkit.StockIconHelper`
 
 **Methods:**
+
 - `GetStockIcon(StockIconId stockIconId)`: Gets a stock Windows icon
 
 **Common Stock Icons:**
+
 - `Folder`: Generic folder icon
 - `DocumentNotAssociated`: Generic document icon
 - `Application`: Application icon
@@ -734,6 +788,7 @@ Localizable string resources for column headers and messages.
 **Location:** `Krypton.Toolkit.KryptonFileSystemListViewStrings`
 
 **Properties:**
+
 - `ColumnNameName`: "Name" column header
 - `ColumnTypeName`: "Type" column header
 - `ColumnSizeName`: "Size" column header
@@ -742,6 +797,7 @@ Localizable string resources for column headers and messages.
 - `UseOSStrings`: Toggle to use OS-defined strings from shell32.dll
 
 **Access:**
+
 ```csharp
 KryptonManager.Strings.FileSystemListViewStrings.ColumnNameName
 ```
@@ -763,16 +819,19 @@ KryptonManager.Strings.FileSystemListViewStrings.ColumnNameName
 ### Icon Cache
 
 **Cache Key Format:**
+
 - Directories: `"__DIRECTORY__"`
 - Files: File extension (lowercase), e.g., `".txt"`
 - Files without extension: `"__FILE__"`
 
 **Cache Benefits:**
+
 - Avoids re-extracting icons for same file types
 - Improves performance when displaying many files
 - Reduces Windows Shell API calls
 
 **Cache Management:**
+
 - Cleared on `Reload()`
 - Cleared when `UseLargeIcons` changes
 - Dictionary uses case-insensitive string comparison
@@ -784,6 +843,7 @@ KryptonManager.Strings.FileSystemListViewStrings.ColumnNameName
 
 **Changing Icon Size:**
 Setting `UseLargeIcons` automatically:
+
 1. Updates ImageList size
 2. Clears icon cache
 3. Clears ImageList images
@@ -1013,6 +1073,7 @@ this.Invoke(new Action(() => fileListView.NavigateTo(path)));
 ### 5. Resource Management
 
 The control manages icon resources internally. Icons are:
+
 - Extracted and cloned (safe to dispose)
 - Added to ImageList (ImageList takes ownership)
 - Cached for reuse
@@ -1041,6 +1102,7 @@ fileListView.Reload(); // Not needed
 ### 8. Filter Syntax
 
 Use proper filter syntax:
+
 - Single pattern: `"*.txt"`
 - Multiple patterns: `"*.txt;*.doc"` (semicolon-separated)
 - All files: `"*.*"`
@@ -1079,6 +1141,7 @@ Sorting is handled by the base `ListView` control. Custom sort comparers can be 
 ### 6. Column Customization
 
 Default columns are hardcoded. To add custom columns:
+
 1. Clear existing columns
 2. Add custom columns
 3. Modify `CreateDirectoryItem()` and `CreateFileItem()` to populate custom columns
@@ -1108,11 +1171,13 @@ The ".." item navigates to the parent directory, but there's no built-in "up" bu
 **Symptoms:** Icons appear as default/gray icons or not at all.
 
 **Possible Causes:**
+
 1. Icon extraction failing silently
 2. ImageList handle not created
 3. Icon size mismatch
 
 **Solutions:**
+
 - Check Windows Shell API availability
 - Verify `UseLargeIcons` matches desired size
 - Check `FileSystemError` event for underlying issues
@@ -1123,6 +1188,7 @@ The ".." item navigates to the parent directory, but there's no built-in "up" bu
 **Symptoms:** Slow loading or UI freezing with large directories.
 
 **Solutions:**
+
 - Use file filters to limit displayed items
 - Set `ShowFiles = false` to show directories only
 - Consider implementing virtual mode (requires custom implementation)
@@ -1133,6 +1199,7 @@ The ".." item navigates to the parent directory, but there's no built-in "up" bu
 **Symptoms:** `FileSystemError` event raised with `UnauthorizedAccessException`.
 
 **Solutions:**
+
 - Handle `FileSystemError` event gracefully
 - Check user permissions
 - Use `ShowHiddenFiles` and `ShowSystemFiles` appropriately
@@ -1143,6 +1210,7 @@ The ".." item navigates to the parent directory, but there's no built-in "up" bu
 **Symptoms:** Columns don't appear in Details view.
 
 **Solutions:**
+
 - Ensure `View` property is set to `View.Details`
 - Check that `SetupColumns()` was called (automatic in Details view)
 - Verify columns weren't cleared manually
@@ -1152,6 +1220,7 @@ The ".." item navigates to the parent directory, but there's no built-in "up" bu
 **Symptoms:** All files displayed despite filter setting.
 
 **Solutions:**
+
 - Verify filter syntax (e.g., `"*.txt"` not `".txt"`)
 - Ensure `ShowFiles` is `true`
 - Check that `Reload()` is called after filter change (automatic)
@@ -1161,6 +1230,7 @@ The ".." item navigates to the parent directory, but there's no built-in "up" bu
 **Symptoms:** `NavigateTo()` doesn't change directory.
 
 **Solutions:**
+
 - Verify path exists: `Directory.Exists(path)`
 - Check path format (use `Path.GetFullPath()` if needed)
 - Handle `FileSystemError` event for details
@@ -1171,6 +1241,7 @@ The ".." item navigates to the parent directory, but there's no built-in "up" bu
 **Symptoms:** Icons appear too large or too small.
 
 **Solutions:**
+
 - Set `UseLargeIcons = true` for 32x32 icons
 - Set `UseLargeIcons = false` for 16x16 icons
 - Changing this property automatically reloads icons
@@ -1180,6 +1251,7 @@ The ".." item navigates to the parent directory, but there's no built-in "up" bu
 **Symptoms:** Cannot get selected file/folder path.
 
 **Solutions:**
+
 - Access via `SelectedItems[0].Tag as string`
 - Check for null before using
 - Verify item is selected (`SelectedItems.Count > 0`)
@@ -1201,6 +1273,7 @@ The ".." item navigates to the parent directory, but there's no built-in "up" bu
 ### String Resources
 
 Access localized strings via:
+
 ```csharp
 KryptonManager.Strings.FileSystemListViewStrings
 ```

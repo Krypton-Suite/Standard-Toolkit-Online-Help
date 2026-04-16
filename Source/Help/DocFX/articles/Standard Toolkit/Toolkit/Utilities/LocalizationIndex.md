@@ -11,9 +11,11 @@ This document serves as the central index for all Krypton Toolkit localization d
 ### 📚 Core Documentation
 
 #### 1. [Localization and String Management Guide](LocalizationGuide.md)
+
 **Purpose:** Main guide for getting started with localization  
 **Target Audience:** All developers  
 **Content:**
+
 - Overview of the localization system
 - Architecture and components
 - String categories reference
@@ -26,9 +28,11 @@ This document serves as the central index for all Krypton Toolkit localization d
 **When to Use:** Start here if you're new to Krypton Toolkit localization or need a comprehensive overview.
 
 #### 2. [KryptonManager.Strings API Reference](../Components/KryptonManagerStringsAPIReference.md)
+
 **Purpose:** Complete API documentation for all string categories  
 **Target Audience:** Developers needing detailed API information  
 **Content:**
+
 - Complete API reference for `KryptonManager.Strings`
 - All string categories with properties
 - Default values and descriptions
@@ -39,9 +43,11 @@ This document serves as the central index for all Krypton Toolkit localization d
 **When to Use:** When you need detailed information about specific properties, default values, or API usage.
 
 #### 3. [Advanced Localization Topics](LocalizationAdvancedTopics.md)
+
 **Purpose:** In-depth coverage of advanced localization features  
 **Target Audience:** Advanced developers and architects  
 **Content:**
+
 - Architecture deep dive
 - Complete language implementations (Spanish, French, German, Japanese)
 - Resource file integration
@@ -54,9 +60,11 @@ This document serves as the central index for all Krypton Toolkit localization d
 **When to Use:** When implementing advanced features like dynamic language switching, custom categories, or enterprise-scale localization.
 
 #### 4. [Localization Implementation Examples](LocalizationImplementationExamples.md)
+
 **Purpose:** Ready-to-use implementation examples  
 **Target Audience:** Developers implementing localization  
 **Content:**
+
 - Complete application example with full source code
 - Multi-form application patterns
 - Settings dialog with language selector
@@ -89,10 +97,12 @@ This document serves as the central index for all Krypton Toolkit localization d
 ### Task: Basic Localization Setup
 
 **Documents:**
+
 1. [Localization Guide](LocalizationGuide.md) - "Application Startup Localization"
 2. [Implementation Examples](LocalizationImplementationExamples.md) - "Complete Application Example"
 
 **Key Topics:**
+
 - Setting strings at application startup
 - Accessing string properties
 - Saving user preferences
@@ -100,10 +110,12 @@ This document serves as the central index for all Krypton Toolkit localization d
 ### Task: Adding a New Language
 
 **Documents:**
+
 1. [Advanced Topics](LocalizationAdvancedTopics.md) - "Complete Language Implementations"
 2. [Implementation Examples](LocalizationImplementationExamples.md) - "Language Provider Pattern"
 
 **Key Topics:**
+
 - Creating a localization provider
 - Translating all string categories
 - Managing accelerator keys
@@ -112,10 +124,12 @@ This document serves as the central index for all Krypton Toolkit localization d
 ### Task: Dynamic Language Switching
 
 **Documents:**
+
 1. [Advanced Topics](LocalizationAdvancedTopics.md) - "Dynamic Language Switching"
 2. [Implementation Examples](LocalizationImplementationExamples.md) - "Settings Dialog with Language Selector"
 
 **Key Topics:**
+
 - LanguageSwitcher class
 - Event handling
 - UI refresh strategies
@@ -124,10 +138,12 @@ This document serves as the central index for all Krypton Toolkit localization d
 ### Task: Resource-Based Localization
 
 **Documents:**
+
 1. [Advanced Topics](LocalizationAdvancedTopics.md) - "Resource File Integration"
 2. [Implementation Examples](LocalizationImplementationExamples.md) - "Complete Application Example"
 
 **Key Topics:**
+
 - Creating .resx files
 - ResourceManager usage
 - Satellite assemblies
@@ -136,10 +152,12 @@ This document serves as the central index for all Krypton Toolkit localization d
 ### Task: Custom String Categories
 
 **Documents:**
+
 1. [Advanced Topics](LocalizationAdvancedTopics.md) - "Custom String Categories"
 2. [API Reference](../Components/KryptonManagerStringsAPIReference.md) - "API Patterns and Conventions"
 
 **Key Topics:**
+
 - Creating custom categories
 - Following toolkit conventions
 - Designer integration
@@ -148,9 +166,11 @@ This document serves as the central index for all Krypton Toolkit localization d
 ### Task: Testing Localization
 
 **Documents:**
+
 1. [Advanced Topics](LocalizationAdvancedTopics.md) - "Localization Testing Framework"
 
 **Key Topics:**
+
 - Automated testing
 - Accelerator key validation
 - Completeness checks
@@ -159,9 +179,11 @@ This document serves as the central index for all Krypton Toolkit localization d
 ### Task: Database-Driven Localization
 
 **Documents:**
+
 1. [Implementation Examples](LocalizationImplementationExamples.md) - "Database-Driven Localization"
 
 **Key Topics:**
+
 - Database schema
 - Loading from database
 - Caching strategies
@@ -223,7 +245,7 @@ bool isDefault = KryptonManager.Strings.IsDefault;
 ### Complete List
 
 | Category | Access Property | Purpose |
-|----------|----------------|----------|
+| -------- | --------------- | ------- |
 | **GeneralToolkitStrings** | `GeneralStrings` | Common button and message box strings |
 | **CustomToolkitStrings** | `CustomStrings` | Custom action and navigation strings |
 | **GeneralRibbonStrings** | `RibbonStrings` | Ribbon component strings |
@@ -235,9 +257,12 @@ bool isDefault = KryptonManager.Strings.IsDefault;
 | **IntegratedToolBarStrings** | `ToolBarStrings` | Toolbar strings |
 | **GlobalColorStrings** | `ColorStrings` | Color name strings |
 
+**V110+:** `KryptonAboutBox` and `KryptonToast` are implemented in **`Krypton.Utilities`**; the **`AboutBoxStrings`** and **`ToastNotificationStrings`** categories remain on **`KryptonManager.Strings`** in **`Krypton.Toolkit`**.
+
 ### Style Categories
 
 Additional categories for style enumerations:
+
 - `ButtonStyleStrings`
 - `PaletteButtonStyleStrings`
 - `PaletteBackStyleStrings`
@@ -257,7 +282,7 @@ Additional categories for style enumerations:
 ### Supported Languages (Examples Provided)
 
 | Language | Code | Provider Class | Document |
-|----------|------|---------------|----------|
+| -------- | ---- | -------------- | -------- |
 | English | en | Default | All documents |
 | Spanish | es | `SpanishProvider` | [Advanced Topics](LocalizationAdvancedTopics.md) |
 | French | fr | `FrenchProvider` | [Advanced Topics](LocalizationAdvancedTopics.md) |
@@ -272,7 +297,8 @@ Additional categories for style enumerations:
 
 ### Basic Examples
 
-**Set Language at Startup**
+#### Set Language at Startup
+
 ```csharp
 // In Program.cs
 static void Main()
@@ -285,14 +311,16 @@ static void Main()
 }
 ```
 
-**Access Strings in Code**
+#### Access Strings in Code
+
 ```csharp
 // Use in your forms
 okButton.Text = KryptonManager.Strings.GeneralStrings.OK;
 cancelButton.Text = KryptonManager.Strings.GeneralStrings.Cancel;
 ```
 
-**Reset to Defaults**
+#### Reset to Defaults
+
 ```csharp
 // Reset all strings
 KryptonManager.Strings.Reset();
@@ -304,6 +332,7 @@ KryptonManager.Strings.GeneralStrings.Reset();
 ### Advanced Examples
 
 See [Implementation Examples](LocalizationImplementationExamples.md) for:
+
 - Complete application with LocalizationManager
 - Settings dialog with language selector
 - LocalizedMessageBox wrapper
@@ -340,6 +369,7 @@ See [Implementation Examples](LocalizationImplementationExamples.md) for:
 ### Issue: Strings Not Updating in UI
 
 **Solution:**
+
 - Strings are cached when controls are created
 - Set localization before creating forms
 - Or recreate controls after changing strings
@@ -348,6 +378,7 @@ See [Implementation Examples](LocalizationImplementationExamples.md) for:
 ### Issue: Accelerator Keys Not Working
 
 **Solution:**
+
 - Ensure `&` character is present in string
 - Verify unique accelerator keys within same dialog
 - Check that accelerator is on a valid character
@@ -356,6 +387,7 @@ See [Implementation Examples](LocalizationImplementationExamples.md) for:
 ### Issue: Designer Changes Not Persisting
 
 **Solution:**
+
 - Set form's `Localizable` property to `true`
 - Change `Language` property to target language
 - Modify strings in Properties window
@@ -364,6 +396,7 @@ See [Implementation Examples](LocalizationImplementationExamples.md) for:
 ### Issue: Language Not Available
 
 **Solution:**
+
 - Create a localization provider for the language
 - Register with LocalizationManager
 - Provide complete translations for all categories
@@ -374,11 +407,13 @@ See [Implementation Examples](LocalizationImplementationExamples.md) for:
 ## Performance Considerations
 
 ### Memory Usage
+
 - Base overhead: ~50 KB for all string categories
 - Each modified string: ~50-200 bytes
 - Total impact: < 1 MB for fully localized application
 
 ### Speed
+
 - String access: O(1) - direct property access
 - No caching overhead required
 - Changes take effect immediately
@@ -389,22 +424,28 @@ See [Implementation Examples](LocalizationImplementationExamples.md) for:
 ## Integration with Other Components
 
 ### KryptonMessageBox
+
 - Automatically uses `GeneralToolkitStrings` for buttons
 - Customize messages and titles as needed
 - See: [Implementation Examples - Localized Message Box](LocalizationImplementationExamples.md#localized-message-box-wrapper)
 
 ### KryptonRibbon
+
 - Uses `GeneralRibbonStrings` for ribbon UI
 - Supports custom color picker strings
 - See: [API Reference - GeneralRibbonStrings](../Components/KryptonManagerStringsAPIReference.md#generalribbonstrings)
 
 ### KryptonAboutBox
+
 - Uses `KryptonAboutBoxStrings` for labels
 - All field labels are localizable
+- **V110+:** `KryptonAboutBox` type is in **`Krypton.Utilities`**
 - See: [API Reference - KryptonAboutBoxStrings](../Components/KryptonManagerStringsAPIReference.md#kryptonaboutboxstrings)
 
 ### Exception Handling
+
 - Custom exception dialogs can use localized strings
+- **V110+:** Public **`KryptonExceptionDialog`** is in **`Krypton.Utilities`** — see [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md)
 - See: [ExceptionHandler API Documentation](ExceptionHandlerAPIDocumentation.md)
 
 ---
@@ -434,15 +475,18 @@ If you have a custom localization implementation:
 ## Additional Resources
 
 ### Related Krypton Toolkit Documentation
+
 - [ExceptionHandler API Documentation](ExceptionHandlerAPIDocumentation.md)
 - [Krypton Toolkit README](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/README.md)
 
 ### .NET Localization Resources
+
 - [.NET Globalization and Localization](https://docs.microsoft.com/en-us/dotnet/standard/globalization-localization/)
 - [CultureInfo Class](https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo)
 - [Resource Files](https://docs.microsoft.com/en-us/dotnet/framework/resources/)
 
 ### Community Resources
+
 - [Krypton Toolkit GitHub](https://github.com/Krypton-Suite/Standard-Toolkit)
 - [Submit Issues](https://github.com/Krypton-Suite/Standard-Toolkit/issues)
 - [Discussions](https://github.com/Krypton-Suite/Standard-Toolkit/discussions)

@@ -32,6 +32,7 @@ public class KryptonTextBox : VisualControlBase, IContainedInputControl
 ## Properties
 
 ### Text and Content
+
 ```csharp
 [DefaultProperty("Text")]
 [DefaultBindingProperty("Text")]
@@ -41,6 +42,7 @@ public string Text { get; set; }
 Gets or sets the text content of the text box.
 
 ### Multiline
+
 ```csharp
 [Category("Behavior")]
 [Description("Indicates whether this is a multiline TextBox control.")]
@@ -53,6 +55,7 @@ Gets or sets a value indicating whether this is a multiline TextBox control.
 **Default Value**: `false`
 
 ### PasswordChar
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets or sets the character used to mask characters of a password in a single-line TextBox control.")]
@@ -65,6 +68,7 @@ Gets or sets the character used to mask characters of a password in a single-lin
 **Default Value**: `'\0'` (no masking)
 
 ### ReadOnly
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets or sets a value indicating whether text in the TextBox is read-only.")]
@@ -77,6 +81,7 @@ Gets or sets a value indicating whether text in the TextBox is read-only.
 **Default Value**: `false`
 
 ### TextAlign
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets or sets how text is aligned in a TextBox control.")]
@@ -89,6 +94,7 @@ Gets or sets how text is aligned in a TextBox control.
 **Default Value**: `HorizontalAlignment.Left`
 
 ### AcceptsTab
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets or sets a value indicating whether pressing the TAB key in a multiline text box control types a TAB character in the control instead of moving the focus to the next control in the tab order.")]
@@ -101,6 +107,7 @@ Gets or sets a value indicating whether pressing the TAB key in a multiline text
 **Default Value**: `false`
 
 ### HideSelection
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets or sets a value indicating whether the selected text in the text box control remains highlighted when the control loses focus.")]
@@ -113,6 +120,7 @@ Gets or sets a value indicating whether the selected text in the text box contro
 **Default Value**: `true`
 
 ### Modified
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets or sets a value that indicates that the TextBox control has been modified by the user since the control was created or its contents were last set.")]
@@ -125,6 +133,7 @@ Gets or sets a value that indicates that the TextBox control has been modified b
 **Default Value**: `false`
 
 ### MaxLength
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets or sets the maximum number of characters the user can type or paste into the text box control.")]
@@ -137,6 +146,7 @@ Gets or sets the maximum number of characters the user can type or paste into th
 **Default Value**: `0` (no limit)
 
 ### CharacterCasing
+
 ```csharp
 [Category("Behavior")]
 [Description("Gets or sets whether the TextBox control modifies the case of characters as they are typed.")]
@@ -149,6 +159,7 @@ Gets or sets whether the TextBox control modifies the case of characters as they
 **Default Value**: `CharacterCasing.Normal`
 
 ### ScrollBars
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets or sets which scroll bars should appear in a multiline TextBox control.")]
@@ -161,6 +172,7 @@ Gets or sets which scroll bars should appear in a multiline TextBox control.
 **Default Value**: `ScrollBars.None`
 
 ### WordWrap
+
 ```csharp
 [Category("Behavior")]
 [Description("Indicates whether a multiline text box control automatically wraps words to the beginning of the next line when necessary.")]
@@ -173,6 +185,7 @@ Indicates whether a multiline text box control automatically wraps words to the 
 **Default Value**: `true`
 
 ### CueHint
+
 ```csharp
 [Category("Appearance")]
 [Description("Gets access to the cue hint text appearance.")]
@@ -183,6 +196,7 @@ public PaletteCueHintText CueHint { get; }
 Gets access to the cue hint text appearance. This allows customization of placeholder text styling.
 
 ### ButtonSpecs
+
 ```csharp
 [Category("Visuals")]
 [Description("Collection of button specifications.")]
@@ -195,6 +209,7 @@ Gets access to the collection of button specifications that can be added to the 
 ## State Properties
 
 ### StateCommon
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining common text box appearance.")]
@@ -205,6 +220,7 @@ public PaletteInputControlTripleRedirect StateCommon { get; }
 Gets access to the common state appearance that other states can override.
 
 ### StateDisabled
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining disabled text box appearance.")]
@@ -215,6 +231,7 @@ public PaletteInputControlTripleStates StateDisabled { get; }
 Gets access to the disabled state appearance.
 
 ### StateNormal
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining normal text box appearance.")]
@@ -225,6 +242,7 @@ public PaletteInputControlTripleStates StateNormal { get; }
 Gets access to the normal state appearance.
 
 ### StateActive
+
 ```csharp
 [Category("Visuals")]
 [Description("Overrides for defining active text box appearance.")]
@@ -237,6 +255,7 @@ Gets access to the active state appearance.
 ## Events
 
 ### TextChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the Text property value changes.")]
@@ -246,6 +265,7 @@ public event EventHandler TextChanged;
 Occurs when the Text property value changes.
 
 ### AcceptsTabChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the value of the AcceptsTab property changes.")]
@@ -255,6 +275,7 @@ public event EventHandler AcceptsTabChanged;
 Occurs when the value of the AcceptsTab property changes.
 
 ### HideSelectionChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the value of the HideSelection property changes.")]
@@ -264,6 +285,7 @@ public event EventHandler HideSelectionChanged;
 Occurs when the value of the HideSelection property changes.
 
 ### TextAlignChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the value of the TextAlign property changes.")]
@@ -273,6 +295,7 @@ public event EventHandler TextAlignChanged;
 Occurs when the value of the TextAlign property changes.
 
 ### ModifiedChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the value of the Modified property changes.")]
@@ -282,6 +305,7 @@ public event EventHandler ModifiedChanged;
 Occurs when the value of the Modified property changes.
 
 ### MultilineChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the value of the Multiline property changes.")]
@@ -291,6 +315,7 @@ public event EventHandler MultilineChanged;
 Occurs when the value of the Multiline property changes.
 
 ### ReadOnlyChanged
+
 ```csharp
 [Category("Property Changed")]
 [Description("Occurs when the value of the ReadOnly property changes.")]
@@ -300,6 +325,7 @@ public event EventHandler ReadOnlyChanged;
 Occurs when the value of the ReadOnly property changes.
 
 ### TrackMouseEnter
+
 ```csharp
 [Category("Mouse")]
 [Description("Raises the TrackMouseEnter event in the wrapped control.")]
@@ -310,6 +336,7 @@ public event EventHandler TrackMouseEnter;
 Occurs when the mouse enters the control.
 
 ### TrackMouseLeave
+
 ```csharp
 [Category("Mouse")]
 [Description("Raises the TrackMouseLeave event in the wrapped control.")]
@@ -322,6 +349,7 @@ Occurs when the mouse leaves the control.
 ## Methods
 
 ### SelectAll()
+
 ```csharp
 public void SelectAll()
 ```
@@ -329,6 +357,7 @@ public void SelectAll()
 Selects all text in the text box.
 
 ### Clear()
+
 ```csharp
 public void Clear()
 ```
@@ -336,6 +365,7 @@ public void Clear()
 Clears all text from the text box control.
 
 ### Copy()
+
 ```csharp
 public void Copy()
 ```
@@ -343,6 +373,7 @@ public void Copy()
 Copies the current selection in the text box to the Clipboard.
 
 ### Cut()
+
 ```csharp
 public void Cut()
 ```
@@ -350,6 +381,7 @@ public void Cut()
 Moves the current selection in the text box to the Clipboard.
 
 ### Paste()
+
 ```csharp
 public void Paste()
 ```
@@ -357,6 +389,7 @@ public void Paste()
 Replaces the current selection in the text box with the contents of the Clipboard.
 
 ### Undo()
+
 ```csharp
 public void Undo()
 ```
@@ -364,6 +397,7 @@ public void Undo()
 Undoes the last edit operation in the text box.
 
 ### AppendText(string text)
+
 ```csharp
 public void AppendText(string text)
 ```
@@ -373,6 +407,7 @@ Appends text to the current text of the text box.
 ## Usage Examples
 
 ### Basic Text Box Setup
+
 ```csharp
 // Create a basic themed text box
 KryptonTextBox textBox = new KryptonTextBox();
@@ -382,6 +417,7 @@ textBox.TextChanged += (sender, e) => Console.WriteLine("Text changed: " + textB
 ```
 
 ### Password Text Box
+
 ```csharp
 // Create a password text box
 KryptonTextBox passwordBox = new KryptonTextBox();
@@ -391,6 +427,7 @@ passwordBox.Text = "Enter password";
 ```
 
 ### Multi-line Text Box
+
 ```csharp
 // Create a multi-line text box
 KryptonTextBox multiLineBox = new KryptonTextBox();
@@ -402,6 +439,7 @@ multiLineBox.WordWrap = true;
 ```
 
 ### Custom Styling
+
 ```csharp
 // Create a text box with custom styling
 KryptonTextBox customBox = new KryptonTextBox();
@@ -418,6 +456,7 @@ customBox.StateActive.Border.Color1 = Color.Blue;
 ```
 
 ### Cue Text (Placeholder)
+
 ```csharp
 // Create a text box with cue text
 KryptonTextBox cueBox = new KryptonTextBox();
@@ -426,6 +465,7 @@ cueBox.CueHint.CueHintColor = Color.Gray;
 ```
 
 ### Button Specifications
+
 ```csharp
 // Create a text box with button specifications
 KryptonTextBox buttonBox = new KryptonTextBox();
@@ -436,6 +476,7 @@ buttonBox.ButtonSpecs.Add(clearButton);
 ```
 
 ### Theme Integration
+
 ```csharp
 // The text box automatically uses the global theme
 KryptonManager.GlobalPaletteMode = PaletteMode.Office2010Blue;

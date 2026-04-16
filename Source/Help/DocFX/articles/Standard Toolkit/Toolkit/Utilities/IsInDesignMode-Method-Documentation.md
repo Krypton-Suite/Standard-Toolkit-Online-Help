@@ -20,10 +20,13 @@ private bool IsInDesignMode() =>
 ## Why This Method Is Critical
 
 ### 🎯 **Primary Purpose**
+
 This method solves a fundamental problem: **reliably detecting when a WinForms control is running in the Visual Studio designer versus actual application runtime**.
 
 ### ⚠️ **The Problem It Solves**
+
 Without proper design mode detection, the KryptonForm's system menu would:
+
 - **Interfere with designer drag and drop** operations
 - **Block control placement** from the toolbox
 - **Cause intermittent "hit and miss"** behavior
@@ -36,11 +39,13 @@ Without proper design mode detection, the KryptonForm's system menu would:
 The method uses three different detection approaches in order of reliability:
 
 #### **1. LicenseManager.UsageMode (Primary)**
+
 ```csharp
 LicenseManager.UsageMode == LicenseUsageMode.Designtime
 ```
 
 **Why This Is Most Reliable:**
+
 - ✅ **Available immediately** during constructor execution
 - ✅ **Works before Site property** is set
 - ✅ **Global application state** - not dependent on individual control state
@@ -48,45 +53,53 @@ LicenseManager.UsageMode == LicenseUsageMode.Designtime
 - ✅ **Consistent across all .NET versions**
 
 **When It's Used:**
+
 - During form constructor execution
 - Before the control is added to a container
 - When Site property is not yet available
 - Early in the control lifecycle
 
 #### **2. Site?.DesignMode (Secondary)**
+
 ```csharp
 Site?.DesignMode == true
 ```
 
 **Why This Is Important:**
+
 - ✅ **Standard .NET approach** for design mode detection
 - ✅ **Per-control basis** - each control can have different design mode state
 - ✅ **Available after siting** - works when control is added to designer surface
 - ✅ **Widely documented** and understood by developers
 
 **When It's Used:**
+
 - After the control is placed on the designer surface
 - When the control has been sited by the designer host
 - During property access in the designer
 - Runtime checks when Site is available
 
 **Limitations:**
+
 - ❌ **Not available during constructor** - Site is null initially
 - ❌ **Timing dependent** - only works after siting occurs
 - ❌ **Can be unreliable** in some edge cases
 
 #### **3. Container Component Check (Fallback)**
+
 ```csharp
 Site?.Container?.Components?.OfType<Control>().Any(c => c.Site?.DesignMode == true) == true
 ```
 
 **Why This Fallback Exists:**
+
 - ✅ **Handles edge cases** where direct detection fails
 - ✅ **Container-level detection** - checks if any component in the same container is in design mode
 - ✅ **Comprehensive coverage** - catches scenarios missed by other methods
 - ✅ **Defensive programming** - ensures robust detection
 
 **When It's Used:**
+
 - When both primary methods return false but we might still be in design mode
 - Complex designer scenarios with nested containers
 - Edge cases in Visual Studio designer behavior
@@ -101,6 +114,7 @@ return Method1() || Method2() || Method3();
 ```
 
 **Performance Benefits:**
+
 - ✅ **Stops at first true result** - doesn't evaluate unnecessary methods
 - ✅ **Fast execution** - most common case (LicenseManager) is checked first
 - ✅ **Minimal overhead** - expensive operations only run when needed
@@ -108,7 +122,8 @@ return Method1() || Method2() || Method3();
 ## Execution Flow Examples
 
 ### 🎨 **Design Mode Scenario**
-```
+
+```text
 Visual Studio Designer Opens KryptonForm
 ├── Constructor executes
 ├── IsInDesignMode() called
@@ -119,7 +134,8 @@ Visual Studio Designer Opens KryptonForm
 ```
 
 ### 🏃 **Runtime Scenario**
-```
+
+```text
 Application Launches with KryptonForm
 ├── Constructor executes
 ├── IsInDesignMode() called
@@ -132,7 +148,8 @@ Application Launches with KryptonForm
 ```
 
 ### 🔄 **Runtime Property Access**
-```
+
+```text
 User Right-Clicks Title Bar
 ├── WndProc receives WM_NCRBUTTONDOWN
 ├── IsInDesignMode() called
@@ -147,23 +164,28 @@ User Right-Clicks Title Bar
 ## Why Multiple Detection Methods Are Necessary
 
 ### 🕐 **Timing Issues**
+
 Different phases of control lifecycle require different detection methods:
 
 | Phase | Primary Method | Why |
-|-------|---------------|-----|
+| --- | --- | --- |
 | **Constructor** | `LicenseManager.UsageMode` | Site not available yet |
 | **After Siting** | `Site?.DesignMode` | Most reliable when available |
 | **Edge Cases** | Container check | Handles complex scenarios |
 
 ### 🛡️ **Reliability Issues**
+
 Single-method detection can fail due to:
+
 - **Timing dependencies** - Site property not always available
 - **Version differences** - Behavior varies across .NET versions
 - **Designer complexities** - Visual Studio designer has complex initialization
 - **Edge cases** - Nested containers, custom designers, etc.
 
 ### 🎯 **Coverage Gaps**
+
 Each method covers different scenarios:
+
 - `LicenseManager.UsageMode` - **Global application state**
 - `Site?.DesignMode` - **Individual control state**
 - Container check - **Related component state**
@@ -171,16 +193,19 @@ Each method covers different scenarios:
 ## Performance Analysis
 
 ### ⚡ **Execution Time**
+
 - **Typical case**: ~0.001ms (LicenseManager check only)
 - **Complex case**: ~0.01ms (all three checks)
 - **Cached scenarios**: Could be optimized with caching if needed
 
 ### 💾 **Memory Impact**
+
 - **Zero allocation** in most cases
 - **Minimal LINQ allocation** for container check (rare)
 - **No persistent state** - method is stateless
 
 ### 🔄 **Call Frequency**
+
 - **Constructor**: Once per form instance
 - **Runtime**: Only when system menu operations occur
 - **Designer**: Not called (service not created)
@@ -188,6 +213,7 @@ Each method covers different scenarios:
 ## Critical Importance for System Menu
 
 ### 🚫 **Without This Method**
+
 If this method didn't exist or was unreliable:
 
 ```csharp
@@ -205,6 +231,7 @@ public KryptonForm()
 ```
 
 ### ✅ **With This Method**
+
 The method enables clean separation:
 
 ```csharp
@@ -227,23 +254,29 @@ public KryptonForm()
 ## Real-World Impact
 
 ### 🎨 **Designer Experience**
+
 **Before:**
+
 - ❌ Cannot drag controls from toolbox
 - ❌ Intermittent functionality
 - ❌ Form selection issues
 
 **After:**
+
 - ✅ Seamless drag and drop
 - ✅ No visual blocking
 - ✅ Consistent behavior
 - ✅ Proper form selection
 
 ### 🏃 **Runtime Experience**
+
 **Before:**
+
 - ✅ System menu worked
 - ❌ But with designer interference code overhead
 
 **After:**
+
 - ✅ System menu works perfectly
 - ✅ No unnecessary overhead
 - ✅ Cleaner, more efficient code
@@ -251,6 +284,7 @@ public KryptonForm()
 ## Usage in KryptonForm
 
 ### 🏗️ **Constructor Usage**
+
 ```csharp
 // Primary usage - determines service creation
 if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
@@ -261,6 +295,7 @@ if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
 ```
 
 ### 🎛️ **Runtime Method Usage**
+
 ```csharp
 // Used in system menu methods
 protected override void ShowSystemMenu(Point screenLocation)
@@ -273,6 +308,7 @@ protected override void ShowSystemMenu(Point screenLocation)
 ```
 
 ### 🖱️ **Message Handling Usage**
+
 ```csharp
 // Used in message processing
 else if (m.Msg == PI.WM_.NCRBUTTONDOWN)
@@ -287,6 +323,7 @@ else if (m.Msg == PI.WM_.NCRBUTTONDOWN)
 ## Error Handling and Edge Cases
 
 ### 🛡️ **Exception Safety**
+
 ```csharp
 // The method is designed to be exception-safe
 // Each check is protected by null-conditional operators
@@ -295,12 +332,15 @@ Site?.Container?.Components?.OfType<Control>()  // Safe navigation
 ```
 
 ### 🔄 **Fallback Behavior**
+
 If all detection methods fail:
+
 - **Default assumption**: Not in design mode
 - **Reason**: Safer to have system menu functionality than to break it
 - **Behavior**: System menu will be available (might cause designer issues, but app won't crash)
 
 ### 🎯 **Edge Case Handling**
+
 - **Null Site**: Handled by null-conditional operators
 - **Null Container**: Handled by safe navigation
 - **Exception in LINQ**: Method doesn't throw, returns false
@@ -309,6 +349,7 @@ If all detection methods fail:
 ## Testing and Validation
 
 ### 🧪 **How to Test**
+
 ```csharp
 // Test in different contexts
 public void TestDesignModeDetection()
@@ -326,6 +367,7 @@ public void TestDesignModeDetection()
 ```
 
 ### ✅ **Validation Scenarios**
+
 1. **Visual Studio Designer**: Method should return `true`
 2. **Runtime Application**: Method should return `false`
 3. **Unit Tests**: Method should return `false`
@@ -336,24 +378,31 @@ public void TestDesignModeDetection()
 ### ❌ **Single Method Approaches**
 
 #### **Option 1: Only LicenseManager**
+
 ```csharp
 private bool IsInDesignMode() => LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 ```
+
 **Problem**: Misses some designer scenarios where LicenseManager isn't set correctly
 
 #### **Option 2: Only Site.DesignMode**
+
 ```csharp
 private bool IsInDesignMode() => Site?.DesignMode == true;
 ```
+
 **Problem**: Not available during constructor, unreliable timing
 
 #### **Option 3: Process Name Detection**
+
 ```csharp
 private bool IsInDesignMode() => Process.GetCurrentProcess().ProcessName == "devenv";
 ```
+
 **Problem**: Unreliable, breaks with different IDEs, not future-proof
 
 ### ✅ **Why Multi-Method Approach Is Superior**
+
 - **Comprehensive coverage** of all scenarios
 - **Robust against timing issues**
 - **Future-proof** against framework changes
@@ -363,9 +412,10 @@ private bool IsInDesignMode() => Process.GetCurrentProcess().ProcessName == "dev
 ## Integration with Krypton Architecture
 
 ### 🏗️ **Architectural Role**
+
 The method serves as the **gatekeeper** for designer vs runtime behavior:
 
-```
+```text
 KryptonForm Architecture Decision Tree
 ├── IsInDesignMode() == true
 │   ├── System menu service = null
@@ -380,7 +430,9 @@ KryptonForm Architecture Decision Tree
 ```
 
 ### 🔗 **Integration Points**
+
 The method is used throughout KryptonForm for:
+
 1. **Service creation decisions** (constructor)
 2. **Property access validation** (KryptonSystemMenu property)
 3. **Method execution control** (ShowSystemMenu, etc.)
@@ -389,18 +441,21 @@ The method is used throughout KryptonForm for:
 ## Best Practices
 
 ### ✅ **When to Use This Method**
+
 - **System menu operations** that should be disabled in designer
 - **Resource-intensive initialization** that's not needed in designer
 - **Event handling** that interferes with designer operations
 - **Message processing** that blocks designer functionality
 
 ### ❌ **When NOT to Use This Method**
+
 - **Property getters/setters** that need to work in designer
 - **Basic control functionality** that should work everywhere
 - **Designer-required operations** like property serialization
 - **Performance-critical paths** where the check overhead matters
 
 ### 🎯 **Usage Pattern**
+
 ```csharp
 // Correct usage pattern
 public void SomeSystemMenuOperation()
@@ -421,6 +476,7 @@ public void SomeSystemMenuOperation()
 ### ⚡ **Optimization Details**
 
 #### **Short-Circuit Evaluation**
+
 ```csharp
 // Evaluation stops at first true result
 LicenseManager.UsageMode == LicenseUsageMode.Designtime  // Check 1: Fast
@@ -429,11 +485,13 @@ LicenseManager.UsageMode == LicenseUsageMode.Designtime  // Check 1: Fast
 ```
 
 #### **Typical Performance**
+
 - **Design Mode**: ~0.001ms (stops at first check)
 - **Runtime**: ~0.002ms (evaluates first two checks)
 - **Edge Cases**: ~0.01ms (evaluates all three checks)
 
 #### **Memory Impact**
+
 - **Zero allocation** in 95% of cases
 - **Minimal LINQ allocation** only in complex edge cases
 - **No persistent state** - method is stateless
@@ -441,6 +499,7 @@ LicenseManager.UsageMode == LicenseUsageMode.Designtime  // Check 1: Fast
 ### 🚀 **Performance Optimizations**
 
 #### **Could Add Caching (If Needed)**
+
 ```csharp
 private bool? _cachedDesignMode;
 private DateTime _lastCheck;
@@ -465,6 +524,7 @@ private bool IsInDesignMode()
 ```
 
 **Note**: Caching not currently implemented because:
+
 - Method is not called frequently enough to justify complexity
 - Current performance is already excellent
 - Stateless approach is simpler and more reliable
@@ -472,7 +532,8 @@ private bool IsInDesignMode()
 ## Real-World Scenarios
 
 ### 🎨 **Scenario 1: Visual Studio Designer**
-```
+
+```text
 Developer opens MyForm.cs in designer
 ├── Visual Studio creates form instance
 ├── LicenseManager.UsageMode = LicenseUsageMode.Designtime
@@ -483,7 +544,8 @@ Developer opens MyForm.cs in designer
 ```
 
 ### 🏃 **Scenario 2: Application Runtime**
-```
+
+```text
 User runs application
 ├── Application creates form instance
 ├── LicenseManager.UsageMode = LicenseUsageMode.Runtime
@@ -495,7 +557,8 @@ User runs application
 ```
 
 ### 🧪 **Scenario 3: Unit Testing**
-```
+
+```text
 Unit test creates form
 ├── Test framework creates form instance
 ├── LicenseManager.UsageMode = LicenseUsageMode.Runtime
@@ -508,6 +571,7 @@ Unit test creates form
 ## Debugging and Diagnostics
 
 ### 🔍 **Debug Information**
+
 ```csharp
 public void DiagnoseDesignMode(KryptonForm form)
 {
@@ -533,7 +597,8 @@ public void DiagnoseDesignMode(KryptonForm form)
 ### 🐛 **Common Debug Scenarios**
 
 #### **System Menu Appears in Designer**
-```
+
+```text
 Problem: System menu interfering with designer
 Debug Steps:
 1. Check IsInDesignMode() result in constructor
@@ -542,7 +607,8 @@ Debug Steps:
 ```
 
 #### **System Menu Missing at Runtime**
-```
+
+```text
 Problem: No system menu functionality at runtime
 Debug Steps:
 1. Check IsInDesignMode() result at runtime
@@ -553,13 +619,16 @@ Debug Steps:
 ## Framework Compatibility
 
 ### 📋 **Supported Frameworks**
+
 - ✅ **.NET Framework 4.7.2+**: Full support
 - ✅ **.NET 8.0+**: Full support  
 - ✅ **.NET 9.0+**: Full support
 - ✅ **.NET 10.0+**: Full support
 
 ### 🔄 **Cross-Version Consistency**
+
 The three detection methods work consistently across all supported .NET versions:
+
 - `LicenseManager.UsageMode` - Available since .NET Framework 1.0
 - `Site?.DesignMode` - Standard since .NET Framework 1.0
 - LINQ operations - Available in all target frameworks
@@ -567,12 +636,14 @@ The three detection methods work consistently across all supported .NET versions
 ## Security Considerations
 
 ### 🔒 **Security Implications**
+
 - **No security risks** - method only reads framework state
 - **No external dependencies** - uses only built-in .NET APIs
 - **No network access** - purely local detection
 - **No file system access** - memory-only operations
 
 ### 🛡️ **Defensive Programming**
+
 ```csharp
 // Method is designed to fail safely
 // If all detection fails, assumes runtime mode
@@ -582,13 +653,16 @@ The three detection methods work consistently across all supported .NET versions
 ## Future Considerations
 
 ### 🔮 **Potential Enhancements**
+
 1. **Performance caching** if method becomes frequently called
 2. **Additional detection methods** if new scenarios arise
 3. **Telemetry integration** for monitoring detection accuracy
 4. **Configuration options** for overriding detection in special cases
 
 ### 📈 **Extensibility**
+
 The method could be extended with additional detection logic:
+
 ```csharp
 private bool IsInDesignMode() =>
     LicenseManager.UsageMode == LicenseUsageMode.Designtime ||

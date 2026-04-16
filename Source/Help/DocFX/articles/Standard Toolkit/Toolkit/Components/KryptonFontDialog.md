@@ -6,7 +6,7 @@ The `KryptonFontDialog` class provides a Krypton-themed wrapper around the stand
 
 ## Class Hierarchy
 
-```
+```text
 System.Object
 └── System.ComponentModel.Component
     └── System.Windows.Forms.CommonDialog
@@ -21,6 +21,7 @@ public KryptonFontDialog()
 ```
 
 The constructor initializes the enhanced features:
+
 - **CommonDialogHandler**: Manages Krypton theming and window behavior
 - **Default Icon**: Uses `DialogImageResources.font`
 - **Default Icon Display**: `ShowIcon = false`
@@ -40,6 +41,7 @@ public string Title { get; set; }
 - **Designer Visible**: Yes
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonFontDialog
 {
@@ -59,6 +61,7 @@ public Icon Icon { get; set; }
 - **Designer Visible**: Yes
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonFontDialog
 {
@@ -91,12 +94,14 @@ public bool DisplayExtendedColorsButton { get; set; }
 
 **Enhanced Color Selection:**
 When enabled, replaces the standard color combobox with:
+
 - **KryptonColorButton**: Full-featured color selection
 - **Scheme Support**: Office themes and basic 16-color schemes
 - **Enhanced UX**: Better visual feedback and color preview
 - **Custom Color Support**: Selection beyond basic palette
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonFontDialog
 {
@@ -113,16 +118,19 @@ public bool DisplayIsPrinterFontDescription { get; set; }
 ```
 
 **Purpose**: Shows informational text about printer compatibility
+
 - **Category**: Behavior
 - **Implementation**: Uses internal Win32 dialog options
 - **Use Case**: Warns users when selected fonts may not print correctly
 
 **Internal Implementation:**
+
 - Accesses private `GetOption` and `SetOption` methods via reflection
 - Controls bit 0x02 in internal dialog options
 - Provides printer compatibility warnings
 
 **Usage Example:**
+
 ```csharp
 var dialog = new KryptonFontDialog
 {
@@ -180,6 +188,7 @@ public void ConfigureRichTextFont()
 ### Theme Integration
 
 The dialog automatically applies Krypton theming:
+
 - **CommonDialogHandler**: Provides consistent window styling
 - **DPI Scaling**: Automatic scaling for high-DPI displays  
 - **Palette Awareness**: Respects global Krypton palette settings
@@ -188,6 +197,7 @@ The dialog automatically applies Krypton theming:
 ### Native Integration
 
 Special considerations for font dialog behavior:
+
 - **Limited Embedding**: Avoids breaking modal loops
 - **Control Substitution**: Seamlessly replaces color combobox
 - **Event Handling**: Proper message routing and button states
@@ -388,7 +398,7 @@ var dialog = new FontDialog();
 var dialog = new KryptonFontDialog();
 ```
 
-### Enhanced Features
+### Configuration with Krypton options
 
 ```csharp
 // Standard FontDialog (basic)

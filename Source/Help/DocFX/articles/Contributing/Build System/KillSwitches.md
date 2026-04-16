@@ -28,27 +28,28 @@ Every release job begins with a `Kill Switch Check` step that reads a repository
 
 Every subsequent action in the job checks the `enabled` output. If the switch is active the expression evaluates to `false`, GitHub skips the step, and the build/page/publish stages never start.
 
-```38:115:.github/workflows/release.yml
+Example:
+
+```yaml
 - name: Build Release
   if: steps.release_kill_switch.outputs.enabled == 'true'
-  run: msbuild "Scripts/Build/build.proj" /t:Build /p:Configuration=Release /p:Platform="Any CPU"
-- name: Push NuGet Packages to nuget.org
-  if: steps.release_kill_switch.outputs.enabled == 'true'
-  id: push_nuget
-  shell: pwsh
+  run: msbuild "Scripts/Build/build.proj" /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:UseArtifactsOutput=true
 ```
+
+**Build** and **Pack** steps use `/p:UseArtifactsOutput=true` so outputs land under `artifacts/`; **Push** collects `.nupkg` files from `artifacts/packages/...` first, then `Bin/Packages/...`.
 
 ## Configuration
 
 | Branch / Job Id | Variable name | Protected artifacts |
 | --- | --- | --- |
 | `master` (`release-master`) | `RELEASE_DISABLED` | Stable builds, packages, Discord master announcement |
-| `V105-LTS` (`release-v105-lts`) | `RELEASE_DISABLED` | Latest LTS stream (shares the same switch to avoid drift) |
-| `V85-LTS` (`release-v85-lts`) | `LTS_DISABLED` | Legacy LTS channel |
+| `V105-LTS` (`release-v105-lts`) | `RELEASE_DISABLED` | LTS stream (same switch as `master` so both channels freeze together) |
 | `canary` (`release-canary`) | `CANARY_DISABLED` | Canary builds and related Discord/webhook posts |
 | `alpha` (`release-alpha`) | `NIGHTLY_DISABLED` | Nightly/alpha drops and notifications |
 
-> Why two LTS jobs share `RELEASE_DISABLED`: the V105 branch follows the same release cadence as `master`, so maintainers typically want to freeze both at once. If you need V105 to keep running while master is frozen, temporarily duplicate the kill-switch step under a new variable before toggling.
+These rows match the jobs defined in `.github/workflows/release.yml`. Older docs referred to a separate `V85-LTS` job (`LTS_DISABLED`); that job is not in the current workflow file—use `release.yml` as the source of truth.
+
+> Why `master` and `V105-LTS` share `RELEASE_DISABLED`: both use the same stable packaging path; maintainers usually want to freeze both at once. If you need different behavior, introduce a dedicated variable and gate the V105 job separately.
 
 ### Setting or clearing a switch
 

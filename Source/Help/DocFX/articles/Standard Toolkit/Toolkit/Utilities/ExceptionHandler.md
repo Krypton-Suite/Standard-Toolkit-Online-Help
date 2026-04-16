@@ -1,6 +1,7 @@
 # ExceptionHandler Guide
 
 ## Table of Contents
+
 1. [Getting Started](#getting-started)
 2. [Basic Usage](#basic-usage)
 3. [Advanced Configuration](#advanced-configuration)
@@ -736,7 +737,7 @@ public void LoadConfiguration()
 
 ## API Documentation
 
-For API documentation, see [here](ExceptionHandlerAPIDocumentation.md).
+For API documentation, see [Exception handler API documentation](ExceptionHandlerAPIDocumentation.md).
 
 ## Best Practices Summary
 
@@ -757,7 +758,7 @@ This guide provides comprehensive coverage of how to effectively use the Excepti
 
 ## Related Documentation
 
-- [KryptonExceptionDialog](../Components/KryptonExceptionDialog.md) - Practical tutorials and recipes ⭐ **Start Here**
-- [KryptonExceptionDialog Quick Start](../Components/KryptonExceptionDialogQuickStart.md) - Complete API documentation for the public exception handler
+- [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md) - API reference (V110+: `Krypton.Utilities`) ⭐ **Start Here**
+- [KryptonExceptionDialog Quick Start](../../Utilities/KryptonExceptionDialogQuickStart.md) - Quick start (V110+: `Krypton.Utilities`)
 - [ExceptionHandler API Documentation](ExceptionHandlerAPIDocumentation.md) - Internal implementation and architecture details
 - [Localization Guide](LocalizationGuide.md) - For localizing exception dialog strings

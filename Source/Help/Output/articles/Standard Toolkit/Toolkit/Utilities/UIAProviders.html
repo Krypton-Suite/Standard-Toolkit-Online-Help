@@ -128,10 +128,10 @@
 </ol>
 <h3 id="example-scenario">Example Scenario</h3>
 <p><strong>Before Implementation:</strong></p>
-<pre><code>Narrator: &quot;Edit, no name specified&quot;
+<pre><code class="lang-text">Narrator: &quot;Edit, no name specified&quot;
 </code></pre>
 <p><strong>After Implementation:</strong></p>
-<pre><code>Narrator: &quot;Test TextBox, edit, type in text&quot;
+<pre><code class="lang-text">Narrator: &quot;Test TextBox, edit, type in text&quot;
 </code></pre>
 <hr>
 <h2 id="architecture--design">Architecture &amp; Design</h2>
@@ -144,7 +144,7 @@
 <li><strong>Fallback Support</strong>: Provide sensible defaults when internal control information is unavailable</li>
 </ol>
 <h3 id="architecture-diagram">Architecture Diagram</h3>
-<pre><code>┌─────────────────────────────────────────────────────────┐
+<pre><code class="lang-text">┌─────────────────────────────────────────────────────────┐
 │                    KryptonTextBox                       │
 │  ┌───────────────────────────────────────────────────┐  │
 │  │  CreateAccessibilityInstance()                    │  │
@@ -177,7 +177,7 @@
 └─────────────────────────────────────────────────────────┘
 </code></pre>
 <h3 id="class-hierarchy">Class Hierarchy</h3>
-<pre><code>Control.ControlAccessibleObject (base class)
+<pre><code class="lang-text">Control.ControlAccessibleObject (base class)
     │
     ├── KryptonTextBoxAccessibleObject
     ├── KryptonRichTextBoxAccessibleObject
@@ -194,7 +194,7 @@
 <h3 id="core-components">Core Components</h3>
 <h4 id="1-accessibleobject-classes">1. AccessibleObject Classes</h4>
 <p>Each Krypton control has a corresponding <code>AccessibleObject</code> class located in:</p>
-<pre><code>Source/Krypton Components/Krypton.Toolkit/Utilities/Accessibility/
+<pre><code class="lang-text">Source/Krypton Components/Krypton.Toolkit/Utilities/Accessibility/
 </code></pre>
 <p><strong>Structure:</strong></p>
 <pre><code class="lang-csharp">internal class KryptonTextBoxAccessibleObject : Control.ControlAccessibleObject
@@ -655,7 +655,7 @@ return AccessibleRole.Text;  // Fallback
 <h4 id="step-1-create-the-accessibleobject-class">Step 1: Create the AccessibleObject Class</h4>
 <ol>
 <li><p>Create a new file in <code>Utilities/Accessibility/</code>:</p>
-<pre><code>Krypton[ControlName]AccessibleObject.cs
+<pre><code class="lang-text">Krypton[ControlName]AccessibleObject.cs
 </code></pre>
 </li>
 <li><p>Use the template from <code>KryptonTextBoxAccessibleObject.cs</code> as a starting point</p>
@@ -779,7 +779,7 @@ protected override AccessibleObject CreateAccessibilityInstance()
 </li>
 </ol>
 <p><strong>Expected Output:</strong></p>
-<pre><code>&quot;Test TextBox, edit, type in text&quot;
+<pre><code class="lang-text">&quot;Test TextBox, edit, type in text&quot;
 &quot;Test ComboBox, combo box, Option 1, collapsed&quot;
 &quot;Test ListBox, list, Item 1, 1 of 5&quot;
 </code></pre>
@@ -871,9 +871,11 @@ if (!_owner.IsHandleCreated)
 </ul>
 <p><strong>Solutions:</strong></p>
 <ul>
-<li>This is expected on legacy TFMs</li>
-<li>Our implementation provides fallback roles</li>
-<li>Verify fallback logic is working:
+<li><p>This is expected on legacy TFMs</p>
+</li>
+<li><p>Our implementation provides fallback roles</p>
+</li>
+<li><p>Verify fallback logic is working:</p>
 <pre><code class="lang-csharp">if (role != AccessibleRole.Default &amp;&amp; role != AccessibleRole.None)
 {
     return role;
@@ -890,15 +892,15 @@ return AccessibleRole.Text;  // Fallback
 </ul>
 <p><strong>Solutions:</strong></p>
 <ul>
-<li>Set <code>AccessibleName</code> on the control:
+<li><p>Set <code>AccessibleName</code> on the control:</p>
 <pre><code class="lang-csharp">kryptonTextBox1.AccessibleName = &quot;User Name Input&quot;;
 </code></pre>
 </li>
-<li>Or set <code>Name</code> property:
+<li><p>Or set <code>Name</code> property:</p>
 <pre><code class="lang-csharp">kryptonTextBox1.Name = &quot;txtUserName&quot;;
 </code></pre>
 </li>
-<li>Verify fallback logic:
+<li><p>Verify fallback logic:</p>
 <pre><code class="lang-csharp">return base.Name ?? _owner.Name;
 </code></pre>
 </li>

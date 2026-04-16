@@ -21,9 +21,10 @@ KryptonTaskDialog is a modern, flexible dialog component for the Krypton Toolkit
 
 ### 📘 [Developer Documentation](KryptonTaskDialogDeveloperOverView.md)
 
-**Comprehensive guide for developers**
+#### Comprehensive guide for developers
 
 Complete documentation covering:
+
 - Overview and key features
 - Architecture and design philosophy
 - Getting started guide
@@ -44,11 +45,12 @@ Complete documentation covering:
 
 ---
 
-### ⚡ [Quick Reference Guide](KryptonTaskDialog-uick-eference.md)
+### ⚡ [Quick Reference Guide](KryptonTaskDialogQuickReference.md)
 
-**Fast lookup and cheat sheet**
+#### Fast lookup and cheat sheet
 
 Quick reference including:
+
 - Quick start example
 - Core concepts summary
 - All element properties at a glance
@@ -64,11 +66,12 @@ Quick reference including:
 
 ---
 
-### 🏗️ [Technical Architecture](KryptonTaskDialo-Architecture.md)
+### 🏗️ [Technical Architecture](KryptonTaskDialogArchitecture.md)
 
-**Internal implementation details**
+#### Internal implementation details
 
 Technical documentation covering:
+
 - Class hierarchy and inheritance
 - Design patterns used (Composite, Template Method, Observer, etc.)
 - Component implementation details
@@ -87,9 +90,10 @@ Technical documentation covering:
 
 ### 📖 [Complete API Reference](KryptonTaskDialogAPIReference.md)
 
-**Exhaustive API documentation**
+#### Exhaustive API documentation
 
 Complete API reference including:
+
 - All classes with inheritance chains
 - All properties with types and descriptions
 - All methods with signatures and parameters
@@ -251,7 +255,7 @@ KryptonTaskDialog follows these design principles:
 
 ### Visual Layout (Top to Bottom)
 
-```
+```text
 ┌────────────────────────────────────┐
 │  Heading (Icon + Title)            │
 ├────────────────────────────────────┤
@@ -333,21 +337,26 @@ All in [Developer Documentation - Usage Examples](KryptonTaskDialogDeveloperOver
 ### Common Issues
 
 **Dialog not displaying?**
+
 - Ensure at least one element has `Visible = true`
 - Check `StartPosition` is valid
 - Verify parent owner window is valid
 
 **Elements not visible?**
+
 - Check element's `Visible` property
 - Ensure you haven't called `HideAllElements()` without re-showing elements
 
 **Cross-thread exceptions?**
+
 - Use `Invoke()` when updating from background threads:
+
   ```csharp
   this.Invoke(() => taskDialog.Content.Text = "Update");
   ```
 
 **Theme not applied?**
+
 - Ensure `KryptonManager.CurrentGlobalPalette` is set before creating dialog
 - Theme changes are automatically detected during dialog lifetime
 
@@ -360,7 +369,7 @@ All in [Developer Documentation - Usage Examples](KryptonTaskDialogDeveloperOver
 This documentation covers the KryptonTaskDialog component of the Krypton Standard Toolkit. For contributing:
 
 1. Report issues on the [GitHub repository](https://github.com/Krypton-Suite/Standard-Toolkit)
-2. Follow the repository guidelines in [AGENTS.md](../AGENTS.md)
+2. Follow the repository guidelines in [AGENTS.md](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/AGENTS.md)
 3. Submit pull requests following the contribution guidelines
 
 ---
@@ -378,10 +387,10 @@ This documentation covers the KryptonTaskDialog component of the Krypton Standar
 ## Quick Links
 
 | Document | Purpose | Size |
-|----------|---------|------|
+| --- | --- | --- |
 | [📘 Developer Documentation](KryptonTaskDialogDeveloperOverView.md) | Complete guide | ~150 pages |
-| [⚡ Quick Reference](KryptonTaskDialog-Quick-Rference.md) | Fast lookup | ~20 pages |
-| [🏗️ Architecture](KryptonTaskDialo-Architecture.md) | Internals | ~50 pages |
+| [⚡ Quick Reference](KryptonTaskDialogQuickReference.md) | Fast lookup | ~20 pages |
+| [🏗️ Architecture](KryptonTaskDialogArchitecture.md) | Internals | ~50 pages |
 | [📖 API Reference](KryptonTaskDialogAPIReference.md) | API docs | ~40 pages |
 
 ---
@@ -389,4 +398,3 @@ This documentation covers the KryptonTaskDialog component of the Krypton Standar
 **Welcome to KryptonTaskDialog!** Start with the [Getting Started](KryptonTaskDialogDeveloperOverView.md#getting-started) section or try one of the [Quick Examples](#getting-started-in-5-minutes) above.
 
 For questions or issues, please refer to the [Krypton Toolkit Repository](https://github.com/Krypton-Suite/Standard-Toolkit).
-

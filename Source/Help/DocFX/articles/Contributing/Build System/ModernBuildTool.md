@@ -10,6 +10,12 @@ ModernBuild is an interactive Terminal UI (TUI) application that provides a mode
 
 **Target Frameworks**: net472, net8.0-windows, net9.0-windows, net10.0-windows
 
+## Build output layout
+
+ModernBuild discovers NuGet package folders in a fixed order: `artifacts/packages/<Configuration>/`, `artifacts/packages/Release/`, `Bin/Packages/<Configuration>/`, then `Bin/<Configuration>/` and `Bin/Release/`. Push and “Create ZIP” use the first folder that exists. The timestamped package ZIP is always written to the repo root `Bin/<yyyyMMdd>_NuGet_Packages.zip` (even when packages were produced under `artifacts/packages/`). F7 **Clean** removes `Bin/`, per-project `obj/` folders, and `Logs/`; it does **not** delete the `artifacts/` tree—remove that manually if you need a full clean after an artifacts-mode build.
+
+Local script builds default to legacy `Bin/` unless you pass `/p:UseArtifactsOutput=true` to MSBuild (GitHub Actions use that for orchestrated jobs).
+
 ## Features
 
 - Interactive keyboard-driven UI
@@ -117,7 +123,7 @@ Build, rebuild, pack, and clean operations
 | **F3** | Config | Release ↔ Debug |
 | **F5** | Run | Execute selected action |
 | **F6** | Tail | Buffer size: 200 → 500 → 1000 lines |
-| **F7** | Clean | Delete Bin/, obj/, Logs/ |
+| **F7** | Clean | Delete `Bin/`, Krypton `obj/`, `Logs/` (not `artifacts/`) |
 | **F8** | Clear | Clear live output |
 | **F9** | PackMode | Pack → PackLite → PackAll (Stable only) |
 
@@ -196,9 +202,12 @@ Available when Channel is Stable and Action is Pack or BuildPack:
 ### Clean Operation (F7)
 
 Deletes:
+
 - `Bin/` directory
-- `obj/` directories in all Krypton projects
+- `obj/` directories in all Krypton component projects
 - `Logs/` directory
+
+The optional `artifacts/` output tree is not removed by F7.
 
 **Warning**: This is destructive and cannot be undone!
 
@@ -224,7 +233,7 @@ Package creation, validation, and publishing to NuGet.org or GitHub Packages
 | **F6** | Symbols | Toggle `.snupkg` inclusion |
 | **F7** | SkipDup | Toggle `--skip-duplicate` flag |
 | **F8** | Source | Default → NuGet.org → GitHub → Custom |
-| **Create ZIP** | Create `Bin/<yyyyMMdd>_NuGet_Packages.zip` |
+| **Create ZIP** | Create `Bin/<yyyyMMdd>_NuGet_Packages.zip` from discovered packages |
 | **TEST** | Preview push commands without executing |
 
 ### Action Selection (F2)
@@ -236,7 +245,7 @@ Package creation, validation, and publishing to NuGet.org or GitHub Packages
 
 **Push**:
 - Publishes existing packages only
-- Requires packages in `Bin/Packages/<Configuration>/`
+- Requires packages in a discovered folder (`artifacts/packages/...` or `Bin/Packages/...`)
 
 **Pack+Push**:
 - Packs packages
@@ -316,16 +325,18 @@ nuget.exe sources add -Name github ^
 ### Create ZIP
 
 Creates archive of all NuGet packages:
-- Filename: `Bin/<yyyyMMdd>_NuGet_Packages.zip`
-- Includes all `.nupkg` and optionally `.snupkg` files
+
+- Packages are read from the first existing candidate folder (see [Build output layout](#build-output-layout)).
+- Output filename: `Bin/<yyyyMMdd>_NuGet_Packages.zip`
+- Includes all `.nupkg` and optionally `.snupkg` files from that folder
 - Useful for offline distribution
 
 ### TEST Mode
 
 Previews `nuget.exe push` commands without executing:
 ```
-nuget.exe push Bin\Packages\Release\Krypton.Toolkit.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
-nuget.exe push Bin\Packages\Release\Krypton.Ribbon.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
+nuget.exe push <packages-folder>\Krypton.Toolkit.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
+nuget.exe push <packages-folder>\Krypton.Ribbon.100.25.1.305.nupkg -Source https://api.nuget.org/v3/index.json
 ...
 ```
 
@@ -539,7 +550,8 @@ Enable SkipDup (F7) when testing publishing to avoid errors.
 ### 6. Verify Packages Locally
 
 Before publishing:
-1. Check `Bin/Packages/<Configuration>/`
+
+1. Check `artifacts/packages/<Configuration>/` or `Bin/Packages/<Configuration>/` (whichever your build produced)
 2. Verify version numbers
 3. Inspect with NuGet Package Explorer
 

@@ -1,11 +1,13 @@
 # KryptonExceptionDialog API Documentation
 
+**V110+:** The public **`KryptonExceptionDialog`** API is in **`Krypton.Utilities`**. Prefer **[Utilities/KryptonExceptionDialog.md](../../Utilities/KryptonExceptionDialog.md)** and **[Quick Start](../../Utilities/KryptonExceptionDialogQuickStart.md)**; this file is a legacy mirror and may be out of date.
+
 ## Overview
 
 `KryptonExceptionDialog` is a static utility class that provides a user-friendly, feature-rich dialog for displaying exception information in Krypton Toolkit applications. It serves as the public interface to the internal `VisualExceptionDialogForm` class, offering multiple overloaded methods to display exceptions with various customization options.
 
-**Namespace:** `Krypton.Toolkit`  
-**Assembly:** `Krypton.Toolkit`  
+**Namespace (V110+):** `Krypton.Utilities`  
+**Assembly (V110+):** `Krypton.Utilities`  
 **Class Type:** `public static class`  
 **Designer Category:** `code` (not available in Visual Studio Toolbox)
 
@@ -30,7 +32,7 @@
 
 ### Class Hierarchy
 
-```
+```text
 KryptonExceptionDialog (static facade)
     └── VisualExceptionDialogForm (internal implementation)
             └── KryptonForm
@@ -63,20 +65,24 @@ KryptonExceptionDialog (static facade)
 Displays the specified exception using default settings.
 
 **Signature:**
+
 ```csharp
 public static void Show(Exception exception)
 ```
 
 **Parameters:**
+
 - `exception` (`Exception`) - The exception to display. Cannot be `null`.
 
 **Remarks:**
+
 - Uses default highlight color (`Color.LightYellow`)
 - Copy button is visible by default
 - Search box is visible by default
 - No bug reporting callback
 
 **Example:**
+
 ```csharp
 try
 {
@@ -96,20 +102,24 @@ catch (Exception ex)
 Displays the exception with a custom highlight color.
 
 **Signature:**
+
 ```csharp
 public static void Show(Exception exception, Color? highlightColor)
 ```
 
 **Parameters:**
+
 - `exception` (`Exception`) - The exception to display. Cannot be `null`.
 - `highlightColor` (`Color?`) - Optional color for highlighting search results and UI elements. If `null`, defaults to `Color.LightYellow`.
 
 **Remarks:**
+
 - Allows visual customization of the dialog
 - Highlight color affects search result highlighting and UI accent colors
 - Copy button and search box use default visibility
 
 **Example:**
+
 ```csharp
 catch (Exception ex)
 {
@@ -124,11 +134,13 @@ catch (Exception ex)
 Displays the exception with control over copy button and search box visibility.
 
 **Signature:**
+
 ```csharp
 public static void Show(Exception exception, bool? showCopyButton, bool? showSearchBox)
 ```
 
 **Parameters:**
+
 - `exception` (`Exception`) - The exception to display. Cannot be `null`.
 - `showCopyButton` (`bool?`) - Controls copy button visibility:
   - `true` - Show copy button
@@ -140,11 +152,13 @@ public static void Show(Exception exception, bool? showCopyButton, bool? showSea
   - `null` - Use default (visible)
 
 **Remarks:**
+
 - Useful for simplified error dialogs where search/copy features aren't needed
 - When search box is hidden, the tree view remains visible but search filtering is disabled
 - Copy button enables users to copy exception details to clipboard
 
 **Example:**
+
 ```csharp
 catch (Exception ex)
 {
@@ -160,22 +174,26 @@ catch (Exception ex)
 Displays the exception with full UI customization options.
 
 **Signature:**
+
 ```csharp
 public static void Show(Exception exception, Color? highlightColor, bool? showCopyButton, bool? showSearchBox)
 ```
 
 **Parameters:**
+
 - `exception` (`Exception`) - The exception to display. Cannot be `null`.
 - `highlightColor` (`Color?`) - Optional highlight color. Defaults to `Color.LightYellow` if `null`.
 - `showCopyButton` (`bool?`) - Optional copy button visibility. Defaults to `true` if `null`.
 - `showSearchBox` (`bool?`) - Optional search box visibility. Defaults to `true` if `null`.
 
 **Remarks:**
+
 - Most flexible overload without bug reporting
 - Combines visual customization with feature toggles
 - All parameters are optional (nullable), allowing partial customization
 
 **Example:**
+
 ```csharp
 catch (Exception ex)
 {
@@ -193,11 +211,13 @@ catch (Exception ex)
 Displays the exception with all customization options including bug reporting.
 
 **Signature:**
+
 ```csharp
 public static void Show(Exception exception, Color? highlightColor, bool? showCopyButton, bool? showSearchBox, Action<Exception>? bugReportCallback)
 ```
 
 **Parameters:**
+
 - `exception` (`Exception`) - The exception to display. Cannot be `null`.
 - `highlightColor` (`Color?`) - Optional highlight color. Defaults to `Color.LightYellow` if `null`.
 - `showCopyButton` (`bool?`) - Optional copy button visibility. Defaults to `true` if `null`.
@@ -205,12 +225,14 @@ public static void Show(Exception exception, Color? highlightColor, bool? showCo
 - `bugReportCallback` (`Action<Exception>?`) - Optional callback invoked when "Report Bug" button is clicked. If provided, enables the bug reporting button.
 
 **Remarks:**
+
 - Most comprehensive overload with all features
 - Bug report callback receives the exception instance
 - When callback is provided, a "Report Bug" button appears in the dialog
 - Useful for integrating with bug tracking systems or user feedback mechanisms
 
 **Example:**
+
 ```csharp
 catch (Exception ex)
 {
@@ -238,6 +260,7 @@ catch (Exception ex)
 Internal implementation method that delegates to `VisualExceptionDialogForm`.
 
 **Signature:**
+
 ```csharp
 private static void ShowCore(Exception exception, Color? highlightColor, bool? showCopyButton, bool? showSearchBox, Action<Exception>? bugReportCallback)
 ```
@@ -404,7 +427,7 @@ catch (Exception ex)
 ### Parameter Defaults
 
 | Parameter | Default Value | Notes |
-|-----------|--------------|-------|
+| --- | --- | --- |
 | `highlightColor` | `Color.LightYellow` | Applied when `null` is passed |
 | `showCopyButton` | `true` | Visible when `null` is passed |
 | `showSearchBox` | `true` | Visible when `null` is passed |
@@ -431,7 +454,7 @@ The dialog automatically adapts to:
 
 ### Layout Structure
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │              Exception Caught                            │
 ├──────────────┬──────────┬───────────────────────────────┤
@@ -482,7 +505,7 @@ The dialog automatically adapts to:
 
 ### Node Hierarchy
 
-```
+```text
 Root Exception Node
 ├── Stack Trace
 │   ├── Frame 1: at Namespace.Class.Method() in File.cs:line 42
@@ -509,7 +532,7 @@ Root Exception Node
 
 When an exception node is selected, the details panel displays:
 
-```
+```text
 Type: ExceptionTypeName
 Message: Exception message text
 
@@ -531,7 +554,7 @@ Inner exception message or "None"
 All UI strings are accessed through `KryptonManager.Strings.ExceptionDialogStrings`:
 
 | Property | Default Value | Usage |
-|----------|--------------|-------|
+| --- | --- | --- |
 | `WindowTitle` | "Exception Caught" | Dialog window title |
 | `ExceptionOutlineHeader` | "Exception Outline" | Left panel header |
 | `ExceptionDetailsHeader` | "Exception Details" | Right panel header |
@@ -719,7 +742,7 @@ else
 
 Exception details are formatted as:
 
-```
+```text
 Type: {ExceptionType}
 Message: {Message}
 
@@ -754,7 +777,7 @@ InnerException:
 
 - [Krypton Toolkit Documentation](https://github.com/Krypton-Suite/Standard-Toolkit)
 - [Exception Handling Best Practices](https://docs.microsoft.com/dotnet/standard/exceptions/)
-- [KryptonBugReportingDialog Documentation](./krypton-bug-reporting-dialog-api.md) (if available)
+- [Bug reporting dialog API](../../Utilities/BugReportingDialogAPI.md)
 
 ---
 
