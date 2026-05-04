@@ -44,6 +44,6 @@ There are currently two types of package that are supported. The table below out
 | .NET Framework 4.7.2 | April 30, 2018 | TBC |
 | .NET Framework 4.7.1 | October 17, 2017 | TBC |
 | .NET Framework 4.7 | April 5, 2017 | TBC |
-| .NET Framework 4.6.2 | August 2, 2016 | TBC |
+| .NET Framework 4.6.2 | August 2, 2016 | January 12, 2027 |
 
 For current .NET releases, see [.NET downloads](https://dotnet.microsoft.com/en-us/download/dotnet). For .NET Framework, see [.NET Framework downloads](https://dotnet.microsoft.com/en-us/download/dotnet-framework).

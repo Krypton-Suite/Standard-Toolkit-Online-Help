@@ -87,6 +87,7 @@ This document provides links to the documentation provided, each will be split u
 * [Krypton Timer](Standard%20Toolkit/Toolkit/Components/KryptonTimer.md)
 * [Krypton Toast Notification](Standard%20Toolkit/Toolkit/Components/KryptonToastNotification.md)
 * [Krypton Toast Notification Manager](Standard%20Toolkit/Toolkit/Components/KryptonToastNotificationManager.md)
+* [Krypton Tool Tip](Standard%20Toolkit/Toolkit/Components/KryptonToolTip.md)
 
 ### [Controls](Standard%20Toolkit/Toolkit/Controls.md)
 

@@ -17,3 +17,4 @@ The following articles contain answers to common questions.
 * [Package Version Descriptions](Support/PackageVersionDescriptions.md)
 * [Reporting a Issue](Support/ReportingaIssue.md)
 * [Using Krypton Packages](Support/UsingKryptonPackages.md)
+* [Visual Studio Templates](Support/VisualStudioTemplates.md)
