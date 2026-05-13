@@ -14,7 +14,8 @@ Authoritative documentation for `.github/workflows/release.yml`, which coordinat
 Common characteristics:
 
 - Every job runs only when the push target matches its branch **and** the corresponding kill switch reports `enabled=true`.
-- All jobs repeat the same setup sequence (checkout → install SDKs → generate `global.json` → MSBuild & NuGet tooling → restore).
+- **SDK setup**: install **.NET 9.0.x** and **10.0.x**. Jobs that publish preview TFMs also run **Setup .NET Preview** (unless repository variable **`USE_DOTNET_PREVIEW`** is `false`) and **Pin SDK via global.json**, which resolves `sdk.version` using **`DOTNET_PREVIEW_SDK_BAND`** / **`Get-ListedSdkVersion`** when preview is enabled, or stable **10.x → 9.x** when preview is disabled (see [GitHub Actions Workflows](../../GitHubActionsWorkflows.md#repository-variables-net-preview--ci)).
+- The **`release-v105-lts`** job pins **stable** SDKs only (no preview setup step).
 - Orchestrated **Build** and **Pack** steps pass `/p:UseArtifactsOutput=true`, so outputs go under `artifacts/bin/` and `artifacts/packages/` on the runner. **Push** and **Get Version** steps try `artifacts/...` first, then fall back to legacy `Bin/...` for compatibility with older layouts or local debugging.
 - Package publishing relies on `secrets.NUGET_API_KEY`.
 
@@ -32,8 +33,8 @@ Common characteristics:
 
 1. **Release Kill Switch Check (`vars.RELEASE_DISABLED`)**  
    - Emits `enabled` output consumed by every subsequent step.
-2. **Checkout + Tooling Setup**  
-   - Dual SDK install (9.0.x and 10.0.x) plus generated `global.json`.
+2. **Checkout + SDK setup + Pin SDK via global.json + tooling**  
+   - **Setup .NET** (9.0.x / 10.0.x), optional **Setup .NET Preview** when `USE_DOTNET_PREVIEW` is not `false`, then **Pin SDK via global.json** (preview band or stable per variables).
 3. **Restore**, **Build**, **Pack** via `Scripts/Build/build.proj` with `/p:UseArtifactsOutput=true`.
 4. **Push NuGet Packages**  
    - Collects `artifacts/packages/Release/*.nupkg` and `Bin/Packages/Release/*.nupkg`.  
@@ -47,10 +48,12 @@ Common characteristics:
 
 ### 2. `release-v105-lts` (105 LTS line)
 
-Matches the `master` job with two differences:
+**Trigger:** `push` to **`V105-LTS`**.
 
-- Messaging still uses the stable Discord webhook (`DISCORD_WEBHOOK_MASTER`).
-- Fallback version tag remains standard (`v<version>`), aligning with non-LTS naming.
+Same overall pipeline as **`release-master`**, but:
+
+- **Discord**: uses **`DISCORD_WEBHOOK_MASTER`** (same secret as master).
+- **SDK**: installs **9.0.x / 10.0.x** and **Pin SDK via global.json** using **stable** 10.x → 9.x only (no **Setup .NET Preview** step in this job).
 
 ### 3. `release-canary` (Canary channel)
 
@@ -70,17 +73,19 @@ Characteristics:
 - Produces packages under `artifacts/packages/Nightly/` (with `Bin/Packages/Nightly/` as fallback for discovery scripts).
 - Discord uses `DISCORD_WEBHOOK_NIGHTLY`, referencing `.Nightly` packages. NuGet publishing for scheduled alpha/nightly drops may also be handled by `nightly.yml`; see that workflow for schedule-driven pushes.
 
-## Shared Step Details
+## Shared step details
 
-### SDK & Tooling Provisioning
+### SDK and `global.json`
 
-```pwsh
-dotnet --list-sdks | Select-String "10.0" | Split(" ")[0]
-```
+Workflow steps named **Pin SDK via global.json** run PowerShell that:
 
-The snippet above enforces the latest 10.0 SDK. If GitHub images add previews, adjust the filter to avoid matching pre-release identifiers.
+1. Lists SDKs with `dotnet --list-sdks`.
+2. Chooses a version via **`Get-ListedSdkVersion`** (matches the scripts in `.github/workflows/release.yml`).
+3. Writes repo-root **`global.json`** with `"rollForward": "latestFeature"`.
 
-### NuGet Publishing Logic
+Preview vs stable selection is driven by repository variables **`USE_DOTNET_PREVIEW`**, **`DOTNET_PREVIEW_SETUP_VERSION`**, and **`DOTNET_PREVIEW_SDK_BAND`** (see [GitHub Actions Workflows](../../GitHubActionsWorkflows.md#repository-variables-net-preview--ci)).
+
+### NuGet publishing logic
 
 - Packages iterate serially; failures log warnings but do not fail the workflow (resilience for flaky pushes).
 - Successful pushes toggle `$publishedAny` to `$true`, which determines whether Discord announcements run.

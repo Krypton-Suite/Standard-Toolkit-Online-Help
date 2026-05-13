@@ -18,6 +18,12 @@ The Krypton Toolkit build system creates NuGet packages for all five component l
 | `Krypton.Workspace` | Workspace controls | Krypton.Workspace.dll |
 | `Krypton.Docking` | Docking system | Krypton.Docking.dll |
 
+### Aggregate package (`Krypton.Standard.Toolkit`)
+
+`Krypton.Standard.Toolkit` is a meta-package (`Source/Krypton Components/Krypton.Standard.Toolkit/Krypton.Standard.Toolkit.csproj`) that bundles the main module assemblies (Docking, Navigator, Navigator.Utilities, Ribbon, Toolkit, Toolkit.JumpList, Utilities, Workspace) into **one** `.nupkg` per channel (stable **/ Canary / Nightly**). Packaging copies binaries from the shared **`$(KryptonBuildOutputRoot)<Configuration>/<TFM>/`** tree (same layout as **`Directory.Build.targets`**), not from stale per-project `bin` folders alone.
+
+Verify after pack: **`lib/`** should contain **each target framework folder** with the expected DLLs; a suspiciously tiny `.nupkg` usually indicates an incomplete **`lib`** (see [Directory build configuration](DirectoryBuildConfiguration.md) for **`OutputPath`** / **`OutDir`** alignment when using **`UseArtifactsOutput=true`**).
+
 ### Package Variants
 
 #### Release/Stable Packages
@@ -303,6 +309,12 @@ lib/
 ```
 
 ## Publishing Packages
+
+### CI guard (GitHub Actions)
+
+Workflows that push to nuget.org (`release.yml`, `canary.yml`, `nightly.yml`, `canary-lts-release.yml`) dot-source **`Scripts/CI/StandardToolkitNupkgGuard.ps1`** and skip (and fail the push step) any **`Krypton.Standard.Toolkit*.nupkg`** whose length is below the configured minimum — by default **10 MiB** when the repository variable is unset.
+
+- **Configure**: **Settings → Actions → Variables** → **`STANDARD_TOOLKIT_MIN_NUPKG_MB`** (whole number of MiB). Documented with other workflow variables in [GitHub Actions workflows](../GitHubActionsWorkflows.md#repository-variables-net-preview--ci).
 
 ### Publishing to NuGet.org
 

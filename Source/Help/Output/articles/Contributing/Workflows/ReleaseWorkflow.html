@@ -84,20 +84,18 @@
 <p>The workflow triggers on pushes to:</p>
 <ul>
 <li><code>master</code> - Stable production releases</li>
-<li><code>alpha</code> - Alpha/nightly releases</li>
+<li><code>alpha</code> - Alpha / nightly-style builds (<code>release-alpha</code>; publishing often driven by <code>nightly.yml</code>)</li>
 <li><code>canary</code> - Canary pre-releases</li>
-<li><code>V105-LTS</code> - Long-Term Support v105 branch</li>
-<li><code>V85-LTS</code> - Long-Term Support v85 branch</li>
+<li><code>V105-LTS</code> - LTS line (<code>release-v105-lts</code>; stable packages, same <code>build.proj</code> as master)</li>
 </ul>
-<p><strong>Note</strong>: Each branch has its own job that only runs for that specific branch.</p>
+<p><strong>Note</strong>: Each branch has its own job that only runs when <code>github.ref</code> matches that branch (<code>workflow_dispatch</code> also supported).</p>
 <h2 id="workflow-structure">Workflow Structure</h2>
-<p>The workflow contains five separate jobs, each handling a different release type:</p>
+<p>The workflow contains <strong>four</strong> jobs:</p>
 <ol>
-<li><strong><code>release-master</code></strong> - Stable releases from master branch</li>
-<li><strong><code>release-v105-lts</code></strong> - LTS releases from V105-LTS branch</li>
-<li><strong><code>release-v85-lts</code></strong> - LTS releases from V85-LTS branch</li>
-<li><strong><code>release-canary</code></strong> - Canary releases from canary branch</li>
-<li><strong><code>release-alpha</code></strong> - Alpha releases from alpha branch</li>
+<li><strong><code>release-master</code></strong> - Stable releases from <code>master</code></li>
+<li><strong><code>release-v105-lts</code></strong> - Releases from <strong><code>V105-LTS</code></strong></li>
+<li><strong><code>release-canary</code></strong> - Canary releases from <code>canary</code></li>
+<li><strong><code>release-alpha</code></strong> - Alpha builds from <code>alpha</code> (pack only; scheduled publishing via <code>nightly.yml</code>)</li>
 </ol>
 <h3 id="common-job-structure">Common Job Structure</h3>
 <p>All jobs follow a similar pattern:</p>
@@ -105,7 +103,8 @@
 <li><strong>Kill Switch Check</strong> - Verifies if workflow is disabled</li>
 <li><strong>Checkout</strong> - Checks out source code</li>
 <li><strong>Setup .NET</strong> - Installs .NET SDKs</li>
-<li><strong>Force .NET 10 SDK</strong> - Creates <code>global.json</code></li>
+<li><strong>Setup .NET Preview</strong> - Installs preview SDK when repository variable <code>USE_DOTNET_PREVIEW</code> is not <code>false</code> (version from <code>DOTNET_PREVIEW_SETUP_VERSION</code>)</li>
+<li><strong>Pin SDK via global.json</strong> - Writes repo-root <code>global.json</code> (stable 10.x/9.x or preview band per <code>USE_DOTNET_PREVIEW</code>, <code>DOTNET_PREVIEW_SDK_BAND</code>)</li>
 <li><strong>Setup MSBuild</strong> - Configures MSBuild</li>
 <li><strong>Setup NuGet</strong> - Configures NuGet</li>
 <li><strong>Cache NuGet</strong> - Caches packages</li>
@@ -150,29 +149,8 @@
 <p><strong>Discord Color</strong>: <code>77dd76</code> (green)</p>
 <p><strong>Changelog</strong>: <code>Documents/Changelog/Changelog.md</code> on V105-LTS branch</p>
 <p><strong>Note</strong>: Uses same webhook as master but different changelog location.</p>
-<h3 id="job-3-release-v85-lts">Job 3: <code>release-v85-lts</code></h3>
-<p><strong>Condition</strong>: <code>github.ref == 'refs/heads/V85-LTS' &amp;&amp; github.event_name == 'push'</code></p>
-<p><strong>Kill Switch</strong>: <code>LTS_DISABLED</code></p>
-<p><strong>Project File</strong>: <code>Scripts/Build/longtermstable.proj</code></p>
-<p><strong>Configuration</strong>: <code>Release</code></p>
-<p><strong>Output Location</strong>: <code>Bin/Packages/Release/</code></p>
-<p><strong>Discord Webhook</strong>: <code>DISCORD_WEBHOOK_LTS</code></p>
-<p><strong>Packages</strong>:</p>
-<ul>
-<li>Krypton.Toolkit.LTS</li>
-<li>Krypton.Ribbon.LTS</li>
-<li>Krypton.Navigator.LTS</li>
-<li>Krypton.Workspace.LTS</li>
-<li>Krypton.Docking.LTS</li>
-</ul>
-<p><strong>Version Source</strong>: <code>Bin/Release/net48/Krypton.Toolkit.dll</code> or <code>Krypton.Toolkit 2022.csproj</code></p>
-<p><strong>Tag Format</strong>: <code>v{version}-lts</code></p>
-<p><strong>Discord Color</strong>: <code>0094ff</code> (blue)</p>
-<p><strong>Changelog</strong>: <code>Documents/Help/Changelog.md</code> on V85-LTS branch</p>
-<p><strong>Target Frameworks</strong>: .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8, 4.8.1, .NET 6.0, 7.0, 8.0</p>
-<p><strong>Special Note</strong>: Uses .NET 6, 7, and 8 SDKs (not 9 and 10) for compatibility with older frameworks.</p>
-<h3 id="job-4-release-canary">Job 4: <code>release-canary</code></h3>
-<p><strong>Condition</strong>: <code>github.ref == 'refs/heads/canary' &amp;&amp; github.event_name == 'push'</code></p>
+<h3 id="job-3-release-canary">Job 3: <code>release-canary</code></h3>
+<p><strong>Condition</strong>: <code>github.ref == 'refs/heads/canary' &amp;&amp; (github.event_name == 'push' || github.event_name == 'workflow_dispatch')</code></p>
 <p><strong>Kill Switch</strong>: <code>CANARY_DISABLED</code></p>
 <p><strong>Project File</strong>: <code>Scripts/Build/canary.proj</code></p>
 <p><strong>Configuration</strong>: <code>Canary</code></p>
@@ -191,8 +169,8 @@
 <p><strong>Tag Format</strong>: <code>v{version}-canary</code></p>
 <p><strong>Discord Color</strong>: <code>16776960</code> (yellow)</p>
 <p><strong>Changelog</strong>: <code>Documents/Changelog/Changelog.md</code> on canary branch</p>
-<h3 id="job-5-release-alpha">Job 5: <code>release-alpha</code></h3>
-<p><strong>Condition</strong>: <code>github.ref == 'refs/heads/alpha' &amp;&amp; github.event_name == 'push'</code></p>
+<h3 id="job-4-release-alpha">Job 4: <code>release-alpha</code></h3>
+<p><strong>Condition</strong>: <code>github.ref == 'refs/heads/alpha' &amp;&amp; (github.event_name == 'push' || github.event_name == 'workflow_dispatch')</code></p>
 <p><strong>Kill Switch</strong>: <code>NIGHTLY_DISABLED</code></p>
 <p><strong>Project File</strong>: <code>Scripts/Build/nightly.proj</code></p>
 <p><strong>Configuration</strong>: <code>Nightly</code></p>
@@ -220,12 +198,7 @@
 <tr>
 <td>release-v105-lts</td>
 <td><code>RELEASE_DISABLED</code></td>
-<td>Disable V105 LTS releases</td>
-</tr>
-<tr>
-<td>release-v85-lts</td>
-<td><code>LTS_DISABLED</code></td>
-<td>Disable V85 LTS releases</td>
+<td>Disable V105-LTS releases</td>
 </tr>
 <tr>
 <td>release-canary</td>
@@ -244,18 +217,13 @@
 <pre><code class="lang-yaml">if: steps.{kill_switch_id}.outputs.enabled == 'true'
 </code></pre>
 <h3 id="net-sdk-versions">.NET SDK Versions</h3>
-<p><strong>Most Jobs</strong> (master, V105-LTS, canary, alpha):</p>
+<p><strong>Typical setup</strong> (<code>release-master</code>, <strong><code>release-v105-lts</code></strong>, <code>release-canary</code>, <code>release-alpha</code>):</p>
 <ul>
-<li>.NET 9.0.x</li>
-<li>.NET 10.0.x</li>
+<li>Install <strong>.NET 9.0.x</strong> and <strong>10.0.x</strong>.</li>
+<li><strong><code>release-master</code></strong> and <strong><code>release-canary</code></strong> also run <strong>Setup .NET Preview</strong> when repository variable <strong><code>USE_DOTNET_PREVIEW</code></strong> is not <code>false</code>, then <strong>Pin SDK via global.json</strong> (preview band or stable per <a href="../GitHubActionsWorkflows.html#repository-variables-net-preview--ci"><code>DOTNET_PREVIEW_SDK_BAND</code></a>).</li>
+<li><strong><code>release-v105-lts</code></strong> pins <strong>stable</strong> SDKs only in <strong>Pin SDK via global.json</strong> (no preview setup step).</li>
 </ul>
-<p><strong>V85-LTS Job</strong>:</p>
-<ul>
-<li>.NET 6.0.x</li>
-<li>.NET 7.0.x</li>
-<li>.NET 8.0.x</li>
-</ul>
-<p><strong>Reason</strong>: V85-LTS supports older frameworks that require earlier SDKs.</p>
+<p>See <a href="../Build%20System/Current/ReleaseWorkflow.html"><code>Build System/Current/ReleaseWorkflow.md</code></a> for authoritative step-by-step detail.</p>
 <h3 id="build-projects">Build Projects</h3>
 <p>Each job uses a different project file:</p>
 <table>
@@ -270,27 +238,22 @@
 <tr>
 <td>release-master</td>
 <td><code>Scripts/Build/build.proj</code></td>
-<td>Standard release build</td>
+<td>Stable release build</td>
 </tr>
 <tr>
 <td>release-v105-lts</td>
 <td><code>Scripts/Build/build.proj</code></td>
-<td>Standard release build</td>
-</tr>
-<tr>
-<td>release-v85-lts</td>
-<td><code>Scripts/longtermstable.proj</code></td>
-<td>LTS-specific build</td>
+<td>Same as master; branch <strong>V105-LTS</strong></td>
 </tr>
 <tr>
 <td>release-canary</td>
 <td><code>Scripts/Build/canary.proj</code></td>
-<td>Canary-specific build</td>
+<td>Canary build</td>
 </tr>
 <tr>
 <td>release-alpha</td>
 <td><code>Scripts/Build/nightly.proj</code></td>
-<td>Nightly/alpha build</td>
+<td>Nightly configuration / alpha branch</td>
 </tr>
 </tbody>
 </table>
@@ -304,9 +267,8 @@
 </ol>
 <p><strong>Package Detection</strong>:</p>
 <ul>
-<li>Master/V105-LTS: <code>Bin/Packages/Release/*.nupkg</code></li>
-<li>V85-LTS: <code>Bin/Packages/Release/*.nupkg</code></li>
-<li>Canary: <code>Bin/Packages/Canary/*.nupkg</code></li>
+<li><code>master</code> / <strong>V105-LTS</strong>: <code>Bin/Packages/Release/*.nupkg</code> (and <code>artifacts/packages/Release/</code> when using artifact output)</li>
+<li><strong>Canary</strong>: <code>Bin/Packages/Canary/*.nupkg</code></li>
 <li>Alpha: <code>Bin/Packages/Nightly/*.nupkg</code> (not published)</li>
 </ul>
 <p><strong>Required Secret</strong>: <code>NUGET_API_KEY</code></p>
@@ -328,8 +290,7 @@
 </li>
 <li><p><strong>Hardcoded Fallback</strong></p>
 <ul>
-<li>Master/V105-LTS/Canary/Alpha: <code>100.25.1.1</code></li>
-<li>V85-LTS: <code>85.25.1.1</code></li>
+<li>Default fallback (e.g. <code>100.25.1.1</code>) when extraction fails</li>
 </ul>
 </li>
 </ol>
@@ -342,10 +303,9 @@
 <p><strong>Trigger</strong>: Only if packages were published (<code>packages_published == 'True'</code>)</p>
 <p><strong>Webhooks</strong>:</p>
 <ul>
-<li>Master/V105-LTS: <code>DISCORD_WEBHOOK_MASTER</code></li>
-<li>V85-LTS: <code>DISCORD_WEBHOOK_LTS</code></li>
+<li>Master / <strong>V105-LTS</strong>: <code>DISCORD_WEBHOOK_MASTER</code></li>
 <li>Canary: <code>DISCORD_WEBHOOK_CANARY</code></li>
-<li>Alpha: None (handled by nightly.yml)</li>
+<li>Alpha: None in this workflow (see <strong>nightly.yml</strong>)</li>
 </ul>
 <p><strong>Message Structure</strong>:</p>
 <ul>
@@ -359,8 +319,7 @@
 </ul>
 <p><strong>Colors</strong>:</p>
 <ul>
-<li>Master/V105-LTS: <code>77dd76</code> (green)</li>
-<li>V85-LTS: <code>0094ff</code> (blue)</li>
+<li>Master / <strong>V105-LTS</strong>: <code>77dd76</code> (green)</li>
 <li>Canary: <code>16776960</code> (yellow)</li>
 </ul>
 <h2 id="configuration">Configuration</h2>
@@ -372,39 +331,18 @@
 <li>Get from: <a href="https://www.nuget.org/account/apikeys">https://www.nuget.org/account/apikeys</a></li>
 </ul>
 </li>
-<li><p><strong><code>DISCORD_WEBHOOK_MASTER</code></strong>: Webhook for stable releases</p>
-<ul>
-<li>Used by: master and V105-LTS jobs</li>
-</ul>
+<li><p><strong><code>DISCORD_WEBHOOK_MASTER</code></strong>: Stable / <strong>V105-LTS</strong> notifications (<code>release-master</code>, <code>release-v105-lts</code>)</p>
 </li>
-<li><p><strong><code>DISCORD_WEBHOOK_LTS</code></strong>: Webhook for LTS releases</p>
-<ul>
-<li>Used by: V85-LTS job</li>
-</ul>
-</li>
-<li><p><strong><code>DISCORD_WEBHOOK_CANARY</code></strong>: Webhook for canary releases</p>
-<ul>
-<li>Used by: canary job</li>
-</ul>
+<li><p><strong><code>DISCORD_WEBHOOK_CANARY</code></strong>: Canary notifications</p>
 </li>
 </ul>
+<p><strong>Note</strong>: There is <strong>no</strong> <code>DISCORD_WEBHOOK_LTS</code> in current <code>release.yml</code>; <strong>V105-LTS</strong> reuses <strong><code>DISCORD_WEBHOOK_MASTER</code></strong>.</p>
 <p><strong>Note</strong>: Webhooks are optional. Workflow continues if not set.</p>
 <h3 id="required-variables">Required Variables</h3>
 <ul>
-<li><p><strong><code>RELEASE_DISABLED</code></strong>: Kill switch for stable releases</p>
-<ul>
-<li>Affects: master and V105-LTS jobs</li>
-</ul>
-</li>
-<li><p><strong><code>LTS_DISABLED</code></strong>: Kill switch for LTS releases</p>
-<ul>
-<li>Affects: V85-LTS job</li>
-</ul>
+<li><p><strong><code>RELEASE_DISABLED</code></strong>: Kill switch for <strong><code>release-master</code></strong> and <strong><code>release-v105-lts</code></strong></p>
 </li>
 <li><p><strong><code>CANARY_DISABLED</code></strong>: Kill switch for canary releases</p>
-<ul>
-<li>Affects: canary job</li>
-</ul>
 </li>
 <li><p><strong><code>NIGHTLY_DISABLED</code></strong>: Kill switch for alpha builds</p>
 <ul>
@@ -488,7 +426,7 @@
 <h2 id="usage-examples">Usage Examples</h2>
 <ul>
 <li><strong>Create a Stable Release</strong>: Push to <code>master</code>; the release-master job builds, packs, and publishes to NuGet.</li>
-<li><strong>Create an LTS Release</strong>: Push to <code>V85-LTS</code> or <code>V105-LTS</code>; the corresponding job publishes LTS or stable packages.</li>
+<li><strong>Create an LTS-line release</strong>: Push to <strong><code>V105-LTS</code></strong>; <strong><code>release-v105-lts</code></strong> publishes stable packages (same IDs as master).</li>
 <li><strong>Create a Canary Pre-Release</strong>: Push to <code>canary</code>; the release-canary job publishes Canary packages.</li>
 </ul>
 <h2 id="related-workflows">Related Workflows</h2>
@@ -501,7 +439,7 @@
 <p><strong>Key Components</strong>:</p>
 <ul>
 <li>Event: <code>push</code> to release branches</li>
-<li>Jobs: 5 separate jobs for different release types</li>
+<li>Jobs: <strong>four</strong> branch-specific jobs (<code>release-master</code>, <code>release-v105-lts</code>, <code>release-canary</code>, <code>release-alpha</code>)</li>
 <li>Kill Switches: Branch-specific disable controls</li>
 </ul>
 <h2 id="maintenance-notes">Maintenance Notes</h2>
@@ -510,8 +448,8 @@
 <ol>
 <li><p>Create new job in workflow file:</p>
 <pre><code class="lang-yaml">release-new-branch:
-  runs-on: windows-latest
-  if: github.ref == 'refs/heads/new-branch' &amp;&amp; github.event_name == 'push'
+  runs-on: windows-2025-vs2026
+  if: github.ref == 'refs/heads/new-branch' &amp;&amp; (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
 </code></pre>
 </li>
 <li><p>Configure kill switch variable</p>
@@ -561,7 +499,6 @@
     ├─&gt; Determine Branch Type
     │   ├─&gt; master → release-master
     │   ├─&gt; V105-LTS → release-v105-lts
-    │   ├─&gt; V85-LTS → release-v85-lts
     │   ├─&gt; canary → release-canary
     │   └─&gt; alpha → release-alpha
     │
@@ -613,22 +550,13 @@
 <td>v{version}</td>
 </tr>
 <tr>
-<td>LTS v105</td>
+<td>LTS (v105)</td>
 <td>V105-LTS</td>
 <td>RELEASE_DISABLED</td>
 <td>Scripts/Build/build.proj</td>
 <td>Release</td>
 <td>MASTER</td>
 <td>v{version}</td>
-</tr>
-<tr>
-<td>LTS v85</td>
-<td>V85-LTS</td>
-<td>LTS_DISABLED</td>
-<td>longtermstable.proj</td>
-<td>Release</td>
-<td>LTS</td>
-<td>v{version}-lts</td>
 </tr>
 <tr>
 <td>Canary</td>
@@ -645,7 +573,7 @@
 <td>NIGHTLY_DISABLED</td>
 <td>Scripts/Build/nightly.proj</td>
 <td>Nightly</td>
-<td>None</td>
+<td>—</td>
 <td>N/A</td>
 </tr>
 </tbody>
@@ -672,7 +600,7 @@
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>

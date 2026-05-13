@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonComboBoxUserControl | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonComboBoxUserControl | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptoncomboboxusercontrol">KryptonComboBoxUserControl</h1>
+
+<p>This document describes the <strong>KryptonComboBoxUserControl</strong> feature introduced for <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3443">GitHub issue #3443</a>: a WinForms control that looks and behaves like a combo box, but hosts <strong>any</strong> <code>Control</code> (typically a <code>UserControl</code>) in its drop-down instead of a fixed list.</p>
+<p><strong>Assembly / namespace:</strong> <code>Krypton.Utilities</code> · <code>Krypton.Utilities</code></p>
+<hr>
+<h2 id="1-purpose-and-mental-model">1. Purpose and mental model</h2>
+<ul>
+<li>The control <strong>derives from <code>KryptonTextBox</code></strong>. You get the same theming, palette, cue hints, button specs, and text-editing surface as other Krypton text inputs.</li>
+<li>A <strong>drop-down button</strong> (<code>ButtonSpec</code> with drop-down style) sits on the right. Clicking it toggles the popup.</li>
+<li>The <strong>popup</strong> is a Krypton-styled <code>VisualPopup</code> that wraps your <code>DropContent</code> with a border and participates in the global popup manager (click-outside dismisses tracking, and so on).</li>
+<li><strong>Values</strong> are not limited to strings: the host exposes <code>SelectedValue</code> (<code>object</code>) while <code>Text</code> remains the display string in the editor.</li>
+</ul>
+<pre><code class="lang-mermaid">flowchart LR
+    subgraph host [KryptonComboBoxUserControl]
+        TB[KryptonTextBox editor]
+        BTN[Drop button]
+    end
+    subgraph popup [VisualKryptonDropDownPopup]
+        DC[DropContent Control]
+    end
+    BTN --&gt;|toggle| popup
+    TB --&gt;|AutoOpenOnType + filter| DC
+    DC --&gt;|CommitValue| host
+</code></pre>
+<hr>
+<h2 id="2-class-overview">2. Class overview</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonComboBoxUserControl</code></td>
+<td>Host control: text box + drop button + popup lifecycle.</td>
+</tr>
+<tr>
+<td><code>IKryptonDropDownUserControl</code></td>
+<td>Optional contract on <code>DropContent</code> for size, lifecycle, commit/cancel.</td>
+</tr>
+<tr>
+<td><code>IKryptonDropDownFilterable</code></td>
+<td>Optional contract for filter-as-you-type with keyboard routing.</td>
+</tr>
+<tr>
+<td><code>KryptonDropDownCommitEventArgs</code></td>
+<td>Payload for committing a value and optional editor text.</td>
+</tr>
+<tr>
+<td><code>KryptonDropDownOpeningEventArgs</code></td>
+<td>Cancelable notification before the popup is created.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Internal (not extensible):</strong> <code>VisualKryptonDropDownPopup</code> hosts the chrome, resize grip, and wires <code>CommitValue</code> / <code>RequestClose</code> from contract implementations.</p>
+<hr>
+<h2 id="3-inherited-behavior-kryptontextbox">3. Inherited behavior (<code>KryptonTextBox</code>)</h2>
+<p>Because the host is a <code>KryptonTextBox</code>, you can use inherited members such as:</p>
+<ul>
+<li><strong><code>Text</code></strong>, <strong><code>ReadOnly</code></strong> — Note: use <strong><code>ReadOnlyEditor</code></strong> when you want <em>DropDownList</em>-style behavior; it sets <strong><code>ReadOnly</code></strong> for you (see §5).</li>
+<li><strong><code>AutoCompleteMode</code> / <code>AutoCompleteSource</code></strong> — Disabled by default in the constructor (<code>None</code>) so they do not fight custom drop-down semantics; you may re-enable if needed.</li>
+<li><strong><code>ButtonSpecs</code></strong>, <strong><code>AllowButtonSpecToolTips</code></strong>, palette and style properties (<code>PaletteMode</code>, <code>InputControlStyle</code>, etc.).</li>
+<li><strong><code>CueHint</code></strong> — Useful for filter scenarios (see demo: “Start typing a city name…”).</li>
+</ul>
+<p>Default designer metadata: <strong><code>DefaultEvent</code></strong>: <code>ValueCommitted</code> · <strong><code>DefaultProperty</code></strong>: <code>Text</code> · <strong><code>DefaultBindingProperty</code></strong>: <code>Text</code>.</p>
+<hr>
+<h2 id="4-kryptoncomboboxusercontrol--public-api">4. <code>KryptonComboBoxUserControl</code> — public API</h2>
+<h3 id="41-properties">4.1 Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DropContent</code></td>
+<td><code>Control?</code> — Content shown inside the popup. Assign any control; implementing <code>IKryptonDropDownUserControl</code> enables sizing and commit wiring. Serialized at design time. Custom <strong>property editor</strong> picks existing controls or creates new <code>UserControl</code> instances (§9).</td>
+</tr>
+<tr>
+<td><code>DropDownAlign</code></td>
+<td><code>LeftRightAlignment</code> — Horizontal alignment of the popup relative to the editor (<code>Left</code> default).</td>
+</tr>
+<tr>
+<td><code>DropDownWidth</code></td>
+<td><code>int</code> — Default <strong>200</strong>. Used when preferred size from the contract is not returned (§6). Minimum stored width is <strong>1</strong>.</td>
+</tr>
+<tr>
+<td><code>DropDownHeight</code></td>
+<td><code>int</code> — Default <strong>200</strong>. Same rules as width.</td>
+</tr>
+<tr>
+<td><code>MinDropDownSize</code></td>
+<td><code>Size</code> — When non-empty, popup size is <strong>clamped up</strong> to this minimum when showing and when resizing is enabled.</td>
+</tr>
+<tr>
+<td><code>MaxDropDownSize</code></td>
+<td><code>Size</code> — When non-empty, size is <strong>clamped down</strong>.</td>
+</tr>
+<tr>
+<td><code>DropDownResizable</code></td>
+<td><code>bool</code> — <strong><code>false</code></strong> by default. When <strong>true</strong>, a standard size grip appears; min/max constraints apply.</td>
+</tr>
+<tr>
+<td><code>ReadOnlyEditor</code></td>
+<td><code>bool</code> — <strong><code>false</code></strong> default. Mirrors <strong>ComboBoxStyle.DropDownList</strong>: user selects via drop-down only; sets <strong><code>ReadOnly</code></strong> on the base text box.</td>
+</tr>
+<tr>
+<td><code>AutoOpenOnType</code></td>
+<td><code>bool</code> — <strong><code>false</code></strong> default. Opens the popup as the user types and forwards text to <strong><code>IKryptonDropDownFilterable.ApplyFilter</code></strong> (§7).</td>
+</tr>
+<tr>
+<td><code>MinFilterLength</code></td>
+<td><code>int</code> — <strong><code>1</code></strong> default. Threshold character count before auto-open triggers; <strong><code>0</code></strong> is allowed. If text drops below threshold, popup opened for filtering <strong>closes</strong>.</td>
+</tr>
+<tr>
+<td><code>SelectedValue</code></td>
+<td><code>object?</code>, read-only — Last value from <strong><code>CommitValue</code></strong> / <strong><code>ValueCommitted</code></strong>. Hidden from designer serialization.</td>
+</tr>
+<tr>
+<td><code>IsDroppedDown</code></td>
+<td><code>bool</code>, read-only — Whether the popup exists with a created handle and is not disposed.</td>
+</tr>
+<tr>
+<td><code>DropButton</code></td>
+<td><code>ButtonSpecAny</code> — The drop arrow; customize image, tooltip, etc. Hidden from serialization.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Popup width rule:</strong> When resolving size, if the computed width is <strong>narrower than the editor’s <code>Width</code></strong>, it is expanded to <strong><code>Width</code></strong> so the popup never appears thinner than its anchor control.</p>
+<p>Changing <strong><code>DropContent</code></strong> while dropped down closes the popup first.</p>
+<h3 id="42-methods">4.2 Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ShowDropDown()</code></td>
+<td>Equivalent to <strong><code>ShowDropDown(retainEditorFocus: false)</code></strong>. No-op when <code>DropContent</code> is null, already dropped down, <strong><code>DesignMode</code></strong>, or handle not created.</td>
+</tr>
+<tr>
+<td><code>ShowDropDown(bool retainEditorFocus)</code></td>
+<td>Runs <strong><code>DropDownOpening</code></strong> (cancelable). Builds <code>VisualKryptonDropDownPopup</code> with current palette renderer (falls back if palette throws). Anchors popup below the control (or above / clamped to work area — see §8). If <strong><code>retainEditorFocus</code></strong> is <strong>true</strong>, focus is programmatically moved back to the editor after open (used for <strong><code>AutoOpenOnType</code></strong>).</td>
+</tr>
+<tr>
+<td><code>CloseDropDown()</code></td>
+<td>Ends popup tracking if the popup exists. Always safe to call.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-events">4.3 Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DropDownOpening</code></td>
+<td>Before the popup is created; <strong><code>Cancel</code></strong> on <code>KryptonDropDownOpeningEventArgs</code> prevents opening. Exposes <strong><code>DropContent</code></strong>.</td>
+</tr>
+<tr>
+<td><code>DropDownOpened</code></td>
+<td>After the popup has been shown.</td>
+</tr>
+<tr>
+<td><code>DropDownClosed</code></td>
+<td>After the popup is disposed (commit, cancel, click-outside, <strong>Escape</strong>, etc.).</td>
+</tr>
+<tr>
+<td><code>ValueCommitted</code></td>
+<td>After drop content commits: updates <strong><code>SelectedValue</code></strong>, optionally <strong><code>Text</code></strong> from <strong><code>DisplayText</code></strong>, then raises this event.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Protected overrides:</strong> <code>OnDropDownOpening</code>, <code>OnDropDownOpened</code>, <code>OnDropDownClosed</code>, <code>OnValueCommitted</code> — follow standard WinForms override patterns.</p>
+<hr>
+<h2 id="5-keyboard-and-interaction-summary">5. Keyboard and interaction summary</h2>
+<p>Handled on the <strong>editor</strong> (<code>KeyDown</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F4</strong> (no modifiers)</td>
+<td>Toggles popup.</td>
+</tr>
+<tr>
+<td><strong>Alt+Down</strong></td>
+<td>Opens if closed.</td>
+</tr>
+<tr>
+<td><strong>Alt+Up</strong></td>
+<td>Closes if open.</td>
+</tr>
+<tr>
+<td><strong>Escape</strong></td>
+<td>Closes if open (<strong>does not</strong> automatically raise <code>RequestClose</code> on content — popup simply closes via manager).</td>
+</tr>
+</tbody>
+</table>
+<p>When <strong><code>IsDroppedDown</code></strong> and <strong><code>DropContent</code></strong> implements <strong><code>IKryptonDropDownFilterable</code></strong>, navigation is forwarded <strong>while focus remains on the editor</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Down</strong></td>
+<td><code>NavigateSelection(+1)</code></td>
+</tr>
+<tr>
+<td><strong>Up</strong></td>
+<td><code>NavigateSelection(-1)</code></td>
+</tr>
+<tr>
+<td><strong>Enter</strong></td>
+<td><code>CommitSelection()</code> if it returns <strong><code>true</code></strong> (handled/suppressed).</td>
+</tr>
+</tbody>
+</table>
+<p>Inside the popup, <code>VisualKryptonDropDownPopup</code> sets <strong><code>KeyboardInert</code></strong> so child controls can consume keys; <strong><code>AllowBecomeActiveWhenCurrent</code></strong> is <strong>true</strong> so trees, grids, and lists can take focus when appropriate.</p>
+<hr>
+<h2 id="6-ikryptondropdownusercontrol">6. <code>IKryptonDropDownUserControl</code></h2>
+<p>Implement on your <code>DropContent</code> type when you want explicit control over <strong>size</strong>, <strong>lifecycle</strong>, and <strong>commits</strong>.</p>
+<h3 id="methods">Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Contract</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Size GetPreferredDropSize(Size proposedSize)</code></td>
+<td>Return <strong><code>Size.Empty</code></strong> to use host <strong><code>DropDownWidth</code>/<code>Height</code></strong> (after merging with proposed). Non-empty replaces the popup’s initial dimensions (still subject to “at least editor width” rule on the host).</td>
+</tr>
+<tr>
+<td><code>void OnDropDownOpening(object owner)</code></td>
+<td>Prepare data before show. <strong><code>owner</code></strong> is the <code>KryptonComboBoxUserControl</code> instance (boxed as <strong><code>object</code></strong> in signature).</td>
+</tr>
+<tr>
+<td><code>void OnDropDownOpened(object owner)</code></td>
+<td>After show — e.g. focus a child <strong><code>TreeView</code></strong>. For filter UX, intentionally <strong>do nothing</strong> here if the editor must keep focus (<strong><code>AutoOpenOnType</code></strong>).</td>
+</tr>
+<tr>
+<td><code>void OnDropDownClosing(object owner, ref bool cancel)</code></td>
+<td>Set <strong><code>cancel = true</code></strong> to <strong>keep</strong> the popup open when the popup is closing through the <strong><code>CloseInternal</code></strong> path (successful commit clears <strong><code>KeepOpen</code></strong>, <strong><code>RequestClose</code></strong>, validation).</td>
+</tr>
+<tr>
+<td><code>void OnDropDownClosed(object owner)</code></td>
+<td>Always invoked from the popup <strong><code>Dispose</code></strong> when the contract was used — including dismissals like <strong>click outside</strong>, so cleanup is reliable.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="events-raise-from-drop-content">Events (raise from drop content)</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CommitValue</code></td>
+<td>Raised with <strong><code>KryptonDropDownCommitEventArgs</code></strong>. Listener updates <strong><code>SelectedValue</code></strong>, <strong><code>Text</code></strong> (when <strong><code>DisplayText</code> != null<code>), and respects **</code>KeepOpen`</strong>.</td>
+</tr>
+<tr>
+<td><code>RequestClose</code></td>
+<td>Close popup <strong>without</strong> commit (e.g. <strong>Escape</strong> inside focused content — see demo tree/grid).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Important:</strong> Popup <strong>detach</strong> semantics: hosted controls are <strong><code>Controls.Remove</code>'d</strong> but <strong>not disposed</strong> so the host can reuse the <strong>same instance</strong> across opens.</p>
+<hr>
+<h2 id="7-ikryptondropdownfilterable">7. <code>IKryptonDropDownFilterable</code></h2>
+<p>Use together with <strong><code>AutoOpenOnType = true</code></strong> on the host.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Contract</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bool ApplyFilter(string text)</code></td>
+<td>Host calls this whenever filter text changes. Return <strong><code>false</code></strong> when <strong>no</strong> matches — host <strong>closes</strong> the popup if open. Return <strong><code>true</code></strong> to keep open.</td>
+</tr>
+<tr>
+<td><code>void NavigateSelection(int direction)</code></td>
+<td><strong><code>+1</code></strong> = next (<strong>Down</strong>), <strong><code>-1</code></strong> = previous (<strong>Up</strong>).</td>
+</tr>
+<tr>
+<td><code>bool CommitSelection()</code></td>
+<td>Commit current logical selection; implementation should raise <strong><code>CommitValue</code></strong> when applicable. Return whether a commit occurred; host uses this for <strong>Enter</strong> handling.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Typical pattern:</strong> implement <strong>both</strong> <code>IKryptonDropDownUserControl</code> and <code>IKryptonDropDownFilterable</code> on the same <code>UserControl</code> (see <strong><code>CityFilterControl</code></strong> in the demo).</p>
+<p><strong>Host detail:</strong> When applying committed <strong><code>DisplayText</code></strong>, the host temporarily sets an internal flag so <strong><code>AutoOpenOnType</code></strong> does not immediately reopen the popup.</p>
+<hr>
+<h2 id="8-kryptondropdowncommiteventargs">8. <code>KryptonDropDownCommitEventArgs</code></h2>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Value</code></td>
+<td><code>object?</code> — Domain value (row object, path, ID, …).</td>
+</tr>
+<tr>
+<td><code>DisplayText</code></td>
+<td><code>string?</code> — If <strong>non-null</strong>, host assigns <strong><code>Text</code></strong> and moves caret to end. If <strong>null</strong>, editor text is <strong>unchanged</strong>.</td>
+</tr>
+<tr>
+<td><code>KeepOpen</code></td>
+<td><strong><code>false</code></strong> default. If <strong>true</strong>, popup <strong>stays open</strong> after commit (rare scenarios such as multi-select or successive picks).</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="9-design-time-experience">9. Design-time experience</h2>
+<h3 id="91-designer-kryptoncomboboxusercontroldesigner">9.1 Designer (<code>KryptonComboBoxUserControlDesigner</code>)</h3>
+<ul>
+<li><strong>Smart tag</strong> (<strong><code>KryptonComboBoxUserControlActionList</code></strong>): Alignment, Width, Height, Resizable, Read-only editor, <code>InputControlStyle</code>, <code>PaletteMode</code>.</li>
+<li><strong><code>ButtonSpecs</code></strong> participate in <strong><code>AssociatedComponents</code></strong> so copy/paste and selection behave coherently.</li>
+<li><strong>Height resize</strong> locked at design time (horizontal sizing only — matches Krypton combo/text conventions).</li>
+</ul>
+<p>Note: <strong><code>AutoOpenOnType</code></strong> and <strong><code>MinFilterLength</code></strong> are not currently on the smart tag; set them in the <strong>Properties</strong> grid.</p>
+<h3 id="92-dropcontent-property-editor-kryptondropcontenteditor">9.2 <code>DropContent</code> property editor (<code>KryptonDropContentEditor</code>)</h3>
+<ul>
+<li><strong>“(none)”</strong> clears the reference.</li>
+<li><strong>Existing controls</strong> on the <strong>same designer host</strong>, excluding <strong><code>Form</code>s</strong>, <strong><code>KryptonTextBox</code></strong>, and <strong>self</strong>.</li>
+<li><strong>[New]</strong> list: <strong><code>UserControl</code></strong>-derived types from <strong><code>ITypeDiscoveryService</code></strong> (<strong><code>excludeGlobalTypes: true</code></strong>), with <strong>public parameterless constructor</strong>, not abstract, not open generic. New instances are <strong><code>CreateComponent</code></strong>’d and <strong>sited</strong> (appear in component tray / code-gen) but are <strong>not</strong> auto-parented to the form — intended for drop-only content.</li>
+</ul>
+<hr>
+<h2 id="10-runtime-popup-placement-visualkryptondropdownpopup">10. Runtime popup placement (<code>VisualKryptonDropDownPopup</code>)</h2>
+<p>Not public API, but behavior matters for layout:</p>
+<ul>
+<li>Popup is shown <strong>below</strong> the editor when it fits in the <strong>working area</strong>; otherwise <strong>above</strong>, with further clamping to stay on-screen.</li>
+<li>Horizontal position follows <strong><code>DropDownAlign</code></strong> (left vs right edge of anchor), then clamped into the working area.</li>
+<li><strong><code>DropDownResizable</code>:</strong> hit-test maps bottom-right grip to <strong><code>HTBOTTOMRIGHT</code></strong> for system resizing; <strong><code>ControlPaint.DrawSizeGrip</code></strong> draws the grip.</li>
+<li><strong><code>DoesCurrentMouseDownEndAllTracking</code>:</strong> mouse-down on the resize grip does <strong>not</strong> end popup tracking.</li>
+</ul>
+<hr>
+<h2 id="11-pitfalls-and-best-practices">11. Pitfalls and best practices</h2>
+<ol>
+<li><strong>Commit without contract:</strong> A plain <code>UserControl</code> with <strong>no</strong> <code>IKryptonDropDownUserControl</code> still displays; you must use <strong>other</strong> means to signal selection (e.g. host listens to child control events) because there is <strong>no</strong> automatic <strong><code>ValueCommitted</code></strong> from the popup alone.</li>
+<li><strong><code>RequestClose</code> only on contract types:</strong> The popup subscribes to <strong><code>RequestClose</code></strong> only when <code>DropContent</code> implements <strong><code>IKryptonDropDownUserControl</code></strong>.</li>
+<li><strong><code>OnDropDownClosing</code>:</strong> Use sparingly; incorrect <strong><code>cancel</code></strong> handling can fight the popup manager.</li>
+<li><strong>Filter + empty results:</strong> Returning <strong><code>false</code></strong> from <strong><code>ApplyFilter</code></strong> closes the popup — design list content accordingly.</li>
+<li><strong>Focus:</strong> For <strong><code>AutoOpenOnType</code></strong>, keep <strong><code>OnDropDownOpened</code></strong> from stealing focus if navigation keys should target the list <strong>through</strong> the host (demo pattern).</li>
+<li><strong>Threading:</strong> Standard WinForms — create and interact on the <strong>UI thread</strong>.</li>
+</ol>
+<hr>
+<h2 id="12-minimal-code-patterns">12. Minimal code patterns</h2>
+<h3 id="121-simple-host-code">12.1 Simple host (code)</h3>
+<pre><code class="lang-csharp">var combo = new KryptonComboBoxUserControl
+{
+    DropContent = myUserControl,
+    DropDownWidth = 280,
+    DropDownHeight = 200,
+    DropDownResizable = true
+};
+combo.ValueCommitted += (_, e) =&gt;
+{
+    // e.Value, e.DisplayText
+};
+</code></pre>
+<h3 id="122-commit-from-drop-content">12.2 Commit from drop content</h3>
+<pre><code class="lang-csharp">CommitValue?.Invoke(this, new KryptonDropDownCommitEventArgs(
+    value: selectedItem,
+    displayText: selectedItem.ToString()));
+</code></pre>
+<h3 id="123-cancel-without-commit">12.3 Cancel without commit</h3>
+<pre><code class="lang-csharp">RequestClose?.Invoke(this, EventArgs.Empty);
+</code></pre>
+<h3 id="124-cancel-open-from-host-or-external-code">12.4 Cancel open from host or external code</h3>
+<pre><code class="lang-csharp">combo.DropDownOpening += (_, e) =&gt;
+{
+    if (!IsDataReady)
+        e.Cancel = true;
+};
+</code></pre>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

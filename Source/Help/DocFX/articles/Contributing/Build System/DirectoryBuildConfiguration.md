@@ -341,17 +341,20 @@ Similar to Canary, but uses `Krypton Nightly.png` icon.
 
 **Purpose**: Advanced versioning, assembly metadata, package ID customization, and optional unified output path when artifacts mode is enabled.
 
-### Artifacts `OutputPath` override
+### Shared `OutputPath` and `OutDir`
 
-When `UseArtifactsOutput` is `true`, targets set:
+**Location**: `Source/Krypton Components/Directory.Build.targets`
+
+For SDK projects with `$(TargetFramework)` set:
 
 ```xml
-<PropertyGroup Condition="'$(UseArtifactsOutput)' == 'true'">
-    <OutputPath>$(KryptonBuildOutputRoot)$(Configuration)\</OutputPath>
+<PropertyGroup Condition="'$(TargetFramework)' != ''">
+    <OutputPath>$(KryptonBuildOutputRoot)$(Configuration)\$(TargetFramework)\</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
 </PropertyGroup>
 ```
 
-This overrides the per-project `<OutputPath>` that points at `Bin/` so binaries match script and CI expectations in artifacts layout.
+`Source/Krypton Components/Directory.Build.props` assigns an early **`OutputPath`** under **`Bin/`**; **`Directory.Build.targets`** then points **`OutputPath`** at **`$(KryptonBuildOutputRoot)...`** when building with **`/p:UseArtifactsOutput=true`**. **`OutDir` must stay in sync** with **`OutputPath`**: MSBuild derives **`OutDir`** from the initial **`OutputPath`**, so if **`OutDir`** is not updated together, compilers emit to **`Bin/...`** while aggregate packing (for example **`Krypton.Standard.Toolkit`**) gathers from **`artifacts/bin/...`**, yielding an empty **`lib`** and undersized `.nupkg`.
 
 ### Version Properties by Configuration
 

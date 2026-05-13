@@ -16,6 +16,10 @@ The purpose of this article is to describe how to enable preview SDKs inside of 
 
 **Step 7:** Configure your project to use a preview version of .NET and then build
 
+## GitHub Actions (CI)
+
+CI does **not** use Visual Studio options on the runner. Preview SDK installation and `global.json` pinning are controlled by **repository Actions variables** (`DOTNET_PREVIEW_SETUP_VERSION`, `DOTNET_PREVIEW_SDK_BAND`, `USE_DOTNET_PREVIEW`). See [GitHub Actions Workflows – Repository variables](GitHubActionsWorkflows.md#repository-variables-net-preview--ci).
+
 ***NOTE:*** By following this guide, you accept that we are *not* responsible for **any** data loss or damage. It is *your* responsibility to create backups of your data.
 
 ![Enable Preview SDKs](https://github.com/Krypton-Suite/Documentation/blob/main/Assets/Miscellaneous/EnablePreviewSDK.gif?raw=true)

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonNavigator Badge Support | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonNavigator Badge Support | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonnavigator-badge-support">KryptonNavigator Badge Support</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonNavigator</code> now supports tab-level badges through <code>KryptonPage</code>.</p>
+<p>This feature allows you to display notification indicators (numeric or text) directly on navigator tabs in all modes that render pages via navigator tab/check button visuals (for example bar tabs and outlook pages). The implementation reuses the existing badge rendering system in <code>Krypton.Toolkit</code>, so behavior is consistent with badge-enabled toolkit controls.</p>
+<hr>
+<h2 id="goals">Goals</h2>
+<ul>
+<li>Expose a simple per-page badge API for developers.</li>
+<li>Reuse existing badge infrastructure (<code>BadgeValues</code>, <code>ViewDrawBadge</code>) rather than creating navigator-specific badge primitives.</li>
+<li>Preserve designer serialization patterns already used across the toolkit.</li>
+<li>Ensure badge mapping follows page-to-tab remapping in dynamic navigator scenarios.</li>
+</ul>
+<hr>
+<h2 id="public-api">Public API</h2>
+<h2 id="kryptonpage"><code>KryptonPage</code></h2>
+<p>Badge configuration is now available directly on each page:</p>
+<ul>
+<li><code>BadgeValues BadgeValues { get; }</code></li>
+</ul>
+<h3 id="property-metadata">Property metadata</h3>
+<p>The property is exposed in the designer as:</p>
+<ul>
+<li>Category: <code>Visuals</code></li>
+<li>Description: <code>Badge values</code></li>
+<li>Serialization visibility: <code>DesignerSerializationVisibility.Content</code></li>
+</ul>
+<h3 id="serialization-helpers">Serialization helpers</h3>
+<p><code>KryptonPage</code> includes:</p>
+<ul>
+<li><code>private bool ShouldSerializeBadgeValues()</code></li>
+<li><code>private void ResetBadgeValues()</code></li>
+</ul>
+<p>This matches the existing serialization model used by other value-storage properties in the toolkit.</p>
+<hr>
+<h2 id="badge-object-model">Badge object model</h2>
+<p>Badges on navigator tabs use the existing toolkit value model:</p>
+<ul>
+<li><code>BadgeValues</code>
+<ul>
+<li><code>BadgeBorderValues</code></li>
+<li><code>BadgeColorValues</code></li>
+<li><code>BadgeContentValues</code></li>
+<li><code>BadgeOverflowValues</code></li>
+</ul>
+</li>
+</ul>
+<p>Commonly used <code>BadgeContentValues</code> members:</p>
+<ul>
+<li><code>Visible</code></li>
+<li><code>Text</code></li>
+<li><code>BadgeImage</code></li>
+<li><code>Animation</code></li>
+<li><code>Position</code></li>
+<li><code>Shape</code></li>
+<li><code>MaximumBadgeValue</code> (overflow threshold)</li>
+</ul>
+<p>Commonly used <code>BadgeOverflowValues</code> member:</p>
+<ul>
+<li><code>OverflowText</code> (for example <code>&quot;+&quot;</code> to produce <code>99+</code>)</li>
+</ul>
+<p>Because navigator uses the shared badge system, all established badge capabilities (text, images, overflow, animation, shape, positioning, border, and colors) apply to navigator tabs without additional navigator-specific API.</p>
+<hr>
+<h2 id="internal-architecture">Internal architecture</h2>
+<h2 id="data-flow">Data flow</h2>
+<ol>
+<li>You configure <code>page.BadgeValues</code>.</li>
+<li>Navigator tab draw elements map the current page badge to the underlying <code>ViewDrawButton</code>.</li>
+<li><code>ViewDrawButton</code> hosts a <code>ViewDrawBadge</code>.</li>
+<li><code>ViewDrawBadge</code> renders using the configured values and invalidates when values change.</li>
+</ol>
+<h2 id="integration-points">Integration points</h2>
+<h3 id="1-kryptonpage-stores-badge-values">1) <code>KryptonPage</code> stores badge values</h3>
+<p><code>KryptonPage</code> creates badge storage in its constructor:</p>
+<ul>
+<li><code>_badgeValues = new BadgeValues(NeedPaintDelegate);</code></li>
+</ul>
+<p>Using <code>NeedPaintDelegate</code> ensures badge changes trigger visual updates through the normal Krypton paint pipeline.</p>
+<h3 id="2-navigator-tab-visuals-map-page---badge-source">2) Navigator tab visuals map page -&gt; badge source</h3>
+<p><code>ViewDrawNavCheckButtonBase</code> now calls an internal badge mapping helper when:</p>
+<ul>
+<li>the view is constructed</li>
+<li>the represented <code>Page</code> changes</li>
+</ul>
+<p>This keeps badge rendering in sync even when view instances are reused or remapped to different pages.</p>
+<h3 id="3-viewdrawbuttonsetbadgevalues-supports-rebinding">3) <code>ViewDrawButton.SetBadgeValues(...)</code> supports rebinding</h3>
+<p><code>ViewDrawButton</code> now handles source changes safely:</p>
+<ul>
+<li>Detects unchanged source and returns early.</li>
+<li>Recreates the hosted <code>ViewDrawBadge</code> when badge source/control changes.</li>
+<li>Disposes old badge visual to avoid stale references and leaks.</li>
+<li>Ensures badge enabled-state alignment with the parent button.</li>
+</ul>
+<p>This is critical for navigator scenarios where a draw element may point at a different page over time.</p>
+<hr>
+<h2 id="supported-navigator-scenarios">Supported navigator scenarios</h2>
+<p>Badge rendering is available anywhere navigator pages are represented by check/tab button draw elements that inherit through the existing <code>ViewDrawButton</code> path.</p>
+<p>Typical covered scenarios include:</p>
+<ul>
+<li>Standard bar tabs (<code>BarTabGroup</code>, related tab-based modes)</li>
+<li>Outlook style page selectors (<code>OutlookFull</code>, <code>OutlookMini</code> via shared check-button visual model)</li>
+<li>Workspace-hosted navigator pages (<code>KryptonWorkspaceCell</code>) when navigator tab visuals are used</li>
+</ul>
+<p>If a mode does not render page headers/tabs/check-buttons, badges are not visible by design because there is no tab visual target.</p>
+<hr>
+<h2 id="usage-examples">Usage examples</h2>
+<h2 id="basic-numeric-badge">Basic numeric badge</h2>
+<pre><code class="lang-csharp">KryptonPage page = new KryptonPage();
+page.Text = &quot;Inbox&quot;;
+
+page.BadgeValues.BadgeContentValues.Text = &quot;3&quot;;
+page.BadgeValues.BadgeContentValues.Visible = true;
+</code></pre>
+<h2 id="overflow-behavior-for-example-99">Overflow behavior (for example <code>99+</code>)</h2>
+<pre><code class="lang-csharp">page.BadgeValues.BadgeContentValues.Text = &quot;120&quot;;
+page.BadgeValues.BadgeContentValues.MaximumBadgeValue = 99;
+page.BadgeValues.BadgeOverflowValues.OverflowText = &quot;+&quot;;
+page.BadgeValues.BadgeContentValues.Visible = true;
+</code></pre>
+<h2 id="hide-badge">Hide badge</h2>
+<pre><code class="lang-csharp">page.BadgeValues.BadgeContentValues.Visible = false;
+</code></pre>
+<h2 id="image-badge">Image badge</h2>
+<pre><code class="lang-csharp">page.BadgeValues.BadgeContentValues.BadgeImage = myImage;
+page.BadgeValues.BadgeContentValues.Visible = true;
+</code></pre>
+<hr>
+<h2 id="behavior-notes">Behavior notes</h2>
+<ul>
+<li>Badge visibility is controlled by <code>BadgeContentValues.Visible</code> and content availability.</li>
+<li>If <code>Text</code> is empty and <code>BadgeImage</code> is null, badge rendering is suppressed.</li>
+<li>Overflow conversion happens only for numeric text when <code>MaximumBadgeValue &gt; 0</code>.</li>
+<li>Badge invalidation is tied to <code>NeedPaint</code>, so property changes repaint without manual refresh calls.</li>
+<li>Badge position is relative to the tab/check-button client rectangle using badge position settings.</li>
+</ul>
+<hr>
+<h2 id="designer-usage">Designer usage</h2>
+<p>In WinForms designer:</p>
+<ol>
+<li>Select a <code>KryptonPage</code>.</li>
+<li>Expand <code>BadgeValues</code>.</li>
+<li>Configure:
+<ul>
+<li><code>BadgeContentValues.Text</code></li>
+<li><code>BadgeContentValues.Visible</code></li>
+<li>Optional color/border/shape/overflow settings.</li>
+</ul>
+</li>
+</ol>
+<p>Values serialize into designer-generated code using normal content serialization patterns.</p>
+<hr>
+<h2 id="manual-verification-checklist">Manual verification checklist</h2>
+<p>Use this checklist when validating badge behavior:</p>
+<ul>
+<li>Badge appears when <code>Visible = true</code> and text/image is set.</li>
+<li>Badge hides when <code>Visible = false</code>.</li>
+<li>Numeric overflow displays threshold format (for example <code>99+</code>).</li>
+<li>Badge updates immediately when text changes at runtime.</li>
+<li>Badges remain correct when:
+<ul>
+<li>selecting different pages</li>
+<li>switching navigator mode</li>
+<li>using overflow-capable page arrangements</li>
+<li>reusing/remapping page views (dynamic navigator/workspace scenarios)</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="performance-and-lifecycle">Performance and lifecycle</h2>
+<ul>
+<li>Badge visuals are lightweight and only created when badge mapping is configured.</li>
+<li>Rebinding logic disposes old badge visuals before replacing them.</li>
+<li><code>ViewDrawButton</code> now explicitly disposes hosted badge visuals in <code>Dispose(bool)</code>.</li>
+</ul>
+<p>This avoids retained badge visuals across remapped page-tab relationships.</p>
+<hr>
+<h2 id="compatibility-notes">Compatibility notes</h2>
+<ul>
+<li>Feature is additive and non-breaking.</li>
+<li>Existing navigator pages continue to render unchanged unless badge values are configured.</li>
+<li>Existing toolkit badge behavior remains unchanged; navigator simply consumes the same primitives.</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h2 id="badge-not-showing">Badge not showing</h2>
+<p>Check:</p>
+<ul>
+<li><code>page.BadgeValues.BadgeContentValues.Visible == true</code></li>
+<li>Either <code>Text</code> is non-empty or <code>BadgeImage</code> is assigned</li>
+<li>The current navigator mode actually renders tabs/check-buttons</li>
+</ul>
+<h2 id="overflow-not-applied">Overflow not applied</h2>
+<p>Check:</p>
+<ul>
+<li><code>MaximumBadgeValue &gt; 0</code></li>
+<li><code>Text</code> contains a parseable integer value</li>
+</ul>
+<h2 id="badge-appears-stale-after-dynamic-page-operations">Badge appears stale after dynamic page operations</h2>
+<p>This should be addressed by the rebinding logic in <code>ViewDrawButton.SetBadgeValues(...)</code>. If observed, verify that the page assignment path triggers <code>ViewDrawNavCheckButtonBase.Page</code> updates.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

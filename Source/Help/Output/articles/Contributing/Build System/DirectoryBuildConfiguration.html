@@ -351,13 +351,15 @@ Each Krypton.*.csproj
 <h2 id="component-directorybuildtargets">Component Directory.Build.targets</h2>
 <p><strong>Location</strong>: <code>Source/Krypton Components/Directory.Build.targets</code></p>
 <p><strong>Purpose</strong>: Advanced versioning, assembly metadata, package ID customization, and optional unified output path when artifacts mode is enabled.</p>
-<h3 id="artifacts-outputpath-override">Artifacts <code>OutputPath</code> override</h3>
-<p>When <code>UseArtifactsOutput</code> is <code>true</code>, targets set:</p>
-<pre><code class="lang-xml">&lt;PropertyGroup Condition=&quot;'$(UseArtifactsOutput)' == 'true'&quot;&gt;
-    &lt;OutputPath&gt;$(KryptonBuildOutputRoot)$(Configuration)\&lt;/OutputPath&gt;
+<h3 id="shared-outputpath-and-outdir">Shared <code>OutputPath</code> and <code>OutDir</code></h3>
+<p><strong>Location</strong>: <code>Source/Krypton Components/Directory.Build.targets</code></p>
+<p>For SDK projects with <code>$(TargetFramework)</code> set:</p>
+<pre><code class="lang-xml">&lt;PropertyGroup Condition=&quot;'$(TargetFramework)' != ''&quot;&gt;
+    &lt;OutputPath&gt;$(KryptonBuildOutputRoot)$(Configuration)\$(TargetFramework)\&lt;/OutputPath&gt;
+    &lt;OutDir&gt;$(OutputPath)&lt;/OutDir&gt;
 &lt;/PropertyGroup&gt;
 </code></pre>
-<p>This overrides the per-project <code>&lt;OutputPath&gt;</code> that points at <code>Bin/</code> so binaries match script and CI expectations in artifacts layout.</p>
+<p><code>Source/Krypton Components/Directory.Build.props</code> assigns an early <strong><code>OutputPath</code></strong> under <strong><code>Bin/</code></strong>; <strong><code>Directory.Build.targets</code></strong> then points <strong><code>OutputPath</code></strong> at <strong><code>$(KryptonBuildOutputRoot)...</code></strong> when building with <strong><code>/p:UseArtifactsOutput=true</code></strong>. <strong><code>OutDir</code> must stay in sync</strong> with <strong><code>OutputPath</code></strong>: MSBuild derives <strong><code>OutDir</code></strong> from the initial <strong><code>OutputPath</code></strong>, so if <strong><code>OutDir</code></strong> is not updated together, compilers emit to <strong><code>Bin/...</code></strong> while aggregate packing (for example <strong><code>Krypton.Standard.Toolkit</code></strong>) gathers from <strong><code>artifacts/bin/...</code></strong>, yielding an empty <strong><code>lib</code></strong> and undersized <code>.nupkg</code>.</p>
 <h3 id="version-properties-by-configuration">Version Properties by Configuration</h3>
 <h4 id="canary">Canary</h4>
 <pre><code class="lang-xml">&lt;When Condition=&quot;'$(Configuration)' == 'Canary'&quot;&gt;
@@ -558,7 +560,7 @@ Each Krypton.*.csproj
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>

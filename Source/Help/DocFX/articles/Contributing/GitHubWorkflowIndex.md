@@ -75,21 +75,20 @@ The repository uses several automated workflows to handle builds, releases, issu
 ### Required Secrets
 
 - `NUGET_API_KEY` - API key for publishing packages to nuget.org
-- `DISCORD_WEBHOOK_MASTER` - Webhook URL for stable release notifications
+- `DISCORD_WEBHOOK_MASTER` - Webhook URL for **stable** and **V105-LTS** release notifications (`release-master`, `release-v105-lts`)
 - `DISCORD_WEBHOOK_NIGHTLY` - Webhook URL for nightly build notifications
 - `DISCORD_WEBHOOK_CANARY` - Webhook URL for canary release notifications
-- `DISCORD_WEBHOOK_LTS` - Webhook URL for LTS release notifications
 
 ### Required Variables
 
-- `NIGHTLY_DISABLED` - Kill switch for nightly builds (set to `true` to disable)
-- `RELEASE_DISABLED` - Kill switch for stable releases (set to `true` to disable)
-- `CANARY_DISABLED` - Kill switch for canary releases (set to `true` to disable)
-- `LTS_DISABLED` - Kill switch for LTS releases (set to `true` to disable)
+- `NIGHTLY_DISABLED` - Kill switch for nightly builds (`nightly.yml` and **`release-alpha`** job guard pattern)
+- `RELEASE_DISABLED` - Kill switch for **`release-master`** and **`release-v105-lts`**
+- `CANARY_DISABLED` - Kill switch for canary releases (`release-canary`)
+- `DOTNET_PREVIEW_SETUP_VERSION`, `DOTNET_PREVIEW_SDK_BAND`, `USE_DOTNET_PREVIEW` - Repository **Variables** for preview SDK behaviour (see [GitHub Actions Workflows](GitHubActionsWorkflows.md#repository-variables-net-preview--ci))
 
 ### Required Environments
 
-- `production` - Protected environment for nightly builds (requires approval)
+- `production` - Protected environment used by release jobs (and nightly publish where configured); requires approval before publishing
 
 ## Branch Strategy
 
@@ -98,8 +97,7 @@ The workflows are designed around the following branch structure:
 - **master** - Stable production releases
 - **alpha** - Bleeding-edge development (nightly builds)
 - **canary** - Pre-release testing builds
-- **V105-LTS** - Long-Term Support branch (v105)
-- **V85-LTS** - Long-Term Support branch (v85)
+- **V105-LTS** - Long-Term Support branch (v105); **`release-v105-lts`** in `release.yml`, **`DISCORD_WEBHOOK_MASTER`**
 - **gold** - Release candidate branch
 
 ## Troubleshooting

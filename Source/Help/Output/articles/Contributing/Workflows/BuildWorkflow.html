@@ -97,7 +97,6 @@
 <li><code>canary</code></li>
 <li><code>gold</code></li>
 <li><code>V105-LTS</code></li>
-<li><code>V85-LTS</code></li>
 </ul>
 </li>
 <li><strong>Path Filters</strong>: Ignores changes to <code>.git*</code> and <code>.vscode</code> directories</li>
@@ -113,68 +112,61 @@
 </ul>
 <h2 id="workflow-structure">Workflow Structure</h2>
 <h3 id="job-1-build">Job 1: <code>build</code></h3>
-<p><strong>Runner</strong>: <code>windows-latest</code></p>
+<p><strong>Runner</strong>: <code>windows-2025-vs2026</code> (see <code>.github/workflows/build.yml</code>)</p>
 <p><strong>Purpose</strong>: Builds the solution to validate changes</p>
 <p><strong>Steps</strong>:</p>
 <ol>
 <li><p><strong>Checkout</strong></p>
 <ul>
 <li>Uses <code>actions/checkout@v6</code></li>
-<li>Checks out the source code</li>
 </ul>
 </li>
 <li><p><strong>Setup .NET</strong></p>
 <ul>
 <li>Uses <code>actions/setup-dotnet@v5</code></li>
 <li>Installs .NET 9.0.x and 10.0.x SDKs</li>
-<li>Required for building multi-target projects</li>
 </ul>
 </li>
-<li><p><strong>Force .NET 10 SDK via global.json</strong></p>
+<li><p><strong>Setup .NET Preview</strong></p>
 <ul>
-<li>Dynamically generates <code>global.json</code> to pin SDK version</li>
-<li>Uses PowerShell to detect installed .NET 10 SDK</li>
-<li>Sets <code>rollForward: latestFeature</code> for compatibility</li>
+<li>Runs when repository variable <code>USE_DOTNET_PREVIEW</code> is not <code>false</code></li>
+<li>Uses <code>DOTNET_PREVIEW_SETUP_VERSION</code> with <code>dotnet-quality: preview</code> so the matching preview SDK is available on the runner</li>
+</ul>
+</li>
+<li><p><strong>Pin SDK via global.json</strong></p>
+<ul>
+<li>PowerShell resolves the SDK version from <code>dotnet --list-sdks</code> (latest stable 10.x, fallback 9.x)</li>
+<li>Writes <code>global.json</code> with <code>rollForward: latestFeature</code></li>
 </ul>
 </li>
 <li><p><strong>Setup MSBuild</strong></p>
 <ul>
-<li>Uses <code>microsoft/setup-msbuild@v2</code></li>
-<li>Configures MSBuild with x64 architecture</li>
-<li>Required for building .NET Framework targets</li>
+<li>Uses <code>microsoft/setup-msbuild@v3</code>, x64</li>
 </ul>
 </li>
 <li><p><strong>Setup NuGet</strong></p>
 <ul>
-<li>Uses <code>NuGet/setup-nuget@v2.0.1</code></li>
-<li>Configures NuGet for package restoration</li>
+<li>Uses <code>NuGet/setup-nuget@v4</code></li>
 </ul>
 </li>
 <li><p><strong>Cache NuGet</strong></p>
 <ul>
-<li>Uses <code>actions/cache@v4</code></li>
-<li>Caches <code>~/.nuget/packages</code> directory</li>
-<li>Cache key based on project file hashes</li>
-<li>Speeds up subsequent builds</li>
+<li>Uses <code>actions/cache@v5</code> on <code>~/.nuget/packages</code></li>
 </ul>
 </li>
 <li><p><strong>Restore</strong></p>
 <ul>
-<li>Restores NuGet packages for the solution</li>
-<li>Solution: <code>Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln</code></li>
+<li><code>dotnet restore</code> on <code>Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.slnx</code> with <code>TFMs=all</code></li>
 </ul>
 </li>
 <li><p><strong>Build</strong></p>
 <ul>
-<li>Builds using MSBuild with <code>nightly.proj</code></li>
-<li>Configuration: <code>Release</code></li>
-<li>Platform: <code>Any CPU</code></li>
-<li>Target: <code>Rebuild</code> (clean and build)</li>
+<li><code>msbuild Scripts/Build/nightly.proj /t:Rebuild ...</code></li>
 </ul>
 </li>
 </ol>
 <h3 id="job-2-release">Job 2: <code>release</code></h3>
-<p><strong>Runner</strong>: <code>windows-latest</code></p>
+<p><strong>Runner</strong>: <code>windows-2025-vs2026</code></p>
 <p><strong>Condition</strong>: Only runs on <code>master</code> branch pushes</p>
 <p><strong>Purpose</strong>: Prepares release artifacts (builds and packages)</p>
 <p><strong>Dependencies</strong>: Requires <code>build</code> job to complete successfully</p>
@@ -184,7 +176,7 @@
 </li>
 <li><p><strong>Setup .NET</strong> - Same as build job</p>
 </li>
-<li><p><strong>Force .NET 10 SDK via global.json</strong> - Same as build job</p>
+<li><p><strong>Pin SDK via global.json</strong> - Same stable pin as build job (10.x → 9.x)</p>
 </li>
 <li><p><strong>Setup MSBuild</strong> - Same as build job</p>
 </li>
@@ -192,7 +184,7 @@
 </li>
 <li><p><strong>Cache NuGet</strong> - Same as build job</p>
 </li>
-<li><p><strong>Restore</strong> - Same as build job</p>
+<li><p><strong>Restore</strong> - Same solution restore as build job (<code>*.slnx</code>)</p>
 </li>
 <li><p><strong>Build Release</strong></p>
 <ul>
@@ -221,14 +213,12 @@
 </ol>
 <h2 id="detailed-behavior">Detailed Behavior</h2>
 <h3 id="net-sdk-management">.NET SDK Management</h3>
-<p>The workflow uses a dynamic <code>global.json</code> approach:</p>
-<pre><code class="lang-powershell">$sdkVersion = (dotnet --list-sdks | Select-String &quot;10.0&quot;).ToString().Split(&quot; &quot;)[0]
-</code></pre>
+<p>The workflow writes <strong><code>Pin SDK via global.json</code></strong>: PowerShell picks the latest listed <strong>10.0.<em>.</em> SDK</strong>, then falls back to <strong>9.0.<em>.</em></strong>, using the same <code>Get-ListedSdkVersion</code> helper pattern as other workflows. Fail the step if neither line exists.</p>
+<p>Preview SDK installation is conditional on <strong><code>USE_DOTNET_PREVIEW</code></strong> (repository variable); version comes from <strong><code>DOTNET_PREVIEW_SETUP_VERSION</code></strong>.</p>
 <p><strong>Benefits</strong>:</p>
 <ul>
-<li>Automatically uses the latest installed .NET 10 SDK</li>
-<li>Handles version variations across GitHub runners</li>
-<li>Ensures consistent SDK usage</li>
+<li>Avoids null <code>.ToString()</code> on empty <code>Select-String</code> results</li>
+<li>Pins a concrete <code>sdk.version</code> with <code>rollForward: latestFeature</code></li>
 </ul>
 <h3 id="build-projects">Build Projects</h3>
 <p><strong>Build Job</strong>:</p>
@@ -425,7 +415,7 @@
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>

@@ -47,8 +47,8 @@ The Nightly workflow automatically creates and publishes bleeding-edge builds fr
 4. **Change Detection** - Checks for commits in last 24 hours
 5. **Skip Notification** - Notifies if no changes found
 6. **Setup .NET** - Installs .NET SDKs
-7. **Setup .NET 11** - Attempts to install .NET 11 (optional)
-8. **Force .NET 10 SDK** - Creates `global.json`
+7. **Setup .NET Preview** - Installs preview SDK when `USE_DOTNET_PREVIEW` is not `false` (`DOTNET_PREVIEW_SETUP_VERSION`; optional when preview disabled)
+8. **Pin SDK via global.json** - Writes `global.json` (preview band or stable 10.x/9.x per repository variables)
 9. **Setup MSBuild** - Configures MSBuild
 10. **Setup NuGet** - Configures NuGet
 11. **Cache NuGet** - Caches packages
@@ -143,15 +143,14 @@ $commitCount = git rev-list --count --since="$yesterday" alpha
 
 **Versions Installed**:
 
-- .NET 9.0.x
-- .NET 10.0.x
-- .NET 11.0.x
+- .NET 9.0.x and 10.0.x (always)
+- Preview SDK: only when `USE_DOTNET_PREVIEW` is not `false`, using repository variable `DOTNET_PREVIEW_SETUP_VERSION` (for example `11.0.x`)
 
-**global.json Generation**:
+**global.json (Pin SDK via global.json)**:
 
-- Prefers .NET 11 SDK
-- Falls back to .NET 10 if .NET 11 unavailable
-- Uses `rollForward: latestFeature`
+- When preview is enabled: pins SDK matching `DOTNET_PREVIEW_SDK_BAND`, with fallback to latest 10.x on the runner if the preview SDK is missing.
+- When `USE_DOTNET_PREVIEW=false`: pins latest stable 10.x, then 9.x.
+- Uses `rollForward: latestFeature` in generated `global.json`.
 
 ### Build Process
 

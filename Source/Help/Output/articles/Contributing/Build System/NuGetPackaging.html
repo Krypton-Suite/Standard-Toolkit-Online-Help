@@ -110,6 +110,9 @@
 </tr>
 </tbody>
 </table>
+<h3 id="aggregate-package-kryptonstandardtoolkit">Aggregate package (<code>Krypton.Standard.Toolkit</code>)</h3>
+<p><code>Krypton.Standard.Toolkit</code> is a meta-package (<code>Source/Krypton Components/Krypton.Standard.Toolkit/Krypton.Standard.Toolkit.csproj</code>) that bundles the main module assemblies (Docking, Navigator, Navigator.Utilities, Ribbon, Toolkit, Toolkit.JumpList, Utilities, Workspace) into <strong>one</strong> <code>.nupkg</code> per channel (stable <strong>/ Canary / Nightly</strong>). Packaging copies binaries from the shared <strong><code>$(KryptonBuildOutputRoot)&lt;Configuration&gt;/&lt;TFM&gt;/</code></strong> tree (same layout as <strong><code>Directory.Build.targets</code></strong>), not from stale per-project <code>bin</code> folders alone.</p>
+<p>Verify after pack: <strong><code>lib/</code></strong> should contain <strong>each target framework folder</strong> with the expected DLLs; a suspiciously tiny <code>.nupkg</code> usually indicates an incomplete <strong><code>lib</code></strong> (see <a href="DirectoryBuildConfiguration.html">Directory build configuration</a> for <strong><code>OutputPath</code></strong> / <strong><code>OutDir</code></strong> alignment when using <strong><code>UseArtifactsOutput=true</code></strong>).</p>
 <h3 id="package-variants">Package Variants</h3>
 <h4 id="releasestable-packages">Release/Stable Packages</h4>
 <p><strong>Standard Package</strong> (<code>TFMs=all</code>):</p>
@@ -340,6 +343,11 @@ Krypton.Ribbon → Krypton.Toolkit
 └── ...
 </code></pre>
 <h2 id="publishing-packages">Publishing Packages</h2>
+<h3 id="ci-guard-github-actions">CI guard (GitHub Actions)</h3>
+<p>Workflows that push to nuget.org (<code>release.yml</code>, <code>canary.yml</code>, <code>nightly.yml</code>, <code>canary-lts-release.yml</code>) dot-source <strong><code>Scripts/CI/StandardToolkitNupkgGuard.ps1</code></strong> and skip (and fail the push step) any <strong><code>Krypton.Standard.Toolkit*.nupkg</code></strong> whose length is below the configured minimum — by default <strong>10 MiB</strong> when the repository variable is unset.</p>
+<ul>
+<li><strong>Configure</strong>: <strong>Settings → Actions → Variables</strong> → <strong><code>STANDARD_TOOLKIT_MIN_NUPKG_MB</code></strong> (whole number of MiB). Documented with other workflow variables in <a href="../GitHubActionsWorkflows.html#repository-variables-net-preview--ci">GitHub Actions workflows</a>.</li>
+</ul>
 <h3 id="publishing-to-nugetorg">Publishing to NuGet.org</h3>
 <h4 id="prerequisites">Prerequisites</h4>
 <ol>
@@ -565,7 +573,7 @@ Remove-Item $temp -Recurse -Force
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>
