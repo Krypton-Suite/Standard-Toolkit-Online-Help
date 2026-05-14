@@ -143,8 +143,8 @@
 <tr>
 <td><strong>Release</strong> (release.yml)</td>
 <td><strong>V105-LTS</strong></td>
-<td>Release</td>
-<td>Same stable IDs; LTS changelog links.</td>
+<td>Release (<code>release-v105-lts</code>)</td>
+<td>Stable IDs; <code>DISCORD_WEBHOOK_MASTER</code>; see <a href="ReleaseWorkflow.html">Release workflow</a>.</td>
 </tr>
 <tr>
 <td><strong>Release</strong> (release.yml)</td>
@@ -157,12 +157,6 @@
 <td><strong>V105-LTS</strong></td>
 <td>Canary</td>
 <td>Same Canary IDs as <code>canary</code> branch; built from V105-LTS.</td>
-</tr>
-<tr>
-<td><strong>Release</strong> (release.yml)</td>
-<td>V85-LTS</td>
-<td>Release (LTS)</td>
-<td>Krypton.Toolkit.LTS, etc. (different solution/proj).</td>
 </tr>
 <tr>
 <td><strong>Nightly</strong> (nightly.yml)</td>
@@ -275,28 +269,28 @@
 <li><strong>Condition</strong>: Kill switch enabled.</li>
 <li><strong>Purpose</strong>: Provides .NET 9 and 10 runtimes/SDKs for building and packing the multi-targeting projects.</li>
 </ul>
-<h3 id="4-setup-net-11-preview">4. Setup .NET 11 (Preview)</h3>
+<h3 id="4-setup-net-preview">4. Setup .NET Preview</h3>
 <ul>
 <li><strong>Action</strong>: <code>actions/setup-dotnet@v5</code></li>
-<li><strong>Version</strong>: <code>11.0.x</code> with <code>dotnet-quality: preview</code></li>
-<li><strong>Condition</strong>: Kill switch enabled.</li>
-<li><strong>Purpose</strong>: Canary configuration supports .NET 11; this step ensures the preview SDK is available.</li>
+<li><strong>Version</strong>: repository variable <code>DOTNET_PREVIEW_SETUP_VERSION</code> with <code>dotnet-quality: preview</code></li>
+<li><strong>Condition</strong>: Kill switch enabled <strong>and</strong> <code>USE_DOTNET_PREVIEW</code> is not <code>false</code></li>
+<li><strong>Purpose</strong>: Makes the configured preview SDK band available when the LTS Canary build targets preview TFMs.</li>
 </ul>
-<h3 id="5-force-net-11-sdk-via-globaljson">5. Force .NET 11 SDK via global.json</h3>
+<h3 id="5-pin-sdk-via-globaljson">5. Pin SDK via global.json</h3>
 <ul>
 <li><strong>Condition</strong>: Kill switch enabled.</li>
-<li><strong>Behaviour</strong>: Detects the installed 11.0 SDK (e.g. via <code>dotnet --list-sdks</code>), writes a <code>global.json</code> in the repo root that pins the SDK version with <code>rollForward: latestFeature</code>. Subsequent <code>dotnet</code>/MSBuild calls use .NET 11 for building and packing.</li>
+<li><strong>Behaviour</strong>: PowerShell resolves an SDK version from <code>dotnet --list-sdks</code> using repository variables (<code>USE_DOTNET_PREVIEW</code>, <code>DOTNET_PREVIEW_SDK_BAND</code>) and writes repo-root <code>global.json</code> with <code>rollForward: latestFeature</code>. When preview is disabled, pins stable <strong>10.x</strong> then <strong>9.x</strong>.</li>
 </ul>
 <h3 id="6-setup-msbuild">6. Setup MSBuild</h3>
 <ul>
-<li><strong>Action</strong>: <code>microsoft/setup-msbuild@v2</code></li>
+<li><strong>Action</strong>: <code>microsoft/setup-msbuild@v3</code></li>
 <li><strong>Options</strong>: <code>msbuild-architecture: x64</code></li>
 <li><strong>Condition</strong>: Kill switch enabled.</li>
 <li><strong>Purpose</strong>: Makes MSBuild available for <code>Scripts/Build/canary.proj</code>.</li>
 </ul>
 <h3 id="7-setup-nuget">7. Setup NuGet</h3>
 <ul>
-<li><strong>Action</strong>: <code>NuGet/setup-nuget@v2.0.1</code></li>
+<li><strong>Action</strong>: <code>NuGet/setup-nuget@v4</code></li>
 <li><strong>Condition</strong>: Kill switch enabled.</li>
 <li><strong>Purpose</strong>: Ensures <code>nuget.exe</code> (and related) is on PATH for restore and pack.</li>
 </ul>
@@ -452,6 +446,24 @@
 <td>No</td>
 <td>Kill switch. Set to <code>true</code> to disable the workflow.</td>
 </tr>
+<tr>
+<td><strong>DOTNET_PREVIEW_SETUP_VERSION</strong></td>
+<td>Variable</td>
+<td>Yes (when preview enabled)</td>
+<td>Passed to <strong>Setup .NET Preview</strong> (for example <code>11.0.x</code>).</td>
+</tr>
+<tr>
+<td><strong>DOTNET_PREVIEW_SDK_BAND</strong></td>
+<td>Variable</td>
+<td>Yes (when preview enabled)</td>
+<td>Used when pinning preview SDK in <strong>Pin SDK via global.json</strong> (for example <code>11.0</code>).</td>
+</tr>
+<tr>
+<td><strong>USE_DOTNET_PREVIEW</strong></td>
+<td>Variable</td>
+<td>No</td>
+<td>Set to <code>false</code> to skip preview SDK install and pin stable 10.x/9.x only.</td>
+</tr>
 </tbody>
 </table>
 <hr>
@@ -485,7 +497,7 @@
 <h3 id="build-or-pack-fails">Build or Pack fails</h3>
 <ul>
 <li>Check the <strong>Build Canary</strong> and <strong>Pack Canary</strong> logs for MSBuild errors.</li>
-<li>Confirm .NET 11 preview SDK is available (Setup .NET 11 step and global.json step).</li>
+<li>Confirm preview/stable SDK variables match <code>dotnet --list-sdks</code> on the runner (<strong>Setup .NET Preview</strong> and <strong>Pin SDK via global.json</strong>).</li>
 <li>Confirm WebView2 SDK step completed and <code>WebView2SDK</code> contains the expected DLLs if the build requires them.</li>
 <li>Locally: <code>msbuild Scripts/Build/canary.proj /t:Build /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;</code> (and same for <code>Pack</code>) to reproduce.</li>
 </ul>
@@ -531,7 +543,7 @@
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>

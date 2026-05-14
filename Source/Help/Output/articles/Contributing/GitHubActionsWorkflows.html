@@ -104,7 +104,7 @@
 │  │             │  │  RELEASES    │  │   NIGHTLY    │          │
 │  │ • All PRs   │  │              │  │              │          │
 │  │ • All Push  │  │ • master     │  │ • Schedule   │          │
-│  │             │  │ • V85-LTS    │  │   (00:00 UTC)│          │
+│  │             │  │ • V105-LTS   │  │   (00:00 UTC)│          │
 │  │ Fast build  │  │ • canary     │  │ • Manual     │          │
 │  │ Validation  │  │ • alpha      │  │              │          │
 │  │             │  │              │  │ alpha branch │          │
@@ -174,7 +174,6 @@
       - canary
       - gold
       - V105-LTS
-      - V85-LTS
     paths-ignore: ['.git*', '.vscode']
   workflow_dispatch:  # Manual trigger
 </code></pre>
@@ -182,13 +181,14 @@
 <h3 id="what-it-does">What It Does</h3>
 <pre><code class="lang-yaml">jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-2025-vs2026
     steps:
       1. Checkout code
-      2. Setup .NET SDKs (6, 7, 8, 9, 10)
-      3. Setup MSBuild and NuGet
-      4. Restore NuGet packages
-      5. Build solution
+      2. Setup .NET SDKs (9.0.x and 10.0.x)
+      3. Setup .NET Preview (when USE_DOTNET_PREVIEW is not false)
+      4. Pin SDK via global.json (stable 10.x/9.x for this workflow)
+      5. Setup MSBuild and NuGet; cache packages
+      6. Restore solution (*.slnx), build via Scripts/Build/nightly.proj
 </code></pre>
 <p><strong>Does NOT</strong>:</p>
 <ul>
@@ -197,15 +197,14 @@
 <li>❌ Create releases</li>
 <li>❌ Send notifications</li>
 </ul>
-<h3 id="sdk-installation">SDK Installation</h3>
-<p>Installs all SDKs to support every branch's target frameworks:</p>
-<pre><code class="lang-yaml">- .NET 6 (LTS)  → For V85-LTS (net6.0-windows)
-- .NET 7        → For V85-LTS (net7.0-windows)
-- .NET 8 (LTS)  → For all branches (net8.0-windows)
-- .NET 9 (GA)   → For master/canary/alpha (net9.0-windows)
-- .NET 10       → For master/canary/alpha (net10.0-windows)
-</code></pre>
-<p><strong>Why all SDKs?</strong>: Single build job must handle PRs from any branch</p>
+<h3 id="sdk-installation">SDK installation</h3>
+<ul>
+<li><strong>Always</strong>: .NET <strong>9.0.x</strong> and <strong>10.0.x</strong> via <code>actions/setup-dotnet</code>.</li>
+<li><strong>Preview (optional)</strong>: when repository variable <code>USE_DOTNET_PREVIEW</code> is not <code>false</code>, installs the band from <code>DOTNET_PREVIEW_SETUP_VERSION</code> so TFMs that need a newer SDK can resolve.</li>
+<li><strong><code>global.json</code></strong>: the <strong>Pin SDK via global.json</strong> step pins a concrete SDK line for reproducibility (helper <code>Get-ListedSdkVersion</code>; stable 10→9 in <code>build.yml</code>).</li>
+</ul>
+<p>See <a href="#repository-variables-net-preview--ci">Repository variables (.NET preview / CI)</a>.</p>
+<p><strong>Why this layout?</strong> One CI job must build the multi-target solution for every PR and branch the workflow listens to.</p>
 <h3 id="execution-time-buildyml">Execution Time (build.yml)</h3>
 <p>⚡ <strong>~3-5 minutes</strong> (optimized for speed)</p>
 <h3 id="when-to-check">When to Check</h3>
@@ -227,12 +226,11 @@
       - alpha
       - canary
       - V105-LTS
-      - V85-LTS
   workflow_dispatch:  # Manual trigger
 </code></pre>
 <p><strong>Runs On</strong>: Manual pushes to release branches or manual trigger from Actions UI</p>
 <h3 id="jobs-overview">Jobs Overview</h3>
-<p>Four independent jobs, one per branch:</p>
+<p>Four independent jobs (each runs only when <code>github.ref</code> matches its branch):</p>
 <table>
 <thead>
 <tr>
@@ -247,28 +245,29 @@
 <td><code>release-master</code></td>
 <td>master</td>
 <td>Stable production</td>
-<td>Packages + Archives + GitHub Release</td>
+<td>Packages (+ archives / GitHub release where implemented)</td>
 </tr>
 <tr>
-<td><code>release-v85-lts</code></td>
-<td>V85-LTS</td>
-<td>Long-term support</td>
-<td>LTS Packages</td>
+<td><code>release-v105-lts</code></td>
+<td>V105-LTS</td>
+<td>LTS line from V105 branch</td>
+<td>LTS packages</td>
 </tr>
 <tr>
 <td><code>release-canary</code></td>
 <td>canary</td>
-<td>Pre-release testing</td>
-<td>Canary Packages</td>
+<td>Canary pre-release</td>
+<td>Canary packages</td>
 </tr>
 <tr>
 <td><code>release-alpha</code></td>
 <td>alpha</td>
-<td>Manual alpha</td>
-<td>Alpha Packages</td>
+<td>Alpha / nightly-style packages</td>
+<td>Nightly packages</td>
 </tr>
 </tbody>
 </table>
+<p>All jobs use <strong><code>windows-2025-vs2026</code></strong> and <strong><code>environment: production</code></strong> where publishing occurs.</p>
 <hr>
 <h3 id="job-release-master">Job: <code>release-master</code></h3>
 <h4 id="stable-production-releases">Stable production releases</h4>
@@ -283,7 +282,8 @@
 <ol>
 <li><p><strong>Setup Environment</strong></p>
 <pre><code class="lang-yaml">- Setup .NET 9, 10
-- Force .NET 10 SDK via global.json
+- Setup .NET Preview (skipped when repository variable USE_DOTNET_PREVIEW=false)
+- Pin SDK via global.json (stable 10.x/9.x or preview band per variables)
 - Setup MSBuild, NuGet
 - Cache NuGet packages
 </code></pre>
@@ -351,39 +351,17 @@
 <h4 id="execution-time-release-master">Execution Time (release-master)</h4>
 <p>🕐 <strong>~12-15 minutes</strong></p>
 <hr>
-<h3 id="job-release-v85-lts">Job: <code>release-v85-lts</code></h3>
-<h4 id="long-term-support-releases">Long-Term Support releases</h4>
-<h4 id="configuration-release-v85-lts">Configuration (release-v85-lts)</h4>
+<h3 id="job-release-v105-lts">Job: <code>release-v105-lts</code></h3>
+<h4 id="v105-long-term-support-push-to-v105-lts">V105 Long-Term Support (push to <code>V105-LTS</code>)</h4>
+<p>Matches <strong><code>release-master</code></strong> in overall shape but targets the <strong>V105-LTS</strong> branch only (<code>if: github.ref == 'refs/heads/V105-LTS'</code>).</p>
+<h4 id="configuration-release-v105-lts">Configuration (release-v105-lts)</h4>
 <ul>
-<li><strong>Build Script</strong>: <code>Scripts/longtermstable.proj</code></li>
-<li><strong>Configuration</strong>: <code>Release</code></li>
-<li><strong>Target Frameworks</strong>: net462, net47, net471, net472, net48, net481, net6.0, net7.0, net8.0</li>
-<li><strong>Output</strong>: <code>Bin/Packages/Release/</code></li>
-<li><strong>Package Names</strong>: <code>Krypton.*.LTS</code> (separate IDs)</li>
+<li><strong>Kill switch</strong>: same pattern as master — <code>vars.RELEASE_DISABLED</code></li>
+<li><strong>SDK setup</strong>: .NET 9.0.x and 10.0.x; <strong>Pin SDK via global.json</strong> pins latest stable <strong>10.x</strong> then <strong>9.x</strong> (no separate <strong>Setup .NET Preview</strong> step in this job — stable SDK only)</li>
+<li><strong>Build / pack</strong>: <code>Scripts/Build/build.proj</code> with <code>Configuration=Release</code>, <code>/p:UseArtifactsOutput=true</code></li>
+<li><strong>Discord</strong>: uses <strong><code>DISCORD_WEBHOOK_MASTER</code></strong> (same secret as stable master releases)</li>
 </ul>
-<h4 id="sdks-required">SDKs Required</h4>
-<pre><code class="lang-yaml">- .NET 6 (LTS)  → net6.0-windows
-- .NET 7        → net7.0-windows
-- .NET 8 (LTS)  → net8.0-windows + .NET Framework targets
-</code></pre>
-<p><strong>No .NET 9 or 10</strong> - LTS focuses on stability</p>
-<h4 id="steps-release-v85-lts">Steps (release-v85-lts)</h4>
-<ol>
-<li>Setup .NET 6, 7, 8</li>
-<li>Restore → Build → Pack</li>
-<li>Push LTS packages to NuGet (fault-tolerant)</li>
-<li>Get Version from assembly</li>
-<li>Discord notification (if packages published)</li>
-</ol>
-<h4 id="unique-features-release-v85-lts">Unique Features (release-v85-lts)</h4>
-<ul>
-<li>✅ Broadest framework support (9 target frameworks)</li>
-<li>✅ Separate package identities (*.LTS suffix)</li>
-<li>✅ Legacy framework support (net462 - 2015 vintage)</li>
-<li>✅ Stable SDK versions only (no previews)</li>
-</ul>
-<h4 id="execution-time-release-v85-lts">Execution Time (release-v85-lts)</h4>
-<p>🕐 <strong>~15-18 minutes</strong> (more target frameworks)</p>
+<p>See <a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/.github/workflows/release.yml">.github/workflows/release.yml</a> job <code>release-v105-lts</code> for the exact step list.</p>
 <hr>
 <h3 id="job-release-canary">Job: <code>release-canary</code></h3>
 <h4 id="pre-release-feature-testing">Pre-release feature testing</h4>
@@ -597,44 +575,39 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 <hr>
 <h4 id="2-discord-webhooks-optional">2. Discord Webhooks (Optional)</h4>
 <p><strong>Purpose</strong>: Send rich notifications to Discord when releases are published</p>
-<p><strong>Four Separate Webhooks</strong> (one per release type):</p>
+<p><strong>Webhooks used by <code>release.yml</code></strong> (implementation):</p>
 <table>
 <thead>
 <tr>
 <th>Secret Name</th>
-<th>Branch</th>
-<th>Channel Suggestion</th>
+<th>Used for</th>
+<th>Channel suggestion</th>
 <th>Color</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>DISCORD_WEBHOOK_MASTER</code></td>
-<td>master</td>
+<td><strong><code>master</code> and <code>V105-LTS</code></strong> jobs</td>
 <td><code>#releases</code> or <code>#announcements</code></td>
 <td>Blue</td>
 </tr>
 <tr>
-<td><code>DISCORD_WEBHOOK_LTS</code></td>
-<td>V85-LTS</td>
-<td><code>#lts-releases</code> or <code>#releases</code></td>
-<td>Orange</td>
-</tr>
-<tr>
 <td><code>DISCORD_WEBHOOK_CANARY</code></td>
-<td>canary</td>
+<td><strong><code>canary</code></strong> job</td>
 <td><code>#canary-builds</code> or <code>#pre-releases</code></td>
 <td>Yellow</td>
 </tr>
 <tr>
 <td><code>DISCORD_WEBHOOK_NIGHTLY</code></td>
-<td>alpha</td>
+<td><strong><code>alpha</code></strong> job</td>
 <td><code>#nightly-builds</code> or <code>#dev-releases</code></td>
 <td>Purple</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Setup Steps</strong> (repeat for each webhook):</p>
+<p>The <strong><code>V105-LTS</code></strong> job reuses <strong><code>DISCORD_WEBHOOK_MASTER</code></strong> (there is no separate <code>DISCORD_WEBHOOK_LTS</code> in the current workflow file).</p>
+<p><strong>Setup Steps</strong> (repeat for each webhook you need):</p>
 <ol>
 <li><p><strong>Create Webhook in Discord</strong>:</p>
 <ul>
@@ -675,6 +648,35 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 <li>No notifications sent</li>
 <li>Packages still published to NuGet</li>
 </ul>
+<h3 id="repository-variables-net-preview--ci">Repository variables (.NET preview / CI)</h3>
+<p>Set under <strong>Settings → Secrets and variables → Actions → Variables</strong> (organization-level variables apply when the repository is allowed to use them).</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DOTNET_PREVIEW_SETUP_VERSION</code></td>
+<td>Version line for <code>actions/setup-dotnet</code> when installing the preview SDK (for example <code>11.0.x</code>).</td>
+</tr>
+<tr>
+<td><code>DOTNET_PREVIEW_SDK_BAND</code></td>
+<td>Major.minor band used with <code>dotnet --list-sdks</code> when pinning the preview SDK in <strong>Pin SDK via global.json</strong> (for example <code>11.0</code>).</td>
+</tr>
+<tr>
+<td><code>USE_DOTNET_PREVIEW</code></td>
+<td>Set exactly to <code>false</code> to disable preview SDK installation and pin stable <strong>10.x</strong>/<strong>9.x</strong> in workflows that implement this toggle. Leave unset or set to anything else to keep preview enabled. <strong>build-testform.yml</strong>: when <code>false</code>, the <strong>Preview</strong> job is skipped and the <strong>Stable</strong> job can run on <code>canary</code>/<code>alpha</code> so CI still builds.</td>
+</tr>
+<tr>
+<td><code>STANDARD_TOOLKIT_MIN_NUPKG_MB</code></td>
+<td><strong>Optional.</strong> Minimum size (integer <strong>MiB</strong>) for <strong><code>Krypton.Standard.Toolkit</code></strong> aggregate <code>.nupkg</code> files before <code>dotnet nuget push</code>. Implemented by dot-sourcing <a href="../../../Scripts/CI/StandardToolkitNupkgGuard.ps1"><code>Scripts/CI/StandardToolkitNupkgGuard.ps1</code></a> in release/canary/nightly push steps. Omit or leave empty to use the script default (<strong>10</strong> MiB).</td>
+</tr>
+</tbody>
+</table>
+<p>Workflows generate <code>global.json</code> with a shared PowerShell pattern (<code>Get-ListedSdkVersion</code>) so SDK resolution stays consistent across YAML files.</p>
 <hr>
 <h2 id="discord-notifications">Discord Notifications</h2>
 <h3 id="notification-content">Notification Content</h3>
@@ -722,13 +724,12 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 <li><strong>Color</strong>: Blue (#3498DB)</li>
 <li><strong>Extra Field</strong>: 📥 GitHub Release (download archives)</li>
 </ul>
-<h4 id="v85-lts-long-term-support">V85-LTS (Long-Term Support)</h4>
+<h4 id="v105-lts-long-term-support-branch">V105-LTS (Long-Term Support branch)</h4>
 <ul>
-<li><strong>Title</strong>: 🛡️ Krypton Toolkit LTS Release</li>
+<li><strong>Title</strong>: 🛡️ Krypton Toolkit LTS Release (same embed pattern as stable when using <code>DISCORD_WEBHOOK_MASTER</code>)</li>
 <li><strong>Description</strong>: A new Long-Term Support release is now available!</li>
 <li><strong>Color</strong>: Orange (#E67E22)</li>
-<li><strong>Packages</strong>: Krypton.*.LTS</li>
-<li><strong>Frameworks</strong>: 9 targets (most comprehensive)</li>
+<li><strong>Note</strong>: Branch <strong><code>V105-LTS</code></strong> is handled by job <code>release-v105-lts</code>; notifications use <strong><code>DISCORD_WEBHOOK_MASTER</code></strong> in the workflow implementation.</li>
 </ul>
 <h4 id="canary-pre-release">Canary (Pre-Release)</h4>
 <ul>
@@ -1027,7 +1028,7 @@ ls .github/workflows/nightly.yml  # Should exist
 <p><strong>Use in workflow</strong>:</p>
 <pre><code class="lang-yaml">jobs:
   release-master:
-    runs-on: windows-2022
+    runs-on: windows-2025-vs2026
     environment: production  # Requires approval
 </code></pre>
 <p><strong>Benefit</strong>: Manual approval required before publishing to nuget.org</p>
@@ -1122,7 +1123,7 @@ ls .github/workflows/nightly.yml  # Should exist
 <li>✅ Expires after job completes</li>
 </ul>
 <h4 id="branch-protection">Branch Protection</h4>
-<p><strong>Recommended for</strong>: master, V85-LTS, canary, alpha</p>
+<p><strong>Recommended for</strong>: master, <strong>V105-LTS</strong>, canary, alpha</p>
 <p><strong>Settings</strong> → Branches → Add rule:</p>
 <ul>
 <li>✅ Require pull request reviews before merging</li>
@@ -1135,27 +1136,21 @@ ls .github/workflows/nightly.yml  # Should exist
 <hr>
 <h2 id="workflow-maintenance">Workflow Maintenance</h2>
 <h3 id="updating-net-sdk-versions">Updating .NET SDK Versions</h3>
-<p>When new .NET version releases (e.g., .NET 11):</p>
+<p>When moving to a new preview band (for example the next major):</p>
 <ol>
-<li><p><strong>Update workflow SDK steps</strong>:</p>
-<pre><code class="lang-yaml">- name: Setup .NET 11 (preview)
-  uses: actions/setup-dotnet@v4
-  with:
-    dotnet-version: 11.0.x
-    dotnet-quality: preview
-</code></pre>
+<li><p><strong>Update repository variables</strong> (preferred — avoids editing YAML for each bump):</p>
+<ul>
+<li><code>DOTNET_PREVIEW_SETUP_VERSION</code> (example: <code>12.0.x</code>)</li>
+<li><code>DOTNET_PREVIEW_SDK_BAND</code> (example: <code>12.0</code>)</li>
+</ul>
 </li>
-<li><p><strong>Update global.json generation</strong>:</p>
-<pre><code class="lang-powershell">$sdkVersion = (dotnet --list-sdks | Select-String &quot;11.0&quot;).ToString().Split(&quot; &quot;)[0]
-</code></pre>
+<li><p><strong>Confirm workflow steps</strong> still use those variables (<code>Setup .NET Preview</code> + <strong>Pin SDK via global.json</strong>). The pin step resolves <code>global.json</code> via <code>Get-ListedSdkVersion</code> and <code>DOTNET_PREVIEW_SDK_BAND</code>.</p>
 </li>
-<li><p><strong>Update target frameworks</strong> in <code>.csproj</code> files (see Build System docs)</p>
+<li><p><strong>Update target frameworks</strong> in <code>.csproj</code> files (see Build System docs).</p>
 </li>
-<li><p><strong>Update Discord notifications</strong>:</p>
-<pre><code class="lang-powershell">value = &quot;• .NET Framework 4.7.2`n...`n• .NET 11.0&quot;
-</code></pre>
+<li><p><strong>Update Discord / release copy</strong> if embeds list TFMs by name.</p>
 </li>
-<li><p><strong>Test on feature branch</strong> before merging</p>
+<li><p><strong>Test on a branch</strong> with <code>workflow_dispatch</code> before merging.</p>
 </li>
 </ol>
 <h3 id="workflow-performance-optimization">Workflow Performance Optimization</h3>
@@ -1232,7 +1227,7 @@ ls .github/workflows/nightly.yml  # Should exist
 </tr>
 <tr>
 <td>release.yml</td>
-<td>Push to master/V105-LTS/V85-LTS/canary/alpha</td>
+<td>Push to master / V105-LTS / canary / alpha</td>
 <td>✅ workflow_dispatch</td>
 </tr>
 <tr>
@@ -1263,13 +1258,7 @@ ls .github/workflows/nightly.yml  # Should exist
 <td><code>DISCORD_WEBHOOK_MASTER</code></td>
 <td>Discord URL</td>
 <td>No</td>
-<td>release.yml (master)</td>
-</tr>
-<tr>
-<td><code>DISCORD_WEBHOOK_LTS</code></td>
-<td>Discord URL</td>
-<td>No</td>
-<td>release.yml (V85-LTS)</td>
+<td><code>release.yml</code> (<strong>master</strong> and <strong>V105-LTS</strong> jobs)</td>
 </tr>
 <tr>
 <td><code>DISCORD_WEBHOOK_CANARY</code></td>
@@ -1343,7 +1332,7 @@ gh run watch [run-id]
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>

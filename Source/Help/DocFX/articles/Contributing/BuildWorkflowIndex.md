@@ -21,7 +21,7 @@ The primary CI/CD workflow that validates code quality and creates releases.
 **Triggers**:
 
 - Pull requests to any branch
-- Push to protected branches (master, alpha, canary, gold, V85-LTS)
+- Push to protected branches (master, alpha, canary, gold, V105-LTS)
 - Manual: workflow_dispatch
 
 **Documentation**: [Full Build Workflow Documentation →](Workflows/BuildWorkflow.md)

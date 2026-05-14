@@ -27,7 +27,6 @@ The Build workflow provides continuous integration (CI) for the Krypton Standard
   - `canary`
   - `gold`
   - `V105-LTS`
-  - `V85-LTS`
 - **Path Filters**: Ignores changes to `.git*` and `.vscode` directories
 
 ### Security Filter
@@ -47,7 +46,7 @@ This ensures:
 
 ### Job 1: `build`
 
-**Runner**: `windows-latest`
+**Runner**: `windows-2025-vs2026` (see `.github/workflows/build.yml`)
 
 **Purpose**: Builds the solution to validate changes
 
@@ -55,46 +54,37 @@ This ensures:
 
 1. **Checkout**
    - Uses `actions/checkout@v6`
-   - Checks out the source code
 
 2. **Setup .NET**
    - Uses `actions/setup-dotnet@v5`
    - Installs .NET 9.0.x and 10.0.x SDKs
-   - Required for building multi-target projects
 
-3. **Force .NET 10 SDK via global.json**
-   - Dynamically generates `global.json` to pin SDK version
-   - Uses PowerShell to detect installed .NET 10 SDK
-   - Sets `rollForward: latestFeature` for compatibility
+3. **Setup .NET Preview**
+   - Runs when repository variable `USE_DOTNET_PREVIEW` is not `false`
+   - Uses `DOTNET_PREVIEW_SETUP_VERSION` with `dotnet-quality: preview` so the matching preview SDK is available on the runner
 
-4. **Setup MSBuild**
-   - Uses `microsoft/setup-msbuild@v2`
-   - Configures MSBuild with x64 architecture
-   - Required for building .NET Framework targets
+4. **Pin SDK via global.json**
+   - PowerShell resolves the SDK version from `dotnet --list-sdks` (latest stable 10.x, fallback 9.x)
+   - Writes `global.json` with `rollForward: latestFeature`
 
-5. **Setup NuGet**
-   - Uses `NuGet/setup-nuget@v2.0.1`
-   - Configures NuGet for package restoration
+5. **Setup MSBuild**
+   - Uses `microsoft/setup-msbuild@v3`, x64
 
-6. **Cache NuGet**
-   - Uses `actions/cache@v4`
-   - Caches `~/.nuget/packages` directory
-   - Cache key based on project file hashes
-   - Speeds up subsequent builds
+6. **Setup NuGet**
+   - Uses `NuGet/setup-nuget@v4`
 
-7. **Restore**
-   - Restores NuGet packages for the solution
-   - Solution: `Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln`
+7. **Cache NuGet**
+   - Uses `actions/cache@v5` on `~/.nuget/packages`
 
-8. **Build**
-   - Builds using MSBuild with `nightly.proj`
-   - Configuration: `Release`
-   - Platform: `Any CPU`
-   - Target: `Rebuild` (clean and build)
+8. **Restore**
+   - `dotnet restore` on `Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.slnx` with `TFMs=all`
+
+9. **Build**
+   - `msbuild Scripts/Build/nightly.proj /t:Rebuild ...`
 
 ### Job 2: `release`
 
-**Runner**: `windows-latest`
+**Runner**: `windows-2025-vs2026`
 
 **Condition**: Only runs on `master` branch pushes
 
@@ -108,7 +98,7 @@ This ensures:
 
 2. **Setup .NET** - Same as build job
 
-3. **Force .NET 10 SDK via global.json** - Same as build job
+3. **Pin SDK via global.json** - Same stable pin as build job (10.x → 9.x)
 
 4. **Setup MSBuild** - Same as build job
 
@@ -116,7 +106,7 @@ This ensures:
 
 6. **Cache NuGet** - Same as build job
 
-7. **Restore** - Same as build job
+7. **Restore** - Same solution restore as build job (`*.slnx`)
 
 8. **Build Release**
    - Uses `Scripts/Build/build.proj` instead of `nightly.proj`
@@ -140,17 +130,14 @@ This ensures:
 
 ### .NET SDK Management
 
-The workflow uses a dynamic `global.json` approach:
+The workflow writes **`Pin SDK via global.json`**: PowerShell picks the latest listed **10.0.*.* SDK**, then falls back to **9.0.*.***, using the same `Get-ListedSdkVersion` helper pattern as other workflows. Fail the step if neither line exists.
 
-```powershell
-$sdkVersion = (dotnet --list-sdks | Select-String "10.0").ToString().Split(" ")[0]
-```
+Preview SDK installation is conditional on **`USE_DOTNET_PREVIEW`** (repository variable); version comes from **`DOTNET_PREVIEW_SETUP_VERSION`**.
 
 **Benefits**:
 
-- Automatically uses the latest installed .NET 10 SDK
-- Handles version variations across GitHub runners
-- Ensures consistent SDK usage
+- Avoids null `.ToString()` on empty `Select-String` results
+- Pins a concrete `sdk.version` with `rollForward: latestFeature`
 
 ### Build Projects
 

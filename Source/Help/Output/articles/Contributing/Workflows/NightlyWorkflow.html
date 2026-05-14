@@ -109,8 +109,8 @@
 <li><strong>Change Detection</strong> - Checks for commits in last 24 hours</li>
 <li><strong>Skip Notification</strong> - Notifies if no changes found</li>
 <li><strong>Setup .NET</strong> - Installs .NET SDKs</li>
-<li><strong>Setup .NET 11</strong> - Attempts to install .NET 11 (optional)</li>
-<li><strong>Force .NET 10 SDK</strong> - Creates <code>global.json</code></li>
+<li><strong>Setup .NET Preview</strong> - Installs preview SDK when <code>USE_DOTNET_PREVIEW</code> is not <code>false</code> (<code>DOTNET_PREVIEW_SETUP_VERSION</code>; optional when preview disabled)</li>
+<li><strong>Pin SDK via global.json</strong> - Writes <code>global.json</code> (preview band or stable 10.x/9.x per repository variables)</li>
 <li><strong>Setup MSBuild</strong> - Configures MSBuild</li>
 <li><strong>Setup NuGet</strong> - Configures NuGet</li>
 <li><strong>Cache NuGet</strong> - Caches packages</li>
@@ -181,15 +181,14 @@ $commitCount = git rev-list --count --since=&quot;$yesterday&quot; alpha
 <h3 id="net-sdk-setup">.NET SDK Setup</h3>
 <p><strong>Versions Installed</strong>:</p>
 <ul>
-<li>.NET 9.0.x</li>
-<li>.NET 10.0.x</li>
-<li>.NET 11.0.x</li>
+<li>.NET 9.0.x and 10.0.x (always)</li>
+<li>Preview SDK: only when <code>USE_DOTNET_PREVIEW</code> is not <code>false</code>, using repository variable <code>DOTNET_PREVIEW_SETUP_VERSION</code> (for example <code>11.0.x</code>)</li>
 </ul>
-<p><strong>global.json Generation</strong>:</p>
+<p><strong>global.json (Pin SDK via global.json)</strong>:</p>
 <ul>
-<li>Prefers .NET 11 SDK</li>
-<li>Falls back to .NET 10 if .NET 11 unavailable</li>
-<li>Uses <code>rollForward: latestFeature</code></li>
+<li>When preview is enabled: pins SDK matching <code>DOTNET_PREVIEW_SDK_BAND</code>, with fallback to latest 10.x on the runner if the preview SDK is missing.</li>
+<li>When <code>USE_DOTNET_PREVIEW=false</code>: pins latest stable 10.x, then 9.x.</li>
+<li>Uses <code>rollForward: latestFeature</code> in generated <code>global.json</code>.</li>
 </ul>
 <h3 id="build-process">Build Process</h3>
 <p><strong>Project File</strong>: <code>Scripts/Build/nightly.proj</code></p>
@@ -474,7 +473,7 @@ $versionNode = $projXml.SelectSingleNode(&quot;//Version&quot;)
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Tobitege, Lesarndro, KamaniAR & Ahmed Abdelhameed et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>

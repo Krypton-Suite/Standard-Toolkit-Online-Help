@@ -45,10 +45,9 @@ The **Canary LTS Release** workflow (`canary-lts-release.yml`) builds and publis
 | Workflow | Branch | Build type | Package IDs / Notes |
 | --- | --- | --- | --- |
 | **Release** (release.yml) | `master` | Release | Krypton.Toolkit, Krypton.Standard.Toolkit, etc. |
-| **Release** (release.yml) | **V105-LTS** | Release | Same stable IDs; LTS changelog links. |
+| **Release** (release.yml) | **V105-LTS** | Release (`release-v105-lts`) | Stable IDs; `DISCORD_WEBHOOK_MASTER`; see [Release workflow](ReleaseWorkflow.md). |
 | **Release** (release.yml) | `canary` | Canary | Krypton.Toolkit.Canary, Krypton.Standard.Toolkit.Canary, etc. |
 | **Canary LTS Release** (this) | **V105-LTS** | Canary | Same Canary IDs as `canary` branch; built from V105-LTS. |
-| **Release** (release.yml) | V85-LTS | Release (LTS) | Krypton.Toolkit.LTS, etc. (different solution/proj). |
 | **Nightly** (nightly.yml) | `alpha` (checked out) | Nightly | Krypton.Toolkit.Nightly, etc. |
 
 - **Canary LTS** and **Canary (canary branch)** both produce the same package IDs (e.g. `Krypton.Toolkit.Canary`). They differ by branch and version/build content; NuGet version (e.g. `110.yy.MM.ddd-beta`) distinguishes them.
@@ -128,28 +127,28 @@ When disabled, the first step writes a warning and sets `enabled=false`; all sub
 - **Condition**: Kill switch enabled.
 - **Purpose**: Provides .NET 9 and 10 runtimes/SDKs for building and packing the multi-targeting projects.
 
-### 4. Setup .NET 11 (Preview)
+### 4. Setup .NET Preview
 
 - **Action**: `actions/setup-dotnet@v5`
-- **Version**: `11.0.x` with `dotnet-quality: preview`
-- **Condition**: Kill switch enabled.
-- **Purpose**: Canary configuration supports .NET 11; this step ensures the preview SDK is available.
+- **Version**: repository variable `DOTNET_PREVIEW_SETUP_VERSION` with `dotnet-quality: preview`
+- **Condition**: Kill switch enabled **and** `USE_DOTNET_PREVIEW` is not `false`
+- **Purpose**: Makes the configured preview SDK band available when the LTS Canary build targets preview TFMs.
 
-### 5. Force .NET 11 SDK via global.json
+### 5. Pin SDK via global.json
 
 - **Condition**: Kill switch enabled.
-- **Behaviour**: Detects the installed 11.0 SDK (e.g. via `dotnet --list-sdks`), writes a `global.json` in the repo root that pins the SDK version with `rollForward: latestFeature`. Subsequent `dotnet`/MSBuild calls use .NET 11 for building and packing.
+- **Behaviour**: PowerShell resolves an SDK version from `dotnet --list-sdks` using repository variables (`USE_DOTNET_PREVIEW`, `DOTNET_PREVIEW_SDK_BAND`) and writes repo-root `global.json` with `rollForward: latestFeature`. When preview is disabled, pins stable **10.x** then **9.x**.
 
 ### 6. Setup MSBuild
 
-- **Action**: `microsoft/setup-msbuild@v2`
+- **Action**: `microsoft/setup-msbuild@v3`
 - **Options**: `msbuild-architecture: x64`
 - **Condition**: Kill switch enabled.
 - **Purpose**: Makes MSBuild available for `Scripts/Build/canary.proj`.
 
 ### 7. Setup NuGet
 
-- **Action**: `NuGet/setup-nuget@v2.0.1`
+- **Action**: `NuGet/setup-nuget@v4`
 - **Condition**: Kill switch enabled.
 - **Purpose**: Ensures `nuget.exe` (and related) is on PATH for restore and pack.
 
@@ -266,6 +265,9 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 | **AUTHENTICODE_CERT_PASSWORD** | Secret | No | Password for the .pfx. Only used when AUTHENTICODE_CERT_BASE64 is set. |
 | **DISCORD_WEBHOOK_CANARY** | Secret | No | Discord webhook URL. If set and at least one package was pushed, an announcement is sent. |
 | **CANARY_LTS_DISABLED** | Variable | No | Kill switch. Set to `true` to disable the workflow. |
+| **DOTNET_PREVIEW_SETUP_VERSION** | Variable | Yes (when preview enabled) | Passed to **Setup .NET Preview** (for example `11.0.x`). |
+| **DOTNET_PREVIEW_SDK_BAND** | Variable | Yes (when preview enabled) | Used when pinning preview SDK in **Pin SDK via global.json** (for example `11.0`). |
+| **USE_DOTNET_PREVIEW** | Variable | No | Set to `false` to skip preview SDK install and pin stable 10.x/9.x only. |
 
 ---
 
@@ -302,7 +304,7 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 ### Build or Pack fails
 
 - Check the **Build Canary** and **Pack Canary** logs for MSBuild errors.
-- Confirm .NET 11 preview SDK is available (Setup .NET 11 step and global.json step).
+- Confirm preview/stable SDK variables match `dotnet --list-sdks` on the runner (**Setup .NET Preview** and **Pin SDK via global.json**).
 - Confirm WebView2 SDK step completed and `WebView2SDK` contains the expected DLLs if the build requires them.
 - Locally: `msbuild Scripts/Build/canary.proj /t:Build /p:Configuration=Canary /p:Platform="Any CPU"` (and same for `Pack`) to reproduce.
 

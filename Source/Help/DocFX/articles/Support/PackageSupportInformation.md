@@ -30,10 +30,10 @@ There are currently two types of package that are supported. The table below out
 
 | Version | Status | Latest Release | Latest Release Date | End of Support |
 | --- | --- | --- | --- | --- |
-| .NET 11.0 | Standard Term Support | 11.0.0-preview.3 | April 14, 2026 | TBA |
-| .NET 10.0 | Long Term Support | 10.0.5 | April 14, 2026 | November 14, 2028 |
-| .NET 9.0 | Standard Term Support | 9.0.15 | April 14, 2026 | May 12, 2026 |
-| .NET 8.0 | Long Term Support | 8.0.26 | April 14, 2026 | November 10, 2026 |
+| .NET 11.0 | Standard Term Support | 11.0.0-preview.4 | May 12, 2026 | TBA |
+| .NET 10.0 | Long Term Support | 10.0.8 | May 12, 2026 | November 14, 2028 |
+| .NET 9.0 | Standard Term Support | 9.0.16 | May 12, 2026 | May 12, 2026 |
+| .NET 8.0 | Long Term Support | 8.0.27 | May 12, 2026 | November 10, 2026 |
 
 ### Supported .NET Framework Versions
 
@@ -44,6 +44,6 @@ There are currently two types of package that are supported. The table below out
 | .NET Framework 4.7.2 | April 30, 2018 | TBC |
 | .NET Framework 4.7.1 | October 17, 2017 | TBC |
 | .NET Framework 4.7 | April 5, 2017 | TBC |
-| .NET Framework 4.6.2 | August 2, 2016 | TBC |
+| .NET Framework 4.6.2 | August 2, 2016 | January 12, 2027 |
 
 For current .NET releases, see [.NET downloads](https://dotnet.microsoft.com/en-us/download/dotnet). For .NET Framework, see [.NET Framework downloads](https://dotnet.microsoft.com/en-us/download/dotnet-framework).

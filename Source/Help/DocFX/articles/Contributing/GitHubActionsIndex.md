@@ -38,7 +38,7 @@ Primary CI/CD workflow for validating code quality and creating releases.
 **Triggers**:
 
 - Pull requests to any branch
-- Push to protected branches (master, alpha, canary, gold, V85-LTS)
+- Push to protected branches (master, alpha, canary, gold, V105-LTS)
 - Manual: workflow_dispatch
 
 **Jobs**:
@@ -54,37 +54,36 @@ Primary CI/CD workflow for validating code quality and creating releases.
 
 **File**: `.github/workflows/release.yml`
 
-Handles production releases across four different release channels.
+Handles production releases across **four** branch-specific jobs in [`release.yml`](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/.github/workflows/release.yml).
 
 **Key Features**:
 
-- ✅ Four independent release channels (Master, LTS, Canary, Alpha)
-- ✅ Automatic NuGet package publishing
-- ✅ GitHub release creation with artifacts (master only)
-- ✅ Discord webhook notifications
-- ✅ Multi-framework support
-- ✅ Intelligent duplicate detection
+- ✅ Four jobs: **`release-master`**, **`release-v105-lts`**, **`release-canary`**, **`release-alpha`**
+- ✅ Automatic NuGet package publishing (where implemented)
+- ✅ Discord webhook notifications (`DISCORD_WEBHOOK_MASTER` shared by master **and** **V105-LTS**)
+- ✅ Multi-framework support via MSBuild scripts under `Scripts/Build/`
+- ✅ Intelligent duplicate detection (`--skip-duplicate`)
 
 **Triggers**:
 
-- Push to: master, alpha, canary, V105-LTS, V85-LTS
-- Manual: workflow_dispatch
+- Push to: **master**, **alpha**, **canary**, **V105-LTS**
+- Manual: **workflow_dispatch**
 
-**Release Channels**:
+**Release channels**:
 
-| Channel | Branch | Package Suffix | Tag Format | Discord Color |
-| --- | --- | --- | --- | --- |
-| **Stable** | master | - | `v{ver}` | Blue 🔵 |
-| **LTS** | V85-LTS | `.LTS` | `v{ver}-lts` | Orange 🟠 |
-| **Canary** | canary | - | `v{ver}-canary` | Yellow 🟡 |
-| **Alpha** | alpha | - | `v{ver}-nightly` | Purple 🟣 |
+| Channel | Branch | Notes | Discord |
+| --- | --- | --- | --- |
+| **Stable** | `master` | `Scripts/Build/build.proj` | `DISCORD_WEBHOOK_MASTER` |
+| **V105 line** | `V105-LTS` | Same stable packages as master; different branch | `DISCORD_WEBHOOK_MASTER` |
+| **Canary** | `canary` | `canary.proj`, Canary packages | `DISCORD_WEBHOOK_CANARY` |
+| **Alpha** | `alpha` | `nightly.proj`; primary NuGet publish often via **`nightly.yml`** | — (this workflow) / **`DISCORD_WEBHOOK_NIGHTLY`** in nightly |
 
-**Jobs**:
+**Jobs** (see [Release Workflow](Workflows/ReleaseWorkflow.md)):
 
-1. **release-master** - Stable production releases
-2. **release-v85-lts** - Long-term support releases
-3. **release-canary** - Pre-release builds
-4. **release-alpha** - Bleeding-edge builds
+1. **release-master**
+2. **release-v105-lts**
+3. **release-canary**
+4. **release-alpha**
 
 **Documentation**: [Full Release Workflow Documentation →](Workflows/ReleaseWorkflow.md)
 
@@ -163,10 +162,9 @@ All secrets are configured at repository level (Settings → Secrets and variabl
 | --- | --- | --- |
 | `NUGET_API_KEY` | All release workflows | Publish packages to nuget.org |
 | `GITHUB_TOKEN` | Build, Release (master) | Create GitHub releases (automatic) |
-| `DISCORD_WEBHOOK_MASTER` | Release (master) | Stable release announcements |
-| `DISCORD_WEBHOOK_LTS` | Release (V85-LTS) | LTS release announcements |
-| `DISCORD_WEBHOOK_CANARY` | Release (canary) | Canary release announcements |
-| `DISCORD_WEBHOOK_NIGHTLY` | Nightly, Release (alpha) | Nightly release announcements |
+| `DISCORD_WEBHOOK_MASTER` | Release (**master** and **V105-LTS**) | Stable / V105-line announcements |
+| `DISCORD_WEBHOOK_CANARY` | Release (canary) | Canary announcements |
+| `DISCORD_WEBHOOK_NIGHTLY` | Nightly, Release (alpha-related) | Nightly / alpha channel announcements |
 
 **Documentation**: See individual workflow docs for detailed secret configuration.
 
@@ -174,10 +172,9 @@ All secrets are configured at repository level (Settings → Secrets and variabl
 
 | Script | Used By | Configuration | Purpose |
 | --- | --- | --- | --- |
-| `Scripts/Build/build.proj` | Build, Release (master) | Release | Stable production builds |
-| `Scripts/Build/longtermstable.proj` | Release (V85-LTS) | Release | LTS builds |
-| `Scripts/Build/canary.proj` | Release (canary), canary.yml | Canary | Pre-release builds |
-| `Scripts/Build/nightly.proj` | Build, Nightly, Release (alpha) | Nightly | Development builds |
+| `Scripts/Build/build.proj` | Release (**master**, **V105-LTS**) | Release | Stable production / V105-line builds |
+| `Scripts/Build/canary.proj` | Release (canary), `canary.yml` | Canary | Canary builds |
+| `Scripts/Build/nightly.proj` | Build, Nightly, Release (alpha) | Nightly | Development / CI builds |
 
 ---
 
@@ -202,12 +199,9 @@ Event: Push to canary
 ├─ Release Workflow → release-canary (NuGet + Discord)
 └─ canary.yml (if using Canary branch) → Canary packages
 
-Event: Push to V85-LTS
-└─ Release Workflow → release-v85-lts (NuGet + Discord)
-
 Event: Push to V105-LTS
-├─ Release Workflow → release-v105-lts (Stable NuGet + Discord)
-└─ Canary LTS Release Workflow → canary-lts-release (Canary NuGet + Discord)
+├─ Release Workflow → release-v105-lts (stable NuGet + Discord via MASTER webhook)
+└─ Canary LTS Release Workflow → canary-lts-release (Canary packages from LTS branch)
 
 Event: Cron Schedule (00:00 UTC)
 └─ Nightly Workflow → Check changes → Build if needed
@@ -220,23 +214,14 @@ Event: Manual Trigger
 
 ## Target Frameworks
 
-### By Workflow/Channel
+TFMs are driven by the solution and shared MSBuild props (`Directory.Build.props`, etc.), not by this index. **`release-master`** and **`release-v105-lts`** both consume **`Scripts/Build/build.proj`** and publish the same stable package IDs from different branches; **Canary** / **Nightly** jobs use **`canary.proj`** / **`nightly.proj`** with different package IDs.
 
-| Framework | Build | Release (Master) | Release (LTS) | Release (Canary) | Release (Alpha) | Nightly |
-| --- | --- | --- | --- | --- | --- | --- |
-| .NET 4.6.2 | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| .NET 4.7.x | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| .NET 4.7.2 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| .NET 4.8 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| .NET 4.8.1 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| .NET 6 | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| .NET 7 | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| .NET 8 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| .NET 9 | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| .NET 10 | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| .NET 11 | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
+| Area | Typical TFMs (see projects for exact roll-forward) |
+| --- | --- |
+| **CI (`build.yml`)** | Multi-target build via `nightly.proj` / solution — **.NET Framework 4.7.2–4.8.1**, **.NET 8–11** windows TFMs as defined in the repo |
+| **Standalone** | `canary.yml` (Canary branch), `canary-lts-release.yml` (**V105-LTS** canary packages) |
 
-**Note**: Standalone workflows: `canary.yml` (push to Canary branch), `canary-lts-release.yml` (push to V105-LTS for Canary packages from the LTS branch).
+**Note**: Older documentation referred to a separate **V85-LTS** / `longtermstable.proj` pipeline; the current [`release.yml`](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/.github/workflows/release.yml) has **four** jobs only (`release-master`, `release-v105-lts`, `release-canary`, `release-alpha`).
 
 ---
 
@@ -263,14 +248,13 @@ Event: Manual Trigger
 3. Push to master
 4. Workflow creates NuGet packages, GitHub release, and Discord notification
 
-#### Create an LTS Release
+#### Create an LTS-line release (V105)
 
-**Workflow**: [Release Workflow - LTS](Workflows/ReleaseWorkflow.md#job-3-release-v85-lts)
+**Workflow**: [Release Workflow — `release-v105-lts`](Workflows/ReleaseWorkflow.md#job-2-release-v105-lts)
 
-1. Cherry-pick changes to V85-LTS branch
-2. Update LTS version
-3. Push to V85-LTS
-4. Workflow creates LTS NuGet packages
+1. Merge or cherry-pick to **`V105-LTS`**
+2. Push to **`V105-LTS`**
+3. **`release-v105-lts`** builds with **`Scripts/Build/build.proj`** and publishes stable packages (same webhook as master unless you change the workflow)
 
 #### Test a Workflow Change
 

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonToolTip | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonToolTip | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptontooltip">KryptonToolTip</h1>
+
+<p>This guide describes <strong><code>KryptonToolTip</code></strong>, a toolbox <strong>component</strong> in <strong><code>Krypton.Toolkit</code></strong> that shows <strong>themed tooltip pop-ups</strong> (the same <strong><code>VisualPopupToolTip</code></strong> rendering used elsewhere in the toolkit) on <strong>any</strong> <code>System.Windows.Forms.Control</code>, without requiring a <code>VisualControlBase</code> descendant.</p>
+<ul>
+<li><p><strong>Primary type</strong>: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Source/Krypton%20Components/Krypton.Toolkit/Controls%20Toolkit/KryptonToolTip.cs"><code>KryptonToolTip</code></a> (<code>Krypton.Toolkit</code> assembly)</p>
+</li>
+<li><p><strong>Sample harness</strong>: <code>Source/Krypton Components/TestForm/KryptonToolTipTest.cs</code> (opened from <strong><code>StartScreen</code></strong> as <strong>“KryptonToolTip”</strong>)</p>
+</li>
+</ul>
+<hr>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><p><a href="#why-kryptontooltip-exists">Why KryptonToolTip exists</a></p>
+</li>
+<li><p><a href="#architecture-at-a-glance">Architecture at a glance</a></p>
+</li>
+<li><p><a href="#getting-started">Getting started</a></p>
+</li>
+<li><p><a href="#kryptontooltip-api"><code>KryptonToolTip</code> API</a></p>
+</li>
+<li><p><a href="#per-control-content">Per-control content</a></p>
+</li>
+<li><p><a href="#tooltipvalues-and-shared-behaviour"><code>ToolTipValues</code> and shared behaviour</a></p>
+</li>
+<li><p><a href="#placement">Placement</a></p>
+</li>
+<li><p><a href="#palette">Palette</a></p>
+</li>
+<li><p><a href="#runtime-behaviour">Runtime behaviour</a></p>
+</li>
+<li><p><a href="#comparison-with-alternatives">Comparison with alternatives</a></p>
+</li>
+<li><p><a href="#limitations-and-good-practices">Limitations and good practices</a></p>
+</li>
+<li><p><a href="#extending-or-integrating">Extending or integrating</a></p>
+</li>
+</ol>
+<hr>
+<h2 id="why-kryptontooltip-exists">Why KryptonToolTip exists</h2>
+<h3 id="problem">Problem</h3>
+<p>Across the toolkit, rich tooltips are built from:</p>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Source/Krypton%20Components/Krypton.Toolkit/Values/ToolTipValues.cs"><code>ToolTipValues</code></a></td>
+<td>Timing, shadow, label style, title/body imagery (via <a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Source/Krypton%20Components/Krypton.Toolkit/Values/HeaderValues.cs"><code>HeaderValues</code></a>), and <a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Source/Krypton%20Components/Krypton.Toolkit/Values/PopupPositionValues.cs"><code>ToolTipPosition</code></a>.</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Source/Krypton%20Components/Krypton.Toolkit/General/TooltipManager.cs"><code>ToolTipManager</code></a></td>
+<td>Mouse-driven show/cancel sequencing (paired with <a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Source/Krypton%20Components/Krypton.Toolkit/Controller/TooltipController.cs"><code>ToolTipController</code></a> and a <strong><code>ViewBase</code></strong> target).</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Source/Krypton%20Components/Krypton.Toolkit/Controls%20Visuals/VisualPopupTooltip.cs"><code>VisualPopupToolTip</code></a></td>
+<td>The actual themed popup window.</td>
+</tr>
+</tbody>
+</table>
+<p>Controls that derive from <strong><code>VisualControlBase</code></strong> wire this stack automatically for their own <strong><code>ToolTipValues</code></strong>. <strong>Plain WinForms controls</strong> (and many third-party controls) do <strong>not</strong>, so developers previously had <strong>no single component</strong> analogous to <strong><code>System.Windows.Forms.ToolTip</code></strong> that still used <strong>Krypton</strong> rendering.</p>
+<h3 id="solution">Solution</h3>
+<p><strong><code>KryptonToolTip</code></strong> fills that gap: drop one component on a form/user control, associate text (and optional image) <strong>per control</strong> via <strong><code>IExtenderProvider</code></strong> properties or <strong><code>SetToolTip</code></strong>, and the component drives <strong><code>VisualPopupToolTip</code></strong> with the same palette and <strong><code>ToolTipValues</code></strong> conventions.</p>
+<hr>
+<h2 id="architecture-at-a-glance">Architecture at a glance</h2>
+<pre><code class="lang-text">
+[KryptonToolTip Component]
+
+       |
+
+       +-- Palette / Renderer (PaletteMode, Palette, KryptonManager)
+
+       |
+
+       +-- ToolTipValues (shared delays, style, shadow, ToolTipPosition, EnableToolTips, …)
+
+       |
+
+       +-- Dictionary&lt;Control, …&gt; per-control Title / Description / Image
+
+       |
+
+       +-- Hooks: MouseEnter / MouseLeave / MouseDown (+ Disposed cleanup)
+
+             |
+
+             +-- timers (initial show delay; optional auto-close)
+
+             |
+
+             v
+
+       [VisualPopupToolTip]  &lt;-- PaletteRedirect + IContentValues + IRenderer
+
+</code></pre>
+<ul>
+<li><p><strong>Content</strong> shown in the popup implements <strong><code>IContentValues</code></strong>. Per-control associations use an internal <strong><code>PerControlToolTipContent</code></strong> adapter (maps <strong>title → short text</strong>, <strong>description → long text</strong>, optional <strong>image</strong>).</p>
+</li>
+<li><p><strong>Placement</strong> (unless legacy cursor mode): <strong><code>VisualPopupToolTip.ShowRelativeTo(Control, Point, PopupPositionValues)</code></strong>, which delegates to <strong><code>ApplyPlacementAndShow</code></strong> so behaviour stays aligned with <strong><code>ShowRelativeTo(ViewBase, Point)</code></strong>.</p>
+</li>
+</ul>
+<hr>
+<h2 id="getting-started">Getting started</h2>
+<h3 id="1-add-the-component">1. Add the component</h3>
+<ul>
+<li><p>In the designer: drag <strong><code>KryptonToolTip</code></strong> onto the form from the toolbox ( <strong><code>Krypton.Toolkit</code></strong>).</p>
+</li>
+<li><p>In code:</p>
+</li>
+</ul>
+<pre><code class="lang-csharp">
+var tips = new KryptonToolTip(components); // participates in IDisposable with container
+
+tips.ContainerControl = this;               // optional: improves DPI scaling context when no control is hovered
+
+</code></pre>
+<h3 id="2-assign-tooltips">2. Assign tooltips</h3>
+<h4 id="designer-extended-properties">Designer (extended properties)</h4>
+<p>On each <strong><code>Control</code></strong>, expand the extender entries provided by <strong><code>KryptonToolTip</code></strong> (often named after your component instance, e.g. <code>kryptonToolTip1</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Extender property</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>KryptonToolTipTitle</strong></td>
+<td>Heading / short text (SuperTip-style title strip).</td>
+</tr>
+<tr>
+<td><strong>KryptonToolTipDescription</strong></td>
+<td>Body / longer description.</td>
+</tr>
+<tr>
+<td><strong>KryptonToolTipImage</strong></td>
+<td>Optional image beside the tooltip content.</td>
+</tr>
+</tbody>
+</table>
+<p>You need <strong>non-empty title and/or description and/or image</strong> for a tooltip to register; clearing all unregisteres hooks for that control.</p>
+<h4 id="code-settooltip">Code (<code>SetToolTip</code>)</h4>
+<pre><code class="lang-csharp">
+kryptonToolTip1.SetToolTip(button1,
+
+    title: &quot;Save&quot;,
+
+    description: &quot;Writes the document to disk.&quot;,
+
+    image: null,
+
+    imageTransparentColor: default);
+
+</code></pre>
+<h4 id="clear">Clear</h4>
+<pre><code class="lang-csharp">
+kryptonToolTip1.ClearToolTip(button1);
+
+</code></pre>
+<h3 id="3-tune-shared-settings">3. Tune shared settings</h3>
+<p>Inspect <strong><code>ToolTipValues</code></strong> on the component (delays, style, shadow, <strong><code>ToolTipPosition</code></strong>, <strong><code>EnableToolTips</code></strong>).</p>
+<p>Run <strong><code>StartScreen → KryptonToolTip</code></strong> or open <strong><code>KryptonToolTipTest</code></strong> for a minimal interactive check.</p>
+<hr>
+<h2 id="kryptontooltip-api"><code>KryptonToolTip</code> API</h2>
+<h3 id="class">Class</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Namespace</strong></td>
+<td><code>Krypton.Toolkit</code></td>
+</tr>
+<tr>
+<td><strong>Base types</strong></td>
+<td><code>Component</code>, <strong><code>IExtenderProvider</code></strong></td>
+</tr>
+<tr>
+<td><strong>Toolbox</strong></td>
+<td>Yes (<code>ToolboxItem(true)</code>, bitmap from <strong><code>System.Windows.Forms.ToolTip</code></strong>)</td>
+</tr>
+<tr>
+<td><strong>Default property (designer)</strong></td>
+<td><strong><code>ToolTipValues</code></strong></td>
+</tr>
+<tr>
+<td><strong><code>CanExtend</code></strong></td>
+<td>Returns <strong><code>true</code></strong> for any <strong><code>Control</code></strong>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="constructors">Constructors</h3>
+<table>
+<thead>
+<tr>
+<th>Signature</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonToolTip()</code></td>
+<td>Typical for code-first usage; subscribes to <strong><code>KryptonManager.GlobalPaletteChanged</code></strong>.</td>
+</tr>
+<tr>
+<td><code>KryptonToolTip(IContainer container)</code></td>
+<td>Adds <strong><code>this</code></strong> to <strong><code>container</code></strong> (standard WinForms disposable pattern).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="public-members-palette">Public members (palette)</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>PaletteMode</code></strong></td>
+<td><code>PaletteMode</code></td>
+<td>Palette source when not using a custom <strong><code>Palette</code></strong>. Updating a <strong>non-Custom</strong> mode refreshes redirector/renderer. <strong><code>Custom</code></strong> is a transition state until <strong><code>Palette</code></strong> is set.</td>
+</tr>
+<tr>
+<td><strong><code>Palette</code></strong></td>
+<td><code>PaletteBase?</code></td>
+<td>Getter returns the custom palette <strong>only when</strong> <strong><code>PaletteMode == Custom</code></strong>; assigning a <strong><code>PaletteBase</code></strong> forces <strong>Custom</strong>. Assign <strong><code>null</code></strong> to return to <strong><code>Global</code></strong> and <strong><code>CurrentGlobalPalette</code></strong>.</td>
+</tr>
+</tbody>
+</table>
+<p>Behaviour matches the palette pattern used in components such as <strong><code>KryptonErrorProvider</code></strong>: rendering uses <strong><code>PaletteRedirect</code></strong> plus <strong><code>palette.GetRenderer()</code></strong>.</p>
+<h3 id="public-members-shared-tooltip-configuration">Public members (shared tooltip configuration)</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>ToolTipValues</code></strong></td>
+<td><code>ToolTipValues</code></td>
+<td><strong>Content serialization object</strong> expanded in the designer. Holds delays, <strong><code>EnableToolTips</code></strong>, shadow, <strong><code>ToolTipStyle</code></strong>, <strong><code>ToolTipPosition</code></strong>, heading/description/image inherited from <strong><code>HeaderValues</code></strong> (see below). <strong><code>EnableToolTips</code> is forced <code>true</code></strong> in <strong><code>KryptonToolTip</code>’s constructor</strong> because the component’s purpose is to show tooltips.</td>
+</tr>
+<tr>
+<td><strong><code>ResetToolTipValues()</code></strong></td>
+<td><code>void</code></td>
+<td>Resets <strong><code>ToolTipValues</code></strong> to defaults (serialization helper).</td>
+</tr>
+<tr>
+<td><strong><code>UseLegacyCursorAnchoredPlacement</code></strong></td>
+<td><code>bool</code></td>
+<td><strong><code>false</code> (default)</strong>: obey <strong><code>ToolTipValues.ToolTipPosition</code></strong> with the <strong>hovered control</strong> as fallback bounds. <strong><code>true</code></strong>: use <strong><code>VisualPopupToolTip.ShowCalculatingSize</code></strong> (cursor-hotspot anchoring compatible with older <code>KryptonToolTip</code> previews).</td>
+</tr>
+<tr>
+<td><strong><code>ContainerControl</code></strong></td>
+<td><code>ContainerControl?</code></td>
+<td><strong>Browsable false</strong>. Secondary DPI/context anchor when <strong><code>GetDpiFactorFromContext</code></strong> falls back from <strong><code>_hoverControl</code></strong>. Rarely needed if tooltips originate from DPI-aware controls.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="programmatic-api">Programmatic API</h3>
+<ul>
+<li><strong><code>SetToolTip(Control?, string title, string description, Image? image = null, Color imageTransparentColor = default)</code></strong>: Registers or replaces association for <strong><code>control</code></strong>; unsubscribes and removes hooks when content is empty.</li>
+<li><strong><code>ClearToolTip(Control?)</code></strong>: Removes association and event hooks for <strong><code>control</code></strong>.</li>
+</ul>
+<h3 id="extender-provider-api-iextenderprovider">Extender provider API (<code>IExtenderProvider</code>)</h3>
+<p>These pairs are surfaced in the <strong><code>Properties</code></strong> window when **<code>CanExtend(control)</code> is true`:</p>
+<pre><code class="lang-text">
+string GetKryptonToolTipTitle(Control control)
+
+void   SetKryptonToolTipTitle(Control control, string value)
+
+
+
+string GetKryptonToolTipDescription(Control control)
+
+void   SetKryptonToolTipDescription(Control control, string value)
+
+
+
+Image? GetKryptonToolTipImage(Control control)
+
+void   SetKryptonToolTipImage(Control control, Image? value)
+
+</code></pre>
+<p><strong><code>ProvideProperty</code></strong> names (first argument) are <strong><code>&quot;KryptonToolTipTitle&quot;</code></strong>, <strong><code>&quot;KryptonToolTipDescription&quot;</code></strong>, <strong><code>&quot;KryptonToolTipImage&quot;</code></strong>.</p>
+<h3 id="disposal">Disposal</h3>
+<p><code>Dispose(bool disposing)</code> unsubscribes from <strong><code>GlobalPaletteChanged</code></strong>, hides active pop-ups, clears timers, <strong>unhooks every tracked control</strong>, disposes <strong><code>Redirector</code></strong>, and nulls <strong><code>Renderer</code></strong> / <strong><code>PaletteInternal</code></strong>.</p>
+<p>Controls that are **<code>Dispose</code>**d unregister via <strong><code>Disposed</code></strong> independently.</p>
+<hr>
+<h2 id="per-control-content">Per-control content</h2>
+<h3 id="rendering-contract-icontentvalues">Rendering contract (<code>IContentValues</code>)</h3>
+<p>The popup <strong><code>ViewDrawContent</code></strong> reads:</p>
+<table>
+<thead>
+<tr>
+<th>Tooltip field</th>
+<th><strong><code>IContentValues</code> mapping</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Title</strong> (extender / <code>SetToolTip</code> <strong>title</strong>)</td>
+<td><strong><code>GetShortText()</code></strong></td>
+</tr>
+<tr>
+<td><strong>Description</strong> (extender / <code>SetToolTip</code> <strong>description</strong>)</td>
+<td><strong><code>GetLongText()</code></strong></td>
+</tr>
+<tr>
+<td><strong>Image</strong></td>
+<td><strong><code>GetImage</code></strong>, <strong><code>GetImageTransparentColor</code></strong></td>
+</tr>
+<tr>
+<td>Overlays</td>
+<td>Not used for <strong><code>PerControlToolTipContent</code></strong> (returns <strong><code>null</code></strong> / sensible defaults mirroring <strong><code>HeaderValuesBase</code></strong> conventions).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="has-content-rule">“Has content?” rule</h3>
+<p>Hooks are attached only when at least one of <strong>title</strong>, <strong>description</strong>, or <strong>image</strong> is considered present (<code>HasRenderableTextOrImage</code>). Whitespace-only strings are <strong>not</strong> treated specially beyond <strong><code>string.IsNullOrEmpty</code></strong>; prefer trimming in your own layer if you need stricter behaviour.</p>
+<h3 id="supertip-vs-simple-styles">SuperTip vs simple styles</h3>
+<p>Use <strong><code>ToolTipValues.ToolTipStyle</code></strong> (a <strong><code>LabelStyle</code></strong>, commonly <strong><code>SuperTip</code></strong> or <strong><code>ToolTip</code></strong>) to control layout/styling consistent with <strong><code>CommonHelper.ContentStyleFromLabelStyle</code></strong> applied when constructing <strong><code>VisualPopupToolTip</code></strong>.</p>
+<h3 id="image-ownership">Image ownership</h3>
+<p><strong><code>SetToolTip</code> / designer</strong> assign <strong><code>Image</code></strong> references <strong>owned by your application</strong>. <strong><code>KryptonToolTip</code></strong> does <strong>not</strong> dispose assigned images.</p>
+<hr>
+<h2 id="tooltipvalues-and-shared-behaviour"><code>ToolTipValues</code> and shared behaviour</h2>
+<p><strong><code>ToolTipValues</code></strong> inherits <strong><code>HeaderValues</code></strong>, which in turn derives from <strong><code>HeaderValuesBase</code></strong> (<strong><code>IContentValues</code></strong>). On <strong><code>KryptonToolTip</code></strong>, <strong>per-popup</strong> content is <strong><code>PerControlToolTipContent</code></strong>, not the component’s <strong><code>ToolTipValues</code></strong> instance—but <strong>timing, positioning, shadow, style, enable flag</strong>, etc. come from <strong><code>KryptonToolTip.ToolTipValues</code></strong>.</p>
+<p>Important members:</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Typical use with <strong><code>KryptonToolTip</code></strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>EnableToolTips</code></strong></td>
+<td>Must stay <strong><code>true</code></strong> for tooltips to show (constructor sets <strong><code>true</code></strong>). <strong><code>false</code></strong> suppresses <strong><code>OnTargetMouseEnter</code></strong>.</td>
+</tr>
+<tr>
+<td><strong><code>ShowIntervalDelay</code></strong></td>
+<td>Milliseconds <strong>before first show</strong> after <strong><code>MouseEnter</code></strong>. (<strong>Minimum effective interval is clamped internally</strong>.)</td>
+</tr>
+<tr>
+<td><strong><code>CloseIntervalDelay</code></strong></td>
+<td>Milliseconds until <strong>automatic hide after show</strong>; <strong><code>0</code></strong> means stay until <strong><code>MouseLeave</code></strong>, <strong><code>MouseDown</code></strong>, dispose, etc.</td>
+</tr>
+<tr>
+<td><strong><code>ToolTipStyle</code></strong></td>
+<td>Maps to <strong><code>PaletteContentStyle</code></strong> via <strong><code>CommonHelper.ContentStyleFromLabelStyle</code></strong>.</td>
+</tr>
+<tr>
+<td><strong><code>ToolTipShadow</code></strong></td>
+<td>Passed through to <strong><code>VisualPopupToolTip</code></strong>.</td>
+</tr>
+<tr>
+<td><strong><code>ToolTipPosition</code></strong></td>
+<td><strong><code>PopupPositionValues</code></strong> (placement mode, optional <strong><code>PlacementTarget</code></strong>, optional <strong><code>PlacementRectangle</code></strong>). Used when <strong><code>UseLegacyCursorAnchoredPlacement == false</code></strong>.</td>
+</tr>
+<tr>
+<td><strong><code>Heading</code></strong> / <strong><code>Description</code></strong> / <strong><code>Image</code></strong> (via <strong><code>HeaderValues</code></strong>)</td>
+<td><strong>Shared defaults</strong> inherited from <strong><code>ToolTipValues</code></strong> type—they are <strong>not</strong> the primary per-control pathway for <strong><code>KryptonToolTip</code></strong> (<strong>extender fields</strong> or <strong><code>SetToolTip</code></strong> populate <strong><code>PerControlToolTipContent</code></strong>). You can still use these for designer defaults if you extend the implementation later or for tooling consistency.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="placement">Placement</h2>
+<h3 id="modes-overview">Modes overview</h3>
+<p>When <strong><code>UseLegacyCursorAnchoredPlacement</code> is false</strong> (default), the component calls:</p>
+<pre><code class="lang-csharp">
+_visualPopup.ShowRelativeTo(hoveredControl, Cursor.Position, ToolTipValues.ToolTipPosition);
+
+</code></pre>
+<p>That overload applies the same <strong><code>ApplyPlacementAndShow</code></strong> logic as <strong><code>ShowRelativeTo(ViewBase, Point)</code></strong>, but uses:</p>
+<ul>
+<li><p><strong><code>PlacementTarget</code></strong> (if <strong><code>ViewBase</code></strong>) plus its <strong><code>OwningControl</code></strong> / <strong><code>ClientRectangle</code></strong> when set on <strong><code>PopupPositionValues</code></strong>.</p>
+</li>
+<li><p>Otherwise <strong>fallback</strong>: <strong><code>fallbackOwningControl</code></strong> = hovered control and <strong><code>fallbackPlacementRect</code></strong> = <strong><code>hoveredControl.ClientRectangle</code></strong> (converted to screen space as in the <strong><code>ViewBase</code></strong> path).</p>
+</li>
+</ul>
+<h4 id="popuppositionvalues-members"><code>PopupPositionValues</code> members</h4>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>PlacementMode</code></strong></td>
+<td><strong><code>PlacementMode</code></strong> enum (<strong>WPF-aligned</strong> semantics; see xmldocs on the enum). Default in <strong><code>PopupPositionValues</code></strong> ctor is <strong><code>Bottom</code></strong>.</td>
+</tr>
+<tr>
+<td><strong><code>PlacementTarget</code></strong></td>
+<td>Optional <strong><code>ViewBase</code></strong>. Rarely used from <strong><code>KryptonToolTip</code></strong> because arbitrary WinForms targets are not <strong><code>ViewBase</code></strong>; toolkit-internal views might set this in richer scenarios.</td>
+</tr>
+<tr>
+<td><strong><code>PlacementRectangle</code></strong></td>
+<td>Screen/world rectangle usage depends on <strong><code>PlacementMode</code></strong> branches inside <strong><code>ApplyPlacementAndShow</code></strong>; when <strong>non-empty</strong>, some modes use <strong><code>Screen.GetWorkingArea(controlMousePosition)</code></strong> or honour absolute placement semantics (see <strong><code>VisualPopupToolTip</code></strong> implementation).</td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>PlacementMode.Mouse</code></strong> / <strong><code>MousePoint</code></strong> use the <strong>cursor</strong> (and hotspot from <strong><code>CommonHelper.CaptureCursor()</code>)</strong>, not control bounds—these are the modes closest to <strong><code>ShowCalculatingSize</code></strong> while still respecting the shared placement pipeline.</p>
+<h3 id="uselegacycursoranchoredplacement"><code>UseLegacyCursorAnchoredPlacement</code></h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>false</code></strong> (<strong>default</strong>)</td>
+<td><strong><code>ShowRelativeTo(Control, Point, PopupPositionValues)</code></strong> with <strong><code>ToolTipValues.ToolTipPosition</code></strong>.</td>
+</tr>
+<tr>
+<td><strong><code>true</code></strong></td>
+<td><strong><code>ShowCalculatingSize(Cursor.Position)</code></strong>: offset popup by cursor hotspot; <strong>does not consult</strong> <strong><code>ToolTipPosition</code></strong> for anchored placement geometry. Useful for migrating early prototypes or mimicking <strong><code>KryptonHelpProvider</code></strong>-style tooltip placement that used screen-point sizing.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="edge-clip-and-bounce">Edge clip and “bounce”</h3>
+<p>Comments in <strong><code>VisualPopupToolTip</code></strong> note WPF-inspired placement; <strong>screen-edge correction</strong> beyond initial placement is delegated to <strong><code>Show</code></strong> / base <strong><code>VisualPopup</code></strong> behaviour as elsewhere in the toolkit. Expect similar limitations as <strong><code>ShowRelativeTo(ViewBase)</code></strong> for complex multi-monitor DPI mixes.</p>
+<hr>
+<h2 id="palette">Palette</h2>
+<ul>
+<li><p><strong><code>PaletteMode.Global</code></strong>: Tooltip colours track <strong><code>KryptonManager.CurrentGlobalPalette</code></strong>; <strong><code>GlobalPaletteChanged</code></strong> rebuilds <strong><code>PaletteRedirect</code></strong> and <strong><code>IRenderer</code></strong>.</p>
+</li>
+<li><p><strong><code>PaletteMode.Custom</code></strong> + <strong><code>Palette</code></strong>: Locks rendering to supplied <strong><code>PaletteBase</code></strong>.</p>
+</li>
+<li><p>Other built-in modes: <strong><code>PaletteMode</code></strong> set to <strong><code>Office2007</code></strong> / <strong><code>Microsoft365</code></strong> / etc.; <strong><code>KryptonManager.GetPaletteForMode</code></strong> supplies the <strong><code>PaletteBase</code></strong>.</p>
+</li>
+</ul>
+<p>If <strong><code>PaletteInternal</code></strong> is unexpectedly <strong><code>null</code></strong>, <strong><code>OnShowTimerTick</code></strong> bails early and <strong>no popup</strong> appears.</p>
+<hr>
+<h2 id="runtime-behaviour">Runtime behaviour</h2>
+<h3 id="event-flow">Event flow</h3>
+<ol>
+<li><p><strong><code>MouseEnter</code></strong> on a registered control (<strong>with</strong> <strong><code>ToolTipValues.EnableToolTips</code></strong>): clear prior timers/popup; remember <strong><code>_hoverControl</code></strong>; start <strong>show timer</strong> (<strong><code>ShowIntervalDelay</code></strong>).</p>
+</li>
+<li><p><strong><code>MouseLeave</code></strong>: tear down timers and popup; clear <strong><code>_hoverControl</code></strong>.</p>
+</li>
+<li><p><strong><code>MouseDown</code></strong>: hides tooltip (parity with <strong><code>ToolTipManager.MouseDown</code></strong> interrupt).</p>
+</li>
+<li><p><strong>Show timer tick</strong>:</p>
+<ul>
+<li><p>Skips <strong>design-mode</strong> hierarchies (<strong><code>Site.DesignMode</code></strong> walk).</p>
+</li>
+<li><p>Skips when <strong><code>OwningForm</code> is null</strong> or <strong><code>ContainsFocus == false</code></strong> (aligned with <strong><code>VisualControlBase</code></strong> “no unfocused form tooltips” policy).</p>
+</li>
+<li><p>Builds <strong><code>VisualPopupToolTip</code></strong> with current palette redirector/renderer and shows via <strong>placement path</strong> chosen by <strong><code>UseLegacyCursorAnchoredPlacement</code></strong>.</p>
+</li>
+<li><p>If <strong><code>CloseIntervalDelay &gt; 0</code></strong>, starts <strong>close timer</strong> to <strong><code>HidePopupOnly</code></strong>.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>OnCloseTimerTick</code></strong>: hides popup (<strong>does not</strong> remove control hooks).</p>
+</li>
+</ol>
+<h3 id="dpi">DPI</h3>
+<p>Construction uses <strong><code>GetDpiFactorFromContext</code></strong>: <strong><code>_hoverControl</code></strong>’s <strong><code>DeviceDpi / 96f</code></strong>, falling back to <strong><code>ContainerControl</code></strong>, otherwise <strong><code>1.0</code></strong>.</p>
+<h3 id="threading">Threading</h3>
+<p>All hooks are <strong>Windows Forms UI thread</strong>. Do not call <strong><code>SetToolTip</code></strong> from background threads <strong>without marshalling</strong> to the control’s thread.</p>
+<h3 id="multiple-kryptontooltip-components">Multiple <code>KryptonToolTip</code> components</h3>
+<p>Avoid assigning <strong>different extender namespaces</strong> onto the <strong>same</strong> <strong><code>Control</code></strong> from <strong>two</strong> provider instances (ambiguous designer <strong>property names</strong>, duplicate <strong><code>MouseEnter</code></strong> hooks). Prefer <strong>one</strong> provider per <strong><code>Form</code>/user-control</strong> subtree.</p>
+<h3 id="interaction-with-krypton-built-in-tips">Interaction with <strong><code>Krypton*</code> built-in tips</strong></h3>
+<p>A <strong><code>KryptonButton</code></strong> already has <strong><code>ToolTipValues</code></strong> and <strong><code>VisualControlBase</code></strong> tooltip handling. Showing <strong>another</strong> tooltip via <strong><code>KryptonToolTip</code></strong> on the same <strong><code>KryptonButton</code></strong> can mean <strong>two</strong> tooltip systems coexist; developers usually pick <strong>either</strong> embedded <strong><code>ToolTipValues</code></strong> <strong>or</strong> <strong><code>KryptonToolTip</code></strong>, unless intentionally layered (not recommended without testing).</p>
+<hr>
+<h2 id="comparison-with-alternatives">Comparison with alternatives</h2>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Strengths</th>
+<th>Trade-offs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>System.Windows.Forms.ToolTip</code></strong></td>
+<td>Native theming/lightweight designer story.</td>
+<td><strong>Not</strong> <strong><code>VisualPopupToolTip</code></strong>; cannot share Krypton <strong><code>PaletteBase</code></strong> styling trivially.</td>
+</tr>
+<tr>
+<td><strong><code>VisualControlBase.ToolTipValues</code></strong></td>
+<td>Integrated <strong><code>ToolTipManager</code></strong> + <strong><code>ViewBase</code></strong> hit testing.</td>
+<td>Only on <strong>Krypton</strong> visual controls hierarchy.</td>
+</tr>
+<tr>
+<td><strong><code>KryptonErrorProvider</code></strong> (tooltip facet)</td>
+<td>Themed <strong><code>VisualPopupToolTip</code></strong> beside error chrome.</td>
+<td>Tied <strong>error</strong> workflow + icon hit regions, <strong>not</strong> general-purpose per-control rects.</td>
+</tr>
+<tr>
+<td><strong><code>KryptonHelpProvider</code></strong></td>
+<td>Help plumbing + contextual strings.</td>
+<td>Help-centric; not a <strong><code>ToolTip</code> replacement</strong> mapping.</td>
+</tr>
+<tr>
+<td><strong><code>KryptonToolTip</code></strong></td>
+<td><strong>General</strong> <strong><code>Control</code></strong> surface; <strong><code>IExtenderProvider</code></strong> story; <strong><code>SetToolTip</code></strong>.</td>
+<td><strong>Managed</strong> <strong><code>Mouse*</code></strong> hooks vs native <strong><code>ToolTip</code></strong> window; <strong><code>PlacementTarget</code></strong> (<strong><code>ViewBase</code></strong>) rarely ergonomic from arbitrary WinForms.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="limitations-and-good-practices">Limitations and good practices</h2>
+<ol>
+<li><p><strong>Child hit testing</strong>: Tooltips attach to <strong><code>Control</code></strong> instances chosen by you. Parent <strong><code>Panel</code></strong> <strong>vs</strong> <strong><code>Button</code></strong> child—hover <strong>regions</strong> correspond to <strong><code>Control</code></strong> <strong>client rects</strong> independently (standard WinForms event routing).</p>
+</li>
+<li><p><strong>Rapid nesting moves</strong>: Leaving one control for a child inside the parent may <strong>tear down</strong> timers briefly (same class of flicker as classic WinForms <strong><code>ToolTip</code></strong>).</p>
+</li>
+<li><p><strong>Focus gate</strong>: Tooltip <strong>won’t display</strong> while <strong><code>FindForm().ContainsFocus</code> is false</strong>—by design symmetry with <strong><code>VisualControlBase</code></strong>.</p>
+</li>
+<li><p><strong><code>ToolTip.AssociatedControl</code> analogue</strong>: Not exposed; <strong><code>KryptonToolTip</code></strong> keeps an <strong>internal dictionary</strong> instead.</p>
+</li>
+<li><p><strong>Accessibility</strong>: Narrator/other tools may classify these as <strong><code>VisualPopup</code></strong> top-level visuals; validate if you expose <strong>critical</strong> <strong><code>AccessibleName</code></strong> on targets alongside tooltips.</p>
+</li>
+</ol>
+<h3 id="recommended-practices">Recommended practices</h3>
+<ul>
+<li><p>Set <strong><code>ContainerControl</code></strong> on the <strong>host form</strong> when creating <strong><code>KryptonToolTip</code></strong> in code without a designer.</p>
+</li>
+<li><p>Centralize <strong>one</strong> <strong><code>KryptonToolTip</code></strong> per <strong>logical surface</strong> (form / user control).</p>
+</li>
+<li><p>Document <strong><code>ToolTipPosition</code></strong> decisions for support—users often expect <strong>Bottom</strong> under mouse-heavy UIs but <strong>Right</strong> for narrow columns.</p>
+</li>
+<li><p>For <strong>infinite</strong> display, set <strong><code>CloseIntervalDelay = 0</code></strong> (see also <strong>Tooltip timeout</strong> discussions in the broader toolkit changelog).</p>
+</li>
+</ul>
+<hr>
+<h2 id="extending-or-integrating">Extending or integrating</h2>
+<h3 id="visualpopuptooltip-overloads-relevant-to-callers"><code>VisualPopupToolTip</code> overloads relevant to callers</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>ShowRelativeTo(ViewBase, Point)</code></strong></td>
+<td>Existing <strong><code>VisualControlBase</code></strong> path (<strong>unchanged externally</strong> besides shared <strong><code>ApplyPlacementAndShow</code></strong> and <strong><code>OwningControl</code> null fallback</strong> → <strong><code>ShowCalculatingSize</code></strong>).</td>
+</tr>
+<tr>
+<td><strong><code>ShowCalculatingSize(Point)</code></strong></td>
+<td>Simple screen-point anchored popup with <strong>preferred size</strong>.</td>
+</tr>
+<tr>
+<td><strong><code>ShowRelativeTo(Control, Point, PopupPositionValues)</code></strong></td>
+<td>Explicit <strong>control fallback</strong> rectangle + <strong><code>PopupPositionValues</code></strong> when <strong><code>IContentValues</code> is not <code>ToolTipValues</code></strong> ( <strong><code>KryptonToolTip</code></strong> scenario).</td>
+</tr>
+<tr>
+<td><strong><code>ApplyPlacementAndShow</code> (private)</strong></td>
+<td>Single source for placement math (<strong>do not duplicate</strong> externally).</td>
+</tr>
+</tbody>
+</table>
+<p>Third-party wrappers can mimic <strong><code>KryptonToolTip</code></strong> by composing <strong><code>PaletteRedirect</code></strong> + <strong><code>ToolTipValues.ToolTipPosition</code></strong> + <strong><code>VisualPopupToolTip</code></strong> the same way, but <strong>reuse</strong> <strong><code>ShowRelativeTo(Control, Point, PopupPositionValues)</code></strong> rather than forks of placement maths.</p>
+<h3 id="implemented-follow-ups">Implemented follow-ups</h3>
+<p>Recent follow-ups from community demand now implemented:</p>
+<ul>
+<li><p><strong>Keyboard/focus activation parity</strong> via <strong><code>EnableKeyboardToolTips</code></strong> (<code>true</code> by default): focus entry (<code>GotFocus</code>) schedules tooltip display using the same delays and rendering path as mouse hover, and focus exit (<code>LostFocus</code>) cancels the popup for that control.</p>
+</li>
+<li><p><strong>Control-bound placement-rectangle helpers</strong>:</p>
+<ul>
+<li><strong><code>SetPlacementRectangle(Control, Rectangle, bool isScreenCoordinates = false)</code></strong></li>
+<li><strong><code>GetPlacementRectangle(Control)</code></strong></li>
+<li><strong><code>ClearPlacementRectangle(Control)</code></strong>
+These feed an effective <strong><code>PopupPositionValues</code></strong> instance so placement can be authored per control without manual rectangle conversion.</li>
+</ul>
+</li>
+<li><p><strong>Control timer-flow deduplication</strong>: mouse and keyboard activation now share a single <code>ScheduleShow(...)</code> path inside <code>KryptonToolTip</code>, reducing duplicated lifecycle logic and keeping behaviour aligned across input modes.</p>
+</li>
+</ul>
+<p>Contributions should continue to target <strong><code>VisualPopupToolTip</code></strong> once—<strong><code>ApplyPlacementAndShow</code></strong> remains canonical placement logic.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

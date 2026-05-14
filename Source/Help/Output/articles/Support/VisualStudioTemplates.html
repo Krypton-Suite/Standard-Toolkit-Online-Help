@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Visual Studio Templates | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Visual Studio Templates | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="visual-studio-templates">Visual Studio Templates</h1>
+
+<h2 id="purpose">Purpose</h2>
+<p>This document describes how Krypton Visual Studio templates are implemented, packaged, and released in this repository.</p>
+<p>It is intended for maintainers who need to:</p>
+<ul>
+<li>modify existing templates,</li>
+<li>add new templates,</li>
+<li>troubleshoot installation or release issues, and</li>
+<li>evolve the templates release workflow.</li>
+</ul>
+<h2 id="scope">Scope</h2>
+<p>This guide covers templates under <code>Templates/</code> and the automation in <code>.github/workflows/templates-release.yml</code>.</p>
+<p>It does not describe NuGet package publishing (<code>release.yml</code>, <code>canary.yml</code>, <code>nightly.yml</code>) except where branch/channel alignment matters.</p>
+<h2 id="feature-context">Feature Context</h2>
+<p>Issue context: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/908">#908</a>.</p>
+<p>The goal is to enable developers to create Krypton-first forms/projects directly from Visual Studio:</p>
+<ul>
+<li><code>Add &gt; New Item</code> (item templates)</li>
+<li><code>Create a new project</code> (project templates)</li>
+</ul>
+<h2 id="directory-layout">Directory Layout</h2>
+<p>Templates are intentionally isolated at repository root:</p>
+<ul>
+<li><code>Templates/ItemTemplates/KryptonForm</code></li>
+<li><code>Templates/ItemTemplates/KryptonRibbonForm</code></li>
+<li><code>Templates/ProjectTemplates/KryptonWinFormsApp</code></li>
+<li><code>Templates/ProjectTemplates/KryptonRibbonWinFormsApp</code></li>
+</ul>
+<p>Supporting files:</p>
+<ul>
+<li><code>Templates/README.md</code> (consumer install notes)</li>
+<li><code>.github/workflows/templates-release.yml</code> (zip + release automation)</li>
+</ul>
+<h2 id="current-template-inventory">Current Template Inventory</h2>
+<h3 id="item-templates">Item Templates</h3>
+<ol>
+<li><code>KryptonForm</code>
+<ul>
+<li>Generates a standard <code>KryptonForm</code> partial class with Designer file.</li>
+</ul>
+</li>
+<li><code>KryptonRibbonForm</code>
+<ul>
+<li>Generates a <code>KryptonForm</code> plus a pre-added <code>KryptonRibbon</code> control.</li>
+<li>Note: this is a template label, not a framework class named <code>KryptonRibbonForm</code>.</li>
+</ul>
+</li>
+</ol>
+<h3 id="project-templates">Project Templates</h3>
+<ol>
+<li><code>KryptonWinFormsApp</code>
+<ul>
+<li>New WinForms app with <code>MainForm : KryptonForm</code>.</li>
+</ul>
+</li>
+<li><code>KryptonRibbonWinFormsApp</code>
+<ul>
+<li>New WinForms app with <code>MainForm : KryptonForm</code> and <code>KryptonRibbon</code>.</li>
+</ul>
+</li>
+</ol>
+<h2 id="template-anatomy">Template Anatomy</h2>
+<p>Each template folder contains:</p>
+<ul>
+<li>one <code>.vstemplate</code> descriptor</li>
+<li>one or more source files copied into the target project</li>
+</ul>
+<h3 id="vstemplate-responsibilities"><code>.vstemplate</code> responsibilities</h3>
+<p>The descriptor controls:</p>
+<ul>
+<li>template display metadata (<code>Name</code>, <code>Description</code>, <code>SortOrder</code>)</li>
+<li>template type (<code>Item</code> or <code>Project</code>)</li>
+<li>target language (<code>ProjectType = CSharp</code>)</li>
+<li>default filename/project name</li>
+<li>parameter replacement behavior (<code>ReplaceParameters=&quot;true&quot;</code>)</li>
+</ul>
+<h3 id="source-file-responsibilities">Source file responsibilities</h3>
+<p>Template source files include tokenized values, for example:</p>
+<ul>
+<li><code>$rootnamespace$</code> for item template namespaces</li>
+<li><code>$safeitemrootname$</code> for item class/file names</li>
+<li><code>$safeprojectname$</code> for project namespace and project file naming</li>
+</ul>
+<p>Visual Studio resolves these values when the template is instantiated.</p>
+<h2 id="item-template-design-guidelines">Item Template Design Guidelines</h2>
+<p>For WinForms/Krypton item templates:</p>
+<ul>
+<li>Always create matching <code>partial</code> class + <code>*.Designer.cs</code>.</li>
+<li>Keep <code>Dispose(bool)</code> and <code>components</code> pattern designer-compatible.</li>
+<li>Prefer explicit <code>System.Windows.Forms</code>/<code>System.Drawing</code> usage in designer file.</li>
+<li>Avoid fragile runtime-only initialization in designer files.</li>
+</ul>
+<h3 id="ribbon-item-template-specifics">Ribbon item template specifics</h3>
+<p><code>KryptonRibbonForm</code> template includes:</p>
+<ul>
+<li>a <code>Krypton.Ribbon.KryptonRibbon</code> field,</li>
+<li>basic ribbon initialization,</li>
+<li><code>Controls.Add(kryptonRibbon)</code> in <code>InitializeComponent()</code>.</li>
+</ul>
+<p>This gives users a working ribbon surface immediately after item creation.</p>
+<h2 id="project-template-design-guidelines">Project Template Design Guidelines</h2>
+<p>Project templates should remain minimal and predictable:</p>
+<ul>
+<li>SDK-style <code>.csproj</code></li>
+<li><code>UseWindowsForms=true</code></li>
+<li><code>TargetFramework=net10.0-windows</code></li>
+<li><code>ImplicitUsings=enable</code></li>
+<li><code>Nullable=enable</code></li>
+<li>a single <code>PackageReference</code> to <code>Krypton.Standard.Toolkit</code></li>
+</ul>
+<p>App bootstrap:</p>
+<ul>
+<li><code>ApplicationConfiguration.Initialize()</code></li>
+<li><code>KryptonManager.GlobalPaletteMode = PaletteModeManager.Office2010Blue</code></li>
+<li><code>Application.Run(new MainForm())</code></li>
+</ul>
+<h2 id="why-kryptonstandardtoolkit">Why <code>Krypton.Standard.Toolkit</code></h2>
+<p>Using <code>Krypton.Standard.Toolkit</code> in project templates reduces setup friction by giving users a single dependency that covers common Krypton scenarios out-of-the-box.</p>
+<p>If package strategy changes in the future, update all project template <code>.csproj</code> files consistently.</p>
+<h2 id="release-automation">Release Automation</h2>
+<p>Workflow file: <code>.github/workflows/templates-release.yml</code></p>
+<h3 id="trigger-conditions">Trigger conditions</h3>
+<ul>
+<li>Push to: <code>master</code>, <code>alpha</code>, <code>canary</code>, <code>V105-LTS</code></li>
+<li>Path filter:
+<ul>
+<li><code>Templates/**</code></li>
+<li><code>.github/workflows/templates-release.yml</code></li>
+</ul>
+</li>
+<li>Manual trigger: <code>workflow_dispatch</code></li>
+</ul>
+<h3 id="security--control-knobs">Security / control knobs</h3>
+<ul>
+<li>Required permission: <code>contents: write</code> (needed for release asset updates)</li>
+<li>Kill switch variable:
+<ul>
+<li><code>TEMPLATES_RELEASE_DISABLED=true</code> disables publish steps</li>
+</ul>
+</li>
+</ul>
+<h3 id="branch-to-channel-mapping">Branch to channel mapping</h3>
+<ul>
+<li><code>master</code> -&gt; <code>stable</code> -&gt; <code>templates-stable</code></li>
+<li><code>canary</code> -&gt; <code>canary</code> -&gt; <code>templates-canary</code></li>
+<li><code>alpha</code> -&gt; <code>alpha</code> -&gt; <code>templates-alpha</code></li>
+<li><code>V105-LTS</code> -&gt; <code>lts</code> -&gt; <code>templates-lts</code></li>
+<li>other branch via manual dispatch -&gt; <code>dev-&lt;sanitized-branch&gt;</code> -&gt; <code>templates-&lt;sanitized-branch&gt;</code></li>
+</ul>
+<h3 id="release-assets-produced">Release assets produced</h3>
+<p>Per workflow run:</p>
+<ul>
+<li>item zip: Krypton Form</li>
+<li>item zip: Krypton Ribbon Form</li>
+<li>project zip: Krypton WinForms App</li>
+<li>project zip: Krypton Ribbon WinForms App</li>
+<li>bundle zip: complete <code>Templates/</code> tree</li>
+</ul>
+<h3 id="release-publishing-semantics">Release publishing semantics</h3>
+<ul>
+<li>Uses <code>softprops/action-gh-release@v2</code></li>
+<li><code>overwrite_files: true</code> updates assets on existing tag</li>
+<li><code>make_latest: true</code> only for stable channel</li>
+<li><code>prerelease: true</code> for canary/alpha/dev channels</li>
+</ul>
+<h2 id="zip-shape-contract-critical">Zip Shape Contract (Critical)</h2>
+<p>Visual Studio expects each template zip to contain its <code>.vstemplate</code> file at archive root.</p>
+<p>The workflow intentionally zips each template folder contents (<code>&lt;folder&gt;\*</code>) instead of the parent folder itself.</p>
+<p>If this contract is broken, templates can appear missing or fail to instantiate.</p>
+<h2 id="developer-workflow">Developer Workflow</h2>
+<h2 id="1-edit-or-add-template">1) Edit or add template</h2>
+<ul>
+<li>Create/modify files under <code>Templates/ItemTemplates</code> or <code>Templates/ProjectTemplates</code>.</li>
+<li>Keep naming clear and stable; template folder names become maintenance anchors.</li>
+</ul>
+<h2 id="2-validate-descriptor-and-token-usage">2) Validate descriptor and token usage</h2>
+<p>Checklist:</p>
+<ul>
+<li><code>.vstemplate</code> <code>Type</code> matches template type (<code>Item</code>/<code>Project</code>).</li>
+<li><code>ProjectType</code> is <code>CSharp</code>.</li>
+<li><code>ReplaceParameters=&quot;true&quot;</code> applied where tokens are present.</li>
+<li><code>TargetFileName</code> tokens align with generated file naming.</li>
+</ul>
+<h2 id="3-smoke-test-locally-in-visual-studio">3) Smoke-test locally in Visual Studio</h2>
+<p>Manual process:</p>
+<ol>
+<li>Zip template folder contents (not the parent folder).</li>
+<li>Copy zips to VS template directories:
+<ul>
+<li>Item: <code>%USERPROFILE%\Documents\Visual Studio 2022\Templates\ItemTemplates\Visual C#\</code></li>
+<li>Project: <code>%USERPROFILE%\Documents\Visual Studio 2022\Templates\ProjectTemplates\Visual C#\</code></li>
+</ul>
+</li>
+<li>Restart Visual Studio.</li>
+<li>Verify template appears and instantiates cleanly.</li>
+<li>Build generated project.</li>
+</ol>
+<h2 id="4-update-docs">4) Update docs</h2>
+<p>At minimum:</p>
+<ul>
+<li>update <code>Templates/README.md</code></li>
+<li>update this document if behavior/architecture changed</li>
+</ul>
+<h2 id="5-verify-release-workflow-impact">5) Verify release workflow impact</h2>
+<p>If new template folders are added, update <code>templates-release.yml</code>:</p>
+<ul>
+<li>path validation block (<code>Test-Path</code> checks)</li>
+<li>zip output variables</li>
+<li>release body asset list</li>
+<li>files list passed to release action</li>
+</ul>
+<h2 id="adding-a-new-template-repeatable-procedure">Adding a New Template (Repeatable Procedure)</h2>
+<ol>
+<li>Add template directory with <code>.vstemplate</code> + source files.</li>
+<li>Add consumer-facing mention in <code>Templates/README.md</code>.</li>
+<li>Add packaging support in <code>templates-release.yml</code>.</li>
+<li>Manual-install smoke test in VS.</li>
+<li>Push branch and verify release workflow artifacts.</li>
+</ol>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="template-does-not-appear-in-visual-studio">Template does not appear in Visual Studio</h3>
+<p>Check:</p>
+<ul>
+<li>zip shape (is <code>.vstemplate</code> at zip root?)</li>
+<li>zip copied to correct VS folder</li>
+<li>Visual Studio restarted</li>
+<li>descriptor <code>ProjectType</code> and <code>Type</code> values valid</li>
+</ul>
+<h3 id="template-appears-but-fails-to-create-files">Template appears but fails to create files</h3>
+<p>Check:</p>
+<ul>
+<li><code>ProjectItem</code> entries reference existing files</li>
+<li>token usage (<code>$safeitemrootname$</code>, <code>$safeprojectname$</code>, <code>$rootnamespace$</code>) is valid</li>
+<li>syntax errors in template source files</li>
+</ul>
+<h3 id="workflow-ran-but-no-release-asset-updates">Workflow ran but no release asset updates</h3>
+<p>Check:</p>
+<ul>
+<li>branch is in allowed set (or manual run with default mapping)</li>
+<li><code>TEMPLATES_RELEASE_DISABLED</code> is not true</li>
+<li>run has <code>contents: write</code></li>
+<li>release action logs for permissions or tag conflicts</li>
+</ul>
+<h3 id="ide-yaml-diagnostics-show-unresolved-marketplace-actions">IDE YAML diagnostics show unresolved marketplace actions</h3>
+<p>Local editor analyzers may fail to resolve actions (<code>actions/checkout</code>, <code>upload-artifact</code>, <code>action-gh-release</code>) even when workflow is valid on GitHub Actions runners. Validate by running workflow in CI.</p>
+<h2 id="backward-compatibility-notes">Backward Compatibility Notes</h2>
+<ul>
+<li>Template names are user-facing; changing names impacts discoverability.</li>
+<li>Existing release tags (<code>templates-stable</code>, <code>templates-canary</code>, etc.) are long-lived channels; prefer updating assets over proliferating new tags.</li>
+<li>Keep generated code broadly WinForms-designer compatible.</li>
+</ul>
+<h2 id="future-enhancements-optional">Future Enhancements (Optional)</h2>
+<ul>
+<li>Publish a VSIX for one-click install in addition to zip assets.</li>
+<li>Add CI validation that checks each <code>.vstemplate</code> references existing files.</li>
+<li>Add generated project compile smoke test in workflow.</li>
+<li>Add icon assets and category metadata per template.</li>
+</ul>
+<h2 id="maintainer-quick-checklist">Maintainer Quick Checklist</h2>
+<ul>
+<li>[ ] Template files added/updated under <code>Templates/</code></li>
+<li>[ ] <code>.vstemplate</code> metadata and tokens verified</li>
+<li>[ ] Local Visual Studio install test passed</li>
+<li>[ ] <code>Templates/README.md</code> updated</li>
+<li>[ ] <code>templates-release.yml</code> updated for new assets</li>
+<li>[ ] Workflow run confirmed and release assets present</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
