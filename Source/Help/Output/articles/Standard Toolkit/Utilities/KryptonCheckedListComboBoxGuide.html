@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonCheckedListComboBox — Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonCheckedListComboBox — Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptoncheckedlistcombobox--guide">KryptonCheckedListComboBox — Guide</h1>
+
+<p>Short overview for <strong><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3445">issue #3445</a></strong> (checked multi-select combo).</p>
+<p><strong>Full developer reference (APIs, architecture, binding, events, troubleshooting):</strong> <strong><a href="KryptonCheckedListComboBox.html">KryptonCheckedListComboBox.md</a></strong></p>
+<hr>
+<ul>
+<li><strong>Type:</strong> <code>Krypton.Toolkit.Utilities.KryptonCheckedListComboBox</code></li>
+<li><strong>Assembly:</strong> <code>Krypton.Toolkit.Utilities.dll</code> (delivered via the <strong>Krypton.Standard.Toolkit</strong> NuGet package, not the core <code>Krypton.Toolkit</code>-only package layout).</li>
+<li><strong>Host:</strong> Built on <strong><code>KryptonComboBoxUserControl</code></strong>: a read-only editor plus a Krypton-styled popup. The drop-down content is a <strong><code>KryptonCheckedListBox</code></strong>, not the native WinForms <code>ComboBox</code> list.</li>
+</ul>
+<h2 id="kryptoncombobox-vs-kryptoncheckedlistcombobox">KryptonComboBox vs KryptonCheckedListComboBox</h2>
+<table>
+<thead>
+<tr>
+<th>Use case</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Single selection from a flat list; editable or drop-down list style; grid columns; familiar <code>ComboBox</code> behavior</td>
+<td><strong><code>KryptonComboBox</code></strong></td>
+</tr>
+<tr>
+<td>Multi-select with check boxes; summary text in the closed field; pick many tags, flags, or categories</td>
+<td><strong><code>KryptonCheckedListComboBox</code></strong></td>
+</tr>
+</tbody>
+</table>
+<p>The native <strong><code>ComboBox</code></strong> inside <strong><code>KryptonComboBox</code></strong> is not designed for per-row check boxes or independent multi-select. <strong><code>KryptonCheckedListComboBox</code></strong> implements the usual WinForms pattern: combo-like chrome + separate popup hosting a <strong><code>CheckedListBox</code></strong>-style control (<code>KryptonCheckedListBox</code>), with Krypton theming.</p>
+<h2 id="filling-the-list">Filling the list</h2>
+<p><strong>Option A — static items</strong></p>
+<ul>
+<li>Use the <strong><code>Items</code></strong> collection (same idea as other list controls).</li>
+</ul>
+<p><strong>Option B — data binding</strong></p>
+<ul>
+<li>Set <strong><code>DataSource</code></strong>, <strong><code>DisplayMember</code></strong>, and optionally <strong><code>ValueMember</code></strong> on <strong><code>KryptonCheckedListComboBox</code></strong> (they are forwarded to the inner <strong><code>KryptonCheckedListBox</code></strong>).</li>
+<li>Ensure <strong><code>BindingContext</code></strong> flows from the form; the control syncs its binding context to the drop-down list.</li>
+</ul>
+<p><strong>Bound <code>Items</code> timing:</strong> The inner list loads bound rows when its <strong>window handle exists</strong> and <strong><code>DisplayMember</code></strong> is set (see <strong><code>KryptonCheckedListBox.RefreshItems</code></strong>). In <strong><code>Form</code>/<code>UserControl</code> constructors</strong>, <strong><code>Items.Count</code></strong> may still be <strong>0</strong>. Defer <strong><code>SetItemChecked</code> / <code>RefreshCheckedSummary</code></strong> until <strong><code>Load</code></strong>/<strong><code>Shown</code></strong> (or call <strong><code>CheckedListBox.RefreshBoundItems()</code></strong> after the handle exists) before using indices.</p>
+<p>Additional formatting options (<strong><code>FormattingEnabled</code></strong>, <strong><code>FormatString</code></strong>) match <strong><code>KryptonCheckedListBox</code></strong> and affect how the summary line is built (via <strong><code>GetItemText</code></strong>).</p>
+<h2 id="reading-the-selection">Reading the selection</h2>
+<ul>
+<li><strong><code>CheckedItems</code> / <code>CheckedIndices</code> / <code>GetItemChecked</code></strong> — same semantics as <strong><code>KryptonCheckedListBox</code></strong>.</li>
+<li><strong><code>CheckedItemList</code></strong> — when <strong><code>ValueMember</code></strong> is set, each entry is the value-member value for a checked row; otherwise the underlying item objects.</li>
+<li><strong><code>GetCheckedValues()</code></strong> — array of checked <strong>items</strong> as bound/display objects (parallel to <strong><code>CheckedItems</code></strong>).</li>
+<li><strong><code>KryptonComboBoxUserControl.SelectedValue</code></strong> — updated when the popup commits; for this control it is typically an <strong><code>object[]</code></strong> of the checked items (<strong><code>BuildCheckedValue()</code></strong>). Prefer <strong><code>CheckedItemList</code></strong> when you need value-member primitives.</li>
+<li><strong><code>Text</code></strong> — read-only summary in the editor (separator from <strong><code>ValueSeparator</code></strong>; <strong><code>EmptySelectionText</code></strong> when nothing is checked). Usually you should <strong><code>RefreshCheckedSummary()</code></strong> after programmatic check changes.</li>
+</ul>
+<h2 id="designer">Designer</h2>
+<p>Open the smart tag and use the <strong>Data</strong> section for <strong><code>DataSource</code></strong>, <strong><code>DisplayMember</code></strong>, <strong><code>ValueMember</code></strong>, and <strong><code>EmptySelectionText</code></strong>. Other sections cover drop-down geometry, <strong><code>ValueSeparator</code></strong>, and visuals.</p>
+<h2 id="try-it-in-the-repo">Try it in the repo</h2>
+<p>Open <strong><code>TestForm</code></strong> and launch <strong>KryptonCheckedListComboBox</strong> from the start screen (<strong><code>KryptonCheckedListComboBoxDemo</code></strong>): plain <strong><code>Items</code></strong>, custom separator <strong><code>EmptySelectionText</code></strong>, and a <strong><code>BindingSource</code></strong> row demonstrating <strong><code>CheckedItemList</code></strong> (initial checks applied on <strong><code>Load</code></strong> because bound items populate after handles exist).</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><strong><code>KryptonComboBoxUserControl</code></strong> — host for arbitrary drop-down <strong><code>Control</code></strong> (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3443">issue #3443</a>).</li>
+<li><strong><code>KryptonTreeComboBox</code></strong> — tree-style grouped combo (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3444">issue #3444</a>).</li>
+<li>Changelog: V110 nightly section in <strong><code>Documents/Changelog/Changelog.md</code></strong>.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

@@ -4,8 +4,8 @@
 
 `CommandLinkImageValues` provides specialized image storage for `KryptonCommandLinkButton` controls, with built-in support for displaying the Windows UAC (User Account Control) shield icon. It implements the `IContentValues` interface to integrate with the Krypton rendering system.
 
-**Namespace (V110+):** `Krypton.Utilities`
-**Assembly (V110+):** `Krypton.Utilities`
+**Namespace (V110+):** `Krypton.Toolkit.Utilities`
+**Assembly (V110+):** `Krypton.Toolkit.Utilities`
 **Inheritance:** `Object` → `Storage` → `CommandLinkImageValues`
 **Implements:** `IContentValues`
 

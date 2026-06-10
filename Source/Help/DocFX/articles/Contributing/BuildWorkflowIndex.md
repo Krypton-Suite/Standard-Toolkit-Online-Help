@@ -58,6 +58,7 @@ For general GitHub Actions workflow information, see:
 
 - [GitHub Actions Workflows](GitHubActionsIndex.md) - Overview of all GitHub Actions workflows
 - [GitHub Workflow Index](GitHubWorkflowIndex.md) - Index of all GitHub workflows
+- [Branch promotion policy](BranchPromotionPolicy.md) - `alpha` → `canary` → `gold` → `master` merge policy
 
 ## Quick Reference
 

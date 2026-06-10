@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Repository Mirror Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Repository Mirror Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="repository-mirror-workflow">Repository Mirror Workflow</h1>
+
+<h2 id="quick-reference">Quick Reference</h2>
+<ul>
+<li>Workflow file: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/repo-mirror.yml"><code>.github/workflows/repo-mirror.yml</code></a></li>
+<li>Workflow name (Actions UI): <strong>Repository Mirror</strong></li>
+<li>Triggers: <code>push</code> (major branches), <code>schedule</code> (<code>0 2 * * *</code>), <code>workflow_dispatch</code> (optional <strong>Dry run</strong> input)</li>
+<li>Runner: <code>ubuntu-latest</code></li>
+<li>Permissions: <code>contents: read</code> (source via <code>${{ github.token }}</code>); mirror push uses <code>MIRROR_REPO_TOKEN</code> PAT via Git credential helper</li>
+</ul>
+<p>Developer documentation for the <strong>Repository Mirror</strong> GitHub Actions workflow.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow file</td>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/repo-mirror.yml"><code>.github/workflows/repo-mirror.yml</code></a></td>
+</tr>
+<tr>
+<td>Workflow name (Actions UI)</td>
+<td><strong>Repository Mirror</strong></td>
+</tr>
+<tr>
+<td>Source repository</td>
+<td><code>Krypton-Suite/Standard-Toolkit</code> (hard-coded security check)</td>
+</tr>
+<tr>
+<td>Runner</td>
+<td><code>ubuntu-latest</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#what-is-mirrored-and-what-is-not">What is mirrored (and what is not)</a></li>
+<li><a href="#how-it-differs-from-other-backup-workflows">How it differs from other backup workflows</a></li>
+<li><a href="#architecture-overview">Architecture overview</a></li>
+<li><a href="#triggers-and-scheduling">Triggers and scheduling</a></li>
+<li><a href="#deployment-requirements">Deployment requirements</a></li>
+<li><a href="#configuration-reference">Configuration reference</a></li>
+<li><a href="#initial-setup-guide">Initial setup guide</a></li>
+<li><a href="#creating-and-rotating-mirror_repo_token">Creating and rotating <code>MIRROR_REPO_TOKEN</code></a></li>
+<li><a href="#execution-flow-step-by-step">Execution flow (step by step)</a></li>
+<li><a href="#testing-and-dry-run">Testing and dry run</a></li>
+<li><a href="#branch-and-tag-behaviour">Branch and tag behaviour</a></li>
+<li><a href="#security-model">Security model</a></li>
+<li><a href="#kill-switch">Kill switch</a></li>
+<li><a href="#discord-notifications">Discord notifications</a></li>
+<li><a href="#concurrency-and-performance">Concurrency and performance</a></li>
+<li><a href="#operational-procedures">Operational procedures</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#limitations-and-design-decisions">Limitations and design decisions</a></li>
+<li><a href="#maintaining-and-extending-the-workflow">Maintaining and extending the workflow</a></li>
+</ol>
+<hr>
+<h2 id="purpose">Purpose</h2>
+<p>The Repository Mirror workflow copies selected <strong>Git branches</strong> (and optionally <strong>tags</strong>) from <code>Krypton-Suite/Standard-Toolkit</code> to a <strong>separate GitHub repository</strong> that you configure.</p>
+<p>Typical use cases:</p>
+<ul>
+<li><strong>Disaster recovery</strong> — maintain a standby copy of major release lines outside the primary org or account.</li>
+<li><strong>Read-only downstream clone</strong> — give partners or internal teams a repo that tracks <code>master</code>, LTS branches, and pre-release lines without granting write access to the source.</li>
+<li><strong>Geographic or org isolation</strong> — keep an identical branch structure in another GitHub org for compliance or redundancy.</li>
+</ul>
+<p>The mirror is a <strong>Git ref sync</strong>, not a full GitHub repository clone. Issues, pull requests, Actions secrets, wiki pages, and repository settings are <strong>not</strong> copied.</p>
+<hr>
+<h2 id="what-is-mirrored-and-what-is-not">What is mirrored (and what is not)</h2>
+<h3 id="mirrored">Mirrored</h3>
+<table>
+<thead>
+<tr>
+<th>Git object</th>
+<th>Default behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Branch <code>master</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Branch <code>gold</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Branch <code>canary</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Branch <code>alpha</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Branch <code>V105-LTS</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Branch <code>V85-LTS</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>All annotated and lightweight tags</td>
+<td>Yes (unless disabled)</td>
+</tr>
+</tbody>
+</table>
+<p>Branches are configurable via <code>MIRROR_BRANCHES</code>. Tags are configurable via <code>MIRROR_SYNC_TAGS</code>.</p>
+<h3 id="not-mirrored">Not mirrored</h3>
+<ul>
+<li>Pull requests, issues, discussions, projects</li>
+<li>GitHub Releases (metadata/UI — tag objects <em>are</em> pushed if tag sync is enabled)</li>
+<li>Repository variables, secrets, environments, branch protection rules</li>
+<li>Wiki, Pages, Packages (except what is referenced in Git history)</li>
+<li>Fork relationships, stars, watchers</li>
+<li>Other branches (e.g. feature branches, <code>alpha-backup</code>) unless added to <code>MIRROR_BRANCHES</code></li>
+<li>Git LFS objects are pushed only if LFS is used in the source repo and the mirror accepts LFS pushes (standard <code>git push</code> behaviour)</li>
+</ul>
+<hr>
+<h2 id="how-it-differs-from-other-backup-workflows">How it differs from other backup workflows</h2>
+<p>This repository also has <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/alpha-backup-sync.yml"><code>alpha-backup-sync.yml</code></a>, which:</p>
+<ul>
+<li>Syncs only the <code>alpha</code> branch into an <strong><code>alpha-backup</code></strong> branch <strong>within the same repo</strong> (via PR).</li>
+<li>Optionally copies a <strong>filesystem snapshot</strong> of <code>alpha</code> into a <strong>dated folder</strong> in a backup repo (e.g. <code>Standard Toolkit Backup - 2026-05-30/</code>).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Repository Mirror</th>
+<th>Alpha Backup Sync</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scope</td>
+<td>Six major branches (+ tags)</td>
+<td><code>alpha</code> only</td>
+</tr>
+<tr>
+<td>Target layout</td>
+<td>Same branch names on mirror</td>
+<td>Dated directory <em>or</em> <code>alpha-backup</code> branch</td>
+</tr>
+<tr>
+<td>Update mechanism</td>
+<td>Direct <code>git push --force</code></td>
+<td>PR merge / folder copy</td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td>Push to major branches, daily cron, manual</td>
+<td>Daily cron, manual</td>
+</tr>
+</tbody>
+</table>
+<p>Use <strong>Repository Mirror</strong> when you need a <strong>branch-faithful</strong> copy of the main lines. Use <strong>Alpha Backup Sync</strong> when you need <strong>point-in-time folder snapshots</strong> or in-repo <code>alpha-backup</code> branch management.</p>
+<p><strong>Recovery:</strong> When the source repo needs to be rebuilt from the mirror, use <a href="RepositoryRestoreFromMirrorWorkflow.html">Repository Restore from Mirror</a> (<code>repo-restore-from-mirror.yml</code>) — manual only, dry run by default. See also <a href="RepositoryBackupAndRestore.html">Repository backup and restore</a>.</p>
+<hr>
+<h2 id="architecture-overview">Architecture overview</h2>
+<pre><code class="lang-mermaid">flowchart TD
+    subgraph triggers [Triggers]
+        PUSH[Push to major branch]
+        CRON[Daily cron 02:00 UTC]
+        MANUAL[workflow_dispatch]
+    end
+
+    subgraph source [Source: Standard-Toolkit]
+        SRC[(Git branches + tags)]
+    end
+
+    subgraph workflow [GitHub Actions: repo-mirror.yml]
+        KS[Kill switch check]
+        SEC[Repository security check]
+        CLONE[&quot;git clone --bare (GITHUB_TOKEN)&quot;]
+        PUSHBR[&quot;For each branch: git push --force (PAT)&quot;]
+        PUSHTAG[&quot;Optional: git push --force tags (PAT)&quot;]
+        DISCORD[Optional Discord webhook]
+    end
+
+    subgraph target [Target: MIRROR_REPO]
+        MIRROR[(Mirrored branches + tags)]
+    end
+
+    PUSH --&gt; KS
+    CRON --&gt; KS
+    MANUAL --&gt; KS
+    KS --&gt;|enabled| SEC
+    SEC --&gt; CLONE
+    SRC --&gt; CLONE
+    CLONE --&gt; PUSHBR
+    PUSHBR --&gt; MIRROR
+    CLONE --&gt; PUSHTAG
+    PUSHTAG --&gt; MIRROR
+    PUSHBR --&gt; DISCORD
+    PUSHTAG --&gt; DISCORD
+</code></pre>
+<p><strong>Authentication split:</strong></p>
+<ul>
+<li><strong>Read source:</strong> <code>${{ github.token }}</code> exported as <code>SOURCE_REPO_TOKEN</code> (workflow permission <code>contents: read</code>).</li>
+<li><strong>Write mirror:</strong> <code>MIRROR_REPO_TOKEN</code> (PAT stored as a repository secret).</li>
+</ul>
+<p>Both tokens are supplied to Git through a temporary <strong>credential helper</strong> script. Remote URLs use plain <code>https://github.com/owner/repo.git</code> forms — tokens are not embedded in push URLs or remote names.</p>
+<p>The workflow never checks out a working tree. It uses a <strong>bare clone</strong> of the source, then pushes refs directly to the mirror remote. This is efficient and avoids polluting the runner workspace with a full checkout.</p>
+<hr>
+<h2 id="triggers-and-scheduling">Triggers and scheduling</h2>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>When it runs</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>push</code></td>
+<td>Any push to <code>master</code>, <code>gold</code>, <code>canary</code>, <code>alpha</code>, <code>V105-LTS</code>, or <code>V85-LTS</code></td>
+<td>Runs <strong>only if this workflow file exists on the branch that was pushed</strong>; mirrors <strong>all</strong> configured branches on each run, not only the branch that was pushed</td>
+</tr>
+<tr>
+<td><code>schedule</code></td>
+<td><code>0 2 * * *</code> — daily at <strong>02:00 UTC</strong></td>
+<td>Runs <strong>only from the repository default branch</strong> (<code>master</code>); see <a href="#deployment-requirements">Deployment requirements</a></td>
+</tr>
+<tr>
+<td><code>workflow_dispatch</code></td>
+<td>Manual run from Actions tab</td>
+<td>Optional <strong>Dry run</strong> input validates config and lists refs without pushing; use before first production sync</td>
+</tr>
+</tbody>
+</table>
+<h3 id="manual-dispatch-inputs">Manual dispatch inputs</h3>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Type</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dry_run</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>When <code>true</code>, clones source, checks mirror reachability (<code>git ls-remote</code>), and logs branches/tags that would be pushed — <strong>no force pushes</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Dry run is only available for manual runs; scheduled and push-triggered runs always perform a full mirror.</p>
+<p>The push trigger branch list is defined in the workflow YAML. If you add a new “major” line (e.g. <code>V110-LTS</code>), you must update <strong>both</strong> the default branch array in the workflow script <strong>and</strong> the <code>push.branches</code> list unless you rely solely on <code>MIRROR_BRANCHES</code> and cron/manual triggers.</p>
+<hr>
+<h2 id="deployment-requirements">Deployment requirements</h2>
+<p>GitHub Actions evaluates workflow definitions <strong>per branch</strong>. This affects when the mirror actually runs in production.</p>
+<h3 id="scheduled-runs-0-2---">Scheduled runs (<code>0 2 * * *</code>)</h3>
+<p>GitHub <strong>only registers cron schedules from the default branch</strong> (<code>master</code> in this repository).</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Daily 02:00 UTC cron active?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>repo-mirror.yml</code> merged to <strong><code>master</code></strong></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>repo-mirror.yml</code> exists only on <strong><code>alpha</code></strong> (or other non-default branches)</td>
+<td><strong>No</strong> — schedule is not registered</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Action:</strong> Merge (or cherry-pick) <code>.github/workflows/repo-mirror.yml</code> to <strong><code>master</code></strong> before relying on the daily safety-net sync.</p>
+<p>This matches how <a href="NightlyWorkflow.html"><code>nightly.yml</code></a> behaves: the workflow file lives on <code>master</code>, while the job checks out another branch.</p>
+<h3 id="push-triggered-runs">Push-triggered runs</h3>
+<p>A push to <code>master</code>, <code>gold</code>, <code>canary</code>, <code>alpha</code>, <code>V105-LTS</code>, or <code>V85-LTS</code> triggers this workflow <strong>only if that branch contains <code>repo-mirror.yml</code></strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Mirror runs on push?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File merged to <strong><code>alpha</code> only</strong>; push to <strong><code>alpha</code></strong></td>
+<td>Yes — mirrors all configured branches from source</td>
+</tr>
+<tr>
+<td>File on <strong><code>alpha</code> only</strong>; push to <strong><code>master</code></strong></td>
+<td><strong>No</strong> — <code>master</code> does not have the workflow file</td>
+</tr>
+<tr>
+<td>File on <strong><code>master</code></strong> and <strong><code>alpha</code></strong></td>
+<td>Push to either branch can trigger a run</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Action:</strong> Backport the workflow to every major branch where push-triggered mirroring is required, <strong>or</strong> depend on the <strong><code>master</code></strong> schedule + manual <code>workflow_dispatch</code> until backport is complete.</p>
+<h3 id="recommended-rollout">Recommended rollout</h3>
+<ol>
+<li>Merge workflow to <strong><code>master</code></strong> (enables schedule + push on <code>master</code>).</li>
+<li>Run manual <strong>dry run</strong>, then full sync from Actions.</li>
+<li>Backport to <code>alpha</code>, <code>canary</code>, <code>gold</code>, <code>V105-LTS</code>, <code>V85-LTS</code> as needed for push-triggered sync on those lines.</li>
+<li>Confirm <strong>Actions → Repository Mirror</strong> appears in the scheduled workflows list after the <code>master</code> merge.</li>
+</ol>
+<hr>
+<h2 id="configuration-reference">Configuration reference</h2>
+<p>All configuration is stored on <strong>Standard-Toolkit</strong> under <strong>Settings → Secrets and variables → Actions</strong>.</p>
+<h3 id="required">Required</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MIRROR_REPO</code></td>
+<td><strong>Variable</strong></td>
+<td>Target repository. Format: <code>owner/repo</code> (strictly validated after URL normalization). Full GitHub URLs are normalized automatically. Must not equal the source repository. Example: <code>Krypton-Suite/Standard-Toolkit-Mirror</code></td>
+</tr>
+<tr>
+<td><code>MIRROR_REPO_TOKEN</code></td>
+<td><strong>Secret</strong></td>
+<td>PAT with permission to push to the <strong>target</strong> repository</td>
+</tr>
+</tbody>
+</table>
+<p>If either is missing, the mirror step fails with an explicit error.</p>
+<h3 id="optional">Optional</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MIRROR_BRANCHES</code></td>
+<td><strong>Variable</strong></td>
+<td><code>master</code>, <code>gold</code>, <code>canary</code>, <code>alpha</code>, <code>V105-LTS</code>, <code>V85-LTS</code></td>
+<td>Comma-separated branch names. Whitespace around names is trimmed.</td>
+</tr>
+<tr>
+<td><code>MIRROR_SYNC_TAGS</code></td>
+<td><strong>Variable</strong></td>
+<td>Tag sync <strong>on</strong></td>
+<td>Set to <code>false</code> (case-sensitive) to skip tag push. Any other value (including unset) enables tag sync.</td>
+</tr>
+<tr>
+<td><code>REPO_MIRROR_DISABLED</code></td>
+<td><strong>Variable</strong></td>
+<td>Mirror <strong>enabled</strong></td>
+<td>Set to <code>true</code> to disable the workflow without deleting the YAML file.</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_MIRROR</code></td>
+<td><strong>Secret</strong></td>
+<td>No notifications</td>
+<td>Discord incoming webhook URL for success/failure embeds.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="variable-vs-secret">Variable vs secret</h3>
+<ul>
+<li><strong>Variables</strong> are non-sensitive configuration (repo name, branch list, flags). They are visible to users with sufficient repository permissions.</li>
+<li><strong>Secrets</strong> are encrypted (PAT, webhook URL). Never commit these to the repository.</li>
+</ul>
+<hr>
+<h2 id="initial-setup-guide">Initial setup guide</h2>
+<h3 id="1-create-the-target-repository">1. Create the target repository</h3>
+<ol>
+<li>On GitHub, create a new repository (e.g. <code>Standard-Toolkit-Mirror</code>).</li>
+<li><strong>Do not</strong> initialize with a README, <code>.gitignore</code>, or license if you want the first mirror push to define history cleanly. An empty repo is ideal.</li>
+<li>Note the <code>owner/repo</code> identifier.</li>
+</ol>
+<h3 id="2-configure-standard-toolkit-variables">2. Configure Standard-Toolkit variables</h3>
+<p><strong>Settings → Secrets and variables → Actions → Variables → New repository variable</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MIRROR_REPO</code></td>
+<td><code>Krypton-Suite/Standard-Toolkit-Mirror</code></td>
+</tr>
+</tbody>
+</table>
+<p>Optional:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Example value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MIRROR_BRANCHES</code></td>
+<td><code>master,alpha,V105-LTS</code></td>
+</tr>
+<tr>
+<td><code>MIRROR_SYNC_TAGS</code></td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-create-and-store-the-pat">3. Create and store the PAT</h3>
+<p>See <a href="#creating-and-rotating-mirror_repo_token">Creating and rotating <code>MIRROR_REPO_TOKEN</code></a>.</p>
+<p><strong>Settings → Secrets and variables → Actions → Secrets → New repository secret</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MIRROR_REPO_TOKEN</code></td>
+<td>The PAT string</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-optional-discord-webhook">4. (Optional) Discord webhook</h3>
+<p><strong>Secrets → New repository secret</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DISCORD_WEBHOOK_MIRROR</code></td>
+<td><code>https://discord.com/api/webhooks/...</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-verify-with-a-dry-run-then-a-full-sync">5. Verify with a dry run, then a full sync</h3>
+<ol>
+<li>Point <code>MIRROR_REPO</code> at a <strong>dedicated test mirror</strong> repository first.</li>
+<li><strong>Actions → Repository Mirror → Run workflow</strong>.</li>
+<li>Enable <strong>Dry run</strong> → confirm the run succeeds and logs list the expected branches (and tag count).</li>
+<li>Run again with <strong>Dry run</strong> disabled → confirm the target repo shows the expected branches.</li>
+<li>Compare SHAs: on the source repo, note a branch tip commit; confirm the same commit appears on the mirror for that branch.</li>
+<li>When satisfied, update <code>MIRROR_REPO</code> to the production mirror target (if different) and repeat steps 3–5.</li>
+</ol>
+<hr>
+<h2 id="creating-and-rotating-mirror_repo_token">Creating and rotating <code>MIRROR_REPO_TOKEN</code></h2>
+<h3 id="fine-grained-pat-recommended">Fine-grained PAT (recommended)</h3>
+<ol>
+<li>GitHub profile <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token</strong>.</li>
+<li><strong>Resource owner:</strong> user or org that owns the mirror repo.</li>
+<li><strong>Repository access:</strong> <strong>Only select repositories</strong> → choose the mirror repo only.</li>
+<li><strong>Permissions → Repository permissions:</strong>
+<ul>
+<li><strong>Contents:</strong> Read and write</li>
+</ul>
+</li>
+<li>Generate and copy the token immediately.</li>
+</ol>
+<h3 id="classic-pat-alternative">Classic PAT (alternative)</h3>
+<ol>
+<li><strong>Developer settings → Personal access tokens → Tokens (classic) → Generate new token</strong>.</li>
+<li>Scope: <strong><code>repo</code></strong> (required for private target repos).</li>
+<li>Generate and copy the token.</li>
+</ol>
+<h3 id="org-sso">Org SSO</h3>
+<p>If the mirror repository belongs to an organization with SAML SSO, open the token in GitHub and click <strong>Configure SSO</strong> → <strong>Authorize</strong> for that organization.</p>
+<h3 id="service-account-recommendation">Service account recommendation</h3>
+<p>Prefer a <strong>machine user</strong> or <strong>GitHub App</strong> installation over a personal account PAT so mirror access is not tied to an individual’s employment status. The workflow itself expects a classic PAT or fine-grained PAT stored as <code>MIRROR_REPO_TOKEN</code>; adapting to a GitHub App would require workflow changes.</p>
+<h3 id="rotation-procedure">Rotation procedure</h3>
+<ol>
+<li>Generate a new PAT with the same permissions.</li>
+<li>Update <strong>Settings → Secrets → <code>MIRROR_REPO_TOKEN</code></strong> with the new value.</li>
+<li>Run <strong>Repository Mirror</strong> manually and confirm success.</li>
+<li>Revoke the old PAT.</li>
+</ol>
+<hr>
+<h2 id="execution-flow-step-by-step">Execution flow (step by step)</h2>
+<h3 id="job-mirror">Job: <code>mirror</code></h3>
+<p><strong>Concurrency:</strong> group <code>repo-mirror</code>, <code>cancel-in-progress: false</code> — overlapping runs are queued, not cancelled mid-push.</p>
+<h4 id="step-1--kill-switch-check">Step 1 — Kill switch check</h4>
+<p>Reads <code>vars.REPO_MIRROR_DISABLED</code>. If exactly <code>true</code>, sets <code>enabled=false</code> and skips all subsequent steps (with a workflow warning annotation).</p>
+<h4 id="step-2--security-verify-repository">Step 2 — Security: verify repository</h4>
+<p>Fails the job if <code>GITHUB_REPOSITORY</code> is not <code>Krypton-Suite/Standard-Toolkit</code>. Prevents accidental execution if the workflow file is copied to a fork.</p>
+<h4 id="step-3--mirror-branches-to-target-repository">Step 3 — Mirror branches to target repository</h4>
+<ol>
+<li>Validates <code>MIRROR_REPO</code>, <code>MIRROR_REPO_TOKEN</code>, and <code>SOURCE_REPO_TOKEN</code> are non-empty.</li>
+<li>Normalizes <code>MIRROR_REPO</code> from URL to <code>owner/repo</code> if needed, then validates strict <code>owner/repo</code> format.</li>
+<li>Rejects <code>MIRROR_REPO</code> when it equals the source repository.</li>
+<li>Builds branch list from <code>MIRROR_BRANCHES</code> or defaults; trims entries, rejects empty entries, validates each name with <code>git check-ref-format --branch</code>.</li>
+<li>Installs a temporary Git credential helper; sets <code>GIT_CREDENTIAL_TOKEN</code> per operation.</li>
+<li><code>git clone --bare</code> source using <code>SOURCE_REPO_TOKEN</code> (<code>${{ github.token }}</code>).</li>
+<li>Fetches mirror branch heads via <code>git ls-remote --heads</code>.</li>
+<li>When <strong>dry run</strong> is enabled: runs <code>git ls-remote</code> against the mirror (reachability check) and logs planned changes without mutating the mirror.</li>
+<li>For each configured branch:
+<ul>
+<li><strong>On source</strong> → force-push to mirror (or <strong>Would push</strong> in dry run).</li>
+<li><strong>Not on source, on mirror</strong> → delete from mirror (branch removed from source; or <strong>Would delete</strong> in dry run).</li>
+<li><strong>Not on source, not on mirror</strong> → <strong>fail</strong> (<code>missing_branches</code> — typo or misconfiguration).</li>
+<li>Push/delete failure → <strong>failed</strong> list.</li>
+</ul>
+</li>
+<li>If tag sync enabled: force-push all source tags, then <strong>prune</strong> mirror tags absent from source (or log <strong>Would prune</strong> in dry run).</li>
+<li>Tag push/prune failures set <code>tags_failed</code> / <code>tags_prune_failed</code> after outputs are written.</li>
+<li>Writes outputs including push/delete/prune/missing branch lists and tag status.</li>
+<li>Exits with error on missing configured branches, branch failures, or tag push/prune failures.</li>
+</ol>
+<h4 id="step-4--discord-notification">Step 4 — Discord notification</h4>
+<p>Runs when kill switch passed and mirror step was not skipped (<code>always()</code> so failures are reported too). No-op if <code>DISCORD_WEBHOOK_MIRROR</code> is unset. Reports push/delete/prune/missing branches, tag status, and dry-run mode.</p>
+<hr>
+<h2 id="testing-and-dry-run">Testing and dry run</h2>
+<p>Use <strong>dry run</strong> before relying on automated force pushes to a production mirror.</p>
+<h3 id="recommended-test-flow">Recommended test flow</h3>
+<ol>
+<li>Create an empty <strong>test mirror</strong> repository on GitHub.</li>
+<li>Set <code>MIRROR_REPO</code> to the test repo and configure <code>MIRROR_REPO_TOKEN</code>.</li>
+<li><strong>Actions → Repository Mirror → Run workflow</strong> with <strong>Dry run</strong> enabled.</li>
+<li>Review logs for:
+<ul>
+<li><code>Mirror repository is reachable</code> (or a warning if <code>ls-remote</code> failed)</li>
+<li><code>Would push branch: …</code> for each configured branch on source</li>
+<li><code>Would delete branch from mirror …</code> when a configured branch was removed from source but still on mirror</li>
+<li><code>Would sync N tag(s)</code> / <code>Would prune tag …</code> when tag sync is enabled</li>
+</ul>
+</li>
+<li>Re-run with <strong>Dry run</strong> disabled to perform the first real sync.</li>
+<li>Compare branch tips with <code>git ls-remote</code> (see <a href="#operational-procedures">Operational procedures</a>).</li>
+<li>Switch <code>MIRROR_REPO</code> to the production mirror when ready.</li>
+</ol>
+<h3 id="verification-checklist-record-in-pr--run-notes">Verification checklist (record in PR / run notes)</h3>
+<p>Before merging workflow changes, exercise a <strong>test mirror</strong> and note the workflow run URL for each scenario:</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>How to test</th>
+<th>Expected result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Happy path</td>
+<td>Dry run, then full sync against empty test mirror</td>
+<td>Success; all configured branches pushed</td>
+</tr>
+<tr>
+<td>Invalid <code>MIRROR_BRANCHES</code></td>
+<td>Set variable to <code>master,typo-branch</code></td>
+<td><strong>Fail</strong> — missing branch / invalid name</td>
+</tr>
+<tr>
+<td>Invalid branch name</td>
+<td>Set <code>MIRROR_BRANCHES</code> to <code>master,bad branch</code></td>
+<td><strong>Fail</strong> — <code>git check-ref-format</code> error</td>
+</tr>
+<tr>
+<td>Bad target token</td>
+<td>Revoke or wrong <code>MIRROR_REPO_TOKEN</code> on test repo</td>
+<td><strong>Fail</strong> — auth / ls-remote / push error</td>
+</tr>
+<tr>
+<td>Branch removed from source</td>
+<td>Remove a test branch from source only (mirror still has it)</td>
+<td>Success; branch <strong>deleted</strong> on mirror</td>
+</tr>
+<tr>
+<td>Tag removed from source</td>
+<td>Delete a tag on source (mirror still has it)</td>
+<td>Success; tag <strong>pruned</strong> on mirror</td>
+</tr>
+<tr>
+<td>Discord on failure</td>
+<td>Trigger a failure with webhook configured</td>
+<td>Red embed with failed/missing details</td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-dry-run-does-not-do">What dry run does not do</h3>
+<ul>
+<li>Does not verify that force push would succeed (branch protection is only hit on a real push).</li>
+<li>Does not modify the mirror repository.</li>
+<li>Is not available on push- or schedule-triggered runs.</li>
+</ul>
+<hr>
+<h2 id="branch-and-tag-behaviour">Branch and tag behaviour</h2>
+<h3 id="default-branches">Default branches</h3>
+<pre><code>master
+gold
+canary
+alpha
+V105-LTS
+V85-LTS
+</code></pre>
+<p>These align with the project’s main release and pre-release lines tracked by other CI workflows (see <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/build.yml"><code>build.yml</code></a> push triggers).</p>
+<h3 id="custom-branch-list">Custom branch list</h3>
+<p>Set <code>MIRROR_BRANCHES</code>:</p>
+<pre><code>master,gold,canary,alpha,V105-LTS,V85-LTS
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li>Comma-separated; leading/trailing whitespace trimmed per entry (shell parameter trim, not <code>xargs</code>).</li>
+<li>Empty entries (e.g. <code>master,,gold</code>) <strong>fail</strong> the run.</li>
+<li>Each name validated with <code>git check-ref-format --branch</code> before any network I/O.</li>
+<li>Order does not affect outcome.</li>
+</ul>
+<h3 id="mirror-equivalence-configured-branches">Mirror equivalence (configured branches)</h3>
+<p>For each name in <code>MIRROR_BRANCHES</code> (or the default six):</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Mirror</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Branch exists</td>
+<td>(any)</td>
+<td>Force-push branch tip to mirror</td>
+</tr>
+<tr>
+<td>Branch absent</td>
+<td>Branch exists</td>
+<td><strong>Delete</strong> branch on mirror (removed from source)</td>
+</tr>
+<tr>
+<td>Branch absent</td>
+<td>Branch absent</td>
+<td><strong>Fail</strong> — likely typo in <code>MIRROR_BRANCHES</code></td>
+</tr>
+</tbody>
+</table>
+<p>Branches on the mirror <strong>outside</strong> the configured list are not modified (legacy refs remain until manually removed or the list is expanded and then retracted).</p>
+<h3 id="force-push">Force push</h3>
+<p>Every successful branch and tag push uses <strong><code>--force</code></strong>. The mirror branch tips are overwritten to match the source exactly.</p>
+<p>Implications:</p>
+<ul>
+<li>The mirror is a <strong>downstream replica</strong>, not a collaboration repo. Do not commit directly to mirrored branches on the target; changes will be lost on the next sync.</li>
+<li>If someone force-pushes on the source, the mirror reflects that on the next run.</li>
+<li>Divergent history on the mirror is replaced — there is no merge.</li>
+</ul>
+<h3 id="tags">Tags</h3>
+<p>When <code>MIRROR_SYNC_TAGS</code> is not <code>false</code>:</p>
+<ul>
+<li>All tags on source are force-pushed to the mirror.</li>
+<li>Tags on the mirror that are <strong>not</strong> on source are <strong>pruned</strong> (<code>git push :refs/tags/&lt;name&gt;</code>).</li>
+<li>If the source has <strong>no tags</strong>, no tag push runs; existing mirror tags are still pruned.</li>
+<li>Tag push failures set <code>tags_failed=true</code>; prune failures set <code>tags_prune_failed=true</code>.</li>
+<li>Annotated-tag peel refs (<code>^{}</code>) are ignored when listing mirror tags.</li>
+</ul>
+<p><strong>Scope:</strong> only tags are fully reconciled. Configured branches are reconciled per the table above. Other mirror refs are untouched.</p>
+<hr>
+<h2 id="security-model">Security model</h2>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unauthorized workflow on forks</td>
+<td>Hard-coded repo name check</td>
+</tr>
+<tr>
+<td>Over-broad PAT</td>
+<td>Scope PAT to mirror repo only; Contents write only</td>
+</tr>
+<tr>
+<td>Secret exposure in logs</td>
+<td>GitHub masks secrets; tokens passed via credential helper, not embedded in remote URLs</td>
+</tr>
+<tr>
+<td>Source repo write access</td>
+<td>Workflow uses <code>contents: read</code> only; mirror PAT is not used for source</td>
+</tr>
+<tr>
+<td>Misconfigured mirror target</td>
+<td>Strict <code>owner/repo</code> validation; blocks mirroring to the source repo</td>
+</tr>
+<tr>
+<td>Disabling in emergency</td>
+<td><code>REPO_MIRROR_DISABLED=true</code> kill switch</td>
+</tr>
+</tbody>
+</table>
+<p>Tokens exist only in step environment variables and the credential helper subprocess. Protect repository access and audit Actions logs accordingly.</p>
+<hr>
+<h2 id="kill-switch">Kill switch</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REPO_MIRROR_DISABLED</code></td>
+<td><code>true</code></td>
+<td>Workflow exits after kill switch step; no clone, no push, no Discord</td>
+</tr>
+<tr>
+<td><code>REPO_MIRROR_DISABLED</code></td>
+<td>unset, <code>false</code>, or any other value</td>
+<td>Normal operation</td>
+</tr>
+</tbody>
+</table>
+<p>Use the kill switch when:</p>
+<ul>
+<li>Rotating or debugging PAT issues without deleting configuration.</li>
+<li>Temporarily stopping pushes during mirror repo maintenance.</li>
+<li>Investigating unexpected force-push behaviour.</li>
+</ul>
+<hr>
+<h2 id="discord-notifications">Discord notifications</h2>
+<p>When <code>DISCORD_WEBHOOK_MIRROR</code> is configured, each completed mirror attempt sends one embed:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Title</td>
+<td>“Repository Mirror succeeded”, “Repository Mirror dry run succeeded”, or “Repository Mirror failed”</td>
+</tr>
+<tr>
+<td>Target</td>
+<td>Normalized <code>MIRROR_REPO</code></td>
+</tr>
+<tr>
+<td>Pushed / Would push</td>
+<td>Branch updates on real / dry runs</td>
+</tr>
+<tr>
+<td>Deleted / Would delete</td>
+<td>Branches removed from source but still on mirror</td>
+</tr>
+<tr>
+<td>Missing</td>
+<td>Configured branches absent from both repos (failure)</td>
+</tr>
+<tr>
+<td>Pruned tags / Would prune tags</td>
+<td>Tags removed from mirror when absent from source</td>
+</tr>
+<tr>
+<td>Tags</td>
+<td>Sync status, or “Tags sync failed” when <code>tags_failed=true</code></td>
+</tr>
+<tr>
+<td>Mode</td>
+<td>“dry run (no pushes)” when applicable</td>
+</tr>
+<tr>
+<td>Link</td>
+<td>Workflow run URL</td>
+</tr>
+</tbody>
+</table>
+<p>If the webhook secret is not set, the step logs a skip message and exits 0.</p>
+<p>To create a webhook: Discord channel → <strong>Edit Channel → Integrations → Webhooks → New Webhook → Copy Webhook URL</strong>.</p>
+<hr>
+<h2 id="concurrency-and-performance">Concurrency and performance</h2>
+<ul>
+<li><strong>Bare clone</strong> fetches full history for all refs (not <code>--depth 1</code>), so the first run and repos with large history may take several minutes.</li>
+<li><strong>Push-triggered runs</strong> mirror all configured branches even when only one branch changed; this keeps every line consistent at the cost of extra push operations.</li>
+<li><strong>Concurrent pushes</strong> to multiple branches may enqueue multiple workflow runs (<code>cancel-in-progress: false</code>). Runs execute serially per concurrency group, reducing race conditions on the mirror.</li>
+</ul>
+<hr>
+<h2 id="operational-procedures">Operational procedures</h2>
+<h3 id="dry-run-recommended-before-first-sync">Dry run (recommended before first sync)</h3>
+<p><strong>Actions → Repository Mirror → Run workflow</strong> → enable <strong>Dry run</strong></p>
+<p>See <a href="#testing-and-dry-run">Testing and dry run</a>.</p>
+<h3 id="manual-full-sync">Manual full sync</h3>
+<p><strong>Actions → Repository Mirror → Run workflow</strong> (leave <strong>Dry run</strong> disabled)</p>
+<h3 id="confirm-mirror-is-current">Confirm mirror is current</h3>
+<p>Compare branch tips:</p>
+<pre><code class="lang-cmd">git ls-remote https://github.com/Krypton-Suite/Standard-Toolkit.git refs/heads/master
+git ls-remote https://github.com/Krypton-Suite/Your-Mirror-Repo.git refs/heads/master
+</code></pre>
+<p>SHAs should match after a successful run.</p>
+<h3 id="temporarily-disable-mirroring">Temporarily disable mirroring</h3>
+<p>Set variable <code>REPO_MIRROR_DISABLED</code> = <code>true</code>.</p>
+<h3 id="change-target-repository">Change target repository</h3>
+<ol>
+<li>Update <code>MIRROR_REPO</code> variable.</li>
+<li>Ensure <code>MIRROR_REPO_TOKEN</code> has push access to the new target.</li>
+<li>Run workflow manually.</li>
+</ol>
+<h3 id="add-a-new-major-branch-to-mirror">Add a new major branch to mirror</h3>
+<ol>
+<li>Add branch name to <code>MIRROR_BRANCHES</code> <strong>or</strong> extend defaults in <code>repo-mirror.yml</code>.</li>
+<li>Add branch to <code>on.push.branches</code> in <code>repo-mirror.yml</code> if push-triggered sync is desired.</li>
+<li>Merge workflow change, then run manually or wait for next push/cron.</li>
+</ol>
+<h3 id="recover-after-mirror-repo-accident">Recover after mirror repo accident</h3>
+<p>If the mirror repo was corrupted or commits were made on mirror-only:</p>
+<ol>
+<li>Fix or recreate empty mirror repo.</li>
+<li>Run <strong>Repository Mirror</strong> manually — force push restores branch tips from source.</li>
+</ol>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MIRROR_REPO and MIRROR_REPO_TOKEN must both be configured</code></td>
+<td>Missing variable or secret</td>
+<td>Set both on Standard-Toolkit</td>
+</tr>
+<tr>
+<td><code>MIRROR_REPO must be a strict owner/repo identifier</code></td>
+<td>Invalid <code>MIRROR_REPO</code> after normalization</td>
+<td>Use <code>owner/repo</code> only (e.g. <code>Krypton-Suite/Standard-Toolkit-Mirror</code>)</td>
+</tr>
+<tr>
+<td><code>MIRROR_REPO must not be the source repository</code></td>
+<td>Mirror target equals source</td>
+<td>Choose a different target repository</td>
+</tr>
+<tr>
+<td><code>SOURCE_REPO_TOKEN is not available</code></td>
+<td>Workflow token not passed to step</td>
+<td>Should not occur on GitHub-hosted runners; re-run or check workflow permissions</td>
+</tr>
+<tr>
+<td><code>403</code> / authentication failed on push</td>
+<td>Invalid or expired PAT; insufficient scope</td>
+<td>Regenerate PAT with Contents write on mirror repo</td>
+</tr>
+<tr>
+<td><code>404</code> on push</td>
+<td>Wrong <code>MIRROR_REPO</code>; PAT lacks repo access</td>
+<td>Verify owner/repo spelling and PAT repository access</td>
+</tr>
+<tr>
+<td><code>Repository Mirror workflow is currently DISABLED</code></td>
+<td>Kill switch on</td>
+<td>Set <code>REPO_MIRROR_DISABLED=false</code> or delete variable</td>
+</tr>
+<tr>
+<td><code>Security: Invalid repository</code></td>
+<td>Workflow ran on a fork</td>
+<td>Expected; only runs on official repo</td>
+</tr>
+<tr>
+<td>Branch listed under <strong>Missing</strong></td>
+<td>Typo in <code>MIRROR_BRANCHES</code> or branch never existed</td>
+<td>Fix variable name; ensure branch exists on source</td>
+</tr>
+<tr>
+<td>Branch listed under <strong>Failed</strong></td>
+<td>Network, auth, or branch protection on <strong>mirror</strong></td>
+<td>Check mirror repo branch protection (may block force push/delete); check PAT</td>
+</tr>
+<tr>
+<td><code>Tag push failed</code> / <code>Tag prune failed</code></td>
+<td>Tag push or prune rejected</td>
+<td>Check mirror permissions; tag protection</td>
+</tr>
+<tr>
+<td>Tags not appearing</td>
+<td><code>MIRROR_SYNC_TAGS=false</code> or no tags on source</td>
+<td>Check variable; verify tags with <code>git ls-remote --tags</code></td>
+</tr>
+<tr>
+<td>Mirror out of date</td>
+<td>Kill switch, failed run, missing push trigger, or workflow not on default branch / pushed branch</td>
+<td>Merge workflow to <strong>master</strong> for schedule; backport for push triggers; run manually</td>
+</tr>
+<tr>
+<td>Schedule never runs</td>
+<td><code>repo-mirror.yml</code> not on <strong>default branch</strong> (<code>master</code>)</td>
+<td>Merge workflow to <code>master</code>; verify under Actions scheduled workflows</td>
+</tr>
+<tr>
+<td>SSO authorization error</td>
+<td>Org SAML not authorized for PAT</td>
+<td>Authorize token for org on GitHub token settings page</td>
+</tr>
+</tbody>
+</table>
+<h3 id="branch-protection-on-the-mirror">Branch protection on the mirror</h3>
+<p>If the mirror repository has <strong>branch protection</strong> that forbids force pushes, branch sync will <strong>fail</strong>. Either:</p>
+<ul>
+<li>Disable force-push restrictions for the bot/PAT user on mirrored branches, or</li>
+<li>Exempt the PAT user from protection rules, or</li>
+<li>Use a mirror repo dedicated to automation without restrictive protection on synced branches.</li>
+</ul>
+<h3 id="inspecting-a-failed-run">Inspecting a failed run</h3>
+<ol>
+<li>Open the workflow run in Actions.</li>
+<li>Expand <strong>Mirror branches to target repository</strong>.</li>
+<li>Look for <code>Pushing branch:</code> lines and Git error output immediately after failed pushes.</li>
+</ol>
+<hr>
+<h2 id="limitations-and-design-decisions">Limitations and design decisions</h2>
+<ol>
+<li><strong>Force push only</strong> — simplicity and exact replication for updates; no three-way merge.</li>
+<li><strong>Configured branch scope</strong> — only listed branches are reconciled; other mirror refs are left unchanged.</li>
+<li><strong>GitHub metadata not copied</strong> — mirror is for source code and ref history, not project management data.</li>
+<li><strong>Single mirror target</strong> — one <code>MIRROR_REPO</code> per workflow; multiple targets would require workflow duplication or matrix strategy changes.</li>
+<li><strong>Hard-coded source repo</strong> — intentional guard rail; forks cannot push to production mirror credentials.</li>
+<li><strong>Tag push uses wildcard</strong> — all source tags pushed together; prune is per-tag afterward.</li>
+<li><strong>Push trigger mirrors all configured branches</strong> — intentional consistency trade-off; see <a href="#concurrency-and-performance">Concurrency and performance</a>.</li>
+<li><strong>Schedule requires <code>master</code></strong> — cron is registered only from the default branch; see <a href="#deployment-requirements">Deployment requirements</a>.</li>
+</ol>
+<hr>
+<h2 id="maintaining-and-extending-the-workflow">Maintaining and extending the workflow</h2>
+<h3 id="files-to-edit">Files to edit</h3>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default branch list</td>
+<td><code>repo-mirror.yml</code> — shell array ~line 97 and optionally <code>MIRROR_BRANCHES</code> docs</td>
+</tr>
+<tr>
+<td>Push-triggered branches</td>
+<td><code>repo-mirror.yml</code> — <code>on.push.branches</code></td>
+</tr>
+<tr>
+<td>Cron schedule</td>
+<td><code>repo-mirror.yml</code> — <code>on.schedule</code></td>
+</tr>
+<tr>
+<td>Allowed source repo</td>
+<td><code>repo-mirror.yml</code> — Security verify step</td>
+</tr>
+<tr>
+<td>Discord payload</td>
+<td><code>repo-mirror.yml</code> — Discord notification step</td>
+</tr>
+</tbody>
+</table>
+<h3 id="suggested-enhancements-not-implemented">Suggested enhancements (not implemented)</h3>
+<ul>
+<li>Matrix job per branch for parallel pushes and isolated failure reporting.</li>
+<li>GitHub App authentication instead of long-lived PAT.</li>
+<li>Environment approval gate before push (similar to <code>nightly.yml</code> <code>environment: production</code>).</li>
+<li>Post-push SHA verification step comparing source and mirror refs.</li>
+<li>Dry-run simulation of force-push/delete success against branch protection rules.</li>
+<li>Prune mirror branches outside the configured <code>MIRROR_BRANCHES</code> list.</li>
+</ul>
+<p>When modifying the workflow, keep header comments in <code>repo-mirror.yml</code> in sync with this document.</p>
+<hr>
+<h2 id="related-documentation">Related documentation</h2>
+<ul>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/AGENTS.md">AGENTS.md</a> — repository guidelines and CI overview</li>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/alpha-backup-sync.yml"><code>.github/workflows/alpha-backup-sync.yml</code></a> — alpha-specific backup (different strategy)</li>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/build.yml"><code>.github/workflows/build.yml</code></a> — branch set used for CI on major lines</li>
+<li><a href="../AlphaBackupSync.html">Alpha Backup Sync</a> — dated snapshots and in-repo <code>alpha-backup</code></li>
+<li><a href="RepositoryRestoreFromMirrorWorkflow.html">Repository Restore from Mirror</a> — mirror → source restore (<code>repo-restore-from-mirror.yml</code>)</li>
+<li><a href="RepositoryBackupAndRestore.html">Repository backup and restore</a> — umbrella guide (architecture, playbooks)</li>
+<li><a href="../GitHubWorkflowIndex.html">GitHub Workflow Index</a> — all workflow documentation</li>
+<li><a href="../Build%20System/KillSwitches.html">Kill Switches</a> — <code>REPO_MIRROR_DISABLED</code> and other kill switches</li>
+</ul>
+<hr>
+<p><em>Last updated to match <code>repo-mirror.yml</code> including mirror equivalence (branch/tag prune), missing-branch failure, and verification checklist (2026).</em></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

@@ -1,12 +1,12 @@
 # KryptonExceptionDialog - Quick Start Guide
 
-**V110+:** Use **`using Krypton.Utilities;`**. Canonical copy: **[Utilities/KryptonExceptionDialogQuickStart.md](../../Utilities/KryptonExceptionDialogQuickStart.md)**.
+**V110+:** Use **`using Krypton.Toolkit.Utilities;`**. Canonical copy: **[Utilities/KryptonExceptionDialogQuickStart.md](../../Utilities/KryptonExceptionDialogQuickStart.md)**.
 
 ## Overview
 
 `KryptonExceptionDialog` is a static utility class that displays exception information in a user-friendly dialog with searchable tree views, copy-to-clipboard functionality, and optional bug reporting integration.
 
-**Namespace (V110+):** `Krypton.Utilities`  
+**Namespace (V110+):** `Krypton.Toolkit.Utilities`  
 **Type:** `public static class`
 
 ---
@@ -16,7 +16,7 @@
 ### Basic Usage
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 try
 {

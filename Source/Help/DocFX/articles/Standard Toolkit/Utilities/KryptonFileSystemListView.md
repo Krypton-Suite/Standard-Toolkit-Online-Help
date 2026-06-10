@@ -35,7 +35,7 @@
 ### Namespace
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 ```
 
 ### Inheritance Hierarchy
@@ -47,7 +47,7 @@ System.Object
           └─ System.Windows.Forms.Control
               └─ System.Windows.Forms.ListView
                   └─ Krypton.Toolkit.KryptonListView
-                      └─ Krypton.Utilities.KryptonFileSystemListView
+                      └─ Krypton.Toolkit.Utilities.KryptonFileSystemListView
 ```
 
 ---
@@ -713,7 +713,7 @@ fileSystemListView.FileSystemError += (sender, e) =>
 
 Groups file system-specific properties for PropertyGrid display.
 
-**Location:** `Krypton.Utilities.FileSystemListViewValues`
+**Location:** `Krypton.Toolkit.Utilities.FileSystemListViewValues`
 
 **Properties:**
 
@@ -868,7 +868,7 @@ This ensures icons are always displayed, even when extraction fails.
 ### Basic Usage
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 // Create control
 KryptonFileSystemListView fileListView = new KryptonFileSystemListView();

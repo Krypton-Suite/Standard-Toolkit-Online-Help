@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Palette Unification | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Palette Unification | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="palette-unification">Palette Unification</h1>
+
+<hr>
+<h2 id="1--define-one-authoritative-colour-contract">1.  Define <strong>one</strong> authoritative colour contract</h2>
+<ul>
+<li>Keep <code>KryptonColorSchemeBase</code> and extend it until it contains <strong>every</strong> colour currently exposed through
+<ul>
+<li><code>SchemeBaseColors</code></li>
+<li><code>SchemeContextMenuColors</code></li>
+<li><code>SchemeExtraColors</code></li>
+<li><code>SchemeMenuStripColors</code></li>
+<li><code>SchemeToolTipColors</code></li>
+<li><code>SchemeTrackingColors</code></li>
+<li>any extra properties that exist in individual colour-table classes, such as
+<ul>
+<li><p><code>AppButtonNormal</code>, <code>AppButtonTrack</code>, <code>AppButtonPressed</code></p>
+</li>
+<li><p><code>ButtonBorderColors</code>, <code>ButtonBackColors</code></p>
+</li>
+<li><p><code>RibbonGroupCollapsedBackContext</code>, <code>RibbonGroupCollapsedBackContextTracking</code></p>
+</li>
+<li><p><code>RibbonGroupCollapsedBorderContext</code>, <code>RibbonGroupCollapsedBorderContextTracking</code></p>
+</li>
+<li><p>These correspond to slot families registered via <code>RegisterColor&lt;TEnum&gt;</code> (publicly mutable at runtime; see the static constructor in <code>PaletteMicrosoft365Base.cs</code>) and must be folded into the scheme as named properties:
+AppButtonNormalColor (5)<br>
+AppButtonTrackColor (5)<br>
+AppButtonPressedColor (5)<br>
+ButtonBackColor (10)<br>
+ButtonBorderColor (7)</p>
+</li>
+<li><p>Additionally, fold remaining legacy arrays used by other themes/renderers into the scheme as named properties (to be removed during clean‑up):
+_ribbonColors<br>
+_colorsB<br>
+_colorsG<br>
+_colorsS<br>
+_ribbonGroupCollapsedBackContext<br>
+_ribbonGroupCollapsedBackContextTracking<br>
+_ribbonGroupCollapsedBorderContext<br>
+_ribbonGroupCollapsedBorderContextTracking<br>
+_sparkleColors<br>
+_trackBarColors<br>
+_trackColors<br>
+_arrowBorderColors</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Use auto-properties - no arrays, no enums, no “slot” indices.</li>
+</ul>
+<pre><code class="lang-csharp">public abstract class KryptonColorScheme
+{
+    public abstract Color ButtonPressedBorder  { get; }
+    public abstract Color ButtonPressedBegin   { get; }
+    // …repeat for every colour…
+}
+</code></pre>
+<ul>
+<li>The various enum files stay <strong>temporarily</strong> (read-only) so everything still compiles, but the end-goal is to delete them in the breaking-change release.</li>
+</ul>
+<hr>
+<h2 id="2--turn-kryptoncolortable-into-the-single-renderer-bridge">2.  Turn <code>KryptonColorTable</code> into the single renderer bridge</h2>
+<ul>
+<li>Today each theme base class overrides <code>ColorTable</code> to call its own derived color-table, for example:</li>
+</ul>
+<pre><code class="lang-csharp">public override KryptonColorTable ColorTable =&gt;
+    Table ??= new KryptonColorTable365(...);
+</code></pre>
+<ul>
+<li><p>We want to collapse <strong>all</strong> of those per-theme <code>KryptonColorTableXXX</code> types into <strong>one</strong> generic bridge:</p>
+<ol>
+<li>Create a single <code>KryptonColorTable : ProfessionalColorTable</code> that takes any <code>KryptonColorSchemeBase</code> instance:</li>
+</ol>
+<pre><code class="lang-csharp">public sealed class KryptonColorTable : ProfessionalColorTable
+{
+    private readonly KryptonColorSchemeBase _scheme;
+    public KryptonColorTable(KryptonColorSchemeBase scheme)
+        =&gt; _scheme = scheme ?? throw new ArgumentNullException(nameof(scheme));
+
+    // Forward every ProfessionalColorTable property to the scheme
+    public override Color ButtonPressedBorder
+        =&gt; _scheme.ButtonPressedBorder;
+    // …add overrides for each property defined in ProfessionalColorTable…
+}
+</code></pre>
+<ol start="2">
+<li>In each theme’s <code>ColorTable</code> override (e.g., <code>PaletteMicrosoft365Base</code>, <code>PaletteOffice2007Base</code>, etc.), replace:</li>
+</ol>
+<pre><code class="lang-csharp">new KryptonColorTable365(...);
+</code></pre>
+<p>with:</p>
+<pre><code class="lang-csharp">new KryptonColorTable(myUnifiedScheme);
+</code></pre>
+<ol start="3">
+<li>After migrating all themes, delete the obsolete <code>KryptonColorTableXXX</code> classes.</li>
+</ol>
+</li>
+</ul>
+<p>This results in:
+- A single <code>ProfessionalColorTable</code> implementation that delegates to a unified color scheme.
+- Elimination of dozens of nearly identical color-table subclasses.
+- A clear, maintainable path for adding new themes.</p>
+<p>That 70-vs-239 gap is exactly what you expect in a split “scheme ↔ table” model, and it doesn’t derail the unification plan—it just underscores it.</p>
+<p>• The <strong>scheme</strong> (<code>KryptonColorSchemeBase</code> and its per-theme subclasses) is a superset of <em>all</em> palette API slots—today that’s ~239 properties covering back, border, content, ribbon, element, metric, image, etc.</p>
+<p>• The <strong>table</strong> (<code>ProfessionalColorTable</code> → <code>KryptonColorTable</code>) only needs to implement the ~70 rendering-specific properties that WinForms actually calls when drawing menus, tool-strips, status-strips, etc.</p>
+<p>Under the one-bridge approach we:</p>
+<ol>
+<li><p>Keep each theme’s <strong>scheme</strong> class as the single large list of 239 named colors.</p>
+</li>
+<li><p>Implement <strong>one</strong> <code>KryptonColorTable : ProfessionalColorTable</code> bridge that forwards <em>only</em> those ~70 table properties into the scheme—exactly the way <code>public override Color ButtonPressedBorder =&gt; _scheme.ButtonPressedBorder;</code> works today.</p>
+</li>
+<li><p>Wire every <code>Palette…Base</code> to use <em>that one</em> <code>KryptonColorTable</code> (passing in its scheme), then delete the dozens of per-theme <code>KryptonColorTableXXX</code> classes.</p>
+</li>
+</ol>
+<p>The extra ~169 scheme properties beyond the table’s 70 remain in each scheme as the palette API surface—they aren’t lost, they’re simply not consumed by WinForms rendering.</p>
+<p>The size difference is intended and doesn’t change the “one scheme per theme / one table bridge” architecture.</p>
+<hr>
+<h2 id="3--create-one-scheme-class-per-theme">3.  Create one <em>scheme</em> class per theme</h2>
+<pre><code class="lang-csharp">public sealed class SparkleColorScheme : KryptonColorScheme
+{
+    // ctor may take nothing or a ThemeVariant flag (Light/Dark).
+    public override Color ButtonPressedBorder =&gt; Color.Black;
+    public override Color ButtonPressedBegin  =&gt; _sparkle[8];
+    // …and so on…
+}
+</code></pre>
+<p>If you prefer data-only classes, you can auto-generate these from the existing colour arrays (Roslyn source-generator or simple script).</p>
+<hr>
+<h2 id="4--wire-up-and-replace">4.  Wire-up and replace</h2>
+<ol>
+<li><p>Wherever code currently does</p>
+<pre><code class="lang-csharp">new KryptonColorTable365(colors, roundedEdges, palette);
+</code></pre>
+<p>replace with</p>
+<pre><code class="lang-csharp">var scheme     = new Microsoft365ColorScheme(colors, roundedEdges);
+var colorTable = new KryptonColorTable(scheme);
+</code></pre>
+</li>
+<li><p>Inside the new scheme classes, remove <code>colors[(int)SchemeBaseColors.X]</code> array lookups and replace with direct property references.</p>
+</li>
+<li><p>Delete <strong>all</strong> obsolete colour-table concrete classes once everything compiles.</p>
+</li>
+</ol>
+<hr>
+<h2 id="5--clean-up-pass-breaking-version">5.  Clean-up pass (breaking version)</h2>
+<p>Once you have full coverage in KryptonColorSchemeBase + KryptonColorTable, you can delete all the SchemeBaseColors, SchemeExtraColors, etc. enums and the old palette classes as access will be via properties, not array indices.</p>
+<ul>
+<li>Delete <code>SchemeBaseColors</code>, <code>SchemeExtraColors</code>, … enums.</li>
+<li>Delete any helper structs such as the <code>Color[]</code> holder constructors.</li>
+<li>Optionally mark removed public APIs with <code>[Obsolete(&quot;Replaced by …&quot;)]</code> for one release cycle.</li>
+</ul>
+<hr>
+<h2 id="6-documentation">6. Documentation</h2>
+<p>This is a major change and affects a lot of classes and their interactions as well as interplay with other tools.
+Documentation of breaking changes with a high detail level is extremely important, even if tedious (use AI to assist!).
+Documenting the new KryptonColorSchemeBase contract and show migration paths is a critical step.</p>
+<hr>
+<h2 id="7--impact--follow-ups">7.  Impact &amp; follow-ups</h2>
+<ol>
+<li><strong>Binary breaking change</strong> – Every consumer that instantiated a concrete <code>KryptonColorTableXYZ</code> now needs to create a <code>KryptonColorScheme</code> + <code>KryptonColorTable</code>.</li>
+<li><strong>Smaller DLL footprint</strong> – only slim scheme classes remain.</li>
+<li><strong>No more index errors</strong> – property access is self-documenting.</li>
+<li><strong>Negligible performance impact</strong> – property getter inlines to the same IL as array lookup.</li>
+<li><strong>Future themes</strong> – just add a new <code>FooColorScheme</code>; no renderer changes required.</li>
+</ol>
+<hr>
+<h3 id="quick-reference-checklist">Quick reference checklist</h3>
+<ul>
+<li>[ ] Fill <code>KryptonColorScheme</code> with <strong>all</strong> colours in <code>AbstractBaseColorScheme</code> (+ any missing ones).</li>
+<li>[ ] Refactor <code>KryptonColorTable</code> to proxy every <code>ProfessionalColorTable</code> property to <code>_scheme</code>.</li>
+<li>[ ] Write scheme classes: <code>Microsoft365ColorScheme</code>, <code>SparkleColorScheme</code>, …</li>
+<li>[ ] Replace constructor calls across the toolkit.</li>
+<li>[ ] Delete obsolete colour-table classes and enum slot maps.</li>
+<li>[ ] Ship next major version and highlight the breaking change in release notes.</li>
+</ul>
+<hr>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

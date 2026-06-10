@@ -13,7 +13,7 @@
 ### Example 1: Simple Bug Report Dialog
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using System.Windows.Forms;
 
 public class BugReportExample
@@ -42,7 +42,7 @@ public class BugReportExample
 ### Example 2: Bug Report with Exception
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 public class ExceptionBugReport
 {
@@ -75,7 +75,7 @@ public class ExceptionBugReport
 ### Example 3: Global Exception Handler
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using System;
 using System.Threading;
 using System.Windows.Forms;
@@ -136,7 +136,7 @@ public class ApplicationMain
 ### Example 4: Try-Catch with Bug Reporting
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 public class DataProcessor
 {
@@ -184,7 +184,7 @@ public class DataProcessor
 ### Example 5: Async Exception Handling
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using System.Threading.Tasks;
 
 public class AsyncProcessor
@@ -228,7 +228,7 @@ public class AsyncProcessor
 ### Example 6: Configuration from App.config
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using System.Configuration;
 
 public class ConfigManager
@@ -276,7 +276,7 @@ public class ConfigManager
 ### Example 7: Configuration from JSON File
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using System.IO;
 using System.Text.Json;
 
@@ -334,7 +334,7 @@ public class JsonConfigManager
 ### Example 8: Secure Configuration Storage
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -382,7 +382,7 @@ public class SecureConfigManager
 ### Example 9: Custom Exception Dialog Integration
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using Krypton.Toolkit;
 
 public class CustomExceptionHandler
@@ -434,7 +434,7 @@ public class CustomExceptionHandler
 ### Example 10: Conditional Bug Reporting
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 public class ConditionalBugReporter
 {
@@ -457,7 +457,7 @@ public class ConditionalBugReporter
         else
         {
             // Show without bug reporting in development
-            Krypton.Utilities.KryptonExceptionDialog.Show(ex);
+            Krypton.Toolkit.Utilities.KryptonExceptionDialog.Show(ex);
         }
     }
     
@@ -475,7 +475,7 @@ public class ConditionalBugReporter
 ### Example 11: Bug Report with Additional Context
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using System.Text;
 
 public class ContextualBugReporter
@@ -518,7 +518,7 @@ public class ContextualBugReporter
 ### Example 12: Programmatic Email Sending
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using System.Collections.Generic;
 
 public class ProgrammaticReporter
@@ -568,7 +568,7 @@ public class ProgrammaticReporter
 ### Example 13: Fallback to File Save
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using System.IO;
 using System.Text;
 
@@ -637,7 +637,7 @@ public class FallbackReporter
 ### Example 14: Testing Email Configuration
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 public class EmailConfigTester
 {
@@ -689,7 +689,7 @@ public class EmailConfigTester
 ### Example 15: Multi-Environment Configuration
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 public class EnvironmentConfigManager
 {

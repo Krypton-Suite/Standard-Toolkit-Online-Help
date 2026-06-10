@@ -758,7 +758,7 @@ This guide provides comprehensive coverage of how to effectively use the Excepti
 
 ## Related Documentation
 
-- [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md) - API reference (V110+: `Krypton.Utilities`) ⭐ **Start Here**
-- [KryptonExceptionDialog Quick Start](../../Utilities/KryptonExceptionDialogQuickStart.md) - Quick start (V110+: `Krypton.Utilities`)
+- [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md) - API reference (V110+: `Krypton.Toolkit.Utilities`) ⭐ **Start Here**
+- [KryptonExceptionDialog Quick Start](../../Utilities/KryptonExceptionDialogQuickStart.md) - Quick start (V110+: `Krypton.Toolkit.Utilities`)
 - [ExceptionHandler API Documentation](ExceptionHandlerAPIDocumentation.md) - Internal implementation and architecture details
 - [Localization Guide](LocalizationGuide.md) - For localizing exception dialog strings

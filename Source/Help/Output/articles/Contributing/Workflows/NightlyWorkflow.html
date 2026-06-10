@@ -69,388 +69,456 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="nightly-workflow">Nightly Workflow</h1>
 
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow file</td>
+<td><code>.github/workflows/nightly.yml</code></td>
+</tr>
+<tr>
+<td>Workflow name (Actions UI)</td>
+<td><strong>Nightly Release</strong></td>
+</tr>
+<tr>
+<td>Triggers</td>
+<td><code>schedule</code> (<code>0 0 * * *</code> UTC), <code>workflow_dispatch</code></td>
+</tr>
+<tr>
+<td>Runner</td>
+<td><code>windows-2025-vs2026</code></td>
+</tr>
+<tr>
+<td>Environment</td>
+<td><code>production</code> (approval before publish, when configured)</td>
+</tr>
+<tr>
+<td>Checkout branch</td>
+<td><code>alpha</code> (<code>fetch-depth: 0</code>)</td>
+</tr>
+<tr>
+<td>Build orchestration</td>
+<td><code>Scripts/Build/nightly.proj</code> (<code>Configuration=Nightly</code>)</td>
+</tr>
+<tr>
+<td>Concurrency</td>
+<td><code>nightly-alpha</code>, <code>cancel-in-progress: true</code></td>
+</tr>
+<tr>
+<td>Permissions</td>
+<td><code>contents: read</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="overview">Overview</h2>
-<p>The Nightly workflow automatically creates and publishes bleeding-edge builds from the <code>alpha</code> branch on a daily schedule. It includes intelligent change detection to skip builds when no changes have occurred, and features kill switch controls for emergency disabling.</p>
+<p>The <strong>Nightly Release</strong> workflow builds and publishes bleeding-edge NuGet packages from the <strong><code>alpha</code></strong> branch on a daily schedule. It skips work when there are no recent commits (24-hour window, with an optional extended <strong>retention</strong> window), and supports a repository kill switch.</p>
+<p><strong>Related:</strong> The <code>release.yml</code> job <code>release-alpha</code> shares the <code>NIGHTLY_DISABLED</code> kill switch name for alpha-channel publishing — see <a href="../Build%20System/KillSwitches.html">Kill switches</a>.</p>
 <h2 id="purpose">Purpose</h2>
 <ul>
-<li><strong>Automated Nightly Builds</strong>: Provides latest development builds without manual intervention</li>
-<li><strong>Change Detection</strong>: Only builds when code has changed in the last 24 hours</li>
-<li><strong>Bleeding-Edge Testing</strong>: Enables early testing of new features and fixes</li>
-<li><strong>NuGet Publishing</strong>: Automatically publishes packages to nuget.org</li>
-<li><strong>Community Notifications</strong>: Announces releases via Discord</li>
+<li>Automated nightly packages (<code>*.Nightly</code> on nuget.org) without manual runs</li>
+<li>Skip CI and NuGet pushes when <code>alpha</code> is quiet (24h + optional retention days)</li>
+<li>Prerelease <strong>WebView2</strong> binaries for <code>Krypton.Toolkit.Utilities</code> (cached per version)</li>
+<li>Discord notification when at least one new package is pushed</li>
+<li>Repository and branch guards before checkout</li>
 </ul>
 <h2 id="trigger-conditions">Trigger Conditions</h2>
 <h3 id="scheduled">Scheduled</h3>
 <ul>
-<li><strong>Cron</strong>: <code>0 0 * * *</code> (midnight UTC every day)</li>
-<li><strong>Time Zone</strong>: UTC</li>
-<li><strong>Frequency</strong>: Once per day</li>
+<li><strong>Cron:</strong> <code>0 0 * * *</code> (midnight UTC daily)</li>
+<li>Uses the workflow definition on the branch where the schedule is registered (typically after merge to <code>master</code> or the default branch that hosts the file).</li>
 </ul>
-<h3 id="manual">Manual</h3>
-<ul>
-<li><strong><code>workflow_dispatch</code></strong>: Can be manually triggered from Actions tab</li>
-<li><strong>Use Case</strong>: Testing workflow changes or forcing a build</li>
-</ul>
+<h3 id="manual-workflow_dispatch">Manual (<code>workflow_dispatch</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>retention_check_days</code></td>
+<td>number (optional)</td>
+<td>When there are <strong>no</strong> commits in the last 24h, look back this many days on <code>alpha</code> for activity. Overrides <code>NIGHTLY_RELEASE_RETENTION_CHECK_DAYS</code> when set.</td>
+</tr>
+</tbody>
+</table>
+<p>Use manual runs to force a build or to test retention behaviour after re-enabling the workflow.</p>
 <h2 id="workflow-structure">Workflow Structure</h2>
 <h3 id="job-nightly">Job: <code>nightly</code></h3>
-<p><strong>Runner</strong>: <code>windows-latest</code></p>
-<p><strong>Environment</strong>: <code>production</code> (requires approval before publishing)</p>
-<p><strong>Concurrency</strong>:</p>
+<p><strong>Runner:</strong> <code>windows-2025-vs2026</code></p>
+<p><strong>Environment:</strong> <code>production</code></p>
+<p><strong>Concurrency:</strong> group <code>nightly-alpha</code>, cancel in-progress runs.</p>
+<h3 id="step-sequence-summary">Step sequence (summary)</h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Steps</th>
+<th>Gated by <code>has_changes</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Control</td>
+<td>Kill switch, repository check, branch check</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Source</td>
+<td>Checkout <code>alpha</code>, change detection, skip notice</td>
+<td>Detection only</td>
+</tr>
+<tr>
+<td>Toolchain</td>
+<td>.NET 9/10, .NET 11 (stable → preview fallback), optional preview SDK, <code>global.json</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Build</td>
+<td>MSBuild, NuGet, cache, WebView2 resolve/restore/populate/save</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Publish</td>
+<td>Restore, Build, Pack, Push NuGet, Get version, Discord</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>All build/publish steps use:</p>
+<p><code>if: steps.nightly_release_kill_switch.outputs.enabled == 'true' &amp;&amp; steps.check_changes.outputs.has_changes == 'true'</code></p>
+<h2 id="detailed-behaviour">Detailed Behaviour</h2>
+<h3 id="kill-switch">Kill switch</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NIGHTLY_DISABLED</code></td>
+<td><code>true</code></td>
+<td>Workflow disables after kill-switch step; no checkout/build</td>
+</tr>
+<tr>
+<td><code>NIGHTLY_DISABLED</code></td>
+<td>unset / <code>false</code></td>
+<td>Normal operation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Location:</strong> Repository Settings → Secrets and variables → Actions → Variables.</p>
+<h3 id="security-verification">Security verification</h3>
+<p><strong>Repository</strong> — must be <code>Krypton-Suite/Standard-Toolkit</code>.</p>
+<p><strong>Branch ref</strong> (<code>GITHUB_REF</code>) — must be one of:</p>
 <ul>
-<li><strong>Group</strong>: <code>nightly-alpha</code></li>
-<li><strong>Cancel In-Progress</strong>: <code>true</code></li>
-<li>Prevents multiple nightly builds from running simultaneously</li>
+<li><code>refs/heads/alpha</code></li>
+<li><code>refs/heads/master</code></li>
+<li><code>refs/heads/main</code></li>
 </ul>
-<h3 id="steps-overview">Steps Overview</h3>
+<p>The job always <strong>checks out <code>ref: alpha</code></strong> for build content regardless of which allowed ref triggered the run (for example manual dispatch from <code>master</code>).</p>
+<h3 id="change-detection-and-retention-window">Change detection and retention window</h3>
+<p><strong>Step:</strong> <code>Check for changes on alpha</code><br>
+<strong>Outputs:</strong> <code>has_changes</code> (<code>true</code>/<code>false</code>), <code>change_window</code> (<code>24h</code>, <code>retention_&lt;N&gt;d</code>, or <code>none</code>).</p>
 <ol>
-<li><strong>Kill Switch Check</strong> - Verifies if workflow is disabled</li>
-<li><strong>Security Verification</strong> - Validates repository and branch</li>
-<li><strong>Checkout</strong> - Checks out <code>alpha</code> branch</li>
-<li><strong>Change Detection</strong> - Checks for commits in last 24 hours</li>
-<li><strong>Skip Notification</strong> - Notifies if no changes found</li>
-<li><strong>Setup .NET</strong> - Installs .NET SDKs</li>
-<li><strong>Setup .NET Preview</strong> - Installs preview SDK when <code>USE_DOTNET_PREVIEW</code> is not <code>false</code> (<code>DOTNET_PREVIEW_SETUP_VERSION</code>; optional when preview disabled)</li>
-<li><strong>Pin SDK via global.json</strong> - Writes <code>global.json</code> (preview band or stable 10.x/9.x per repository variables)</li>
-<li><strong>Setup MSBuild</strong> - Configures MSBuild</li>
-<li><strong>Setup NuGet</strong> - Configures NuGet</li>
-<li><strong>Cache NuGet</strong> - Caches packages</li>
-<li><strong>Restore</strong> - Restores dependencies</li>
-<li><strong>Build Nightly</strong> - Builds the solution</li>
-<li><strong>Pack Nightly</strong> - Creates NuGet packages</li>
-<li><strong>Push NuGet Packages</strong> - Publishes to nuget.org</li>
-<li><strong>Get Version</strong> - Extracts version information</li>
-<li><strong>Announce on Discord</strong> - Sends notification</li>
-</ol>
-<h2 id="detailed-behavior">Detailed Behavior</h2>
-<h3 id="kill-switch">Kill Switch</h3>
-<p><strong>Variable</strong>: <code>NIGHTLY_DISABLED</code></p>
-<p><strong>Location</strong>: Repository Settings → Secrets and variables → Actions → Variables</p>
-<p><strong>Values</strong>:</p>
+<li><strong>24-hour window</strong> — count commits on <code>alpha</code> since 24 hours ago (UTC). If count &gt; 0 → proceed (<code>change_window=24h</code>).</li>
+<li><strong>Retention window</strong> — if 24h count is 0:
 <ul>
-<li><code>true</code> - Disables workflow (all steps skipped after check)</li>
-<li><code>false</code> or unset - Enables workflow</li>
-</ul>
-<p><strong>Use Cases</strong>:</p>
+<li>Resolve retention days:
 <ul>
-<li>Emergency disabling of automated builds</li>
-<li>Maintenance periods</li>
-<li>Preventing duplicate releases</li>
-</ul>
-<p><strong>Implementation</strong>:</p>
-<pre><code class="lang-powershell">$disabled = '${{ vars.NIGHTLY_DISABLED }}'
-if ($disabled -eq 'true') {
-  echo &quot;enabled=false&quot; &gt;&gt; $env:GITHUB_OUTPUT
-}
-</code></pre>
-<p>All subsequent steps check: <code>if: steps.nightly_release_kill_switch.outputs.enabled == 'true'</code></p>
-<h3 id="security-verification">Security Verification</h3>
-<h4 id="repository-check">Repository Check</h4>
-<p>Validates that workflow only runs on the correct repository:</p>
-<pre><code class="lang-powershell">if ($env:GITHUB_REPOSITORY -ne 'Krypton-Suite/Standard-Toolkit') {
-  Write-Error &quot;Security: Invalid repository&quot;
-  exit 1
-}
-</code></pre>
-<h4 id="branch-check">Branch Check</h4>
-<p>Verifies workflow is running from an authorized branch:</p>
-<pre><code class="lang-powershell">$allowedRefs = @('refs/heads/alpha', 'refs/heads/master', 'refs/heads/main')
-if ($env:GITHUB_REF -notin $allowedRefs) {
-  Write-Error &quot;Security: Unauthorized branch&quot;
-  exit 1
-}
-</code></pre>
-<p><strong>Note</strong>: Workflow checks out <code>alpha</code> branch regardless of trigger source.</p>
-<h3 id="change-detection">Change Detection</h3>
-<p><strong>Purpose</strong>: Skips build if no commits in last 24 hours</p>
-<p><strong>Implementation</strong>:</p>
-<pre><code class="lang-powershell">$yesterday = (Get-Date).AddDays(-1).ToUniversalTime().ToString(&quot;yyyy-MM-dd HH:mm:ss&quot;)
-$commitCount = git rev-list --count --since=&quot;$yesterday&quot; alpha
-</code></pre>
-<p><strong>Logic</strong>:</p>
-<ul>
-<li>Counts commits on <code>alpha</code> branch since 24 hours ago</li>
-<li>If count &gt; 0: proceeds with build</li>
-<li>If count = 0: skips build and logs notice</li>
-</ul>
-<p><strong>Benefits</strong>:</p>
-<ul>
-<li>Saves CI minutes</li>
-<li>Prevents duplicate packages</li>
-<li>Reduces noise in notifications</li>
-</ul>
-<h3 id="net-sdk-setup">.NET SDK Setup</h3>
-<p><strong>Versions Installed</strong>:</p>
-<ul>
-<li>.NET 9.0.x and 10.0.x (always)</li>
-<li>Preview SDK: only when <code>USE_DOTNET_PREVIEW</code> is not <code>false</code>, using repository variable <code>DOTNET_PREVIEW_SETUP_VERSION</code> (for example <code>11.0.x</code>)</li>
-</ul>
-<p><strong>global.json (Pin SDK via global.json)</strong>:</p>
-<ul>
-<li>When preview is enabled: pins SDK matching <code>DOTNET_PREVIEW_SDK_BAND</code>, with fallback to latest 10.x on the runner if the preview SDK is missing.</li>
-<li>When <code>USE_DOTNET_PREVIEW=false</code>: pins latest stable 10.x, then 9.x.</li>
-<li>Uses <code>rollForward: latestFeature</code> in generated <code>global.json</code>.</li>
-</ul>
-<h3 id="build-process">Build Process</h3>
-<p><strong>Project File</strong>: <code>Scripts/Build/nightly.proj</code></p>
-<p><strong>Configuration</strong>: <code>Nightly</code></p>
-<p><strong>Platform</strong>: <code>Any CPU</code></p>
-<p><strong>Targets</strong>:</p>
-<ol>
-<li><code>Build</code> - Compiles solution</li>
-<li><code>Pack</code> - Creates NuGet packages</li>
-</ol>
-<p><strong>Output Location</strong>: <code>Bin/Packages/Nightly/</code></p>
-<h3 id="nuget-publishing">NuGet Publishing</h3>
-<p><strong>Process</strong>:</p>
-<ol>
-<li>Scans for <code>.nupkg</code> files in <code>Bin/Packages/Nightly/</code></li>
-<li>Pushes each package to nuget.org</li>
-<li>Uses <code>--skip-duplicate</code> flag to handle existing packages</li>
-<li>Tracks if any packages were actually published</li>
-</ol>
-<p><strong>Package Detection</strong>:</p>
-<pre><code class="lang-powershell">$packages = Get-ChildItem &quot;Bin/Packages/Nightly/*.nupkg&quot;
-</code></pre>
-<p><strong>Publishing Logic</strong>:</p>
-<ul>
-<li>Checks output for &quot;already exists&quot; or &quot;was not pushed&quot;</li>
-<li>Only marks as published if package was new</li>
-<li>Continues with remaining packages on individual failures</li>
-</ul>
-<p><strong>Required Secret</strong>: <code>NUGET_API_KEY</code></p>
-<p><strong>Output Variable</strong>: <code>packages_published</code> (true/false)</p>
-<h3 id="version-extraction">Version Extraction</h3>
-<p><strong>Methods</strong> (in order of preference):</p>
-<ol>
-<li><p><strong>Assembly Version</strong> (Primary)</p>
-<pre><code class="lang-powershell">$dllPath = Get-ChildItem &quot;Bin/Nightly/net48/Krypton.Toolkit.dll&quot;
-$assemblyVersion = [System.Reflection.AssemblyName]::GetAssemblyName($dllPath.FullName).Version
-</code></pre>
-</li>
-<li><p><strong>Project File</strong> (Fallback)</p>
-<pre><code class="lang-powershell">[xml]$projXml = Get-Content &quot;Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit.csproj&quot;
-$versionNode = $projXml.SelectSingleNode(&quot;//Version&quot;)
-</code></pre>
-</li>
-<li><p><strong>Hardcoded Fallback</strong></p>
-<ul>
-<li>Version: <code>100.25.1.1</code></li>
-<li>Tag: <code>v100.25.1.1-nightly</code></li>
+<li><code>workflow_dispatch</code> input <code>retention_check_days</code> (if numeric), else</li>
+<li>repository variable <code>NIGHTLY_RELEASE_RETENTION_CHECK_DAYS</code>, else</li>
+<li><code>0</code> (no extended window).</li>
 </ul>
 </li>
+<li>Cap retention at <strong>90</strong> days (warning if higher).</li>
+<li>If retention ≤ 0 → skip build (<code>change_window=none</code>).</li>
+<li>Else count commits on <code>alpha</code> in the last <em>N</em> days; if &gt; 0 → proceed (<code>change_window=retention_&lt;N&gt;d</code>).</li>
+</ul>
+</li>
+<li><strong>Skip</strong> — if still no commits, <code>has_changes=false</code> and <strong>Skip notification</strong> logs a notice; no build/publish.</li>
 </ol>
-<p><strong>Output Variables</strong>:</p>
+<p><strong>Use case for retention:</strong> After <code>NIGHTLY_DISABLED=true</code> for several days, set <code>NIGHTLY_RELEASE_RETENTION_CHECK_DAYS=7</code> (or pass <code>retention_check_days</code> on a manual run) so the next scheduled run can still publish if <code>alpha</code> had commits during that week.</p>
+<h3 id="net-sdk-setup">.NET SDK setup</h3>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>When</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Setup .NET (9 and 10)</td>
+<td>Kill switch on</td>
+<td><code>9.0.x</code>, <code>10.0.x</code></td>
+</tr>
+<tr>
+<td>Setup .NET 11 (stable)</td>
+<td>Kill switch on</td>
+<td><code>DOTNET_PREVIEW_SETUP_VERSION</code> or <code>11.0.x</code>; <code>continue-on-error: true</code></td>
+</tr>
+<tr>
+<td>Setup .NET 11 (preview fallback)</td>
+<td>Stable step failed</td>
+<td>Same version with <code>dotnet-quality: preview</code></td>
+</tr>
+<tr>
+<td>Setup .NET Preview</td>
+<td><code>USE_DOTNET_PREVIEW != 'false'</code></td>
+<td><code>DOTNET_PREVIEW_SETUP_VERSION</code>, preview quality</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pin-sdk-via-globaljson">Pin SDK via <code>global.json</code></h3>
+<p>Runs only when <code>has_changes == true</code>. Uses <code>USE_DOTNET_PREVIEW</code> and <code>DOTNET_PREVIEW_SDK_BAND</code>:</p>
 <ul>
-<li><code>version</code> - Version number (e.g., <code>100.25.1.1</code>)</li>
-<li><code>tag</code> - Git tag format (e.g., <code>v100.25.1.1-nightly</code>)</li>
+<li><strong><code>USE_DOTNET_PREVIEW=false</code>:</strong> Prefer latest installed <strong>11.0</strong>, then 10.0, then 9.0.</li>
+<li><strong>Preview enabled:</strong> Require <code>DOTNET_PREVIEW_SDK_BAND</code>; pin latest SDK matching that band, fallback to 11.0 then 10.0.</li>
 </ul>
-<h3 id="discord-notification">Discord Notification</h3>
-<p><strong>Trigger</strong>: Only if packages were published (<code>packages_published == 'True'</code>)</p>
-<p><strong>Required Secret</strong>: <code>DISCORD_WEBHOOK_NIGHTLY</code></p>
-<p><strong>Message Content</strong>:</p>
+<p>Writes <code>rollForward: latestFeature</code>.</p>
+<h3 id="webview2-prerelease">WebView2 (prerelease)</h3>
+<p>Nightly builds use the latest <strong>prerelease</strong> WebView2 package for <code>Krypton.Toolkit.Utilities</code>:</p>
+<ol>
+<li><strong>Resolve WebView2 version</strong> — NuGet search API (<code>prerelease=true</code>); fallback <code>1.0.3595.46</code>.</li>
+<li><strong>Restore WebView2 cache</strong> — <code>actions/cache/restore</code> under <code>${{ runner.temp }}/webview2</code>, key <code>webview2-&lt;os&gt;-&lt;version&gt;</code>.</li>
+<li><strong>Populate WebView2 (Preview)</strong> — Download/extract nupkg if needed; copy <code>Microsoft.Web.WebView2.Core.dll</code>, <code>Microsoft.Web.WebView2.WinForms.dll</code>, <code>WebView2Loader.dll</code> into <code>Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2</code>.</li>
+<li><strong>Save WebView2 cache</strong> — <code>actions/cache/save</code> on success.</li>
+</ol>
+<h3 id="build-and-pack">Build and pack</h3>
+<p><strong>Project:</strong> <code>Scripts/Build/nightly.proj</code><br>
+<strong>Properties:</strong> <code>Configuration=Nightly</code>, <code>Platform=Any CPU</code>, <code>UseArtifactsOutput=true</code><br>
+<strong>Parallelism:</strong> <code>msbuild /m</code></p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>MSBuild target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Restore</td>
+<td><code>/t:Restore</code></td>
+</tr>
+<tr>
+<td>Build Nightly</td>
+<td><code>/t:Build</code> with <code>/restore</code></td>
+</tr>
+<tr>
+<td>Pack Nightly</td>
+<td><code>/t:Pack</code> with <code>/restore</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="nuget-publishing">NuGet publishing</h3>
+<p><strong>Secret:</strong> <code>NUGET_API_KEY</code> (optional — missing key skips push with warning, <code>packages_published=false</code>).</p>
+<p><strong>Package search paths (both):</strong></p>
 <ul>
-<li>Title: &quot;🚀 Krypton Toolkit Nightly Release&quot;</li>
-<li>Version information</li>
-<li>NuGet package links</li>
-<li>Target frameworks list</li>
-<li>Changelog link</li>
+<li><code>artifacts/packages/Nightly/*.nupkg</code></li>
+<li><code>Bin/Packages/Nightly/*.nupkg</code></li>
 </ul>
-<p><strong>Color</strong>: <code>10181046</code> (purple/blue)</p>
-<p><strong>Packages Listed</strong>:</p>
+<p><strong>Guard:</strong> Dot-sources <code>Scripts/CI/StandardToolkitNupkgGuard.ps1</code> — <code>Test-StandardToolkitNupkgPushAllowed</code> per package. If any package fails the size gate, the step <strong>exits 1</strong>.</p>
+<p><strong>Variable:</strong> <code>STANDARD_TOOLKIT_MIN_NUPKG_MB</code> (passed to guard script).</p>
+<p><strong>Push:</strong> <code>dotnet nuget push</code> to <code>https://api.nuget.org/v3/index.json</code> with <code>--skip-duplicate</code>.</p>
+<p><strong>Output:</strong> <code>packages_published</code> — <code>true</code> only if at least one package was newly pushed (not duplicate).</p>
+<h3 id="version-extraction">Version extraction</h3>
+<p><strong>Step:</strong> <code>Get Version</code><br>
+<strong>Project (MSBuild fallback):</strong> <code>Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csproj</code><br>
+<strong>Configuration:</strong> <code>Nightly</code></p>
+<ol>
+<li><strong>Primary:</strong> <code>Krypton.Toolkit.dll</code> assembly version from (first hit):
 <ul>
-<li>Krypton.Toolkit.Nightly</li>
-<li>Krypton.Ribbon.Nightly</li>
-<li>Krypton.Navigator.Nightly</li>
-<li>Krypton.Workspace.Nightly</li>
-<li>Krypton.Docking.Nightly</li>
-<li>Krypton.Standard.Toolkit.Nightly</li>
+<li><code>artifacts/bin/Nightly/net48/Krypton.Toolkit.dll</code></li>
+<li><code>Bin/Nightly/net48/Krypton.Toolkit.dll</code></li>
+<li>Recursive search under <code>artifacts/bin</code>, <code>Bin/Nightly</code>, <code>Bin</code></li>
+</ul>
+</li>
+<li><strong>Fallback:</strong> <code>dotnet msbuild -getProperty:Version</code> on the csproj above.</li>
+<li><strong>Hard fallback:</strong> <code>100.25.1.1</code></li>
+</ol>
+<p>Accepted version format: <code>^[1-9]\d{2,}\.\d+\.\d+\.\d+$</code></p>
+<p><strong>Outputs:</strong> <code>version</code>, <code>tag</code> (e.g. <code>v100.25.1.1-nightly</code>)</p>
+<h3 id="discord-notification">Discord notification</h3>
+<p><strong>When:</strong> <code>packages_published == 'True'</code> and kill switch enabled.</p>
+<p><strong>Secret:</strong> <code>DISCORD_WEBHOOK_NIGHTLY</code> (optional — warning and skip if unset).</p>
+<p><strong>Content highlights:</strong></p>
+<ul>
+<li>Nightly package links (Toolkit, Ribbon, Navigator, Workspace, Docking, Standard.Toolkit)</li>
+<li>Target frameworks including <strong>.NET 11.0</strong></li>
+<li>Changelog: <code>alpha</code> branch path <code>Documents/Changelog/Changelog.md</code></li>
 </ul>
 <h2 id="configuration">Configuration</h2>
-<h3 id="required-secrets">Required Secrets</h3>
+<h3 id="secrets">Secrets</h3>
+<table>
+<thead>
+<tr>
+<th>Secret</th>
+<th>Required</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NUGET_API_KEY</code></td>
+<td>For publish</td>
+<td>nuget.org push</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_NIGHTLY</code></td>
+<td>No</td>
+<td>Release announcement</td>
+</tr>
+</tbody>
+</table>
+<h3 id="variables">Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>NIGHTLY_DISABLED</code></td>
+<td>Kill switch (<code>true</code> disables)</td>
+</tr>
+<tr>
+<td><code>NIGHTLY_RELEASE_RETENTION_CHECK_DAYS</code></td>
+<td>Extended lookback when 24h has no commits (max 90)</td>
+</tr>
+<tr>
+<td><code>USE_DOTNET_PREVIEW</code></td>
+<td><code>false</code> skips preview SDK step; affects <code>global.json</code> pinning</td>
+</tr>
+<tr>
+<td><code>DOTNET_PREVIEW_SETUP_VERSION</code></td>
+<td>.NET 11 install version (e.g. <code>11.0.x</code>)</td>
+</tr>
+<tr>
+<td><code>DOTNET_PREVIEW_SDK_BAND</code></td>
+<td>Required when preview enabled; band for <code>global.json</code></td>
+</tr>
+<tr>
+<td><code>STANDARD_TOOLKIT_MIN_NUPKG_MB</code></td>
+<td>Minimum package size gate for push</td>
+</tr>
+</tbody>
+</table>
+<h3 id="environment">Environment</h3>
 <ul>
-<li><p><strong><code>NUGET_API_KEY</code></strong>: API key for nuget.org publishing</p>
-<ul>
-<li>Get from: <a href="https://www.nuget.org/account/apikeys">https://www.nuget.org/account/apikeys</a></li>
-<li>Requires &quot;Push&quot; permission</li>
-</ul>
-</li>
-<li><p><strong><code>DISCORD_WEBHOOK_NIGHTLY</code></strong>: Discord webhook URL for notifications</p>
-<ul>
-<li>Create in Discord server settings</li>
-<li>Optional (workflow continues if not set)</li>
-</ul>
-</li>
-</ul>
-<h3 id="required-variables">Required Variables</h3>
-<ul>
-<li><strong><code>NIGHTLY_DISABLED</code></strong>: Kill switch variable
-<ul>
-<li>Set to <code>true</code> to disable workflow</li>
-<li>Set to <code>false</code> or leave unset to enable</li>
-</ul>
-</li>
-</ul>
-<h3 id="required-environments">Required Environments</h3>
-<ul>
-<li><strong><code>production</code></strong>: Protected environment
-<ul>
-<li>Requires approval before publishing</li>
-<li>Prevents accidental releases</li>
-<li>Configure in repository settings</li>
-</ul>
-</li>
+<li><strong><code>production</code></strong> — use GitHub environment protection so NuGet push requires approval when configured.</li>
 </ul>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="workflow-not-running">Workflow Not Running</h3>
-<p><strong>Possible Causes</strong>:</p>
-<ol>
-<li>Kill switch enabled (<code>NIGHTLY_DISABLED=true</code>)</li>
-<li>No changes in last 24 hours (expected behavior)</li>
-<li>Schedule not configured correctly</li>
-<li>Workflow file syntax errors</li>
-</ol>
-<p><strong>Solutions</strong>:</p>
-<ul>
-<li>Check variable <code>NIGHTLY_DISABLED</code> in repository settings</li>
-<li>Verify commits exist on <code>alpha</code> branch</li>
-<li>Review workflow schedule syntax</li>
-<li>Check Actions tab for errors</li>
-</ul>
-<h3 id="build-skipped-due-to-no-changes">Build Skipped Due to No Changes</h3>
-<p><strong>Expected Behavior</strong>: This is intentional</p>
-<p><strong>Reason</strong>: Saves resources when no new code exists</p>
-<p><strong>Solution</strong>: Make a commit to <code>alpha</code> branch or manually trigger workflow</p>
-<h3 id="nuget-publishing-failed">NuGet Publishing Failed</h3>
-<p><strong>Possible Causes</strong>:</p>
-<ol>
-<li>Missing or invalid <code>NUGET_API_KEY</code></li>
-<li>Package version already exists</li>
-<li>Network issues</li>
-<li>Invalid package format</li>
-</ol>
-<p><strong>Solutions</strong>:</p>
-<ul>
-<li>Verify API key is set and valid</li>
-<li>Check if package version already exists (this is handled gracefully)</li>
-<li>Review NuGet push logs</li>
-<li>Verify package files are valid</li>
-</ul>
-<h3 id="discord-notification-not-sent">Discord Notification Not Sent</h3>
-<p><strong>Possible Causes</strong>:</p>
-<ol>
-<li>No packages were published (expected if duplicates)</li>
-<li>Missing <code>DISCORD_WEBHOOK_NIGHTLY</code> secret</li>
-<li>Webhook URL invalid</li>
-<li>Discord API issues</li>
-</ol>
-<p><strong>Solutions</strong>:</p>
-<ul>
-<li>Check <code>packages_published</code> output in logs</li>
-<li>Verify webhook secret is set</li>
-<li>Test webhook URL manually</li>
-<li>Check Discord server settings</li>
-</ul>
-<h3 id="version-extraction-failed">Version Extraction Failed</h3>
-<p><strong>Behavior</strong>: Uses fallback version <code>100.25.1.1</code></p>
-<p><strong>Solutions</strong>:</p>
-<ul>
-<li>Verify build completed successfully</li>
-<li>Check if DLL exists at expected path</li>
-<li>Review version extraction logs</li>
-<li>Ensure project file has <code>&lt;Version&gt;</code> element</li>
-</ul>
-<h3 id="net-11-setup-failed">.NET 11 Setup Failed</h3>
-<p><strong>Expected Behavior</strong>: This is normal if .NET 11 is not yet available</p>
-<p><strong>Solution</strong>: Workflow continues with .NET 10 (this is intentional)</p>
-<h2 id="related-workflows">Related Workflows</h2>
-<ul>
-<li><strong>Build Workflow</strong>: Similar build process for CI</li>
-<li><strong>Release Workflow</strong>: Similar publishing process for stable releases</li>
-</ul>
-<h2 id="code-reference">Code Reference</h2>
-<p><strong>File</strong>: <code>.github/workflows/nightly.yml</code></p>
-<p><strong>Key Components</strong>:</p>
-<ul>
-<li>Event: <code>schedule</code> and <code>workflow_dispatch</code></li>
-<li>Environment: <code>production</code></li>
-<li>Concurrency: <code>nightly-alpha</code> group</li>
-<li>Kill Switch: <code>NIGHTLY_DISABLED</code> variable</li>
-</ul>
-<h2 id="maintenance-notes">Maintenance Notes</h2>
-<h3 id="updating-schedule">Updating Schedule</h3>
-<p>To change the build schedule:</p>
-<pre><code class="lang-yaml">schedule:
-  - cron: '0 0 * * *'  # Change cron expression
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow skipped immediately</td>
+<td><code>NIGHTLY_DISABLED=true</code></td>
+<td>Clear or set variable to <code>false</code></td>
+</tr>
+<tr>
+<td>“No commits in 24h” notice</td>
+<td>No <code>alpha</code> commits in 24h and retention 0</td>
+<td>Commit to <code>alpha</code>, set retention days, or manual dispatch</td>
+</tr>
+<tr>
+<td>Build steps skipped</td>
+<td><code>has_changes=false</code></td>
+<td>Same as above; check <code>change_window</code> in logs</td>
+</tr>
+<tr>
+<td>NuGet push skipped</td>
+<td>Missing <code>NUGET_API_KEY</code></td>
+<td>Add secret</td>
+</tr>
+<tr>
+<td>Job failed on push</td>
+<td>Nupkg size guard</td>
+<td>Check <code>STANDARD_TOOLKIT_MIN_NUPKG_MB</code> and package sizes</td>
+</tr>
+<tr>
+<td>Duplicate packages only</td>
+<td>Versions already on nuget.org</td>
+<td>Expected; <code>packages_published=false</code>, no Discord</td>
+</tr>
+<tr>
+<td>WebView2 warnings</td>
+<td>Cache corrupt / download fail</td>
+<td>Re-run; check logs under Populate WebView2</td>
+</tr>
+<tr>
+<td>Wrong repository/branch error</td>
+<td>Security steps</td>
+<td>Run only on allowed repo/ref</td>
+</tr>
+<tr>
+<td>Version fallback <code>100.25.1.1</code></td>
+<td>DLL/MSBuild version not found</td>
+<td>Inspect build outputs under <code>artifacts/bin</code> / <code>Bin</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="workflow-flow">Workflow flow</h2>
+<pre><code class="lang-text">Trigger (schedule 00:00 UTC or workflow_dispatch)
+    │
+    ├─&gt; Kill switch (NIGHTLY_DISABLED)
+    │       └─&gt; disabled → stop
+    │
+    ├─&gt; Verify repository + GITHUB_REF
+    │
+    ├─&gt; Checkout alpha (full history)
+    │
+    ├─&gt; Change detection
+    │       ├─&gt; commits in 24h → has_changes=true
+    │       ├─&gt; else retention window (var/input, max 90d)
+    │       └─&gt; else → skip notice, stop (no build)
+    │
+    ├─&gt; Setup .NET 9/10, 11 (stable/preview), optional preview SDK
+    ├─&gt; Pin global.json (if has_changes)
+    ├─&gt; MSBuild + NuGet + package cache
+    ├─&gt; WebView2 resolve → cache restore → populate → cache save
+    ├─&gt; msbuild nightly.proj: Restore → Build → Pack
+    ├─&gt; Push NuGet (guard + skip-duplicate) → packages_published
+    ├─&gt; Get version from assembly / MSBuild
+    └─&gt; Discord (if packages_published)
 </code></pre>
-<p><strong>Common Schedules</strong>:</p>
+<h2 id="maintenance">Maintenance</h2>
+<h3 id="change-schedule">Change schedule</h3>
+<p>Edit <code>on.schedule</code> cron in <code>.github/workflows/nightly.yml</code> (must be on the branch GitHub uses for scheduled workflows).</p>
+<h3 id="change-retention-default">Change retention default</h3>
+<p>Set repository variable <code>NIGHTLY_RELEASE_RETENTION_CHECK_DAYS</code> (integer, ≤ 90), or document manual <code>retention_check_days</code> for one-off runs.</p>
+<h3 id="align-documentation">Align documentation</h3>
+<p>When changing <code>nightly.yml</code>, update this file and <a href="../GitHubWorkflowIndex.html">GitHub Workflow Index</a> quick-reference row if triggers or kill switches change.</p>
+<h2 id="related-documentation">Related documentation</h2>
 <ul>
-<li><code>0 0 * * *</code> - Daily at midnight UTC</li>
-<li><code>0 */6 * * *</code> - Every 6 hours</li>
-<li><code>0 0 * * 1</code> - Weekly on Monday</li>
+<li><a href="BuildWorkflow.html">Build workflow</a> — PR CI (different trigger; shares SDK/WebView2 patterns on <code>alpha</code>)</li>
+<li><a href="ReleaseWorkflow.html">Release workflow</a> — <code>release-alpha</code> and shared <code>NIGHTLY_DISABLED</code></li>
+<li><a href="../Build%20System/KillSwitches.html">Kill switches</a></li>
+<li><a href="../Build%20System/BuildScripts.html">Build scripts</a> — <code>nightly.proj</code></li>
 </ul>
-<h3 id="modifying-change-detection-window">Modifying Change Detection Window</h3>
-<p>To change the 24-hour window:</p>
-<pre><code class="lang-powershell">$yesterday = (Get-Date).AddHours(-24).AddDays(-1)  # Change hours
-</code></pre>
-<h3 id="adding-new-packages">Adding New Packages</h3>
-<p>If new NuGet packages are added:</p>
-<ol>
-<li>Update Discord notification message</li>
-<li>Verify package paths in publishing step</li>
-<li>Test package creation in build step</li>
-</ol>
-<h3 id="kill-switch-management">Kill Switch Management</h3>
-<p><strong>To Disable</strong>:</p>
-<ol>
-<li>Go to Repository Settings → Secrets and variables → Actions</li>
-<li>Add/Edit variable: <code>NIGHTLY_DISABLED</code> = <code>true</code></li>
-<li>Save</li>
-</ol>
-<p><strong>To Re-enable</strong>:</p>
-<ol>
-<li>Set <code>NIGHTLY_DISABLED</code> = <code>false</code></li>
-<li>Or delete the variable</li>
-</ol>
-<h2 id="best-practices">Best Practices</h2>
-<ol>
-<li><strong>Monitor Builds</strong>: Check Actions tab regularly for failures</li>
-<li><strong>Version Management</strong>: Ensure version numbers increment correctly</li>
-<li><strong>Change Detection</strong>: Let the workflow skip when appropriate</li>
-<li><strong>Kill Switch</strong>: Use for maintenance or emergency stops</li>
-<li><strong>Notifications</strong>: Keep Discord webhook updated</li>
-<li><strong>Security</strong>: Never commit secrets or API keys</li>
-</ol>
-<h2 id="workflow-flow-diagram">Workflow Flow Diagram</h2>
-<pre><code class="lang-text">Schedule Trigger (00:00 UTC)
-    │
-    ├─&gt; Kill Switch Check
-    │   └─&gt; If disabled: Exit
-    │
-    ├─&gt; Security Verification
-    │   ├─&gt; Repository Check
-    │   └─&gt; Branch Check
-    │
-    ├─&gt; Checkout alpha Branch
-    │
-    ├─&gt; Change Detection (24h)
-    │   └─&gt; If no changes: Skip &amp; Exit
-    │
-    ├─&gt; Setup .NET SDKs (9, 10, 11)
-    │
-    ├─&gt; Setup Build Tools (MSBuild, NuGet)
-    │
-    ├─&gt; Restore &amp; Build
-    │
-    ├─&gt; Pack NuGet Packages
-    │
-    ├─&gt; Publish to nuget.org
-    │   └─&gt; If published: Continue
-    │   └─&gt; If skipped: Exit (no notification)
-    │
-    ├─&gt; Extract Version
-    │
-    └─&gt; Discord Notification (if published)
-</code></pre>
+<h2 id="code-reference">Code reference</h2>
+<p><strong>File:</strong> <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/nightly.yml">.github/workflows/nightly.yml</a></p>
 
 </article>
           </div>

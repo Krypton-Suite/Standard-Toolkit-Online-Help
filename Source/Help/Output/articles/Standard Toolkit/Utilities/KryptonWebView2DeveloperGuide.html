@@ -86,8 +86,8 @@
 </ol>
 <h2 id="quick-start">Quick Start</h2>
 <h3 id="basic-usage">Basic Usage</h3>
-<pre><code class="lang-csharp">using Krypton.Utilities;  // For KryptonWebView2
-using Krypton.Toolkit;     // For KryptonContextMenu and related types
+<pre><code class="lang-csharp">using Krypton.Toolkit.Utilities;  // For KryptonWebView2
+using Krypton.Toolkit;            // For KryptonContextMenu and related types
 
 // Create the control
 var webView = new KryptonWebView2();
@@ -128,7 +128,7 @@ webView.KryptonContextMenu = contextMenu;
 <li><strong>Rendering Pipeline</strong>: Double-buffered, optimized drawing</li>
 </ol>
 <h3 id="conditional-compilation">Conditional Compilation</h3>
-<p>The control is wrapped in <code>#if WEBVIEW2_AVAILABLE &amp;&amp; NET8_0_OR_GREATER</code> directives, ensuring it only compiles when WebView2 dependencies are available <strong>and</strong> the target framework is .NET 8.0 or greater.</p>
+<p>The control is wrapped in <code>#if WEBVIEW2_AVAILABLE</code> when bundled WebView2 assemblies are present under <code>Lib/WebView2</code>. Otherwise a stub control is compiled. This matches the <code>Krypton.Toolkit.Utilities</code> multi-target build ( .NET Framework 4.7.2+ and modern <code>-windows</code> TFMs).</p>
 <h2 id="api-reference">API Reference</h2>
 <h3 id="constructor">Constructor</h3>
 <h4 id="kryptonwebview2-1"><code>KryptonWebView2()</code></h4>
@@ -181,10 +181,10 @@ if (renderer != null)
 <h4 id="getresolvedpalette"><code>GetResolvedPalette()</code></h4>
 <pre><code class="lang-csharp">[Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public PaletteBase GetResolvedPalette()
+public PaletteBase? GetResolvedPalette()
 </code></pre>
 <p><strong>Description:</strong> Gets the resolved palette currently being used for rendering.</p>
-<p><strong>Returns:</strong> A <code>PaletteBase</code> instance representing the currently active palette.</p>
+<p><strong>Returns:</strong> A <code>PaletteBase</code> instance representing the currently active palette, or <code>null</code> if no palette has been assigned yet.</p>
 <h3 id="events">Events</h3>
 <h4 id="onglobalpalettechanged"><code>OnGlobalPaletteChanged</code></h4>
 <pre><code class="lang-csharp">protected virtual void OnGlobalPaletteChanged(object? sender, EventArgs e)
@@ -262,22 +262,63 @@ private void OnWebMessageReceived(object? sender, CoreWebView2WebMessageReceived
 }
 </code></pre>
 <h2 id="theming-integration">Theming Integration</h2>
-<h3 id="palette-system">Palette System</h3>
-<p>The control automatically integrates with Krypton's palette system:</p>
-<pre><code class="lang-csharp">// Global theme changes are automatically applied
-KryptonManager.GlobalPalette = PaletteOffice2013Blue;
+<h3 id="palette-system-and-state-properties">Palette system and State properties</h3>
+<p><code>KryptonWebView2</code> follows the same <strong>State###</strong> pattern as other Krypton controls (<code>KryptonRichTextBox</code>, <code>KryptonPanel</code>, etc.):</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StateCommon</code></td>
+<td>Shared back/content/border overrides</td>
+</tr>
+<tr>
+<td><code>StateNormal</code></td>
+<td>Enabled, unfocused</td>
+</tr>
+<tr>
+<td><code>StateActive</code></td>
+<td>Enabled, focused (<code>PaletteState.Tracking</code>)</td>
+</tr>
+<tr>
+<td><code>StateDisabled</code></td>
+<td><code>Enabled == false</code></td>
+</tr>
+<tr>
+<td><code>WebViewBackStyle</code></td>
+<td>Palette back style (default <code>PanelClient</code>)</td>
+</tr>
+<tr>
+<td><code>WebViewContentStyle</code></td>
+<td>Palette content style for foreground (default <code>InputControlStandalone</code>)</td>
+</tr>
+<tr>
+<td><code>AlwaysActive</code></td>
+<td>Keep active-state colors when unfocused</td>
+</tr>
+</tbody>
+</table>
+<p><code>BackColor</code>, <code>ForeColor</code>, and <code>DefaultBackgroundColor</code> are updated automatically from the resolved state. They are <strong>hidden in the Property Grid</strong>; use <strong>Visuals → State###</strong> instead.</p>
+<pre><code class="lang-csharp">// Global theme changes are applied automatically
+KryptonManager.GlobalPalette = KryptonManager.CurrentGlobalPalette;
 
-// The control will automatically update its appearance
+// Designer/code overrides
+webView.StateCommon.Back.Color1 = Color.Empty; // inherit from palette
+webView.StateActive.Content.ShortText.Color1 = Color.Navy;
 </code></pre>
-<h3 id="custom-theming">Custom Theming</h3>
-<pre><code class="lang-csharp">// Access the resolved palette
+<p>Colors refresh on global palette change, focus change, and after <code>EnsureCoreWebView2Async()</code> completes.</p>
+<h3 id="custom-theming-tool-strips-and-web-content">Custom theming (tool strips and web content)</h3>
+<pre><code class="lang-csharp">// Access the resolved palette (e.g. for injected CSS)
 var palette = webView.GetResolvedPalette();
 
 // Create custom tool strip renderer
 var renderer = webView.CreateToolStripRenderer();
 if (renderer != null)
 {
-    // Apply to custom tool strips
     myCustomToolStrip.Renderer = renderer;
 }
 </code></pre>

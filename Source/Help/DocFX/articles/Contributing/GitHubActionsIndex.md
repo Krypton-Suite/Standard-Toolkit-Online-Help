@@ -13,9 +13,28 @@ This directory contains comprehensive documentation for all GitHub Actions workf
 | Workflow | File | Purpose | Documentation |
 | --- | --- | --- | --- |
 | **Build** | `build.yml` | CI/CD validation and releases | [Build Workflow](Workflows/BuildWorkflow.md) |
+| **Build TestForm** | `build-testform.yml` | Validate TestForm sample build + resources | [Build TestForm Workflow](Workflows/BuildTestFormWorkflow.md) |
 | **Release** | `release.yml` | Multi-channel production releases | [Release Workflow](Workflows/ReleaseWorkflow.md) |
 | **Nightly** | `nightly.yml` | Scheduled nightly builds | [Nightly Workflow](Workflows/NightlyWorkflow.md) |
+| **Canary** | `canary.yml` | Standalone Canary branch publishing | [Canary Workflow](Workflows/CanaryWorkflow.md) |
 | **Canary LTS** | `canary-lts-release.yml` | Canary packages from V105-LTS | [Canary LTS Release Workflow](Workflows/CanaryLTSReleaseWorkflow.md) |
+| **Templates Release** | `templates-release.yml` | Publish VS template ZIP/VSIX assets | [Templates Release Workflow](Workflows/TemplatesReleaseWorkflow.md) |
+| **CodeQL Advanced** | `codeql.yml` | Security/quality static analysis | [CodeQL Workflow](Workflows/CodeQLWorkflow.md) |
+| **Auto-Assign PR Author** | `auto-assign-pr-author.yml` | Assign PR opener automatically | [Auto-Assign PR Author](Workflows/AutoAssignPRAuthorWorkflow.md) |
+| **Auto-Label Issue Areas** | `auto-label-issue-areas.yml` | Prefix issue titles + area labels | [Auto-Label Issue Areas](Workflows/AutoLabelIssueAreasWorkflow.md) |
+| **Auto-complete Linked Issues** | `auto-complete-issues.yml` | Close/label linked issues on merges | [Auto-complete Linked Issues](Workflows/AutoCompleteIssuesWorkflow.md) |
+| **Auto-label PR Backup** | `auto-label-pr-backup.yml` | Label backup automation PRs | [Auto-label PR Backup Workflow](Workflows/AutoLabelPRBackupWorkflow.md) |
+| **Alpha Backup Sync** | `alpha-backup-sync.yml` | Sync `alpha` into `alpha-backup` and optional backup repo push | [Alpha Backup Sync](AlphaBackupSync.md) |
+| **Repository Mirror** | `repo-mirror.yml` | Mirror major branches and tags to an external GitHub repo | [Repository Mirror](Workflows/RepositoryMirror.md) |
+| **Repository Restore from Mirror** | `repo-restore-from-mirror.yml` | Manual disaster recovery: restore branches/tags from mirror to source | [Repository Restore from Mirror](Workflows/RepositoryRestoreFromMirrorWorkflow.md) |
+| **Master merge guard** | `master-guard.yml` | Enforce `gold` / Dependabot → `master` PR sources | [Master merge guard](Workflows/MasterMergeGuardWorkflow.md) |
+| **Branch promotion guard** | `branch-promotion-guard.yml` | Enforce `alpha` → `canary` and `canary` → `gold` PR sources | [Branch promotion guard](Workflows/BranchPromotionGuardWorkflow.md) |
+| **PR branch policy** | `pr-branch-policy.yml` | Warn/fail on invalid PR base/head pairs and non-`.github/` `master` → downstream PRs | [PR branch policy](Workflows/PRBranchPolicyWorkflow.md) |
+| **Sync .github from master** | `sync-github-from-master.yml` | Open PRs copying only `.github/` from `master` to release lines (path checkout) | [Sync .github from master](Workflows/SyncGitHubFromMasterWorkflow.md) |
+
+**Branch policy overview:** [Branch policy and workflow hardening](BranchPolicyandWorkflowHardening.md) ([#3610](https://github.com/Krypton-Suite/Standard-Toolkit/issues/3610))
+
+**Branch promotion overview:** [Branch promotion policy](BranchPromotionPolicy.md)
 
 ---
 
@@ -93,28 +112,29 @@ Handles production releases across **four** branch-specific jobs in [`release.ym
 
 **File**: `.github/workflows/nightly.yml`
 
-Automated nightly builds with intelligent change detection.
+Automated **Nightly Release** from `alpha` with 24h change detection and optional retention lookback.
 
 **Key Features**:
 
 - ⏰ Scheduled execution (00:00 UTC daily)
-- 🔍 Change detection (checks for commits in last 24 hours)
-- 💰 Resource efficient (skips build when no changes)
-- 📦 Automatic NuGet publishing
-- 💬 Discord integration
-- 🔧 Manual triggering support
+- 🔍 Change detection (24h on `alpha`; optional `NIGHTLY_RELEASE_RETENTION_CHECK_DAYS` or dispatch input `retention_check_days`, max 90)
+- 🖥️ Runner `windows-2025-vs2026`; MSBuild via `Scripts/Build/nightly.proj`
+- 🌐 WebView2 prerelease resolve + Actions cache
+- 📦 NuGet push to nuget.org (`artifacts/packages/Nightly` and `Bin/Packages/Nightly`) with size guard
+- 💬 Discord when `packages_published=true`
+- 🔧 Kill switch `NIGHTLY_DISABLED`
 
 **Triggers**:
 
-- Scheduled: Daily at midnight UTC (`0 0 * * *`)
-- Manual: workflow_dispatch
+- Scheduled: `0 0 * * *` (UTC)
+- Manual: `workflow_dispatch` (optional `retention_check_days`)
 
 **Workflow Behavior**:
 
-- **With Changes**: Builds, packs, publishes to NuGet, sends Discord notification
-- **No Changes**: Skips all build steps, completes in ~2 minutes
+- **With changes** (`has_changes=true`): Toolchain, build, pack, push, version, optional Discord
+- **No changes**: Skip notice only; no build/publish steps
 
-**Target Branch**: alpha
+**Checkout / content branch:** `alpha` (security allows trigger ref `alpha`, `master`, or `main`)
 
 **Documentation**: [Full Nightly Workflow Documentation →](Workflows/NightlyWorkflow.md)
 
@@ -147,7 +167,7 @@ Automated nightly builds with intelligent change detection.
 **Best Practices**:
 
 - Document any workflow modifications
-- Keep all four workflow docs in sync
+- Keep workflow docs and indexes in sync
 - Update version numbers in documentation when workflows change
 
 ---
@@ -165,6 +185,10 @@ All secrets are configured at repository level (Settings → Secrets and variabl
 | `DISCORD_WEBHOOK_MASTER` | Release (**master** and **V105-LTS**) | Stable / V105-line announcements |
 | `DISCORD_WEBHOOK_CANARY` | Release (canary) | Canary announcements |
 | `DISCORD_WEBHOOK_NIGHTLY` | Nightly, Release (alpha-related) | Nightly / alpha channel announcements |
+| `MIRROR_REPO_TOKEN` | Repository Mirror, Repository Restore | Mirror: push branches/tags; Restore: read mirror (clone/fetch) |
+| `DISCORD_WEBHOOK_MIRROR` | Repository Mirror | Mirror success/failure notifications |
+| `DISCORD_WEBHOOK_RESTORE` | Repository Restore from Mirror | Restore success/failure notifications (optional) |
+| `BACKUP_REPO_TOKEN` | Alpha Backup Sync | Optional dated snapshot push to backup repo |
 
 **Documentation**: See individual workflow docs for detailed secret configuration.
 
@@ -185,12 +209,18 @@ All secrets are configured at repository level (Settings → Secrets and variabl
 ```plaintext
 Event: Pull Request
 ├─ Any Branch → Build Workflow → Validation Only
-└─ Result: Status check on PR
+├─ Target canary → Branch promotion guard (head must be alpha)
+├─ Target gold → Branch promotion guard (head must be canary)
+├─ Target master → Master merge guard (head must be gold or dependabot/*)
+└─ Result: Status checks on PR
 
-Event: Push to master
+Event: Push to master (after gold → master PR merge)
 ├─ Build Workflow → Build Job
 └─ Build Workflow → Release Job (GitHub release)
 └─ Release Workflow → release-master (NuGet + Discord)
+
+Event: Push to gold (after canary → gold PR merge)
+└─ Build Workflow → Build Job
 
 Event: Push to alpha
 └─ Release Workflow → release-alpha (NuGet + Discord)
@@ -205,6 +235,15 @@ Event: Push to V105-LTS
 
 Event: Cron Schedule (00:00 UTC)
 └─ Nightly Workflow → Check changes → Build if needed
+
+Event: Cron Schedule (02:00 UTC)
+└─ Repository Mirror → Sync branches + tags to MIRROR_REPO (if configured)
+
+Event: Push to major branch (master, gold, canary, alpha, V105-LTS, V85-LTS)
+└─ Repository Mirror → Full branch mirror to external repo
+
+Event: Manual Trigger (Repository Restore from Mirror)
+└─ Mirror → source restore (dry run default; new_branch or force_push)
 
 Event: Manual Trigger
 └─ Any workflow with workflow_dispatch
@@ -241,12 +280,16 @@ TFMs are driven by the solution and shared MSBuild props (`Directory.Build.props
 
 #### Create a Stable Release
 
-**Workflow**: [Release Workflow - Master](Workflows/ReleaseWorkflow.md#job-1-release-master)
+**Workflows**: [Branch promotion policy](BranchPromotionPolicy.md), [Release Workflow - Master](Workflows/ReleaseWorkflow.md#job-1-release-master)
 
-1. Update version in project files
-2. Commit to master branch
-3. Push to master
-4. Workflow creates NuGet packages, GitHub release, and Discord notification
+Stable releases reach `master` through the promotion chain, not by pushing feature branches directly to `master` (when repository rulesets are enabled).
+
+1. Promote changes through **`alpha` → `canary` → `gold`** (see [Branch promotion guard](Workflows/BranchPromotionGuardWorkflow.md)).
+2. Update version in project files on the promotion path as your process requires.
+3. Open a PR **`gold` → `master`** and merge when CI and [Master merge guard](Workflows/MasterMergeGuardWorkflow.md) pass.
+4. The merge push triggers **`release-master`**, which creates NuGet packages, a GitHub release, and a Discord notification.
+
+**Dependabot** may also open **`dependabot/*` → `master`** PRs for GitHub Actions updates; those are allowed by the master merge guard.
 
 #### Create an LTS-line release (V105)
 
@@ -267,10 +310,11 @@ TFMs are driven by the solution and shared MSBuild props (`Directory.Build.props
 
 **Workflow**: [Nightly Workflow](Workflows/NightlyWorkflow.md)
 
-1. Go to Actions → Nightly Release
-2. Click "Run workflow"
-3. Select alpha branch
-4. Click "Run workflow" button
+1. Go to Actions → **Nightly Release**
+2. Click **Run workflow**
+3. Select branch `alpha`, `master`, or `main` (job still builds from `alpha`)
+4. Optionally set **Retention check days** when testing lookback after a kill-switch pause
+5. Run workflow
 
 #### Check Workflow Status
 
@@ -287,6 +331,7 @@ TFMs are driven by the solution and shared MSBuild props (`Directory.Build.props
 
 | Issue | Likely Workflow | Solution Link |
 | --- | --- | --- |
+| Merge blocked / guard check failed | Branch promotion / master merge guards | [Branch promotion policy](BranchPromotionPolicy.md), [Master merge guard](Workflows/MasterMergeGuardWorkflow.md), [Branch promotion guard](Workflows/BranchPromotionGuardWorkflow.md) |
 | PR build fails | Build | [Build Troubleshooting](Workflows/BuildWorkflow.md#troubleshooting) |
 | NuGet push fails | Any release | [Release Troubleshooting](Workflows/ReleaseWorkflow.md#troubleshooting) |
 | Discord notification not sent | Release/Nightly | [Nightly Troubleshooting](Workflows/NightlyWorkflow.md#troubleshooting) |
@@ -337,9 +382,10 @@ TFMs are driven by the solution and shared MSBuild props (`Directory.Build.props
 
 1. **Version Discipline**: Increment versions consistently
 2. **Test Releases**: Validate in canary before stable
-3. **Communicate**: Announce releases to users
-4. **Monitor**: Watch for issues after releases
-5. **Document**: Update changelog with releases
+3. **Promotion chain**: Follow [Branch promotion policy](BranchPromotionPolicy.md) (`alpha` → `canary` → `gold` → `master`)
+4. **Communicate**: Announce releases to users
+5. **Monitor**: Watch for issues after releases
+6. **Document**: Update changelog with releases
 
 ### Security
 
@@ -416,6 +462,30 @@ When modifying workflows:
 - **Cross-Reference**: Link to related sections
 - **Version Numbers**: Update when workflows change
 
+### Workflow Documentation Template
+
+All files under `Documents/Contributing/Workflows` should include the same top-level structure to keep docs predictable and easy to scan.
+
+Required sections:
+
+1. `# <Workflow Name>`
+2. `## Quick Reference` (must include file path, workflow name, triggers, runner, and key permissions/actions)
+3. `## Overview`
+4. `## Purpose`
+5. `## Triggers` (or `## Trigger Conditions`)
+6. `## Permissions and Security` (or equivalent split sections)
+7. `## Troubleshooting`
+8. `## Related Documentation`
+
+Recommended additions (when applicable):
+
+- `## Inputs / Manual Dispatch`
+- `## Environment / Secrets / Variables`
+- `## Job Model` or `## Processing Pipeline`
+- `## Operational Runbook`
+- `## Known Constraints`
+- `## Maintenance Guidance`
+
 ---
 
 ## Support
@@ -445,5 +515,18 @@ We welcome feedback on workflow documentation:
 ### Documentation
 
 - [Build Workflow Documentation](Workflows/BuildWorkflow.md)
+- [Build TestForm Workflow Documentation](Workflows/BuildTestFormWorkflow.md)
 - [Release Workflow Documentation](Workflows/ReleaseWorkflow.md)
 - [Nightly Workflow Documentation](Workflows/NightlyWorkflow.md)
+- [Canary Workflow Documentation](Workflows/CanaryWorkflow.md)
+- [Canary LTS Release Workflow Documentation](Workflows/CanaryLTSReleaseWorkflow.md)
+- [Templates Release Workflow Documentation](Workflows/TemplatesReleaseWorkflow.md)
+- [CodeQL Workflow Documentation](Workflows/CodeQLWorkflow.md)
+- [Auto-complete Linked Issues Documentation](Workflows/AutoCompleteIssuesWorkflow.md)
+- [Repository Mirror Documentation](Workflows/RepositoryMirror.md)
+- [Repository Restore from Mirror](Workflows/RepositoryRestoreFromMirrorWorkflow.md)
+- [Repository backup and restore](Workflows/RepositoryBackupAndRestore.md) (umbrella / playbooks)
+- [Alpha Backup Sync Documentation](AlphaBackupSync.md)
+- [Branch promotion policy](BranchPromotionPolicy.md)
+- [Master merge guard documentation](Workflows/MasterMergeGuardWorkflow.md)
+- [Branch promotion guard documentation](Workflows/BranchPromotionGuardWorkflow.md)

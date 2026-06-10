@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Branch policy and workflow hardening | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Branch policy and workflow hardening | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="branch-policy-and-workflow-hardening">Branch policy and workflow hardening</h1>
+
+<p><strong>Audience:</strong> Maintainers and contributors who work with release branches, GitHub Actions, and pull requests in <a href="https://github.com/Krypton-Suite/Standard-Toolkit">Krypton-Suite/Standard-Toolkit</a>.</p>
+<p><strong>Tracking:</strong> <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3610">GitHub issue #3610</a></p>
+<p><strong>Quick reference:</strong> <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/BRANCH_POLICY.md">BRANCH_POLICY</a> (short operational cheat sheet)</p>
+<hr>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#background-and-goals">Background and goals</a></li>
+<li><a href="#branch-model-in-this-repository">Branch model in this repository</a></li>
+<li><a href="#architecture-overview">Architecture overview</a></li>
+<li><a href="#configuration-branch-policyjson">Configuration (<code>branch-policy.json</code>)</a></li>
+<li><a href="#validation-rules-detailed">Validation rules (detailed)</a></li>
+<li><a href="#pr-branch-policy-workflow">PR branch policy workflow</a></li>
+<li><a href="#sync-github-from-master-workflow">Sync <code>.github</code> from master workflow</a></li>
+<li><a href="#warn-then-fail-rollout">Warn-then-fail rollout</a></li>
+<li><a href="#day-to-day-workflows-for-developers">Day-to-day workflows for developers</a></li>
+<li><a href="#local-testing-and-debugging">Local testing and debugging</a></li>
+<li><a href="#operations-and-repository-settings">Operations and repository settings</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#extending-the-system">Extending the system</a></li>
+<li><a href="#related-automation">Related automation</a></li>
+<li><a href="#security-limitations-and-known-gaps">Security, limitations, and known gaps</a></li>
+<li><a href="#roadmap-and-optional-enhancements">Roadmap and optional enhancements</a></li>
+</ol>
+<hr>
+<h2 id="background-and-goals">Background and goals</h2>
+<p>The Standard Toolkit maintains <strong>several long-lived Git branches</strong> that represent different release channels (<code>master</code>, <code>alpha</code>, <code>canary</code>, LTS lines, version milestones, and backups). Product code on those branches <strong>intentionally diverges</strong>. <strong>CI and workflow definitions</strong> should still propagate from <code>master</code> in a controlled way—by <strong>copying the <code>.github/</code> tree</strong>, not by requiring every release line to contain <code>master</code> in Git history.</p>
+<p>Before this feature, teams could:</p>
+<ul>
+<li>Open a pull request from <code>master</code> into <code>alpha</code> (or another line) and accidentally merge <strong>the entire product tree</strong>, not just workflow fixes.</li>
+<li>Merge a release line into <code>master</code> when intending only to ship a hotfix through the wrong direction.</li>
+</ul>
+<p>This feature adds:</p>
+<table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enforce valid PR <strong>base/head</strong> pairings</td>
+<td><code>pr-branch-policy</code> workflow + <code>Invoke-BranchPolicyCheck.ps1</code></td>
+</tr>
+<tr>
+<td>Restrict <code>master</code> → downstream to <strong><code>.github/</code> only</strong></td>
+<td>Same validator + dedicated sync workflow</td>
+</tr>
+<tr>
+<td>Automate workflow propagation (file content)</td>
+<td><code>sync-github-from-master</code> workflow (<code>git checkout origin/master -- .github</code>)</td>
+</tr>
+<tr>
+<td><strong>Warn-then-fail</strong> rollout</td>
+<td>Repository variable <code>BRANCH_POLICY_ENFORCE</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Explicitly not enforced:</strong> that downstream branches are Git ancestors of <code>master</code>. That check was removed as brittle and unnecessary for file-based workflow sync.</p>
+<hr>
+<h2 id="branch-model-in-this-repository">Branch model in this repository</h2>
+<p>Exact promotion of product code is a <strong>maintainer process</strong>; the policy encodes <strong>Git and CI constraints</strong>, not the full release calendar.</p>
+<h3 id="typical-roles">Typical roles</h3>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Typical role</th>
+<th>Listed in policy as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master</code></td>
+<td>Stable / default branch; workflow source of truth for CI</td>
+<td>— (upstream)</td>
+</tr>
+<tr>
+<td><code>alpha</code></td>
+<td>Nightly / active development packages</td>
+<td>Downstream + sync target</td>
+</tr>
+<tr>
+<td><code>canary</code></td>
+<td>Pre-stable channel (<code>build.yml</code>, <code>release.yml</code>)</td>
+<td>Downstream + sync target</td>
+</tr>
+<tr>
+<td><code>Canary</code></td>
+<td>Separate workflow entry (<code>canary.yml</code> only)</td>
+<td>Downstream only</td>
+</tr>
+<tr>
+<td><code>gold</code></td>
+<td>Release line (mirrored, built)</td>
+<td>Downstream + sync target</td>
+</tr>
+<tr>
+<td><code>prerelease</code></td>
+<td>Staging before <code>alpha</code> (see <code>repo-mirror.yml</code> comments)</td>
+<td>Downstream + sync target</td>
+</tr>
+<tr>
+<td><code>V110</code>, <code>V105-LTS</code>, <code>V85-LTS</code></td>
+<td>Version / LTS lines</td>
+<td>Downstream + sync where configured</td>
+</tr>
+<tr>
+<td><code>alpha-backup</code></td>
+<td>Backup of <code>alpha</code> (automated)</td>
+<td>Downstream; special head rule</td>
+</tr>
+</tbody>
+</table>
+<h3 id="product-flow-vs-infrastructure-flow">Product flow vs infrastructure flow</h3>
+<pre><code class="lang-mermaid">flowchart TB
+  subgraph product[&quot;Product code (features, fixes, breaking changes)&quot;]
+    TB[Topic branch]
+    A[alpha]
+    C[canary / Canary]
+    G[gold / V110 / LTS]
+    M[master]
+    TB --&gt; A
+    A --&gt; C
+    C --&gt; G
+    G --&gt; M
+  end
+
+  subgraph infra[&quot;Infrastructure / CI only (.github/)&quot;]
+    MW[master .github/]
+    MW --&gt;|Sync .github from master| A
+    MW --&gt; C
+    MW --&gt; G
+    MW --&gt; LTS[V105-LTS / V85-LTS / ...]
+  end
+
+  subgraph backup[&quot;Backup&quot;]
+    A --&gt;|Alpha to Alpha-Backup Sync| AB[alpha-backup]
+  end
+</code></pre>
+<p><strong>Important:</strong> The diagram is <strong>logical</strong>, not a strict “every commit must follow this arrow” pipeline. The policy <strong>blocks</strong> some arrows in CI (e.g. <code>alpha</code> → <code>master</code> as a PR). Feature work may land on <code>alpha</code> or an LTS branch directly via topic branches.</p>
+<h3 id="workflow-alignment-vs-git-history">Workflow alignment vs Git history</h3>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>What it checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sync .github from master</strong></td>
+<td>Whether files under <code>.github/</code> on a release line match <code>master</code> (path checkout)</td>
+</tr>
+<tr>
+<td><strong>PR policy <code>master-github-downstream</code></strong></td>
+<td>Manual PRs with <code>head=master</code> may only change paths under <code>.github/</code></td>
+</tr>
+<tr>
+<td><strong>Git ancestry</strong></td>
+<td><strong>Not</strong> enforced — release lines may fork from <code>master</code> at different points</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="architecture-overview">Architecture overview</h2>
+<pre><code class="lang-text">.github/
+├── branch-policy.json              # Machine-readable branch lists (partially used today)
+├── BRANCH_POLICY.md                # Short maintainer cheat sheet
+├── scripts/
+│   └── Invoke-BranchPolicyCheck.ps1   # Rule engine (PowerShell)
+└── workflows/
+    ├── pr-branch-policy.yml        # Runs on pull_request
+    └── sync-github-from-master.yml # Opens .github-only sync PRs
+
+Documents/Developers/Contributing/
+└── BranchPolicyandWorkflowHardening.md   # This document
+</code></pre>
+<h3 id="execution-paths">Execution paths</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Workflow</th>
+<th>Runner</th>
+<th>Outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PR opened / updated (same repo)</td>
+<td><code>PR branch policy</code></td>
+<td><code>ubuntu-latest</code></td>
+<td>Warnings or failure</td>
+</tr>
+<tr>
+<td>Push to <code>master</code> under <code>.github/**</code></td>
+<td><code>Sync .github from master</code></td>
+<td><code>ubuntu-latest</code></td>
+<td>Force-push sync branch + open PR per target</td>
+</tr>
+<tr>
+<td>Monday 03:30 UTC</td>
+<td><code>Sync .github from master</code> (schedule)</td>
+<td>Same</td>
+<td>Reconcile drift</td>
+</tr>
+<tr>
+<td>Manual dispatch</td>
+<td>Either workflow</td>
+<td>Same</td>
+<td>On-demand</td>
+</tr>
+</tbody>
+</table>
+<p>Scheduled workflows use the workflow file <strong>as it exists on the repository default branch</strong> (<code>master</code>). Merge policy changes to <code>master</code> first so cron behaviour is predictable (same pattern as <code>repo-mirror.yml</code>).</p>
+<hr>
+<h2 id="configuration-branch-policyjson">Configuration (<code>branch-policy.json</code>)</h2>
+<p>Path: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/branch-policy.json">.github/branch-policy.json</a></p>
+<p>The JSON file is the <strong>single place to edit branch lists</strong> consumed by workflows. The <code>rules</code> array documents intent; <strong>enforcement logic today lives in</strong> <code>Invoke-BranchPolicyCheck.ps1</code> (keep script and JSON in sync when adding rules).</p>
+<h3 id="top-level-properties">Top-level properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Used by</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>downstreamBranches</code></td>
+<td>Validator (<code>master-github-downstream</code>)</td>
+<td>Bases that restrict <code>head == master</code> to <code>.github/</code> paths</td>
+</tr>
+<tr>
+<td><code>longLivedHeadBranches</code></td>
+<td>Validator (<code>no-long-lived-to-master</code>)</td>
+<td>Heads forbidden when <code>base == master</code></td>
+</tr>
+<tr>
+<td><code>syncGithubFromMasterTargets</code></td>
+<td><code>sync-github-from-master.yml</code></td>
+<td>Branches that receive automated sync PRs</td>
+</tr>
+<tr>
+<td><code>rules</code></td>
+<td>Documentation / future engine</td>
+<td>Human-readable rule definitions (ids match log tags)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-adding-a-new-lts-branch-v120-lts">Example: adding a new LTS branch <code>V120-LTS</code></h3>
+<ol>
+<li>Add to <code>downstreamBranches</code> and <code>syncGithubFromMasterTargets</code> as appropriate.</li>
+<li>If it is a long-lived line, add to <code>longLivedHeadBranches</code>.</li>
+<li>Update <code>Invoke-BranchPolicyCheck.ps1</code> only if you add a <strong>new rule type</strong> (not required for list membership).</li>
+<li>Update release workflows (<code>build.yml</code>, <code>release.yml</code>, mirrors) separately — policy does not register branches in MSBuild.</li>
+<li>Document in changelog and this file.</li>
+</ol>
+<h3 id="rules-array-reference"><code>rules</code> array (reference)</h3>
+<table>
+<thead>
+<tr>
+<th><code>id</code></th>
+<th>Enforced when</th>
+<th>Script behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master-github-downstream</code></td>
+<td><code>head == master</code> and <code>base</code> ∈ <code>downstreamBranches</code></td>
+<td>All PR files must start with <code>.github/</code></td>
+</tr>
+<tr>
+<td><code>alpha-to-alpha-backup</code></td>
+<td><code>base == alpha-backup</code></td>
+<td><code>head</code> must be <code>alpha</code></td>
+</tr>
+<tr>
+<td><code>no-long-lived-to-master</code></td>
+<td><code>base == master</code></td>
+<td><code>head</code> must not be in <code>longLivedHeadBranches</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="validation-rules-detailed">Validation rules (detailed)</h2>
+<h3 id="rule-master-github-downstream">Rule: <code>master-github-downstream</code></h3>
+<p><strong>Intent:</strong> Workflow, Actions, issue templates, and Dependabot config live under <code>.github/</code>. When bringing CI fixes from <code>master</code> to a release line, only that directory should change.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Triggers</strong></td>
+<td><code>head.ref == master</code> and <code>base.ref</code> is in <code>downstreamBranches</code></td>
+</tr>
+<tr>
+<td><strong>Pass</strong></td>
+<td>Every path in the PR file list starts with <code>.github/</code> (case-insensitive)</td>
+</tr>
+<tr>
+<td><strong>Fail message</strong></td>
+<td>Lists up to five paths outside <code>.github/</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Valid example</strong></p>
+<ul>
+<li>PR: <code>master</code> → <code>alpha</code></li>
+<li>Files: <code>.github/workflows/build.yml</code>, <code>.github/branch-policy.json</code></li>
+</ul>
+<p><strong>Invalid example</strong></p>
+<ul>
+<li>PR: <code>master</code> → <code>alpha</code></li>
+<li>Files: <code>.github/workflows/build.yml</code>, <code>Source/Krypton.Toolkit/Foo.cs</code></li>
+</ul>
+<p><strong>Remediation:</strong> Use [Sync <code>.github</code> from master<code>](#sync-github-from-master-workflow) or remove non-</code>.github` commits from the PR.</p>
+<p><strong>Edge cases</strong></p>
+<ul>
+<li>Empty file list: passes path check (no files to violate).</li>
+<li>Renames <strong>from</strong> outside <code>.github/</code> <strong>to</strong> inside still appear in <code>pulls.listFiles</code> — review carefully.</li>
+<li>Changes to <code>.github</code> at repo root only; <code>.gitattributes</code> in root is <strong>not</strong> allowed on this PR type.</li>
+</ul>
+<hr>
+<h3 id="rule-alpha-to-alpha-backup">Rule: <code>alpha-to-alpha-backup</code></h3>
+<p><strong>Intent:</strong> <code>alpha-backup</code> is maintained only from <code>alpha</code> (see <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/alpha-backup-sync.yml">Alpha to Alpha-Backup Sync</a>).</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Triggers</strong></td>
+<td><code>base.ref == alpha-backup</code></td>
+</tr>
+<tr>
+<td><strong>Pass</strong></td>
+<td><code>head.ref == alpha</code></td>
+</tr>
+<tr>
+<td><strong>Typical valid PR</strong></td>
+<td><code>alpha</code> → <code>alpha-backup</code> (often automated)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Invalid example</strong></p>
+<ul>
+<li><code>sync/github-from-master-alpha</code> → <code>alpha-backup</code> (wrong head)</li>
+</ul>
+<hr>
+<h3 id="rule-no-long-lived-to-master">Rule: <code>no-long-lived-to-master</code></h3>
+<p><strong>Intent:</strong> Stable <code>master</code> must not receive direct PRs from other <strong>release lines</strong> (accidental “merge alpha into master”).</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Triggers</strong></td>
+<td><code>base.ref == master</code> and <code>head.ref</code> ∈ <code>longLivedHeadBranches</code></td>
+</tr>
+<tr>
+<td><strong>Pass</strong></td>
+<td>Topic branches (e.g. <code>feature/1234-fix</code>, <code>bugfix/3618-canary-lts</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Invalid examples</strong></p>
+<ul>
+<li><code>alpha</code> → <code>master</code></li>
+<li><code>V105-LTS</code> → <code>master</code></li>
+</ul>
+<p><strong>Valid examples</strong></p>
+<ul>
+<li><code>feature/v110-theme</code> → <code>master</code></li>
+<li><code>dependabot/nuget/...</code> → <code>master</code> (head not in long-lived list)</li>
+</ul>
+<p><strong>Note:</strong> <code>main</code> is listed for forks or renames but is not the default branch here.</p>
+<hr>
+<h2 id="pr-branch-policy-workflow">PR branch policy workflow</h2>
+<p>File: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/pr-branch-policy.yml">.github/workflows/pr-branch-policy.yml</a></p>
+<h3 id="triggers">Triggers</h3>
+<pre><code class="lang-yaml">on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+</code></pre>
+<p>Re-runs on every push to the PR branch (<code>synchronize</code>).</p>
+<h3 id="job-gating">Job gating</h3>
+<pre><code class="lang-yaml">if: github.event.pull_request.head.repo.full_name == github.repository
+</code></pre>
+<p><strong>Fork PRs are skipped entirely.</strong> External contributors do not get policy feedback from this job; maintainers rely on review for forks.</p>
+<h3 id="steps">Steps</h3>
+<ol>
+<li><strong>Kill switch</strong> — <code>BRANCH_POLICY_DISABLED=true</code> skips all steps.</li>
+<li><strong>Checkout</strong> — <code>fetch-depth: 0</code>, default ref = PR <strong>merge commit</strong> (<code>refs/pull/&lt;n&gt;/merge</code>).</li>
+<li><strong>List changed files</strong> — GitHub API <code>pulls.listFiles</code> with pagination (100 per page).</li>
+<li><strong>Run script</strong> — passes <code>base.ref</code>, <code>head.ref</code>, file paths, <code>vars.BRANCH_POLICY_ENFORCE</code>.</li>
+</ol>
+<h3 id="permissions">Permissions</h3>
+<pre><code class="lang-yaml">permissions:
+  contents: read
+  pull-requests: read
+</code></pre>
+<p>No write access; safe for same-repo PRs without <code>pull_request_target</code>.</p>
+<h3 id="github-actions-annotations">GitHub Actions annotations</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Annotation</th>
+<th>Job result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Warn</td>
+<td><code>::warning::[rule-id] message</code></td>
+<td>Success (exit 0)</td>
+</tr>
+<tr>
+<td>Enforce</td>
+<td><code>::error::[rule-id] message</code></td>
+<td>Failure (exit 1)</td>
+</tr>
+<tr>
+<td>Pass</td>
+<td><code>Branch policy check passed.</code></td>
+<td>Success</td>
+</tr>
+</tbody>
+</table>
+<p>Also emits <code>::notice::</code> when warnings occurred in warn-only mode.</p>
+<hr>
+<h2 id="sync-github-from-master-workflow">Sync <code>.github</code> from master workflow</h2>
+<p>File: <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/sync-github-from-master.yml">.github/workflows/sync-github-from-master.yml</a></p>
+<h3 id="triggers-1">Triggers</h3>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>push</code></td>
+<td>Branch <code>master</code>, paths <code>.github/**</code></td>
+</tr>
+<tr>
+<td><code>schedule</code></td>
+<td><code>30 3 * * 1</code> (Monday 03:30 UTC)</td>
+</tr>
+<tr>
+<td><code>workflow_dispatch</code></td>
+<td>Manual full run</td>
+</tr>
+</tbody>
+</table>
+<h3 id="algorithm-per-target-branch">Algorithm (per target branch)</h3>
+<ol>
+<li>Confirm branch exists (<code>repos.getBranch</code>); skip with log if 404.</li>
+<li><code>syncBranch = sync/github-from-master-&lt;sanitized-target&gt;</code> (lowercase, non-alphanumeric → <code>-</code>).</li>
+<li><code>git checkout -B $syncBranch origin/$target</code></li>
+<li><code>git checkout origin/master -- .github</code> (overwrites <code>.github</code> tree from <code>master</code> only).</li>
+<li>If porcelain empty → <strong>noop</strong>.</li>
+<li>Commit <code>chore(ci): sync .github from master into &lt;target&gt;</code></li>
+<li><strong>Force-push</strong> <code>syncBranch</code> (branch is automation-only).</li>
+<li>If open PR <code>head=syncBranch</code>, <code>base=target</code> exists → skip create.</li>
+<li>Else create PR, label <code>chore:workflow-sync</code> if label exists.</li>
+</ol>
+<h3 id="permissions-1">Permissions</h3>
+<pre><code class="lang-yaml">permissions:
+  contents: write
+  pull-requests: write
+</code></pre>
+<p>Uses <code>GITHUB_TOKEN</code>; requires Actions write and contents write (default for <code>GITHUB_TOKEN</code> in repo settings).</p>
+<h3 id="security">Security</h3>
+<p>Hard-coded repository check: only <code>Krypton-Suite/Standard-Toolkit</code>.</p>
+<h3 id="interaction-with-pr-policy">Interaction with PR policy</h3>
+<p>Sync PRs use <strong>head</strong> <code>sync/github-from-master-*</code>, not <code>master</code>, so:</p>
+<ul>
+<li><code>master-github-downstream</code> does <strong>not</strong> apply to the head name <code>master</code>.</li>
+<li>Files changed are only under <code>.github/</code> by construction.</li>
+<li>No Git ancestry requirement on the base branch — only the resulting <code>.github/</code> tree is updated on the sync branch.</li>
+</ul>
+<hr>
+<h2 id="warn-then-fail-rollout">Warn-then-fail rollout</h2>
+<h3 id="phase-1--warn-only-default-after-merge">Phase 1 — Warn only (default after merge)</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BRANCH_POLICY_ENFORCE</code></td>
+<td>unset or <code>false</code></td>
+</tr>
+<tr>
+<td><code>BRANCH_POLICY_DISABLED</code></td>
+<td>unset</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>CI shows yellow annotations.</li>
+<li>PRs can still merge if other checks pass.</li>
+<li>Fix invalid PR pairings and manual <code>master</code> → downstream PRs that include product paths.</li>
+</ul>
+<h3 id="phase-2--enforce">Phase 2 — Enforce</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BRANCH_POLICY_ENFORCE</code></td>
+<td><code>true</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Also required:</strong></p>
+<ol>
+<li>GitHub <strong>Settings → Rules → Rulesets</strong> (or branch protection): require status check <strong>PR branch policy</strong> / job name <code>policy</code>.</li>
+<li>Communicate to contributors (link this doc).</li>
+</ol>
+<h3 id="kill-switches-incidents">Kill switches (incidents)</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BRANCH_POLICY_DISABLED=true</code></td>
+<td>Stop PR validation</td>
+</tr>
+<tr>
+<td><code>SYNC_GITHUB_FROM_MASTER_DISABLED=true</code></td>
+<td>Stop automated sync PRs</td>
+</tr>
+</tbody>
+</table>
+<p>Set under <strong>Settings → Secrets and variables → Actions → Variables</strong>.</p>
+<hr>
+<h2 id="day-to-day-workflows-for-developers">Day-to-day workflows for developers</h2>
+<h3 id="i-fixed-ci-only-on-master-and-need-it-on-alpha">I fixed CI only on <code>master</code> and need it on <code>alpha</code></h3>
+<ol>
+<li>Merge the fix to <code>master</code> (or push to <code>master</code>).</li>
+<li>Wait for <strong>Sync .github from master</strong> (push under <code>.github/</code>) or run workflow manually.</li>
+<li>Review and merge the generated PR into <code>alpha</code>.</li>
+<li>Do <strong>not</strong> open <code>master</code> → <code>alpha</code> with <code>Source/</code> changes.</li>
+</ol>
+<h3 id="i-am-shipping-a-feature-to-alpha">I am shipping a feature to <code>alpha</code></h3>
+<ol>
+<li>Branch from <code>alpha</code> (or rebase onto latest <code>alpha</code>).</li>
+<li>Open PR: <code>your-branch</code> → <code>alpha</code>.</li>
+<li>If only CI/workflows drifted, merge a <strong>Sync .github from master</strong> PR — no need to merge full <code>master</code> into <code>alpha</code> for policy.</li>
+</ol>
+<h3 id="product-integration-with-master-optional-maintainer-choice">Product integration with <code>master</code> (optional, maintainer choice)</h3>
+<p>Policy does <strong>not</strong> require merging <code>master</code> into release lines. When you <strong>choose</strong> to integrate product changes from <code>master</code>, use a normal merge or a topic branch PR into the release line — not a raw <code>master</code> → <code>alpha</code> PR that mixes <code>Source/</code> with <code>.github/</code>.</p>
+<h3 id="automated-sync-pr-keeps-reopening">Automated sync PR keeps reopening</h3>
+<ul>
+<li>Expected if <code>master</code> <code>.github/</code> keeps changing and target diverges.</li>
+<li>Merge or close stale sync PRs; only one open PR per target is created.</li>
+</ul>
+<hr>
+<h2 id="local-testing-and-debugging">Local testing and debugging</h2>
+<h3 id="run-the-validator-script">Run the validator script</h3>
+<p>From any clone (no network required for the remaining rules):</p>
+<pre><code class="lang-powershell">$repoRoot = 'Z:\Development\Krypton\Standard-Toolkit'  # adjust
+$policy = Join-Path $repoRoot '.github\branch-policy.json'
+
+# Warn mode (exit 0 with violations)
+&amp; (Join-Path $repoRoot '.github\scripts\Invoke-BranchPolicyCheck.ps1') `
+  -BaseRef 'alpha' `
+  -HeadRef 'master' `
+  -ChangedFiles @('.github/workflows/foo.yml', 'Source/Bad.cs') `
+  -PolicyPath $policy `
+  -Enforce 'false' `
+  -Repository 'Krypton-Suite/Standard-Toolkit'
+
+# Enforce mode (exit 1 with violations)
+# ... -Enforce 'true' ...
+</code></pre>
+<h3 id="simulate-path-only-pass">Simulate path-only pass</h3>
+<pre><code class="lang-powershell">-ChangedFiles @('.github/workflows/build.yml')
+</code></pre>
+<h3 id="test-in-actions-without-merging">Test in Actions without merging</h3>
+<ol>
+<li>Push branch to fork or test repo with copied <code>.github</code> workflows.</li>
+<li>Open PR and inspect <strong>PR branch policy</strong> job log.</li>
+<li>Toggle <code>BRANCH_POLICY_ENFORCE</code> on a test org repo first.</li>
+</ol>
+<hr>
+<h2 id="operations-and-repository-settings">Operations and repository settings</h2>
+<h3 id="recommended-labels">Recommended labels</h3>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>chore:workflow-sync</code></td>
+<td>Automated <code>.github</code> sync PRs (optional; workflow logs warning if missing)</td>
+</tr>
+<tr>
+<td><code>chore:automatic-backup</code></td>
+<td>Used by alpha-backup automation (separate feature)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="repository-variables-checklist">Repository variables checklist</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>When to set</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BRANCH_POLICY_ENFORCE</code></td>
+<td>After warn-only bake-in period</td>
+</tr>
+<tr>
+<td><code>BRANCH_POLICY_DISABLED</code></td>
+<td>Incident bypass</td>
+</tr>
+<tr>
+<td><code>SYNC_GITHUB_FROM_MASTER_DISABLED</code></td>
+<td>Disable sync automation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="required-checks-after-enforce">Required checks (after enforce)</h3>
+<p>Add to rulesets protecting <code>master</code>, <code>alpha</code>, <code>canary</code>, LTS branches as appropriate:</p>
+<ul>
+<li><strong>PR branch policy</strong> (job <code>policy</code> in workflow <code>PR branch policy</code>)</li>
+</ul>
+<p>Existing checks (<code>Build</code>, etc.) remain independent.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="policy-job-did-not-run">Policy job did not run</h3>
+<table>
+<thead>
+<tr>
+<th>Cause</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fork PR</td>
+<td>Expected; skipped</td>
+</tr>
+<tr>
+<td><code>BRANCH_POLICY_DISABLED=true</code></td>
+<td>Clear variable</td>
+</tr>
+<tr>
+<td>Workflow not on default branch yet</td>
+<td>Merge workflow to <code>master</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="sync-workflow-did-not-open-pr">Sync workflow did not open PR</h3>
+<table>
+<thead>
+<tr>
+<th>Cause</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.github</code> already identical</td>
+<td>No-op in logs</td>
+</tr>
+<tr>
+<td>Target branch missing</td>
+<td>Add branch or remove from <code>syncGithubFromMasterTargets</code></td>
+</tr>
+<tr>
+<td><code>SYNC_GITHUB_FROM_MASTER_DISABLED=true</code></td>
+<td>Clear variable</td>
+</tr>
+<tr>
+<td>Open PR already exists</td>
+<td>Merge or close existing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="canary-vs-canary-confusion"><code>canary</code> vs <code>Canary</code> confusion</h3>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Workflows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>canary</code></td>
+<td><code>build.yml</code>, <code>release.yml</code>, sync target</td>
+</tr>
+<tr>
+<td><code>Canary</code></td>
+<td><code>canary.yml</code> only</td>
+</tr>
+</tbody>
+</table>
+<p>Policy lists both as downstream. <strong>Consolidating to one branch name</strong> is recommended long-term but is a separate migration (update workflows, retarget PRs, delete obsolete branch).</p>
+<h3 id="product-vs-github-on-release-lines">Product vs <code>.github</code> on release lines</h3>
+<p>Sync PRs align <strong>only</strong> <code>.github/</code> from <code>master</code>. They do not update <code>Source/</code> or other product paths. Integrating product code from <code>master</code> remains a separate maintainer decision and is <strong>not</strong> validated by branch policy.</p>
+<hr>
+<h2 id="extending-the-system">Extending the system</h2>
+<h3 id="new-rule-type-example-forbid-gold--alpha">New rule type (example: forbid <code>gold</code> → <code>alpha</code>)</h3>
+<ol>
+<li>Implement in <code>Invoke-BranchPolicyCheck.ps1</code> with a distinct <code>RuleId</code>.</li>
+<li>Document in <code>branch-policy.json</code> <code>rules</code> array.</li>
+<li>Add unit-style local tests (script invocations).</li>
+<li>Update this document and <code>BRANCH_POLICY.md</code>.</li>
+<li>Start in warn-only mode; enforce later.</li>
+</ol>
+<h3 id="driving-rules-purely-from-json-future">Driving rules purely from JSON (future)</h3>
+<p>Today lists are JSON-driven; branching logic is PowerShell. A future refactor could interpret <code>rules[]</code> generically to avoid script edits for list-only changes.</p>
+<hr>
+<h2 id="related-automation">Related automation</h2>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Relationship</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/alpha-backup-sync.yml">alpha-backup-sync.yml</a></td>
+<td><code>alpha</code> → <code>alpha-backup</code>; complements <code>alpha-to-alpha-backup</code> rule</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/auto-label-pr-backup.yml">auto-label-pr-backup.yml</a></td>
+<td>Labels PRs touching backup workflow</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/repo-mirror.yml">repo-mirror.yml</a></td>
+<td>Mirrors branches to external repo; branch list should stay aligned with policy</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/repo-restore-from-mirror.yml">repo-restore-from-mirror.yml</a></td>
+<td>Manual disaster recovery from mirror; see <a href="Workflows/RepositoryRestoreFromMirrorWorkflow.html">Repository Restore from Mirror</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/build.yml">build.yml</a></td>
+<td>Independent compile check; does not validate branch pairs</td>
+</tr>
+<tr>
+<td>Release / nightly / canary workflows</td>
+<td>Per-branch kill switches; unaffected by policy except via shared <code>.github</code> files</td>
+</tr>
+</tbody>
+</table>
+<p>When editing <code>.github/workflows</code> on <code>master</code>, expect <strong>sync PRs</strong> to downstream lines after merge.</p>
+<hr>
+<h2 id="security-limitations-and-known-gaps">Security, limitations, and known gaps</h2>
+<h3 id="security-1">Security</h3>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pull_request</code> vs <code>pull_request_target</code></td>
+<td>Uses <code>pull_request</code> + read-only permissions; no untrusted code execution from fork write paths</td>
+</tr>
+<tr>
+<td>Forks</td>
+<td>No policy job; malicious forks not blocked by this feature</td>
+</tr>
+<tr>
+<td>Sync workflow</td>
+<td>Force-pushes bot branches; branch names are predictable (<code>sync/github-from-master-*</code>)</td>
+</tr>
+<tr>
+<td>Token</td>
+<td><code>GITHUB_TOKEN</code> scoped to repository</td>
+</tr>
+</tbody>
+</table>
+<h3 id="limitations">Limitations</h3>
+<table>
+<thead>
+<tr>
+<th>Limitation</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>File list API</td>
+<td>Max pagination handled; extremely large PRs rare</td>
+</tr>
+<tr>
+<td>Empty PRs</td>
+<td>Path rules pass when no files listed</td>
+</tr>
+<tr>
+<td><code>rules</code> in JSON</td>
+<td>Not fully interpreted by engine yet</td>
+</tr>
+<tr>
+<td><code>alpha-backup</code></td>
+<td>In <code>downstreamBranches</code> but not in <code>syncGithubFromMasterTargets</code> (backup uses <code>alpha</code> content)</td>
+</tr>
+<tr>
+<td>Branch renames</td>
+<td>Must update JSON + script + all workflows manually</td>
+</tr>
+</tbody>
+</table>
+<h2 id="roadmap-and-optional-enhancements">Roadmap and optional enhancements</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gold</code> / <code>prerelease</code> in sync targets</td>
+<td><strong>Done</strong></td>
+<td>Listed in <code>syncGithubFromMasterTargets</code> in <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/branch-policy.json">branch-policy.json</a>; same set as <code>repo-mirror.yml</code> major lines (except <code>alpha-backup</code>).</td>
+</tr>
+<tr>
+<td>Master ancestry on PR bases</td>
+<td><strong>Removed</strong></td>
+<td>Was brittle; workflow sync uses file content, not SHA ancestry.</td>
+</tr>
+<tr>
+<td>Unify <code>canary</code> and <code>Canary</code></td>
+<td><strong>Planned</strong></td>
+<td>Maintainer migration — <a href="CanaryBranchUnification.html">CanaryBranchUnification.md</a>.</td>
+</tr>
+<tr>
+<td>Required check only on release branches</td>
+<td><strong>Configure in GitHub</strong></td>
+<td>See below; no workflow change required for the common setup.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="required-check-only-on-release-branches-not-topic-prs--master">Required check only on release branches (not topic PRs → <code>master</code>)</h3>
+<p><strong>Goal:</strong> Feature PRs into <code>master</code> must pass <strong>Build</strong>, but <strong>PR branch policy</strong> should not block merges on <code>master</code> rulesets.</p>
+<p><strong>Recommended approach (GitHub rulesets):</strong></p>
+<ol>
+<li>On rulesets for <strong><code>alpha</code></strong>, <strong><code>canary</code></strong>, <strong><code>gold</code></strong>, <strong>LTS</strong>, etc.: add required status check <strong>PR branch policy</strong> (after <code>BRANCH_POLICY_ENFORCE=true</code>).</li>
+<li>On the <strong><code>master</code></strong> ruleset: do <strong>not</strong> require <strong>PR branch policy</strong>; keep <strong>Build</strong> and other existing checks.</li>
+</ol>
+<p>The workflow still runs on PRs targeting <code>master</code> (so <code>alpha</code> → <code>master</code> is reported in warn/enforce mode), but contributors merging <code>feature/xyz</code> → <code>master</code> are not blocked if policy is warn-only or if the check is not required on <code>master</code>.</p>
+<p><strong>Optional stricter variant:</strong> Set variable <code>BRANCH_POLICY_SKIP_WHEN_BASE_IS_MASTER=true</code> to skip the policy job entirely when the PR base is <code>master</code> (not implemented by default — you would lose automated blocking of release-line → <code>master</code> PRs unless enforced elsewhere).</p>
+<hr>
+<h2 id="file-index">File index</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/branch-policy.json">branch-policy.json</a></td>
+<td>Branch lists and rule metadata</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/BRANCH_POLICY.md">BRANCH_POLICY.md</a></td>
+<td>Short operational reference</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/scripts/Invoke-BranchPolicyCheck.ps1">Invoke-BranchPolicyCheck.ps1</a></td>
+<td>Validation implementation</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/pr-branch-policy.yml">pr-branch-policy.yml</a></td>
+<td>PR CI entry point</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/sync-github-from-master.yml">sync-github-from-master.yml</a></td>
+<td>Automated <code>.github</code> propagation (path checkout)</td>
+</tr>
+<tr>
+<td><a href="CanaryBranchUnification.html">CanaryBranchUnification.md</a></td>
+<td><code>canary</code> / <code>Canary</code> migration checklist</td>
+</tr>
+</tbody>
+</table>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

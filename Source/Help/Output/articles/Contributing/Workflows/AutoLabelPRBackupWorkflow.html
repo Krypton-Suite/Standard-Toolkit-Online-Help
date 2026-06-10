@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Auto-label PR Backup Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Auto-label PR Backup Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="auto-label-pr-backup-workflow">Auto-label PR Backup Workflow</h1>
+
+<h2 id="quick-reference">Quick Reference</h2>
+<ul>
+<li>Workflow file: <code>.github/workflows/auto-label-pr-backup.yml</code></li>
+<li>Workflow name: <code>Auto-label PR backup workflow</code></li>
+<li>Trigger: <code>pull_request</code> (<code>opened</code>, <code>synchronize</code>, <code>reopened</code>)</li>
+<li>Runner: <code>ubuntu-latest</code></li>
+<li>Permissions: <code>pull-requests: write</code></li>
+<li>Primary action: <code>actions/github-script@v9</code></li>
+</ul>
+<h2 id="overview">Overview</h2>
+<p>The <code>auto-label-pr-backup.yml</code> workflow adds a maintenance label to backup-sync pull requests when they modify the backup workflow definition.</p>
+<ul>
+<li>Workflow file: <code>.github/workflows/auto-label-pr-backup.yml</code></li>
+<li>Workflow name: <code>Auto-label PR backup workflow</code></li>
+<li>Runner: <code>ubuntu-latest</code></li>
+</ul>
+<h2 id="purpose">Purpose</h2>
+<ul>
+<li>Highlight backup automation PRs that touch <code>.github/workflows/alpha-backup-sync.yml</code>.</li>
+<li>Improve triage visibility for automation-related changes.</li>
+</ul>
+<h2 id="trigger-conditions">Trigger Conditions</h2>
+<p>Event:</p>
+<ul>
+<li><code>pull_request</code> with types: <code>opened</code>, <code>synchronize</code>, <code>reopened</code></li>
+</ul>
+<p>Base branch filter:</p>
+<ul>
+<li><code>alpha-backup</code></li>
+</ul>
+<p>Additional job-level gate:</p>
+<ul>
+<li><code>github.head_ref == 'alpha'</code></li>
+</ul>
+<p>This constrains matching to PR direction <code>alpha</code> -&gt; <code>alpha-backup</code>.</p>
+<h2 id="permissions">Permissions</h2>
+<ul>
+<li><code>pull-requests: write</code></li>
+</ul>
+<h2 id="labeling-logic">Labeling Logic</h2>
+<p>The script:</p>
+<ol>
+<li>Lists changed files for the PR.</li>
+<li>Checks for exact file match:
+<ul>
+<li><code>.github/workflows/alpha-backup-sync.yml</code></li>
+</ul>
+</li>
+<li>If matched:
+<ul>
+<li>Reads existing PR labels.</li>
+<li>Adds <code>chore:automatic-backup</code> only if not already present.</li>
+</ul>
+</li>
+</ol>
+<p>If label does not exist in repository, the workflow logs a warning and continues.</p>
+<h2 id="idempotency">Idempotency</h2>
+<p>The workflow is safe to run repeatedly:</p>
+<ul>
+<li>It does not re-add the label when already present.</li>
+<li>It does not fail the run when the label is missing.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="label-not-added">Label not added</h3>
+<p>Check:</p>
+<ul>
+<li>PR base is <code>alpha-backup</code>.</li>
+<li>PR head is <code>alpha</code>.</li>
+<li>PR includes <code>.github/workflows/alpha-backup-sync.yml</code> in changed files.</li>
+<li>Label <code>chore:automatic-backup</code> exists.</li>
+</ul>
+<h3 id="workflow-did-not-run">Workflow did not run</h3>
+<p>Check:</p>
+<ul>
+<li>event type is one of <code>opened/synchronize/reopened</code></li>
+<li>workflow file exists on default branch</li>
+</ul>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="../AlphaBackupSync.html">Alpha Backup Sync</a></li>
+<li><a href="../GitHubWorkflowIndex.html">GitHub Workflow Index</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

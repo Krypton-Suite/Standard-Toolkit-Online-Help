@@ -101,7 +101,7 @@
 </tr>
 <tr>
 <td>Build Scripts</td>
-<td><code>Scripts/Build/nightly.proj</code> (build job), <code>Scripts/Build/build.proj</code> (release job); both pass <code>/p:UseArtifactsOutput=true</code> on MSBuild</td>
+<td><code>Scripts/Build/nightly.proj</code> (build job), <code>Scripts/Build/build.proj</code> (release job); MSBuild steps use <code>/m</code> and <code>/p:UseArtifactsOutput=true</code></td>
 </tr>
 <tr>
 <td>Secrets/Vars</td>
@@ -133,13 +133,13 @@
 <li><strong>Setup NuGet CLI</strong>.</li>
 <li><strong>Cache NuGet packages</strong> under <code>~/.nuget/packages</code>.</li>
 <li><strong>Restore</strong> <code>Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.slnx</code> with <code>TFMs=all</code>.</li>
-<li><strong>Build</strong> via <code>msbuild Scripts/Build/nightly.proj /t:Rebuild /p:Configuration=Release /p:Platform=&quot;Any CPU&quot; /p:UseArtifactsOutput=true</code>.</li>
+<li><strong>Build</strong> via <code>msbuild /m Scripts/Build/nightly.proj /t:Rebuild /p:Configuration=Release /p:Platform=&quot;Any CPU&quot; /p:UseArtifactsOutput=true</code> (<code>nightly.proj</code> sets <code>BuildInParallel=&quot;true&quot;</code>).</li>
 </ol>
 <h3 id="release-job-master-pushes-only"><code>release</code> Job (master pushes only)</h3>
 <p>Purpose: pack master builds into NuGet artifacts.</p>
 <ol>
 <li><strong>Checkout + SDK setup + Pin SDK via global.json + tooling</strong>: aligned with the <code>build</code> job.</li>
-<li><strong>Restore</strong>, <strong>Build</strong>, <strong>Pack</strong> via <code>Scripts/Build/build.proj</code>.</li>
+<li><strong>Restore</strong>, <strong>Build</strong>, <strong>Pack</strong> via <code>Scripts/Build/build.proj</code> (MSBuild <code>/m</code> on Build/Pack steps).</li>
 <li><strong>Get Version</strong> from build output / project files.</li>
 </ol>
 <h3 id="toolchain-notes">Toolchain Notes</h3>

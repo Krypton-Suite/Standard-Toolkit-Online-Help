@@ -1,5 +1,14 @@
 # Auto-Assign PR Author Workflow
 
+## Quick Reference
+
+- Workflow file: `.github/workflows/auto-assign-pr-author.yml`
+- Workflow name: `Auto-assign PR author`
+- Trigger: `pull_request_target` (`opened`)
+- Runner: `ubuntu-latest`
+- Permissions: `issues: write`, `pull-requests: write`
+- Primary action: `actions/github-script@v9`
+
 ## Overview
 
 The Auto-Assign PR Author workflow automatically assigns the pull request author as an assignee when a new pull request is opened. This ensures that PR authors are immediately notified of any activity on their pull requests and helps maintain clear ownership.
@@ -32,7 +41,7 @@ The Auto-Assign PR Author workflow automatically assigns the pull request author
 **Steps**:
 
 1. **Assign PR author**
-   - Uses `actions/github-script@v8` to execute JavaScript
+   - Uses `actions/github-script@v9` to execute JavaScript
    - Accesses PR context via `context.payload.pull_request`
    - Determines assignee based on branch name
    - Assigns only if no assignees exist
@@ -137,7 +146,7 @@ This workflow requires no secrets, variables, or environment configuration. It u
 **Key Components**:
 
 - Event: `pull_request_target` with type `opened`
-- Action: `actions/github-script@v8`
+- Action: `actions/github-script@v9`
 - Logic: Branch-based assignee selection
 
 ## Maintenance Notes

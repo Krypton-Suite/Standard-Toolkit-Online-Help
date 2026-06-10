@@ -1,13 +1,13 @@
 # KryptonExceptionDialog API Documentation
 
-**V110+:** The public **`KryptonExceptionDialog`** API is in **`Krypton.Utilities`**. Prefer **[Utilities/KryptonExceptionDialog.md](../../Utilities/KryptonExceptionDialog.md)** and **[Quick Start](../../Utilities/KryptonExceptionDialogQuickStart.md)**; this file is a legacy mirror and may be out of date.
+**V110+:** The public **`KryptonExceptionDialog`** API is in **`Krypton.Toolkit.Utilities`**. Prefer **[Utilities/KryptonExceptionDialog.md](../../Utilities/KryptonExceptionDialog.md)** and **[Quick Start](../../Utilities/KryptonExceptionDialogQuickStart.md)**; this file is a legacy mirror and may be out of date.
 
 ## Overview
 
 `KryptonExceptionDialog` is a static utility class that provides a user-friendly, feature-rich dialog for displaying exception information in Krypton Toolkit applications. It serves as the public interface to the internal `VisualExceptionDialogForm` class, offering multiple overloaded methods to display exceptions with various customization options.
 
-**Namespace (V110+):** `Krypton.Utilities`  
-**Assembly (V110+):** `Krypton.Utilities`  
+**Namespace (V110+):** `Krypton.Toolkit.Utilities`  
+**Assembly (V110+):** `Krypton.Toolkit.Utilities`  
 **Class Type:** `public static class`  
 **Designer Category:** `code` (not available in Visual Studio Toolbox)
 

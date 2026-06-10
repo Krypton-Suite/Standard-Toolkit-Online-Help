@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Sync .github from Master Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Sync .github from Master Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="sync-github-from-master-workflow">Sync .github from Master Workflow</h1>
+
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow file</td>
+<td><code>.github/workflows/sync-github-from-master.yml</code></td>
+</tr>
+<tr>
+<td>Workflow name (Actions UI)</td>
+<td><strong>Sync .github from master</strong></td>
+</tr>
+<tr>
+<td>Triggers</td>
+<td>Push to <code>master</code> (<code>.github/**</code>), weekly schedule, <code>workflow_dispatch</code></td>
+</tr>
+<tr>
+<td>Runner</td>
+<td><code>ubuntu-latest</code></td>
+</tr>
+<tr>
+<td>Permissions</td>
+<td><code>contents: write</code>, <code>pull-requests: write</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="overview">Overview</h2>
+<p>Opens pull requests that copy <strong>only</strong> the <code>.github/</code> directory from <code>master</code> onto downstream release branches listed in <code>syncGithubFromMasterTargets</code> in <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/branch-policy.json">branch-policy.json</a>.</p>
+<p>Typical targets: <code>alpha</code>, <code>canary</code>, <code>gold</code>, <code>prerelease</code>, <code>V105-LTS</code>, <code>V85-LTS</code>, <code>V110</code>.</p>
+<p><strong>Not a merge of <code>master</code>:</strong> the job checks out the target branch tip, then runs <code>git checkout origin/master -- .github</code>. That replaces the <code>.github/</code> tree with the files from <code>master</code> at that moment. Downstream branches do <strong>not</strong> need to contain <code>master</code> in Git history.</p>
+<h2 id="behaviour">Behaviour</h2>
+<ol>
+<li>For each target branch, create or update <code>sync/github-from-master-&lt;target&gt;</code> from <code>origin/&lt;target&gt;</code>.</li>
+<li>Run <code>git checkout origin/master -- .github</code> (path copy from <code>master</code>, not <code>git merge master</code>).</li>
+<li>If there are changes, force-push the sync branch and open a PR (or skip if one is already open).</li>
+<li>Label <code>chore:workflow-sync</code> when the label exists.</li>
+</ol>
+<h2 id="kill-switch">Kill Switch</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SYNC_GITHUB_FROM_MASTER_DISABLED=true</code></td>
+<td>Disables this workflow</td>
+</tr>
+</tbody>
+</table>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="../BranchPolicyandWorkflowHardening.html">Branch policy and workflow hardening</a> — why <code>.github/</code>-only propagation exists</li>
+<li><a href="PRBranchPolicyWorkflow.html">PR branch policy workflow</a> — validates manual PRs that use <code>master</code> as head</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

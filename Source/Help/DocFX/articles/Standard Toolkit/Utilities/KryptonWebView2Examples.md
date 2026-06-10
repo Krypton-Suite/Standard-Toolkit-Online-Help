@@ -1,5 +1,7 @@
 # KryptonWebView2 Examples and Use Cases
 
+`KryptonWebView2` lives in the **`Krypton.Toolkit.Utilities`** assembly (`using Krypton.Toolkit.Utilities;`). Companion types such as `KryptonContextMenu` remain in **`Krypton.Toolkit`**.
+
 ## Table of Contents
 
 1. [Basic Web Browser](#basic-web-browser)
@@ -15,6 +17,10 @@
 ### Simple Web Browser Form
 
 ```csharp
+using Krypton.Toolkit;
+using Krypton.Toolkit.Utilities;
+using Microsoft.Web.WebView2.Core;
+
 public partial class WebBrowserForm : KryptonForm
 {
     private KryptonWebView2 webView;
@@ -273,7 +279,41 @@ public class WebView2ContextMenuBuilder
 
 ## Theme Integration
 
-### Dynamic Theme Application
+Appearance has two layers:
+
+1. **Control chrome** — `BackColor`, `ForeColor`, and `DefaultBackgroundColor` follow the Krypton palette via `StateCommon`, `StateNormal`, `StateActive`, and `StateDisabled`. These properties are hidden from the designer; use **Visuals → State###** or the API below.
+2. **Web page content** — HTML/CSS inside the document is unchanged unless you inject scripts or styles (examples below).
+
+### Control chrome colors (State properties)
+
+```csharp
+private async Task SetupThemedWebView(KryptonWebView2 webView)
+{
+    // Inherit palette colors (recommended)
+    webView.StateCommon.Back.Color1 = Color.Empty;
+    webView.StateCommon.Content.ShortText.Color1 = Color.Empty;
+
+    // Optional: match a panel host
+    webView.WebViewBackStyle = PaletteBackStyle.PanelClient;
+    webView.WebViewContentStyle = PaletteContentStyle.InputControlStandalone;
+
+    // Optional: keep active-state colors when unfocused
+    webView.AlwaysActive = false;
+
+    await webView.EnsureCoreWebView2Async();
+    // BackColor / DefaultBackgroundColor are applied after initialization
+}
+
+// Per-state overrides
+webView.StateActive.Back.Color1 = Color.FromArgb(255, 255, 255);
+webView.StateDisabled.Back.Color1 = Color.FromArgb(220, 220, 220);
+```
+
+Do **not** set `DefaultBackgroundColor = Color.White` in the designer; it is synchronized from the palette and hidden from the Property Grid.
+
+### Dynamic theme application (web page content)
+
+The following subclass injects palette colors into **document** CSS. Control chrome still updates automatically when the global palette or focus state changes.
 
 ```csharp
 public class ThemeAwareWebView2 : KryptonWebView2
@@ -456,13 +496,18 @@ public class ThemeHostObject
     public string GetPrimaryColor()
     {
         var palette = webView.GetResolvedPalette();
-        return palette.GetColorTable().Color1;
+        return ColorTranslator.ToHtml(palette.GetColorTable().Color1);
     }
 
+    /// <summary>Host surface color (matches control chrome / DefaultBackgroundColor).</summary>
     public string GetBackgroundColor()
     {
-        var palette = webView.GetResolvedPalette();
-        return palette.GetColorTable().Color3;
+        return ColorTranslator.ToHtml(webView.BackColor);
+    }
+
+    public string GetTextColor()
+    {
+        return ColorTranslator.ToHtml(webView.ForeColor);
     }
 }
 ```

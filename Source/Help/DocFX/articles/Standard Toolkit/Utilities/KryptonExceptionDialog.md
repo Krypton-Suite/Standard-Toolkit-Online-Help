@@ -1,6 +1,6 @@
 # KryptonExceptionDialog API Reference
 
-**V110+:** **`Krypton.Utilities.KryptonExceptionDialog`** — add `using Krypton.Utilities;`. Related strings may still be exposed via `KryptonManager.Strings` in `Krypton.Toolkit`.
+**V110+:** **`Krypton.Toolkit.Utilities.KryptonExceptionDialog`** — add `using Krypton.Toolkit.Utilities;`. Related strings may still be exposed via `KryptonManager.Strings` in `Krypton.Toolkit`.
 
 ## Overview
 
@@ -46,7 +46,7 @@ KryptonExceptionDialog (Public API)
 
 ### KryptonExceptionDialog Class
 
-**Namespace (V110+):** `Krypton.Utilities`
+**Namespace (V110+):** `Krypton.Toolkit.Utilities`
 
 #### KryptonExceptionDialog methods
 
@@ -135,7 +135,7 @@ Displays an exception dialog with all features including bug reporting capabilit
 
 ### KryptonExceptionHandler Class
 
-**Namespace (V110+):** `Krypton.Utilities`
+**Namespace (V110+):** `Krypton.Toolkit.Utilities`
 
 This class provides higher-level exception handling utilities with automatic caller information capture.
 
@@ -896,7 +896,7 @@ This component was introduced in **Krypton Toolkit v100** (2024-2025) as part of
 - `KryptonForm`
 - `KryptonTreeView`
 
-**Krypton.Utilities:** The `Krypton.Utilities` assembly exposes a public `KryptonExceptionDialog` with an additional overload that supports GitHub issue reporting (`githubSecretKey`, `githubConfigPath`). Use that overload when integrating with the encrypted GitHub bug-report config.
+**Krypton.Toolkit.Utilities:** The `Krypton.Toolkit.Utilities` assembly exposes a public `KryptonExceptionDialog` with an additional overload that supports GitHub issue reporting (`githubSecretKey`, `githubConfigPath`). Use that overload when integrating with the encrypted GitHub bug-report config.
 
 ### Related Patterns
 

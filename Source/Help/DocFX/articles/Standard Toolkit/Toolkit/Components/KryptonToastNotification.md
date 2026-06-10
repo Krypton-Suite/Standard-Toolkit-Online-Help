@@ -1,6 +1,6 @@
 # KryptonToast (toast notifications)
 
-**File:** `KryptonToastNotification.md` (historic name). **V110+:** The public static API was renamed to `KryptonToast` and moved to the `Krypton.Utilities` assembly and namespace. The content below describes the same feature set; replace `KryptonToastNotification` with `KryptonToast` and use `using Krypton.Utilities;` (or fully qualified names) in new code.
+**File:** `KryptonToastNotification.md` (historic name). **V110+:** The public static API was renamed to `KryptonToast` and moved to the `Krypton.Toolkit.Utilities` assembly and namespace. The content below describes the same feature set; replace `KryptonToastNotification` with `KryptonToast` and use `using Krypton.Toolkit.Utilities;` (or fully qualified names) in new code.
 
 ## Overview
 
@@ -10,7 +10,7 @@ The `KryptonToast` class (formerly `KryptonToastNotification`) provides a static
 
 ```text
 System.Object
-└── Krypton.Utilities.KryptonToast
+└── Krypton.Toolkit.Utilities.KryptonToast
 ```
 
 ## Key Methods

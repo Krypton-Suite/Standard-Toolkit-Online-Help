@@ -18,7 +18,7 @@
 
 ## Overview
 
-The GitHub Bug Reporting feature in Krypton.Utilities allows your application to let users create bug reports directly on your GitHub repository's issue tracker. The configuration (repository details and authentication) is stored in an AES-256–encrypted file that you create during development and ship with your application. End users never see or configure GitHub settings—they only see a simple form with Title and Description fields.
+The GitHub Bug Reporting feature in Krypton.Toolkit.Utilities allows your application to let users create bug reports directly on your GitHub repository's issue tracker. The configuration (repository details and authentication) is stored in an AES-256–encrypted file that you create during development and ship with your application. End users never see or configure GitHub settings—they only see a simple form with Title and Description fields.
 
 ### Architecture
 
@@ -52,7 +52,7 @@ The GitHub Bug Reporting feature in Krypton.Utilities allows your application to
 ## Requirements
 
 - **Target Framework**: .NET Framework 4.7.2+ or .NET 5+
-- **Dependencies**: Krypton.Toolkit, Krypton.Utilities
+- **Dependencies**: Krypton.Toolkit, Krypton.Toolkit.Utilities
 - **GitHub**: A GitHub Personal Access Token with `repo` or `public_repo` scope
 - **Network**: Outbound HTTPS to `api.github.com`
 
@@ -63,7 +63,7 @@ The GitHub Bug Reporting feature in Krypton.Utilities allows your application to
 ### 1. Create the Encrypted Config File (Development, One-Time)
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 var config = new BugReportGitHubConfig
 {
@@ -86,7 +86,7 @@ Include `github-issue-config.enc` in your build output (e.g. copy to output dire
 ### 3. Show the Dialog at Runtime
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 // Load secret key from environment or secure storage
 var secretKey = Environment.GetEnvironmentVariable("MY_APP_GITHUB_KEY") ?? "your-secret-key";
@@ -137,12 +137,12 @@ Use `BugReportGitHubConfigEncryption.SaveEncryptedConfig` with your config, outp
 ### Namespace
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 ```
 
 ### Assembly
 
-- **Krypton.Utilities** (references Krypton.Toolkit)
+- **Krypton.Toolkit.Utilities** (references Krypton.Toolkit)
 
 ---
 
@@ -152,7 +152,7 @@ using Krypton.Utilities;
 
 Configuration for the target GitHub repository and authentication.
 
-**Location**: `Krypton.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubConfig.cs`
+**Location**: `Krypton.Toolkit.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubConfig.cs`
 
 #### BugReportGitHubConfig properties
 
@@ -185,7 +185,7 @@ if (config.IsValid)
 
 Static class for encrypting and decrypting the config file. Uses AES-256-CBC with PKCS7 padding; key derived via SHA-256.
 
-**Location**: `Krypton.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubConfigEncryption.cs`
+**Location**: `Krypton.Toolkit.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubConfigEncryption.cs`
 
 #### BugReportGitHubConfigEncryption methods
 
@@ -225,7 +225,7 @@ var defaultPath = BugReportGitHubConfigEncryption.GetDefaultConfigFilePath();
 
 Static class providing the user-facing bug report dialog. Loads config from the encrypted file (or accepts config directly) and shows a form with Title and Description fields. Overloads that accept `initialDescription` pre-fill the description (e.g. exception details from `KryptonExceptionDialog`).
 
-**Location**: `Krypton.Utilities` → `Components/KryptonBugReportingDialog/Controls Toolkit/KryptonGitHubIssueReportDialog.cs`
+**Location**: `Krypton.Toolkit.Utilities` → `Components/KryptonBugReportingDialog/Controls Toolkit/KryptonGitHubIssueReportDialog.cs`
 
 #### KryptonGitHubIssueReportDialog methods
 
@@ -285,7 +285,7 @@ var result = KryptonGitHubIssueReportDialog.Show(this, config, exceptionDetails)
 
 Service for creating GitHub issues programmatically (without showing the dialog). Supports both synchronous and asynchronous methods.
 
-**Location**: `Krypton.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubService.cs`
+**Location**: `Krypton.Toolkit.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubService.cs`
 
 #### Methods (Public API – Title + Body)
 
@@ -326,7 +326,7 @@ else
 
 Read-only struct representing the outcome of an issue creation attempt.
 
-**Location**: `Krypton.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubResult.cs`
+**Location**: `Krypton.Toolkit.Utilities` → `Components/KryptonBugReportingDialog/General/BugReportGitHubResult.cs`
 
 #### BugReportGitHubResult properties
 
@@ -549,6 +549,6 @@ public void GenerateEncryptedConfig()
 
 ## See Also
 
-- **[KryptonExceptionDialog](KryptonExceptionDialog.md)** — The Exception Dialog has an overload (in `Krypton.Utilities`) that accepts `githubSecretKey` and `githubConfigPath`. When provided, the "Report Bug" button opens this GitHub issue dialog with the exception details pre-filled in the description.
+- **[KryptonExceptionDialog](KryptonExceptionDialog.md)** — The Exception Dialog has an overload (in `Krypton.Toolkit.Utilities`) that accepts `githubSecretKey` and `githubConfigPath`. When provided, the "Report Bug" button opens this GitHub issue dialog with the exception details pre-filled in the description.
 - [GitHub REST API – Create an Issue](https://docs.github.com/en/rest/issues/issues#create-an-issue)
 - [GitHub Personal Access Tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)

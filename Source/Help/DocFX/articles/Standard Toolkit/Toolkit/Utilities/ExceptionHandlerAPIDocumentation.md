@@ -186,7 +186,7 @@ public static void PrintExceptionStackTrace(Exception exception, string fileName
 
 A static class that provides access to the advanced exception dialog UI.
 
-**Public API location (V110+):** `Source/Krypton Components/Krypton.Utilities/Components/KryptonExceptionDialog/Controls Toolkit/KryptonExceptionDialog.cs` (internal forwarding remains in `Krypton.Toolkit`)
+**Public API location (V110+):** `Source/Krypton Components/Krypton.Toolkit.Utilities/Components/KryptonExceptionDialog/Controls Toolkit/KryptonExceptionDialog.cs` (internal forwarding remains in `Krypton.Toolkit`)
 
 #### KryptonExceptionDialog methods
 
@@ -393,7 +393,7 @@ Potential areas for future development:
 
 ## Related Documentation
 
-- [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md) - API reference (V110+: `Krypton.Utilities`) ⭐ **Start Here**
+- [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md) - API reference (V110+: `Krypton.Toolkit.Utilities`) ⭐ **Start Here**
 - [KryptonExceptionDialog Quick Start](../../Utilities/KryptonExceptionDialogQuickStart.md) - Quick start
 - [Exception Handling Guide](ExceptionHandler.md) - Comprehensive exception handling guide  
 - [Localization and String Management](LocalizationGuide.md) - For localizing exception messages

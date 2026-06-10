@@ -119,7 +119,8 @@ build-nightly.cmd Pack     # Pack nightly packages
 
 **Notes**:
 
-- Includes commented options for `-graphBuild:True` (parallel project graph builds)
+- Invokes MSBuild with **`/m`** (all logical CPUs). `nightly.proj` sets **`BuildInParallel="true"`** on the Krypton.* orchestration target.
+- Optional commented switch in the script: `-graphBuild:True` (MSBuild graph scheduling; distinct from `/m`).
 
 ## Utility Scripts
 
@@ -187,7 +188,7 @@ You are about to delete the Bin folder; do you want to continue? (Y/N)
 - `Source/Krypton Components/Krypton.Workspace/obj/`
 - `Logs/` (if exists)
 
-**Note**: Does not delete `Krypton.Utilities` or `Krypton.Standard.Toolkit` obj folders. Run from `Scripts/VS2022`, `Scripts/Current`, or `Scripts/Build`.
+**Note**: Does not delete `Krypton.Toolkit.Utilities` or `Krypton.Standard.Toolkit` obj folders. Run from `Scripts/VS2022`, `Scripts/Current`, or `Scripts/Build`.
 
 **Warning**: This operation is destructive and cannot be undone!
 
@@ -268,10 +269,11 @@ goto build
 
 ### Logging Pattern
 
-Scripts enable detailed logging:
+Scripts enable detailed logging and parallel builds:
 
 ```batch
-"%msbuildpath%\msbuild.exe" /t:%targets% build.proj ^
+REM /m: multi-processor MSBuild (all logical CPUs).
+"%msbuildpath%\msbuild.exe" /m /t:%targets% build.proj ^
     /fl ^
     /flp:logfile=../Logs/stable-build-log.log ^
     /bl:../Logs/stable-build-log.binlog ^
@@ -281,6 +283,7 @@ Scripts enable detailed logging:
 
 Parameters:
 
+- `/m` - Use all logical processors (see [Parallel builds](#parallel-builds))
 - `/fl` - Enable file logging
 - `/flp:logfile=<path>` - Specify log file location
 - `/bl:<path>` - Binary log file
@@ -304,7 +307,7 @@ Scripts accept optional target parameter:
 ```batch
 set targets=Build
 if not "%~1" == "" set targets=%~1
-"%msbuildpath%\msbuild.exe" /t:%targets% build.proj ...
+"%msbuildpath%\msbuild.exe" /m /t:%targets% build.proj ...
 ```
 
 Usage:
@@ -324,13 +327,19 @@ Add custom MSBuild parameters:
 build-stable.cmd Build /v:detailed /flp:logfile=custom.log
 ```
 
-### Parallel Builds
+### Parallel builds
 
-Enable multi-core builds:
+All orchestration `.cmd` files (`build-stable.cmd`, `build-canary.cmd`, `build-nightly.cmd`, `build-lts.cmd`, `build-installer.cmd`, `debug.cmd`, `buildsolution.cmd`, and related rebuild/custom scripts) pass **`/m`** to MSBuild so compilation uses all logical CPUs.
+
+`nightly.proj` also sets **`BuildInParallel="true"`** on its Build target so sibling `Krypton.*` projects can build in parallel where project references allow (Toolkit first, then Ribbon/Navigator, and so on).
+
+To **limit** parallelism when diagnosing file-lock or memory issues:
 
 ```cmd
-build-stable.cmd Build /m:4
+msbuild /m:1 /t:Build build.proj
 ```
+
+Or pass a cap, for example `/m:4`. Extra arguments after the script target name are **not** forwarded by the `.cmd` wrappers; invoke `msbuild` directly or edit the script line.
 
 ### Binary Log Analysis
 
@@ -407,7 +416,7 @@ build-stable.cmd Build
 3. Manual MSBuild invocation:
 
    ```cmd
-   "C:\Path\To\MSBuild.exe" /t:Build build.proj
+   "C:\Path\To\MSBuild.exe" /m /t:Build build.proj
    ```
 
 ### Build Hangs or Stalls

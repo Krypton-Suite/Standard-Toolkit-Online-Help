@@ -202,9 +202,9 @@ purge.cmd
 build-stable.cmd Build
 ```
 
-4. **Use Single-Threaded Build**:
+4. **Use Single-Threaded Build** (orchestration `.cmd` scripts and CI default to **`/m`**; throttle when diagnosing races):
 ```cmd
-msbuild build.proj /t:Build /m:1
+msbuild /m:1 build.proj /t:Build
 ```
 
 ### Permission Denied Errors
@@ -404,7 +404,7 @@ type extracted\*.nuspec
 3. **Rebuild and Repack**:
 ```cmd
 cd Scripts
-msbuild build.proj /t:Clean;Build;Pack
+msbuild /m build.proj /t:Clean;Build;Pack
 ```
 
 ### Wrong Framework Assemblies
@@ -430,7 +430,7 @@ Should show: `net472/`, `net48/`, `net481/`, `net8.0-windows/`, etc.
 2. **Rebuild with Correct TFMs**:
 ```cmd
 cd Scripts
-msbuild build.proj /t:Clean;Build;Pack /p:TFMs=all
+msbuild /m build.proj /t:Clean;Build;Pack /p:TFMs=all
 ```
 
 3. **Check Target Framework in Consumer Project**:
@@ -678,13 +678,13 @@ this.AutoScaleMode = AutoScaleMode.Dpi;
    - Add repository folder to exclusions
    - Add `Bin/`, `obj/`, `.git/` to exclusions
 
-2. **Adjust Parallel Builds**:
+2. **Adjust parallel builds** (scripts and CI use **`/m`** by default):
 ```cmd
 # Reduce parallelism
-msbuild build.proj /t:Build /m:2
+msbuild /m:2 build.proj /t:Build
 
 # Or disable
-msbuild build.proj /t:Build /m:1
+msbuild /m:1 build.proj /t:Build
 ```
 
 3. **Build Specific Projects**:
@@ -694,7 +694,7 @@ dotnet build "Source/Krypton Components/Krypton.Toolkit/Krypton.Toolkit 2022.csp
 
 4. **Use Binary Logs for Analysis**:
 ```cmd
-msbuild build.proj /t:Build /bl:build.binlog
+msbuild /m build.proj /t:Build /bl:build.binlog
 msbuildlogviewer build.binlog
 ```
 
@@ -714,9 +714,9 @@ msbuildlogviewer build.binlog
    - Close other applications
    - Close Visual Studio during command-line builds
 
-2. **Reduce Parallel Builds**:
+2. **Reduce parallel builds**:
 ```cmd
-msbuild build.proj /t:Build /m:1
+msbuild /m:1 build.proj /t:Build
 ```
 
 3. **Build in Chunks**:

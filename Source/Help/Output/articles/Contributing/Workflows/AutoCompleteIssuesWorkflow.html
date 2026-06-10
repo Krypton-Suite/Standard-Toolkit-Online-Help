@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Auto-complete Linked Issues Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Auto-complete Linked Issues Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="auto-complete-linked-issues-workflow">Auto-complete Linked Issues Workflow</h1>
+
+<h2 id="quick-reference">Quick Reference</h2>
+<ul>
+<li>Workflow file: <code>.github/workflows/auto-complete-issues.yml</code></li>
+<li>Workflow name: <code>Auto-complete linked issues</code></li>
+<li>Triggers: <code>pull_request_target</code> (<code>closed</code>), <code>workflow_dispatch</code></li>
+<li>Runner: <code>ubuntu-latest</code></li>
+<li>Permissions: <code>issues: write</code>, <code>pull-requests: read</code></li>
+<li>Primary action: <code>actions/github-script@v9</code></li>
+</ul>
+<h2 id="purpose">Purpose</h2>
+<p><code>auto-complete-issues.yml</code> automates issue lifecycle cleanup when a pull request is merged.</p>
+<p>When conditions are met, the workflow:</p>
+<ol>
+<li>Finds linked issues for the merged PR.</li>
+<li>Adds a completion label based on issue title prefix:
+<ul>
+<li><code>[Bug]</code> -&gt; <code>fixed</code></li>
+<li><code>[Feature Request]</code> -&gt; <code>completed</code></li>
+</ul>
+</li>
+<li>Closes the issue (if still open).</li>
+<li>Removes all assignees.</li>
+</ol>
+<p>This implements the behavior requested in issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3550">#3550</a>.</p>
+<hr>
+<h2 id="workflow-file">Workflow File</h2>
+<ul>
+<li>Path: <code>.github/workflows/auto-complete-issues.yml</code></li>
+<li>Workflow name: <code>Auto-complete linked issues</code></li>
+<li>Runtime: <code>ubuntu-latest</code></li>
+<li>Engine: <code>actions/github-script@v9</code></li>
+</ul>
+<hr>
+<h2 id="triggers">Triggers</h2>
+<h3 id="automatic-trigger">Automatic trigger</h3>
+<pre><code class="lang-yaml">on:
+  pull_request_target:
+    types: [closed]
+</code></pre>
+<p>The workflow starts when a PR is closed, then exits early unless:</p>
+<ul>
+<li><code>pr.merged == true</code></li>
+</ul>
+<h3 id="manual-trigger">Manual trigger</h3>
+<pre><code class="lang-yaml">on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        type: number
+      dry_run:
+        type: boolean
+        default: true
+</code></pre>
+<p>Manual runs fetch PR metadata via <code>pulls.get</code> and apply the same merged-PR validation.</p>
+<hr>
+<h2 id="permissions-and-security-model">Permissions and Security Model</h2>
+<h3 id="permissions-requested">Permissions requested</h3>
+<pre><code class="lang-yaml">permissions:
+  issues: write
+  pull-requests: read
+</code></pre>
+<p>These are the minimum permissions needed to:</p>
+<ul>
+<li>Read PR metadata and body</li>
+<li>Read and update issues</li>
+<li>Add/remove labels</li>
+<li>Remove assignees</li>
+</ul>
+<h3 id="why-pull_request_target-is-used">Why <code>pull_request_target</code> is used</h3>
+<p><code>pull_request_target</code> executes in the context of the base repository (not fork workflow files), which allows write operations using <code>GITHUB_TOKEN</code>.</p>
+<p>Risk is controlled because this workflow:</p>
+<ul>
+<li>does not check out code</li>
+<li>does not execute scripts from PR contents</li>
+<li>only acts on GitHub API metadata</li>
+<li>restricts operations to merged PR events only</li>
+</ul>
+<hr>
+<h2 id="processing-pipeline">Processing Pipeline</h2>
+<p>The script follows a deterministic pipeline:</p>
+<ol>
+<li><strong>Load event context</strong>
+<ul>
+<li>Detect whether run is automatic or <code>workflow_dispatch</code>.</li>
+<li>Parse <code>dry_run</code>.</li>
+</ul>
+</li>
+<li><strong>Load PR</strong>
+<ul>
+<li>Automatic: use <code>context.payload.pull_request</code>.</li>
+<li>Manual: fetch PR by <code>pr_number</code>.</li>
+</ul>
+</li>
+<li><strong>Gate checks</strong>
+<ul>
+<li>Require merged PR.</li>
+<li>Use actual PR <code>head</code>/<code>base</code> refs from event/API metadata (no hardcoded branch gate).</li>
+</ul>
+</li>
+<li><strong>Discover linked issues</strong>
+<ul>
+<li>Primary: GraphQL <code>closingIssuesReferences(first: 100)</code>.</li>
+<li>Fallback: regex scan of PR body for closing keywords.</li>
+</ul>
+</li>
+<li><strong>Process each issue</strong>
+<ul>
+<li>Fetch issue by number.</li>
+<li>Ignore references that are actually pull requests.</li>
+<li>Derive completion label from title prefix.</li>
+<li>Add label if needed.</li>
+<li>Close issue if open.</li>
+<li>Remove assignees if present.</li>
+</ul>
+</li>
+<li><strong>Log outcomes</strong>
+<ul>
+<li>Success and skip paths are logged explicitly.</li>
+<li>Partial failures are logged as warnings; processing continues.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="linked-issue-discovery-details">Linked Issue Discovery Details</h2>
+<h3 id="primary-method-graphql-closing-references">Primary method: GraphQL closing references</h3>
+<p>The workflow queries:</p>
+<ul>
+<li><code>repository.pullRequest(number: X).closingIssuesReferences</code></li>
+</ul>
+<p>This is the most reliable way to honor GitHub-native closing semantics.</p>
+<h3 id="fallback-method-regex-in-pr-body">Fallback method: regex in PR body</h3>
+<p>If GraphQL returns no issues (or fails), a fallback regex scans PR body text:</p>
+<pre><code class="lang-text">\b(?:close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+#(\d+)\b
+</code></pre>
+<p>Matches examples like:</p>
+<ul>
+<li><code>close #123</code></li>
+<li><code>closes #123</code></li>
+<li><code>fixed #123</code></li>
+<li><code>resolves #123</code></li>
+</ul>
+<p>Numbers are deduplicated with a <code>Set</code>.</p>
+<hr>
+<h2 id="labeling-rules">Labeling Rules</h2>
+<p>Label assignment is title-prefix based and case-insensitive:</p>
+<ul>
+<li><code>/^\[bug\]:?/i</code> -&gt; add <code>fixed</code></li>
+<li><code>/^\[feature request\]:?/i</code> -&gt; add <code>completed</code></li>
+</ul>
+<p>Notes:</p>
+<ul>
+<li>If title does not match either pattern, no completion label is added.</li>
+<li>If target label already exists, no duplicate add is attempted.</li>
+<li>Missing labels produce warning logs and do not fail the entire workflow.</li>
+</ul>
+<hr>
+<h2 id="dry-run-behavior">Dry Run Behavior</h2>
+<p><code>dry_run</code> is only honored for <code>workflow_dispatch</code> runs.</p>
+<ul>
+<li><code>dry_run=true</code>:
+<ul>
+<li>No mutations are performed.</li>
+<li>Logs emit explicit <code>&quot;[dry-run] Would ...&quot;</code> messages.</li>
+</ul>
+</li>
+<li><code>dry_run=false</code>:
+<ul>
+<li>Mutations are executed (label/close/unassign).</li>
+</ul>
+</li>
+</ul>
+<p>Automatic PR-close events always run in live mode.</p>
+<hr>
+<h2 id="operational-runbook">Operational Runbook</h2>
+<h3 id="manual-validation-before-enabling-broader-usage">Manual validation before enabling broader usage</h3>
+<ol>
+<li>Open <strong>Actions</strong> -&gt; <strong>Auto-complete linked issues</strong>.</li>
+<li>Run workflow with:
+<ul>
+<li><code>pr_number</code>: a known merged PR</li>
+<li><code>dry_run</code>: <code>true</code></li>
+</ul>
+</li>
+<li>Verify logs:
+<ul>
+<li>branch-direction gate result</li>
+<li>issue detection output</li>
+<li>expected label/close/unassign actions</li>
+</ul>
+</li>
+<li>Re-run with <code>dry_run=false</code> for an approved test PR.</li>
+</ol>
+<h3 id="expected-skip-conditions">Expected skip conditions</h3>
+<ul>
+<li>PR closed without merge</li>
+<li>No linked issues detected</li>
+<li>Referenced number is a PR, not an issue</li>
+</ul>
+<p>These are healthy no-op states, not failures.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="no-issues-were-processed">No issues were processed</h3>
+<p>Check:</p>
+<ul>
+<li>PR actually merged</li>
+<li>PR has closing references (<code>Fixes #...</code>) or native linked issues</li>
+</ul>
+<h3 id="labels-were-not-added">Labels were not added</h3>
+<p>Check:</p>
+<ul>
+<li>Label names exist exactly as <code>fixed</code> and <code>completed</code></li>
+<li>Issue title prefix is present:
+<ul>
+<li><code>[Bug]</code></li>
+<li><code>[Feature Request]</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="assignees-not-removed">Assignees not removed</h3>
+<p>Check:</p>
+<ul>
+<li>Issue had assignees at processing time</li>
+<li>Run was not <code>dry_run=true</code></li>
+</ul>
+<h3 id="manual-run-failed-with-invalid-pr-input">Manual run failed with invalid PR input</h3>
+<p>Check:</p>
+<ul>
+<li><code>pr_number</code> is numeric and corresponds to an existing PR in this repository</li>
+</ul>
+<hr>
+<h2 id="known-constraints">Known Constraints</h2>
+<ul>
+<li>Only up to first 100 GraphQL closing references are queried.</li>
+<li>Regex fallback only parses issue references in PR body, not comments.</li>
+<li>Completion label is inferred from title convention, not issue form metadata.</li>
+</ul>
+<hr>
+<h2 id="maintenance-guidance">Maintenance Guidance</h2>
+<h3 id="if-label-taxonomy-changes">If label taxonomy changes</h3>
+<p>Update mapping logic:</p>
+<ul>
+<li><code>[Bug]</code> -&gt; replacement for <code>fixed</code></li>
+<li><code>[Feature Request]</code> -&gt; replacement for <code>completed</code></li>
+</ul>
+<h3 id="if-issue-title-conventions-change">If issue title conventions change</h3>
+<p>Update regex checks for title prefixes to match new conventions.</p>
+<hr>
+<h2 id="suggested-future-enhancements">Suggested Future Enhancements</h2>
+<ol>
+<li>Move expected branch names to repository variables for zero-code reconfiguration.</li>
+<li>Add optional comment on closed issue linking back to merged PR.</li>
+<li>Add metric-style summary output (counts of labeled/closed/unassigned/skipped).</li>
+<li>Add support for additional title conventions (<code>[Other Issues]</code>, <code>[Question]</code>) if policy requires.</li>
+</ol>
+<hr>
+<h2 id="quick-reference-1">Quick Reference</h2>
+<ul>
+<li><strong>Workflow file</strong>: <code>.github/workflows/auto-complete-issues.yml</code></li>
+<li><strong>Manual test mode</strong>: <code>workflow_dispatch</code> + <code>dry_run=true</code></li>
+<li><strong>Branch context source</strong>: PR metadata (<code>head</code>/<code>base</code> refs)</li>
+<li><strong>Completion labels</strong>:
+<ul>
+<li><code>[Bug]</code> -&gt; <code>fixed</code></li>
+<li><code>[Feature Request]</code> -&gt; <code>completed</code></li>
+</ul>
+</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

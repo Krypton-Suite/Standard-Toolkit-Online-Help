@@ -1171,7 +1171,7 @@ topPanel.Controls.Add(toolStrip);
 
 ```csharp
 using Krypton.Toolkit;
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -1859,10 +1859,10 @@ public partial class StateAwareForm : KryptonForm
 
 ### Namespace
 
-All components are in the `Krypton.Utilities` namespace:
+All components are in the `Krypton.Toolkit.Utilities` namespace:
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 ```
 
 ### Dependencies

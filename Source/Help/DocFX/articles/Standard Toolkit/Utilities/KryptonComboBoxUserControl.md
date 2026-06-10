@@ -2,7 +2,7 @@
 
 This document describes the **KryptonComboBoxUserControl** feature introduced for [GitHub issue #3443](https://github.com/Krypton-Suite/Standard-Toolkit/issues/3443): a WinForms control that looks and behaves like a combo box, but hosts **any** `Control` (typically a `UserControl`) in its drop-down instead of a fixed list.
 
-**Assembly / namespace:** `Krypton.Utilities` · `Krypton.Utilities`
+**Assembly / namespace:** `Krypton.Toolkit.Utilities` · `Krypton.Toolkit.Utilities`
 
 ---
 

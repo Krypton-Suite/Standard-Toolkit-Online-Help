@@ -150,9 +150,9 @@ This document provides links to the documentation provided, each will be split u
 * [KryptonForm](Standard%20Toolkit/Toolkit/Forms/KryptonForm.md)
 * [Krypton System Menu](Standard%20Toolkit/Toolkit/Forms/KryptonSystemMenu.md)
 
-### [Theming](Standard%20Toolkit/Toolkit/Theming.md)
+### [Themes](Standard%20Toolkit/Themes.md)
 
-* [How Themes Work](Standard%20Toolkit/Toolkit/Themes/HowThemesWork.md)
+* [How Themes Work](Standard%20Toolkit/Themes/HowThemesWork.md)
 
 ### [Utilities](Standard%20Toolkit/Toolkit/Utilities.md)
 

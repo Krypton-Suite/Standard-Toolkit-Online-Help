@@ -37,7 +37,7 @@
 ### Namespace
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 ```
 
 ### Inheritance Hierarchy
@@ -49,7 +49,7 @@ System.Object
           └─ System.Windows.Forms.Control
               └─ System.Windows.Forms.TreeView
                   └─ Krypton.Toolkit.KryptonTreeView
-                      └─ Krypton.Utilities.KryptonSystemTreeView
+                      └─ Krypton.Toolkit.Utilities.KryptonSystemTreeView
 ```
 
 ### Comparison with KryptonFileSystemTreeView
@@ -565,7 +565,7 @@ systemTreeView.FileSystemError += (sender, e) =>
 
 Groups system tree view-specific properties for PropertyGrid display.
 
-**Location:** `Krypton.Utilities.SystemTreeViewValues`
+**Location:** `Krypton.Toolkit.Utilities.SystemTreeViewValues`
 
 **Properties:**
 
@@ -717,7 +717,7 @@ This ensures icons are always displayed, even when extraction fails.
 ### Basic Usage
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 // Create control
 KryptonSystemTreeView systemTreeView = new KryptonSystemTreeView();

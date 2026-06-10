@@ -62,7 +62,7 @@ Once you have clicked 'Create pull request', GitHub Desktop will launch your def
 
 ### Additional Notes
 
-1) Please remember to always update `Changelog.md` with any changes that you have made. This is located in ***Documents\Help\Changelog.md***.
+1) Please remember to always update `Changelog.md` with any changes that you have made. This is located in ***Documents\Changelog\Changelog.md***.
 
 2) We ask you to provide a build report when submitting a pull request. This allows us to verify that there are no errors within the code. To do this, simply execute `run.cmd` from the root directory. Choose option '4' -> '1'. Once completed, it should show something like this:
 
@@ -71,3 +71,22 @@ Once you have clicked 'Create pull request', GitHub Desktop will launch your def
    Simply take a snippet of the log, then paste it into your pull request description.
 
 **Note:** As of version 100, we have introduced workflows. Each time a pull request is updated, it will automatically compile the code.
+
+### Branch policy checks
+
+Same-repository pull requests also run the **PR branch policy** workflow. It may report **warnings** (default) for issues such as:
+
+- Attempting to merge a release line into `master` instead of using a feature branch.
+- Merging `master` into a release branch with changes outside `.github/` (use the automated **Sync .github from master** workflow instead).
+
+See [Branch policy and workflow hardening](BranchPolicyandWorkflowHardening.md) and [BRANCH_POLICY](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/BRANCH_POLICY.md).
+
+### Release promotion (maintainers)
+
+This guide covers **contributor** PRs into **`alpha`**. Moving code toward stable production uses a separate promotion chain:
+
+```text
+alpha → canary → gold → master
+```
+
+Each step is a pull request in the same repository. Guard workflows validate allowed source branches; repository rulesets block direct pushes. See [Branch promotion policy](BranchPromotionPolicy.md) for the full procedure.

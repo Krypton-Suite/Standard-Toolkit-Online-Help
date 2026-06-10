@@ -4,8 +4,8 @@
 
 `CommandLinkTextValues` is a specialized values class that provides heading and description text properties for `KryptonCommandLinkButton` controls. It extends `CaptionValues` to support the two-line text layout characteristic of Windows command link buttons.
 
-**Namespace (V110+):** `Krypton.Utilities`  
-**Assembly (V110+):** `Krypton.Utilities`  
+**Namespace (V110+):** `Krypton.Toolkit.Utilities`  
+**Assembly (V110+):** `Krypton.Toolkit.Utilities`  
 **Inheritance:** `Object` → `Storage` → `CaptionValues` → `CommandLinkTextValues`
 
 ## Key Features

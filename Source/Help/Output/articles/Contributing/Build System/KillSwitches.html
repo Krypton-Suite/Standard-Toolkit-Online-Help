@@ -91,7 +91,7 @@
 <p>Example:</p>
 <pre><code class="lang-yaml">- name: Build Release
   if: steps.release_kill_switch.outputs.enabled == 'true'
-  run: msbuild &quot;Scripts/Build/build.proj&quot; /t:Build /p:Configuration=Release /p:Platform=&quot;Any CPU&quot; /p:UseArtifactsOutput=true
+  run: msbuild /m &quot;Scripts/Build/build.proj&quot; /t:Build /p:Configuration=Release /p:Platform=&quot;Any CPU&quot; /p:UseArtifactsOutput=true
 </code></pre>
 <p><strong>Build</strong> and <strong>Pack</strong> steps use <code>/p:UseArtifactsOutput=true</code> so outputs land under <code>artifacts/</code>; <strong>Push</strong> collects <code>.nupkg</code> files from <code>artifacts/packages/...</code> first, then <code>Bin/Packages/...</code>.</p>
 <h2 id="configuration">Configuration</h2>
@@ -164,6 +164,39 @@
 <li>Document the variable under Configuration so on-call engineers know which switch to flip.</li>
 </ol>
 <p>Keeping the guard self-contained inside the workflow ensures you can pause or resume publishing safely even while other infrastructure (NuGet, Discord, etc.) stays configured.</p>
+<h2 id="other-workflow-kill-switches">Other workflow kill switches</h2>
+<p>These use the same <code>variable == 'true'</code> pattern but live outside <code>release.yml</code>. See each workflow's documentation for full configuration.</p>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Variable</th>
+<th>Effect when <code>true</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../Workflows/RepositoryMirror.html">Repository Mirror</a> (<code>repo-mirror.yml</code>)</td>
+<td><code>REPO_MIRROR_DISABLED</code></td>
+<td>Skips bare clone and all pushes to the mirror repo</td>
+</tr>
+<tr>
+<td><a href="../Workflows/RepositoryRestoreFromMirrorWorkflow.html">Repository Restore from Mirror</a> (<code>repo-restore-from-mirror.yml</code>)</td>
+<td><code>REPO_RESTORE_DISABLED</code></td>
+<td>Skips mirror clone, validation, and all pushes to the source repo</td>
+</tr>
+<tr>
+<td><a href="../AlphaBackupSync.html">Alpha Backup Sync</a> (<code>alpha-backup-sync.yml</code>)</td>
+<td><code>ALPHA_BACKUP_SYNC_DISABLED</code></td>
+<td>Skips PR creation, backup-repo push, and Discord</td>
+</tr>
+<tr>
+<td><a href="../Workflows/NightlyWorkflow.html">Nightly Release</a> (<code>nightly.yml</code>)</td>
+<td><code>NIGHTLY_DISABLED</code></td>
+<td>Skips nightly build and publish (also gates <code>release-alpha</code> in <code>release.yml</code>)</td>
+</tr>
+</tbody>
+</table>
 
 </article>
           </div>

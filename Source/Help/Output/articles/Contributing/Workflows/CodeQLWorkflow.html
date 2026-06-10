@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>CodeQL Advanced Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="CodeQL Advanced Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="codeql-advanced-workflow">CodeQL Advanced Workflow</h1>
+
+<h2 id="quick-reference">Quick Reference</h2>
+<ul>
+<li>Workflow file: <code>.github/workflows/codeql.yml</code></li>
+<li>Workflow name: <code>CodeQL Advanced</code></li>
+<li>Triggers: <code>push</code>, <code>pull_request</code>, <code>schedule</code></li>
+<li>Runner: <code>ubuntu-latest</code> (default)</li>
+<li>Primary actions: <code>github/codeql-action/init@v4</code>, <code>github/codeql-action/analyze@v4</code></li>
+</ul>
+<h2 id="overview">Overview</h2>
+<p>The <code>codeql.yml</code> workflow runs GitHub Advanced Security CodeQL analysis on a schedule and on code changes for selected branches.</p>
+<ul>
+<li>Workflow file: <code>.github/workflows/codeql.yml</code></li>
+<li>Workflow name: <code>CodeQL Advanced</code></li>
+<li>Runner: <code>ubuntu-latest</code> (or <code>macos-latest</code> for Swift matrix entries)</li>
+</ul>
+<h2 id="purpose">Purpose</h2>
+<ul>
+<li>Perform static security and quality analysis across repository languages.</li>
+<li>Surface findings in GitHub code scanning alerts.</li>
+<li>Provide recurring (scheduled) analysis independent of PR activity.</li>
+</ul>
+<h2 id="triggers">Triggers</h2>
+<p>The workflow triggers on:</p>
+<ul>
+<li><code>push</code> to <code>master</code>, <code>V105-LTS</code>, <code>V85-LTS</code>, <code>alpha</code>, <code>canary</code>, <code>gold</code></li>
+<li><code>pull_request</code> targeting the same branches</li>
+<li>weekly schedule: Monday 00:00 UTC (<code>0 0 * * 1</code>)</li>
+</ul>
+<h2 id="permissions">Permissions</h2>
+<p>Per job permissions:</p>
+<ul>
+<li><code>security-events: write</code> (required to publish results)</li>
+<li><code>packages: read</code></li>
+<li><code>actions: read</code></li>
+<li><code>contents: read</code></li>
+</ul>
+<h2 id="language-matrix">Language Matrix</h2>
+<p>Current matrix entries:</p>
+<ul>
+<li><code>actions</code></li>
+<li><code>csharp</code></li>
+<li><code>javascript-typescript</code></li>
+<li><code>python</code></li>
+</ul>
+<p>All currently run with <code>build-mode: none</code>.</p>
+<h2 id="execution-flow">Execution Flow</h2>
+<p>For each matrix language:</p>
+<ol>
+<li>Checkout repository.</li>
+<li>Initialize CodeQL (<code>github/codeql-action/init@v4</code>).</li>
+<li>Optional manual build step (only if <code>build-mode == manual</code>; currently not used).</li>
+<li>Analyze and upload results (<code>github/codeql-action/analyze@v4</code>).</li>
+</ol>
+<h2 id="build-mode-notes">Build Mode Notes</h2>
+<ul>
+<li><code>build-mode: none</code> is suitable for interpreted languages and scenarios where autobuild/manual build is unnecessary.</li>
+<li>For compiled-language deep analysis requiring build context, set <code>build-mode: manual</code> and provide concrete build commands in the placeholder step.</li>
+</ul>
+<h2 id="operational-guidance">Operational Guidance</h2>
+<h3 id="when-to-adjust-matrix-languages">When to adjust matrix languages</h3>
+<p>Update matrix if repository language profile changes substantially (for example, adding/removing maintained language areas).</p>
+<h3 id="when-to-switch-to-manual-build-mode">When to switch to manual build mode</h3>
+<p>Use manual mode if:</p>
+<ul>
+<li>analysis misses meaningful data for compiled components</li>
+<li>CodeQL logs indicate inability to infer project build context</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="no-alerts-appear">No alerts appear</h3>
+<p>Check:</p>
+<ul>
+<li>workflow actually ran on branch/event</li>
+<li>Code Scanning is enabled in repository security settings</li>
+<li>permissions include <code>security-events: write</code></li>
+</ul>
+<h3 id="analysis-fails-for-a-language">Analysis fails for a language</h3>
+<p>Check:</p>
+<ul>
+<li>matrix entry matches supported CodeQL language IDs</li>
+<li>init/analyze action versions are compatible</li>
+<li>if using manual mode, ensure build commands succeed</li>
+</ul>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="../GitHubActionsWorkflows.html">GitHub Actions Workflows</a></li>
+<li><a href="https://docs.github.com/code-security/code-scanning">GitHub code scanning docs</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

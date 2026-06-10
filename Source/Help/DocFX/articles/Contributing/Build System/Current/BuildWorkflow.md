@@ -11,7 +11,7 @@ Comprehensive reference for the Build workflow located at `.github/workflows/bui
 | Hosted Images | `windows-2025-vs2026` (build and release jobs) |
 | Toolchains | .NET SDKs 9.0.x and 10.0.x, MSBuild x64, NuGet CLI 6.x |
 | Global.json | **Pin SDK via global.json** pins latest stable 10.x (fallback 9.x) in `build`/`release`; preview workflows use additional variables |
-| Build Scripts | `Scripts/Build/nightly.proj` (build job), `Scripts/Build/build.proj` (release job); both pass `/p:UseArtifactsOutput=true` on MSBuild |
+| Build Scripts | `Scripts/Build/nightly.proj` (build job), `Scripts/Build/build.proj` (release job); MSBuild steps use `/m` and `/p:UseArtifactsOutput=true` |
 | Secrets/Vars | `NUGET_API_KEY` when publishing; repository variables `DOTNET_PREVIEW_SETUP_VERSION`, `DOTNET_PREVIEW_SDK_BAND`, `USE_DOTNET_PREVIEW` for preview SDK behaviour (see [GitHub Actions Workflows](../../GitHubActionsWorkflows.md#repository-variables-net-preview--ci)) |
 
 ## Job Topology
@@ -43,14 +43,14 @@ Purpose: validate the solution for PRs and pushes, producing a Release build via
 6. **Setup NuGet CLI**.
 7. **Cache NuGet packages** under `~/.nuget/packages`.
 8. **Restore** `Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.slnx` with `TFMs=all`.
-9. **Build** via `msbuild Scripts/Build/nightly.proj /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /p:UseArtifactsOutput=true`.
+9. **Build** via `msbuild /m Scripts/Build/nightly.proj /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" /p:UseArtifactsOutput=true` (`nightly.proj` sets `BuildInParallel="true"`).
 
 ### `release` Job (master pushes only)
 
 Purpose: pack master builds into NuGet artifacts.
 
 1. **Checkout + SDK setup + Pin SDK via global.json + tooling**: aligned with the `build` job.
-2. **Restore**, **Build**, **Pack** via `Scripts/Build/build.proj`.
+2. **Restore**, **Build**, **Pack** via `Scripts/Build/build.proj` (MSBuild `/m` on Build/Pack steps).
 3. **Get Version** from build output / project files.
 
 ### Toolchain Notes

@@ -49,8 +49,8 @@ Source/Krypton Components/
 │   └── Krypton.Workspace 2022.csproj
 ├── Krypton.Docking/
 │   └── Krypton.Docking 2022.csproj
-├── Krypton.Utilities/
-│   └── Krypton.Utilities.csproj
+├── Krypton.Toolkit.Utilities/
+│   └── Krypton.Toolkit.Utilities.csproj
 ├── Krypton.Standard.Toolkit/
 │   └── Krypton.Standard.Toolkit.csproj
 └── TestForm/

@@ -7,7 +7,7 @@ The `BugReportEmailConfig` class provides configuration for SMTP email settings 
 ## Namespace
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 ```
 
 ## BugReportEmailConfig Class
@@ -334,7 +334,7 @@ public static bool TestEmailConfiguration(BugReportEmailConfig config)
 ## Usage Example
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 // Load email configuration
 var emailConfig = LoadEmailConfigFromSecureStorage();

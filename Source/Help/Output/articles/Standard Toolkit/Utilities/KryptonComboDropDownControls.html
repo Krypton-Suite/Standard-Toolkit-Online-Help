@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Combo Drop-Down Controls | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Combo Drop-Down Controls | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-combo-drop-down-controls">Krypton Combo Drop-Down Controls</h1>
+
+<p>This guide documents the <strong>combo-style drop-down controls</strong> in <code>Krypton.Toolkit.Utilities</code> (namespace <code>Krypton.Toolkit.Utilities</code>). These controls provide a <code>KryptonTextBox</code>-based editor with a Krypton-styled popup that hosts arbitrary or built-in drop-down content.</p>
+<table>
+<thead>
+<tr>
+<th>GitHub issues</th>
+<th>Controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3443">#3443</a></td>
+<td><code>KryptonComboBoxUserControl</code> (extensible host)</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3444">#3444</a></td>
+<td><code>KryptonTreeComboBox</code> (hierarchical tree picker)</td>
+</tr>
+<tr>
+<td>—</td>
+<td><code>KryptonCheckedListComboBox</code> (multi-select checked list)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#choosing-a-control">Choosing a control</a></li>
+<li><a href="#kryptoncomboboxusercontrol">KryptonComboBoxUserControl</a></li>
+<li><a href="#drop-down-contracts">Drop-down contracts</a></li>
+<li><a href="#kryptontreecombobox">KryptonTreeComboBox</a></li>
+<li><a href="#kryptoncheckedlistcombobox">KryptonCheckedListComboBox</a></li>
+<li><a href="#designer-support">Designer support</a></li>
+<li><a href="#keyboard-and-mouse-interaction">Keyboard and mouse interaction</a></li>
+<li><a href="#code-examples">Code examples</a></li>
+<li><a href="#related-controls">Related controls</a></li>
+<li><a href="#testform-demos">TestForm demos</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>Standard <code>KryptonComboBox</code> is optimized for a flat list of items. It is not well suited to hosting arbitrary controls (trees, grids, multi-column lists, custom panels) in its drop-down region.</p>
+<p>The combo drop-down stack solves that by:</p>
+<ul>
+<li>Using a <strong><code>KryptonTextBox</code> + drop button</strong> as the “combo” chrome (inherits cue hints, palette, button specs, and input styles).</li>
+<li>Showing drop-down content in a <strong><code>VisualKryptonDropDownPopup</code></strong> (Krypton border, optional resize grip, screen-aware positioning).</li>
+<li>Supporting an optional <strong><code>IKryptonDropDownUserControl</code></strong> contract so custom <code>UserControl</code> content can size itself, receive lifecycle callbacks, and commit values back to the host.</li>
+<li>Supporting an optional <strong><code>IKryptonDropDownFilterable</code></strong> contract for filter-as-you-type scenarios.</li>
+</ul>
+<p>Built-on-top controls (<code>KryptonTreeComboBox</code>, <code>KryptonCheckedListComboBox</code>) fix the drop-down content and expose a familiar API (<code>Nodes</code>, <code>Items</code>, etc.) without requiring custom <code>UserControl</code> code.</p>
+<hr>
+<h2 id="getting-started">Getting started</h2>
+<h3 id="assembly-and-namespace">Assembly and namespace</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+using Krypton.Toolkit.Utilities;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Assembly</td>
+<td><code>Krypton.Toolkit.Utilities.dll</code></td>
+</tr>
+<tr>
+<td>NuGet (typical)</td>
+<td><code>Krypton.Standard.Toolkit</code> (aggregate package)</td>
+</tr>
+<tr>
+<td>Toolbox</td>
+<td>Controls appear under <strong>Krypton.Toolkit.Utilities</strong> after referencing the assembly</td>
+</tr>
+</tbody>
+</table>
+<h3 id="minimal-example--tree-combo">Minimal example — tree combo</h3>
+<pre><code class="lang-csharp">var combo = new KryptonTreeComboBox
+{
+    DropDownWidth = 280,
+    DropDownHeight = 240,
+    DisplayMode = KryptonTreeComboBoxDisplayMode.Breadcrumb,
+    SelectMode = KryptonTreeComboBoxSelectMode.LeafOnly,
+    ReadOnlyEditor = true
+};
+
+var root = new TreeNode(&quot;Europe&quot;);
+root.Nodes.Add(new TreeNode(&quot;Germany&quot;) { Tag = &quot;DE&quot; });
+root.Nodes.Add(new TreeNode(&quot;France&quot;) { Tag = &quot;FR&quot; });
+combo.Nodes.Add(root);
+root.Expand();
+
+combo.SelectedNodeChanged += (_, _) =&gt;
+    Debug.WriteLine($&quot;Picked: {combo.Text}, Tag={combo.SelectedValue}&quot;);
+
+form.Controls.Add(combo);
+</code></pre>
+<h3 id="minimal-example--checked-list-combo">Minimal example — checked list combo</h3>
+<pre><code class="lang-csharp">var combo = new KryptonCheckedListComboBox { Width = 320 };
+combo.Items.AddRange(new object[] { &quot;Docking&quot;, &quot;Navigator&quot;, &quot;Ribbon&quot;, &quot;Workspace&quot; });
+combo.SetItemChecked(0, true);
+combo.SetItemChecked(2, true);
+combo.RefreshCheckedSummary(); // required after SetItemChecked before a handle exists
+
+combo.CheckedItemsChanged += (_, _) =&gt;
+    Debug.WriteLine($&quot;Checked: {string.Join(&quot;, &quot;, combo.GetCheckedValues())}&quot;);
+
+form.Controls.Add(combo);
+</code></pre>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<pre><code class="lang-mermaid">flowchart TB
+    subgraph Host[&quot;Host controls&quot;]
+        CBUC[KryptonComboBoxUserControl]
+        TC[KryptonTreeComboBox]
+        CLC[KryptonCheckedListComboBox]
+    end
+
+    subgraph DropContent[&quot;Drop-down content&quot;]
+        UC[Custom UserControl]
+        TV[KryptonTreeView]
+        CLB[KryptonCheckedListBox]
+    end
+
+    subgraph Popup[&quot;Popup layer&quot;]
+        VPP[VisualKryptonDropDownPopup]
+    end
+
+    TC --&gt; CBUC
+    CLC --&gt; CBUC
+    CBUC --&gt; VPP
+    UC -.-&gt;|optional IKryptonDropDownUserControl| VPP
+    TC --&gt; TV
+    CLC --&gt; CLB
+    TV --&gt; VPP
+    CLB --&gt; VPP
+</code></pre>
+<p><strong>Inheritance</strong></p>
+<pre><code>KryptonTextBox
+    └── KryptonComboBoxUserControl          ← extensible host (#3443)
+            ├── KryptonTreeComboBox         ← fixed tree drop-down (#3444)
+            └── KryptonCheckedListComboBox  ← fixed checked-list drop-down
+</code></pre>
+<p><strong>Commit flow</strong></p>
+<ol>
+<li>User interacts with drop-down content.</li>
+<li>Content raises <code>CommitValue</code> (<code>IKryptonDropDownUserControl</code>) with <code>KryptonDropDownCommitEventArgs</code>.</li>
+<li>Popup forwards to host <code>ValueCommitted</code>.</li>
+<li>Host updates <code>SelectedValue</code> and <code>Text</code> (unless <code>DisplayText</code> is null).</li>
+<li>Popup closes unless <code>KeepOpen == true</code>.</li>
+</ol>
+<hr>
+<h2 id="choosing-a-control">Choosing a control</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Control</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Custom panel, grid, chart, or proprietary picker</td>
+<td><code>KryptonComboBoxUserControl</code> + your <code>UserControl</code></td>
+</tr>
+<tr>
+<td>Grouped / hierarchical single selection (folders, categories, locations)</td>
+<td><code>KryptonTreeComboBox</code></td>
+</tr>
+<tr>
+<td>Multi-select from a flat list with check boxes</td>
+<td><code>KryptonCheckedListComboBox</code></td>
+</tr>
+<tr>
+<td>Multi-select with legacy checkbox-item list and data binding</td>
+<td><code>KryptonCheckBoxComboBox</code> (older stack; see <a href="#related-controls">Related controls</a>)</td>
+</tr>
+<tr>
+<td>Filter-as-you-type over a custom list</td>
+<td><code>KryptonComboBoxUserControl</code> + <code>IKryptonDropDownFilterable</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="kryptoncomboboxusercontrol">KryptonComboBoxUserControl</h2>
+<p><strong>Type:</strong> <code>Krypton.Toolkit.Utilities.KryptonComboBoxUserControl</code><br>
+<strong>Base class:</strong> <code>Krypton.Toolkit.KryptonTextBox</code><br>
+<strong>Default event:</strong> <code>ValueCommitted</code><br>
+<strong>Default property:</strong> <code>Text</code></p>
+<p>A combo-style editor whose drop-down hosts any <code>Control</code>, typically a <code>UserControl</code> assigned to <code>DropContent</code>.</p>
+<h3 id="features">Features</h3>
+<ul>
+<li>Krypton-themed popup anchored below (or above) the editor, with optional <strong>resize grip</strong> (<code>DropDownResizable</code>).</li>
+<li><strong>Horizontal alignment</strong> of popup (<code>DropDownAlign</code>: left or right relative to editor).</li>
+<li><strong>Min/max popup size</strong> (<code>MinDropDownSize</code>, <code>MaxDropDownSize</code>).</li>
+<li><strong>Read-only editor</strong> mode (<code>ReadOnlyEditor</code>) mimicking <code>ComboBoxStyle.DropDownList</code>.</li>
+<li><strong>Filter-as-you-type</strong> (<code>AutoOpenOnType</code>, <code>MinFilterLength</code>) when drop content implements <code>IKryptonDropDownFilterable</code>.</li>
+<li>Inherits all <code>KryptonTextBox</code> features: cue hint, palette modes, button specs, etc.</li>
+<li>Drop button exposed via <code>DropButton</code> (<code>ButtonSpecAny</code>) for customization.</li>
+</ul>
+<h3 id="properties">Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DropContent</code></td>
+<td><code>Control?</code></td>
+<td><code>null</code></td>
+<td>Control shown in the popup. Use <code>KryptonDropContentEditor</code> in the designer.</td>
+</tr>
+<tr>
+<td><code>DropDownAlign</code></td>
+<td><code>LeftRightAlignment</code></td>
+<td><code>Left</code></td>
+<td>Horizontal alignment of popup vs. editor.</td>
+</tr>
+<tr>
+<td><code>DropDownWidth</code></td>
+<td><code>int</code></td>
+<td><code>200</code></td>
+<td>Initial popup width (px). May be overridden by <code>GetPreferredDropSize</code>.</td>
+</tr>
+<tr>
+<td><code>DropDownHeight</code></td>
+<td><code>int</code></td>
+<td><code>200</code></td>
+<td>Initial popup height (px).</td>
+</tr>
+<tr>
+<td><code>MinDropDownSize</code></td>
+<td><code>Size</code></td>
+<td><code>Empty</code></td>
+<td>Minimum size when resizing; <code>Empty</code> disables minimum.</td>
+</tr>
+<tr>
+<td><code>MaxDropDownSize</code></td>
+<td><code>Size</code></td>
+<td><code>Empty</code></td>
+<td>Maximum size when resizing; <code>Empty</code> disables maximum.</td>
+</tr>
+<tr>
+<td><code>DropDownResizable</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Shows bottom-right resize grip on popup.</td>
+</tr>
+<tr>
+<td><code>ReadOnlyEditor</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>When true, user cannot type in editor (<code>ReadOnly</code> synced).</td>
+</tr>
+<tr>
+<td><code>AutoOpenOnType</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Opens popup while typing; forwards text to <code>IKryptonDropDownFilterable</code>.</td>
+</tr>
+<tr>
+<td><code>MinFilterLength</code></td>
+<td><code>int</code></td>
+<td><code>1</code></td>
+<td>Minimum characters before <code>AutoOpenOnType</code> opens popup.</td>
+</tr>
+<tr>
+<td><code>SelectedValue</code></td>
+<td><code>object?</code></td>
+<td>—</td>
+<td>Last committed value (read-only).</td>
+</tr>
+<tr>
+<td><code>IsDroppedDown</code></td>
+<td><code>bool</code></td>
+<td>—</td>
+<td>Whether popup is open (read-only).</td>
+</tr>
+<tr>
+<td><code>DropButton</code></td>
+<td><code>ButtonSpecAny</code></td>
+<td>—</td>
+<td>Drop-down button spec (read-only).</td>
+</tr>
+<tr>
+<td><code>Text</code></td>
+<td><code>string</code></td>
+<td>—</td>
+<td>Editor display text (inherited; updated on commit).</td>
+</tr>
+</tbody>
+</table>
+<p>Also inherits <code>KryptonTextBox</code> properties: <code>InputControlStyle</code>, <code>PaletteMode</code>, <code>CueHint</code>, <code>ButtonSpecs</code>, etc.</p>
+<h3 id="methods">Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ShowDropDown()</code></td>
+<td>Opens popup; focus moves to drop content.</td>
+</tr>
+<tr>
+<td><code>ShowDropDown(bool retainEditorFocus)</code></td>
+<td>Opens popup; when <code>true</code>, focus returns to editor (filter-as-you-type).</td>
+</tr>
+<tr>
+<td><code>CloseDropDown()</code></td>
+<td>Closes popup if open.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="events">Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Args</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DropDownOpening</code></td>
+<td><code>KryptonDropDownOpeningEventArgs</code></td>
+<td>Before popup shows; set <code>Cancel = true</code> to block.</td>
+</tr>
+<tr>
+<td><code>DropDownOpened</code></td>
+<td><code>EventArgs</code></td>
+<td>After popup is visible.</td>
+</tr>
+<tr>
+<td><code>DropDownClosed</code></td>
+<td><code>EventArgs</code></td>
+<td>After popup is dismissed.</td>
+</tr>
+<tr>
+<td><code>ValueCommitted</code></td>
+<td><code>KryptonDropDownCommitEventArgs</code></td>
+<td>Drop content committed a value.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="drop-down-contracts">Drop-down contracts</h2>
+<h3 id="ikryptondropdownusercontrol">IKryptonDropDownUserControl</h3>
+<p>Optional interface for <code>DropContent</code>. Implement on your <code>UserControl</code> when you need sizing, lifecycle hooks, or value commit.</p>
+<pre><code class="lang-csharp">public interface IKryptonDropDownUserControl
+{
+    Size GetPreferredDropSize(Size proposedSize);
+    void OnDropDownOpening(object owner);
+    void OnDropDownOpened(object owner);
+    void OnDropDownClosing(object owner, ref bool cancel);
+    void OnDropDownClosed(object owner);
+
+    event EventHandler&lt;KryptonDropDownCommitEventArgs&gt; CommitValue;
+    event EventHandler RequestClose;
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GetPreferredDropSize</code></td>
+<td>Return preferred popup size, or <code>Size.Empty</code> to use host <code>DropDownWidth</code>/<code>DropDownHeight</code>. Width is clamped to at least editor width.</td>
+</tr>
+<tr>
+<td><code>OnDropDownOpening</code></td>
+<td>Refresh data, sync selection before show.</td>
+</tr>
+<tr>
+<td><code>OnDropDownOpened</code></td>
+<td>Set focus to inner control.</td>
+</tr>
+<tr>
+<td><code>OnDropDownClosing</code></td>
+<td>Set <code>cancel = true</code> to keep popup open.</td>
+</tr>
+<tr>
+<td><code>OnDropDownClosed</code></td>
+<td>Cleanup after dismiss.</td>
+</tr>
+<tr>
+<td><code>CommitValue</code></td>
+<td>Raise when user picks a value; host updates <code>Text</code>/<code>SelectedValue</code>.</td>
+</tr>
+<tr>
+<td><code>RequestClose</code></td>
+<td>Raise to close without commit (e.g. Escape in content).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Commit example</strong></p>
+<pre><code class="lang-csharp">CommitValue?.Invoke(this, new KryptonDropDownCommitEventArgs(
+    value: selectedObject,
+    displayText: selectedObject.ToString()));
+</code></pre>
+<p><strong>Keep popup open</strong> (multi-step or live update):</p>
+<pre><code class="lang-csharp">CommitValue?.Invoke(this, new KryptonDropDownCommitEventArgs(values, summary)
+{
+    KeepOpen = true
+});
+</code></pre>
+<h3 id="ikryptondropdownfilterable">IKryptonDropDownFilterable</h3>
+<p>Optional interface for filter-as-you-type when <code>AutoOpenOnType = true</code>.</p>
+<pre><code class="lang-csharp">public interface IKryptonDropDownFilterable
+{
+    bool ApplyFilter(string text);
+    void NavigateSelection(int direction);  // +1 down, -1 up
+    bool CommitSelection();
+}
+</code></pre>
+<p>Host behavior:</p>
+<ul>
+<li>Opens popup with <code>ShowDropDown(retainEditorFocus: true)</code> so typing continues in editor.</li>
+<li>Calls <code>ApplyFilter(Text)</code> on each text change; closes popup if filter returns <code>false</code>.</li>
+<li>Forwards <strong>Up/Down/Enter</strong> to <code>NavigateSelection</code> / <code>CommitSelection</code> while popup is open.</li>
+</ul>
+<h3 id="kryptondropdowncommiteventargs">KryptonDropDownCommitEventArgs</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Value</code></td>
+<td>Committed object (stored in <code>SelectedValue</code>).</td>
+</tr>
+<tr>
+<td><code>DisplayText</code></td>
+<td>Text written to editor; <code>null</code> leaves <code>Text</code> unchanged.</td>
+</tr>
+<tr>
+<td><code>KeepOpen</code></td>
+<td>When <code>true</code>, popup stays open after commit (default <code>false</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="kryptondropdownopeningeventargs">KryptonDropDownOpeningEventArgs</h3>
+<p>Inherits <code>CancelEventArgs</code>. Exposes <code>DropContent</code> (the control about to be shown).</p>
+<hr>
+<h2 id="kryptontreecombobox">KryptonTreeComboBox</h2>
+<p><strong>Type:</strong> <code>Krypton.Toolkit.Utilities.KryptonTreeComboBox</code><br>
+<strong>Base class:</strong> <code>KryptonComboBoxUserControl</code><br>
+<strong>Default event:</strong> <code>SelectedNodeChanged</code><br>
+<strong>Default property:</strong> <code>Nodes</code><br>
+<strong>Issue:</strong> <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3444">#3444</a></p>
+<p>Single-select combo with a hierarchical <code>KryptonTreeView</code> in the drop-down. Supports grouping (parent nodes), optional check boxes and images on nodes, and multiple ways to format the editor text after selection.</p>
+<h3 id="features-1">Features</h3>
+<ul>
+<li><strong>Leaf-only or any-node</strong> selection (<code>SelectMode</code>).</li>
+<li><strong>Display modes:</strong> leaf text only, full path, or breadcrumb trail.</li>
+<li>Commit via <strong>double-click</strong>, <strong>Enter</strong>, or optional <strong>single-click</strong> (<code>CommitOnNodeClick</code>).</li>
+<li>Forwards <code>AfterSelect</code> while drop-down is open.</li>
+<li><code>CheckBoxes</code>, <code>ImageList</code>, <code>ShowLines</code>, <code>ShowRootLines</code>, <code>ShowPlusMinus</code> forwarded to inner tree.</li>
+<li><code>ReadOnlyEditor = true</code> by default; <code>DropDownResizable = true</code> by default.</li>
+<li>Does <strong>not</strong> support <code>AutoOpenOnType</code> (property hidden).</li>
+</ul>
+<h3 id="properties-in-addition-to-host">Properties (in addition to host)</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Nodes</code></td>
+<td><code>TreeNodeCollection</code></td>
+<td>—</td>
+<td>Tree nodes (designer collection editor).</td>
+</tr>
+<tr>
+<td><code>SelectedNode</code></td>
+<td><code>TreeNode?</code></td>
+<td>—</td>
+<td>Current selection; updates <code>Text</code> when set.</td>
+</tr>
+<tr>
+<td><code>SelectedValue</code></td>
+<td><code>object?</code></td>
+<td>—</td>
+<td>Committed node reference (from last commit).</td>
+</tr>
+<tr>
+<td><code>DisplayMode</code></td>
+<td><code>KryptonTreeComboBoxDisplayMode</code></td>
+<td><code>LeafText</code></td>
+<td>How editor text is formatted.</td>
+</tr>
+<tr>
+<td><code>SelectMode</code></td>
+<td><code>KryptonTreeComboBoxSelectMode</code></td>
+<td><code>LeafOnly</code></td>
+<td><code>LeafOnly</code> or <code>AnyNode</code>.</td>
+</tr>
+<tr>
+<td><code>PathSeparator</code></td>
+<td><code>string</code></td>
+<td><code>\</code></td>
+<td>Separator for <code>FullPath</code> mode.</td>
+</tr>
+<tr>
+<td><code>BreadcrumbSeparator</code></td>
+<td><code>string</code></td>
+<td><code>&gt;</code></td>
+<td>Separator for <code>Breadcrumb</code> mode.</td>
+</tr>
+<tr>
+<td><code>CommitOnNodeClick</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Single-click commits selectable nodes.</td>
+</tr>
+<tr>
+<td><code>CheckBoxes</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>Show node check boxes (visual only for single-select commit).</td>
+</tr>
+<tr>
+<td><code>ImageList</code></td>
+<td><code>ImageList?</code></td>
+<td><code>null</code></td>
+<td>Node images.</td>
+</tr>
+<tr>
+<td><code>ShowLines</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Tree line styling.</td>
+</tr>
+<tr>
+<td><code>ShowRootLines</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Lines from root.</td>
+</tr>
+<tr>
+<td><code>ShowPlusMinus</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Expand/collapse glyphs.</td>
+</tr>
+<tr>
+<td><code>TreeView</code></td>
+<td><code>KryptonTreeView</code></td>
+<td>—</td>
+<td>Inner tree (do not reparent).</td>
+</tr>
+</tbody>
+</table>
+<p>Inherited from host: <code>DropDownWidth</code> (default 280), <code>DropDownHeight</code> (default 240), <code>DropDownResizable</code>, <code>DropDownAlign</code>, <code>ReadOnlyEditor</code>, palette/style properties.</p>
+<h3 id="enums">Enums</h3>
+<p><strong>KryptonTreeComboBoxDisplayMode</strong></p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Editor text example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LeafText</code></td>
+<td><code>Germany</code></td>
+</tr>
+<tr>
+<td><code>FullPath</code></td>
+<td><code>Continents\Europe\Germany</code> (uses <code>PathSeparator</code>)</td>
+</tr>
+<tr>
+<td><code>Breadcrumb</code></td>
+<td><code>Continents &gt; Europe &gt; Germany</code> (uses <code>BreadcrumbSeparator</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>KryptonTreeComboBoxSelectMode</strong></p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LeafOnly</code></td>
+<td>Only nodes without children can be committed.</td>
+</tr>
+<tr>
+<td><code>AnyNode</code></td>
+<td>Parent/group nodes can be committed.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="methods-1">Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CanSelectNode(TreeNode node)</code></td>
+<td>Whether node is committable for current <code>SelectMode</code>.</td>
+</tr>
+<tr>
+<td><code>FormatNodeDisplay(TreeNode node)</code></td>
+<td>Format node text per <code>DisplayMode</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="events-1">Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SelectedNodeChanged</code></td>
+<td>After a node is committed from the drop-down.</td>
+</tr>
+<tr>
+<td><code>AfterSelect</code></td>
+<td>Forwards inner <code>KryptonTreeView.AfterSelect</code> while popup is open.</td>
+</tr>
+<tr>
+<td><code>ValueCommitted</code></td>
+<td>Inherited; <code>Value</code> is the <code>TreeNode</code>, <code>DisplayText</code> is formatted text.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="kryptoncheckedlistcombobox">KryptonCheckedListComboBox</h2>
+<p><strong>Type:</strong> <code>Krypton.Toolkit.Utilities.KryptonCheckedListComboBox</code><br>
+<strong>Base class:</strong> <code>KryptonComboBoxUserControl</code><br>
+<strong>Default event:</strong> <code>ItemCheck</code><br>
+<strong>Default property:</strong> <code>Items</code></p>
+<p>Multi-select combo with a <code>KryptonCheckedListBox</code> hosted <strong>directly</strong> in the popup (not inside a plain <code>UserControl</code> wrapper) so Krypton layout and painting work correctly.</p>
+<h3 id="features-2">Features</h3>
+<ul>
+<li><strong>Live summary</strong> in editor while checking/unchecking (popup stays open).</li>
+<li>Configurable <strong>separator</strong> between checked item names in editor.</li>
+<li><strong>Empty selection text</strong> when nothing is checked.</li>
+<li><strong>Enter closes popup</strong> optionally (<code>CloseDropDownOnEnter</code>, default <code>true</code>).</li>
+<li><code>CheckOnClick</code> forwarded to inner list (default <code>true</code>).</li>
+<li><code>ReadOnlyEditor = true</code> by default; <code>DropDownResizable = true</code> by default.</li>
+<li>Does <strong>not</strong> support <code>AutoOpenOnType</code> (property hidden).</li>
+</ul>
+<h3 id="properties-in-addition-to-host-1">Properties (in addition to host)</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Items</code></td>
+<td><code>ListBox.ObjectCollection</code></td>
+<td>—</td>
+<td>List entries (designer string collection editor).</td>
+</tr>
+<tr>
+<td><code>CheckedItems</code></td>
+<td><code>CheckedItemCollection</code></td>
+<td>—</td>
+<td>Currently checked items.</td>
+</tr>
+<tr>
+<td><code>CheckedIndices</code></td>
+<td><code>CheckedIndexCollection</code></td>
+<td>—</td>
+<td>Indexes of checked items.</td>
+</tr>
+<tr>
+<td><code>CheckedListBox</code></td>
+<td><code>KryptonCheckedListBox</code></td>
+<td>—</td>
+<td>Inner list (do not reparent).</td>
+</tr>
+<tr>
+<td><code>ValueSeparator</code></td>
+<td><code>string</code></td>
+<td><code>&quot;, &quot;</code></td>
+<td>Between item texts in editor summary.</td>
+</tr>
+<tr>
+<td><code>EmptySelectionText</code></td>
+<td><code>string</code></td>
+<td><code>&quot;&quot;</code></td>
+<td>Editor text when no checks.</td>
+</tr>
+<tr>
+<td><code>CloseDropDownOnEnter</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Enter in list closes popup.</td>
+</tr>
+<tr>
+<td><code>CheckOnClick</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Toggle check on item click.</td>
+</tr>
+<tr>
+<td><code>SelectedValue</code></td>
+<td><code>object[]</code></td>
+<td>—</td>
+<td>Last committed checked values (via <code>GetCheckedValues()</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>Inherited from host: <code>DropDownWidth</code> (default 260), <code>DropDownHeight</code> (default 200), <code>DropDownResizable</code>, <code>DropDownAlign</code>, palette/style properties.</p>
+<h3 id="methods-2">Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GetItemChecked(int index)</code></td>
+<td>Check state of item.</td>
+</tr>
+<tr>
+<td><code>SetItemChecked(int index, bool value)</code></td>
+<td>Set checked state.</td>
+</tr>
+<tr>
+<td><code>GetItemCheckState(int index)</code></td>
+<td><code>CheckState</code> of item.</td>
+</tr>
+<tr>
+<td><code>SetItemCheckState(int index, CheckState value)</code></td>
+<td>Set <code>CheckState</code>.</td>
+</tr>
+<tr>
+<td><code>ClearChecked()</code></td>
+<td>Uncheck all items.</td>
+</tr>
+<tr>
+<td><code>GetCheckedValues()</code></td>
+<td><code>object[]</code> of checked items.</td>
+</tr>
+<tr>
+<td><code>FormatCheckedItemsDisplay()</code></td>
+<td>Build summary string for editor.</td>
+</tr>
+<tr>
+<td><code>RefreshCheckedSummary()</code></td>
+<td>Update editor from checks without opening popup (call after <code>SetItemChecked</code> in ctor).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="events-2">Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ItemCheck</code></td>
+<td>Forwards <code>KryptonCheckedListBox.ItemCheck</code> (before state changes).</td>
+</tr>
+<tr>
+<td><code>CheckedItemsChanged</code></td>
+<td>After summary / <code>SelectedValue</code> updated.</td>
+</tr>
+<tr>
+<td><code>ValueCommitted</code></td>
+<td>Inherited; fires on each check change (<code>KeepOpen</code>) and on close.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="initialization-note">Initialization note</h3>
+<p><code>SetItemChecked</code> during form/control construction may run <strong>before</strong> a window handle exists. The control skips deferred <code>BeginInvoke</code> updates in that case. Always call <strong><code>RefreshCheckedSummary()</code></strong> after programmatically setting checks in the constructor:</p>
+<pre><code class="lang-csharp">combo.SetItemChecked(0, true);
+combo.SetItemChecked(2, true);
+combo.RefreshCheckedSummary();
+</code></pre>
+<hr>
+<h2 id="designer-support">Designer support</h2>
+<h3 id="kryptoncomboboxusercontrol-1">KryptonComboBoxUserControl</h3>
+<ul>
+<li><strong>Smart tag:</strong> Drop-down alignment, width/height, resizable, read-only editor, input style, palette.</li>
+<li><strong>DropContent editor:</strong> Picks an existing control on the form or creates a new <code>UserControl</code>-derived type (sited on the form for code generation).</li>
+</ul>
+<h3 id="kryptontreecombobox-1">KryptonTreeComboBox</h3>
+<ul>
+<li><strong>Smart tag:</strong> Drop-down settings + display mode + select mode + palette.</li>
+<li><strong>Nodes:</strong> Standard tree node collection editor on <code>Nodes</code>.</li>
+</ul>
+<h3 id="kryptoncheckedlistcombobox-1">KryptonCheckedListComboBox</h3>
+<ul>
+<li><strong>Smart tag:</strong> Drop-down settings + value separator + palette.</li>
+<li><strong>Items:</strong> Standard list string collection editor.</li>
+</ul>
+<h3 id="toolbox-bitmaps">Toolbox bitmaps</h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Bitmap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonComboBoxUserControl</code></td>
+<td><code>KryptonComboBox</code></td>
+</tr>
+<tr>
+<td><code>KryptonTreeComboBox</code></td>
+<td><code>KryptonComboBox</code></td>
+</tr>
+<tr>
+<td><code>KryptonCheckedListComboBox</code></td>
+<td><code>KryptonCheckedListBox</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="keyboard-and-mouse-interaction">Keyboard and mouse interaction</h2>
+<h3 id="host-all-variants">Host (all variants)</h3>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Click drop button</td>
+<td>Toggle popup</td>
+</tr>
+<tr>
+<td><strong>F4</strong></td>
+<td>Toggle popup</td>
+</tr>
+<tr>
+<td><strong>Alt+Down</strong></td>
+<td>Open popup</td>
+</tr>
+<tr>
+<td><strong>Alt+Up</strong></td>
+<td>Close popup</td>
+</tr>
+<tr>
+<td><strong>Escape</strong> (popup open)</td>
+<td>Close popup</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tree-combo-popup-open">Tree combo (popup open)</h3>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Enter</strong></td>
+<td>Commit selected node (if selectable)</td>
+</tr>
+<tr>
+<td><strong>Escape</strong></td>
+<td>Close popup</td>
+</tr>
+<tr>
+<td>Double-click node</td>
+<td>Commit (if selectable)</td>
+</tr>
+<tr>
+<td>Single-click</td>
+<td>Commit when <code>CommitOnNodeClick</code> is true</td>
+</tr>
+</tbody>
+</table>
+<h3 id="checked-list-combo-popup-open">Checked list combo (popup open)</h3>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Click item</td>
+<td>Toggle check (<code>CheckOnClick</code>)</td>
+</tr>
+<tr>
+<td><strong>Enter</strong></td>
+<td>Close when <code>CloseDropDownOnEnter</code> is true</td>
+</tr>
+<tr>
+<td><strong>Escape</strong></td>
+<td>Close popup</td>
+</tr>
+</tbody>
+</table>
+<h3 id="filter-as-you-type-host--ikryptondropdownfilterable">Filter-as-you-type (host + <code>IKryptonDropDownFilterable</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Type in editor</td>
+<td>Open popup (if <code>AutoOpenOnType</code>), call <code>ApplyFilter</code></td>
+</tr>
+<tr>
+<td><strong>Up / Down</strong></td>
+<td><code>NavigateSelection</code></td>
+</tr>
+<tr>
+<td><strong>Enter</strong></td>
+<td><code>CommitSelection</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="code-examples">Code examples</h2>
+<h3 id="custom-grid-picker-ikryptondropdownusercontrol">Custom grid picker (<code>IKryptonDropDownUserControl</code>)</h3>
+<p>See <code>TestForm/KryptonComboBoxUserControlDemo.cs</code> — <code>GridPickerControl</code> uses <code>KryptonDataGridView</code>, commits on double-click/Enter, implements <code>GetPreferredDropSize</code>, and raises <code>CommitValue</code> with an anonymous type <code>{ Code, Name, Currency }</code>.</p>
+<h3 id="tree-with-tag-for-business-key">Tree with <code>Tag</code> for business key</h3>
+<pre><code class="lang-csharp">var node = new TreeNode(&quot;Germany&quot;) { Tag = &quot;DE&quot; };
+// After commit:
+var countryCode = (string)combo.SelectedValue?.Tag!;
+</code></pre>
+<h3 id="checked-list--custom-separator-and-empty-text">Checked list — custom separator and empty text</h3>
+<pre><code class="lang-csharp">var combo = new KryptonCheckedListComboBox
+{
+    ValueSeparator = &quot; | &quot;,
+    EmptySelectionText = &quot;(none selected)&quot;,
+    CloseDropDownOnEnter = false  // keep popup open on Enter
+};
+</code></pre>
+<h3 id="cancel-opening-drop-down">Cancel opening drop-down</h3>
+<pre><code class="lang-csharp">combo.DropDownOpening += (_, e) =&gt;
+{
+    if (!CanShowPickerToday())
+        e.Cancel = true;
+};
+</code></pre>
+<hr>
+<h2 id="related-controls">Related controls</h2>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Location</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonCheckBoxComboBox</code></td>
+<td><code>Krypton.Toolkit.Utilities</code></td>
+<td>Older multi-select combo; custom checkbox item list on <code>KryptonPopUpComboBox</code> stack. Use for existing apps with data-binding to checkbox items. <strong>Prefer <code>KryptonCheckedListComboBox</code></strong> for new work on the #3443 popup stack.</td>
+</tr>
+<tr>
+<td><code>KryptonCheckedListBox</code></td>
+<td><code>Krypton.Toolkit</code></td>
+<td>Standalone checked list (always visible).</td>
+</tr>
+<tr>
+<td><code>KryptonTreeView</code></td>
+<td><code>Krypton.Toolkit</code></td>
+<td>Standalone tree.</td>
+</tr>
+<tr>
+<td><code>KryptonComboBox</code></td>
+<td><code>Krypton.Toolkit</code></td>
+<td>Flat list combo; not for arbitrary drop-down content.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="blank-or-gray-drop-down-checked-list">Blank or gray drop-down (checked list)</h3>
+<p><strong>Cause:</strong> <code>KryptonCheckedListBox</code> must be hosted as a Krypton control directly in the popup so <code>ViewLayoutFill</code> / <code>OnLayout</code> can position the inner list. A plain <code>UserControl</code> wrapper shows gray chrome with no items.</p>
+<p><strong>Fix:</strong> Use <code>KryptonCheckedListComboBox</code> (current implementation). If building custom content, host <code>KryptonCheckedListBox</code> as <code>DropContent</code> itself or call <code>ForceControlLayout()</code> / <code>PerformNeedPaint</code> on open.</p>
+<h3 id="begininvoke--handle-not-created"><code>BeginInvoke</code> / handle not created</h3>
+<p><strong>Cause:</strong> Calling <code>SetItemChecked</code> in the constructor triggers <code>ItemCheck</code> before any control has a handle.</p>
+<p><strong>Fix:</strong> Call <code>RefreshCheckedSummary()</code> after programmatic initialization. The drop-down defers live updates until the host has a handle.</p>
+<h3 id="popup-width-narrower-than-editor">Popup width narrower than editor</h3>
+<p><strong>By design:</strong> Popup width is at least the editor width (<code>ResolvePopupSize</code> in host).</p>
+<h3 id="custom-content-does-not-close-on-pick">Custom content does not close on pick</h3>
+<p>Implement <code>IKryptonDropDownUserControl</code> and raise <code>CommitValue</code> with <code>KeepOpen = false</code> (default). For multi-select live updates, use <code>KeepOpen = true</code>.</p>
+<h3 id="designer-shows-autoopenontype-on-tree--checked-list-combos">Designer shows <code>AutoOpenOnType</code> on tree / checked list combos</h3>
+<p>Properties are hidden (<code>Browsable(false)</code>); specialized combos do not support filter-as-you-type. Use <code>KryptonComboBoxUserControl</code> for that scenario.</p>
+<h3 id="styling--palette-mismatch-in-popup">Styling / palette mismatch in popup</h3>
+<p>Ensure drop content uses the same <code>PaletteMode</code> as the host, or relies on global palette (<code>KryptonManager</code>). <code>KryptonCheckedListComboBoxDropDown</code> syncs <code>PaletteMode</code> from the owner on open.</p>
+<hr>
+<h2 id="source-layout-reference">Source layout (reference)</h2>
+<pre><code>Krypton.Toolkit.Utilities/
+  Components/
+    KryptonComboBoxUserControl/
+      Controls Toolkit/KryptonComboBoxUserControl.cs
+      Controls Visuals/VisualKryptonDropDownPopup.cs
+      General/IKryptonDropDownUserControl.cs
+      General/IKryptonDropDownFilterable.cs
+      EventArgs/KryptonDropDownCommitEventArgs.cs
+      EventArgs/KryptonDropDownOpeningEventArgs.cs
+      Designers/...
+    KryptonTreeComboBox/
+      Controls Toolkit/KryptonTreeComboBox.cs
+      Controls Visuals/KryptonTreeComboBoxDropDown.cs
+      General/KryptonTreeComboBoxDisplayMode.cs
+      General/KryptonTreeComboBoxSelectMode.cs
+      Designers/...
+    KryptonCheckedListComboBox/
+      Controls Toolkit/KryptonCheckedListComboBox.cs
+      Controls Visuals/KryptonCheckedListComboBoxDropDown.cs
+      Designers/...
+</code></pre>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

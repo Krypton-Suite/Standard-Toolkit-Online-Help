@@ -380,7 +380,7 @@ All published versions are tracked on NuGet.org:
 
 **Solution**: Rebuild all projects in single invocation:
 ```cmd
-msbuild build.proj /t:Rebuild
+msbuild /m build.proj /t:Rebuild
 ```
 
 ### Old Version After Clean Build
@@ -393,7 +393,7 @@ msbuild build.proj /t:Rebuild
 ```cmd
 purge.cmd
 nuget.exe locals all -clear
-msbuild build.proj /t:Rebuild
+msbuild /m build.proj /t:Rebuild
 ```
 
 ### Pre-release Not Showing in NuGet
@@ -420,7 +420,7 @@ Check "Include prerelease" in NuGet Package Manager
 **Solution**:
 ```cmd
 purge.cmd
-msbuild build.proj /t:Rebuild /p:Configuration=Release
+msbuild /m build.proj /t:Rebuild /p:Configuration=Release
 ```
 
 ## Advanced Scenarios
@@ -451,7 +451,7 @@ Add build metadata per SemVer 2.0:
 
 Override version in CI/CD:
 ```cmd
-msbuild build.proj /t:Pack /p:PackageVersion=100.25.1.305-ci.%BUILD_NUMBER%
+msbuild /m build.proj /t:Pack /p:PackageVersion=100.25.1.305-ci.%BUILD_NUMBER%
 ```
 
 ## Related Documentation

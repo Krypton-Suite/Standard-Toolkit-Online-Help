@@ -1,5 +1,14 @@
 # Auto-Label Issue Areas Workflow
 
+## Quick Reference
+
+- Workflow file: `.github/workflows/auto-label-issue-areas.yml`
+- Workflow name: `Auto-label issue areas`
+- Trigger: `issues` (`opened`, `edited`)
+- Runner: `ubuntu-latest`
+- Permissions: `issues: write`
+- Primary action: `actions/github-script@v9`
+
 ## Overview
 
 The Auto-Label Issue Areas workflow automatically processes issues to:
@@ -36,7 +45,7 @@ The Auto-Label Issue Areas workflow automatically processes issues to:
 **Steps**:
 
 1. **Extract and apply area labels**
-   - Uses `actions/github-script@v8` to execute JavaScript
+   - Uses `actions/github-script@v9` to execute JavaScript
    - Processes issue body and title
    - Extracts area information
    - Applies labels and updates title
@@ -249,7 +258,7 @@ If labels don't exist, the workflow will log warnings but continue processing.
 **Key Components**:
 
 - Event: `issues` with types `opened` and `edited`
-- Action: `actions/github-script@v8`
+- Action: `actions/github-script@v9`
 - Logic: Regex-based field extraction and label mapping
 
 ## Maintenance Notes

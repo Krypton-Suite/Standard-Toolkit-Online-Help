@@ -70,6 +70,7 @@
 <h1 id="releaseyml-developer-guide"><code>release.yml</code> Developer Guide</h1>
 
 <p>Authoritative documentation for <code>.github/workflows/release.yml</code>, which coordinates production and pre-release promotions for pushes to <code>master</code>, <code>alpha</code>, <code>canary</code>, and <code>V105-LTS</code> (see the workflow <code>on.push.branches</code> list for the current set).</p>
+<p><strong>How code reaches <code>master</code>:</strong> Feature work merges into <code>alpha</code> first. Stable releases are promoted through <strong><code>alpha</code> → <code>canary</code> → <code>gold</code></strong>, then a <strong><code>gold</code> → <code>master</code></strong> pull request. When repository rulesets are enabled, <a href="../../Workflows/MasterMergeGuardWorkflow.html">Master merge guard</a> enforces that path; <strong><code>release-master</code></strong> runs on the <strong>push</strong> that results from merging that PR—not from direct feature pushes to <code>master</code>. See <a href="../../BranchPromotionPolicy.html">Branch promotion policy</a>.</p>
 <h2 id="quick-reference">Quick Reference</h2>
 <table>
 <thead>
@@ -122,7 +123,7 @@
 <li>Every job runs only when the push target matches its branch <strong>and</strong> the corresponding kill switch reports <code>enabled=true</code>.</li>
 <li><strong>SDK setup</strong>: install <strong>.NET 9.0.x</strong> and <strong>10.0.x</strong>. Jobs that publish preview TFMs also run <strong>Setup .NET Preview</strong> (unless repository variable <strong><code>USE_DOTNET_PREVIEW</code></strong> is <code>false</code>) and <strong>Pin SDK via global.json</strong>, which resolves <code>sdk.version</code> using <strong><code>DOTNET_PREVIEW_SDK_BAND</code></strong> / <strong><code>Get-ListedSdkVersion</code></strong> when preview is enabled, or stable <strong>10.x → 9.x</strong> when preview is disabled (see <a href="../../GitHubActionsWorkflows.html#repository-variables-net-preview--ci">GitHub Actions Workflows</a>).</li>
 <li>The <strong><code>release-v105-lts</code></strong> job pins <strong>stable</strong> SDKs only (no preview setup step).</li>
-<li>Orchestrated <strong>Build</strong> and <strong>Pack</strong> steps pass <code>/p:UseArtifactsOutput=true</code>, so outputs go under <code>artifacts/bin/</code> and <code>artifacts/packages/</code> on the runner. <strong>Push</strong> and <strong>Get Version</strong> steps try <code>artifacts/...</code> first, then fall back to legacy <code>Bin/...</code> for compatibility with older layouts or local debugging.</li>
+<li>Orchestrated <strong>Build</strong> and <strong>Pack</strong> steps pass <strong><code>/m</code></strong> and <code>/p:UseArtifactsOutput=true</code>, so outputs go under <code>artifacts/bin/</code> and <code>artifacts/packages/</code> on the runner. <strong>Push</strong> and <strong>Get Version</strong> steps try <code>artifacts/...</code> first, then fall back to legacy <code>Bin/...</code> for compatibility with older layouts or local debugging.</li>
 <li>Package publishing relies on <code>secrets.NUGET_API_KEY</code>.</li>
 </ul>
 <h2 id="kill-switches">Kill Switches</h2>
@@ -133,7 +134,7 @@
 </ul>
 <h2 id="job-deep-dive">Job Deep Dive</h2>
 <h3 id="1-release-master-stable">1. <code>release-master</code> (Stable)</h3>
-<p><strong>Trigger:</strong> <code>push</code> to <code>master</code>.</p>
+<p><strong>Trigger:</strong> <code>push</code> to <code>master</code> (typically after merging a <strong><code>gold</code> → <code>master</code></strong> promotion PR).</p>
 <ol>
 <li><strong>Release Kill Switch Check (<code>vars.RELEASE_DISABLED</code>)</strong>
 <ul>
@@ -145,7 +146,7 @@
 <li><strong>Setup .NET</strong> (9.0.x / 10.0.x), optional <strong>Setup .NET Preview</strong> when <code>USE_DOTNET_PREVIEW</code> is not <code>false</code>, then <strong>Pin SDK via global.json</strong> (preview band or stable per variables).</li>
 </ul>
 </li>
-<li><strong>Restore</strong>, <strong>Build</strong>, <strong>Pack</strong> via <code>Scripts/Build/build.proj</code> with <code>/p:UseArtifactsOutput=true</code>.</li>
+<li><strong>Restore</strong>, <strong>Build</strong>, <strong>Pack</strong> via <code>Scripts/Build/build.proj</code> with <code>msbuild /m</code> and <code>/p:UseArtifactsOutput=true</code>.</li>
 <li><strong>Push NuGet Packages</strong>
 <ul>
 <li>Collects <code>artifacts/packages/Release/*.nupkg</code> and <code>Bin/Packages/Release/*.nupkg</code>.</li>
@@ -176,7 +177,7 @@
 <p>Highlights:</p>
 <ul>
 <li>Kill switch <code>vars.CANARY_DISABLED</code>.</li>
-<li>Build/Pack uses <code>Scripts/Build/canary.proj</code> with <code>Configuration=Canary</code> and <code>/p:UseArtifactsOutput=true</code>.</li>
+<li>Build/Pack uses <code>Scripts/Build/canary.proj</code> with <code>Configuration=Canary</code>, <code>msbuild /m</code>, and <code>/p:UseArtifactsOutput=true</code>.</li>
 <li>Packages: <code>artifacts/packages/Canary/</code> then <code>Bin/Packages/Canary/</code>. Binaries for version: <code>artifacts/bin/Canary/net48/Krypton.Toolkit.dll</code> then <code>Bin/Canary/net48/Krypton.Toolkit.dll</code>; fallback <code>100.25.1.1</code>.</li>
 <li>Discord uses <code>DISCORD_WEBHOOK_CANARY</code> and points to <code>.Canary</code> nuget.org packages.</li>
 </ul>
@@ -184,7 +185,7 @@
 <p>Characteristics:</p>
 <ul>
 <li>Kill switch <code>vars.NIGHTLY_DISABLED</code>.</li>
-<li>Uses <code>Scripts/Build/nightly.proj</code> with <code>Configuration=Nightly</code> and <code>/p:UseArtifactsOutput=true</code>.</li>
+<li>Uses <code>Scripts/Build/nightly.proj</code> with <code>Configuration=Nightly</code>, <code>msbuild /m</code>, <code>BuildInParallel=&quot;true&quot;</code>, and <code>/p:UseArtifactsOutput=true</code>.</li>
 <li>Produces packages under <code>artifacts/packages/Nightly/</code> (with <code>Bin/Packages/Nightly/</code> as fallback for discovery scripts).</li>
 <li>Discord uses <code>DISCORD_WEBHOOK_NIGHTLY</code>, referencing <code>.Nightly</code> packages. NuGet publishing for scheduled alpha/nightly drops may also be handled by <code>nightly.yml</code>; see that workflow for schedule-driven pushes.</li>
 </ul>
@@ -256,6 +257,12 @@
 <li>[ ] Monitor package push logs for <code>already exists</code> messages; duplicates are expected on reruns.</li>
 <li>[ ] Validate Discord message in the target channel after publication.</li>
 <li>[ ] Tag repository manually if you rely on the <code>get_version</code> output for git tagging.</li>
+</ul>
+<h2 id="related-documentation">Related documentation</h2>
+<ul>
+<li><a href="../../BranchPromotionPolicy.html">Branch promotion policy</a></li>
+<li><a href="../../Workflows/MasterMergeGuardWorkflow.html">Master merge guard</a></li>
+<li><a href="../../Workflows/BranchPromotionGuardWorkflow.html">Branch promotion guard</a></li>
 </ul>
 
 </article>

@@ -3,7 +3,7 @@
 ## Namespace
 
 ```csharp
-Krypton.Utilities
+Krypton.Toolkit.Utilities
 ```
 
 ## Classes
@@ -12,7 +12,7 @@ Krypton.Utilities
 
 Static class providing the main API for displaying bug reporting dialogs.
 
-**Assembly:** `Krypton.Utilities.dll`
+**Assembly:** `Krypton.Toolkit.Utilities.dll`
 
 #### KryptonBugReportingDialog methods
 
@@ -64,7 +64,7 @@ Displays the bug reporting dialog without an exception.
 
 Configuration class for SMTP email settings.
 
-**Assembly:** `Krypton.Utilities.dll`
+**Assembly:** `Krypton.Toolkit.Utilities.dll`
 
 #### BugReportEmailConfig constructor
 
@@ -222,7 +222,7 @@ This is a computed property based on whether `Username` is set.
 
 Service class for sending bug report emails.
 
-**Assembly:** `Krypton.Utilities.dll`
+**Assembly:** `Krypton.Toolkit.Utilities.dll`
 
 #### Constructor
 
@@ -274,7 +274,7 @@ Sends a bug report email.
 
 Helper class for integrating bug reporting with exception dialogs.
 
-**Assembly:** `Krypton.Utilities.dll`
+**Assembly:** `Krypton.Toolkit.Utilities.dll`
 
 #### BugReportingHelper methods
 
@@ -308,7 +308,7 @@ This method displays `KryptonExceptionDialog` with a "Report Bug" button. When c
 
 Localizable string resources for the bug reporting dialog.
 
-**Assembly:** `Krypton.Utilities.dll`
+**Assembly:** `Krypton.Toolkit.Utilities.dll`
 
 #### KryptonBugReportingDialogStrings constructor
 

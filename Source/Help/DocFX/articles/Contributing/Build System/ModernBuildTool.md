@@ -14,7 +14,7 @@ ModernBuild is an interactive Terminal UI (TUI) application that provides a mode
 
 ModernBuild discovers NuGet package folders in a fixed order: `artifacts/packages/<Configuration>/`, `artifacts/packages/Release/`, `Bin/Packages/<Configuration>/`, then `Bin/<Configuration>/` and `Bin/Release/`. Push and “Create ZIP” use the first folder that exists. The timestamped package ZIP is always written to the repo root `Bin/<yyyyMMdd>_NuGet_Packages.zip` (even when packages were produced under `artifacts/packages/`). F7 **Clean** removes `Bin/`, per-project `obj/` folders, and `Logs/`; it does **not** delete the `artifacts/` tree—remove that manually if you need a full clean after an artifacts-mode build.
 
-Local script builds default to legacy `Bin/` unless you pass `/p:UseArtifactsOutput=true` to MSBuild (GitHub Actions use that for orchestrated jobs).
+Local script builds default to legacy `Bin/` unless you pass `/p:UseArtifactsOutput=true` to MSBuild (GitHub Actions use that for orchestrated jobs). ModernBuild always passes **`/m`** when invoking MSBuild (same as the `.cmd` orchestration scripts).
 
 ## Features
 

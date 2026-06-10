@@ -57,7 +57,7 @@ Verify after pack: **`lib/`** should contain **each target framework folder** wi
 ### 1. Clean Previous Packages
 
 ```cmd
-msbuild build.proj /t:CleanPackages
+msbuild /m build.proj /t:CleanPackages
 ```
 
 **Actions**:
@@ -66,7 +66,7 @@ msbuild build.proj /t:CleanPackages
 ### 2. Clean Build Artifacts
 
 ```cmd
-msbuild build.proj /t:Clean
+msbuild /m build.proj /t:Clean
 ```
 
 **Actions**:
@@ -81,7 +81,7 @@ msbuild build.proj /t:Clean
 ### 3. Restore Dependencies
 
 ```cmd
-msbuild build.proj /t:Restore
+msbuild /m build.proj /t:Restore
 ```
 
 **Actions**:
@@ -92,7 +92,7 @@ msbuild build.proj /t:Restore
 ### 4. Build Projects
 
 ```cmd
-msbuild build.proj /t:Build /p:TFMs=all
+msbuild /m build.proj /t:Build /p:TFMs=all
 ```
 
 **Actions**:
@@ -103,7 +103,7 @@ msbuild build.proj /t:Build /p:TFMs=all
 ### 5. Pack Projects
 
 ```cmd
-msbuild build.proj /t:Pack /p:TFMs=all
+msbuild /m build.proj /t:Pack /p:TFMs=all
 ```
 
 **Actions**:
@@ -116,7 +116,7 @@ msbuild build.proj /t:Pack /p:TFMs=all
 
 ```cmd
 cd Scripts
-msbuild build.proj /t:Clean;Restore;Build;Pack /p:Configuration=Release /p:TFMs=all
+msbuild /m build.proj /t:Clean;Restore;Build;Pack /p:Configuration=Release /p:TFMs=all
 ```
 
 Or use build scripts:
@@ -333,10 +333,10 @@ nuget.exe setapikey <YOUR_API_KEY> -Source https://api.nuget.org/v3/index.json
 cd Scripts
 
 # Build and pack
-msbuild build.proj /t:Build;Pack
+msbuild /m build.proj /t:Build;Pack
 
 # Push to NuGet.org
-msbuild build.proj /t:Push
+msbuild /m build.proj /t:Push
 ```
 
 Or use `publish.cmd`:
@@ -482,7 +482,7 @@ nuget-validator Krypton.Toolkit.100.25.1.305.nupkg
 
 **Solution**: Rebuild with correct TFMs:
 ```cmd
-msbuild build.proj /t:Clean;Build;Pack /p:TFMs=all
+msbuild /m build.proj /t:Clean;Build;Pack /p:TFMs=all
 ```
 
 ### Symbol Package Not Uploading
@@ -565,7 +565,7 @@ Remove-Item $temp -Recurse -Force
 ### 1. Always Clean Before Packing
 
 ```cmd
-msbuild build.proj /t:Clean;Pack
+msbuild /m build.proj /t:Clean;Pack
 ```
 
 ### 2. Test Packages Locally First
