@@ -34,6 +34,10 @@ The developers **respects** diversity. Any user who posts offensive or disrespec
 
  To make a new pull request, follow these [instructions](HowtoCreateaPullRequest.md) for guidance.
 
+ **Standard Toolkit contributors** normally open PRs from a feature branch into **`alpha`**. Release promotion between long-lived branches (`alpha` → `canary` → `gold` → `master`) is maintainer-driven and enforced by GitHub Actions guard workflows—see [Branch promotion policy](BranchPromotionPolicy.md).
+
+ CI also runs a **warn-then-fail** [branch policy](BranchPolicyandWorkflowHardening.md) on pull requests (invalid branch pairs; `master` → release line PRs must touch only `.github/`). Workflow alignment uses **Sync .github from master**, not full merges of `master`. Contributors may see **PR branch policy** warnings until maintainers enable strict enforcement; see [BRANCH_POLICY.md](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/BRANCH_POLICY.md).
+
 ## Coding Style
 
  These repositories use C# with `LangVersion` set to `preview` in the build configuration. For compatibility, ensure code builds for .NET Framework 4.7.2 (C# 7.3). New classes should follow existing patterns. **If** a new class is added, please be sure to append a license header. The `Standard Toolkit` is governed by the BSD-3-Clause license, whereas the `Extended Toolkit` is governed by the MIT license.

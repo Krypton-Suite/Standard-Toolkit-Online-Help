@@ -69,6 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptonwebview2-examples-and-use-cases">KryptonWebView2 Examples and Use Cases</h1>
 
+<p><code>KryptonWebView2</code> lives in the <strong><code>Krypton.Toolkit.Utilities</code></strong> assembly (<code>using Krypton.Toolkit.Utilities;</code>). Companion types such as <code>KryptonContextMenu</code> remain in <strong><code>Krypton.Toolkit</code></strong>.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#basic-web-browser">Basic Web Browser</a></li>
@@ -81,7 +82,11 @@
 </ol>
 <h2 id="basic-web-browser">Basic Web Browser</h2>
 <h3 id="simple-web-browser-form">Simple Web Browser Form</h3>
-<pre><code class="lang-csharp">public partial class WebBrowserForm : KryptonForm
+<pre><code class="lang-csharp">using Krypton.Toolkit;
+using Krypton.Toolkit.Utilities;
+using Microsoft.Web.WebView2.Core;
+
+public partial class WebBrowserForm : KryptonForm
 {
     private KryptonWebView2 webView;
     private KryptonButton btnNavigate;
@@ -333,7 +338,36 @@
 }
 </code></pre>
 <h2 id="theme-integration">Theme Integration</h2>
-<h3 id="dynamic-theme-application">Dynamic Theme Application</h3>
+<p>Appearance has two layers:</p>
+<ol>
+<li><strong>Control chrome</strong> — <code>BackColor</code>, <code>ForeColor</code>, and <code>DefaultBackgroundColor</code> follow the Krypton palette via <code>StateCommon</code>, <code>StateNormal</code>, <code>StateActive</code>, and <code>StateDisabled</code>. These properties are hidden from the designer; use <strong>Visuals → State###</strong> or the API below.</li>
+<li><strong>Web page content</strong> — HTML/CSS inside the document is unchanged unless you inject scripts or styles (examples below).</li>
+</ol>
+<h3 id="control-chrome-colors-state-properties">Control chrome colors (State properties)</h3>
+<pre><code class="lang-csharp">private async Task SetupThemedWebView(KryptonWebView2 webView)
+{
+    // Inherit palette colors (recommended)
+    webView.StateCommon.Back.Color1 = Color.Empty;
+    webView.StateCommon.Content.ShortText.Color1 = Color.Empty;
+
+    // Optional: match a panel host
+    webView.WebViewBackStyle = PaletteBackStyle.PanelClient;
+    webView.WebViewContentStyle = PaletteContentStyle.InputControlStandalone;
+
+    // Optional: keep active-state colors when unfocused
+    webView.AlwaysActive = false;
+
+    await webView.EnsureCoreWebView2Async();
+    // BackColor / DefaultBackgroundColor are applied after initialization
+}
+
+// Per-state overrides
+webView.StateActive.Back.Color1 = Color.FromArgb(255, 255, 255);
+webView.StateDisabled.Back.Color1 = Color.FromArgb(220, 220, 220);
+</code></pre>
+<p>Do <strong>not</strong> set <code>DefaultBackgroundColor = Color.White</code> in the designer; it is synchronized from the palette and hidden from the Property Grid.</p>
+<h3 id="dynamic-theme-application-web-page-content">Dynamic theme application (web page content)</h3>
+<p>The following subclass injects palette colors into <strong>document</strong> CSS. Control chrome still updates automatically when the global palette or focus state changes.</p>
 <pre><code class="lang-csharp">public class ThemeAwareWebView2 : KryptonWebView2
 {
     private Timer themeUpdateTimer;
@@ -510,13 +544,18 @@ public class ThemeHostObject
     public string GetPrimaryColor()
     {
         var palette = webView.GetResolvedPalette();
-        return palette.GetColorTable().Color1;
+        return ColorTranslator.ToHtml(palette.GetColorTable().Color1);
     }
 
+    /// &lt;summary&gt;Host surface color (matches control chrome / DefaultBackgroundColor).&lt;/summary&gt;
     public string GetBackgroundColor()
     {
-        var palette = webView.GetResolvedPalette();
-        return palette.GetColorTable().Color3;
+        return ColorTranslator.ToHtml(webView.BackColor);
+    }
+
+    public string GetTextColor()
+    {
+        return ColorTranslator.ToHtml(webView.ForeColor);
     }
 }
 </code></pre>

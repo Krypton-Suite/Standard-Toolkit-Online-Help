@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Palette Mechanics Introduction | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Palette Mechanics Introduction | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="palette-mechanics-introduction">Palette Mechanics Introduction</h1>
+
+<p>This document describes the layering of palette classes, redirectors, and renderers in the Krypton Toolkit to help new users understand how theming and painting work.</p>
+<h2 id="1-palettebase">1. <code>PaletteBase</code></h2>
+<p><code>PaletteBase</code> is the root abstract class that defines the public API for retrieving all palette values:</p>
+<ul>
+<li>Colors (<code>GetBackColor1</code>, <code>GetBorderColor1</code>, etc.)</li>
+<li>Images (<code>GetBackImage</code>, etc.)</li>
+<li>Typography (<code>GetContentShortTextFont</code>, etc.)</li>
+<li>Layout metrics (<code>GetMetricPadding</code>, etc.)</li>
+<li>Hints (<code>GetBackGraphicsHint</code>, etc.)</li>
+</ul>
+<p>Concrete built-in palettes inherit from <code>PaletteBase</code> and override these methods to supply theme-specific values.</p>
+<h2 id="2-built-in-base-palettes">2. Built-in Base Palettes</h2>
+<p>From the plenty built-in base palettes, for example:</p>
+<ul>
+<li><p><strong>Office 2013</strong>: <code>PaletteOffice2013Base</code><br>
+Returns Office 2013 values for colors, paddings, fonts, and images.</p>
+</li>
+<li><p><strong>Microsoft 365</strong>: <code>PaletteMicrosoft365Base</code><br>
+Returns the updated palette values for the Microsoft 365 look.</p>
+</li>
+</ul>
+<p>Each of these base palettes also overrides:</p>
+<pre><code class="lang-csharp">public override IRenderer GetRenderer() =&gt; KryptonManager.RenderOffice2013;
+// or
+public override IRenderer GetRenderer() =&gt; KryptonManager.RenderMicrosoft365;
+</code></pre>
+<p>to select the renderer implementation.</p>
+<h2 id="3-palette-redirectors">3. Palette Redirectors</h2>
+<p>A <code>PaletteRedirect</code> sits between your control and a base palette to:</p>
+<ul>
+<li>Dynamically redirect requests to alternate palettes (e.g. inherited global palette, custom palettes).</li>
+<li>Allow overriding a subset of values via a custom palette.</li>
+</ul>
+<p>Controls and Visual classes often use a <code>PaletteRedirect</code> instance to decouple drawing logic from a specific palette.</p>
+<h2 id="4-visual-classes">4. Visual Classes</h2>
+<p>Visual classes (e.g. <code>VisualForm</code>, <code>VisualButton</code>, <code>VisualControlHost</code>) implement the drawing logic that:</p>
+<ol>
+<li><p>Queries the palette (via a redirector) for the values needed.</p>
+</li>
+<li><p>Calls into the selected <code>IRenderer</code> to perform GDI+ or rendering operations.</p>
+</li>
+<li><p>Manages non-client painting, borders, backgrounds, and content drawing with consistent logic.</p>
+</li>
+</ol>
+<p>These classes do <em>not</em> hard-code any theme values.</p>
+<h2 id="5-renderer-implementations">5. Renderer Implementations</h2>
+<p>Renderer classes in <code>Krypton.Toolkit.Rendering</code> (e.g. <code>RenderOffice2013</code>, <code>RenderMicrosoft365</code>) :</p>
+<ul>
+<li>Subclass a common base (such as <code>RenderOffice2010</code>) which implements the bulk of drawing logic.</li>
+<li>Override only the small bits of painting that differ per theme (e.g. gradients, blends, special corner treatments).</li>
+<li>Are selected by the base palette’s <code>GetRenderer()</code> override.</li>
+</ul>
+<h2 id="6-putting-it-all-together">6. Putting It All Together</h2>
+<ol>
+<li>A control’s <code>ViewManager</code> or Visual class queries:</li>
+</ol>
+<pre><code class="lang-csharp">IRenderer renderer = currentPalette.GetRenderer();
+</code></pre>
+<ol start="2">
+<li>The Visual code asks the palette (or redirector) for values:</li>
+</ol>
+<pre><code class="lang-csharp">Color back = palette.GetBackColor1(style, state);
+Padding pad = palette.GetMetricPadding(...);
+</code></pre>
+<ol start="3">
+<li>The Visual code then calls the renderer:</li>
+</ol>
+<pre><code class="lang-csharp">renderer.Draw...(..., back, pad, ...);
+</code></pre>
+<ol start="4">
+<li>The renderer uses these values and implements the final drawing calls.</li>
+</ol>
+<p>This separation allows:</p>
+<ul>
+<li><strong>Easy theming</strong>: Add a new base palette + renderer, and everything repaints with new look.</li>
+<li><strong>Dynamic theming</strong>: Switch a palette redirector at runtime and all controls update.</li>
+<li><strong>Centralized drawing</strong>: Visual classes contain the paint algorithms; palette &amp; renderer supply the data.</li>
+</ul>
+<h2 id="7-color-tables-for-toolstrip-rendering">7. Color Tables for ToolStrip Rendering</h2>
+<p>Krypton integrates with the .NET ToolStrip rendering pipeline via a family of &quot;color table&quot; classes. These are separate from the main Krypton renderer and are used exclusively by <code>MenuStrip</code>, <code>ToolStrip</code>, <code>StatusStrip</code>, and <code>ContextMenuStrip</code>.</p>
+<ul>
+<li><p><strong>what they are</strong>: <code>KryptonColorTable</code> extends <code>ProfessionalColorTable</code> and exposes the color properties that the .NET <code>ToolStripProfessionalRenderer</code> consumes while painting menus/strips. Krypton supplies its own renderer <code>KryptonProfessionalRenderer</code> that takes a <code>KryptonColorTable</code> instance.</p>
+</li>
+<li><p><strong>where they come from</strong>: Each built-in palette exposes a <code>ColorTable</code> tailored to its theme by creating a concrete <code>KryptonColorTable*</code>:</p>
+<pre><code class="lang-csharp">public override KryptonColorTable ColorTable =&gt;
+    Table ??= new KryptonColorTable365(BaseColors!.ToArray(), InheritBool.True, this);
+</code></pre>
+</li>
+<li><p><strong>where they are used</strong>: When Krypton sets up a menu/strip renderer, it passes the palette's color table into <code>KryptonProfessionalRenderer</code>, which ultimately drives all <code>ToolStrip*</code> painting via the standard WinForms pipeline.</p>
+</li>
+</ul>
+<h3 id="71-key-classes-and-relationships">7.1 Key classes and relationships</h3>
+<ul>
+<li><p><strong><code>KryptonColorTable</code> (base)</strong></p>
+<ul>
+<li>Inherits <code>ProfessionalColorTable</code> and adds a reference to the owning <code>PaletteBase</code> (<code>Palette</code> property) and convenience properties for text colors and fonts (<code>MenuItemText</code>, <code>MenuStripText</code>, <code>ToolStripText</code>, <code>StatusStripText</code>, <code>MenuStripFont</code>, etc.).</li>
+<li>Acts as the root for theme-specific tables.</li>
+</ul>
+</li>
+<li><p><strong><code>KryptonColorTable365</code> and variants</strong></p>
+<ul>
+<li>Constructed with <code>Color[] colors</code>, <code>InheritBool roundedEdges</code>, and the owning <code>PaletteBase</code>.</li>
+<li>The <code>colors</code> array is produced by the palette (typically from <code>KryptonColorSchemeBase</code>), and properties index into it using the <code>SchemeBaseColors</code> enum. Examples:
+<ul>
+<li><code>GripLight =&gt; colors[(int)SchemeBaseColors.GripLight]</code></li>
+<li><code>ToolStripBorder =&gt; colors[(int)SchemeBaseColors.ToolStripBorder]</code></li>
+<li><code>MenuStripText =&gt; colors[(int)SchemeBaseColors.StatusStripText]</code></li>
+</ul>
+</li>
+<li>Some tracking/selection fills come from theme constants inside the table (e.g., <code>_buttonSelectedBegin</code>, <code>_menuItemSelectedBegin/End</code>) to match the target look.</li>
+<li>Fonts are resolved from system fonts at runtime and updated on user preference changes.</li>
+</ul>
+</li>
+<li><p><strong><code>KryptonProfessionalKCT</code> (Professional/System/Office 2003 family)</strong></p>
+<ul>
+<li>Used by <code>PaletteProfessionalSystem</code> and <code>PaletteProfessionalOffice2003</code>.</li>
+<li>These palettes generate a base <code>KryptonColorTable</code> reflecting system/visual-style colors, then synthesize a small header color array and create <code>KryptonProfessionalKCT</code>. On OS with classic Office 2003 schemes, the palette substitutes scheme-specific arrays.</li>
+<li>For advanced overrides, <code>KryptonProfessionalCustomKCT</code> indexes into a <code>PaletteColorIndex</code> array to selectively replace <code>ProfessionalColorTable</code> properties.</li>
+</ul>
+</li>
+</ul>
+<h3 id="72-execution-flow-for-menusstrips">7.2 Execution flow for menus/strips</h3>
+<ol>
+<li>A palette exposes its table via <code>PaletteBase.ColorTable</code> (theme-specific <code>KryptonColorTable*</code>).</li>
+<li>Krypton hooks WinForms menus/strips with <code>KryptonProfessionalRenderer(colorTable)</code>.</li>
+<li>During painting, the renderer queries the color table properties (e.g., <code>MenuItemSelectedGradientBegin</code>, <code>ToolStripGradientMiddle</code>, <code>StatusStripGradientEnd</code>).</li>
+</ol>
+<p>This is distinct from <code>GetRenderer()</code> used by Krypton Visual classes. Visual classes render all other Krypton controls; color tables are only for the ToolStrip family.</p>
+<h3 id="73-sources-at-a-glance">7.3 Sources at a glance</h3>
+<ul>
+<li><strong>Microsoft 365 / Office 2013/2010/2007 palettes</strong>: color tables pull from the palette's <code>BaseColors</code> (<code>KryptonColorSchemeBase</code>) via <code>SchemeBaseColors</code> indices, plus a handful of theme constants for tracking/selection.</li>
+<li><strong>Professional/System/Office 2003 palettes</strong>: color tables derive from system/visual-style colors and (when applicable) predefined Office 2003 scheme arrays.</li>
+<li><strong>Fonts/text</strong>: color tables provide per-surface text colors and fonts for MenuStrip/ToolStrip/StatusStrip; these update on system preference changes.</li>
+</ul>
+<h3 id="74-practical-mapping-examples">7.4 Practical mapping examples</h3>
+<ul>
+<li><code>MenuItem</code> hover: <code>MenuItemSelectedGradientBegin/End</code> (theme constants in 365 table) and <code>MenuItemBorder</code> (often <code>SchemeBaseColors.ButtonBorder</code>).</li>
+<li><code>ToolStrip</code> background: <code>ToolStripGradientBegin/Middle/End</code> (from <code>SchemeBaseColors.ToolStripBegin/Middle/End</code>).</li>
+<li><code>StatusStrip</code> background: <code>StatusStripGradientBegin/End</code> (from <code>SchemeBaseColors.StatusStripLight/Dark</code>).</li>
+</ul>
+<p>With this separation, palettes supply both:</p>
+<ul>
+<li>A main <code>IRenderer</code> for Krypton controls (via <code>GetRenderer()</code>), and</li>
+<li>A <code>KryptonColorTable</code> for menus/strips (via <code>ColorTable</code>).</li>
+</ul>
+<p>Switching palettes updates both paths so menus/strips and Krypton controls remain visually consistent.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

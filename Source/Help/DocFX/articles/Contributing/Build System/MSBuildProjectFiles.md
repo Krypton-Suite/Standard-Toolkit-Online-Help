@@ -6,6 +6,14 @@ The Krypton Toolkit build system uses MSBuild project files (`.proj`) to orchest
 
 Each script `.proj` imports the repo root `Directory.Build.props`, which defines `KryptonBuildOutputRoot` and `KryptonPackageOutputRoot`. Those resolve to legacy `Bin\` and `Bin\Packages\` by default, or to `artifacts\bin\` and `artifacts\packages\` when MSBuild is invoked with `/p:UseArtifactsOutput=true` (as in CI). Clean, Push, and archive targets use `$(ReleaseSourcePath)`, `$(ReleasePackagesPath)`, and equivalent Canary/Nightly properties so they stay aligned with component `OutputPath` and `PackageOutputPath`.
 
+### Parallel builds
+
+- **Command line**: Local `.cmd` scripts, GitHub Actions, and ModernBuild pass **`/m`** (all logical CPUs) when invoking MSBuild.
+- **Orchestration**: `nightly.proj` sets **`BuildInParallel="true"`** on its Build `<MSBuild>` task. Other orchestration `.proj` files use the task default (`true`).
+- **Ordering**: Project references between `Krypton.*` libraries still apply; only independent work runs in parallel.
+
+See [Build System Overview](BuildSystemOverview.md#parallel-msbuild) and [Build Scripts](BuildScripts.md#parallel-builds).
+
 ## Project File Structure
 
 All `.proj` files follow a similar structure:
@@ -37,25 +45,25 @@ All `.proj` files follow a similar structure:
 #### Clean
 Cleans all Krypton component projects for the Release configuration.
 ```cmd
-msbuild build.proj /t:Clean
+msbuild /m build.proj /t:Clean
 ```
 
 #### Restore
 Restores NuGet packages for all Krypton components.
 ```cmd
-msbuild build.proj /t:Restore
+msbuild /m build.proj /t:Restore
 ```
 
 #### Build (Default)
 Builds all Krypton components. Depends on Restore.
 ```cmd
-msbuild build.proj /t:Build
+msbuild /m build.proj /t:Build
 ```
 
 #### CleanPackages
 Deletes existing NuGet packages from `$(ReleasePackagesPath)` (legacy: `Bin/Packages/Release/`; artifacts: `artifacts/packages/Release/`).
 ```cmd
-msbuild build.proj /t:CleanPackages
+msbuild /m build.proj /t:CleanPackages
 ```
 
 #### PackLite
@@ -64,7 +72,7 @@ Creates NuGet packages for "lite" target frameworks (net48, net481, net8.0+).
 - Restores with `TFMs=lite`
 - Packs with `TFMs=lite`
 ```cmd
-msbuild build.proj /t:PackLite
+msbuild /m build.proj /t:PackLite
 ```
 
 #### PackAll
@@ -73,20 +81,20 @@ Creates NuGet packages for all target frameworks (net472-net10.0-windows).
 - Restores with `TFMs=all`
 - Packs with `TFMs=all`
 ```cmd
-msbuild build.proj /t:PackAll
+msbuild /m build.proj /t:PackAll
 ```
 
 #### Pack
 Master packaging target. Depends on CleanPackages, PackLite, and PackAll.
 Generates both Lite and full packages.
 ```cmd
-msbuild build.proj /t:Pack
+msbuild /m build.proj /t:Pack
 ```
 
 #### Push
 Publishes NuGet packages to NuGet.org using `nuget.exe`.
 ```cmd
-msbuild build.proj /t:Push
+msbuild /m build.proj /t:Push
 ```
 **Note**: Requires `NUGET_API_KEY` environment variable or configured API key.
 
@@ -96,7 +104,7 @@ Creates ZIP archive of Release binaries.
 - Falls back to PowerShell `Compress-Archive`
 - Output: `$(ReleaseBuildPath)Krypton-Release_<yyyyMMdd>.zip` (under `Bin/Release/Zips/` or `artifacts/bin/Release/Zips/`)
 ```cmd
-msbuild build.proj /t:CreateReleaseZip
+msbuild /m build.proj /t:CreateReleaseZip
 ```
 
 #### CreateReleaseTar
@@ -106,13 +114,13 @@ Creates TAR.GZ archive of Release binaries.
 - Falls back to Git Bash tar
 - Output: same `Zips` folder as ZIP, e.g. `.../Release/Zips/Krypton-Release_<yyyyMMdd>.tar.gz`
 ```cmd
-msbuild build.proj /t:CreateReleaseTar
+msbuild /m build.proj /t:CreateReleaseTar
 ```
 
 #### CreateAllReleaseArchives
 Creates both ZIP and TAR.GZ archives.
 ```cmd
-msbuild build.proj /t:CreateAllReleaseArchives
+msbuild /m build.proj /t:CreateAllReleaseArchives
 ```
 
 ### canary.proj - Beta Pre-Release Builds
@@ -177,6 +185,26 @@ msbuild build.proj /t:CreateAllReleaseArchives
 - Includes `Rebuild` target
 - Packages get `-alpha` suffix in NuGet
 - Outputs under `$(KryptonBuildOutputRoot)Nightly\` and `$(KryptonPackageOutputRoot)Nightly\`
+
+**Build target** (explicit cross-project parallelism):
+
+```xml
+<MSBuild Projects="@(Projects)"
+         Properties="Configuration=$(Configuration);TFMs=all"
+         BuildInParallel="true" />
+```
+
+### canarylongtermstable.proj - Canary LTS (V105-LTS)
+
+**Purpose**: Orchestrates Canary-configuration builds for the **Canary LTS** GitHub Actions workflow (`.github/workflows/canary-lts-release.yml`) on branch `V105-LTS`.
+
+**Usage**: Same targets as `canary.proj` (`Build`, `Pack`, archives, and so on). CI invokes:
+
+```cmd
+msbuild /m "Scripts/Build/canarylongtermstable.proj" /t:Build /p:Configuration=Canary /p:Platform="Any CPU" /p:UseArtifactsOutput=true
+```
+
+**Note**: The main `canary` branch release job in `release.yml` uses `canary.proj`; scheduled/manual **Canary LTS** publishing uses this file.
 
 ### debug.proj - Debug Builds
 
@@ -254,12 +282,15 @@ This ensures clean package generation.
 
 ### MSBuild Invocation Pattern
 
-Projects are built with configuration and TFM control:
+Projects are built with configuration and TFM control. The nightly Build target enables cross-project parallelism explicitly:
+
 ```xml
-<MSBuild Projects="@(Projects)" 
-         Properties="Configuration=$(Configuration);TFMs=all" 
-         Targets="Build" />
+<MSBuild Projects="@(Projects)"
+         Properties="Configuration=$(Configuration);TFMs=all"
+         BuildInParallel="true" />
 ```
+
+Other orchestration `.proj` files omit `BuildInParallel` and use the MSBuild task default (`true`). Combine with **`/m`** on the `msbuild.exe` command line for multi-CPU compilation within the graph.
 
 Key properties passed:
 - `Configuration` - Debug, Release, Canary, Nightly, Installer
@@ -296,73 +327,76 @@ Uses multiple fallback methods:
 
 ### Execute Specific Target
 ```cmd
-msbuild build.proj /t:TargetName
+msbuild /m build.proj /t:TargetName
 ```
 
 ### Execute Multiple Targets
 ```cmd
-msbuild build.proj /t:Clean;Build
+msbuild /m build.proj /t:Clean;Build
 ```
 
 ### Override Configuration
 ```cmd
-msbuild build.proj /t:Build /p:Configuration=Debug
+msbuild /m build.proj /t:Build /p:Configuration=Debug
 ```
 
 ### Override TFMs
 ```cmd
-msbuild build.proj /t:Build /p:TFMs=lite
+msbuild /m build.proj /t:Build /p:TFMs=lite
 ```
 
 ### Artifacts output layout (CI / optional local)
 ```cmd
-msbuild Scripts\Build\build.proj /t:Build /p:UseArtifactsOutput=true
+msbuild /m Scripts\Build\build.proj /t:Build /p:UseArtifactsOutput=true
 ```
 
 ### Verbose Output
 ```cmd
-msbuild build.proj /t:Build /v:detailed
+msbuild /m build.proj /t:Build /v:detailed
 ```
 
 ### Save to Log File
 ```cmd
-msbuild build.proj /t:Build /fl /flp:logfile=build.log
+msbuild /m build.proj /t:Build /fl /flp:logfile=build.log
 ```
 
 ### Binary Log
 ```cmd
-msbuild build.proj /t:Build /bl:build.binlog
+msbuild /m build.proj /t:Build /bl:build.binlog
 ```
 
 ## Best Practices
 
 ### 1. Clean Before Major Builds
 ```cmd
-msbuild build.proj /t:Clean;Build
+msbuild /m build.proj /t:Clean;Build
 ```
 
 ### 2. Use Rebuild for Complete Rebuild
 ```cmd
-msbuild nightly.proj /t:Rebuild
+msbuild /m nightly.proj /t:Rebuild
 ```
 
 ### 3. Test Packaging Locally Before Push
 ```cmd
-msbuild build.proj /t:Pack
+msbuild /m build.proj /t:Pack
 REM Verify packages under artifacts/packages/Release/ or Bin/Packages/Release/ (depends on UseArtifactsOutput)
-msbuild build.proj /t:Push
+msbuild /m build.proj /t:Push
 ```
 
 ### 4. Use Binary Logs for Troubleshooting
 ```cmd
-msbuild build.proj /t:Build /bl:build.binlog
+msbuild /m build.proj /t:Build /bl:build.binlog
 # View with MSBuild Structured Log Viewer
 ```
 
-### 5. Parallel Builds
-MSBuild automatically parallelizes project builds. For explicit control:
+### 5. Parallel builds
+
+Scripts and CI already pass **`/m`**. To cap CPU use:
+
 ```cmd
-msbuild build.proj /t:Build /m:4
+msbuild /m:4 build.proj /t:Build
+msbuild /m:1 build.proj /t:Build
 ```
 
 ## Related Documentation

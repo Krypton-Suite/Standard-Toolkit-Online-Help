@@ -159,20 +159,15 @@
 
 **Solutions:**
 
-1. **Check Target Framework:**
-   - Ensure project targets .NET 8.0 or later (this control is not available for .NET Framework)
+1. **Check build-time DLLs:**
+   - Ensure `Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2/` contains the three WebView2 SDK assemblies (run `Scripts\WebVew2\Populate-BundledWebView2.cmd`)
+   - Rebuild `Krypton.Toolkit.Utilities` so `WEBVIEW2_AVAILABLE` is defined
+
+2. **Check target framework:**
+   - Use a TFM supported by `Krypton.Toolkit.Utilities` (including .NET Framework 4.7.2+ and modern `-windows` TFMs)
    - Verify platform target matches (x86/x64/AnyCPU)
 
-2. **Copy Assemblies Manually:**
-
-   ```csharp
-   // Copy WebView2 assemblies to output directory
-   <ItemGroup>
-     <Content Include="WebView2SDK\*.dll">
-       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-     </Content>
-   </ItemGroup>
-   ```
+3. **Runtime:** End users need the WebView2 **Runtime** installed separately from the SDK DLLs used at compile time (see [WebView2 SDK Setup](WebView2SDKSetup.md)).
 
 ## Runtime Errors
 
@@ -369,16 +364,45 @@
 
 ## Theming Problems
 
-### Issue: Theme Not Applied
+### Issue: Control chrome colors do not match the theme
 
 **Symptoms:**
 
-- WebView2 doesn't reflect Krypton theme changes
-- Inconsistent appearance
+- WebView2 background or flash color stays white or a fixed color
+- Changing global palette does not update the control surface
 
 **Solutions:**
 
-1. **Force Theme Update:**
+1. **Use State properties (not `DefaultBackgroundColor` in the designer):**
+
+   Appearance is driven from **Visuals → StateCommon / StateNormal / StateActive / StateDisabled**. `BackColor`, `ForeColor`, and `DefaultBackgroundColor` are hidden from the Property Grid and updated from the active palette state.
+
+   ```csharp
+   // Inherit palette colors (recommended)
+   webView.StateCommon.Back.Color1 = Color.Empty;
+
+   // Or set an explicit override on common
+   webView.StateCommon.Back.Color1 = Color.FromArgb(240, 240, 240);
+   ```
+
+2. **Ensure WebView2 is initialized** so `DefaultBackgroundColor` is applied to the engine:
+
+   ```csharp
+   await webView.EnsureCoreWebView2Async();
+   ```
+
+3. **Focus state:** When focused, `StateActive` is used. Set `AlwaysActive = true` if you need active colors while unfocused.
+
+### Issue: Theme Not Applied to web page content
+
+**Symptoms:**
+
+- WebView2 host matches the theme but page HTML/CSS does not
+- Inconsistent appearance inside the document
+
+**Solutions:**
+
+1. **Force Theme Update (injected CSS / script):**
 
    ```csharp
    protected override void OnGlobalPaletteChanged(object? sender, EventArgs e)
@@ -572,7 +596,7 @@
 
 ### Q: Is KryptonWebView2 compatible with .NET Framework?
 
-**A:** No, KryptonWebView2 is only available for .NET 8.0 and later. It is not available for .NET Framework versions. If you need WebView2 functionality on .NET Framework, consider using the base `Microsoft.Web.WebView2.WinForms.WebView2` control directly.
+**A:** Yes. `KryptonWebView2` is part of `Krypton.Toolkit.Utilities`, which targets .NET Framework 4.7.2+ (`net472`, `net48`, `net481`) and modern `-windows` TFMs (for example `net8.0-windows`). The full control requires bundled WebView2 SDK assemblies under `Lib/WebView2` (`WEBVIEW2_AVAILABLE`) and the WebView2 Runtime on the machine. Without bundled SDK DLLs, a stub control is compiled instead.
 
 ### Q: How do I handle different screen DPI settings?
 

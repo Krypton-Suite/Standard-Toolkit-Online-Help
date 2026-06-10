@@ -2,11 +2,11 @@
 
 ## Namespace
 
-`Krypton.Utilities`
+`Krypton.Toolkit.Utilities`
 
 ## Assembly
 
-`Krypton.Utilities.dll`
+`Krypton.Toolkit.Utilities.dll`
 
 ## Inheritance Hierarchy
 
@@ -16,12 +16,12 @@ System.Object
     └── System.ComponentModel.Component
         └── System.Windows.Forms.Control
             └── Microsoft.Web.WebView2.WinForms.WebView2
-                └── Krypton.Utilities.KryptonWebView2
+                └── Krypton.Toolkit.Utilities.KryptonWebView2
 ```
 
 ## Conditional compilation overview
 
-This control is only available when `WEBVIEW2_AVAILABLE` is defined **and** the target framework is .NET 8.0 or greater (`NET8_0_OR_GREATER`).
+The full control is compiled when bundled WebView2 assemblies are present under `Krypton.Toolkit.Utilities/Lib/WebView2` (`WEBVIEW2_AVAILABLE`). Without them, a minimal stub `Control` is emitted instead. Supported target frameworks follow the `Krypton.Toolkit.Utilities` project (including .NET Framework 4.7.2+ and modern `-windows` TFMs).
 
 ---
 
@@ -34,7 +34,7 @@ Provide a WebView2 control with Krypton styling applied. A modern web browser co
 ### Attributes
 
 - `[ToolboxItem(true)]` - Available in Visual Studio toolbox
-- `[ToolboxBitmap(typeof(KryptonWebView2), "ToolboxBitmaps.WebView2.bmp")]` - Custom toolbox icon
+- `[ToolboxBitmap(typeof(KryptonWebView2), "KryptonWebView2.ToolboxBitmaps.WebView2.bmp")]` - Custom toolbox icon
 - `[Designer(typeof(KryptonWebView2Designer))]` - Custom designer support
 - `[DesignerCategory("code")]` - Code-based designer category
 - `[Description("Enables the user to browse web pages using the modern WebView2 engine with Krypton theming support.")]` - Control description
@@ -142,27 +142,109 @@ webView.AllowExternalDrop = true;
 
 **Remarks:** This property forwards to the base WebView2 `CreationProperties` property.
 
-### DefaultBackgroundColor
+### WebViewBackStyle
 
-**Type:** `Color`
+**Type:** `PaletteBackStyle`
 
 **Access:** Public get/set
 
 **Attributes:**
 
-- `[Category("Appearance")]`
-- `[Description("Gets or sets the default background color for the WebView2 control.")]`
+- `[Category("Visuals")]`
+- `[DefaultValue(PaletteBackStyle.PanelClient)]`
 
-**Summary:** Gets or sets the default background color for the WebView2 control.
+**Summary:** Gets and sets the palette background style used for `BackColor` and `DefaultBackgroundColor`.
 
-**Value:** The default background color.
+**Default:** `PaletteBackStyle.PanelClient`
 
-**Remarks:** This property forwards to the base WebView2 `DefaultBackgroundColor` property.
+### WebViewContentStyle
 
-**Example:**
+**Type:** `PaletteContentStyle`
+
+**Access:** Public get/set
+
+**Attributes:**
+
+- `[Category("Visuals")]`
+- `[DefaultValue(PaletteContentStyle.InputControlStandalone)]`
+
+**Summary:** Gets and sets the palette content style used for `ForeColor`.
+
+**Default:** `PaletteContentStyle.InputControlStandalone`
+
+### StateCommon
+
+**Type:** `PaletteTripleRedirect`
+
+**Access:** Public get
+
+**Attributes:**
+
+- `[Category("Visuals")]`
+- `[DesignerSerializationVisibility(Content)]`
+
+**Summary:** Common appearance overrides inherited by `StateNormal`, `StateActive`, and `StateDisabled`.
+
+### StateNormal / StateActive / StateDisabled
+
+**Type:** `PaletteTriple`
+
+**Access:** Public get
+
+**Attributes:**
+
+- `[Category("Visuals")]`
+- `[DesignerSerializationVisibility(Content)]`
+
+**Summary:** Per-state palette overrides. `StateActive` applies when the control has focus (`PaletteState.Tracking`). `StateDisabled` applies when `Enabled` is `false`.
+
+### AlwaysActive
+
+**Type:** `bool`
+
+**Access:** Public get/set
+
+**Attributes:**
+
+- `[Category("Visuals")]`
+- `[DefaultValue(false)]`
+
+**Summary:** When `true`, the control always uses `StateActive` palette colors even when unfocused.
+
+### SetFixedState(bool active)
+
+**Summary:** Fixes the control in the active or normal palette state (useful at design time or for custom focus handling).
+
+### IsActive
+
+**Type:** `bool`
+
+**Access:** Public get
+
+**Attributes:** `[Browsable(false)]`, `[EditorBrowsable(Never)]`
+
+**Summary:** Indicates whether the active palette state is in effect (`ContainsFocus`, `AlwaysActive`, design mode, or `SetFixedState`).
+
+### Hidden appearance properties
+
+The following are **hidden from the designer** and driven from the current palette state. Prefer **Visuals → State###** in the Property Grid, or set `StateCommon.Back.Color1` / `StateCommon.Content.ShortText.Color1` in code:
+
+| Property | Behavior |
+|----------|----------|
+| `BackColor` | Resolved from active state's back color; setter writes `StateCommon.Back.Color1` |
+| `ForeColor` | Resolved from active state's content short-text color; setter writes `StateCommon.Content.ShortText.Color1` |
+| `DefaultBackgroundColor` | Synchronized with `BackColor` (WebView2 loading flash / empty document) |
+| `Font`, `BackgroundImage`, `BackgroundImageLayout` | Hidden; not used for web rendering |
+| `BackColorChanged`, `ForeColorChanged`, `BackgroundImageChanged`, `BackgroundImageLayoutChanged` | Hidden |
+
+**Example (designer-friendly overrides):**
 
 ```csharp
-webView.DefaultBackgroundColor = Color.White;
+// Override background for all states from common
+webView.StateCommon.Back.Color1 = Color.FromArgb(240, 240, 240);
+
+// Override active-state foreground only
+webView.StateActive.Content.ShortText.Color1 = Color.Navy;
 ```
 
 ### ZoomFactor
@@ -248,7 +330,7 @@ if (renderer != null)
 
 ### GetResolvedPalette()
 
-**Signature:** `public PaletteBase GetResolvedPalette()`
+**Signature:** `public PaletteBase? GetResolvedPalette()`
 
 **Attributes:**
 
@@ -257,7 +339,7 @@ if (renderer != null)
 
 **Summary:** Gets the resolved palette to actually use when drawing.
 
-**Returns:** A `PaletteBase` instance that represents the currently active palette for this control.
+**Returns:** A `PaletteBase` instance that represents the currently active palette for this control, or `null` if no palette has been assigned yet.
 
 **Remarks:**
 
@@ -268,7 +350,7 @@ if (renderer != null)
 **Example:**
 
 ```csharp
-var palette = webView.GetResolvedPalette();
+var palette = webView.GetResolvedPalette() ?? KryptonManager.CurrentGlobalPalette;
 var primaryColor = palette.GetColorTable().Color1;
 ```
 
@@ -667,17 +749,16 @@ webView.CoreWebView2.NewWindowRequested += (sender, e) =>
 
 - Windows 10 version 1803 (build 17134) or later
 - WebView2 Runtime installed on target system
-- **.NET 8.0 or later** (.NET Framework is not supported for this control)
+- Supported TFMs per `Krypton.Toolkit.Utilities` (including .NET Framework 4.7.2+ and modern `-windows` TFMs)
 
 ### Dependencies
 
-- `Microsoft.Web.WebView2.WinForms` NuGet package
-- `Microsoft.Web.WebView2.Core` (included with WinForms package)
-- `WebView2Loader.dll` (included with WinForms package)
+- Bundled `Microsoft.Web.WebView2.Core.dll` and `Microsoft.Web.WebView2.WinForms.dll` under `Lib/WebView2` (see [WebView2 SDK Setup](WebView2SDKSetup.md)), or equivalent references
+- `WebView2Loader.dll` (deployed with the WebView2 runtime on target machines)
 
 ### Conditional compilation details
 
-The control is only available when `WEBVIEW2_AVAILABLE` is defined **and** the target framework is .NET 8.0 or greater (`NET8_0_OR_GREATER`). This ensures compatibility with systems that don't have WebView2 dependencies and limits availability to supported frameworks.
+The full control is built when `WEBVIEW2_AVAILABLE` is defined (bundled assemblies present). Otherwise a stub `Control` is compiled. See [WebView2 SDK Setup](WebView2SDKSetup.md).
 
 ---
 

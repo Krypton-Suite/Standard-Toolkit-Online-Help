@@ -3,7 +3,7 @@
 ## Quick Start
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 // 1. Configure email settings
 var emailConfig = new BugReportEmailConfig

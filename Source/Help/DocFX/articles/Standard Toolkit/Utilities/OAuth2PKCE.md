@@ -1,7 +1,7 @@
 # OAuth2 with PKCE
 
-**Namespace:** `Krypton.Utilities`  
-**Assembly:** `Krypton.Utilities`
+**Namespace:** `Krypton.Toolkit.Utilities`  
+**Assembly:** `Krypton.Toolkit.Utilities`
 
 This document provides comprehensive developer documentation for the OAuth2 with PKCE (Proof Key for Code Exchange) authentication feature in Krypton Utilities.
 
@@ -48,8 +48,8 @@ The OAuth2 PKCE feature supports the **authorization code flow with PKCE** as de
 
 To use the default embedded sign-in form (`KryptonOAuth2Login` / `OAuth2WebView2BrowserHost`), the **WebView2 Runtime** must be available:
 
-- Bundled DLLs: Place `Microsoft.Web.WebView2.Core.dll` and `Microsoft.Web.WebView2.WinForms.dll` in `Krypton.Utilities/Lib/WebView2/`
-- Or run: `Scripts\WebView2\Populate-BundledWebView2.cmd`
+- Bundled DLLs: Place `Microsoft.Web.WebView2.Core.dll` and `Microsoft.Web.WebView2.WinForms.dll` in `Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2/`
+- Or run: `Scripts\WebVew2\Populate-BundledWebView2.cmd`
 
 If WebView2 is not available, you can:
 
@@ -70,7 +70,7 @@ The redirect URI must be registered with your OAuth2 provider and match exactly:
 ### 1. Simple sign-in dialog (WebView2)
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 // Use provider preset
 var options = OAuth2ProviderPresets.AzureAd(
@@ -471,7 +471,7 @@ Components/Krypton OAuth2/
 
 ## Target Frameworks
 
-The OAuth2 feature targets all frameworks supported by `Krypton.Utilities`:
+The OAuth2 feature targets all frameworks supported by `Krypton.Toolkit.Utilities`:
 
 - .NET Framework 4.7.2, 4.8, 4.8.1  
 - .NET 8.0, 9.0, 10.0, 11.0 (Windows)

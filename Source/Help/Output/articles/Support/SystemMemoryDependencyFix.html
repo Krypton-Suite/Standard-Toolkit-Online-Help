@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton.Toolkit TypeInitializationException: missing System.Memory | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton.Toolkit TypeInitializationException: missing System.Memory | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptontoolkit-typeinitializationexception-missing-systemmemory">Krypton.Toolkit TypeInitializationException: missing System.Memory</h1>
+
+<h2 id="overview">Overview</h2>
+<p>This document explains the cause, diagnosis, fixes, and verification steps for the exception seen during Windows Forms startup:</p>
+<p>System.TypeInitializationException: The type initializer for 'Krypton.Toolkit.KryptonManager' threw an exception.</p>
+<p>Inner-most cause:</p>
+<p>System.IO.FileNotFoundException: Could not load file or assembly 'System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51'</p>
+<p>This usually appears in a multi-target SDK-style project that includes a .NET Framework (net48) target alongside a modern .NET target. Krypton types (palettes/resources) are deserialized during InitializeComponent and require System.Memory at runtime when the app runs under .NET Framework.</p>
+<hr>
+<h2 id="root-cause-technical">Root cause (technical)</h2>
+<ul>
+<li>The Krypton library (or types serialized in form resources used by Krypton palettes) requires the System.Memory assembly at runtime.</li>
+<li>When running the net48 build, the .NET Framework loader (Fusion) attempts to resolve System.Memory by exact identity or using binding redirects.</li>
+<li>The required System.Memory assembly/version was not available in the application probing paths and no binding redirect mapped the request to an available version, resulting in FileNotFoundException during resource deserialization.</li>
+<li>The FileNotFoundException inside static initialization causes the observed TypeInitializationException chain.</li>
+</ul>
+<hr>
+<h2 id="why-resource-deserialization-triggers-assembly-loads">Why resource deserialization triggers assembly loads</h2>
+<ul>
+<li>WinForms designer files (InitializeComponent) use ComponentResourceManager to read resources (ResX) and may deserialize objects or load typed resources.</li>
+<li>DeserializingResourceReader will validate and attempt to load the CLR types referenced by resources. If those types live in assemblies that are missing, assembly load errors surface while constructing form objects (or in library static initializers invoked from resources).</li>
+</ul>
+<hr>
+<h2 id="fixes-applied-what-to-change-in-the-project">Fixes applied (what to change in the project)</h2>
+<p>Two complementary changes were applied in the project file to resolve the issue for the net48 target:</p>
+<ol>
+<li>Ensure System.Memory is a restored package for the net48 build so the exact assembly will be copied to output.</li>
+</ol>
+<p>Add a conditional PackageReference that only applies when targeting .NET Framework:</p>
+<pre><code class="lang-xml">&lt;!-- In your SDK project file (.csproj) --&gt;
+&lt;ItemGroup Condition=&quot;'$(TargetFramework)' == 'net48'&quot;&gt;
+  &lt;PackageReference Include=&quot;System.Memory&quot; Version=&quot;4.5.4&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<ol start="2">
+<li>Enable binding redirect generation when building for .NET Framework so version mismatches are handled automatically:</li>
+</ol>
+<pre><code class="lang-xml">&lt;PropertyGroup&gt;
+  &lt;AutoGenerateBindingRedirects&gt;true&lt;/AutoGenerateBindingRedirects&gt;
+  &lt;GenerateBindingRedirectsOutputType&gt;true&lt;/GenerateBindingRedirectsOutputType&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p>Rationale:</p>
+<ul>
+<li>Adding System.Memory ensures a compatible assembly is restored and copied to the bin folder for net48.</li>
+<li>Auto-generated binding redirects let the runtime map requests for different System.Memory versions to the available version when multiple packages target different versions.</li>
+</ul>
+<hr>
+<h2 id="alternative-solutions-choose-based-on-needs">Alternative solutions (choose based on needs)</h2>
+<ul>
+<li>Remove the net48 target if you do not need to run on .NET Framework. Target only modern .NET (e.g., net10.0-windows) which avoids these binding issues.</li>
+<li>Add an explicit app.config binding redirect (manual) instead of auto-generation. Example:</li>
+</ul>
+<pre><code class="lang-xml">&lt;!-- app.config / &lt;runtime&gt; section --&gt;
+&lt;runtime&gt;
+  &lt;assemblyBinding xmlns=&quot;urn:schemas-microsoft-com:asm.v1&quot;&gt;
+	&lt;dependentAssembly&gt;
+	  &lt;assemblyIdentity name=&quot;System.Memory&quot; publicKeyToken=&quot;cc7b13ffcd2ddd51&quot; culture=&quot;neutral&quot; /&gt;
+	  &lt;bindingRedirect oldVersion=&quot;0.0.0.0-4.5.4.0&quot; newVersion=&quot;4.5.4.0&quot; /&gt;
+	&lt;/dependentAssembly&gt;
+  &lt;/assemblyBinding&gt;
+&lt;/runtime&gt;
+</code></pre>
+<ul>
+<li>Copy the exact System.Memory.dll to the output folder manually (not recommended as a long-term fix).</li>
+</ul>
+<hr>
+<h2 id="verification--testing-checklist">Verification &amp; testing checklist</h2>
+<ol>
+<li>Restore and build for net48:</li>
+</ol>
+<pre><code class="lang-sh">dotnet restore
+dotnet build -f net48
+</code></pre>
+<ol start="2">
+<li>Confirm output contains System.Memory.dll (or a redirected binding entry):</li>
+</ol>
+<ul>
+<li>Check bin\Debug\net48\ (or your configuration path) for System.Memory.dll.</li>
+<li>Check the generated app.config (if produced) for assemblyBinding entries.</li>
+</ul>
+<ol start="3">
+<li><p>Run the application (the net48 build) and confirm it no longer throws during Form construction.</p>
+</li>
+<li><p>If still failing, enable Fusion logs to capture assembly binding attempts (see troubleshooting below).</p>
+</li>
+</ol>
+<hr>
+<h2 id="troubleshooting-steps-if-problem-persists">Troubleshooting steps (if problem persists)</h2>
+<ul>
+<li>Confirm which target is running: when launching from Visual Studio ensure the project is actually being run as the net48 build if you intend to test net48 behavior.</li>
+<li>Inspect inner exceptions and resource names to identify which resource or Krypton type triggers the load.</li>
+<li>Check bin output for System.Memory and validate its assembly identity (version, public key token). Use a simple tool or PowerShell to inspect:</li>
+</ul>
+<pre><code class="lang-powershell"># Example: get file properties with reflection metadata (requires appropriate tool)
+</code></pre>
+<ul>
+<li><p>Capture assembly binding logs (Fusion):</p>
+<ul>
+<li>Run Fuslogvw.exe (Assembly Binding Log Viewer) with logging enabled.</li>
+<li>Reproduce the failure and inspect the log entries to see probing locations and versions attempted.</li>
+</ul>
+</li>
+<li><p>If a third-party dependency requires a different System.Memory version, use bindingRedirect to map oldVersion-&gt;newVersion.</p>
+</li>
+</ul>
+<hr>
+<h2 id="ci--build-pipeline-notes">CI / Build pipeline notes</h2>
+<ul>
+<li>Ensure your CI restores packages for all targeted frameworks before building. Example pipeline steps:</li>
+</ul>
+<pre><code class="lang-sh">dotnet restore
+dotnet build -f net48 --configuration Release
+</code></pre>
+<ul>
+<li><p>Building for net48 on headless agents may require .NET Framework targeting packs or Visual Studio Build Tools installed. Confirm the build agent has the required workloads.</p>
+</li>
+<li><p>AutoGenerateBindingRedirects runs in MSBuild for net48 builds; ensure the build uses the SDK that supports these targets.</p>
+</li>
+</ul>
+<hr>
+<h2 id="best-practices--recommendations">Best practices &amp; recommendations</h2>
+<ul>
+<li>For multi-targeted projects, add framework-specific PackageReferences when older runtimes need additional compatibility packages.</li>
+<li>Prefer AutoGenerateBindingRedirects for SDK-style projects that produce .NET Framework outputs to avoid manual maintenance of app.config binding redirects.</li>
+<li>Prefer modern .NET targets where possible to reduce assembly-binding complexity.</li>
+<li>Keep third-party packages updated and read their compatibility notes (Krypton release notes may document required dependencies).</li>
+</ul>
+<hr>
+<h2 id="references--tools">References &amp; tools</h2>
+<ul>
+<li>Fuslogvw.exe — Assembly Binding Log Viewer (for .NET Framework binding failures).</li>
+<li>dotnet CLI: dotnet add package, dotnet restore, dotnet build.</li>
+<li>Microsoft docs: AutoGenerateBindingRedirects and binding redirect behavior in SDK-style projects.</li>
+</ul>
+<hr>
+<h2 id="appendix-applied-csproj-snippet">Appendix: applied csproj snippet</h2>
+<p>The following is the exact change used to fix the issue in an SDK-style multi-target project:</p>
+<pre><code class="lang-xml">&lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+  &lt;PropertyGroup&gt;
+	&lt;OutputType&gt;WinExe&lt;/OutputType&gt;
+	&lt;TargetFrameworks&gt;net48;net10.0-windows&lt;/TargetFrameworks&gt;
+	&lt;Nullable&gt;enable&lt;/Nullable&gt;
+	&lt;UseWindowsForms&gt;true&lt;/UseWindowsForms&gt;
+	&lt;AutoGenerateBindingRedirects&gt;true&lt;/AutoGenerateBindingRedirects&gt;
+	&lt;GenerateBindingRedirectsOutputType&gt;true&lt;/GenerateBindingRedirectsOutputType&gt;
+	&lt;ImplicitUsings&gt;enable&lt;/ImplicitUsings&gt;
+	&lt;LangVersion&gt;preview&lt;/LangVersion&gt;
+  &lt;/PropertyGroup&gt;
+
+  &lt;ItemGroup&gt;
+	&lt;PackageReference Include=&quot;Krypton.Standard.Toolkit.Nightly&quot; Version=&quot;110.26.5.141-alpha&quot; /&gt;
+  &lt;/ItemGroup&gt;
+
+  &lt;ItemGroup Condition=&quot;'$(TargetFramework)' == 'net48'&quot;&gt;
+	&lt;PackageReference Include=&quot;System.Memory&quot; Version=&quot;4.5.4&quot; /&gt;
+  &lt;/ItemGroup&gt;
+&lt;/Project&gt;
+</code></pre>
+<hr>
+<p>If you need additional edits (explicit app.config, test scripts, CI pipeline changes, or a sample project reproducer), provide guidance on the desired output format and I will prepare it.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

@@ -14,6 +14,18 @@ The Krypton Toolkit Suite uses a sophisticated MSBuild-based build system design
 - **CI/CD Integration**: Full GitHub Actions workflow support
 - **Modern Build Tool**: Optional Terminal UI tool for interactive builds
 - **Artifacts output layout (optional)**: MSBuild can place binaries under `artifacts/bin/<Configuration>/` and packages under `artifacts/packages/<Configuration>/` when `UseArtifactsOutput=true` (default is legacy `Bin/`). Script `.proj` files and GitHub Actions use the shared path properties so both layouts work.
+- **Parallel MSBuild**: Local `.cmd` scripts, GitHub Actions, and ModernBuild pass `/m` so builds use all logical CPUs. `nightly.proj` sets `BuildInParallel="true"` on its orchestration target; other `.proj` files use the MSBuild task default. Project references still order work (Toolkit → Ribbon/Navigator → Workspace → Docking).
+
+## Parallel MSBuild
+
+| Layer | Behaviour |
+| --- | --- |
+| **CLI (`/m`)** | All orchestration `.cmd` files under `Scripts/Build/`, `Scripts/VS2022/`, and `Scripts/Current/` invoke `msbuild.exe /m …`. GitHub Actions use the same switch on `msbuild` steps. |
+| **Orchestration (`.proj`)** | `nightly.proj` Build target sets `BuildInParallel="true"`. `build.proj`, `canary.proj`, `canarylongtermstable.proj`, and similar files rely on the default (`true`) for the `<MSBuild>` task. |
+| **Ordering** | `Krypton.*` projects still build in dependency order; independent siblings (for example Ribbon and Navigator after Toolkit) may compile in parallel. |
+| **Throttle** | For races or memory pressure: `msbuild /m:1 …` or see [Troubleshooting](Troubleshooting.md). `build-testform.yml` intentionally uses `-m:1` for TestForm CI. |
+
+See [Build Scripts](BuildScripts.md) and [MSBuild Project Files](MSBuildProjectFiles.md).
 
 ## Build System Components
 
@@ -23,6 +35,7 @@ Located in `Scripts/`:
 
 - `Scripts/Build/build.proj` - Stable/Release builds
 - `canary.proj` - Beta pre-release builds
+- `canarylongtermstable.proj` - Canary builds for the V105-LTS line (`canary-lts-release.yml`)
 - `nightly.proj` - Alpha nightly builds
 - `debug.proj` - Debug builds
 - `installer.proj` - Installer-specific builds
@@ -201,9 +214,9 @@ build-stable.cmd Build
 ### Build and Pack Release
 
 ```cmd
-cd Scripts
-msbuild build.proj /t:Build
-msbuild build.proj /t:Pack
+cd Scripts\VS2022
+msbuild /m build.proj /t:Build
+msbuild /m build.proj /t:Pack
 ```
 
 ### Build Nightly
@@ -223,8 +236,8 @@ purge.cmd
 ### Create Distribution Archives
 
 ```cmd
-cd Scripts
-msbuild build.proj /t:CreateAllReleaseArchives
+cd Scripts\VS2022
+msbuild /m build.proj /t:CreateAllReleaseArchives
 ```
 
 ## Build System Workflow

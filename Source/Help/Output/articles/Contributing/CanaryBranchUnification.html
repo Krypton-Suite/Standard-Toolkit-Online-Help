@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Unifying canary and Canary branches | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Unifying canary and Canary branches | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="unifying-canary-and-canary-branches">Unifying <code>canary</code> and <code>Canary</code> branches</h1>
+
+<p><strong>Status:</strong> Planned maintainer migration (not automated by branch policy).</p>
+<p><strong>Why:</strong> Two branch names exist today:</p>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>canary</code> (lowercase)</td>
+<td><code>build.yml</code>, <code>release.yml</code>, <code>codeql.yml</code>, <code>repo-mirror.yml</code>, branch policy sync</td>
+</tr>
+<tr>
+<td><code>Canary</code> (capital C)</td>
+<td><code>canary.yml</code> (standalone Canary Release workflow)</td>
+</tr>
+</tbody>
+</table>
+<p>Policy treats <strong>both</strong> as downstream lines. Contributors and CI can target the wrong ref. Unification removes duplicate configuration and sync PRs.</p>
+<hr>
+<h2 id="preconditions">Preconditions</h2>
+<ul>
+<li>[ ] Agree on the <strong>canonical name</strong> (recommended: <code>canary</code> lowercase, matching mirror and <code>release.yml</code>).</li>
+<li>[ ] Confirm which branch on GitHub actually receives day-to-day pushes today.</li>
+<li>[ ] Schedule a quiet window (no active release in flight).</li>
+</ul>
+<hr>
+<h2 id="migration-checklist-canonical--canary">Migration checklist (canonical = <code>canary</code>)</h2>
+<h3 id="1-github">1. GitHub</h3>
+<ol>
+<li>If <code>Canary</code> has commits not on <code>canary</code>, merge or fast-forward:
+<pre><code class="lang-bash">git fetch origin canary Canary
+git checkout canary
+git merge origin/Canary   # resolve conflicts if any
+git push origin canary
+</code></pre>
+</li>
+<li>Update default branch protection / rulesets if they reference <code>Canary</code>.</li>
+<li>Delete remote branch <code>Canary</code> after verification:
+<pre><code class="lang-bash">git push origin --delete Canary
+</code></pre>
+</li>
+</ol>
+<h3 id="2-workflows">2. Workflows</h3>
+<ol>
+<li>Change <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/canary.yml">canary.yml</a>:
+<ul>
+<li><code>on.push.branches</code>: <code>Canary</code> → <code>canary</code></li>
+<li>Security verify branch: <code>refs/heads/Canary</code> → <code>refs/heads/canary</code></li>
+<li><code>checkout</code> ref: <code>Canary</code> → <code>canary</code></li>
+</ul>
+</li>
+<li>Search repo for <code>Canary</code> branch references (README badges, changelog links).</li>
+<li>Remove <code>Canary</code> from <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/branch-policy.json">.github/branch-policy.json</a> <code>downstreamBranches</code> and <code>longLivedHeadBranches</code> once the branch is deleted.</li>
+</ol>
+<h3 id="3-branch-policy-and-sync">3. Branch policy and sync</h3>
+<ul>
+<li>After deletion, only <code>canary</code> remains in <code>syncGithubFromMasterTargets</code> (already listed).</li>
+<li>Re-run <strong>Sync .github from master</strong> if needed.</li>
+</ul>
+<h3 id="4-external-systems">4. External systems</h3>
+<ul>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/repo-mirror.yml">repo-mirror.yml</a> already mirrors <code>canary</code>.</li>
+<li>Update any fork docs, Discord runbooks, or NuGet release notes that link to <code>/tree/Canary</code>.</li>
+</ul>
+<h3 id="5-verify">5. Verify</h3>
+<ul>
+<li>[ ] Push to <code>canary</code> triggers <code>build.yml</code> and <code>release.yml</code> jobs.</li>
+<li>[ ] Retire or repoint standalone <code>canary.yml</code> if <code>release.yml</code> <code>release-canary</code> job fully replaces it.</li>
+<li>[ ] No open PRs use <code>Canary</code> as head or base.</li>
+</ul>
+<hr>
+<h2 id="rollback">Rollback</h2>
+<p>Recreate <code>Canary</code> from <code>canary</code> tip and revert workflow edits if a release window requires the old setup.</p>
+<hr>
+<h2 id="related">Related</h2>
+<ul>
+<li><a href="BranchPolicyandWorkflowHardening.html">BranchPolicyandWorkflowHardening.md</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

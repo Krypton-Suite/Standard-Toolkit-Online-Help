@@ -1,5 +1,13 @@
 # Release Workflow
 
+## Quick Reference
+
+- Workflow file: `.github/workflows/release.yml`
+- Workflow name: `Release`
+- Triggers: `push`, `workflow_dispatch`
+- Runner: `windows-2025-vs2026`
+- Environment: `production` (publishing jobs)
+
 ## Overview
 
 The Release workflow handles automated releases for multiple branch types: stable releases (master), Long-Term Support (LTS) branches, canary pre-releases, and alpha builds. It builds, packages, and publishes NuGet packages to nuget.org with Discord notifications for each release type.

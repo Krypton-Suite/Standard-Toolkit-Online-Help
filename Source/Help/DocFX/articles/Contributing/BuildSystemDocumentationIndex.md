@@ -17,6 +17,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Build outputs and artifacts
 - Prerequisites and requirements
 - Common build tasks
+- [Parallel MSBuild](Build%20System/BuildSystemOverview.md#parallel-msbuild) (`/m`, `BuildInParallel`)
 
 ### 2. [MSBuild Project Files](Build%20System/MSBuildProjectFiles.md)
 
@@ -25,7 +26,8 @@ This document contains comprehensive developer documentation for the Krypton Too
 - Project file structure and patterns
 - `Scripts/Build/build.proj` - Stable/Release builds
 - `Scripts/Build/canary.proj` - Beta pre-releases
-- `Scripts/Build/nightly.proj` - Alpha nightly builds
+- `Scripts/Build/canarylongtermstable.proj` - Canary LTS (`canary-lts-release.yml`)
+- `Scripts/Build/nightly.proj` - Alpha nightly builds (`BuildInParallel="true"`)
 - `debug.proj` - Debug builds
 - `installer.proj` - Installer packages
 - Available targets (Clean, Restore, Build, Pack, Push, etc.)
@@ -44,6 +46,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - `publish.cmd` - Publish to NuGet
 - Visual Studio detection
 - Logging and troubleshooting
+- [Parallel builds](Build%20System/BuildScripts.md#parallel-builds) (`/m` on all orchestration `.cmd` files)
 
 ### 4. [Directory.Build Configuration](Build%20System/DirectoryBuildConfiguration.md)
 
@@ -175,7 +178,7 @@ See: [Build Scripts](Build%20System/BuildScripts.md) (section *build-stable.cmd*
 
 ```cmd
 cd Scripts
-msbuild build.proj /t:Build;Pack
+msbuild /m build.proj /t:Build;Pack
 ```
 
 See: [NuGet Package Creation and Publishing](Build%20System/NuGetPackaging.md#package-creation-workflow)

@@ -1,44 +1,132 @@
 # KryptonGroupBox
 
-Use the *KryptonGroupBox* control when you need to group related controls
-together and provide a caption. For example, you can use group boxes to
-subdivide a form into distinct areas. Moving the group will cause all the
-contained controls to also be moved along with it as it acts as a container.
-This control is similar to the *KryptonGroup* except it provides a caption as
-well as a grouping ability.
+## Overview
 
-## Appearance
+`KryptonGroupBox` displays a framed area with an optional caption for grouping related controls. It combines border, background, and caption rendering with an inner `KryptonGroupBoxPanel` for child controls.
 
-The *GroupBackStyle* and *GroupBorderStyle* properties are used to define the
-level styling required for the background and border areas of the
-*KryptonGroupBox* control. The default value of *ControlGroupBox* for both
-properties gives an appearance appropriate for grouping together related
-controls. The style of the caption is defined by the *CaptionStyle* property and
-this default to *CaptionPanel*. By default the *CaptionOverlap* property is
-defined as *50%* and so causes the group border to be drawn halfway down the
-caption. If you would prefer the caption to be entirely outside of the border
-then set this property to *100%*. To place the caption entirely inside the
-border you can set the *CaptionOverlap* to *0%*.
+**Namespace:** `Krypton.Toolkit`  
+**Assembly:** `Krypton.Toolkit`  
+**Default property:** `ValuesPrimary` (caption values)  
+**Inheritance:** `VisualControlContainment` → `KryptonGroupBox`
 
-## Two States
+## Key features
 
-Only two possible states of *Disabled* and *Normal* are used by the group box
-control. In order to customize the appearance use the corresponding
-*StateDisabled* and *StateNormal* properties.
+- Caption with overlap, edge, orientation, and visibility
+- `CaptionValues` for heading text and images
+- `GroupBackStyle` / `GroupBorderStyle` / `CaptionStyle`
+- Inner `Panel` for child controls
+- Auto-size with `GrowAndShrink` default
+- Optional themed scroll bars
 
-To speed up the customization process an extra *StateCommon* property has been
-provided. The settings from this are used if no override has been defined for
-the state specific entry. Note that the specific state values always take
-precedence and so if you define the background color in *StateNormal* and
-*StateCommon* then the *StateNormal* value will be used whenever the control is
-in the *Normal* state. Only if the *StateNormal* value is not overridden will it
-look in *StateCommon*.
+## Constructor
 
-## Examples of Appearance
+```csharp
+public KryptonGroupBox()
+```
 
-Figure 1 shows the appearance when *GroupBackStyle* and *GroupBorderStyle* are
-both defined as the default *ControlGroupBox*.
+## Properties
+
+### Panel
+
+```csharp
+public KryptonGroupBoxPanel Panel { get; }
+```
+
+Inner surface for child controls.
+
+### Values
+
+```csharp
+public CaptionValues Values { get; }
+```
+
+Caption text, image, and related content. `Text` on the control maps to caption heading.
+
+### CaptionOverlap
+
+```csharp
+[DefaultValue(0.5)]
+public double CaptionOverlap { get; set; }
+```
+
+**Default:** `0.5` (50%) — border draws through the caption vertically.  
+`1.0` places the caption outside the border; `0.0` places it fully inside.
+
+### GroupBackStyle / GroupBorderStyle
+
+```csharp
+[DefaultValue(PaletteBackStyle.ControlGroupBox)]
+public PaletteBackStyle GroupBackStyle { get; set; }
+
+[DefaultValue(PaletteBorderStyle.ControlGroupBox)]
+public PaletteBorderStyle GroupBorderStyle { get; set; }
+```
+
+### CaptionStyle
+
+```csharp
+[DefaultValue(LabelStyle.GroupBoxCaption)]
+public LabelStyle CaptionStyle { get; set; }
+```
+
+Palette label style for the caption.
+
+### CaptionEdge / CaptionOrientation / CaptionVisible
+
+```csharp
+public VisualOrientation CaptionEdge { get; set; }
+public ButtonOrientation CaptionOrientation { get; set; }
+public bool CaptionVisible { get; set; }
+```
+
+Position and visibility of the caption.
+
+### StateCommon / StateDisabled / StateNormal
+
+```csharp
+public PaletteGroupBoxRedirect StateCommon { get; }
+public PaletteGroupBox? StateDisabled { get; }
+public PaletteGroupBox? StateNormal { get; }
+```
+
+Back, border, and content overrides for the frame and caption.
+
+### AutoSize / AutoSizeMode
+
+```csharp
+[DefaultValue(AutoSizeMode.GrowAndShrink)]
+public AutoSizeMode AutoSizeMode { get; set; }
+```
+
+### UseKryptonScrollbars
+
+Themed scroll bars on the inner panel when content overflows.
+
+## Visual states
+
+*Normal* and *Disabled* only. Customize via `StateNormal` and `StateDisabled`; defaults come from `StateCommon`.
+
+## Examples of appearance
 
 ![KryptonGroupBox examples showing default ControlGroupBox style for GroupBackStyle and GroupBorderStyle](../Images/KryptonGroupBox.png)
 
-Figure 1 – KryptonGroupBox examples
+Figure 1 — `GroupBackStyle` and `GroupBorderStyle` = `ControlGroupBox` (default)
+
+## Usage example
+
+```csharp
+kryptonGroupBox1.Values.Heading = "Connection";
+kryptonGroupBox1.CaptionOverlap = 1.0; // caption above border
+kryptonGroupBox1.Panel.Padding = new Padding(8);
+```
+
+## Best practices
+
+- Use `Values.Heading` (or `Text`) for the caption; child controls go on `Panel`.
+- Adjust `CaptionOverlap` when the default 50% overlap does not match your layout.
+
+## See also
+
+- [KryptonGroup](KryptonGroup.md)
+- [CaptionValues](CaptionValues.md)
+- [Controls index](../Controls.md)

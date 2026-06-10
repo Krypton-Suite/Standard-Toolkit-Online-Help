@@ -38,7 +38,7 @@
 ### Namespace
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 ```
 
 ### Inheritance Hierarchy
@@ -50,7 +50,7 @@ System.Object
           └─ System.Windows.Forms.Control
               └─ System.Windows.Forms.TreeView
                   └─ Krypton.Toolkit.KryptonTreeView
-                      └─ Krypton.Utilities.KryptonFileSystemTreeView
+                      └─ Krypton.Toolkit.Utilities.KryptonFileSystemTreeView
 ```
 
 ---
@@ -689,7 +689,7 @@ fileSystemTreeView.FileSystemError += (sender, e) =>
 
 Groups file system-specific properties for PropertyGrid display.
 
-**Location:** `Krypton.Utilities.FileSystemTreeViewValues`
+**Location:** `Krypton.Toolkit.Utilities.FileSystemTreeViewValues`
 
 **Properties:**
 
@@ -927,7 +927,7 @@ This ensures icons are always displayed, even when extraction fails.
 ### Basic Usage
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 
 // Create control
 KryptonFileSystemTreeView fileTreeView = new KryptonFileSystemTreeView();
@@ -1297,7 +1297,7 @@ Drag-and-drop is not implemented. Can be added via standard WinForms drag-and-dr
 ### Source Code Location
 
 ```text
-Source/Krypton Components/Krypton.Utilities/KryptonFileSystemTreeView/
+Source/Krypton Components/Krypton.Toolkit.Utilities/Components/KryptonFileSystemTreeView/
 ├── Controls Toolkit/
 │   └── KryptonFileSystemTreeView.cs
 └── Values/

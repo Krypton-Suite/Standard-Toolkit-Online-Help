@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>PR Branch Policy Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="PR Branch Policy Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="pr-branch-policy-workflow">PR Branch Policy Workflow</h1>
+
+<h2 id="quick-reference">Quick Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow file</td>
+<td><code>.github/workflows/pr-branch-policy.yml</code></td>
+</tr>
+<tr>
+<td>Workflow name (Actions UI)</td>
+<td><strong>PR branch policy</strong></td>
+</tr>
+<tr>
+<td>Job name</td>
+<td><code>policy</code></td>
+</tr>
+<tr>
+<td>Trigger</td>
+<td><code>pull_request</code> (<code>opened</code>, <code>synchronize</code>, <code>reopened</code>)</td>
+</tr>
+<tr>
+<td>Runner</td>
+<td><code>ubuntu-latest</code></td>
+</tr>
+<tr>
+<td>Permissions</td>
+<td><code>contents: read</code>, <code>pull-requests: read</code></td>
+</tr>
+<tr>
+<td>Script</td>
+<td><code>.github/scripts/Invoke-BranchPolicyCheck.ps1</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="overview">Overview</h2>
+<p>Validates same-repository pull requests against <a href="../BranchPolicyandWorkflowHardening.html">branch policy</a> rules: allowed base/head pairs and <code>.github/</code>-only merges from <code>master</code> to release lines. Does <strong>not</strong> require release branches to contain <code>master</code> in Git history.</p>
+<p><strong>Rollout:</strong> warn-only by default (<code>BRANCH_POLICY_ENFORCE</code> unset). Set <code>BRANCH_POLICY_ENFORCE=true</code> to fail the check.</p>
+<h2 id="trigger-conditions">Trigger Conditions</h2>
+<ul>
+<li>Runs on internal PRs only (<code>head.repo</code> must equal this repository).</li>
+<li>Skipped when <code>BRANCH_POLICY_DISABLED=true</code>.</li>
+</ul>
+<h2 id="kill-switches-and-variables">Kill Switches and Variables</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BRANCH_POLICY_DISABLED=true</code></td>
+<td>Disables this workflow</td>
+</tr>
+<tr>
+<td><code>BRANCH_POLICY_ENFORCE=true</code></td>
+<td>Violations fail the job</td>
+</tr>
+<tr>
+<td><code>BRANCH_POLICY_ENFORCE</code> unset / <code>false</code></td>
+<td>Violations are warnings; job passes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="../BranchPolicyandWorkflowHardening.html">Branch policy and workflow hardening</a> — full rules, troubleshooting, rollout</li>
+<li><a href="../BranchPromotionPolicy.html">Branch promotion policy</a> — <code>alpha</code> → <code>canary</code> → <code>gold</code> → <code>master</code> promotion guards (separate workflows)</li>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/BRANCH_POLICY.md">.github/BRANCH_POLICY.md</a> — cheat sheet</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

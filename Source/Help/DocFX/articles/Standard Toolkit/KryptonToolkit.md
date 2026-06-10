@@ -58,7 +58,7 @@ the toolbox.
 
 ## Components  
 
-* [KryptonAboutBox](Toolkit/Components/KryptonAboutBox.md) (`Krypton.Utilities` from V110+)
+* [KryptonAboutBox](Toolkit/Components/KryptonAboutBox.md) (`Krypton.Toolkit.Utilities` from V110+)
 * [KryptonCheckSet](Toolkit/Components/KryptonCheckSet.md)  
 * [KryptonCommand](Toolkit/Components/KryptonCommand.md)  
 * [KryptonContextMenu](Toolkit/Components/KryptonContextMenu.md)  
@@ -82,7 +82,7 @@ the toolbox.
 * [KryptonTaskDialog](Toolkit/Components/KryptonTaskDialog.md)
 * [KryptonThemeBrowser](Toolkit/Components/KryptonThemeBrowser.md)
 * [KryptonTimer](Toolkit/Components/KryptonTimer.md)
-* [KryptonToast / toast notifications](Toolkit/Components/KryptonToastNotification.md) (`Krypton.Utilities.KryptonToast` from V110+; see topic)
+* [KryptonToast / toast notifications](Toolkit/Components/KryptonToastNotification.md) (`Krypton.Toolkit.Utilities.KryptonToast` from V110+; see topic)
 
 ## Forms
 

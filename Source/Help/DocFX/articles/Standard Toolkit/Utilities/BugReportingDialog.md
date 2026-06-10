@@ -25,10 +25,10 @@ The `KryptonBugReportingDialog` is a comprehensive bug reporting tool that exten
 
 ## Namespace
 
-All bug reporting components are located in the `Krypton.Utilities` namespace:
+All bug reporting components are located in the `Krypton.Toolkit.Utilities` namespace:
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 ```
 
 ## API Reference
@@ -244,7 +244,7 @@ catch (Exception ex)
 {
     var emailConfig = new BugReportEmailConfig { /* ... */ };
     
-    Krypton.Utilities.KryptonExceptionDialog.Show(
+    Krypton.Toolkit.Utilities.KryptonExceptionDialog.Show(
         ex, 
         highlightColor: null,
         showCopyButton: true,
@@ -369,7 +369,7 @@ private static BugReportEmailConfig LoadEmailConfig()
 ### Example 1: Basic Exception Handling with Bug Reporting
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 using Krypton.Toolkit;
 
 public class MyApplication
@@ -701,11 +701,11 @@ private bool TestEmailConfiguration(BugReportEmailConfig config)
 - **.NET Framework**: 4.7.2 or later
 - **.NET**: 8.0 or later
 - **Dependencies**:
-  - `Krypton.Toolkit` (referenced by `Krypton.Utilities`)
+  - `Krypton.Toolkit` (referenced by `Krypton.Toolkit.Utilities`)
   - `System.Net.Mail` (included in .NET Framework/.NET)
 
 ## See Also
 
 - [KryptonExceptionDialog documentation](KryptonExceptionDialog.md)
-- [Krypton.Utilities source](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/Source/Krypton%20Components/Krypton.Utilities)
+- [Krypton.Toolkit.Utilities source](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/Source/Krypton%20Components/Krypton.Toolkit.Utilities)
 - [Email Configuration Best Practices](EmailConfiguration.md)

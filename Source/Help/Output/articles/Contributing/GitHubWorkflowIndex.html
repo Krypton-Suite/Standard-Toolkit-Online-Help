@@ -76,14 +76,20 @@
 <h3 id="build--ci-workflows">Build &amp; CI Workflows</h3>
 <ul>
 <li><strong><a href="Workflows/BuildWorkflow.html">Build Workflow</a></strong> - Continuous Integration workflow that builds the solution on pull requests and pushes to main branches. Ensures code quality and build integrity before merging.</li>
+<li><strong><a href="Workflows/BuildTestFormWorkflow.html">Build TestForm Workflow</a></strong> - Validates restore/build of the TestForm sample and checks linked <code>.resx</code> resources.</li>
+<li><strong><a href="Workflows/CodeQLWorkflow.html">CodeQL Workflow</a></strong> - Runs CodeQL security and quality analysis on PRs, pushes, and a weekly schedule.</li>
 </ul>
 <h3 id="release-workflows">Release Workflows</h3>
 <ul>
 <li><p><strong><a href="Workflows/ReleaseWorkflow.html">Release Workflow</a></strong> - Handles automated releases for stable, canary, alpha, and LTS branches. Builds, packages, and publishes NuGet packages to nuget.org with Discord notifications.</p>
 </li>
-<li><p><strong><a href="Workflows/NightlyWorkflow.html">Nightly Workflow</a></strong> - Scheduled nightly builds that automatically create and publish bleeding-edge builds from the <code>alpha</code> branch. Includes change detection to skip builds when no changes are present.</p>
+<li><p><strong><a href="Workflows/NightlyWorkflow.html">Nightly Workflow</a></strong> - Scheduled <strong>Nightly Release</strong> from <code>alpha</code> (<code>windows-2025-vs2026</code>, <code>nightly.proj</code>). Skips when no commits in 24h unless <code>NIGHTLY_RELEASE_RETENTION_CHECK_DAYS</code> / manual <code>retention_check_days</code> applies; WebView2 prerelease cache; NuGet guard on push.</p>
 </li>
 <li><p><strong><a href="Workflows/CanaryLTSReleaseWorkflow.html">Canary LTS Release Workflow</a></strong> - Handles automated canary LTS releases and publishes NuGet packages to nuget.org with Discord notifications.</p>
+</li>
+<li><p><strong><a href="Workflows/CanaryWorkflow.html">Canary Workflow</a></strong> - Standalone canary release pipeline that builds and publishes from the <code>Canary</code> branch.</p>
+</li>
+<li><p><strong><a href="Workflows/TemplatesReleaseWorkflow.html">Templates Release Workflow</a></strong> - Builds and publishes Visual Studio template ZIP and VSIX artifacts to GitHub Releases.</p>
 </li>
 </ul>
 <h3 id="automation-workflows">Automation Workflows</h3>
@@ -92,7 +98,24 @@
 </li>
 <li><p><strong><a href="Workflows/AutoLabelIssueAreasWorkflow.html">Auto-Label Issue Areas</a></strong> - Automatically labels issues based on the &quot;Areas Affected&quot; field in bug reports and prefixes issue titles based on template type.</p>
 </li>
+<li><p><strong><a href="Workflows/AutoCompleteIssuesWorkflow.html">Auto-complete Linked Issues</a></strong> - Closes linked issues and applies completion labels on merged PRs in the configured branch direction.</p>
+</li>
+<li><p><strong><a href="Workflows/AutoLabelPRBackupWorkflow.html">Auto-label PR Backup Workflow</a></strong> - Adds backup-maintenance labels to <code>alpha</code> -&gt; <code>alpha-backup</code> PRs that modify backup automation.</p>
+</li>
+<li><p><strong><a href="AlphaBackupSync.html">Alpha Backup Sync</a></strong> - Nightly/manual automation to sync <code>alpha</code> into <code>alpha-backup</code>, with optional backup-repo push and Discord notifications.</p>
+</li>
+<li><p><strong><a href="Workflows/RepositoryMirror.html">Repository Mirror</a></strong> - Mirrors major branches (<code>master</code>, <code>gold</code>, <code>canary</code>, <code>alpha</code>, <code>V105-LTS</code>, <code>V85-LTS</code>) and tags to a separate GitHub repository via force-push. <strong>Requires the workflow file on <code>master</code> for the daily schedule.</strong></p>
+</li>
+<li><p><strong><a href="Workflows/RepositoryRestoreFromMirrorWorkflow.html">Repository Restore from Mirror</a></strong> - Manual-only workflow to restore branches (and optionally tags) from the mirror back into the source repo. Supports dry run (default), <code>new_branch</code>, point-in-time <code>restore_date</code>, and guarded <code>force_push</code>. Umbrella guide: <a href="Workflows/RepositoryBackupAndRestore.html">Repository backup and restore</a>.</p>
+</li>
 </ul>
+<h3 id="branch-policy-and-ci-alignment-3610">Branch policy and CI alignment (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3610">#3610</a>)</h3>
+<ul>
+<li><strong><a href="BranchPolicyandWorkflowHardening.html">Branch policy and workflow hardening</a></strong> - Overview: PR pairing rules, <code>.github/</code>-only propagation from <code>master</code>, warn-then-fail rollout.</li>
+<li><strong><a href="Workflows/PRBranchPolicyWorkflow.html">PR branch policy</a></strong> - Validates pull request base/head pairings on same-repo PRs (no master ancestry check).</li>
+<li><strong><a href="Workflows/SyncGitHubFromMasterWorkflow.html">Sync .github from master</a></strong> - Opens automated PRs copying only <code>.github/</code> from <code>master</code> to release branches (path checkout, not merge).</li>
+</ul>
+<p><strong>Promotion guards (separate):</strong> <a href="BranchPromotionPolicy.html">Branch promotion policy</a> documents <code>alpha</code> → <code>canary</code> → <code>gold</code> → <code>master</code> source-branch enforcement.</p>
 <h2 id="quick-reference">Quick Reference</h2>
 <table>
 <thead>
@@ -111,6 +134,18 @@
 <td>Build artifacts</td>
 </tr>
 <tr>
+<td>Build TestForm</td>
+<td>PR/Push/Manual</td>
+<td>Validate TestForm sample + linked resources</td>
+<td>CI validation logs</td>
+</tr>
+<tr>
+<td>CodeQL Advanced</td>
+<td>PR/Push/Schedule</td>
+<td>Security and quality static analysis</td>
+<td>Code scanning alerts</td>
+</tr>
+<tr>
 <td>Release</td>
 <td>Push to release branches/Manual</td>
 <td>Stable releases</td>
@@ -123,6 +158,18 @@
 <td>Nightly NuGet packages</td>
 </tr>
 <tr>
+<td>Canary Release</td>
+<td>Push to <code>Canary</code>/Manual</td>
+<td>Standalone canary publishing</td>
+<td>Canary NuGet packages</td>
+</tr>
+<tr>
+<td>Templates Release</td>
+<td>Push on <code>Templates/**</code>/Manual</td>
+<td>Publish VS template assets</td>
+<td>ZIP + VSIX release assets</td>
+</tr>
+<tr>
 <td>Auto-Assign PR</td>
 <td>PR opened</td>
 <td>Assign PR author</td>
@@ -133,6 +180,48 @@
 <td>Issue opened/edited</td>
 <td>Label and title issues</td>
 <td>Labels, title prefix</td>
+</tr>
+<tr>
+<td>Auto-complete Issues</td>
+<td>PR closed (merged, gated branches)/Manual</td>
+<td>Label + close linked issues and clear assignees</td>
+<td>Issue lifecycle updates</td>
+</tr>
+<tr>
+<td>Auto-label PR Backup</td>
+<td>PR opened/sync/reopened (<code>alpha</code> -&gt; <code>alpha-backup</code>)</td>
+<td>Tag backup workflow modification PRs</td>
+<td>PR label updates</td>
+</tr>
+<tr>
+<td>Alpha Backup Sync</td>
+<td>Schedule (00:00 UTC)/Manual</td>
+<td>Sync <code>alpha</code> to <code>alpha-backup</code> + optional off-repo backup</td>
+<td>PR sync + optional backup snapshot</td>
+</tr>
+<tr>
+<td>Repository Mirror</td>
+<td>Push to major branches/Schedule (02:00 UTC)/Manual (optional dry run)</td>
+<td>Mirror branches + tags to external repo</td>
+<td>Force-pushed refs on mirror repo</td>
+</tr>
+<tr>
+<td>Repository Restore from Mirror</td>
+<td>Manual only</td>
+<td>Restore branches/tags from mirror to source</td>
+<td><code>restore/…</code> branches or force-pushed tips</td>
+</tr>
+<tr>
+<td>PR branch policy</td>
+<td>PR opened/sync/reopened (same repo)</td>
+<td>Validate branch pairing and <code>.github/</code>-only rules</td>
+<td>Warnings or failed check</td>
+</tr>
+<tr>
+<td>Sync .github from master</td>
+<td>Push to <code>master</code> (<code>.github/**</code>)/Mon 03:30 UTC/Manual</td>
+<td>Copy <code>.github/</code> tree to release branches</td>
+<td>Sync PRs per target branch</td>
 </tr>
 </tbody>
 </table>
@@ -181,6 +270,13 @@
 <li><code>RELEASE_DISABLED</code> - Kill switch for <strong><code>release-master</code></strong> and <strong><code>release-v105-lts</code></strong></li>
 <li><code>CANARY_DISABLED</code> - Kill switch for canary releases (<code>release-canary</code>)</li>
 <li><code>DOTNET_PREVIEW_SETUP_VERSION</code>, <code>DOTNET_PREVIEW_SDK_BAND</code>, <code>USE_DOTNET_PREVIEW</code> - Repository <strong>Variables</strong> for preview SDK behaviour (see <a href="GitHubActionsWorkflows.html#repository-variables-net-preview--ci">GitHub Actions Workflows</a>)</li>
+<li><code>MIRROR_REPO</code>, <code>MIRROR_BRANCHES</code>, <code>MIRROR_SYNC_TAGS</code>, <code>REPO_MIRROR_DISABLED</code> - Repository Mirror configuration (see <a href="Workflows/RepositoryMirror.html#configuration-reference">Repository Mirror</a>)</li>
+</ul>
+<h3 id="mirror--backup-secrets-optional">Mirror &amp; backup secrets (optional)</h3>
+<ul>
+<li><code>MIRROR_REPO_TOKEN</code> - PAT with <strong>Contents: write</strong> on the mirror target repository</li>
+<li><code>DISCORD_WEBHOOK_MIRROR</code> - Discord webhook for mirror run notifications</li>
+<li><code>BACKUP_REPO_TOKEN</code>, <code>DISCORD_WEBHOOK_ALPHA_BACKUP</code> - Alpha Backup Sync (see <a href="AlphaBackupSync.html">Alpha Backup Sync</a>)</li>
 </ul>
 <h3 id="required-environments">Required Environments</h3>
 <ul>
@@ -194,6 +290,7 @@
 <li><strong>canary</strong> - Pre-release testing builds</li>
 <li><strong>V105-LTS</strong> - Long-Term Support branch (v105); <strong><code>release-v105-lts</code></strong> in <code>release.yml</code>, <strong><code>DISCORD_WEBHOOK_MASTER</code></strong></li>
 <li><strong>gold</strong> - Release candidate branch</li>
+<li><strong>V85-LTS</strong> - Long-Term Support branch (v85); mirrored by <a href="Workflows/RepositoryMirror.html">Repository Mirror</a> when present on source</li>
 </ul>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="workflow-not-running">Workflow Not Running</h3>

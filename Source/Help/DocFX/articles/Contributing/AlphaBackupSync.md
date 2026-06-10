@@ -343,6 +343,8 @@ Use **Actions** → **Alpha to Alpha-Backup Sync** → **Run workflow**. Ensure 
 ## See Also
 
 - **Workflow file**: [alpha-backup-sync.yml](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/.github/workflows/alpha-backup-sync.yml)
+- **Repository Mirror** (branch-faithful external mirror): [Workflows/RepositoryMirror.md](Workflows/RepositoryMirror.md)
+- **Repository backup and restore** (mirror → source disaster recovery): [Workflows/RepositoryRestoreFromMirrorWorkflow.md](Workflows/RepositoryRestoreFromMirrorWorkflow.md) · [Workflows/RepositoryBackupAndRestore.md](Workflows/RepositoryBackupAndRestore.md)
 - **Nightly workflow**: [nightly.yml](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/.github/workflows/nightly.yml)
 - [GitHub: Events that trigger workflows – schedule](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule)
 - [GitHub: Using the GITHUB_TOKEN](https://docs.github.com/en/actions/security-guides/automatic-token-authentication)

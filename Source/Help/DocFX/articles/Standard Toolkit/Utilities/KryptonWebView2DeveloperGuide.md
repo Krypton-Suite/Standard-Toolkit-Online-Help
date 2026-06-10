@@ -22,8 +22,8 @@ The `KryptonWebView2` control is a modern web browser control that integrates Mi
 ### Basic Usage
 
 ```csharp
-using Krypton.Utilities;  // For KryptonWebView2
-using Krypton.Toolkit;     // For KryptonContextMenu and related types
+using Krypton.Toolkit.Utilities;  // For KryptonWebView2
+using Krypton.Toolkit;            // For KryptonContextMenu and related types
 
 // Create the control
 var webView = new KryptonWebView2();
@@ -73,7 +73,7 @@ KryptonWebView2 : WebView2
 
 ### Conditional Compilation
 
-The control is wrapped in `#if WEBVIEW2_AVAILABLE && NET8_0_OR_GREATER` directives, ensuring it only compiles when WebView2 dependencies are available **and** the target framework is .NET 8.0 or greater.
+The control is wrapped in `#if WEBVIEW2_AVAILABLE` when bundled WebView2 assemblies are present under `Lib/WebView2`. Otherwise a stub control is compiled. This matches the `Krypton.Toolkit.Utilities` multi-target build ( .NET Framework 4.7.2+ and modern `-windows` TFMs).
 
 ## API Reference
 
@@ -153,12 +153,12 @@ if (renderer != null)
 ```csharp
 [Browsable(false)]
 [EditorBrowsable(EditorBrowsableState.Never)]
-public PaletteBase GetResolvedPalette()
+public PaletteBase? GetResolvedPalette()
 ```
 
 **Description:** Gets the resolved palette currently being used for rendering.
 
-**Returns:** A `PaletteBase` instance representing the currently active palette.
+**Returns:** A `PaletteBase` instance representing the currently active palette, or `null` if no palette has been assigned yet.
 
 ### Events
 
@@ -255,28 +255,43 @@ private void OnWebMessageReceived(object? sender, CoreWebView2WebMessageReceived
 
 ## Theming Integration
 
-### Palette System
+### Palette system and State properties
 
-The control automatically integrates with Krypton's palette system:
+`KryptonWebView2` follows the same **State###** pattern as other Krypton controls (`KryptonRichTextBox`, `KryptonPanel`, etc.):
+
+| Property | Purpose |
+|----------|---------|
+| `StateCommon` | Shared back/content/border overrides |
+| `StateNormal` | Enabled, unfocused |
+| `StateActive` | Enabled, focused (`PaletteState.Tracking`) |
+| `StateDisabled` | `Enabled == false` |
+| `WebViewBackStyle` | Palette back style (default `PanelClient`) |
+| `WebViewContentStyle` | Palette content style for foreground (default `InputControlStandalone`) |
+| `AlwaysActive` | Keep active-state colors when unfocused |
+
+`BackColor`, `ForeColor`, and `DefaultBackgroundColor` are updated automatically from the resolved state. They are **hidden in the Property Grid**; use **Visuals → State###** instead.
 
 ```csharp
-// Global theme changes are automatically applied
-KryptonManager.GlobalPalette = PaletteOffice2013Blue;
+// Global theme changes are applied automatically
+KryptonManager.GlobalPalette = KryptonManager.CurrentGlobalPalette;
 
-// The control will automatically update its appearance
+// Designer/code overrides
+webView.StateCommon.Back.Color1 = Color.Empty; // inherit from palette
+webView.StateActive.Content.ShortText.Color1 = Color.Navy;
 ```
 
-### Custom Theming
+Colors refresh on global palette change, focus change, and after `EnsureCoreWebView2Async()` completes.
+
+### Custom theming (tool strips and web content)
 
 ```csharp
-// Access the resolved palette
+// Access the resolved palette (e.g. for injected CSS)
 var palette = webView.GetResolvedPalette();
 
 // Create custom tool strip renderer
 var renderer = webView.CreateToolStripRenderer();
 if (renderer != null)
 {
-    // Apply to custom tool strips
     myCustomToolStrip.Renderer = renderer;
 }
 ```

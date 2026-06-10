@@ -15,6 +15,7 @@ This feature was introduced to address the growing prevalence of touchscreen dev
 - [Best Practices](#best-practices)
 - [Known Limitations](#known-limitations)
 - [Troubleshooting](#troubleshooting)
+- [Version History](#version-history)
 
 ---
 
@@ -1503,15 +1504,6 @@ Images within controls are not automatically scaled. Only the control's overall 
 
 ---
 
-## Related Documentation
-
-- [KryptonManager API Reference](../Source/Krypton Components/Krypton.Toolkit/Controls Toolkit/KryptonManager.cs)
-- [ViewManager Implementation](../Source/Krypton Components/Krypton.Toolkit/View Base/ViewManager.cs)
-- [VisualControlBase Implementation](../Source/Krypton Components/Krypton.Toolkit/Controls Visuals/VisualControlBase.cs)
-- [Palette mechanics](https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Documents/palette-mechanics-intro.md)
-
----
-
 ## Version History
 
 - **Version 110**: Initial implementation of touchscreen support feature
@@ -1529,8 +1521,7 @@ Images within controls are not automatically scaled. Only the control's overall 
     - Groups all touchscreen settings into an expandable object
     - Provides `Enabled`, `ControlScaleFactor`, `FontScalingEnabled`, and `FontScaleFactor` properties
     - Designer-friendly with `ExpandableObjectConverter`
-
-- **Version 110+**: Enhanced with automatic detection and hot-plug support
+  - Enhanced with automatic detection and hot-plug support
   - Added automatic touchscreen detection
     - Added `AutomaticallyDetectTouchscreen` static property
     - Added `AutomaticallyDetectTouchscreen` property to `KryptonTouchscreenSettingValues`
@@ -1547,12 +1538,3 @@ Images within controls are not automatically scaled. Only the control's overall 
     - Added `IsTouchscreenAvailable()` static method
     - Added `GetMaximumTouchContacts()` static method
     - Added `MaximumTouchContacts` read-only property to `KryptonTouchscreenSettingValues`
-
----
-
-## Feedback and Contributions
-
-For issues, feature requests, or contributions related to touchscreen support, please visit:
-
-- [GitHub Issues](https://github.com/Krypton-Suite/Standard-Toolkit/issues)
-- [Feature request #1760](https://github.com/Krypton-Suite/Standard-Toolkit/issues/1760)

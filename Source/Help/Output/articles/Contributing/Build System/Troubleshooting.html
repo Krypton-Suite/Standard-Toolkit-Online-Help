@@ -272,9 +272,9 @@ purge.cmd
 build-stable.cmd Build
 </code></pre>
 <ol start="4">
-<li><strong>Use Single-Threaded Build</strong>:</li>
+<li><strong>Use Single-Threaded Build</strong> (orchestration <code>.cmd</code> scripts and CI default to <strong><code>/m</code></strong>; throttle when diagnosing races):</li>
 </ol>
-<pre><code class="lang-cmd">msbuild build.proj /t:Build /m:1
+<pre><code class="lang-cmd">msbuild /m:1 build.proj /t:Build
 </code></pre>
 <h3 id="permission-denied-errors">Permission Denied Errors</h3>
 <p><strong>Symptoms</strong>:</p>
@@ -505,7 +505,7 @@ type extracted\*.nuspec
 <li><strong>Rebuild and Repack</strong>:</li>
 </ol>
 <pre><code class="lang-cmd">cd Scripts
-msbuild build.proj /t:Clean;Build;Pack
+msbuild /m build.proj /t:Clean;Build;Pack
 </code></pre>
 <h3 id="wrong-framework-assemblies">Wrong Framework Assemblies</h3>
 <p><strong>Symptoms</strong>:</p>
@@ -530,7 +530,7 @@ dir extracted\lib
 <li><strong>Rebuild with Correct TFMs</strong>:</li>
 </ol>
 <pre><code class="lang-cmd">cd Scripts
-msbuild build.proj /t:Clean;Build;Pack /p:TFMs=all
+msbuild /m build.proj /t:Clean;Build;Pack /p:TFMs=all
 </code></pre>
 <ol start="3">
 <li><strong>Check Target Framework in Consumer Project</strong>:</li>
@@ -806,14 +806,14 @@ Application.SetCompatibleTextRenderingDefault(false);
 <li>Add <code>Bin/</code>, <code>obj/</code>, <code>.git/</code> to exclusions</li>
 </ul>
 </li>
-<li><p><strong>Adjust Parallel Builds</strong>:</p>
+<li><p><strong>Adjust parallel builds</strong> (scripts and CI use <strong><code>/m</code></strong> by default):</p>
 </li>
 </ol>
 <pre><code class="lang-cmd"># Reduce parallelism
-msbuild build.proj /t:Build /m:2
+msbuild /m:2 build.proj /t:Build
 
 # Or disable
-msbuild build.proj /t:Build /m:1
+msbuild /m:1 build.proj /t:Build
 </code></pre>
 <ol start="3">
 <li><strong>Build Specific Projects</strong>:</li>
@@ -823,7 +823,7 @@ msbuild build.proj /t:Build /m:1
 <ol start="4">
 <li><strong>Use Binary Logs for Analysis</strong>:</li>
 </ol>
-<pre><code class="lang-cmd">msbuild build.proj /t:Build /bl:build.binlog
+<pre><code class="lang-cmd">msbuild /m build.proj /t:Build /bl:build.binlog
 msbuildlogviewer build.binlog
 </code></pre>
 <h3 id="memory-issues-during-build">Memory Issues During Build</h3>
@@ -845,10 +845,10 @@ msbuildlogviewer build.binlog
 <li>Close Visual Studio during command-line builds</li>
 </ul>
 </li>
-<li><p><strong>Reduce Parallel Builds</strong>:</p>
+<li><p><strong>Reduce parallel builds</strong>:</p>
 </li>
 </ol>
-<pre><code class="lang-cmd">msbuild build.proj /t:Build /m:1
+<pre><code class="lang-cmd">msbuild /m:1 build.proj /t:Build
 </code></pre>
 <ol start="3">
 <li><strong>Build in Chunks</strong>:</li>

@@ -86,9 +86,10 @@ Common issues, solutions, and frequently asked questions.
 
 ### 🎨 **Theming Integration**
 
-- Automatic palette system integration
-- Dynamic theme updates
-- Custom theme injection into web content
+- Automatic palette system integration via `StateCommon`, `StateNormal`, `StateActive`, and `StateDisabled`
+- `BackColor`, `ForeColor`, and `DefaultBackgroundColor` synchronized from palette (hidden from designer)
+- Dynamic theme and focus-state updates
+- Custom theme injection into web content (optional)
 - Consistent appearance with other Krypton controls
 
 ### 🖱️ **Context Menu System**
@@ -125,8 +126,9 @@ Before using KryptonWebView2, ensure you have:
 
 - **Windows 10** version 1803 (build 17134) or later
 - **WebView2 Runtime** installed on target systems
-- **.NET 8.0 or later** (this control is not available for .NET Framework)
-- **Visual Studio 2019+** for development
+- **WebView2 SDK assemblies** for build (bundled under `Lib/WebView2` or via setup scripts — see [WebView2 SDK Setup](WebView2SDKSetup.md))
+- **.NET Framework 4.7.2+** or a supported modern `-windows` TFM (per `Krypton.Toolkit.Utilities`)
+- **Visual Studio 2022** recommended for development
 - **Krypton Toolkit** installed and configured
 
 ## Getting Help
@@ -152,12 +154,13 @@ Before using KryptonWebView2, ensure you have:
 
 ## Version Information
 
-This documentation covers KryptonWebView2 as part of the Krypton Toolkit Suite. The control is conditionally compiled and only available when `WEBVIEW2_AVAILABLE` is defined **and** the target framework is .NET 8.0 or greater (`NET8_0_OR_GREATER`).
+This documentation covers KryptonWebView2 as part of the Krypton Toolkit Suite. The full control is compiled when `WEBVIEW2_AVAILABLE` is defined (bundled WebView2 SDK under `Lib/WebView2`); see [WebView2 SDK Setup](WebView2SDKSetup.md).
 
 ### Compatibility Matrix
 
 | Framework | WebView2 Runtime | Supported |
 | --------- | ---------------- | --------- |
-| .NET 8.0+ | 1.0.3485.44+     | Yes       |
+| .NET Framework 4.7.2+ (`net472`, `net48`, `net481`) | 1.0.3485.44+ | Yes (when `WEBVIEW2_AVAILABLE`) |
+| .NET 8.0+ Windows (`net8.0-windows` and later) | 1.0.3485.44+ | Yes |
 
-**Note:** This control is only available for .NET 8.0 and later. It is not available for .NET Framework versions.
+**Note:** The full control is compiled when bundled WebView2 SDK assemblies are present under `Krypton.Toolkit.Utilities/Lib/WebView2` (`WEBVIEW2_AVAILABLE`). Without them, a minimal stub is built. Windows only; WebView2 Runtime must be installed on target machines.

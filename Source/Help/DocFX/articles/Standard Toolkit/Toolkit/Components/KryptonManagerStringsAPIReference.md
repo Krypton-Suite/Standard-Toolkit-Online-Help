@@ -70,7 +70,7 @@ All string category properties follow this pattern:
 | `ToolBarStrings` | `IntegratedToolBarStrings` | Toolbar strings | `KryptonManager.Strings.ToolBarStrings` |
 | `ColorStrings` | `GlobalColorStrings` | Color name strings | `KryptonManager.Strings.ColorStrings` |
 
-**V110+:** Some components that consume these strings (for example **`KryptonAboutBox`**, **`KryptonToast`**) live in **`Krypton.Utilities`**. The **`KryptonManager.Strings`** API remains in **`Krypton.Toolkit`** as the usual localization entry point.
+**V110+:** Some components that consume these strings (for example **`KryptonAboutBox`**, **`KryptonToast`**) live in **`Krypton.Toolkit.Utilities`**. The **`KryptonManager.Strings`** API remains in **`Krypton.Toolkit`** as the usual localization entry point.
 
 #### KryptonGlobalToolkitStrings methods
 

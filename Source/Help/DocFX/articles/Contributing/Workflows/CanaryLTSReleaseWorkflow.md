@@ -1,5 +1,13 @@
 # Canary LTS Release Workflow
 
+## Quick Reference
+
+- Workflow file: `.github/workflows/canary-lts-release.yml`
+- Workflow name: `Canary LTS Release`
+- Triggers: `push` (LTS branch), `workflow_dispatch`
+- Runner: `windows-latest`
+- Environment: `production` (publishing path)
+
 ## Table of Contents
 
 1. [Overview](#overview)
@@ -79,7 +87,7 @@ if: github.ref == 'refs/heads/V105-LTS' && (github.event_name == 'push' || githu
 
 ## Prerequisites
 
-- **Repository**: Contains the Standard Toolkit solution and `Scripts/Build/canary.proj`.
+- **Repository**: Contains the Standard Toolkit solution and `Scripts/Build/canarylongtermstable.proj` (Canary LTS orchestration; distinct from `canary.proj` on the `canary` branch).
 - **Branch**: Workflow logic runs only on `V105-LTS`.
 - **Secrets** (see [Secrets and Variables Reference](#secrets-and-variables-reference)):
   - **NUGET_API_KEY** (required for push): nuget.org API key with push permission.
@@ -144,7 +152,7 @@ When disabled, the first step writes a warning and sets `enabled=false`; all sub
 - **Action**: `microsoft/setup-msbuild@v3`
 - **Options**: `msbuild-architecture: x64`
 - **Condition**: Kill switch enabled.
-- **Purpose**: Makes MSBuild available for `Scripts/Build/canary.proj`.
+- **Purpose**: Makes MSBuild available for `Scripts/Build/canarylongtermstable.proj`.
 
 ### 7. Setup NuGet
 
@@ -166,7 +174,7 @@ When disabled, the first step writes a warning and sets `enabled=false`; all sub
 - **Behaviour**:
   - Creates `WebView2SDK` directory if missing.
   - Resolves latest stable **Microsoft.Web.WebView2** (NuGet search or API); fallback version `1.0.3595.46`.
-  - Temporarily adds the package to `Krypton.Utilities.csproj`, restores, copies `Microsoft.Web.WebView2.Core.dll`, `Microsoft.Web.WebView2.WinForms.dll`, and `WebView2Loader.dll` into `WebView2SDK\`, then removes the package reference.
+  - Temporarily adds the package to `Krypton.Toolkit.Utilities.csproj`, restores, copies `Microsoft.Web.WebView2.Core.dll`, `Microsoft.Web.WebView2.WinForms.dll`, and `WebView2Loader.dll` into `WebView2SDK\`, then removes the package reference.
 - **Purpose**: Canary build can bundle WebView2; this step provides the SDK files expected by the build without persisting the package reference in the repo.
 
 ### 10. Restore
@@ -184,12 +192,12 @@ When disabled, the first step writes a warning and sets `enabled=false`; all sub
 ### 12. Build Canary
 
 - **Condition**: Kill switch enabled.
-- **Command**: `msbuild "Scripts/Build/canary.proj" /t:Build /p:Configuration=Canary /p:Platform="Any CPU"` with optional signing parameters when `prepare_cert` has made a certificate available.
+- **Command**: `msbuild /m` with `Scripts/Build/canarylongtermstable.proj` `/t:Build` `/p:Configuration=Canary` `/p:Platform="Any CPU"` `/p:UseArtifactsOutput=true`, plus optional signing parameters when `prepare_cert` has made a certificate available.
 - **Purpose**: Builds all Canary-configuration outputs (DLLs, etc.) for the TFMs defined in the solution. See [Build System and Package Output](#build-system-and-package-output).
 
 ### 13. Pack Canary
 
-- **Command**: `msbuild "Scripts/Build/canary.proj" /t:Pack /p:Configuration=Canary /p:Platform="Any CPU"`
+- **Command**: `msbuild /m "Scripts/Build/canarylongtermstable.proj" /t:Pack /p:Configuration=Canary /p:Platform="Any CPU" /p:UseArtifactsOutput=true`
 - **Condition**: Kill switch enabled.
 - **Purpose**: Cleans old Canary packages, then builds and packs all projects in Canary configuration; produces `.nupkg` files. Output location is defined by the build (see next section).
 
@@ -221,7 +229,7 @@ When disabled, the first step writes a warning and sets `enabled=false`; all sub
 
 ## Build System and Package Output
 
-- **Project**: `Scripts/Build/canary.proj`
+- **Project**: `Scripts/Build/canarylongtermstable.proj`
 - **Configuration**: `Canary`
 - **Targets used**: `Build`, then `Pack` (which depends on `CleanPackages` and `PackAll`).
 
@@ -306,7 +314,7 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 - Check the **Build Canary** and **Pack Canary** logs for MSBuild errors.
 - Confirm preview/stable SDK variables match `dotnet --list-sdks` on the runner (**Setup .NET Preview** and **Pin SDK via global.json**).
 - Confirm WebView2 SDK step completed and `WebView2SDK` contains the expected DLLs if the build requires them.
-- Locally: `msbuild Scripts/Build/canary.proj /t:Build /p:Configuration=Canary /p:Platform="Any CPU"` (and same for `Pack`) to reproduce.
+- Locally: `msbuild /m Scripts/Build/canarylongtermstable.proj /t:Build /p:Configuration=Canary /p:Platform="Any CPU" /p:UseArtifactsOutput=true` (and same for `Pack`) to reproduce.
 
 ### Get Version fails or uses fallback
 

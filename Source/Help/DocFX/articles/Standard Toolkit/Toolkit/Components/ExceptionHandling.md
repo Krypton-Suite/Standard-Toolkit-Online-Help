@@ -1,6 +1,6 @@
 # Krypton Exception Handling Documentation
 
-**V110+:** The public **`KryptonExceptionDialog`** API is implemented in **`Krypton.Utilities`**. The canonical quick start and API reference are under **[Utilities/KryptonExceptionDialogQuickStart.md](../../Utilities/KryptonExceptionDialogQuickStart.md)** and **[Utilities/KryptonExceptionDialog.md](../../Utilities/KryptonExceptionDialog.md)**. The files in this folder are legacy copies; prefer the Utilities topics when links are updated.
+**V110+:** The public **`KryptonExceptionDialog`** API is implemented in **`Krypton.Toolkit.Utilities`**. The canonical quick start and API reference are under **[Utilities/KryptonExceptionDialogQuickStart.md](../../Utilities/KryptonExceptionDialogQuickStart.md)** and **[Utilities/KryptonExceptionDialog.md](../../Utilities/KryptonExceptionDialog.md)**. The files in this folder are legacy copies; prefer the Utilities topics when links are updated.
 
 This directory contains documentation for the Krypton Toolkit exception handling features.
 
@@ -52,7 +52,7 @@ This directory contains documentation for the Krypton Toolkit exception handling
 Static API for displaying rich exception details in a modal dialog.
 
 ```csharp
-using Krypton.Utilities;
+using Krypton.Toolkit.Utilities;
 // ...
 KryptonExceptionDialog.Show(exception, showCopyButton: true, showSearchBox: true);
 ```

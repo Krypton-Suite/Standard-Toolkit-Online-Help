@@ -16,10 +16,13 @@
 
 ## Overview
 
-The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple release channels. The system includes workflows for continuous integration (`build.yml`), manual releases (`release.yml`), automated nightly builds (`nightly.yml`), a standalone Canary release workflow (`canary.yml`) on push to the Canary branch, and a **Canary LTS Release** workflow (`canary-lts-release.yml`) that publishes Canary packages from the V105-LTS branch.
+The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple release channels. The system includes workflows for continuous integration (`build.yml`), manual releases (`release.yml`), automated nightly builds (`nightly.yml`), a standalone Canary release workflow (`canary.yml`) on push to the Canary branch, a **Canary LTS Release** workflow (`canary-lts-release.yml`) that publishes Canary packages from the V105-LTS branch, and **branch promotion guards** (`master-guard.yml`, `branch-promotion-guard.yml`) that enforce which branches may merge into `canary`, `gold`, and `master`.
+
+See [Branch promotion policy](BranchPromotionPolicy.md) for the full `alpha` → `canary` → `gold` → `master` model and ruleset setup.
 
 ### Key Features
 
+✅ **Branch Promotion Guards** - Enforce allowed PR sources into `canary`, `gold`, and `master`  
 ✅ **Automated NuGet Publishing** - Push packages to nuget.org automatically  
 ✅ **Branch-Specific Configurations** - Different builds for different release types  
 ✅ **Discord Notifications** - Rich embeds announcing new releases  
@@ -51,6 +54,13 @@ The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple rele
 │        ↓                 ↓                  ↓                 │
 │    Verify            Publish           Auto-Publish           │
 │                                                               │
+│  ┌──────────────────────┐  ┌─────────────────────────────┐    │
+│  │ branch-promotion-    │  │ master-guard.yml            │    │
+│  │ guard.yml            │  │ (gold / dependabot → master)│    │
+│  │ (alpha→canary,       │  └─────────────────────────────┘    │
+│  │  canary→gold)        │                                     │
+│  └──────────────────────┘                                     │
+│                                                               │
 └───────────────────────────────────────────────────────────────┘
 ```
 
@@ -63,6 +73,8 @@ The Krypton Toolkit uses GitHub Actions for automated CI/CD across multiple rele
 | **nightly.yml** | Automation | Daily at midnight | Packages (if version changed) |
 | **canary.yml** | Canary release | Push to Canary branch | Canary packages (alternative to release.yml's release-canary job) |
 | **canary-lts-release.yml** | Canary LTS | Push to V105-LTS branch | Canary packages built from LTS branch (see [CanaryLTSReleaseWorkflow](Workflows/CanaryLTSReleaseWorkflow.md)) |
+| **master-guard.yml** | Merge policy | PR to `master` | Validates head is `gold` or `dependabot/*` (see [Master merge guard](Workflows/MasterMergeGuardWorkflow.md)) |
+| **branch-promotion-guard.yml** | Merge policy | PR to `canary` or `gold` | Validates promotion chain sources (see [Branch promotion guard](Workflows/BranchPromotionGuardWorkflow.md)) |
 
 ---
 
@@ -106,8 +118,10 @@ jobs:
       3. Setup .NET Preview (when USE_DOTNET_PREVIEW is not false)
       4. Pin SDK via global.json (stable 10.x/9.x for this workflow)
       5. Setup MSBuild and NuGet; cache packages
-      6. Restore solution (*.slnx), build via Scripts/Build/nightly.proj
+      6. Restore solution (*.slnx), build via Scripts/Build/nightly.proj (MSBuild **`/m`**; `nightly.proj` sets `BuildInParallel="true"`)
 ```
+
+Orchestrated release, canary, nightly, and canary-lts workflows invoke `msbuild /m` on `Scripts/Build/*.proj` Build/Pack steps. See [Parallel MSBuild](Build%20System/BuildSystemOverview.md#parallel-msbuild).
 
 **Does NOT**:
 
@@ -568,7 +582,7 @@ Set under **Settings → Secrets and variables → Actions → Variables** (orga
 | `DOTNET_PREVIEW_SETUP_VERSION` | Version line for `actions/setup-dotnet` when installing the preview SDK (for example `11.0.x`). |
 | `DOTNET_PREVIEW_SDK_BAND` | Major.minor band used with `dotnet --list-sdks` when pinning the preview SDK in **Pin SDK via global.json** (for example `11.0`). |
 | `USE_DOTNET_PREVIEW` | Set exactly to `false` to disable preview SDK installation and pin stable **10.x**/**9.x** in workflows that implement this toggle. Leave unset or set to anything else to keep preview enabled. **build-testform.yml**: when `false`, the **Preview** job is skipped and the **Stable** job can run on `canary`/`alpha` so CI still builds. |
-| `STANDARD_TOOLKIT_MIN_NUPKG_MB` | **Optional.** Minimum size (integer **MiB**) for **`Krypton.Standard.Toolkit`** aggregate `.nupkg` files before `dotnet nuget push`. Implemented by dot-sourcing [`Scripts/CI/StandardToolkitNupkgGuard.ps1`](../../../Scripts/CI/StandardToolkitNupkgGuard.ps1) in release/canary/nightly push steps. Omit or leave empty to use the script default (**10** MiB). |
+| `STANDARD_TOOLKIT_MIN_NUPKG_MB` | **Optional.** Minimum size (integer **MiB**) for **`Krypton.Standard.Toolkit`** aggregate `.nupkg` files before `dotnet nuget push`. Implemented by dot-sourcing [`Scripts/CI/StandardToolkitNupkgGuard.ps1`](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/Scripts/CI/StandardToolkitNupkgGuard.ps1) in release/canary/nightly push steps. Omit or leave empty to use the script default (**10** MiB). |
 
 Workflows generate `global.json` with a shared PowerShell pattern (`Get-ListedSdkVersion`) so SDK resolution stays consistent across YAML files.
 
@@ -1141,19 +1155,29 @@ jobs:
 - ✅ Scoped to repository only
 - ✅ Expires after job completes
 
-#### Branch Protection
+#### Branch protection and promotion rules
 
-**Recommended for**: master, **V105-LTS**, canary, alpha
+**Recommended for**: `master`, `gold`, `canary`, `alpha`, **V105-LTS**
 
-**Settings** → Branches → Add rule:
+Use **Settings → Rules → Rulesets** (preferred) or classic branch protection. Promotion guards add required status checks; rulesets block direct pushes.
 
-- ✅ Require pull request reviews before merging
-- ✅ Require status checks to pass (build.yml)
-- ✅ Require branches to be up to date before merging
-- ✅ Include administrators
-- ✅ Require linear history
+| Target branch | Required status check (promotion guard) | Allowed PR head (same repo) |
+| --- | --- | --- |
+| `canary` | `Branch promotion guard / Allowed source branch` | `alpha` |
+| `gold` | `Branch promotion guard / Allowed source branch` | `canary` |
+| `master` | `Master merge guard / Allowed source branch` | `gold`, `dependabot/*` |
 
-**Benefit**: Prevents accidental direct pushes that trigger releases
+**Per ruleset (Protect canary, Protect gold, Protect master):**
+
+- ✅ Restrict updates (block direct pushes)
+- ✅ Require a pull request before merging
+- ✅ Require status checks to pass (guard workflow **and** `build.yml` / CodeQL as applicable)
+- ✅ Block force pushes
+- ✅ Apply to administrators (recommended)
+
+**Benefit**: Prevents accidental direct pushes that trigger releases and enforces the promotion chain documented in [Branch promotion policy](BranchPromotionPolicy.md).
+
+Full setup: [Master merge guard — rulesets](Workflows/MasterMergeGuardWorkflow.md#repository-ruleset-configuration), [Branch promotion guard — rulesets](Workflows/BranchPromotionGuardWorkflow.md#repository-ruleset-configuration).
 
 ---
 
@@ -1260,6 +1284,8 @@ Before merging workflow changes:
 | build.yml | PR, Push to any release branch | ✅ workflow_dispatch |
 | release.yml | Push to master / V105-LTS / canary / alpha | ✅ workflow_dispatch |
 | nightly.yml | Daily at 00:00 UTC | ✅ workflow_dispatch |
+| master-guard.yml | PR to master | — |
+| branch-promotion-guard.yml | PR to canary or gold | — |
 
 ### Secret Names Reference
 
@@ -1269,6 +1295,8 @@ Before merging workflow changes:
 | `DISCORD_WEBHOOK_MASTER` | Discord URL | No | `release.yml` (**master** and **V105-LTS** jobs) |
 | `DISCORD_WEBHOOK_CANARY` | Discord URL | No | release.yml (canary) |
 | `DISCORD_WEBHOOK_NIGHTLY` | Discord URL | No | release.yml (alpha), nightly.yml |
+| `MIRROR_REPO_TOKEN` | GitHub PAT | Yes (for mirroring) | repo-mirror.yml |
+| `DISCORD_WEBHOOK_MIRROR` | Discord URL | No | repo-mirror.yml |
 
 ### Workflow File Locations
 
@@ -1280,7 +1308,11 @@ Before merging workflow changes:
     ├── nightly.yml         (scheduled nightly builds)
     ├── canary.yml            (standalone Canary branch release)
     ├── canary-lts-release.yml (Canary packages from V105-LTS)
-    └── ...                   (alpha-backup-sync, auto-assign, auto-label)
+    ├── repo-mirror.yml          (mirror major branches to external repo)
+    ├── alpha-backup-sync.yml    (alpha → alpha-backup + optional dated backup)
+    ├── master-guard.yml             (gold / dependabot → master PR policy)
+    ├── branch-promotion-guard.yml   (alpha→canary, canary→gold PR policy)
+    └── ...                      (auto-assign, auto-label, etc.)
 ```
 
 ### Common Commands
@@ -1315,6 +1347,10 @@ gh run watch [run-id]
 ### Related Documentation
 
 - [Build System Guide](BuildSystemDocumentationIndex.md) - MSBuild scripts and project configuration
+- [Parallel MSBuild](Build%20System/BuildSystemOverview.md#parallel-msbuild) - `/m`, `BuildInParallel`, and throttling
+- [Branch promotion policy](BranchPromotionPolicy.md) - Promotion chain and ruleset setup
+- [Master merge guard](Workflows/MasterMergeGuardWorkflow.md) - `master-guard.yml` reference
+- [Branch promotion guard](Workflows/BranchPromotionGuardWorkflow.md) - `branch-promotion-guard.yml` reference
 
 ---
 

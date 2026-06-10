@@ -1,5 +1,13 @@
 # Build Workflow
 
+## Quick Reference
+
+- Workflow file: `.github/workflows/build.yml`
+- Workflow name: `Build`
+- Triggers: `pull_request`, `push`, `workflow_dispatch`
+- Runner: `windows-2025-vs2026`
+- Permissions: `contents: read`
+
 ## Overview
 
 The Build workflow provides continuous integration (CI) for the Krypton Standard Toolkit. It validates code changes by building the solution on pull requests and pushes to main branches, ensuring build integrity before code is merged or released.
@@ -80,7 +88,7 @@ This ensures:
    - `dotnet restore` on `Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.slnx` with `TFMs=all`
 
 9. **Build**
-   - `msbuild Scripts/Build/nightly.proj /t:Rebuild ...`
+   - `msbuild /m Scripts/Build/nightly.proj /t:Rebuild ...` (`/m` on all orchestrated MSBuild steps; `nightly.proj` sets `BuildInParallel="true"`)
 
 ### Job 2: `release`
 
@@ -110,12 +118,13 @@ This ensures:
 
 8. **Build Release**
    - Uses `Scripts/Build/build.proj` instead of `nightly.proj`
+   - MSBuild invoked with `/m`
    - Configuration: `Release`
    - Platform: `Any CPU`
    - Target: `Build`
 
 9. **Pack Release**
-   - Uses `Scripts/Build/build.proj`
+   - Uses `Scripts/Build/build.proj` (MSBuild `/m`)
    - Configuration: `Release`
    - Platform: `Any CPU`
    - Target: `Pack`
@@ -324,7 +333,7 @@ To force cache refresh:
 
 ## Best Practices
 
-1. **Keep Builds Fast**: Leverage caching and parallel builds
+1. **Keep Builds Fast**: Leverage caching; CI and `.cmd` scripts already use MSBuild `/m` (see [Build Scripts](../Build%20System/BuildScripts.md#parallel-builds))
 2. **Fail Fast**: Build should fail on any compilation error
 3. **Consistent Environments**: Use same SDK versions as local development
 4. **Clear Logs**: Ensure build output is readable and actionable

@@ -143,14 +143,14 @@
 </ul>
 <h2 id="package-creation-workflow">Package Creation Workflow</h2>
 <h3 id="1-clean-previous-packages">1. Clean Previous Packages</h3>
-<pre><code class="lang-cmd">msbuild build.proj /t:CleanPackages
+<pre><code class="lang-cmd">msbuild /m build.proj /t:CleanPackages
 </code></pre>
 <p><strong>Actions</strong>:</p>
 <ul>
 <li>Deletes all <code>.nupkg</code> files from the configuration folder under <code>$(KryptonPackageOutputRoot)</code> (legacy: <code>Bin/Packages/&lt;Configuration&gt;/</code>; artifacts: <code>artifacts/packages/&lt;Configuration&gt;/</code>)</li>
 </ul>
 <h3 id="2-clean-build-artifacts">2. Clean Build Artifacts</h3>
-<pre><code class="lang-cmd">msbuild build.proj /t:Clean
+<pre><code class="lang-cmd">msbuild /m build.proj /t:Clean
 </code></pre>
 <p><strong>Actions</strong>:</p>
 <ul>
@@ -166,7 +166,7 @@
 </li>
 </ul>
 <h3 id="3-restore-dependencies">3. Restore Dependencies</h3>
-<pre><code class="lang-cmd">msbuild build.proj /t:Restore
+<pre><code class="lang-cmd">msbuild /m build.proj /t:Restore
 </code></pre>
 <p><strong>Actions</strong>:</p>
 <ul>
@@ -175,7 +175,7 @@
 <li>Generates assets files</li>
 </ul>
 <h3 id="4-build-projects">4. Build Projects</h3>
-<pre><code class="lang-cmd">msbuild build.proj /t:Build /p:TFMs=all
+<pre><code class="lang-cmd">msbuild /m build.proj /t:Build /p:TFMs=all
 </code></pre>
 <p><strong>Actions</strong>:</p>
 <ul>
@@ -184,7 +184,7 @@
 <li>Generates assemblies under <code>$(KryptonBuildOutputRoot)&lt;Configuration&gt;/&lt;TFM&gt;/</code> (legacy <code>Bin/...</code> or <code>artifacts/bin/...</code> when <code>UseArtifactsOutput=true</code>)</li>
 </ul>
 <h3 id="5-pack-projects">5. Pack Projects</h3>
-<pre><code class="lang-cmd">msbuild build.proj /t:Pack /p:TFMs=all
+<pre><code class="lang-cmd">msbuild /m build.proj /t:Pack /p:TFMs=all
 </code></pre>
 <p><strong>Actions</strong>:</p>
 <ul>
@@ -195,7 +195,7 @@
 </ul>
 <h3 id="complete-workflow">Complete Workflow</h3>
 <pre><code class="lang-cmd">cd Scripts
-msbuild build.proj /t:Clean;Restore;Build;Pack /p:Configuration=Release /p:TFMs=all
+msbuild /m build.proj /t:Clean;Restore;Build;Pack /p:Configuration=Release /p:TFMs=all
 </code></pre>
 <p>Or use build scripts:</p>
 <pre><code class="lang-cmd">cd Scripts
@@ -361,10 +361,10 @@ Krypton.Ribbon → Krypton.Toolkit
 <pre><code class="lang-cmd">cd Scripts
 
 # Build and pack
-msbuild build.proj /t:Build;Pack
+msbuild /m build.proj /t:Build;Pack
 
 # Push to NuGet.org
-msbuild build.proj /t:Push
+msbuild /m build.proj /t:Push
 </code></pre>
 <p>Or use <code>publish.cmd</code>:</p>
 <pre><code class="lang-cmd">cd Scripts
@@ -465,7 +465,7 @@ nuget-validator Krypton.Toolkit.100.25.1.305.nupkg
 <p><strong>Symptom</strong>: Assemblies for wrong .NET version</p>
 <p><strong>Cause</strong>: Incorrect TFM selection</p>
 <p><strong>Solution</strong>: Rebuild with correct TFMs:</p>
-<pre><code class="lang-cmd">msbuild build.proj /t:Clean;Build;Pack /p:TFMs=all
+<pre><code class="lang-cmd">msbuild /m build.proj /t:Clean;Build;Pack /p:TFMs=all
 </code></pre>
 <h3 id="symbol-package-not-uploading">Symbol Package Not Uploading</h3>
 <p><strong>Symptom</strong>: <code>.snupkg</code> not appearing on NuGet.org</p>
@@ -523,7 +523,7 @@ Remove-Item $temp -Recurse -Force
 </code></pre>
 <h2 id="best-practices">Best Practices</h2>
 <h3 id="1-always-clean-before-packing">1. Always Clean Before Packing</h3>
-<pre><code class="lang-cmd">msbuild build.proj /t:Clean;Pack
+<pre><code class="lang-cmd">msbuild /m build.proj /t:Clean;Pack
 </code></pre>
 <h3 id="2-test-packages-locally-first">2. Test Packages Locally First</h3>
 <p>Install from local source before publishing to NuGet.org.</p>

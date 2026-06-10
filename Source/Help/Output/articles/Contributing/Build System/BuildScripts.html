@@ -159,7 +159,8 @@ build-nightly.cmd Pack     # Pack nightly packages
 </code></pre>
 <p><strong>Notes</strong>:</p>
 <ul>
-<li>Includes commented options for <code>-graphBuild:True</code> (parallel project graph builds)</li>
+<li>Invokes MSBuild with <strong><code>/m</code></strong> (all logical CPUs). <code>nightly.proj</code> sets <strong><code>BuildInParallel=&quot;true&quot;</code></strong> on the Krypton.* orchestration target.</li>
+<li>Optional commented switch in the script: <code>-graphBuild:True</code> (MSBuild graph scheduling; distinct from <code>/m</code>).</li>
 </ul>
 <h2 id="utility-scripts">Utility Scripts</h2>
 <h3 id="buildsolutioncmd">buildsolution.cmd</h3>
@@ -210,7 +211,7 @@ purge.cmd
 <li><code>Source/Krypton Components/Krypton.Workspace/obj/</code></li>
 <li><code>Logs/</code> (if exists)</li>
 </ul>
-<p><strong>Note</strong>: Does not delete <code>Krypton.Utilities</code> or <code>Krypton.Standard.Toolkit</code> obj folders. Run from <code>Scripts/VS2022</code>, <code>Scripts/Current</code>, or <code>Scripts/Build</code>.</p>
+<p><strong>Note</strong>: Does not delete <code>Krypton.Toolkit.Utilities</code> or <code>Krypton.Standard.Toolkit</code> obj folders. Run from <code>Scripts/VS2022</code>, <code>Scripts/Current</code>, or <code>Scripts/Build</code>.</p>
 <p><strong>Warning</strong>: This operation is destructive and cannot be undone!</p>
 <p><strong>Use Cases</strong>:</p>
 <ul>
@@ -269,8 +270,9 @@ set msbuildpath=%ProgramFiles%\Microsoft Visual Studio\2022\Preview\MSBuild\Curr
 goto build
 </code></pre>
 <h3 id="logging-pattern">Logging Pattern</h3>
-<p>Scripts enable detailed logging:</p>
-<pre><code class="lang-batch">&quot;%msbuildpath%\msbuild.exe&quot; /t:%targets% build.proj ^
+<p>Scripts enable detailed logging and parallel builds:</p>
+<pre><code class="lang-batch">REM /m: multi-processor MSBuild (all logical CPUs).
+&quot;%msbuildpath%\msbuild.exe&quot; /m /t:%targets% build.proj ^
     /fl ^
     /flp:logfile=../Logs/stable-build-log.log ^
     /bl:../Logs/stable-build-log.binlog ^
@@ -279,6 +281,7 @@ goto build
 </code></pre>
 <p>Parameters:</p>
 <ul>
+<li><code>/m</code> - Use all logical processors (see <a href="#parallel-builds">Parallel builds</a>)</li>
 <li><code>/fl</code> - Enable file logging</li>
 <li><code>/flp:logfile=&lt;path&gt;</code> - Specify log file location</li>
 <li><code>/bl:&lt;path&gt;</code> - Binary log file</li>
@@ -295,7 +298,7 @@ goto build
 <p>Scripts accept optional target parameter:</p>
 <pre><code class="lang-batch">set targets=Build
 if not &quot;%~1&quot; == &quot;&quot; set targets=%~1
-&quot;%msbuildpath%\msbuild.exe&quot; /t:%targets% build.proj ...
+&quot;%msbuildpath%\msbuild.exe&quot; /m /t:%targets% build.proj ...
 </code></pre>
 <p>Usage:</p>
 <pre><code class="lang-cmd">build-stable.cmd Pack      # Sets targets=Pack
@@ -306,10 +309,13 @@ build-stable.cmd           # Uses default targets=Build
 <p>Add custom MSBuild parameters:</p>
 <pre><code class="lang-cmd">build-stable.cmd Build /v:detailed /flp:logfile=custom.log
 </code></pre>
-<h3 id="parallel-builds">Parallel Builds</h3>
-<p>Enable multi-core builds:</p>
-<pre><code class="lang-cmd">build-stable.cmd Build /m:4
+<h3 id="parallel-builds">Parallel builds</h3>
+<p>All orchestration <code>.cmd</code> files (<code>build-stable.cmd</code>, <code>build-canary.cmd</code>, <code>build-nightly.cmd</code>, <code>build-lts.cmd</code>, <code>build-installer.cmd</code>, <code>debug.cmd</code>, <code>buildsolution.cmd</code>, and related rebuild/custom scripts) pass <strong><code>/m</code></strong> to MSBuild so compilation uses all logical CPUs.</p>
+<p><code>nightly.proj</code> also sets <strong><code>BuildInParallel=&quot;true&quot;</code></strong> on its Build target so sibling <code>Krypton.*</code> projects can build in parallel where project references allow (Toolkit first, then Ribbon/Navigator, and so on).</p>
+<p>To <strong>limit</strong> parallelism when diagnosing file-lock or memory issues:</p>
+<pre><code class="lang-cmd">msbuild /m:1 /t:Build build.proj
 </code></pre>
+<p>Or pass a cap, for example <code>/m:4</code>. Extra arguments after the script target name are <strong>not</strong> forwarded by the <code>.cmd</code> wrappers; invoke <code>msbuild</code> directly or edit the script line.</p>
 <h3 id="binary-log-analysis">Binary Log Analysis</h3>
 <p>View binary logs with MSBuild Structured Log Viewer:</p>
 <pre><code class="lang-cmd"># Install viewer
@@ -366,7 +372,7 @@ build-stable.cmd Build
 </code></pre>
 </li>
 <li><p>Manual MSBuild invocation:</p>
-<pre><code class="lang-cmd">&quot;C:\Path\To\MSBuild.exe&quot; /t:Build build.proj
+<pre><code class="lang-cmd">&quot;C:\Path\To\MSBuild.exe&quot; /m /t:Build build.proj
 </code></pre>
 </li>
 </ol>

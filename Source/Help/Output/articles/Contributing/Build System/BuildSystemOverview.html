@@ -81,13 +81,43 @@
 <li><strong>CI/CD Integration</strong>: Full GitHub Actions workflow support</li>
 <li><strong>Modern Build Tool</strong>: Optional Terminal UI tool for interactive builds</li>
 <li><strong>Artifacts output layout (optional)</strong>: MSBuild can place binaries under <code>artifacts/bin/&lt;Configuration&gt;/</code> and packages under <code>artifacts/packages/&lt;Configuration&gt;/</code> when <code>UseArtifactsOutput=true</code> (default is legacy <code>Bin/</code>). Script <code>.proj</code> files and GitHub Actions use the shared path properties so both layouts work.</li>
+<li><strong>Parallel MSBuild</strong>: Local <code>.cmd</code> scripts, GitHub Actions, and ModernBuild pass <code>/m</code> so builds use all logical CPUs. <code>nightly.proj</code> sets <code>BuildInParallel=&quot;true&quot;</code> on its orchestration target; other <code>.proj</code> files use the MSBuild task default. Project references still order work (Toolkit → Ribbon/Navigator → Workspace → Docking).</li>
 </ul>
+<h2 id="parallel-msbuild">Parallel MSBuild</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CLI (<code>/m</code>)</strong></td>
+<td>All orchestration <code>.cmd</code> files under <code>Scripts/Build/</code>, <code>Scripts/VS2022/</code>, and <code>Scripts/Current/</code> invoke <code>msbuild.exe /m …</code>. GitHub Actions use the same switch on <code>msbuild</code> steps.</td>
+</tr>
+<tr>
+<td><strong>Orchestration (<code>.proj</code>)</strong></td>
+<td><code>nightly.proj</code> Build target sets <code>BuildInParallel=&quot;true&quot;</code>. <code>build.proj</code>, <code>canary.proj</code>, <code>canarylongtermstable.proj</code>, and similar files rely on the default (<code>true</code>) for the <code>&lt;MSBuild&gt;</code> task.</td>
+</tr>
+<tr>
+<td><strong>Ordering</strong></td>
+<td><code>Krypton.*</code> projects still build in dependency order; independent siblings (for example Ribbon and Navigator after Toolkit) may compile in parallel.</td>
+</tr>
+<tr>
+<td><strong>Throttle</strong></td>
+<td>For races or memory pressure: <code>msbuild /m:1 …</code> or see <a href="Troubleshooting.html">Troubleshooting</a>. <code>build-testform.yml</code> intentionally uses <code>-m:1</code> for TestForm CI.</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="BuildScripts.html">Build Scripts</a> and <a href="MSBuildProjectFiles.html">MSBuild Project Files</a>.</p>
 <h2 id="build-system-components">Build System Components</h2>
 <h3 id="1-msbuild-project-files-proj">1. MSBuild Project Files (<code>.proj</code>)</h3>
 <p>Located in <code>Scripts/</code>:</p>
 <ul>
 <li><code>Scripts/Build/build.proj</code> - Stable/Release builds</li>
 <li><code>canary.proj</code> - Beta pre-release builds</li>
+<li><code>canarylongtermstable.proj</code> - Canary builds for the V105-LTS line (<code>canary-lts-release.yml</code>)</li>
 <li><code>nightly.proj</code> - Alpha nightly builds</li>
 <li><code>debug.proj</code> - Debug builds</li>
 <li><code>installer.proj</code> - Installer-specific builds</li>
@@ -278,9 +308,9 @@ build-stable.cmd Build
 build-stable.cmd Build
 </code></pre>
 <h3 id="build-and-pack-release">Build and Pack Release</h3>
-<pre><code class="lang-cmd">cd Scripts
-msbuild build.proj /t:Build
-msbuild build.proj /t:Pack
+<pre><code class="lang-cmd">cd Scripts\VS2022
+msbuild /m build.proj /t:Build
+msbuild /m build.proj /t:Pack
 </code></pre>
 <h3 id="build-nightly">Build Nightly</h3>
 <pre><code class="lang-cmd">cd Scripts
@@ -291,8 +321,8 @@ build-nightly.cmd Build
 purge.cmd
 </code></pre>
 <h3 id="create-distribution-archives">Create Distribution Archives</h3>
-<pre><code class="lang-cmd">cd Scripts
-msbuild build.proj /t:CreateAllReleaseArchives
+<pre><code class="lang-cmd">cd Scripts\VS2022
+msbuild /m build.proj /t:CreateAllReleaseArchives
 </code></pre>
 <h2 id="build-system-workflow">Build System Workflow</h2>
 <ol>

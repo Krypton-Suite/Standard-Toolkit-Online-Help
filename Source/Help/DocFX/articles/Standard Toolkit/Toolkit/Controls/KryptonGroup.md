@@ -1,49 +1,120 @@
 # KryptonGroup
 
-Use the *KryptonGroup* control when you need to group related controls together.
-For example, you can use groups to subdivide a form into distinct areas. Moving
-the group will cause all the contained controls to also be moved along with it
-as it acts as a container. This control is similar to the *KryptonPanel* except
-it provides a border as well as a background.
+## Overview
 
-The *KryptonPanel* is more suited towards providing the background for large
-sections of the client area. *KryptonGroup* is more suitable for grouping a
-small number of related controls together.
+`KryptonGroup` groups related controls inside a themed border and background. It exposes an inner `Panel` for child controls and supports auto-size, themed scroll bars, and full palette state customization.
 
-## Appearance
+**Namespace:** `Krypton.Toolkit`  
+**Assembly:** `Krypton.Toolkit`  
+**Inheritance:** `Object` → `MarshalByRefObject` → `Component` → `Control` → `VisualControlBase` → `KryptonGroup`
 
-The *GroupBackStyle* and *GroupBorderStyle* properties are used to define the
-top level styling required for the appearance of the *KryptonGroup* control. The
-default value of *ControlClient* for both properties gives an appearance
-appropriate for grouping together related controls. Alternatively use
-the *ControlAlternate* setting for a group that needs to stand out. There is
-also a custom style that can be defined via a *KryptonPalette* for situations
-where you need to create a variation on the styles already provided. The custom
-style is called simply *Custom1*.
+## Key features
 
-## Two States
+- Bordered container with `GroupBackStyle` and `GroupBorderStyle`
+- Inner `KryptonGroupPanel` for child controls at design time and run time
+- `DisplayRectangle` reports the fill area inside the border (designer-friendly)
+- Optional `UseKryptonScrollbars`
+- `AutoSize` / `AutoSizeMode` for grow/shrink layout
 
-Only two possible states of *Disabled* and *Normal* are used by the group
-control. In order to customize the appearance use the corresponding
-*StateDisabled* and *StateNormal* properties. Note that only the background and
-border characteristics can be modified as the group control never has a content
-value.
+## Class hierarchy
 
-To speed up the customization process an extra *StateCommon* property has been
-provided. The settings from this are used if no override has been defined for
-the state specific entry. Note that the specific state values always take
-precedence and so if you define the background color in *StateNormal* and
-*StateCommon* then the *StateNormal* value will be used whenever the control is
-in the *Normal* state. Only if the *StateNormal* value is not overridden will it
-look in *StateCommon*.
+```text
+Krypton.Toolkit.VisualControlBase
+└── Krypton.Toolkit.KryptonGroup
+    └── Panel (KryptonGroupPanel) — child container
+```
 
-## Examples of Appearance
+## Constructor
 
-Figure 1 shows the appearance when *GroupBackStyle* and *GroupBorderStyle* are
-both defined as the default *Control1*. You can see that the *Disabled* and
-*Normal* states have the same appearance. If you need to show the group is
-disabled then you can alter the *StateDisabled* property as required.
+```csharp
+public KryptonGroup()
+```
 
-![KryptonGroup examples showing default Control1 style in Normal and Disabled states](../Images/KryptonGroup1.png)
+Creates palette states, inner panel, view manager, and wires the panel into the control collection.
 
-Figure 1 – KryptonGroup examples
+## Properties
+
+### Panel
+
+```csharp
+public KryptonGroupPanel Panel { get; }
+```
+
+Host surface for child controls. Place controls on the group in the designer; they are parented to `Panel`.
+
+### GroupBackStyle / GroupBorderStyle
+
+```csharp
+[DefaultValue(PaletteBackStyle.ControlClient)]
+public PaletteBackStyle GroupBackStyle { get; set; }
+
+[DefaultValue(PaletteBorderStyle.ControlClient)]
+public PaletteBorderStyle GroupBorderStyle { get; set; }
+```
+
+Top-level palette styles for background and border.
+
+### StateCommon / StateDisabled / StateNormal
+
+```csharp
+public PaletteDoubleRedirect StateCommon { get; }
+public PaletteDouble? StateDisabled { get; }
+public PaletteDouble? StateNormal { get; }
+```
+
+Per-state back and border overrides (`PaletteDouble`).
+
+### AutoSize / AutoSizeMode
+
+```csharp
+public override bool AutoSize { get; set; }
+[DefaultValue(AutoSizeMode.GrowAndShrink)]
+public AutoSizeMode AutoSizeMode { get; set; }
+```
+
+**Default:** `AutoSizeMode.GrowAndShrink` (differs from many WinForms controls).
+
+### UseKryptonScrollbars / ScrollbarManager
+
+Same pattern as [KryptonPanel](KryptonPanel.md).
+
+### DisplayRectangle
+
+```csharp
+public override Rectangle DisplayRectangle { get; }
+```
+
+Returns the client fill rectangle inside the border (used by the designer for child placement).
+
+## Methods
+
+### GetPreferredSize
+
+```csharp
+public override Size GetPreferredSize(Size proposedSize)
+```
+
+Layout measurement including border and panel content.
+
+### SetFixedState
+
+```csharp
+public virtual void SetFixedState(PaletteState state)
+```
+
+Forces rendering state (advanced).
+
+## Usage with KryptonDataGridView
+
+Place a [KryptonDataGridView](KryptonDataGridView.md) inside a group with `Dock = Fill` for group chrome around a grid. Set `HideOuterBorders = true` on the grid if cell borders clash with the group border, unless you use the grid's own [corner rounding](KryptonDataGridView.md#external-corner-rounding).
+
+## Best practices
+
+- Parent child controls to the group in the designer (not only to the form) so they move with the group.
+- Prefer native grid corner rounding over group + grid double borders when only rounding is needed.
+
+## See also
+
+- [KryptonGroupBox](KryptonGroupBox.md) — captioned variant
+- [KryptonPanel](KryptonPanel.md) — borderless background
+- [KryptonDataGridView](KryptonDataGridView.md)

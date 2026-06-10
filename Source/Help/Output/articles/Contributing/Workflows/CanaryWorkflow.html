@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Canary Release Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Canary Release Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="canary-release-workflow">Canary Release Workflow</h1>
+
+<h2 id="quick-reference">Quick Reference</h2>
+<ul>
+<li>Workflow file: <code>.github/workflows/canary.yml</code></li>
+<li>Workflow name: <code>Canary Release</code></li>
+<li>Triggers: <code>push</code> (<code>Canary</code>), <code>workflow_dispatch</code></li>
+<li>Runner: <code>windows-2025-vs2026</code></li>
+<li>Permissions: <code>contents: read</code></li>
+<li>Environment: <code>production</code></li>
+</ul>
+<h2 id="overview">Overview</h2>
+<p>The <code>canary.yml</code> workflow builds and publishes canary packages from the <code>Canary</code> branch.</p>
+<ul>
+<li>Workflow file: <code>.github/workflows/canary.yml</code></li>
+<li>Workflow name: <code>Canary Release</code></li>
+<li>Runner: <code>windows-2025-vs2026</code></li>
+<li>Environment: <code>production</code></li>
+</ul>
+<h2 id="purpose">Purpose</h2>
+<ul>
+<li>Produce and publish canary NuGet packages for early validation.</li>
+<li>Run as a standalone canary pipeline separate from <code>release.yml</code>'s <code>release-canary</code> job.</li>
+</ul>
+<h2 id="triggers">Triggers</h2>
+<ul>
+<li><code>push</code> to branch <code>Canary</code></li>
+<li><code>workflow_dispatch</code> (manual run)</li>
+</ul>
+<h2 id="safety-controls">Safety Controls</h2>
+<h3 id="kill-switch">Kill switch</h3>
+<p>Variable: <code>CANARY_DISABLED</code></p>
+<ul>
+<li><code>true</code> -&gt; workflow warns and all subsequent guarded steps are skipped.</li>
+<li><code>false</code>/unset -&gt; workflow proceeds.</li>
+</ul>
+<h3 id="security-checks">Security checks</h3>
+<p>The workflow explicitly verifies:</p>
+<ul>
+<li>repository is <code>Krypton-Suite/Standard-Toolkit</code></li>
+<li><code>GITHUB_REF</code> is <code>refs/heads/Canary</code></li>
+</ul>
+<p>Manual runs must be launched on branch <code>Canary</code>.</p>
+<h2 id="toolchain-setup">Toolchain Setup</h2>
+<p>The workflow installs:</p>
+<ul>
+<li>.NET 9 / 10</li>
+<li>.NET 11 stable attempt (fallback to preview setup if needed)</li>
+<li>optional preview SDK (<code>DOTNET_PREVIEW_SETUP_VERSION</code>) when <code>USE_DOTNET_PREVIEW != 'false'</code></li>
+</ul>
+<p>Then it pins <code>global.json</code> to a resolved SDK version using:</p>
+<ul>
+<li><code>DOTNET_PREVIEW_SDK_BAND</code> (preview path), or</li>
+<li>stable fallback order (<code>11</code> -&gt; <code>10</code> -&gt; <code>9</code>)</li>
+</ul>
+<h2 id="build-and-pack">Build and Pack</h2>
+<p>Build orchestration uses:</p>
+<ul>
+<li><code>Scripts/Build/canary.proj</code></li>
+</ul>
+<p>Targets:</p>
+<ul>
+<li><code>Restore</code></li>
+<li><code>Build</code></li>
+<li><code>Pack</code></li>
+</ul>
+<p>with <code>Configuration=Canary</code> and <code>UseArtifactsOutput=true</code>.</p>
+<h2 id="additional-pre-build-step">Additional Pre-Build Step</h2>
+<p><code>Populate WebView2 (Preview)</code> downloads/extracts WebView2 package content and copies required DLLs into:</p>
+<ul>
+<li><code>Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2</code></li>
+</ul>
+<p>This ensures required binaries are present for canary build/package flow.</p>
+<h2 id="publishing">Publishing</h2>
+<p>NuGet push step behavior:</p>
+<ul>
+<li>Looks for packages in:
+<ul>
+<li><code>artifacts/packages/Canary/*.nupkg</code></li>
+<li><code>Bin/Packages/Canary/*.nupkg</code></li>
+</ul>
+</li>
+<li>Uses <code>dotnet nuget push --skip-duplicate</code></li>
+<li>Applies size gate from <code>Scripts/CI/StandardToolkitNupkgGuard.ps1</code></li>
+<li>Tracks whether any package was newly published</li>
+</ul>
+<p>Required secret for publish:</p>
+<ul>
+<li><code>NUGET_API_KEY</code></li>
+</ul>
+<h2 id="notifications">Notifications</h2>
+<p>When packages were newly published, the workflow posts a Discord embed to:</p>
+<ul>
+<li><code>DISCORD_WEBHOOK_CANARY</code></li>
+</ul>
+<p>If webhook is missing, notification is skipped with warning.</p>
+<h2 id="concurrency">Concurrency</h2>
+<p>Concurrency group:</p>
+<ul>
+<li><code>canary-alpha</code></li>
+</ul>
+<p>with <code>cancel-in-progress: true</code> to avoid overlapping runs in that group.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="workflow-exits-on-branch-verification">Workflow exits on branch verification</h3>
+<p>Check:</p>
+<ul>
+<li>run was triggered from <code>Canary</code> branch (case-sensitive in current workflow)</li>
+</ul>
+<h3 id="no-packages-published">No packages published</h3>
+<p>Check:</p>
+<ul>
+<li><code>NUGET_API_KEY</code> configured</li>
+<li>version increment/publish duplication behavior (<code>--skip-duplicate</code>)</li>
+<li>package size guard thresholds (<code>STANDARD_TOOLKIT_MIN_NUPKG_MB</code>)</li>
+</ul>
+<h3 id="discord-notification-not-sent">Discord notification not sent</h3>
+<p>Check:</p>
+<ul>
+<li><code>packages_published == True</code></li>
+<li><code>DISCORD_WEBHOOK_CANARY</code> is configured and valid</li>
+</ul>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="ReleaseWorkflow.html">Release Workflow</a></li>
+<li><a href="../GitHubActionsWorkflows.html">GitHub Actions Workflows</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

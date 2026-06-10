@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Visual Studio Templates Release Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Visual Studio Templates Release Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="visual-studio-templates-release-workflow">Visual Studio Templates Release Workflow</h1>
+
+<h2 id="quick-reference">Quick Reference</h2>
+<ul>
+<li>Workflow file: <code>.github/workflows/templates-release.yml</code></li>
+<li>Workflow name: <code>Visual Studio Templates Release</code></li>
+<li>Triggers: <code>push</code> (template-related paths), <code>workflow_dispatch</code></li>
+<li>Runner: <code>windows-2025-vs2026</code></li>
+<li>Permissions: <code>contents: write</code></li>
+<li>Environment: <code>production</code></li>
+</ul>
+<h2 id="overview">Overview</h2>
+<p>The <code>templates-release.yml</code> workflow builds and publishes Visual Studio template artifacts (ZIP templates and VSIX package) to GitHub Releases.</p>
+<ul>
+<li>Workflow file: <code>.github/workflows/templates-release.yml</code></li>
+<li>Workflow name: <code>Visual Studio Templates Release</code></li>
+<li>Runner: <code>windows-2025-vs2026</code></li>
+<li>Environment: <code>production</code></li>
+</ul>
+<h2 id="purpose">Purpose</h2>
+<ul>
+<li>Package Krypton item/project templates in distributable formats.</li>
+<li>Build a VSIX installer for one-click template installation in Visual Studio.</li>
+<li>Publish channel-specific artifacts to GitHub Releases.</li>
+</ul>
+<h2 id="triggers">Triggers</h2>
+<p>The workflow runs on:</p>
+<ul>
+<li><code>push</code> to <code>master</code>, <code>alpha</code>, <code>canary</code>, <code>V110</code></li>
+<li>only when files under <code>Templates/**</code> or the workflow file itself change</li>
+<li>manual trigger via <code>workflow_dispatch</code></li>
+</ul>
+<h2 id="kill-switch">Kill Switch</h2>
+<p>Variable: <code>TEMPLATES_RELEASE_DISABLED</code></p>
+<ul>
+<li><code>true</code> -&gt; workflow logs warning and exits via step gating.</li>
+<li><code>false</code> or unset -&gt; workflow proceeds.</li>
+</ul>
+<p>Location: Repository Settings -&gt; Secrets and variables -&gt; Actions -&gt; Variables.</p>
+<h2 id="channel-resolution">Channel Resolution</h2>
+<p>Release metadata is derived from the source branch:</p>
+<ul>
+<li><code>master</code> -&gt; <code>stable</code></li>
+<li><code>canary</code> -&gt; <code>canary</code></li>
+<li><code>alpha</code> -&gt; <code>alpha</code></li>
+<li><code>V110</code> -&gt; <code>current</code></li>
+<li>other branches -&gt; <code>dev-&lt;sanitized-branch&gt;</code></li>
+</ul>
+<p>The workflow computes:</p>
+<ul>
+<li>release tag</li>
+<li>release title</li>
+<li>prerelease flag</li>
+<li>build-stamped template version (<code>&lt;channel&gt;-&lt;UTC timestamp&gt;</code>)</li>
+<li>VSIX version (<code>110.0.MMdd.HHmm</code>)</li>
+</ul>
+<h2 id="artifacts-produced">Artifacts Produced</h2>
+<p>The workflow creates:</p>
+<ol>
+<li>Item template zip: <code>Krypton Form</code></li>
+<li>Item template zip: <code>Krypton Ribbon Form</code></li>
+<li>Project template zip: <code>Krypton WinForms App</code></li>
+<li>Project template zip: <code>Krypton Ribbon WinForms App</code></li>
+<li>Bundle zip of full <code>Templates</code> tree</li>
+<li>VSIX package built from <code>Templates/Vsix/Krypton.Templates.Vsix</code></li>
+</ol>
+<p>All artifacts are also uploaded as workflow artifacts using <code>actions/upload-artifact@v4</code>.</p>
+<h2 id="vsix-build-details">VSIX Build Details</h2>
+<p>Before building VSIX:</p>
+<ul>
+<li>The workflow updates <code>source.extension.vsixmanifest</code> version dynamically.</li>
+<li>It writes UTF-8 content without BOM handling issues.</li>
+</ul>
+<p>Build execution:</p>
+<ul>
+<li><code>dotnet restore</code> on VSIX project</li>
+<li><code>dotnet msbuild</code> with:
+<ul>
+<li><code>Configuration=Release</code></li>
+<li><code>DeployExtension=false</code></li>
+<li><code>VsixVersion=&lt;computed&gt;</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="publishing">Publishing</h2>
+<p>Publishing uses <code>softprops/action-gh-release@v2</code>:</p>
+<ul>
+<li><code>tag_name</code> and release metadata from resolved channel.</li>
+<li><code>make_latest=true</code> only for stable channel.</li>
+<li>Existing files are overwritten (<code>overwrite_files: true</code>).</li>
+</ul>
+<p>Release body includes installation guidance and asset list.</p>
+<h2 id="permissions-and-safety">Permissions and Safety</h2>
+<ul>
+<li>Permission scope: <code>contents: write</code></li>
+<li>No external package publication (NuGet) in this workflow.</li>
+<li>Environment protection (<code>production</code>) can enforce approvals.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="workflow-skips-immediately">Workflow skips immediately</h3>
+<p>Check <code>TEMPLATES_RELEASE_DISABLED</code>.</p>
+<h3 id="missing-artifact-errors">Missing artifact errors</h3>
+<p>Check template directories exist:</p>
+<ul>
+<li><code>Templates/ItemTemplates/KryptonForm</code></li>
+<li><code>Templates/ItemTemplates/KryptonRibbonForm</code></li>
+<li><code>Templates/ProjectTemplates/KryptonWinFormsApp</code></li>
+<li><code>Templates/ProjectTemplates/KryptonRibbonWinFormsApp</code></li>
+<li><code>Templates/README.md</code></li>
+</ul>
+<h3 id="vsix-not-produced">VSIX not produced</h3>
+<p>Check:</p>
+<ul>
+<li>VSIX project path and manifest path exist.</li>
+<li>Manifest version replacement succeeded.</li>
+<li>Build logs under VSIX build step.</li>
+</ul>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="../GitHubActionsWorkflows.html">GitHub Actions Workflows</a></li>
+<li><a href="../GitHubWorkflowIndex.html">GitHub Workflow Index</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

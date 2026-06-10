@@ -257,7 +257,7 @@ bool isDefault = KryptonManager.Strings.IsDefault;
 | **IntegratedToolBarStrings** | `ToolBarStrings` | Toolbar strings |
 | **GlobalColorStrings** | `ColorStrings` | Color name strings |
 
-**V110+:** `KryptonAboutBox` and `KryptonToast` are implemented in **`Krypton.Utilities`**; the **`AboutBoxStrings`** and **`ToastNotificationStrings`** categories remain on **`KryptonManager.Strings`** in **`Krypton.Toolkit`**.
+**V110+:** `KryptonAboutBox` and `KryptonToast` are implemented in **`Krypton.Toolkit.Utilities`**; the **`AboutBoxStrings`** and **`ToastNotificationStrings`** categories remain on **`KryptonManager.Strings`** in **`Krypton.Toolkit`**.
 
 ### Style Categories
 
@@ -439,13 +439,13 @@ See [Implementation Examples](LocalizationImplementationExamples.md) for:
 
 - Uses `KryptonAboutBoxStrings` for labels
 - All field labels are localizable
-- **V110+:** `KryptonAboutBox` type is in **`Krypton.Utilities`**
+- **V110+:** `KryptonAboutBox` type is in **`Krypton.Toolkit.Utilities`**
 - See: [API Reference - KryptonAboutBoxStrings](../Components/KryptonManagerStringsAPIReference.md#kryptonaboutboxstrings)
 
 ### Exception Handling
 
 - Custom exception dialogs can use localized strings
-- **V110+:** Public **`KryptonExceptionDialog`** is in **`Krypton.Utilities`** — see [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md)
+- **V110+:** Public **`KryptonExceptionDialog`** is in **`Krypton.Toolkit.Utilities`** — see [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md)
 - See: [ExceptionHandler API Documentation](ExceptionHandlerAPIDocumentation.md)
 
 ---

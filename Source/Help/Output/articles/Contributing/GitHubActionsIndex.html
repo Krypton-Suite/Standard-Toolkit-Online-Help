@@ -91,6 +91,12 @@
 <td><a href="Workflows/BuildWorkflow.html">Build Workflow</a></td>
 </tr>
 <tr>
+<td><strong>Build TestForm</strong></td>
+<td><code>build-testform.yml</code></td>
+<td>Validate TestForm sample build + resources</td>
+<td><a href="Workflows/BuildTestFormWorkflow.html">Build TestForm Workflow</a></td>
+</tr>
+<tr>
 <td><strong>Release</strong></td>
 <td><code>release.yml</code></td>
 <td>Multi-channel production releases</td>
@@ -103,13 +109,99 @@
 <td><a href="Workflows/NightlyWorkflow.html">Nightly Workflow</a></td>
 </tr>
 <tr>
+<td><strong>Canary</strong></td>
+<td><code>canary.yml</code></td>
+<td>Standalone Canary branch publishing</td>
+<td><a href="Workflows/CanaryWorkflow.html">Canary Workflow</a></td>
+</tr>
+<tr>
 <td><strong>Canary LTS</strong></td>
 <td><code>canary-lts-release.yml</code></td>
 <td>Canary packages from V105-LTS</td>
 <td><a href="Workflows/CanaryLTSReleaseWorkflow.html">Canary LTS Release Workflow</a></td>
 </tr>
+<tr>
+<td><strong>Templates Release</strong></td>
+<td><code>templates-release.yml</code></td>
+<td>Publish VS template ZIP/VSIX assets</td>
+<td><a href="Workflows/TemplatesReleaseWorkflow.html">Templates Release Workflow</a></td>
+</tr>
+<tr>
+<td><strong>CodeQL Advanced</strong></td>
+<td><code>codeql.yml</code></td>
+<td>Security/quality static analysis</td>
+<td><a href="Workflows/CodeQLWorkflow.html">CodeQL Workflow</a></td>
+</tr>
+<tr>
+<td><strong>Auto-Assign PR Author</strong></td>
+<td><code>auto-assign-pr-author.yml</code></td>
+<td>Assign PR opener automatically</td>
+<td><a href="Workflows/AutoAssignPRAuthorWorkflow.html">Auto-Assign PR Author</a></td>
+</tr>
+<tr>
+<td><strong>Auto-Label Issue Areas</strong></td>
+<td><code>auto-label-issue-areas.yml</code></td>
+<td>Prefix issue titles + area labels</td>
+<td><a href="Workflows/AutoLabelIssueAreasWorkflow.html">Auto-Label Issue Areas</a></td>
+</tr>
+<tr>
+<td><strong>Auto-complete Linked Issues</strong></td>
+<td><code>auto-complete-issues.yml</code></td>
+<td>Close/label linked issues on merges</td>
+<td><a href="Workflows/AutoCompleteIssuesWorkflow.html">Auto-complete Linked Issues</a></td>
+</tr>
+<tr>
+<td><strong>Auto-label PR Backup</strong></td>
+<td><code>auto-label-pr-backup.yml</code></td>
+<td>Label backup automation PRs</td>
+<td><a href="Workflows/AutoLabelPRBackupWorkflow.html">Auto-label PR Backup Workflow</a></td>
+</tr>
+<tr>
+<td><strong>Alpha Backup Sync</strong></td>
+<td><code>alpha-backup-sync.yml</code></td>
+<td>Sync <code>alpha</code> into <code>alpha-backup</code> and optional backup repo push</td>
+<td><a href="AlphaBackupSync.html">Alpha Backup Sync</a></td>
+</tr>
+<tr>
+<td><strong>Repository Mirror</strong></td>
+<td><code>repo-mirror.yml</code></td>
+<td>Mirror major branches and tags to an external GitHub repo</td>
+<td><a href="Workflows/RepositoryMirror.html">Repository Mirror</a></td>
+</tr>
+<tr>
+<td><strong>Repository Restore from Mirror</strong></td>
+<td><code>repo-restore-from-mirror.yml</code></td>
+<td>Manual disaster recovery: restore branches/tags from mirror to source</td>
+<td><a href="Workflows/RepositoryRestoreFromMirrorWorkflow.html">Repository Restore from Mirror</a></td>
+</tr>
+<tr>
+<td><strong>Master merge guard</strong></td>
+<td><code>master-guard.yml</code></td>
+<td>Enforce <code>gold</code> / Dependabot → <code>master</code> PR sources</td>
+<td><a href="Workflows/MasterMergeGuardWorkflow.html">Master merge guard</a></td>
+</tr>
+<tr>
+<td><strong>Branch promotion guard</strong></td>
+<td><code>branch-promotion-guard.yml</code></td>
+<td>Enforce <code>alpha</code> → <code>canary</code> and <code>canary</code> → <code>gold</code> PR sources</td>
+<td><a href="Workflows/BranchPromotionGuardWorkflow.html">Branch promotion guard</a></td>
+</tr>
+<tr>
+<td><strong>PR branch policy</strong></td>
+<td><code>pr-branch-policy.yml</code></td>
+<td>Warn/fail on invalid PR base/head pairs and non-<code>.github/</code> <code>master</code> → downstream PRs</td>
+<td><a href="Workflows/PRBranchPolicyWorkflow.html">PR branch policy</a></td>
+</tr>
+<tr>
+<td><strong>Sync .github from master</strong></td>
+<td><code>sync-github-from-master.yml</code></td>
+<td>Open PRs copying only <code>.github/</code> from <code>master</code> to release lines (path checkout)</td>
+<td><a href="Workflows/SyncGitHubFromMasterWorkflow.html">Sync .github from master</a></td>
+</tr>
 </tbody>
 </table>
+<p><strong>Branch policy overview:</strong> <a href="BranchPolicyandWorkflowHardening.html">Branch policy and workflow hardening</a> (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3610">#3610</a>)</p>
+<p><strong>Branch promotion overview:</strong> <a href="BranchPromotionPolicy.html">Branch promotion policy</a></p>
 <hr>
 <h2 id="workflow-summary">Workflow Summary</h2>
 <h3 id="build-workflow"><a href="Workflows/BuildWorkflow.html">Build Workflow</a></h3>
@@ -200,27 +292,28 @@
 <hr>
 <h3 id="nightly-workflow"><a href="Workflows/NightlyWorkflow.html">Nightly Workflow</a></h3>
 <p><strong>File</strong>: <code>.github/workflows/nightly.yml</code></p>
-<p>Automated nightly builds with intelligent change detection.</p>
+<p>Automated <strong>Nightly Release</strong> from <code>alpha</code> with 24h change detection and optional retention lookback.</p>
 <p><strong>Key Features</strong>:</p>
 <ul>
 <li>⏰ Scheduled execution (00:00 UTC daily)</li>
-<li>🔍 Change detection (checks for commits in last 24 hours)</li>
-<li>💰 Resource efficient (skips build when no changes)</li>
-<li>📦 Automatic NuGet publishing</li>
-<li>💬 Discord integration</li>
-<li>🔧 Manual triggering support</li>
+<li>🔍 Change detection (24h on <code>alpha</code>; optional <code>NIGHTLY_RELEASE_RETENTION_CHECK_DAYS</code> or dispatch input <code>retention_check_days</code>, max 90)</li>
+<li>🖥️ Runner <code>windows-2025-vs2026</code>; MSBuild via <code>Scripts/Build/nightly.proj</code></li>
+<li>🌐 WebView2 prerelease resolve + Actions cache</li>
+<li>📦 NuGet push to nuget.org (<code>artifacts/packages/Nightly</code> and <code>Bin/Packages/Nightly</code>) with size guard</li>
+<li>💬 Discord when <code>packages_published=true</code></li>
+<li>🔧 Kill switch <code>NIGHTLY_DISABLED</code></li>
 </ul>
 <p><strong>Triggers</strong>:</p>
 <ul>
-<li>Scheduled: Daily at midnight UTC (<code>0 0 * * *</code>)</li>
-<li>Manual: workflow_dispatch</li>
+<li>Scheduled: <code>0 0 * * *</code> (UTC)</li>
+<li>Manual: <code>workflow_dispatch</code> (optional <code>retention_check_days</code>)</li>
 </ul>
 <p><strong>Workflow Behavior</strong>:</p>
 <ul>
-<li><strong>With Changes</strong>: Builds, packs, publishes to NuGet, sends Discord notification</li>
-<li><strong>No Changes</strong>: Skips all build steps, completes in ~2 minutes</li>
+<li><strong>With changes</strong> (<code>has_changes=true</code>): Toolchain, build, pack, push, version, optional Discord</li>
+<li><strong>No changes</strong>: Skip notice only; no build/publish steps</li>
 </ul>
-<p><strong>Target Branch</strong>: alpha</p>
+<p><strong>Checkout / content branch:</strong> <code>alpha</code> (security allows trigger ref <code>alpha</code>, <code>master</code>, or <code>main</code>)</p>
 <p><strong>Documentation</strong>: <a href="Workflows/NightlyWorkflow.html">Full Nightly Workflow Documentation →</a></p>
 <hr>
 <h2 id="getting-started">Getting Started</h2>
@@ -247,7 +340,7 @@
 <p><strong>Best Practices</strong>:</p>
 <ul>
 <li>Document any workflow modifications</li>
-<li>Keep all four workflow docs in sync</li>
+<li>Keep workflow docs and indexes in sync</li>
 <li>Update version numbers in documentation when workflows change</li>
 </ul>
 <hr>
@@ -288,6 +381,26 @@
 <td>Nightly, Release (alpha-related)</td>
 <td>Nightly / alpha channel announcements</td>
 </tr>
+<tr>
+<td><code>MIRROR_REPO_TOKEN</code></td>
+<td>Repository Mirror, Repository Restore</td>
+<td>Mirror: push branches/tags; Restore: read mirror (clone/fetch)</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_MIRROR</code></td>
+<td>Repository Mirror</td>
+<td>Mirror success/failure notifications</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_RESTORE</code></td>
+<td>Repository Restore from Mirror</td>
+<td>Restore success/failure notifications (optional)</td>
+</tr>
+<tr>
+<td><code>BACKUP_REPO_TOKEN</code></td>
+<td>Alpha Backup Sync</td>
+<td>Optional dated snapshot push to backup repo</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Documentation</strong>: See individual workflow docs for detailed secret configuration.</p>
@@ -327,12 +440,18 @@
 <h3 id="which-workflow-runs-when">Which Workflow Runs When?</h3>
 <pre><code class="lang-plaintext">Event: Pull Request
 ├─ Any Branch → Build Workflow → Validation Only
-└─ Result: Status check on PR
+├─ Target canary → Branch promotion guard (head must be alpha)
+├─ Target gold → Branch promotion guard (head must be canary)
+├─ Target master → Master merge guard (head must be gold or dependabot/*)
+└─ Result: Status checks on PR
 
-Event: Push to master
+Event: Push to master (after gold → master PR merge)
 ├─ Build Workflow → Build Job
 └─ Build Workflow → Release Job (GitHub release)
 └─ Release Workflow → release-master (NuGet + Discord)
+
+Event: Push to gold (after canary → gold PR merge)
+└─ Build Workflow → Build Job
 
 Event: Push to alpha
 └─ Release Workflow → release-alpha (NuGet + Discord)
@@ -347,6 +466,15 @@ Event: Push to V105-LTS
 
 Event: Cron Schedule (00:00 UTC)
 └─ Nightly Workflow → Check changes → Build if needed
+
+Event: Cron Schedule (02:00 UTC)
+└─ Repository Mirror → Sync branches + tags to MIRROR_REPO (if configured)
+
+Event: Push to major branch (master, gold, canary, alpha, V105-LTS, V85-LTS)
+└─ Repository Mirror → Full branch mirror to external repo
+
+Event: Manual Trigger (Repository Restore from Mirror)
+└─ Mirror → source restore (dry run default; new_branch or force_push)
 
 Event: Manual Trigger
 └─ Any workflow with workflow_dispatch
@@ -386,13 +514,15 @@ Event: Manual Trigger
 <li>Fix any failures before merging</li>
 </ol>
 <h4 id="create-a-stable-release">Create a Stable Release</h4>
-<p><strong>Workflow</strong>: <a href="Workflows/ReleaseWorkflow.html#job-1-release-master">Release Workflow - Master</a></p>
+<p><strong>Workflows</strong>: <a href="BranchPromotionPolicy.html">Branch promotion policy</a>, <a href="Workflows/ReleaseWorkflow.html#job-1-release-master">Release Workflow - Master</a></p>
+<p>Stable releases reach <code>master</code> through the promotion chain, not by pushing feature branches directly to <code>master</code> (when repository rulesets are enabled).</p>
 <ol>
-<li>Update version in project files</li>
-<li>Commit to master branch</li>
-<li>Push to master</li>
-<li>Workflow creates NuGet packages, GitHub release, and Discord notification</li>
+<li>Promote changes through <strong><code>alpha</code> → <code>canary</code> → <code>gold</code></strong> (see <a href="Workflows/BranchPromotionGuardWorkflow.html">Branch promotion guard</a>).</li>
+<li>Update version in project files on the promotion path as your process requires.</li>
+<li>Open a PR <strong><code>gold</code> → <code>master</code></strong> and merge when CI and <a href="Workflows/MasterMergeGuardWorkflow.html">Master merge guard</a> pass.</li>
+<li>The merge push triggers <strong><code>release-master</code></strong>, which creates NuGet packages, a GitHub release, and a Discord notification.</li>
 </ol>
+<p><strong>Dependabot</strong> may also open <strong><code>dependabot/*</code> → <code>master</code></strong> PRs for GitHub Actions updates; those are allowed by the master merge guard.</p>
 <h4 id="create-an-lts-line-release-v105">Create an LTS-line release (V105)</h4>
 <p><strong>Workflow</strong>: <a href="Workflows/ReleaseWorkflow.html#job-2-release-v105-lts">Release Workflow — <code>release-v105-lts</code></a></p>
 <ol>
@@ -410,10 +540,11 @@ Event: Manual Trigger
 <h4 id="force-a-nightly-build">Force a Nightly Build</h4>
 <p><strong>Workflow</strong>: <a href="Workflows/NightlyWorkflow.html">Nightly Workflow</a></p>
 <ol>
-<li>Go to Actions → Nightly Release</li>
-<li>Click &quot;Run workflow&quot;</li>
-<li>Select alpha branch</li>
-<li>Click &quot;Run workflow&quot; button</li>
+<li>Go to Actions → <strong>Nightly Release</strong></li>
+<li>Click <strong>Run workflow</strong></li>
+<li>Select branch <code>alpha</code>, <code>master</code>, or <code>main</code> (job still builds from <code>alpha</code>)</li>
+<li>Optionally set <strong>Retention check days</strong> when testing lookback after a kill-switch pause</li>
+<li>Run workflow</li>
 </ol>
 <h4 id="check-workflow-status">Check Workflow Status</h4>
 <ol>
@@ -434,6 +565,11 @@ Event: Manual Trigger
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>Merge blocked / guard check failed</td>
+<td>Branch promotion / master merge guards</td>
+<td><a href="BranchPromotionPolicy.html">Branch promotion policy</a>, <a href="Workflows/MasterMergeGuardWorkflow.html">Master merge guard</a>, <a href="Workflows/BranchPromotionGuardWorkflow.html">Branch promotion guard</a></td>
+</tr>
 <tr>
 <td>PR build fails</td>
 <td>Build</td>
@@ -495,6 +631,7 @@ Event: Manual Trigger
 <ol>
 <li><strong>Version Discipline</strong>: Increment versions consistently</li>
 <li><strong>Test Releases</strong>: Validate in canary before stable</li>
+<li><strong>Promotion chain</strong>: Follow <a href="BranchPromotionPolicy.html">Branch promotion policy</a> (<code>alpha</code> → <code>canary</code> → <code>gold</code> → <code>master</code>)</li>
 <li><strong>Communicate</strong>: Announce releases to users</li>
 <li><strong>Monitor</strong>: Watch for issues after releases</li>
 <li><strong>Document</strong>: Update changelog with releases</li>
@@ -568,6 +705,28 @@ Event: Manual Trigger
 <li><strong>Cross-Reference</strong>: Link to related sections</li>
 <li><strong>Version Numbers</strong>: Update when workflows change</li>
 </ul>
+<h3 id="workflow-documentation-template">Workflow Documentation Template</h3>
+<p>All files under <code>Documents/Contributing/Workflows</code> should include the same top-level structure to keep docs predictable and easy to scan.</p>
+<p>Required sections:</p>
+<ol>
+<li><code># &lt;Workflow Name&gt;</code></li>
+<li><code>## Quick Reference</code> (must include file path, workflow name, triggers, runner, and key permissions/actions)</li>
+<li><code>## Overview</code></li>
+<li><code>## Purpose</code></li>
+<li><code>## Triggers</code> (or <code>## Trigger Conditions</code>)</li>
+<li><code>## Permissions and Security</code> (or equivalent split sections)</li>
+<li><code>## Troubleshooting</code></li>
+<li><code>## Related Documentation</code></li>
+</ol>
+<p>Recommended additions (when applicable):</p>
+<ul>
+<li><code>## Inputs / Manual Dispatch</code></li>
+<li><code>## Environment / Secrets / Variables</code></li>
+<li><code>## Job Model</code> or <code>## Processing Pipeline</code></li>
+<li><code>## Operational Runbook</code></li>
+<li><code>## Known Constraints</code></li>
+<li><code>## Maintenance Guidance</code></li>
+</ul>
 <hr>
 <h2 id="support">Support</h2>
 <h3 id="getting-help">Getting Help</h3>
@@ -592,8 +751,21 @@ Event: Manual Trigger
 <h3 id="documentation">Documentation</h3>
 <ul>
 <li><a href="Workflows/BuildWorkflow.html">Build Workflow Documentation</a></li>
+<li><a href="Workflows/BuildTestFormWorkflow.html">Build TestForm Workflow Documentation</a></li>
 <li><a href="Workflows/ReleaseWorkflow.html">Release Workflow Documentation</a></li>
 <li><a href="Workflows/NightlyWorkflow.html">Nightly Workflow Documentation</a></li>
+<li><a href="Workflows/CanaryWorkflow.html">Canary Workflow Documentation</a></li>
+<li><a href="Workflows/CanaryLTSReleaseWorkflow.html">Canary LTS Release Workflow Documentation</a></li>
+<li><a href="Workflows/TemplatesReleaseWorkflow.html">Templates Release Workflow Documentation</a></li>
+<li><a href="Workflows/CodeQLWorkflow.html">CodeQL Workflow Documentation</a></li>
+<li><a href="Workflows/AutoCompleteIssuesWorkflow.html">Auto-complete Linked Issues Documentation</a></li>
+<li><a href="Workflows/RepositoryMirror.html">Repository Mirror Documentation</a></li>
+<li><a href="Workflows/RepositoryRestoreFromMirrorWorkflow.html">Repository Restore from Mirror</a></li>
+<li><a href="Workflows/RepositoryBackupAndRestore.html">Repository backup and restore</a> (umbrella / playbooks)</li>
+<li><a href="AlphaBackupSync.html">Alpha Backup Sync Documentation</a></li>
+<li><a href="BranchPromotionPolicy.html">Branch promotion policy</a></li>
+<li><a href="Workflows/MasterMergeGuardWorkflow.html">Master merge guard documentation</a></li>
+<li><a href="Workflows/BranchPromotionGuardWorkflow.html">Branch promotion guard documentation</a></li>
 </ul>
 
 </article>

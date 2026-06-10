@@ -113,7 +113,7 @@ Strings used in the KryptonAboutBox component.
 
 **Access:** `KryptonManager.Strings.AboutBoxStrings`
 
-**V110+:** `KryptonAboutBox` UI type is in `Krypton.Utilities`; string table type name is unchanged.
+**V110+:** `KryptonAboutBox` UI type is in `Krypton.Toolkit.Utilities`; string table type name is unchanged.
 
 #### KryptonToastNotificationStrings
 
@@ -121,7 +121,7 @@ Strings for toast notification components.
 
 **Access:** `KryptonManager.Strings.ToastNotificationStrings`
 
-**V110+:** Static toast API is `KryptonToast` in `Krypton.Utilities`; this string table name is unchanged.
+**V110+:** Static toast API is `KryptonToast` in `Krypton.Toolkit.Utilities`; this string table name is unchanged.
 
 #### KryptonScrollBarStrings
 

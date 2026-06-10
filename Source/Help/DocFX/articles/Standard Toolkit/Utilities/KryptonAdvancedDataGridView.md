@@ -1,9 +1,9 @@
 # KryptonAdvancedDataGridView
 
-This document describes **KryptonAdvancedDataGridView**, a WinForms grid control in **Krypton.Utilities** that extends **Krypton.Toolkit**’s `KryptonDataGridView` with Excel-style per-column filtering, multi-column sort composition, optional search UI integration, and localization.
+This document describes **KryptonAdvancedDataGridView**, a WinForms grid control in **Krypton.Toolkit.Utilities** that extends **Krypton.Toolkit**’s `KryptonDataGridView` with Excel-style per-column filtering, multi-column sort composition, optional search UI integration, and localization.
 
-**Primary type:** `Krypton.Utilities.KryptonAdvancedDataGridView`  
-**Source:** `Source/Krypton Components/Krypton.Utilities/Components/KryptonAdvancedDataGridView/Controls Toolkit/KryptonAdvancedDataGridView.cs`
+**Primary type:** `Krypton.Toolkit.Utilities.KryptonAdvancedDataGridView`  
+**Source:** `Source/Krypton Components/Krypton.Toolkit.Utilities/Components/KryptonAdvancedDataGridView/Controls Toolkit/KryptonAdvancedDataGridView.cs`
 
 ---
 
@@ -12,7 +12,7 @@ This document describes **KryptonAdvancedDataGridView**, a WinForms grid control
 | Aspect | Detail |
 | ------ | ------ |
 | **Base class** | `KryptonDataGridView` → `System.Windows.Forms.DataGridView` |
-| **Assembly** | `Krypton.Utilities` (project reference to `Krypton.Toolkit`) |
+| **Assembly** | `Krypton.Toolkit.Utilities` (project reference to `Krypton.Toolkit`) |
 | **Designer** | `[DesignerCategory("code")]` — typical WinForms usage: drop on form or compose in code |
 | **Column headers** | Every column added at runtime gets a custom header cell (`KryptonColumnHeaderCell`, **internal**) with a filter/sort drop-down button |
 
@@ -207,7 +207,7 @@ When `true`, the event runs **before** the data source is updated; when `false`,
 - **Translations:** separate static `Translations` / `SetTranslations` / `LoadTranslationsFromFile` (same JSON pattern as the grid).
 - **Close button:** designer constant `BUTTON_CLOSE_ENABLED = false` removes the close item in the constructor; toolbar uses `ToolStripRenderMode.ManagerRenderMode`.
 
-### 6.2 `FilterType` (in `Krypton.Utilities`)
+### 6.2 `FilterType` (in `Krypton.Toolkit.Utilities`)
 
 Public enum in **`General/Definitions.cs`** describes **value categories** for filter logic (`DateTime`, `String`, `Integer`, etc.). This is **not** the same as the internal **`MenuStrip.FilterType`** (`None`, `Custom`, `CheckList`, `Loaded`), which describes **which filter mode** is active on a column.
 

@@ -1,13 +1,13 @@
 # KryptonCommandLinkButton
 
-**Assembly and namespace (V110+):** `KryptonCommandLinkButton` is in the `Krypton.Utilities` assembly and namespace. Add `using Krypton.Utilities;` (or fully qualify the type) when upgrading from earlier releases that exposed it under `Krypton.Toolkit`.
+**Assembly and namespace (V110+):** `KryptonCommandLinkButton` is in the `Krypton.Toolkit.Utilities` assembly and namespace. Add `using Krypton.Toolkit.Utilities;` (or fully qualify the type) when upgrading from earlier releases that exposed it under `Krypton.Toolkit`.
 
 ## Overview
 
 `KryptonCommandLinkButton` is a specialized button control that displays in the Windows command link style, featuring a primary heading, descriptive text, and an optional UAC shield icon. It's designed for presenting users with clear, descriptive action choices in dialogs and wizards.
 
-**Namespace (V110+):** `Krypton.Utilities`  
-**Assembly (V110+):** `Krypton.Utilities`  
+**Namespace (V110+):** `Krypton.Toolkit.Utilities`  
+**Assembly (V110+):** `Krypton.Toolkit.Utilities`  
 **Inheritance:** `Object` → `MarshalByRefObject` → `Component` → `Control` → `VisualSimpleBase` → `KryptonCommandLinkButton`  
 **Implements:** `IButtonControl`
 

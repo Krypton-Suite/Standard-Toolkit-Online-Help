@@ -1,6 +1,6 @@
 # KryptonToastNotificationManager
 
-**V110+:** Call the static toast API as `KryptonToast` in the `Krypton.Utilities` namespace (`using Krypton.Utilities;`). `KryptonToastNotificationManager` remains a **design-time component** in `Krypton.Toolkit`.
+**V110+:** Call the static toast API as `KryptonToast` in the `Krypton.Toolkit.Utilities` namespace (`using Krypton.Toolkit.Utilities;`). `KryptonToastNotificationManager` remains a **design-time component** in `Krypton.Toolkit`.
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # KryptonAboutBox
 
-**Assembly and namespace (V110+):** `KryptonAboutBox` is in the `Krypton.Utilities` assembly and namespace. Earlier documentation referred to `Krypton.Toolkit`; update `using` directives when upgrading.
+**Assembly and namespace (V110+):** `KryptonAboutBox` is in the `Krypton.Toolkit.Utilities` assembly and namespace. Earlier documentation referred to `Krypton.Toolkit`; update `using` directives when upgrading.
 
 The *KryptonAboutBox* provides access to a *Krypton* style dialog that allows the user to view details of the running application. It is a replica of the *AboutBox* dialog, that is provided as part of the *Microsoft.VisualBasic* assembly and is typically used by *VB.NET* developers. By providing a *Krypton* version of this dialog it ensures that your whole application has a consistent look and feel that extends to even the input boxes that appear.
 

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Build TestForm Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Build TestForm Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="build-testform-workflow">Build TestForm Workflow</h1>
+
+<h2 id="quick-reference">Quick Reference</h2>
+<ul>
+<li>Workflow file: <code>.github/workflows/build-testform.yml</code></li>
+<li>Workflow name: <code>Build TestForm</code></li>
+<li>Triggers: <code>pull_request</code>, <code>push</code>, <code>workflow_dispatch</code></li>
+<li>Runner: <code>windows-2025-vs2026</code></li>
+<li>Permissions: <code>contents: read</code></li>
+</ul>
+<h2 id="overview">Overview</h2>
+<p>The <code>build-testform.yml</code> workflow validates that the WinForms sample application (<code>TestForm</code>) restores and builds across all configured TFMs, and that linked <code>.resx</code> file references are valid.</p>
+<ul>
+<li>Workflow file: <code>.github/workflows/build-testform.yml</code></li>
+<li>Workflow name: <code>Build TestForm</code></li>
+<li>Runner: <code>windows-2025-vs2026</code></li>
+<li>Trigger types: pull request, push, manual (<code>workflow_dispatch</code>)</li>
+</ul>
+<p>This workflow is CI-focused. It does not publish packages or create releases.</p>
+<h2 id="purpose">Purpose</h2>
+<ul>
+<li>Provide an additional quality gate for the sample app used for manual validation.</li>
+<li>Catch broken linked-resource references early (missing files in <code>.resx</code> references).</li>
+<li>Validate both stable and preview SDK paths (depending on repository variables).</li>
+</ul>
+<h2 id="triggers">Triggers</h2>
+<p>The workflow runs on:</p>
+<ul>
+<li><code>pull_request</code> (<code>opened</code>, <code>synchronize</code>, <code>reopened</code>) for all branches</li>
+<li><code>push</code> to <code>master</code>, <code>alpha</code>, <code>canary</code>, <code>gold</code>, <code>V105-LTS</code> (with <code>paths-ignore</code> for <code>.git*</code> and <code>.vscode</code>)</li>
+<li><code>workflow_dispatch</code></li>
+</ul>
+<h2 id="job-model">Job Model</h2>
+<p>The workflow has two jobs:</p>
+<ol>
+<li><code>Stable</code></li>
+<li><code>Preview</code></li>
+</ol>
+<p>Both jobs:</p>
+<ul>
+<li>Check out repository code.</li>
+<li>Set up .NET SDKs.</li>
+<li>Restore NuGet cache.</li>
+<li>Restore <code>Source/Krypton Components/TestForm/TestForm.csproj</code>.</li>
+<li>Validate linked resources in two <code>.resx</code> files.</li>
+<li>Build <code>TestForm</code> with <code>-p:TFMs=all</code>.</li>
+</ul>
+<h3 id="stable-job">Stable job</h3>
+<p>Key behavior:</p>
+<ul>
+<li>Uses .NET 9/10 setup.</li>
+<li>Pins <code>global.json</code> to a stable SDK (<code>10.x</code>, fallback <code>9.x</code>) with <code>allowPrerelease: false</code>.</li>
+<li>Is skipped for <code>canary</code>/<code>alpha</code> push/PR contexts unless <code>USE_DOTNET_PREVIEW == 'false'</code>.</li>
+</ul>
+<h3 id="preview-job">Preview job</h3>
+<p>Key behavior:</p>
+<ul>
+<li>Runs when <code>vars.USE_DOTNET_PREVIEW != 'false'</code>.</li>
+<li>Installs preview SDK using <code>DOTNET_PREVIEW_SETUP_VERSION</code>.</li>
+<li>Pins <code>global.json</code> to <code>DOTNET_PREVIEW_SDK_BAND</code> with <code>allowPrerelease: true</code>.</li>
+</ul>
+<h2 id="repository-variables">Repository Variables</h2>
+<p>The workflow depends on the same preview SDK variables used by other CI workflows:</p>
+<ul>
+<li><code>DOTNET_PREVIEW_SETUP_VERSION</code></li>
+<li><code>DOTNET_PREVIEW_SDK_BAND</code></li>
+<li><code>USE_DOTNET_PREVIEW</code></li>
+</ul>
+<p>Behavior of <code>USE_DOTNET_PREVIEW</code>:</p>
+<ul>
+<li><code>false</code>: Preview job skipped; Stable may cover canary/alpha contexts.</li>
+<li>other/unset: Preview job enabled.</li>
+</ul>
+<h2 id="resource-validation-gate">Resource Validation Gate</h2>
+<p>Before build, each job validates linked-file references in:</p>
+<ul>
+<li><code>Source\Krypton Components\TestForm\Properties\Resources.resx</code></li>
+<li><code>Source\Krypton Components\TestForm\KryptonTaskDialogDemo\KryptonTaskDialogDemoResources.resx</code></li>
+</ul>
+<p>For every <code>ResXFileRef</code> entry, the referenced file path must exist. Missing references fail the job with a clear error summary.</p>
+<h2 id="caching">Caching</h2>
+<p>NuGet cache restore/save is used per job with distinct keys:</p>
+<ul>
+<li>stable key prefix: <code>nuget-testform-stable-</code></li>
+<li>preview key prefix: <code>nuget-testform-preview-</code></li>
+</ul>
+<p>Cache save occurs only on success and non-PR events.</p>
+<h2 id="what-this-workflow-does-not-do">What This Workflow Does Not Do</h2>
+<ul>
+<li>Does not create NuGet packages.</li>
+<li>Does not publish to nuget.org.</li>
+<li>Does not create GitHub releases.</li>
+<li>Does not post Discord notifications.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="preview-job-fails-to-resolve-sdk-band">Preview job fails to resolve SDK band</h3>
+<p>Check:</p>
+<ul>
+<li><code>DOTNET_PREVIEW_SETUP_VERSION</code> is set to an installable preview line.</li>
+<li><code>DOTNET_PREVIEW_SDK_BAND</code> matches installed SDK major/minor (for example <code>11.0</code>).</li>
+</ul>
+<h3 id="resource-validation-fails">Resource validation fails</h3>
+<p>Check:</p>
+<ul>
+<li>Referenced files in <code>.resx</code> exist in repository and are included in commits.</li>
+<li>Relative paths in <code>ResXFileRef</code> entries are correct.</li>
+</ul>
+<h3 id="stablepreview-job-unexpectedly-skipped">Stable/Preview job unexpectedly skipped</h3>
+<p>Check:</p>
+<ul>
+<li>Branch context (especially <code>alpha</code>/<code>canary</code> conditions).</li>
+<li><code>USE_DOTNET_PREVIEW</code> value.</li>
+</ul>
+<h2 id="related-documentation">Related Documentation</h2>
+<ul>
+<li><a href="BuildWorkflow.html">Build Workflow</a></li>
+<li><a href="../GitHubActionsWorkflows.html">GitHub Actions Workflows</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

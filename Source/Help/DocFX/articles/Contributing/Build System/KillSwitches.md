@@ -33,7 +33,7 @@ Example:
 ```yaml
 - name: Build Release
   if: steps.release_kill_switch.outputs.enabled == 'true'
-  run: msbuild "Scripts/Build/build.proj" /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:UseArtifactsOutput=true
+  run: msbuild /m "Scripts/Build/build.proj" /t:Build /p:Configuration=Release /p:Platform="Any CPU" /p:UseArtifactsOutput=true
 ```
 
 **Build** and **Pack** steps use `/p:UseArtifactsOutput=true` so outputs land under `artifacts/`; **Push** collects `.nupkg` files from `artifacts/packages/...` first, then `Bin/Packages/...`.
@@ -89,3 +89,14 @@ To add a new kill switch (e.g., for a future `beta` branch), copy the existing p
 3. Document the variable under Configuration so on-call engineers know which switch to flip.
 
 Keeping the guard self-contained inside the workflow ensures you can pause or resume publishing safely even while other infrastructure (NuGet, Discord, etc.) stays configured.
+
+## Other workflow kill switches
+
+These use the same `variable == 'true'` pattern but live outside `release.yml`. See each workflow's documentation for full configuration.
+
+| Workflow | Variable | Effect when `true` |
+| --- | --- | --- |
+| [Repository Mirror](../Workflows/RepositoryMirror.md) (`repo-mirror.yml`) | `REPO_MIRROR_DISABLED` | Skips bare clone and all pushes to the mirror repo |
+| [Repository Restore from Mirror](../Workflows/RepositoryRestoreFromMirrorWorkflow.md) (`repo-restore-from-mirror.yml`) | `REPO_RESTORE_DISABLED` | Skips mirror clone, validation, and all pushes to the source repo |
+| [Alpha Backup Sync](../AlphaBackupSync.md) (`alpha-backup-sync.yml`) | `ALPHA_BACKUP_SYNC_DISABLED` | Skips PR creation, backup-repo push, and Discord |
+| [Nightly Release](../Workflows/NightlyWorkflow.md) (`nightly.yml`) | `NIGHTLY_DISABLED` | Skips nightly build and publish (also gates `release-alpha` in `release.yml`) |

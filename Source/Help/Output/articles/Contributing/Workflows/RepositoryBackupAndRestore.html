@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Repository backup and restore | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Repository backup and restore | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="repository-backup-and-restore">Repository backup and restore</h1>
+
+<p>This document describes the automated backup infrastructure for <strong>Krypton-Suite/Standard-Toolkit</strong>, how the components relate to each other, and how to configure, operate, and recover from failures. It was introduced as part of <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3591">#3591</a>.</p>
+<p><strong>Workflow-specific documentation:</strong></p>
+<ul>
+<li><a href="RepositoryMirror.html">Repository Mirror</a> — source → mirror</li>
+<li><a href="RepositoryRestoreFromMirrorWorkflow.html">Repository Restore from Mirror</a> — mirror → source (this workflow in depth)</li>
+</ul>
+<p><strong>Quick reference (cheat sheet):</strong> <a href="../../../../.github/REPOSITORY_BACKUP.md">.github/REPOSITORY_BACKUP.md</a></p>
+<hr>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#backup-mechanisms-compared">Backup mechanisms compared</a></li>
+<li><a href="#repository-mirror-source--mirror">Repository Mirror (source → mirror)</a></li>
+<li><a href="#repository-restore-from-mirror-mirror--source">Repository Restore from Mirror (mirror → source)</a></li>
+<li><a href="#alpha-to-alpha-backup-sync">Alpha to Alpha-Backup Sync</a></li>
+<li><a href="#configuration-reference">Configuration reference</a></li>
+<li><a href="#initial-setup">Initial setup</a></li>
+<li><a href="#operational-procedures">Operational procedures</a></li>
+<li><a href="#disaster-recovery-playbooks">Disaster recovery playbooks</a></li>
+<li><a href="#point-in-time-restore-mechanics">Point-in-time restore mechanics</a></li>
+<li><a href="#security-model">Security model</a></li>
+<li><a href="#workflow-internals">Workflow internals</a></li>
+<li><a href="#limitations-and-non-goals">Limitations and non-goals</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#maintenance-and-extension">Maintenance and extension</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The Standard Toolkit repository uses <strong>three complementary backup layers</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Workflow</th>
+<th>Direction</th>
+<th>Git history</th>
+<th>Primary purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Mirror</strong></td>
+<td><a href="../../../../.github/workflows/repo-mirror.yml">repo-mirror.yml</a></td>
+<td>Source → mirror repo</td>
+<td>Full</td>
+<td>Off-site Git replica of major branches and tags</td>
+</tr>
+<tr>
+<td><strong>Restore</strong></td>
+<td><a href="../../../../.github/workflows/repo-restore-from-mirror.yml">repo-restore-from-mirror.yml</a></td>
+<td>Mirror → source</td>
+<td>Full</td>
+<td>Manual disaster recovery and branch rollback</td>
+</tr>
+<tr>
+<td><strong>Alpha sync</strong></td>
+<td><a href="../../../../.github/workflows/alpha-backup-sync.yml">alpha-backup-sync.yml</a></td>
+<td><code>alpha</code> → <code>alpha-backup</code> (+ optional file dump)</td>
+<td>Full on branch; file dump has <strong>no</strong> <code>.git</code></td>
+<td>Daily alpha-line safety net</td>
+</tr>
+</tbody>
+</table>
+<p>None of these replace normal Git hygiene (feature branches, PR review, protected branches). They provide <strong>recovery paths</strong> when something goes wrong on the main repository.</p>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<pre><code class="lang-mermaid">flowchart LR
+  subgraph source[&quot;Standard-Toolkit (source)&quot;]
+    master
+    gold
+    canary
+    alpha
+    lts[&quot;V105-LTS / V85-LTS&quot;]
+    tags[&quot;Tags&quot;]
+  end
+
+  subgraph mirror[&quot;Mirror repository&quot;]
+    m_master
+    m_branches[&quot;… branches …&quot;]
+    m_tags[&quot;Tags&quot;]
+  end
+
+  subgraph alpha_backup[&quot;In-repo alpha backup&quot;]
+    alpha_backup_branch[&quot;alpha-backup branch&quot;]
+  end
+
+  subgraph file_backup[&quot;Optional BACKUP_REPO&quot;]
+    dated_dirs[&quot;Standard Toolkit Backup - YYYY-MM-DD/&quot;]
+  end
+
+  source --&gt;|&quot;Repository Mirror\n(schedule / push / manual)&quot;| mirror
+  mirror --&gt;|&quot;Repository Restore\n(manual only)&quot;| source
+  alpha --&gt;|&quot;Alpha Backup Sync\n(daily PR + optional rsync)&quot;| alpha_backup_branch
+  alpha --&gt;|&quot;rsync (no .git)&quot;| dated_dirs
+</code></pre>
+<p><strong>Data flow summary:</strong></p>
+<ul>
+<li><strong>Mirror</strong> keeps a separate GitHub repository in sync with configured branches on the source. It uses bare clones and force-pushes refs so the mirror holds complete object history for those branches.</li>
+<li><strong>Restore</strong> is the inverse: clone the mirror bare, resolve target commits, push back to the source (either to new <code>restore/…</code> branches or via force-push).</li>
+<li><strong>Alpha sync</strong> creates merge commits on <code>alpha-backup</code> via automated PRs when <code>alpha</code> had activity in the last 24 hours. Optionally copies a <strong>file snapshot</strong> (no Git metadata) into a second repository under dated folders.</li>
+</ul>
+<hr>
+<h2 id="backup-mechanisms-compared">Backup mechanisms compared</h2>
+<h3 id="when-to-use-which-mechanism">When to use which mechanism</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source repo corrupted; mirror is healthy</td>
+<td><strong>Repository Restore</strong> (<code>new_branch</code> or <code>force_push</code>)</td>
+</tr>
+<tr>
+<td>Roll <code>alpha</code> back to how it was on a specific UTC date</td>
+<td><strong>Repository Restore</strong> with <code>restore_date</code> (history must exist on mirror)</td>
+</tr>
+<tr>
+<td>Recover one known good commit on one branch</td>
+<td><strong>Repository Restore</strong> with <code>commit_sha</code> + single <code>branches</code> input</td>
+</tr>
+<tr>
+<td>Compare alpha vs last known backup branch in-repo</td>
+<td><strong><code>alpha-backup</code></strong> branch (merge or reset locally)</td>
+</tr>
+<tr>
+<td>Recover <strong>files only</strong> from a past day (no commits/merges)</td>
+<td><strong>BACKUP_REPO</strong> dated directory (manual copy-out)</td>
+</tr>
+<tr>
+<td>Routine off-site replica</td>
+<td><strong>Repository Mirror</strong> (automatic)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-each-mechanism-cannot-do">What each mechanism cannot do</h3>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Cannot</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mirror</td>
+<td>Restore by itself; it only copies <strong>current</strong> source state (plus retained history on mirror)</td>
+</tr>
+<tr>
+<td>Restore</td>
+<td>Recover objects never pushed to the mirror; restore whole-repo “snapshot at midnight” across all branches as one atomic unit</td>
+</tr>
+<tr>
+<td>Alpha file backup</td>
+<td>Restore Git history, tags, or branch relationships</td>
+</tr>
+<tr>
+<td>GitHub UI</td>
+<td>Arbitrary point-in-time full-repo restore without Git operations</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="repository-mirror-source--mirror">Repository Mirror (source → mirror)</h2>
+<p><strong>Workflow file:</strong> <code>.github/workflows/repo-mirror.yml</code><br>
+<strong>Actions name:</strong> Repository Mirror</p>
+<h3 id="triggers">Triggers</h3>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>When it runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schedule</code></td>
+<td>Daily at <strong>02:00 UTC</strong> (uses workflow file on default branch <code>master</code>)</td>
+</tr>
+<tr>
+<td><code>push</code></td>
+<td>Pushes to configured major branches when this workflow file exists on that branch</td>
+</tr>
+<tr>
+<td><code>workflow_dispatch</code></td>
+<td>Manual run; supports <strong>Dry run</strong> input</td>
+</tr>
+</tbody>
+</table>
+<p>Configured push branches include: <code>master</code>, <code>gold</code>, <code>canary</code>, <code>alpha</code>, <code>alpha-backup</code>, <code>V105-LTS</code>, <code>V85-LTS</code>, <code>prerelease</code>.</p>
+<h3 id="behaviour">Behaviour</h3>
+<ol>
+<li>Bare-clone the <strong>source</strong> repository.</li>
+<li>For each configured branch:
+<ul>
+<li>If branch exists on source → <strong>force-push</strong> to mirror.</li>
+<li>If branch removed from source but exists on mirror → <strong>delete</strong> from mirror.</li>
+<li>If branch missing on both → <strong>fail</strong> (typo guard for <code>MIRROR_BRANCHES</code>).</li>
+</ul>
+</li>
+<li>Unless <code>MIRROR_SYNC_TAGS=false</code>:
+<ul>
+<li>Force-push all tags from source to mirror.</li>
+<li><strong>Prune</strong> tags on mirror that no longer exist on source.</li>
+</ul>
+</li>
+</ol>
+<h3 id="concurrency">Concurrency</h3>
+<ul>
+<li>Group: <code>repo-mirror</code></li>
+<li><code>cancel-in-progress: false</code> — overlapping runs queue rather than cancel (avoids partial mirror state).</li>
+</ul>
+<h3 id="kill-switch">Kill switch</h3>
+<p>Set repository variable <code>REPO_MIRROR_DISABLED=true</code> to skip the mirror job.</p>
+<hr>
+<h2 id="repository-restore-from-mirror-mirror--source">Repository Restore from Mirror (mirror → source)</h2>
+<p><strong>Workflow file:</strong> <code>.github/workflows/repo-restore-from-mirror.yml</code><br>
+<strong>Actions name:</strong> Repository Restore from Mirror<br>
+<strong>Detailed documentation:</strong> <a href="RepositoryRestoreFromMirrorWorkflow.html">Repository Restore from Mirror Workflow</a></p>
+<h3 id="triggers-1">Triggers</h3>
+<p><strong>Manual only</strong> (<code>workflow_dispatch</code>). There is no schedule or push trigger.</p>
+<h3 id="workflow-inputs">Workflow inputs</h3>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dry_run</code></td>
+<td>boolean</td>
+<td><code>true</code></td>
+<td>Preview only; no pushes to source</td>
+</tr>
+<tr>
+<td><code>restore_mode</code></td>
+<td>choice</td>
+<td><code>new_branch</code></td>
+<td><code>new_branch</code> or <code>force_push</code> (ignored when <code>dry_run</code> is true)</td>
+</tr>
+<tr>
+<td><code>branches</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>Comma-separated list; empty uses <code>MIRROR_BRANCHES</code> or built-in defaults</td>
+</tr>
+<tr>
+<td><code>restore_date</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>UTC date/time for point-in-time restore</td>
+</tr>
+<tr>
+<td><code>commit_sha</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>Exact commit (single branch only; overrides <code>restore_date</code>)</td>
+</tr>
+<tr>
+<td><code>sync_tags</code></td>
+<td>boolean</td>
+<td><code>false</code></td>
+<td>Force-push all mirror tags to source</td>
+</tr>
+<tr>
+<td><code>force_push_confirmation</code></td>
+<td>string</td>
+<td><em>(empty)</em></td>
+<td>Must be exactly <code>RESTORE</code> when using <code>force_push</code></td>
+</tr>
+<tr>
+<td><code>new_branch_prefix</code></td>
+<td>string</td>
+<td><code>restore/</code></td>
+<td>Prefix for branches created in <code>new_branch</code> mode</td>
+</tr>
+</tbody>
+</table>
+<h3 id="restore-modes">Restore modes</h3>
+<h4 id="new_branch-recommended"><code>new_branch</code> (recommended)</h4>
+<p>Creates a <strong>new branch</strong> on the source repository pointing at the resolved commit. Does not modify the original branch tip.</p>
+<p><strong>Branch naming:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Example name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Current mirror tip, no date</td>
+<td><code>restore/alpha-tip</code></td>
+</tr>
+<tr>
+<td><code>restore_date</code> set</td>
+<td><code>restore/alpha-2025-06-01</code> (spaces/colons in date sanitized to <code>-</code>)</td>
+</tr>
+<tr>
+<td><code>commit_sha</code> set</td>
+<td><code>restore/alpha-a1b2c3d</code> (7-char short SHA)</td>
+</tr>
+</tbody>
+</table>
+<p>Typical follow-up: open a PR from <code>restore/alpha-…</code> → <code>alpha</code>, review diff, merge.</p>
+<h4 id="force_push-destructive"><code>force_push</code> (destructive)</h4>
+<p>Overwrites the <strong>existing branch tip</strong> on the source with the resolved commit.</p>
+<p><strong>Requirements:</strong></p>
+<ul>
+<li><code>dry_run</code> must be <code>false</code></li>
+<li><code>force_push_confirmation</code> must be exactly <code>RESTORE</code></li>
+<li>Branch protection may <strong>reject</strong> the push (e.g. <code>master</code> without bypass permissions)</li>
+</ul>
+<p>Commits that were on the branch tip but remain in the object database may still be reachable via SHA until garbage-collected; treat force-push as <strong>loss of branch history</strong> from a workflow perspective.</p>
+<h3 id="resolution-order-per-branch">Resolution order (per branch)</h3>
+<p>For each configured branch on the mirror:</p>
+<ol>
+<li><strong><code>commit_sha</code></strong> (if set) — must exist in mirror and be an ancestor of the mirror branch.</li>
+<li>Else <strong><code>restore_date</code></strong> — <code>git rev-list -1 --before=&quot;&lt;date&gt;&quot; refs/heads/&lt;branch&gt;</code>.</li>
+<li>Else <strong>current mirror tip</strong> — <code>git rev-parse refs/heads/&lt;branch&gt;</code>.</li>
+</ol>
+<p>If source tip already equals the restore target SHA, the branch is reported as <strong>unchanged</strong> and skipped.</p>
+<h3 id="tag-sync">Tag sync</h3>
+<p>When <code>sync_tags</code> is <code>true</code>, the workflow force-pushes <code>refs/tags/*</code> from the mirror clone to the source. Default is <strong>off</strong> because tag overwrites are high impact. Enable only when tag recovery is explicitly required.</p>
+<h3 id="concurrency-1">Concurrency</h3>
+<ul>
+<li>Group: <code>repo-restore</code></li>
+<li><code>cancel-in-progress: false</code></li>
+</ul>
+<h3 id="kill-switch-1">Kill switch</h3>
+<p>Set repository variable <code>REPO_RESTORE_DISABLED=true</code>.</p>
+<hr>
+<h2 id="alpha-to-alpha-backup-sync">Alpha to Alpha-Backup Sync</h2>
+<p><strong>Workflow file:</strong> <code>.github/workflows/alpha-backup-sync.yml</code><br>
+<strong>Actions name:</strong> Alpha to Alpha-Backup Sync</p>
+<h3 id="triggers-2">Triggers</h3>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schedule</code></td>
+<td>Daily at <strong>00:00 UTC</strong></td>
+</tr>
+<tr>
+<td><code>workflow_dispatch</code></td>
+<td>Manual</td>
+</tr>
+</tbody>
+</table>
+<h3 id="behaviour-1">Behaviour</h3>
+<ol>
+<li>Checkout <code>alpha</code> with full history (<code>fetch-depth: 0</code>).</li>
+<li>If <strong>no commits</strong> on <code>alpha</code> in the last 24 hours → exit (no work).</li>
+<li>Ensure <code>alpha-backup</code> branch exists (create from <code>alpha</code> if missing).</li>
+<li>Open PR <code>alpha</code> → <code>alpha-backup</code> (or reuse existing open PR).</li>
+<li>Attempt to enable <strong>auto-merge</strong> on the PR (requires repo setting <em>Allow auto-merge</em>).</li>
+<li>Optionally push a <strong>file snapshot</strong> of <code>alpha</code> to <code>BACKUP_REPO</code> under <code>Standard Toolkit Backup - YYYY-MM-DD/</code> (no <code>.git</code> directory in the snapshot).</li>
+</ol>
+<h3 id="kill-switch-2">Kill switch</h3>
+<p><code>ALPHA_BACKUP_SYNC_DISABLED=true</code></p>
+<hr>
+<h2 id="configuration-reference">Configuration reference</h2>
+<p>All variables and secrets are configured under <strong>Repository Settings → Secrets and variables → Actions</strong>.</p>
+<h3 id="shared-mirror--restore-settings">Shared mirror / restore settings</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Used by</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MIRROR_REPO</code></td>
+<td>Variable</td>
+<td>Mirror, Restore</td>
+<td>Target mirror as <code>owner/repo</code> (full GitHub URLs normalized automatically)</td>
+</tr>
+<tr>
+<td><code>MIRROR_REPO_TOKEN</code></td>
+<td>Secret</td>
+<td>Mirror, Restore</td>
+<td>PAT for mirror access (mirror: <strong>write</strong>; restore: <strong>read</strong> sufficient)</td>
+</tr>
+<tr>
+<td><code>MIRROR_BRANCHES</code></td>
+<td>Variable</td>
+<td>Mirror, Restore</td>
+<td>Optional comma-separated branch list</td>
+</tr>
+<tr>
+<td><code>MIRROR_SYNC_TAGS</code></td>
+<td>Variable</td>
+<td>Mirror only</td>
+<td>Set to <code>false</code> to skip tag sync on mirror push</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default branches</strong> (when <code>MIRROR_BRANCHES</code> and workflow <code>branches</code> input are empty):</p>
+<p><code>master</code>, <code>gold</code>, <code>canary</code>, <code>alpha</code>, <code>V105-LTS</code>, <code>V85-LTS</code></p>
+<h3 id="mirror-only-settings">Mirror-only settings</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REPO_MIRROR_DISABLED</code></td>
+<td>Variable</td>
+<td>Kill switch (<code>true</code> = disabled)</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_MIRROR</code></td>
+<td>Secret</td>
+<td>Optional Discord notifications</td>
+</tr>
+</tbody>
+</table>
+<h3 id="restore-only-settings">Restore-only settings</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REPO_RESTORE_DISABLED</code></td>
+<td>Variable</td>
+<td>Kill switch (<code>true</code> = disabled)</td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_RESTORE</code></td>
+<td>Secret</td>
+<td>Optional Discord notifications</td>
+</tr>
+</tbody>
+</table>
+<h3 id="alpha-backup-settings">Alpha backup settings</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ALPHA_BACKUP_SYNC_DISABLED</code></td>
+<td>Variable</td>
+<td>Kill switch</td>
+</tr>
+<tr>
+<td><code>BACKUP_REPO</code></td>
+<td>Variable</td>
+<td>Optional second repo for dated file snapshots</td>
+</tr>
+<tr>
+<td><code>BACKUP_REPO_TOKEN</code></td>
+<td>Secret</td>
+<td>PAT with push access to <code>BACKUP_REPO</code></td>
+</tr>
+<tr>
+<td><code>BACKUP_DIR_PREFIX</code></td>
+<td>Variable</td>
+<td>Default: <code>Standard Toolkit Backup</code></td>
+</tr>
+<tr>
+<td><code>BACKUP_BRANCH</code></td>
+<td>Variable</td>
+<td>Branch in backup repo; default: <code>main</code></td>
+</tr>
+<tr>
+<td><code>DISCORD_WEBHOOK_ALPHA_BACKUP</code></td>
+<td>Secret</td>
+<td>Optional Discord notifications</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pat-permission-matrix">PAT permission matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Repository</th>
+<th>Minimum scopes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MIRROR_REPO_TOKEN</code> (mirror)</td>
+<td>Mirror repo</td>
+<td><code>contents: write</code> (push branches/tags, delete refs)</td>
+</tr>
+<tr>
+<td><code>MIRROR_REPO_TOKEN</code> (restore)</td>
+<td>Mirror repo</td>
+<td><code>contents: read</code> (clone/fetch)</td>
+</tr>
+<tr>
+<td><em>(implicit)</em> <code>GITHUB_TOKEN</code></td>
+<td>Source repo</td>
+<td>Workflow <code>permissions: contents: write</code> for restore pushes</td>
+</tr>
+<tr>
+<td><code>BACKUP_REPO_TOKEN</code></td>
+<td>Backup repo</td>
+<td><code>contents: write</code></td>
+</tr>
+</tbody>
+</table>
+<p>Use fine-grained PATs limited to the specific backup/mirror repositories where possible.</p>
+<hr>
+<h2 id="initial-setup">Initial setup</h2>
+<h3 id="1-create-the-mirror-repository">1. Create the mirror repository</h3>
+<ol>
+<li>Create an empty private repository (e.g. <code>Krypton-Suite/Standard-Toolkit-Mirror</code>).</li>
+<li>Do <strong>not</strong> initialize with README if you want a clean first mirror push (optional either way).</li>
+</ol>
+<h3 id="2-create-and-store-credentials">2. Create and store credentials</h3>
+<ol>
+<li>Create a PAT with access to the mirror repository.</li>
+<li>Add secrets/variables on <strong>Standard-Toolkit</strong>:
+<ul>
+<li><code>MIRROR_REPO</code> = <code>Krypton-Suite/Standard-Toolkit-Mirror</code></li>
+<li><code>MIRROR_REPO_TOKEN</code> = PAT</li>
+</ul>
+</li>
+</ol>
+<h3 id="3-validate-mirror-dry-run">3. Validate mirror (dry run)</h3>
+<ol>
+<li><strong>Actions → Repository Mirror → Run workflow</strong></li>
+<li>Enable <strong>Dry run</strong></li>
+<li>Confirm log shows expected branches and mirror reachability.</li>
+</ol>
+<h3 id="4-first-real-mirror">4. First real mirror</h3>
+<ol>
+<li>Run Repository Mirror without dry run (or wait for schedule / push trigger).</li>
+<li>Verify branches and tags on the mirror repository.</li>
+</ol>
+<h3 id="5-optional-discord-and-alpha-file-backup">5. Optional: Discord and alpha file backup</h3>
+<p>Configure webhooks and <code>BACKUP_REPO</code> as needed.</p>
+<h3 id="6-validate-restore-dry-run">6. Validate restore (dry run)</h3>
+<ol>
+<li><strong>Actions → Repository Restore from Mirror → Run workflow</strong></li>
+<li>Leave <strong>dry_run</strong> enabled.</li>
+<li>Set <code>branches</code> to one branch (e.g. <code>alpha</code>).</li>
+<li>Confirm log shows mirror SHA, source SHA, and planned branch names.</li>
+</ol>
+<hr>
+<h2 id="operational-procedures">Operational procedures</h2>
+<h3 id="routine-health-checks">Routine health checks</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Frequency</th>
+<th>How</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mirror workflow last success</td>
+<td>Weekly</td>
+<td>Actions → Repository Mirror</td>
+</tr>
+<tr>
+<td>Mirror repo branch tips vs source</td>
+<td>After incidents</td>
+<td>Compare SHAs on GitHub or <code>git ls-remote</code></td>
+</tr>
+<tr>
+<td>Alpha backup PR merged</td>
+<td>After alpha activity</td>
+<td>Open PRs <code>alpha</code> → <code>alpha-backup</code></td>
+</tr>
+<tr>
+<td>Restore dry run</td>
+<td>After config changes</td>
+<td>Manual restore with <code>dry_run=true</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="standard-restore-procedure-safe-path">Standard restore procedure (safe path)</h3>
+<ol>
+<li>Identify affected branch(es) and whether you need a <strong>date</strong>, <strong>commit</strong>, or <strong>current mirror tip</strong>.</li>
+<li>Run <strong>Repository Restore from Mirror</strong> with:
+<ul>
+<li><code>dry_run</code>: <strong>true</strong></li>
+<li><code>branches</code>: affected branch(es)</li>
+<li><code>restore_date</code> or <code>commit_sha</code> if needed</li>
+</ul>
+</li>
+<li>Review workflow log:
+<ul>
+<li><code>Restore SHAs</code> vs <code>Source SHAs</code></li>
+<li>Planned <code>restore/…</code> branch names</li>
+</ul>
+</li>
+<li>Re-run with:
+<ul>
+<li><code>dry_run</code>: <strong>false</strong></li>
+<li><code>restore_mode</code>: <strong>new_branch</strong></li>
+</ul>
+</li>
+<li>Locally or on GitHub, compare <code>restore/…</code> with the live branch.</li>
+<li>Open PR from <code>restore/…</code> → target branch; get review; merge.</li>
+<li>Optionally run <strong>Repository Mirror</strong> manually to re-sync mirror after source is corrected.</li>
+</ol>
+<h3 id="force-push-procedure-emergency-only">Force-push procedure (emergency only)</h3>
+<p>Use when the branch must be corrected <strong>immediately</strong> and reviewers agree force-push is acceptable.</p>
+<ol>
+<li>Complete dry run steps above.</li>
+<li>Confirm branch protection allows force-push (or temporarily adjust rules).</li>
+<li>Run restore with:
+<ul>
+<li><code>dry_run</code>: <strong>false</strong></li>
+<li><code>restore_mode</code>: <strong>force_push</strong></li>
+<li><code>force_push_confirmation</code>: <strong>RESTORE</strong></li>
+</ul>
+</li>
+<li>Verify branch tip SHA on source.</li>
+<li>Notify team; run mirror sync if needed.</li>
+</ol>
+<hr>
+<h2 id="disaster-recovery-playbooks">Disaster recovery playbooks</h2>
+<h3 id="playbook-a--source-branch-accidentally-force-pushed">Playbook A — Source branch accidentally force-pushed</h3>
+<p><strong>Symptoms:</strong> Branch tip moved backward or to wrong commit; mirror not yet updated.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Check mirror branch tip SHA (may still point at last good commit if mirror has not run since the bad push).</li>
+<li>Run restore dry run with empty <code>restore_date</code> (mirror tip).</li>
+<li>If mirror tip is good → <code>new_branch</code> restore → PR.</li>
+<li>If mirror already synced the bad state → use <code>restore_date</code> or <code>commit_sha</code> from before the incident.</li>
+</ol>
+<h3 id="playbook-b--source-repository-wide-corruption">Playbook B — Source repository wide corruption</h3>
+<p><strong>Symptoms:</strong> Multiple branches wrong; local clones fine but GitHub state bad.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Restore <strong>one branch at a time</strong> via <code>new_branch</code> mode.</li>
+<li>Start with lowest-risk branches; leave <code>master</code> for last with extra review.</li>
+<li>Avoid <code>sync_tags</code> until branch tips are verified.</li>
+<li>After all branches corrected, run mirror from source to refresh off-site copy.</li>
+</ol>
+<h3 id="playbook-c--mirror-is-stale-but-source-is-fine">Playbook C — Mirror is stale but source is fine</h3>
+<p><strong>Symptoms:</strong> Mirror behind source; no source corruption.</p>
+<p><strong>Action:</strong> Run <strong>Repository Mirror</strong> (not restore). Restore is only for mirror → source.</p>
+<h3 id="playbook-d--need-files-from-a-specific-day-alpha-only">Playbook D — Need files from a specific day (alpha only)</h3>
+<p><strong>Symptoms:</strong> Need source tree as of a date; Git history not required.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Open <code>BACKUP_REPO</code> → branch <code>main</code> (or <code>BACKUP_BRANCH</code>).</li>
+<li>Locate folder <code>Standard Toolkit Backup - YYYY-MM-DD</code>.</li>
+<li>Copy files manually into a working branch.</li>
+</ol>
+<p><strong>Note:</strong> This does not preserve Git history. For commit-level recovery use mirror restore.</p>
+<h3 id="playbook-e--alpha-backup-branch-is-aheadbehind-unexpectedly">Playbook E — <code>alpha-backup</code> branch is ahead/behind unexpectedly</h3>
+<p><strong>Symptoms:</strong> Automated PR failed or was not merged.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Check <strong>Alpha to Alpha-Backup Sync</strong> workflow runs.</li>
+<li>Manually merge or create PR from <code>alpha</code> to <code>alpha-backup</code>.</li>
+<li>For Git-level rollback, prefer mirror restore with <code>restore_date</code> if mirror history is authoritative.</li>
+</ol>
+<hr>
+<h2 id="point-in-time-restore-mechanics">Point-in-time restore mechanics</h2>
+<h3 id="how-restore_date-works">How <code>restore_date</code> works</h3>
+<p>The workflow runs (inside the bare mirror clone):</p>
+<pre><code class="lang-bash">git rev-list -1 --before=&quot;&lt;restore_date&gt;&quot; refs/heads/&lt;branch&gt;
+</code></pre>
+<p>Git interprets <code>--before</code> against commit <strong>author/committer timestamps</strong> on the branch’s reachable history. The result is the <strong>latest commit on that branch</strong> whose commit time is strictly before the given instant (or equal depending on Git version parsing — treat dates as UTC and prefer explicit times for precision).</p>
+<p><strong>Examples:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>2025-06-01</code></td>
+<td>Latest commit on branch before end of that UTC calendar day (parsed by <code>date -u -d</code>)</td>
+</tr>
+<tr>
+<td><code>2025-06-01 14:30:00</code></td>
+<td>Latest commit before that UTC timestamp</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Important:</strong> There may be <strong>no commit</strong> exactly at your chosen wall-clock time. You get the nearest ancestor commit on that branch.</p>
+<h3 id="how-commit_sha-works">How <code>commit_sha</code> works</h3>
+<ul>
+<li>Must be a valid commit object in the mirror.</li>
+<li>Must be <strong>reachable</strong> from the specified mirror branch (<code>merge-base --is-ancestor</code>).</li>
+<li>Only allowed when exactly <strong>one</strong> branch is in scope (workflow input or implied single branch).</li>
+</ul>
+<h3 id="history-availability">History availability</h3>
+<p>Point-in-time restore only works if:</p>
+<ol>
+<li>The commit existed on the branch when the mirror last received it, and</li>
+<li>The commit is still reachable from the mirror branch (not orphaned by later mirror syncs that force-pushed away history).</li>
+</ol>
+<p>The mirror retains objects for force-pushed-away commits until garbage collection on the mirror host; do not rely on orphaned SHAs indefinitely.</p>
+<hr>
+<h2 id="security-model">Security model</h2>
+<h3 id="repository-guard">Repository guard</h3>
+<p>Both mirror and restore workflows <strong>hard-code</strong> an check that <code>GITHUB_REPOSITORY</code> equals <code>Krypton-Suite/Standard-Toolkit</code>. Forks or accidental workflow copies fail fast.</p>
+<h3 id="kill-switches">Kill switches</h3>
+<p>Each workflow can be disabled independently without deleting workflow files:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Workflow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REPO_MIRROR_DISABLED</code></td>
+<td>Repository Mirror</td>
+</tr>
+<tr>
+<td><code>REPO_RESTORE_DISABLED</code></td>
+<td>Repository Restore</td>
+</tr>
+<tr>
+<td><code>ALPHA_BACKUP_SYNC_DISABLED</code></td>
+<td>Alpha Backup Sync</td>
+</tr>
+</tbody>
+</table>
+<h3 id="least-privilege">Least privilege</h3>
+<ul>
+<li>Mirror PAT: write on mirror only.</li>
+<li>Restore uses the same PAT but only <strong>reads</strong> the mirror; writes use <code>GITHUB_TOKEN</code> on the source repo within workflow permissions.</li>
+<li>Store PATs as secrets; never commit tokens.</li>
+</ul>
+<h3 id="human-confirmation">Human confirmation</h3>
+<ul>
+<li>Restore defaults to <strong>dry run</strong>.</li>
+<li><code>force_push</code> requires typing <strong>RESTORE</strong>.</li>
+<li>Prefer <code>new_branch</code> + PR review over force-push for auditability.</li>
+</ul>
+<h3 id="branch-protection-interaction">Branch protection interaction</h3>
+<p>Protected branches may block:</p>
+<ul>
+<li>Force-push restores</li>
+<li>Direct pushes to <code>restore/…</code> if rules are restrictive (uncommon)</li>
+</ul>
+<p>Plan rule exceptions or use PR-based promotion from restore branches.</p>
+<hr>
+<h2 id="workflow-internals">Workflow internals</h2>
+<h3 id="repository-restore--step-sequence">Repository Restore — step sequence</h3>
+<pre><code class="lang-mermaid">sequenceDiagram
+  participant User
+  participant GHA as GitHub Actions
+  participant Mirror as Mirror repo
+  participant Source as Standard-Toolkit
+
+  User-&gt;&gt;GHA: workflow_dispatch (inputs)
+  GHA-&gt;&gt;GHA: Kill switch check
+  GHA-&gt;&gt;GHA: Repository guard
+  GHA-&gt;&gt;GHA: Validate inputs (RESTORE, dates, commit_sha)
+  GHA-&gt;&gt;Mirror: bare clone (MIRROR_REPO_TOKEN)
+  GHA-&gt;&gt;Source: fetch refs/heads/* (GITHUB_TOKEN)
+  loop Each branch
+    GHA-&gt;&gt;GHA: Resolve restore SHA
+    GHA-&gt;&gt;GHA: Compare to source tip
+    alt dry_run
+      GHA-&gt;&gt;GHA: Log planned actions
+    else new_branch
+      GHA-&gt;&gt;Source: push SHA to restore/… branch
+    else force_push
+      GHA-&gt;&gt;Source: push --force SHA to branch
+    end
+  end
+  opt sync_tags
+    GHA-&gt;&gt;Source: push --force refs/tags/*
+  end
+  GHA-&gt;&gt;User: Discord notification (optional)
+</code></pre>
+<h3 id="credential-helper">Credential helper</h3>
+<p>Mirror and restore workflows use a small shell credential helper so Git commands do not embed tokens in URLs in logs:</p>
+<pre><code class="lang-bash">git_with_token &quot;$TOKEN&quot; clone --bare &quot;$remote&quot; mirror.git
+</code></pre>
+<h3 id="job-outputs-restore">Job outputs (restore)</h3>
+<p>The restore step exposes outputs consumed by Discord notification:</p>
+<table>
+<thead>
+<tr>
+<th>Output</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>restored_branches</code></td>
+<td>Source branches successfully restored</td>
+</tr>
+<tr>
+<td><code>created_branches</code></td>
+<td>New <code>restore/…</code> refs created</td>
+</tr>
+<tr>
+<td><code>unchanged_branches</code></td>
+<td>Already matched mirror target</td>
+</tr>
+<tr>
+<td><code>failed_branches</code></td>
+<td>Push or validation failures</td>
+</tr>
+<tr>
+<td><code>missing_branches</code></td>
+<td>Branch absent on mirror</td>
+</tr>
+<tr>
+<td><code>restore_shas</code> / <code>source_shas</code></td>
+<td><code>branch:sha</code> pairs for auditing</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="limitations-and-non-goals">Limitations and non-goals</h2>
+<ol>
+<li><strong>No whole-repository time machine</strong> — Branches are restored independently; there is no single “repo at 2025-06-01” snapshot unless every branch tip happened to match that instant.</li>
+<li><strong>Mirror lag</strong> — Scheduled mirror runs at 02:00 UTC; push-triggered runs reduce lag. Restore from mirror tip reflects last successful mirror, not necessarily latest source second.</li>
+<li><strong>Alpha file backups are not Git backups</strong> — Dated directories exclude <code>.git</code>.</li>
+<li><strong>Deleted history</strong> — Commits never mirrored, or garbage-collected on mirror, cannot be restored by these workflows.</li>
+<li><strong>Restore does not delete</strong> — Extra branches or tags on source that are absent on mirror are <strong>not</strong> removed by restore (unlike mirror’s prune behaviour). Tag sync force-pushes mirror tags but does not delete source-only tags unless overwritten by name.</li>
+<li><strong>Not a replacement for GitHub Enterprise backup appliances</strong> — This is org-managed Git mirroring via Actions.</li>
+</ol>
+<h3 id="possible-future-enhancements">Possible future enhancements</h3>
+<ul>
+<li>Dated <strong><code>git clone --mirror</code></strong> archives for true point-in-time full mirrors</li>
+<li>GitHub Environment protection on restore workflow (required reviewers)</li>
+<li>Separate read-only mirror PAT for restore vs write PAT for mirror</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mirror job skipped</td>
+<td><code>REPO_MIRROR_DISABLED=true</code></td>
+<td>Set to <code>false</code> or remove variable</td>
+</tr>
+<tr>
+<td>Restore job skipped</td>
+<td><code>REPO_RESTORE_DISABLED=true</code></td>
+<td>Set to <code>false</code> or remove variable</td>
+</tr>
+<tr>
+<td><code>MIRROR_REPO and MIRROR_REPO_TOKEN must both be configured</code></td>
+<td>Missing variable/secret</td>
+<td>Add both in repo settings</td>
+</tr>
+<tr>
+<td><code>Invalid repository</code> security error</td>
+<td>Workflow ran on a fork</td>
+<td>Only run on official repo</td>
+</tr>
+<tr>
+<td><code>Branch does not exist on the mirror</code></td>
+<td>Branch never mirrored or typo</td>
+<td>Run mirror; check <code>MIRROR_BRANCHES</code></td>
+</tr>
+<tr>
+<td><code>No commit found … at or before restore_date</code></td>
+<td>Date before branch existed</td>
+<td>Pick earlier branch creation or use <code>commit_sha</code></td>
+</tr>
+<tr>
+<td><code>commit_sha is not reachable from mirror branch</code></td>
+<td>SHA on wrong branch</td>
+<td>Verify SHA on mirror branch history</td>
+</tr>
+<tr>
+<td><code>force_push mode requires typing RESTORE</code></td>
+<td>Missing confirmation</td>
+<td>Re-run with exact string <code>RESTORE</code></td>
+</tr>
+<tr>
+<td>Force-push failed</td>
+<td>Branch protection</td>
+<td>Use <code>new_branch</code> + PR or adjust protection</td>
+</tr>
+<tr>
+<td>Tag sync failed</td>
+<td>Permission or tag conflict</td>
+<td>Check token scopes; resolve tag name collisions</td>
+</tr>
+<tr>
+<td>Mirror and source SHAs match but code “looks wrong”</td>
+<td>Wrong branch or wrong mirror repo</td>
+<td>Verify <code>MIRROR_REPO</code> points at intended mirror</td>
+</tr>
+<tr>
+<td>Alpha backup folder empty / missing</td>
+<td>No alpha commits in 24h or <code>BACKUP_REPO</code> unset</td>
+<td>Expected; check workflow conditions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="useful-local-commands">Useful local commands</h3>
+<pre><code class="lang-bash"># Compare branch tips
+git ls-remote https://github.com/Krypton-Suite/Standard-Toolkit.git refs/heads/alpha
+git ls-remote https://github.com/Krypton-Suite/Standard-Toolkit-Mirror.git refs/heads/alpha
+
+# Find commit at date on local clone
+git rev-list -1 --before=&quot;2025-06-01&quot; origin/alpha
+</code></pre>
+<hr>
+<h2 id="maintenance-and-extension">Maintenance and extension</h2>
+<h3 id="adding-a-new-major-branch-to-mirrorrestore">Adding a new major branch to mirror/restore</h3>
+<ol>
+<li>Add branch name to push triggers in <code>repo-mirror.yml</code> (if push-triggered sync desired).</li>
+<li>Add to <code>MIRROR_BRANCHES</code> repository variable <strong>or</strong> rely on workflow file default list update.</li>
+<li>Run mirror dry run, then full mirror.</li>
+<li>Run restore dry run for the new branch.</li>
+</ol>
+<h3 id="testing-workflow-changes">Testing workflow changes</h3>
+<ol>
+<li>Use a <strong>dedicated test mirror</strong> repository variable override (on a fork or test org) before production.</li>
+<li>Always run <strong>dry run</strong> first for restore changes.</li>
+<li>Mirror workflow supports dry run via <code>workflow_dispatch</code>.</li>
+</ol>
+<h3 id="related-documentation">Related documentation</h3>
+<ul>
+<li><a href="../../../../.github/BRANCH_POLICY.md">Branch policy cheat sheet</a> — includes <code>alpha</code> → <code>alpha-backup</code> flow</li>
+<li><a href="../../../Changelog/Changelog.md">Changelog entry</a> — Build 2611 backup/restore notes</li>
+<li>Workflow header comments in each YAML file — operational quick reference</li>
+</ul>
+<hr>
+<p><em>Document version: aligns with <code>repo-restore-from-mirror.yml</code> and <code>repo-mirror.yml</code> as of <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3591">#3591</a>.</em></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

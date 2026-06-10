@@ -69,117 +69,485 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="kryptondatagridview">KryptonDataGridView</h1>
 
-<p>The <em>KryptonDataGridView</em> control derives from the standard <em>DataGridView</em> that
-comes with .NET 2.0. This allows you to take advantage of all the features
-present in the <em>DataGridView</em> control but with the advantage of drawing in the
-<em>Krypton</em> palette style. As with all <em>Krypton</em> controls you can customize the
-appearance by providing a custom palette or by modifying the individual state
-appearance properties. For information about non-appearance aspects of the
-control you should refer to the <em>DataGridView</em> control documentation.</p>
-<h2 id="grid-styles">Grid Styles</h2>
-<p>Select the <em>KryptonDataGridView</em> control at design time and using the properties
-window you can navigate to the <em>GridStyles</em> compound property. This property is
-used to specify the <em>Krypton</em> styles used for drawing the different elements of
-the grid. There are three built-in styles called <em>List</em>, <em>Sheet</em> and <em>Custom1</em>.
-Usually you would modify all the grid elements to use the same <em>List</em>, <em>Sheet</em>
-or <em>Custom1</em> setting so that the appearance is consistent.</p>
-<p>For example, if you look at the left image in <em>Figure 1</em> you can see the default
-settings where each grid element is using the <em>List</em> setting. Changing just the
-<em>Style</em> property will cause all the other properties to change to the correct
-matching style. The right image of <em>Figure 1</em> shows where <em>Style</em> has been
-updated to <em>Sheet</em>. So if you would like all the properties to be in sync then
-use the <em>Style</em> property.</p>
-<p>However, if you would like to mix and match the styles of the different grid
-elements then you can modify them individually. For example you might change
-<em>StyleDataCells</em> to be <em>Sheet</em> and then alter the <em>StyleRow</em> to be <em>List</em>. In
-that scenario the <em>Style</em> property will automatically update itself to become
-<em>Mixed</em> as the settings of the grid element properties are a mixture of styles
-and not consistent.</p>
-<p><img src="../Images/KryptonDataGridView1.png" alt="KryptonDataGridView comparing GridStyles Style List (left) and Style Sheet (right)"></p>
-<p>Figure 1 - Style = List and Style = Sheet</p>
-<p>You can see the visual different between the <em>List</em> and <em>Sheet</em> styles by
-looking at <em>Figure 2</em>. The left image is the <em>List</em> style when the <em>Office 2007 - Blue</em> palette is used and the right image is the same palette but with the
-<em>Sheet</em> style.</p>
-<p><img src="../Images/KryptonDataGridView2.png" alt="KryptonDataGridView grid appearance for List and Sheet styles using Office 2007 Blue palette"></p>
-<p>Figure 2 - Grid Appearance for List and Sheet styles</p>
-<h2 id="hideouterborders">HideOuterBorders</h2>
-<p>Unlike the standard <em>DataGridView</em> control the <em>Krypton</em> version never draws a
-border around the entire control area. This is because the <em>DataGridView</em>
-control does not provide an effective method of overriding the drawing of the
-control border and so it has been always removed. Many developers may find that
-they do need a <em>Krypton</em> appropriate border around the control. To achieve the
-border you can simply place the <em>KryptonDataGridView</em> instance inside a
-<em>KryptonGroup</em> instance and modify the grid to fill the entire group area by
-setting the <em>Dock</em> property to <em>Fill</em>.</p>
-<p>This solution does not always give an appropriate appearance. You can see in the
-left image of <em>Figure 3</em> that the border around the entire control clashes with
-the border around the grid cells. By setting the <em>HideOuterBorders</em> to True you
-prevent the drawing of the cells borders where they are adjacent to the group
-border. The right image in <em>Figure 3</em> shows the resulting more aesthetic result.</p>
-<p><img src="../Images/KryptonDataGridView3.png" alt="KryptonDataGridView comparing HideOuterBorders False (left) and True (right) inside a KryptonGroup"></p>
-<p>Figure 3 - HideOuterBorders = False and True</p>
-<h2 id="five-states">Five States</h2>
-<p>There are 5 different states that grid elements can be in at any given time.
-These are <em>Normal</em>, <em>Disabled</em>, <em>Tracking</em>, <em>Pressed</em> and <em>Selected</em>. Note
-however that not all the different elements use all the possible states. All the
-grid elements of <em>DataCells</em>, <em>HeaderColumn</em>, <em>HeaderRow</em> and <em>Background</em> make
-use of the <em>Normal</em> and <em>Disabled</em> states. All except the <em>Background</em> make use
-of the <em>Selected</em> state. Only the <em>HeaderColumn</em> and <em>HeaderRow</em> use the
-<em>Tracking</em> and <em>Pressed</em> states. To find the appearance properties for a given
-state just look in the <em>Visuals</em> category of the properties window and expand
-the relevant named compound property such as <em>StateNormal</em>.</p>
-<p>To speed up the customization process an extra <em>StateCommon</em> property has been
-provided. The settings from this are used if no override has been defined for
-the state specific entry. Note that the specific state values always take
-precedence and so if you define a text color in <em>StateNormal</em> and <em>StateCommon</em>
-then the <em>StateNormal</em> value will be used whenever the control is in the
-<em>Normal</em> state. Only if the <em>StateNormal</em> value is not overridden will it look
-in <em>StateCommon</em>.</p>
-<h2 id="overriding-cell-styles">Overriding Cell Styles</h2>
-<p>It is common when using a grid control to override the appearance of individual
-cells or whole columns of cells. For example you might have a column that
-contains currency values and want to show the negative values in red and the
-positive values in black. You can do this using the <em>KryptonDataGridView</em>
-control in the same way that you would for the standard <em>DataGridView</em> control.</p>
-<p>To modify the <em>Font</em>, <em>BackColor</em>, <em>ForeColor</em>, <em>SelectionBackColor</em> and
-<em>SelectionForeColor</em> for a column you would use the properties window to find
-and edit the <em>Columns</em> collection. After selecting the column instance of
-interest you would alter the <em>DefaultCellStyle</em> from the editing dialog and then
-alter the properties as required. This is exactly the same process as for the
-standard <em>DataGridView</em> control.</p>
-<p>Updating the cell style for an individual cell is done via code. You just access
-the cell style associated with the individual cell and change the property of
-interest. For example you could use the following code to change the text color
-to red for the first cell in a grid instance.</p>
-<pre><code class="lang-cs">    kryptonDataGridView1.Rows[0].Cells[0].Style.ForeColor = Colors.Red;
-</code></pre>
-<p>Overriding the cell styles works because the <em>KryptonDataGridView</em> only uses the
-palette defined colors when the cell style for a cell has been explicitly
-specified.</p>
-<h2 id="defining-grid-columns">Defining Grid Columns</h2>
-<p>At design time you can specify the number and type of columns shown by the grid.
-You should always use the Krypton specified version of the column type whenever
-possible. For example, instead of using the <em>DataGridViewTextBoxColumn</em> instead
-select the <em>KryptonDataGridViewTextBoxColumn</em>. This ensures the column cells are
-drawn in a manner consistent with the Krypton palette. The nine possible Krypton
-specific types are:</p>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonDataGridView</code> extends the standard Windows Forms <code>DataGridView</code> with full Krypton palette rendering for backgrounds, borders, headers, data cells, tooltips, and outer corner rounding. Data binding, editing, sorting, and column types follow the base <code>DataGridView</code> behavior; appearance is driven by palette state properties instead of <code>DefaultCellStyle</code> colors in most scenarios.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Default event:</strong> <code>CellContentClick</code><br>
+<strong>Designer:</strong> <code>System.Windows.Forms.Design.DataGridViewDesigner</code><br>
+<strong>Inheritance:</strong> <code>Object</code> → <code>MarshalByRefObject</code> → <code>Component</code> → <code>Control</code> → <code>DataGridView</code> → <code>KryptonDataGridView</code></p>
+<p>For general grid behavior (binding, sorting, selection modes), see <a href="https://learn.microsoft.com/dotnet/desktop/winforms/controls/datagridview-control-windows-forms">Microsoft DataGridView documentation</a>.</p>
+<h2 id="key-features">Key features</h2>
+<h3 id="palette-integration">Palette integration</h3>
 <ul>
-<li><em>KryptonDataGridViewTextBoxColumn</em></li>
-<li><em>KryptonDataGridViewMaskedTextBoxColumn</em></li>
-<li><em>KryptonDataGridViewComboBoxColumn</em></li>
-<li><em>KryptonDataGridViewNumericUpDownColumn</em></li>
-<li><em>KryptonDataGridViewDomainUpDownColumn</em></li>
-<li><em>KryptonDataGridViewDateTimePickerColumn</em></li>
-<li><em>KryptonDataGridViewCheckBoxColumn</em></li>
-<li><em>KryptonDataGridViewButtonColumn</em></li>
-<li><em>KryptonDataGridViewLinkColumn</em></li>
+<li><code>PaletteMode</code>, <code>Palette</code>, and <code>Renderer</code> integration with global theme changes</li>
+<li><code>StateCommon</code>, <code>StateNormal</code>, <code>StateDisabled</code>, <code>StateTracking</code>, <code>StatePressed</code>, <code>StateSelected</code></li>
+<li><code>GridStyles</code> for <em>List</em>, <em>Sheet</em>, <em>Custom1</em>–<em>Custom3</em>, and <em>Mixed</em> element styles</li>
+<li><a href="#external-corner-rounding">External corner rounding</a> via <code>StateNormal.Border</code> / <code>StateDisabled.Border</code></li>
 </ul>
-<p>When adding a new column definition at design time you will be presented with a
-ComboBox that lists all available column types. Figure 4 shows an example of
-this scenario and shows where the <em>Krypton</em> set of columns are displayed within
-the available options.</p>
+<h3 id="data-and-columns">Data and columns</h3>
+<ul>
+<li>Full <code>DataGridView</code> data binding (<code>DataSource</code>, <code>DataMember</code>, complex binding)</li>
+<li><code>AutoGenerateKryptonColumns</code> converts generated columns to Krypton column types</li>
+<li>Krypton column types for text, masked text, combo, numeric, domain, date/time, check box, button, link, image, progress, rating, and icon cells</li>
+</ul>
+<h3 id="behavior">Behavior</h3>
+<ul>
+<li><code>HideOuterBorders</code> for use inside <code>KryptonGroup</code> or with native outer rounding</li>
+<li><code>KryptonContextMenu</code> and themed <code>ContextMenuStrip</code> support</li>
+<li>Krypton tooltips with optional shadow (<code>ToolTipShadow</code>)</li>
+<li><code>HighlightSearch</code> for in-grid search highlighting</li>
+<li><code>EditingControlButtonSpecClick</code> when edit controls expose <code>ButtonSpec</code>s</li>
+<li><code>DoubleBuffered</code> exposed in the designer (default <code>true</code>)</li>
+</ul>
+<hr>
+<h2 id="class-hierarchy">Class hierarchy</h2>
+<pre><code class="lang-text">System.Object
+└── System.MarshalByRefObject
+    └── System.ComponentModel.Component
+        └── System.Windows.Forms.Control
+            └── System.Windows.Forms.DataGridView
+                └── Krypton.Toolkit.KryptonDataGridView
+</code></pre>
+<hr>
+<h2 id="constructor">Constructor</h2>
+<h3 id="kryptondatagridview-1">KryptonDataGridView()</h3>
+<pre><code class="lang-csharp">public KryptonDataGridView()
+</code></pre>
+<p>Initializes palette states, view manager, double buffering, DPI-adjusted default column header height, corner-rounding region, and cell-style sync with the active palette.</p>
+<hr>
+<h2 id="properties">Properties</h2>
+<h3 id="palette-and-rendering">Palette and rendering</h3>
+<h4 id="palettemode">PaletteMode</h4>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[DefaultValue(PaletteMode.Global)]
+public PaletteMode PaletteMode { get; set; }
+</code></pre>
+<p>Palette source for drawing. <code>PaletteMode.Custom</code> requires <code>Palette</code> to be assigned. Changing this raises <code>PaletteChanged</code> and relayouts the control.</p>
+<h4 id="palette">Palette</h4>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[DefaultValue(null)]
+public PaletteBase? Palette { get; set; }
+</code></pre>
+<p>Custom palette instance. When set, <code>PaletteMode</code> becomes <code>Custom</code>. <code>ResetPalette()</code> restores global mode.</p>
+<h4 id="renderer">Renderer</h4>
+<pre><code class="lang-csharp">[Browsable(false)]
+public IRenderer? Renderer { get; }
+</code></pre>
+<p>Active renderer resolved from the current palette (read-only).</p>
+<hr>
+<h3 id="visual-states">Visual states</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StateCommon</code></td>
+<td><code>PaletteDataGridViewRedirect</code></td>
+<td>Shared defaults overridden by state-specific entries</td>
+</tr>
+<tr>
+<td><code>StateNormal</code></td>
+<td><code>PaletteDataGridViewAll</code></td>
+<td>Normal appearance; includes <code>Background</code>, <code>Border</code>, <code>DataCell</code>, <code>HeaderColumn</code>, <code>HeaderRow</code></td>
+</tr>
+<tr>
+<td><code>StateDisabled</code></td>
+<td><code>PaletteDataGridViewAll</code></td>
+<td>Disabled appearance (same structure as <code>StateNormal</code>)</td>
+</tr>
+<tr>
+<td><code>StateTracking</code></td>
+<td><code>PaletteDataGridViewHeaders</code></td>
+<td>Header hover</td>
+</tr>
+<tr>
+<td><code>StatePressed</code></td>
+<td><code>PaletteDataGridViewHeaders</code></td>
+<td>Header pressed</td>
+</tr>
+<tr>
+<td><code>StateSelected</code></td>
+<td><code>PaletteDataGridViewCells</code></td>
+<td>Selected data cells and headers</td>
+</tr>
+</tbody>
+</table>
+<p><code>PaletteDataGridViewAll</code> exposes:</p>
+<ul>
+<li><code>Background</code> — grid background fill</li>
+<li><code>Border</code> — outer grid border (designer-visible; use for corner rounding)</li>
+<li><code>DataCell</code>, <code>HeaderColumn</code>, <code>HeaderRow</code> — per-element back, border, content</li>
+</ul>
+<p><code>PaletteBorder</code> on <code>StateNormal</code> is hidden from the designer; use <code>Border</code> instead.</p>
+<hr>
+<h3 id="gridstyles">GridStyles</h3>
+<h4 id="gridstyles-1">GridStyles</h4>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+public DataGridViewStyles GridStyles { get; }
+</code></pre>
+<p>Compound property controlling grid element styles.</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Style</code></td>
+<td><code>DataGridViewStyle</code></td>
+<td><code>List</code></td>
+<td>Overall style; sets column, row, data cell, and background together</td>
+</tr>
+<tr>
+<td><code>StyleColumn</code></td>
+<td><code>GridStyle</code></td>
+<td><code>List</code></td>
+<td>Column header style</td>
+</tr>
+<tr>
+<td><code>StyleRow</code></td>
+<td><code>GridStyle</code></td>
+<td><code>List</code></td>
+<td>Row header style</td>
+</tr>
+<tr>
+<td><code>StyleDataCells</code></td>
+<td><code>GridStyle</code></td>
+<td><code>List</code></td>
+<td>Data cell style</td>
+</tr>
+<tr>
+<td><code>StyleBackground</code></td>
+<td><code>PaletteBackStyle</code></td>
+<td><code>GridBackgroundList</code></td>
+<td>Background palette style</td>
+</tr>
+</tbody>
+</table>
+<p><code>DataGridViewStyle</code> values: <code>List</code>, <code>Sheet</code>, <code>Custom1</code>, <code>Custom2</code>, <code>Custom3</code>, <code>Mixed</code>.<br>
+<code>GridStyle</code> values: <code>List</code>, <code>Sheet</code>, <code>Custom1</code>, <code>Custom2</code>, <code>Custom3</code>.</p>
+<p>When individual element styles differ, <code>Style</code> becomes <code>Mixed</code>.</p>
+<hr>
+<h3 id="behavior-1">Behavior</h3>
+<h4 id="hideouterborders">HideOuterBorders</h4>
+<pre><code class="lang-csharp">[Category(&quot;Visuals&quot;)]
+[DefaultValue(false)]
+public bool HideOuterBorders { get; set; }
+</code></pre>
+<p>When <code>true</code>, suppresses drawing of cell borders on the outer edge of the grid. Use with a parent <code>KryptonGroup</code> border, or rely on automatic suppression when <a href="#external-corner-rounding">corner rounding</a> is enabled.</p>
+<h4 id="autogeneratekryptoncolumns">AutoGenerateKryptonColumns</h4>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(true)]
+public bool AutoGenerateKryptonColumns { get; set; }
+</code></pre>
+<p>When <code>true</code> and <code>AutoGenerateColumns</code> is enabled, WinForms column types created from a data source are replaced with Krypton column types when <code>ColumnCount</code> is set.</p>
+<h4 id="doublebuffered">DoubleBuffered</h4>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(true)]
+public new bool DoubleBuffered { get; set; }
+</code></pre>
+<p>Reduces flicker during scroll and repaint (visible in the designer).</p>
+<h4 id="showcelltooltips">ShowCellToolTips</h4>
+<pre><code class="lang-csharp">public new bool ShowCellToolTips { get; set; }
+</code></pre>
+<p>Enables Krypton-themed cell tooltips when cells define tooltip text.</p>
+<h4 id="tooltipshadow">ToolTipShadow</h4>
+<pre><code class="lang-csharp">[Category(&quot;ToolTip&quot;)]
+[DefaultValue(true)]
+public bool ToolTipShadow { get; set; }
+</code></pre>
+<p>Draws a shadow on cell tooltips.</p>
+<h4 id="kryptoncontextmenu">KryptonContextMenu</h4>
+<pre><code class="lang-csharp">[Category(&quot;Behavior&quot;)]
+[DefaultValue(null)]
+public virtual KryptonContextMenu? KryptonContextMenu { get; set; }
+</code></pre>
+<p>Context menu shown on right-click (preferred over WinForms <code>ContextMenuStrip</code> for full theming).</p>
+<h4 id="contextmenustrip">ContextMenuStrip</h4>
+<pre><code class="lang-csharp">public override ContextMenuStrip? ContextMenuStrip { get; set; }
+</code></pre>
+<p>Standard context menu; opening hooks apply the Krypton renderer automatically.</p>
+<hr>
+<h3 id="advanced--non-browsable">Advanced / non-browsable</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CellOver</code></td>
+<td>Internal mouse-over cell coordinates</td>
+</tr>
+<tr>
+<td><code>ColumnCount</code></td>
+<td>Hidden; triggers Krypton column conversion when auto-generating</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h3 id="hidden-winforms-appearance-properties">Hidden WinForms appearance properties</h3>
+<p>The following are hidden from the designer because palette state drives appearance. Setting them has little or no effect on Krypton drawing:</p>
+<p><code>BackgroundColor</code>, <code>CellBorderStyle</code>, <code>ColumnHeadersBorderStyle</code>, <code>ColumnHeadersDefaultCellStyle</code>, <code>DefaultCellStyle</code>, <code>EnableHeadersVisualStyles</code>, <code>GridColor</code>, <code>RowHeadersBorderStyle</code>, <code>RowHeadersDefaultCellStyle</code></p>
+<p>Use <code>StateCommon</code> / <code>StateNormal</code> and <code>GridStyles</code> instead.</p>
+<hr>
+<h2 id="methods">Methods</h2>
+<h4 id="performneedpaint">PerformNeedPaint</h4>
+<pre><code class="lang-csharp">public void PerformNeedPaint(bool needLayout)
+</code></pre>
+<p>Requests repaint; optionally layout when palette or state changes require it.</p>
+<h4 id="getcelltriple">GetCellTriple</h4>
+<pre><code class="lang-csharp">public virtual PaletteState GetCellTriple(
+    DataGridViewElementStates state,
+    int rowIndex,
+    int columnIndex,
+    out IPaletteBack paletteBack,
+    out IPaletteBorder paletteBorder,
+    out IPaletteContent paletteContent)
+</code></pre>
+<p>Resolves back, border, and content palettes for a cell based on enabled state, selection, and header tracking/pressed state. Used by custom drawing and column/cell implementations.</p>
+<h4 id="highlightsearch">HighlightSearch</h4>
+<pre><code class="lang-csharp">public void HighlightSearch(string s)
+public void HighlightSearch(string s, List&lt;int&gt; columnsIndex)
+</code></pre>
+<p>Highlights matching text in the grid. Empty <code>columnsIndex</code> searches all columns.</p>
+<h4 id="resetpalettemode--resetpalette">ResetPaletteMode / ResetPalette</h4>
+<p>Restore default global palette mode.</p>
+<h4 id="getviewmanager--getresolvedpalette">GetViewManager / GetResolvedPalette</h4>
+<p>Internal/advanced access to view manager and resolved palette instance.</p>
+<hr>
+<h2 id="events">Events</h2>
+<h4 id="palettechanged">PaletteChanged</h4>
+<pre><code class="lang-csharp">public event EventHandler? PaletteChanged;
+</code></pre>
+<p>Raised when <code>Palette</code> or <code>PaletteMode</code> changes.</p>
+<h4 id="editingcontrolbuttonspecclick">EditingControlButtonSpecClick</h4>
+<pre><code class="lang-csharp">public event EventHandler&lt;DataGridViewButtonSpecClickEventArgs&gt;? EditingControlButtonSpecClick;
+</code></pre>
+<p>Raised when a <code>ButtonSpec</code> on an in-cell editing control is clicked.</p>
+<hr>
+<h2 id="grid-styles">Grid styles</h2>
+<p>Select the control at design time and open <strong>Visuals</strong> → <strong>GridStyles</strong>.</p>
+<p><img src="../Images/KryptonDataGridView1.png" alt="KryptonDataGridView comparing GridStyles Style List (left) and Style Sheet (right)"></p>
+<p>Figure 1 — <code>Style</code> = List and <code>Style</code> = Sheet</p>
+<p><img src="../Images/KryptonDataGridView2.png" alt="KryptonDataGridView grid appearance for List and Sheet styles using Office 2007 Blue palette"></p>
+<p>Figure 2 — Grid appearance for List and Sheet styles</p>
+<p>Changing <strong>Style</strong> updates column headers, row headers, data cells, and background together. To mix styles, set <strong>StyleColumn</strong>, <strong>StyleRow</strong>, or <strong>StyleDataCells</strong> individually; <strong>Style</strong> then shows <strong>Mixed</strong>.</p>
+<hr>
+<h2 id="external-corner-rounding">External corner rounding</h2>
+<p><code>KryptonDataGridView</code> can draw a themed outer border with rounded corners. The control clips its client area, paints the outer border from the palette, rounds outer corner cells, and accounts for visible scroll bars when locating corners.</p>
+<p><strong>Designer:</strong> <em>Visuals</em> → <em>StateNormal</em> → <em>Border</em> → <em>Rounding</em> (and <em>StateDisabled</em> → <em>Border</em> for disabled state).</p>
+<table>
+<thead>
+<tr>
+<th><code>Rounding</code></th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&gt; 0</code></td>
+<td>Enable corner rounding with the specified radius</td>
+</tr>
+<tr>
+<td><code>-1</code></td>
+<td>Inherit from the active palette (default)</td>
+</tr>
+<tr>
+<td><code>0</code></td>
+<td>Force flat corners</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="lang-csharp">kryptonDataGridView1.StateNormal.Border.Rounding = 5f;
+kryptonDataGridView1.StateDisabled.Border.Rounding = 5f;
+</code></pre>
+<p>Other <code>Border</code> properties (<code>Color1</code>, <code>Width</code>, <code>Draw</code>, etc.) apply to the outer chrome when rounding is enabled. Outer-edge cell borders are suppressed automatically when rounding is active.</p>
+<p>See <a href="#hideouterborders">HideOuterBorders</a> when using a <code>KryptonGroup</code> wrapper instead.</p>
+<hr>
+<h2 id="hideouterborders-1">HideOuterBorders</h2>
+<p>Unlike the standard <code>DataGridView</code>, this control does not use the WinForms control border. By default no outer border is drawn unless <a href="#external-corner-rounding">corner rounding</a> is enabled.</p>
+<p>Placing the grid in a <a href="KryptonGroup.html">KryptonGroup</a> with <em>Dock</em> = <em>Fill</em> still provides group chrome. Set <em>HideOuterBorders</em> to <em>True</em> to avoid double borders where cell edges meet the group border.</p>
+<p><img src="../Images/KryptonDataGridView3.png" alt="KryptonDataGridView comparing HideOuterBorders False (left) and True (right) inside a KryptonGroup"></p>
+<p>Figure 3 — <code>HideOuterBorders</code> = False and True</p>
+<hr>
+<h2 id="visual-states-reference">Visual states reference</h2>
+<table>
+<thead>
+<tr>
+<th>Grid element</th>
+<th>Normal</th>
+<th>Disabled</th>
+<th>Selected</th>
+<th>Tracking</th>
+<th>Pressed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data cells</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Header column</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Header row</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Background</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Whole-grid <code>Border</code></td>
+<td>Yes (<code>StateNormal</code> / <code>StateDisabled</code>)</td>
+<td>Yes</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><em>StateCommon</em> supplies defaults when a state-specific override is not set. State-specific values always win over <em>StateCommon</em>.</p>
+<hr>
+<h2 id="overriding-cell-styles">Overriding cell styles</h2>
+<p>Per-column and per-cell <code>DefaultCellStyle</code> / <code>CellStyle</code> (<em>Font</em>, <em>BackColor</em>, <em>ForeColor</em>, selection colors) work as on <code>DataGridView</code>. <code>KryptonDataGridView</code> applies palette colors when those style properties are <strong>not</strong> explicitly set on the cell.</p>
+<pre><code class="lang-csharp">kryptonDataGridView1.Rows[0].Cells[0].Style.ForeColor = Color.Red;
+</code></pre>
+<p>Configure column defaults via the <strong>Columns</strong> collection in the designer.</p>
+<hr>
+<h2 id="column-types">Column types</h2>
+<p>Prefer Krypton column types so cells render with palette-consistent editors and chrome:</p>
+<table>
+<thead>
+<tr>
+<th>Column type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonDataGridViewTextBoxColumn</code></td>
+<td>Text</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewMaskedTextBoxColumn</code></td>
+<td>Masked input</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewComboBoxColumn</code></td>
+<td>Drop-down list</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewNumericUpDownColumn</code></td>
+<td>Numeric up/down</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewDomainUpDownColumn</code></td>
+<td>Domain up/down</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewDateTimePickerColumn</code></td>
+<td>Date/time</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewCheckBoxColumn</code></td>
+<td>Check box</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewButtonColumn</code></td>
+<td>Button</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewLinkColumn</code></td>
+<td>Link</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewImageColumn</code></td>
+<td>Image</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewProgressColumn</code></td>
+<td>Progress bar cell</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewRatingColumn</code></td>
+<td>Star rating cell</td>
+</tr>
+<tr>
+<td><code>KryptonDataGridViewIconColumn</code></td>
+<td>Icon / indicator cell</td>
+</tr>
+</tbody>
+</table>
 <p><img src="../Images/KryptonDataGridView4.png" alt="Column type picker showing Krypton-specific DataGridView column types"></p>
-<p>Figure 4 - Krypton Specific Columns</p>
+<p>Figure 4 — Krypton-specific columns in the column type picker</p>
+<hr>
+<h2 id="usage-examples">Usage examples</h2>
+<h3 id="corner-rounding-and-grid-lines">Corner rounding and grid lines</h3>
+<pre><code class="lang-csharp">// Rounded outer border
+kdgv.StateNormal.Border.Rounding = 8f;
+kdgv.StateDisabled.Border.Rounding = 8f;
+
+// Toggle inner grid lines via StateCommon
+kdgv.StateCommon.DataCell.Border.DrawBorders = PaletteDrawBorders.All;
+kdgv.HideOuterBorders = false;
+</code></pre>
+<h3 id="themed-context-menu">Themed context menu</h3>
+<pre><code class="lang-csharp">kdgv.KryptonContextMenu = kryptonContextMenu1;
+</code></pre>
+<h3 id="search-highlight">Search highlight</h3>
+<pre><code class="lang-csharp">kdgv.HighlightSearch(&quot;invoice&quot;, new List&lt;int&gt; { 0, 2 });
+</code></pre>
+<hr>
+<h2 id="best-practices">Best practices</h2>
+<ul>
+<li>Use <strong>Krypton</strong> column types for new columns; enable <code>AutoGenerateKryptonColumns</code> for bound grids.</li>
+<li>Customize appearance via <strong>GridStyles</strong> and <strong>State###</strong> properties, not hidden WinForms color properties.</li>
+<li>Set both <code>StateNormal.Border.Rounding</code> and <code>StateDisabled.Border.Rounding</code> for consistent enabled/disabled chrome.</li>
+<li>Use <code>KryptonContextMenu</code> for fully themed right-click menus.</li>
+<li>Validate layout in <code>TestForm</code> → <strong>DataGridView</strong> demo (corner rounding, grid lines, binding).</li>
+</ul>
+<hr>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="KryptonGroup.html">KryptonGroup</a> — container border alternative</li>
+<li><a href="ButtonSpec.html">ButtonSpec</a> — cell editing button specifications</li>
+<li><a href="../Controls.html">Controls index</a></li>
+<li><a href="https://learn.microsoft.com/dotnet/desktop/winforms/controls/datagridview-control-windows-forms">DataGridView (Microsoft)</a></li>
+<li><code>Source/Krypton Components/TestForm/DataGridViewDemo.cs</code> — interactive demo</li>
+</ul>
 
 </article>
           </div>

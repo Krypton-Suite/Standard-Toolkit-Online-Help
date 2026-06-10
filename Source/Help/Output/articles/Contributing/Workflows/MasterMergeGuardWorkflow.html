@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Master Merge Guard Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Master Merge Guard Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="master-merge-guard-workflow">Master Merge Guard Workflow</h1>
+
+<p>Developer documentation for the <strong>Master merge guard</strong> GitHub Actions workflow.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow file</td>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/master-guard.yml"><code>.github/workflows/master-guard.yml</code></a></td>
+</tr>
+<tr>
+<td>Workflow name (Actions UI)</td>
+<td><strong>Master merge guard</strong></td>
+</tr>
+<tr>
+<td>Job name (status check)</td>
+<td><strong>Allowed source branch</strong></td>
+</tr>
+<tr>
+<td>Full check name (typical)</td>
+<td><code>Master merge guard / Allowed source branch</code></td>
+</tr>
+<tr>
+<td>Runner</td>
+<td><code>ubuntu-latest</code></td>
+</tr>
+<tr>
+<td>Permissions</td>
+<td><code>contents: read</code></td>
+</tr>
+<tr>
+<td>Related workflow</td>
+<td><a href="BranchPromotionGuardWorkflow.html">Branch promotion guard</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#role-in-the-branch-promotion-model">Role in the branch promotion model</a></li>
+<li><a href="#what-this-workflow-enforces">What this workflow enforces</a></li>
+<li><a href="#what-this-workflow-does-not-enforce">What this workflow does not enforce</a></li>
+<li><a href="#architecture-overview">Architecture overview</a></li>
+<li><a href="#triggers-and-events">Triggers and events</a></li>
+<li><a href="#validation-logic-step-by-step">Validation logic (step by step)</a></li>
+<li><a href="#repository-ruleset-configuration">Repository ruleset configuration</a></li>
+<li><a href="#dependabot-integration">Dependabot integration</a></li>
+<li><a href="#typical-developer-workflows">Typical developer workflows</a></li>
+<li><a href="#interaction-with-other-ci-workflows">Interaction with other CI workflows</a></li>
+<li><a href="#security-model">Security model</a></li>
+<li><a href="#decision-matrix">Decision matrix</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#operational-procedures">Operational procedures</a></li>
+<li><a href="#maintaining-and-extending-the-workflow">Maintaining and extending the workflow</a></li>
+</ol>
+<hr>
+<h2 id="purpose">Purpose</h2>
+<p>The Master merge guard ensures that <strong><code>master</code> receives changes only through controlled promotion paths</strong>:</p>
+<ul>
+<li>Pull requests whose <strong>head branch</strong> is <strong><code>gold</code></strong> (release-candidate line promoted from <code>canary</code>).</li>
+<li>Pull requests opened by <strong>Dependabot</strong> against <code>master</code> (head branches matching <code>dependabot/*</code>).</li>
+</ul>
+<p>The workflow exists to protect the <strong>stable production line</strong> from accidental merges of feature branches, pre-release branches (<code>alpha</code>, <code>canary</code>), or fork-based contributions directly into <code>master</code>.</p>
+<p><code>master</code> triggers stable releases via <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/release.yml"><code>release.yml</code></a> (<code>release-master</code> job) and is the target of Dependabot updates in <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/dependabot.yml"><code>.github/dependabot.yml</code></a>. Guarding merge sources reduces the risk of publishing unintended builds to NuGet.org.</p>
+<hr>
+<h2 id="role-in-the-branch-promotion-model">Role in the branch promotion model</h2>
+<p>This repository uses a <strong>sequential promotion chain</strong> for code moving toward production:</p>
+<pre><code class="lang-text">feature/*  ──PR──&gt;  alpha  ──PR──&gt;  canary  ──PR──&gt;  gold  ──PR──&gt;  master
+                         │              │              │              │
+                         │              │              │              └── Master merge guard (this doc)
+                         │              │              └── Branch promotion guard (canary -&gt; gold)
+                         │              └── Branch promotion guard (alpha -&gt; canary)
+                         └── Feature PRs (not restricted by promotion guards)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Branch</th>
+<th>Guard workflow</th>
+<th>Allowed PR sources into target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Development integration</td>
+<td><code>alpha</code></td>
+<td><em>(none from this family)</em></td>
+<td>Feature branches, etc.</td>
+</tr>
+<tr>
+<td>Pre-release testing</td>
+<td><code>canary</code></td>
+<td><a href="BranchPromotionGuardWorkflow.html">Branch promotion guard</a></td>
+<td><code>alpha</code> only</td>
+</tr>
+<tr>
+<td>Release candidate</td>
+<td><code>gold</code></td>
+<td><a href="BranchPromotionGuardWorkflow.html">Branch promotion guard</a></td>
+<td><code>canary</code> only</td>
+</tr>
+<tr>
+<td>Stable production</td>
+<td><code>master</code></td>
+<td><strong>Master merge guard</strong> (this workflow)</td>
+<td><code>gold</code>, <code>dependabot/*</code></td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="BranchPromotionGuardWorkflow.html">Branch promotion guard</a> for the <code>alpha</code> → <code>canary</code> → <code>gold</code> rules.</p>
+<hr>
+<h2 id="what-this-workflow-enforces">What this workflow enforces</h2>
+<p>When a pull request <strong>targets</strong> <code>master</code>, the workflow:</p>
+<ol>
+<li><strong>Rejects fork PRs</strong> — the head repository must be <code>Krypton-Suite/Standard-Toolkit</code> (same repo as the base).</li>
+<li><strong>Allows <code>gold</code> → <code>master</code></strong> — head ref must be exactly <code>gold</code>.</li>
+<li><strong>Allows Dependabot → <code>master</code></strong> — head ref must match the pattern <code>dependabot/*</code> (e.g. <code>dependabot/github_actions/actions/checkout-6</code>).</li>
+</ol>
+<p>If validation passes, the job succeeds and reports a green status check. If validation fails, the job fails with a GitHub Actions error annotation (<code>::error::</code>).</p>
+<hr>
+<h2 id="what-this-workflow-does-not-enforce">What this workflow does not enforce</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Why it is not blocked by this workflow alone</th>
+<th>Required mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Direct push</strong> to <code>master</code></td>
+<td>Actions run <em>after</em> the push; they cannot reject it</td>
+<td><a href="#repository-ruleset-configuration">Repository ruleset</a>: restrict updates</td>
+</tr>
+<tr>
+<td><strong>Opening</strong> a PR from a disallowed branch</td>
+<td>GitHub always allows opening PRs</td>
+<td>Failed status check blocks <strong>merge</strong> when ruleset requires this check</td>
+</tr>
+<tr>
+<td><strong>Force-push</strong> to <code>master</code></td>
+<td>Not validated by this workflow</td>
+<td>Ruleset: block force pushes</td>
+</tr>
+<tr>
+<td><strong>Admin bypass</strong> of branch rules</td>
+<td>Workflow has no admin override</td>
+<td>Ruleset: apply to administrators</td>
+</tr>
+<tr>
+<td><strong>Merging without other CI</strong></td>
+<td>This guard only validates source branch</td>
+<td>Keep existing required checks (Build, CodeQL, etc.)</td>
+</tr>
+<tr>
+<td><strong>PRs into <code>alpha</code>, <code>canary</code>, <code>gold</code></strong></td>
+<td>Out of scope</td>
+<td><a href="BranchPromotionGuardWorkflow.html">Branch promotion guard</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="architecture-overview">Architecture overview</h2>
+<pre><code class="lang-mermaid">flowchart TD
+    subgraph trigger [Pull request event]
+        PR[PR targets master]
+    end
+
+    subgraph workflow [master-guard.yml]
+        FORK{Head repo == this repo?}
+        GOLD{Head ref == gold?}
+        DEPS{Head ref matches dependabot/*?}
+        PASS[Job succeeds]
+        FAIL[Job fails - merge blocked if check required]
+    end
+
+    subgraph ruleset [Repository ruleset on master]
+        RP[Require PR + status checks]
+        BLOCK[Block direct push]
+    end
+
+    PR --&gt; FORK
+    FORK --&gt;|No| FAIL
+    FORK --&gt;|Yes| GOLD
+    GOLD --&gt;|Yes| PASS
+    GOLD --&gt;|No| DEPS
+    DEPS --&gt;|Yes| PASS
+    DEPS --&gt;|No| FAIL
+    PASS --&gt; RP
+    FAIL --&gt; RP
+    BLOCK -.-&gt;|prevents| PR
+</code></pre>
+<hr>
+<h2 id="triggers-and-events">Triggers and events</h2>
+<p>Defined in <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/master-guard.yml"><code>master-guard.yml</code></a>:</p>
+<pre><code class="lang-yaml">on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Event type</th>
+<th>When it fires</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>opened</code></td>
+<td>New PR targeting <code>master</code></td>
+<td>Initial validation</td>
+</tr>
+<tr>
+<td><code>synchronize</code></td>
+<td>New commits pushed to PR head branch</td>
+<td>Re-validate after updates</td>
+</tr>
+<tr>
+<td><code>reopened</code></td>
+<td>Closed PR reopened</td>
+<td>Re-validate</td>
+</tr>
+<tr>
+<td><code>edited</code></td>
+<td>PR base/head changed</td>
+<td>Re-validate if target or source branch changes</td>
+</tr>
+</tbody>
+</table>
+<p>The workflow does <strong>not</strong> run on:</p>
+<ul>
+<li><code>push</code> to <code>master</code> (cannot block pushes anyway)</li>
+<li><code>pull_request_target</code> (not needed; no write permissions or secrets required)</li>
+<li><code>workflow_dispatch</code> (manual runs are unnecessary for policy checks)</li>
+</ul>
+<hr>
+<h2 id="validation-logic-step-by-step">Validation logic (step by step)</h2>
+<p>The single job <strong><code>allowed-source-branch</code></strong> runs on <code>ubuntu-latest</code> and executes a Bash script.</p>
+<h3 id="step-1--resolve-pr-metadata">Step 1 — Resolve PR metadata</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Source</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>head_repo</code></td>
+<td><code>github.event.pull_request.head.repo.full_name</code></td>
+<td><code>Krypton-Suite/Standard-Toolkit</code></td>
+</tr>
+<tr>
+<td><code>head_ref</code></td>
+<td><code>github.event.pull_request.head.ref</code></td>
+<td><code>gold</code> or <code>dependabot/github_actions/actions/checkout-6</code></td>
+</tr>
+<tr>
+<td><code>this_repo</code></td>
+<td><code>github.repository</code></td>
+<td><code>Krypton-Suite/Standard-Toolkit</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-2--same-repository-check">Step 2 — Same-repository check</h3>
+<pre><code class="lang-bash">if [ &quot;$head_repo&quot; != &quot;$this_repo&quot; ]; then
+  exit 1
+fi
+</code></pre>
+<p>Fork PRs fail here. Dependabot and in-repo promotion PRs pass.</p>
+<h3 id="step-3--allowed-source-branch-check">Step 3 — Allowed source branch check</h3>
+<p><strong>Path A — <code>gold</code>:</strong></p>
+<pre><code class="lang-bash">if [ &quot;$head_ref&quot; = &quot;gold&quot; ]; then
+  exit 0
+fi
+</code></pre>
+<p>Branch name comparison is <strong>case-sensitive</strong>. The remote branch is <code>gold</code> (lowercase).</p>
+<p><strong>Path B — Dependabot:</strong></p>
+<pre><code class="lang-bash">case &quot;$head_ref&quot; in
+  dependabot/*)
+    exit 0
+    ;;
+esac
+</code></pre>
+<p>Matches all Dependabot branch prefixes used for GitHub Actions updates (see <a href="#dependabot-integration">Dependabot integration</a>).</p>
+<p><strong>Path C — anything else:</strong></p>
+<pre><code class="lang-bash">echo &quot;::error::Pull requests to master are only allowed from branch 'gold' or Dependabot branches (got '$head_ref').&quot;
+exit 1
+</code></pre>
+<hr>
+<h2 id="repository-ruleset-configuration">Repository ruleset configuration</h2>
+<p>This workflow <strong>alone</strong> only adds a status check. <strong>Direct pushes</strong> to <code>master</code> must be blocked with a GitHub <strong>ruleset</strong> (or classic branch protection).</p>
+<h3 id="recommended-ruleset-protect-master">Recommended ruleset: Protect master</h3>
+<p><strong>Location:</strong> GitHub → Repository → <strong>Settings</strong> → <strong>Rules</strong> → <strong>Rulesets</strong> → <strong>New ruleset</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ruleset name</td>
+<td><code>Protect master</code></td>
+</tr>
+<tr>
+<td>Enforcement status</td>
+<td><strong>Active</strong></td>
+</tr>
+<tr>
+<td>Target branches</td>
+<td><strong>Include by name</strong> → <code>master</code></td>
+</tr>
+<tr>
+<td>Restrict updates</td>
+<td><strong>Enabled</strong> (blocks direct pushes)</td>
+</tr>
+<tr>
+<td>Require a pull request before merging</td>
+<td><strong>Enabled</strong></td>
+</tr>
+<tr>
+<td>Require status checks to pass</td>
+<td><strong>Enabled</strong> — add <strong><code>Master merge guard / Allowed source branch</code></strong> (exact label may vary slightly in the UI)</td>
+</tr>
+<tr>
+<td>Block force pushes</td>
+<td><strong>Enabled</strong></td>
+</tr>
+<tr>
+<td>Apply to administrators</td>
+<td><strong>Recommended: Enabled</strong></td>
+</tr>
+<tr>
+<td>Bypass list</td>
+<td>Only trusted automation accounts (if any must push directly)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="minimum-required-status-checks-suggested">Minimum required status checks (suggested)</h3>
+<p>Combine this guard with existing CI:</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Master merge guard / Allowed source branch</code></td>
+<td>Source branch policy</td>
+</tr>
+<tr>
+<td>Build workflow job(s)</td>
+<td>Compile all TFMs</td>
+</tr>
+<tr>
+<td>CodeQL (if required on <code>master</code>)</td>
+<td>Security analysis</td>
+</tr>
+<tr>
+<td>Other team-required reviews</td>
+<td>Human approval</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bootstrapping-first-time-enablement">Bootstrapping (first-time enablement)</h3>
+<ol>
+<li>Merge <code>master-guard.yml</code> onto <code>master</code> (may require a one-time admin merge or ruleset bypass).</li>
+<li>Open a test PR from <code>gold</code> → <code>master</code> and confirm the check appears and passes.</li>
+<li>Open a test PR from another branch (e.g. <code>alpha</code> → <code>master</code>) and confirm the check <strong>fails</strong>.</li>
+<li>Enable the ruleset with <strong>Require status checks</strong> once the check name is visible in the ruleset UI.</li>
+<li>Enable <strong>Restrict updates</strong> to block direct pushes.</li>
+</ol>
+<hr>
+<h2 id="dependabot-integration">Dependabot integration</h2>
+<p>Dependabot is configured in <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/dependabot.yml"><code>.github/dependabot.yml</code></a>:</p>
+<pre><code class="lang-yaml">package-ecosystem: &quot;github-actions&quot;
+target-branch: &quot;master&quot;
+</code></pre>
+<p>Dependabot opens PRs with head branches such as:</p>
+<ul>
+<li><code>dependabot/github_actions/actions/checkout-6</code></li>
+<li><code>dependabot/github_actions/actions/setup-dotnet-5</code></li>
+</ul>
+<p>The master merge guard <strong>explicitly allows</strong> any head ref matching <code>dependabot/*</code> so weekly GitHub Actions dependency updates can merge into <code>master</code> without going through <code>gold</code>.</p>
+<p><strong>Assignee behaviour:</strong> <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/auto-assign-pr-author.yml"><code>.github/workflows/auto-assign-pr-author.yml</code></a> assigns Dependabot PRs to the repository owner instead of <code>dependabot[bot]</code>.</p>
+<p><strong>Review policy:</strong> Dependabot PRs still require normal review/CI rules configured on the ruleset; this guard only validates the source branch name.</p>
+<hr>
+<h2 id="typical-developer-workflows">Typical developer workflows</h2>
+<h3 id="promoting-a-stable-release-to-master">Promoting a stable release to <code>master</code></h3>
+<ol>
+<li>Ensure changes have flowed <strong><code>alpha</code> → <code>canary</code> → <code>gold</code></strong> (see <a href="BranchPromotionGuardWorkflow.html">Branch promotion guard</a>).</li>
+<li>Open a PR: <strong>base</strong> <code>master</code>, <strong>compare</strong> <code>gold</code>.</li>
+<li>Wait for <strong>Master merge guard / Allowed source branch</strong> and other CI checks.</li>
+<li>Merge after approval.</li>
+<li><code>release-master</code> in <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/release.yml"><code>release.yml</code></a> runs on push to <code>master</code>.</li>
+</ol>
+<h3 id="merging-a-dependabot-update">Merging a Dependabot update</h3>
+<ol>
+<li>Dependabot opens <code>dependabot/*</code> → <code>master</code>.</li>
+<li>Master merge guard passes automatically.</li>
+<li>Review and merge like any other PR.</li>
+</ol>
+<h3 id="what-not-to-do">What not to do</h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PR <code>feature/my-fix</code> → <code>master</code></td>
+<td>Guard <strong>fails</strong></td>
+</tr>
+<tr>
+<td>PR <code>alpha</code> → <code>master</code></td>
+<td>Guard <strong>fails</strong></td>
+</tr>
+<tr>
+<td>PR <code>canary</code> → <code>master</code></td>
+<td>Guard <strong>fails</strong></td>
+</tr>
+<tr>
+<td>PR from a fork → <code>master</code></td>
+<td>Guard <strong>fails</strong></td>
+</tr>
+<tr>
+<td>Direct <code>git push origin master</code></td>
+<td>Blocked by ruleset (once configured), not by workflow</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="interaction-with-other-ci-workflows">Interaction with other CI workflows</h2>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Relationship</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/build.yml"><code>build.yml</code></a></td>
+<td>Runs on PRs to all branches including <code>master</code>; independent of source-branch policy</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/release.yml"><code>release.yml</code></a></td>
+<td>Runs on <strong>push</strong> to <code>master</code> after merge</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/codeql.yml"><code>codeql.yml</code></a></td>
+<td>Analyzes PRs targeting <code>master</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/repo-mirror.yml"><code>repo-mirror.yml</code></a></td>
+<td>Mirrors <code>master</code> on push</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/dependabot.yml"><code>dependabot.yml</code></a></td>
+<td>Targets <code>master</code>; allowed by this guard</td>
+</tr>
+<tr>
+<td><a href="BranchPromotionGuardWorkflow.html">Branch promotion guard</a></td>
+<td>Upstream policy for <code>gold</code> content</td>
+</tr>
+</tbody>
+</table>
+<p>Promotion guards and build workflows are <strong>complementary</strong>: build verifies <em>quality</em>; merge guards verify <em>provenance</em>.</p>
+<hr>
+<h2 id="security-model">Security model</h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Design choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>pull_request</code> vs <code>pull_request_target</code></strong></td>
+<td>Uses <code>pull_request</code> — untrusted fork code is not checked out; only metadata is read</td>
+</tr>
+<tr>
+<td><strong>Permissions</strong></td>
+<td>Minimal (<code>contents: read</code>)</td>
+</tr>
+<tr>
+<td><strong>Secrets</strong></td>
+<td>None required</td>
+</tr>
+<tr>
+<td><strong>Fork exclusion</strong></td>
+<td>Prevents drive-by PRs from external forks into <code>master</code></td>
+</tr>
+<tr>
+<td><strong>Dependabot allowance</strong></td>
+<td>Dependabot branches are always in-repo; pattern match is safe</td>
+</tr>
+</tbody>
+</table>
+<p>This workflow is <strong>policy enforcement</strong>, not code scanning. Malicious code could still exist on <code>gold</code>; review and CI remain essential.</p>
+<hr>
+<h2 id="decision-matrix">Decision matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Base branch</th>
+<th>Head branch</th>
+<th>Head repo</th>
+<th>Guard result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>master</code></td>
+<td><code>gold</code></td>
+<td>Same repo</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td><code>master</code></td>
+<td><code>dependabot/github_actions/...</code></td>
+<td>Same repo</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td><code>master</code></td>
+<td><code>alpha</code></td>
+<td>Same repo</td>
+<td>Fail</td>
+</tr>
+<tr>
+<td><code>master</code></td>
+<td><code>canary</code></td>
+<td>Same repo</td>
+<td>Fail</td>
+</tr>
+<tr>
+<td><code>master</code></td>
+<td><code>feature/*</code></td>
+<td>Same repo</td>
+<td>Fail</td>
+</tr>
+<tr>
+<td><code>master</code></td>
+<td><code>gold</code></td>
+<td>Fork</td>
+<td>Fail</td>
+</tr>
+<tr>
+<td><code>master</code></td>
+<td>any</td>
+<td>Fork</td>
+<td>Fail</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="check-does-not-appear-on-pr">Check does not appear on PR</h3>
+<ol>
+<li>Confirm <code>master-guard.yml</code> exists on the <strong>default branch</strong> or the PR’s base branch.</li>
+<li>Confirm the PR <strong>targets</strong> <code>master</code> (not <code>main</code> or another name).</li>
+<li>Confirm Actions are enabled for the repository.</li>
+<li>Re-run checks from the PR <strong>Checks</strong> tab if the workflow was added after PR creation (close/reopen or push an empty commit).</li>
+</ol>
+<h3 id="check-fails-for-a-valid-gold--master-pr">Check fails for a valid <code>gold</code> → <code>master</code> PR</h3>
+<ol>
+<li>Verify head branch is exactly <strong><code>gold</code></strong> (case-sensitive).</li>
+<li>Verify the PR is from <strong>this repository</strong>, not a fork.</li>
+<li>Read the job log for the exact <code>head_ref</code> value.</li>
+</ol>
+<h3 id="check-fails-for-dependabot-pr">Check fails for Dependabot PR</h3>
+<ol>
+<li>Confirm head branch starts with <strong><code>dependabot/</code></strong> (Dependabot version updates use this prefix).</li>
+<li>If using a different bot or prefix, extend the workflow <code>case</code> pattern.</li>
+</ol>
+<h3 id="merge-button-disabled-despite-green-guard">Merge button disabled despite green guard</h3>
+<p>Other required checks or reviews may be pending. This guard is one of several gates.</p>
+<h3 id="direct-push-to-master-still-works">Direct push to <code>master</code> still works</h3>
+<p>The ruleset is missing or bypassed. Enable <strong>Restrict updates</strong> and <strong>Apply to administrators</strong>.</p>
+<h3 id="dependabot-pr-passes-guard-but-team-wants-it-on-gold-instead">Dependabot PR passes guard but team wants it on <code>gold</code> instead</h3>
+<p>Change <code>target-branch</code> in <code>dependabot.yml</code> to <code>gold</code> and <strong>remove</strong> the Dependabot exemption from this workflow. That is a policy change, not a bug.</p>
+<hr>
+<h2 id="operational-procedures">Operational procedures</h2>
+<h3 id="temporarily-allowing-an-exception-merge">Temporarily allowing an exception merge</h3>
+<p>Prefer <strong>ruleset bypass</strong> for a trusted maintainer with audit trail, rather than disabling the workflow.</p>
+<ol>
+<li>Add maintainer to ruleset bypass list (time-limited).</li>
+<li>Perform merge.</li>
+<li>Remove bypass entry.</li>
+</ol>
+<p>Disabling the workflow file entirely affects all PRs to <code>master</code>.</p>
+<h3 id="renaming-the-gold-branch">Renaming the <code>gold</code> branch</h3>
+<p>Update:</p>
+<ol>
+<li><code>master-guard.yml</code> — allowed head ref</li>
+<li><a href="BranchPromotionGuardWorkflow.html">Branch promotion guard</a> — <code>gold</code> base and <code>canary</code> head rules</li>
+<li>All workflow <code>push</code>/<code>pull_request</code> branch lists</li>
+<li>Rulesets and mirror configuration</li>
+</ol>
+<h3 id="verifying-policy-after-changes">Verifying policy after changes</h3>
+<ol>
+<li><code>gold</code> → <code>master</code>: expect <strong>pass</strong></li>
+<li><code>alpha</code> → <code>master</code>: expect <strong>fail</strong></li>
+<li><code>dependabot/*</code> → <code>master</code>: expect <strong>pass</strong></li>
+<li>Fork → <code>master</code>: expect <strong>fail</strong></li>
+</ol>
+<hr>
+<h2 id="maintaining-and-extending-the-workflow">Maintaining and extending the workflow</h2>
+<p>When editing <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/master-guard.yml"><code>master-guard.yml</code></a>:</p>
+<ol>
+<li>Update this documentation and <a href="../GitHubWorkflowIndex.html">GitHub Workflow Index</a>.</li>
+<li>Keep header comments in the YAML file aligned with ruleset steps.</li>
+<li>If adding new allowed sources (e.g. release bot branch), document the security rationale.</li>
+<li>Avoid <code>pull_request_target</code> unless you need elevated permissions and understand the security implications.</li>
+<li>Test with real PRs before marking the check as required in rulesets.</li>
+</ol>
+<p><strong>Related files:</strong></p>
+<ul>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/master-guard.yml"><code>.github/workflows/master-guard.yml</code></a></li>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/branch-promotion-guard.yml"><code>.github/workflows/branch-promotion-guard.yml</code></a></li>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/dependabot.yml"><code>.github/dependabot.yml</code></a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

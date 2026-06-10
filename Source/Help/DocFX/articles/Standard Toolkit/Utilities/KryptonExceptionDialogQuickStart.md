@@ -4,9 +4,9 @@
 
 ### Installation
 
-`KryptonExceptionDialog` is part of the **`Krypton.Utilities`** assembly (delivered via **`Krypton.Standard.Toolkit`** / **`Krypton.Toolkit`** metapackages, depending on how you reference the suite). No separate Utilities-only package is required when you already use the standard suite packages.
+`KryptonExceptionDialog` is part of the **`Krypton.Toolkit.Utilities`** assembly (delivered via **`Krypton.Standard.Toolkit`** / **`Krypton.Toolkit`** metapackages, depending on how you reference the suite). No separate Utilities-only package is required when you already use the standard suite packages.
 
-**Namespace (V110+):** `Krypton.Utilities` — add `using Krypton.Utilities;`.
+**Namespace (V110+):** `Krypton.Toolkit.Utilities` — add `using Krypton.Toolkit.Utilities;`.
 
 ---
 

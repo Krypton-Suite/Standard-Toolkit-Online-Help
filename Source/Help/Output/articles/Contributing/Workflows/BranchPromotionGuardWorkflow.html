@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Branch Promotion Guard Workflow | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Branch Promotion Guard Workflow | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="branch-promotion-guard-workflow">Branch Promotion Guard Workflow</h1>
+
+<p>Developer documentation for the <strong>Branch promotion guard</strong> GitHub Actions workflow.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow file</td>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/branch-promotion-guard.yml"><code>.github/workflows/branch-promotion-guard.yml</code></a></td>
+</tr>
+<tr>
+<td>Workflow name (Actions UI)</td>
+<td><strong>Branch promotion guard</strong></td>
+</tr>
+<tr>
+<td>Job name (status check)</td>
+<td><strong>Allowed source branch</strong></td>
+</tr>
+<tr>
+<td>Full check name (typical)</td>
+<td><code>Branch promotion guard / Allowed source branch</code></td>
+</tr>
+<tr>
+<td>Runner</td>
+<td><code>ubuntu-latest</code></td>
+</tr>
+<tr>
+<td>Permissions</td>
+<td><code>contents: read</code></td>
+</tr>
+<tr>
+<td>Related workflow</td>
+<td><a href="MasterMergeGuardWorkflow.html">Master merge guard</a></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#role-in-the-branch-promotion-model">Role in the branch promotion model</a></li>
+<li><a href="#what-this-workflow-enforces">What this workflow enforces</a></li>
+<li><a href="#what-this-workflow-does-not-enforce">What this workflow does not enforce</a></li>
+<li><a href="#architecture-overview">Architecture overview</a></li>
+<li><a href="#triggers-and-events">Triggers and events</a></li>
+<li><a href="#validation-logic-step-by-step">Validation logic (step by step)</a></li>
+<li><a href="#repository-ruleset-configuration">Repository ruleset configuration</a></li>
+<li><a href="#typical-developer-workflows">Typical developer workflows</a></li>
+<li><a href="#interaction-with-release-and-ci-workflows">Interaction with release and CI workflows</a></li>
+<li><a href="#security-model">Security model</a></li>
+<li><a href="#decision-matrix">Decision matrix</a></li>
+<li><a href="#branch-naming-and-repository-conventions">Branch naming and repository conventions</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#operational-procedures">Operational procedures</a></li>
+<li><a href="#maintaining-and-extending-the-workflow">Maintaining and extending the workflow</a></li>
+</ol>
+<hr>
+<h2 id="purpose">Purpose</h2>
+<p>The Branch promotion guard enforces the <strong>pre-release promotion chain</strong> for long-lived integration branches:</p>
+<table>
+<thead>
+<tr>
+<th>Target branch (PR base)</th>
+<th>Required source branch (PR head)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>canary</code></td>
+<td><code>alpha</code></td>
+</tr>
+<tr>
+<td><code>gold</code></td>
+<td><code>canary</code></td>
+</tr>
+</tbody>
+</table>
+<p>Feature development merges into <code>alpha</code> without this guard. Only <strong>promotion PRs</strong> between these release lines are restricted, ensuring code reaches <code>canary</code> and <code>gold</code> through the intended sequence before <a href="MasterMergeGuardWorkflow.html">Master merge guard</a> allows <code>gold</code> → <code>master</code>.</p>
+<p>This aligns with the repository’s release tiers:</p>
+<ul>
+<li><strong><code>alpha</code></strong> — bleeding-edge integration (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/release.yml"><code>release-alpha</code></a>, <a href="NightlyWorkflow.html">Nightly workflow</a>)</li>
+<li><strong><code>canary</code></strong> — pre-release testing (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/release.yml"><code>release-canary</code></a>, <a href="CanaryWorkflow.html">Canary workflow</a>)</li>
+<li><strong><code>gold</code></strong> — release candidate (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/build.yml"><code>build.yml</code></a> push target; promoted to <code>master</code>)</li>
+</ul>
+<hr>
+<h2 id="role-in-the-branch-promotion-model">Role in the branch promotion model</h2>
+<p>Full path from development to stable:</p>
+<pre><code class="lang-text">feature/*  ──PR──&gt;  alpha  ──PR──&gt;  canary  ──PR──&gt;  gold  ──PR──&gt;  master
+                         │              │              │              │
+                         │              │              │              └── Master merge guard
+                         │              │              └── Branch promotion guard (canary -&gt; gold)
+                         │              └── Branch promotion guard (alpha -&gt; canary)  ◄── this workflow
+                         └── Standard feature PRs (no promotion guard)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Transition</th>
+<th>Guarded by</th>
+<th>Allowed head</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>→ <code>canary</code></td>
+<td><strong>This workflow</strong></td>
+<td><code>alpha</code></td>
+</tr>
+<tr>
+<td>→ <code>gold</code></td>
+<td><strong>This workflow</strong></td>
+<td><code>canary</code></td>
+</tr>
+<tr>
+<td>→ <code>master</code></td>
+<td><a href="MasterMergeGuardWorkflow.html">Master merge guard</a></td>
+<td><code>gold</code>, <code>dependabot/*</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="what-this-workflow-enforces">What this workflow enforces</h2>
+<p>For pull requests targeting <strong><code>canary</code></strong> or <strong><code>gold</code></strong>:</p>
+<ol>
+<li><strong>Rejects fork PRs</strong> — head repository must match <code>github.repository</code>.</li>
+<li><strong>For base <code>canary</code></strong> — head ref must be exactly <strong><code>alpha</code></strong>.</li>
+<li><strong>For base <code>gold</code></strong> — head ref must be exactly <strong><code>canary</code></strong>.</li>
+</ol>
+<p>Validation uses <code>github.event.pull_request.base.ref</code> to select the rule set.</p>
+<p>There is <strong>no</strong> Dependabot exemption on these branches (Dependabot targets <code>master</code> only).</p>
+<hr>
+<h2 id="what-this-workflow-does-not-enforce">What this workflow does not enforce</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PRs <strong>into</strong> <code>alpha</code></td>
+<td>Feature branches may merge freely; use normal review/CI</td>
+</tr>
+<tr>
+<td>PRs <strong>into</strong> <code>master</code></td>
+<td>Handled by <a href="MasterMergeGuardWorkflow.html">Master merge guard</a></td>
+</tr>
+<tr>
+<td><strong>Direct push</strong> to <code>canary</code> or <code>gold</code></td>
+<td>Requires ruleset <strong>Restrict updates</strong></td>
+</tr>
+<tr>
+<td><strong>Skipping</strong> a promotion stage (e.g. <code>alpha</code> → <code>gold</code>)</td>
+<td>Guard fails; no shortcut path</td>
+</tr>
+<tr>
+<td><strong>Hotfix</strong> branches merging to <code>gold</code> or <code>master</code></td>
+<td>Not supported unless policy/workflow is extended</td>
+</tr>
+<tr>
+<td><strong>LTS branches</strong> (<code>V105-LTS</code>, <code>V85-LTS</code>)</td>
+<td>Out of scope for this workflow</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="architecture-overview">Architecture overview</h2>
+<pre><code class="lang-mermaid">flowchart TD
+    subgraph trigger [Pull request event]
+        PR_CANARY[PR targets canary]
+        PR_GOLD[PR targets gold]
+    end
+
+    subgraph workflow [branch-promotion-guard.yml]
+        FORK{Head repo == this repo?}
+        BASE{Base branch?}
+        ALPHA{Head ref == alpha?}
+        CANARY{Head ref == canary?}
+        PASS[Job succeeds]
+        FAIL[Job fails]
+    end
+
+    subgraph rulesets [Repository rulesets]
+        RS_CANARY[Protect canary]
+        RS_GOLD[Protect gold]
+    end
+
+    PR_CANARY --&gt; FORK
+    PR_GOLD --&gt; FORK
+    FORK --&gt;|No| FAIL
+    FORK --&gt;|Yes| BASE
+    BASE --&gt;|canary| ALPHA
+    BASE --&gt;|gold| CANARY
+    ALPHA --&gt;|Yes| PASS
+    ALPHA --&gt;|No| FAIL
+    CANARY --&gt;|Yes| PASS
+    CANARY --&gt;|No| FAIL
+    PASS --&gt; RS_CANARY
+    PASS --&gt; RS_GOLD
+</code></pre>
+<hr>
+<h2 id="triggers-and-events">Triggers and events</h2>
+<p>Defined in <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/branch-promotion-guard.yml"><code>branch-promotion-guard.yml</code></a>:</p>
+<pre><code class="lang-yaml">on:
+  pull_request:
+    branches:
+      - canary
+      - gold
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - edited
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Event type</th>
+<th>When it fires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>opened</code></td>
+<td>New PR targeting <code>canary</code> or <code>gold</code></td>
+</tr>
+<tr>
+<td><code>synchronize</code></td>
+<td>New commits on PR head branch</td>
+</tr>
+<tr>
+<td><code>reopened</code></td>
+<td>Previously closed PR reopened</td>
+</tr>
+<tr>
+<td><code>edited</code></td>
+<td>PR base or head branch changed</td>
+</tr>
+</tbody>
+</table>
+<p>The workflow does <strong>not</strong> run on push events or PRs targeting <code>alpha</code> or <code>master</code>.</p>
+<hr>
+<h2 id="validation-logic-step-by-step">Validation logic (step by step)</h2>
+<p>The job <strong><code>allowed-source-branch</code></strong> runs on <code>ubuntu-latest</code>.</p>
+<h3 id="step-1--resolve-pr-metadata">Step 1 — Resolve PR metadata</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Source</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>head_repo</code></td>
+<td><code>github.event.pull_request.head.repo.full_name</code></td>
+<td><code>Krypton-Suite/Standard-Toolkit</code></td>
+</tr>
+<tr>
+<td><code>head_ref</code></td>
+<td><code>github.event.pull_request.head.ref</code></td>
+<td><code>alpha</code> or <code>canary</code></td>
+</tr>
+<tr>
+<td><code>base_ref</code></td>
+<td><code>github.event.pull_request.base.ref</code></td>
+<td><code>canary</code> or <code>gold</code></td>
+</tr>
+<tr>
+<td><code>this_repo</code></td>
+<td><code>github.repository</code></td>
+<td><code>Krypton-Suite/Standard-Toolkit</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="step-2--same-repository-check">Step 2 — Same-repository check</h3>
+<pre><code class="lang-bash">if [ &quot;$head_repo&quot; != &quot;$this_repo&quot; ]; then
+  exit 1
+fi
+</code></pre>
+<h3 id="step-3--base-specific-promotion-rules">Step 3 — Base-specific promotion rules</h3>
+<p><strong>When <code>base_ref</code> is <code>canary</code>:</strong></p>
+<pre><code class="lang-bash">if [ &quot;$head_ref&quot; != &quot;alpha&quot; ]; then
+  echo &quot;::error::Pull requests to canary are only allowed from branch 'alpha' (got '$head_ref').&quot;
+  exit 1
+fi
+</code></pre>
+<p><strong>When <code>base_ref</code> is <code>gold</code>:</strong></p>
+<pre><code class="lang-bash">if [ &quot;$head_ref&quot; != &quot;canary&quot; ]; then
+  echo &quot;::error::Pull requests to gold are only allowed from branch 'canary' (got '$head_ref').&quot;
+  exit 1
+fi
+</code></pre>
+<p><strong>Unexpected base</strong> (should not occur given trigger filters):</p>
+<pre><code class="lang-bash">echo &quot;::error::Unexpected base branch '$base_ref'.&quot;
+exit 1
+</code></pre>
+<p>All comparisons are <strong>case-sensitive</strong>.</p>
+<hr>
+<h2 id="repository-ruleset-configuration">Repository ruleset configuration</h2>
+<p>Configure <strong>two rulesets</strong> (or one ruleset with multiple branch targets). Each must require this workflow’s status check and block direct pushes.</p>
+<h3 id="ruleset-protect-canary">Ruleset: Protect canary</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ruleset name</td>
+<td><code>Protect canary</code></td>
+</tr>
+<tr>
+<td>Enforcement status</td>
+<td><strong>Active</strong></td>
+</tr>
+<tr>
+<td>Target branches</td>
+<td><strong>Include by name</strong> → <code>canary</code></td>
+</tr>
+<tr>
+<td>Restrict updates</td>
+<td><strong>Enabled</strong></td>
+</tr>
+<tr>
+<td>Require a pull request before merging</td>
+<td><strong>Enabled</strong></td>
+</tr>
+<tr>
+<td>Require status checks to pass</td>
+<td><strong><code>Branch promotion guard / Allowed source branch</code></strong></td>
+</tr>
+<tr>
+<td>Block force pushes</td>
+<td><strong>Enabled</strong></td>
+</tr>
+<tr>
+<td>Apply to administrators</td>
+<td><strong>Recommended: Enabled</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="ruleset-protect-gold">Ruleset: Protect gold</h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ruleset name</td>
+<td><code>Protect gold</code></td>
+</tr>
+<tr>
+<td>Enforcement status</td>
+<td><strong>Active</strong></td>
+</tr>
+<tr>
+<td>Target branches</td>
+<td><strong>Include by name</strong> → <code>gold</code></td>
+</tr>
+<tr>
+<td>Rules</td>
+<td>Same as <strong>Protect canary</strong> (identical required check name)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="suggested-additional-required-checks">Suggested additional required checks</h3>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Typical companion checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>canary</code></td>
+<td>Build, CodeQL, release-canary prerequisites</td>
+</tr>
+<tr>
+<td><code>gold</code></td>
+<td>Build, CodeQL</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bootstrapping">Bootstrapping</h3>
+<ol>
+<li>Merge <code>branch-promotion-guard.yml</code> onto branches that will receive rulesets.</li>
+<li>Test <strong><code>alpha</code> → <code>canary</code></strong>: guard should <strong>pass</strong>.</li>
+<li>Test <strong><code>canary</code> → <code>gold</code></strong>: guard should <strong>pass</strong>.</li>
+<li>Test <strong><code>alpha</code> → <code>gold</code></strong>: guard should <strong>fail</strong> (skipping <code>canary</code>).</li>
+<li>Enable rulesets once check names appear in the UI.</li>
+</ol>
+<hr>
+<h2 id="typical-developer-workflows">Typical developer workflows</h2>
+<h3 id="promote-bleeding-edge-work-to-canary">Promote bleeding-edge work to canary</h3>
+<ol>
+<li>Merge feature PRs into <strong><code>alpha</code></strong> as usual.</li>
+<li>When ready for pre-release testing, open PR: <strong>base</strong> <code>canary</code>, <strong>compare</strong> <code>alpha</code>.</li>
+<li>Pass <strong>Branch promotion guard</strong> and CI.</li>
+<li>Merge; <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/release.yml"><code>release-canary</code></a> may run on push to <code>canary</code>.</li>
+</ol>
+<h3 id="promote-canary-to-gold-release-candidate">Promote canary to gold (release candidate)</h3>
+<ol>
+<li>After validation on <code>canary</code>, open PR: <strong>base</strong> <code>gold</code>, <strong>compare</strong> <code>canary</code>.</li>
+<li>Pass guard and CI.</li>
+<li>Merge; <code>gold</code> is built on push per <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/build.yml"><code>build.yml</code></a>.</li>
+</ol>
+<h3 id="promote-gold-to-master">Promote gold to master</h3>
+<p>Follow <a href="MasterMergeGuardWorkflow.html">Master merge guard</a> — <strong>not</strong> covered by this workflow.</p>
+<h3 id="invalid-shortcuts-blocked">Invalid shortcuts (blocked)</h3>
+<table>
+<thead>
+<tr>
+<th>PR</th>
+<th>Guard result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>alpha</code> → <code>gold</code></td>
+<td><strong>Fail</strong> (must go through <code>canary</code>)</td>
+</tr>
+<tr>
+<td><code>feature/x</code> → <code>canary</code></td>
+<td><strong>Fail</strong></td>
+</tr>
+<tr>
+<td><code>feature/x</code> → <code>gold</code></td>
+<td><strong>Fail</strong></td>
+</tr>
+<tr>
+<td><code>alpha</code> → <code>master</code></td>
+<td>Fail on <a href="MasterMergeGuardWorkflow.html">Master merge guard</a></td>
+</tr>
+<tr>
+<td>Fork → <code>canary</code> / <code>gold</code></td>
+<td><strong>Fail</strong></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="interaction-with-release-and-ci-workflows">Interaction with release and CI workflows</h2>
+<table>
+<thead>
+<tr>
+<th>Workflow / branch</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/build.yml"><code>build.yml</code></a></td>
+<td>Push/PR on <code>alpha</code>, <code>canary</code>, <code>gold</code>; uses prerelease SDK logic on <code>alpha</code>/<code>canary</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/release.yml"><code>release.yml</code></a></td>
+<td><code>release-alpha</code> on push to <code>alpha</code>; <code>release-canary</code> on push to <code>canary</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/canary.yml"><code>canary.yml</code></a></td>
+<td>Separate canary release pipeline; see <a href="#branch-naming-and-repository-conventions">Branch naming</a></td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/nightly.yml"><code>nightly.yml</code></a></td>
+<td>Scheduled builds from <code>alpha</code></td>
+</tr>
+<tr>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/repo-mirror.yml"><code>repo-mirror.yml</code></a></td>
+<td>Mirrors <code>alpha</code>, <code>canary</code>, <code>gold</code></td>
+</tr>
+<tr>
+<td><a href="MasterMergeGuardWorkflow.html">Master merge guard</a></td>
+<td>Downstream gate for <code>gold</code> → <code>master</code></td>
+</tr>
+</tbody>
+</table>
+<p>Promotion guards ensure <strong>only promoted snapshots</strong> move between tiers; release workflows then publish packages for the resulting push.</p>
+<hr>
+<h2 id="security-model">Security model</h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Design choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Event type</td>
+<td><code>pull_request</code> (not <code>pull_request_target</code>)</td>
+</tr>
+<tr>
+<td>Permissions</td>
+<td><code>contents: read</code> only</td>
+</tr>
+<tr>
+<td>Fork PRs</td>
+<td>Rejected — promotion must happen inside the canonical repo</td>
+</tr>
+<tr>
+<td>Secrets</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Bypass</td>
+<td>Only via ruleset bypass list (operational), not via workflow logic</td>
+</tr>
+</tbody>
+</table>
+<p>Reviewers should treat promotion PRs as <strong>full-line merges</strong>: they often contain many commits aggregated from <code>alpha</code> or <code>canary</code>.</p>
+<hr>
+<h2 id="decision-matrix">Decision matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Base branch</th>
+<th>Head branch</th>
+<th>Head repo</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>canary</code></td>
+<td><code>alpha</code></td>
+<td>Same repo</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td><code>canary</code></td>
+<td><code>gold</code></td>
+<td>Same repo</td>
+<td>Fail</td>
+</tr>
+<tr>
+<td><code>canary</code></td>
+<td><code>feature/*</code></td>
+<td>Same repo</td>
+<td>Fail</td>
+</tr>
+<tr>
+<td><code>gold</code></td>
+<td><code>canary</code></td>
+<td>Same repo</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td><code>gold</code></td>
+<td><code>alpha</code></td>
+<td>Same repo</td>
+<td>Fail</td>
+</tr>
+<tr>
+<td><code>gold</code></td>
+<td><code>feature/*</code></td>
+<td>Same repo</td>
+<td>Fail</td>
+</tr>
+<tr>
+<td><code>canary</code> or <code>gold</code></td>
+<td>any</td>
+<td>Fork</td>
+<td>Fail</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="branch-naming-and-repository-conventions">Branch naming and repository conventions</h2>
+<p>Remote branches (verified on <code>origin</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Exists as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>alpha</code></td>
+<td><code>refs/heads/alpha</code></td>
+</tr>
+<tr>
+<td><code>canary</code></td>
+<td><code>refs/heads/canary</code> (lowercase)</td>
+</tr>
+<tr>
+<td><code>gold</code></td>
+<td><code>refs/heads/gold</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Case sensitivity:</strong> GitHub branch refs are case-sensitive. This workflow expects lowercase <strong><code>canary</code></strong>.</p>
+<p><strong>Known inconsistency:</strong> <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/canary.yml"><code>.github/workflows/canary.yml</code></a> listens for push to <strong><code>Canary</code></strong> (capital C), while most workflows (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/build.yml"><code>build.yml</code></a>, <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/release.yml"><code>release.yml</code></a>) use <strong><code>canary</code></strong>. The remote branch is lowercase <code>canary</code>, so <code>canary.yml</code> may not trigger on push until that naming is aligned. The promotion guard uses <strong><code>canary</code></strong> to match the actual branch ref.</p>
+<p>If you rename branches, update this workflow, rulesets, mirror lists, and all dependent workflows together.</p>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="promotion-pr-fails-but-source-looks-correct">Promotion PR fails but source looks correct</h3>
+<ol>
+<li>Open the failed job log and note <strong><code>head_ref</code></strong> and <strong><code>base_ref</code></strong>.</li>
+<li>Confirm exact spelling and case (<code>alpha</code>, <code>canary</code>, <code>gold</code>).</li>
+<li>Confirm PR is from <strong>this repo</strong>, not a fork.</li>
+</ol>
+<h3 id="check-missing-on-pr">Check missing on PR</h3>
+<ol>
+<li>Ensure workflow file is on the repository default branch.</li>
+<li>Confirm PR targets <strong><code>canary</code></strong> or <strong><code>gold</code></strong>.</li>
+<li>Push a new commit or re-open the PR to re-trigger.</li>
+</ol>
+<h3 id="need-to-merge-alpha-directly-into-gold-emergency">Need to merge <code>alpha</code> directly into <code>gold</code> (emergency)</h3>
+<p>This workflow intentionally blocks that path. Options:</p>
+<ol>
+<li><strong>Preferred:</strong> Promote <code>alpha</code> → <code>canary</code> → <code>gold</code> in sequence.</li>
+<li><strong>Exception:</strong> Temporary ruleset bypass for a maintainer (audited).</li>
+<li><strong>Policy change:</strong> Extend workflow with documented hotfix rules (requires code + doc update).</li>
+</ol>
+<h3 id="merge-allowed-without-promotion-guard">Merge allowed without promotion guard</h3>
+<p>Ruleset not configured or check not listed as required. Enable <strong>Protect canary</strong> / <strong>Protect gold</strong> rulesets.</p>
+<h3 id="canaryyml-does-not-run-after-merge-to-canary"><code>canary.yml</code> does not run after merge to canary</h3>
+<p>Check push trigger branch name in <code>canary.yml</code> (<code>Canary</code> vs <code>canary</code>). Align with remote branch name.</p>
+<hr>
+<h2 id="operational-procedures">Operational procedures</h2>
+<h3 id="full-promotion-dry-run-recommended-after-policy-changes">Full promotion dry run (recommended after policy changes)</h3>
+<ol>
+<li>Create or use test commits on <code>alpha</code>.</li>
+<li>PR <code>alpha</code> → <code>canary</code> — expect guard <strong>pass</strong>.</li>
+<li>PR <code>canary</code> → <code>gold</code> — expect guard <strong>pass</strong>.</li>
+<li>PR <code>gold</code> → <code>master</code> — expect <a href="MasterMergeGuardWorkflow.html">Master merge guard</a> <strong>pass</strong>.</li>
+<li>PR <code>alpha</code> → <code>gold</code> — expect guard <strong>fail</strong>.</li>
+</ol>
+<h3 id="coordinating-with-repository-mirror">Coordinating with Repository Mirror</h3>
+<p>After promotion merges, <a href="RepositoryMirror.html"><code>repo-mirror.yml</code></a> syncs updated <code>alpha</code>, <code>canary</code>, and <code>gold</code> refs to the mirror repository on push (if configured).</p>
+<h3 id="disabling-promotion-policy-temporarily">Disabling promotion policy temporarily</h3>
+<p>Avoid deleting the workflow. Use ruleset deactivation or bypass with documented approval. Deactivating rulesets without removing the workflow still leaves informational failed checks on invalid PRs.</p>
+<hr>
+<h2 id="maintaining-and-extending-the-workflow">Maintaining and extending the workflow</h2>
+<p>When editing <a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/branch-promotion-guard.yml"><code>branch-promotion-guard.yml</code></a>:</p>
+<ol>
+<li>Update this document and <a href="../GitHubWorkflowIndex.html">GitHub Workflow Index</a>.</li>
+<li>Update <a href="MasterMergeGuardWorkflow.html">Master merge guard</a> if the overall chain changes.</li>
+<li>Keep YAML header comments in sync with ruleset steps.</li>
+<li>Consider impact on release jobs before adding exceptions (e.g. hotfix branches).</li>
+</ol>
+<p><strong>Possible extensions (not implemented):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Extension</th>
+<th>Considerations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Allow <code>alpha-backup</code> → <code>canary</code></td>
+<td>Only if backup sync policy requires it</td>
+</tr>
+<tr>
+<td>Dependabot on <code>gold</code></td>
+<td>Add <code>dependabot/*</code> pattern like master guard</td>
+</tr>
+<tr>
+<td>Hotfix branch prefix <code>hotfix/*</code> → <code>gold</code></td>
+<td>Document emergency process; narrow pattern</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Related files:</strong></p>
+<ul>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/branch-promotion-guard.yml"><code>.github/workflows/branch-promotion-guard.yml</code></a></li>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/master-guard.yml"><code>.github/workflows/master-guard.yml</code></a></li>
+<li><a href="MasterMergeGuardWorkflow.html">Master merge guard documentation</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

@@ -69,6 +69,14 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="canary-lts-release-workflow">Canary LTS Release Workflow</h1>
 
+<h2 id="quick-reference">Quick Reference</h2>
+<ul>
+<li>Workflow file: <code>.github/workflows/canary-lts-release.yml</code></li>
+<li>Workflow name: <code>Canary LTS Release</code></li>
+<li>Triggers: <code>push</code> (LTS branch), <code>workflow_dispatch</code></li>
+<li>Runner: <code>windows-latest</code></li>
+<li>Environment: <code>production</code> (publishing path)</li>
+</ul>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ol>
 <li><a href="#overview">Overview</a></li>
@@ -202,7 +210,7 @@
 <hr>
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-<li><strong>Repository</strong>: Contains the Standard Toolkit solution and <code>Scripts/Build/canary.proj</code>.</li>
+<li><strong>Repository</strong>: Contains the Standard Toolkit solution and <code>Scripts/Build/canarylongtermstable.proj</code> (Canary LTS orchestration; distinct from <code>canary.proj</code> on the <code>canary</code> branch).</li>
 <li><strong>Branch</strong>: Workflow logic runs only on <code>V105-LTS</code>.</li>
 <li><strong>Secrets</strong> (see <a href="#secrets-and-variables-reference">Secrets and Variables Reference</a>):
 <ul>
@@ -286,7 +294,7 @@
 <li><strong>Action</strong>: <code>microsoft/setup-msbuild@v3</code></li>
 <li><strong>Options</strong>: <code>msbuild-architecture: x64</code></li>
 <li><strong>Condition</strong>: Kill switch enabled.</li>
-<li><strong>Purpose</strong>: Makes MSBuild available for <code>Scripts/Build/canary.proj</code>.</li>
+<li><strong>Purpose</strong>: Makes MSBuild available for <code>Scripts/Build/canarylongtermstable.proj</code>.</li>
 </ul>
 <h3 id="7-setup-nuget">7. Setup NuGet</h3>
 <ul>
@@ -309,7 +317,7 @@
 <ul>
 <li>Creates <code>WebView2SDK</code> directory if missing.</li>
 <li>Resolves latest stable <strong>Microsoft.Web.WebView2</strong> (NuGet search or API); fallback version <code>1.0.3595.46</code>.</li>
-<li>Temporarily adds the package to <code>Krypton.Utilities.csproj</code>, restores, copies <code>Microsoft.Web.WebView2.Core.dll</code>, <code>Microsoft.Web.WebView2.WinForms.dll</code>, and <code>WebView2Loader.dll</code> into <code>WebView2SDK\</code>, then removes the package reference.</li>
+<li>Temporarily adds the package to <code>Krypton.Toolkit.Utilities.csproj</code>, restores, copies <code>Microsoft.Web.WebView2.Core.dll</code>, <code>Microsoft.Web.WebView2.WinForms.dll</code>, and <code>WebView2Loader.dll</code> into <code>WebView2SDK\</code>, then removes the package reference.</li>
 </ul>
 </li>
 <li><strong>Purpose</strong>: Canary build can bundle WebView2; this step provides the SDK files expected by the build without persisting the package reference in the repo.</li>
@@ -329,12 +337,12 @@
 <h3 id="12-build-canary">12. Build Canary</h3>
 <ul>
 <li><strong>Condition</strong>: Kill switch enabled.</li>
-<li><strong>Command</strong>: <code>msbuild &quot;Scripts/Build/canary.proj&quot; /t:Build /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;</code> with optional signing parameters when <code>prepare_cert</code> has made a certificate available.</li>
+<li><strong>Command</strong>: <code>msbuild /m</code> with <code>Scripts/Build/canarylongtermstable.proj</code> <code>/t:Build</code> <code>/p:Configuration=Canary</code> <code>/p:Platform=&quot;Any CPU&quot;</code> <code>/p:UseArtifactsOutput=true</code>, plus optional signing parameters when <code>prepare_cert</code> has made a certificate available.</li>
 <li><strong>Purpose</strong>: Builds all Canary-configuration outputs (DLLs, etc.) for the TFMs defined in the solution. See <a href="#build-system-and-package-output">Build System and Package Output</a>.</li>
 </ul>
 <h3 id="13-pack-canary">13. Pack Canary</h3>
 <ul>
-<li><strong>Command</strong>: <code>msbuild &quot;Scripts/Build/canary.proj&quot; /t:Pack /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;</code></li>
+<li><strong>Command</strong>: <code>msbuild /m &quot;Scripts/Build/canarylongtermstable.proj&quot; /t:Pack /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot; /p:UseArtifactsOutput=true</code></li>
 <li><strong>Condition</strong>: Kill switch enabled.</li>
 <li><strong>Purpose</strong>: Cleans old Canary packages, then builds and packs all projects in Canary configuration; produces <code>.nupkg</code> files. Output location is defined by the build (see next section).</li>
 </ul>
@@ -371,7 +379,7 @@
 <hr>
 <h2 id="build-system-and-package-output">Build System and Package Output</h2>
 <ul>
-<li><strong>Project</strong>: <code>Scripts/Build/canary.proj</code></li>
+<li><strong>Project</strong>: <code>Scripts/Build/canarylongtermstable.proj</code></li>
 <li><strong>Configuration</strong>: <code>Canary</code></li>
 <li><strong>Targets used</strong>: <code>Build</code>, then <code>Pack</code> (which depends on <code>CleanPackages</code> and <code>PackAll</code>).</li>
 </ul>
@@ -499,7 +507,7 @@
 <li>Check the <strong>Build Canary</strong> and <strong>Pack Canary</strong> logs for MSBuild errors.</li>
 <li>Confirm preview/stable SDK variables match <code>dotnet --list-sdks</code> on the runner (<strong>Setup .NET Preview</strong> and <strong>Pin SDK via global.json</strong>).</li>
 <li>Confirm WebView2 SDK step completed and <code>WebView2SDK</code> contains the expected DLLs if the build requires them.</li>
-<li>Locally: <code>msbuild Scripts/Build/canary.proj /t:Build /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot;</code> (and same for <code>Pack</code>) to reproduce.</li>
+<li>Locally: <code>msbuild /m Scripts/Build/canarylongtermstable.proj /t:Build /p:Configuration=Canary /p:Platform=&quot;Any CPU&quot; /p:UseArtifactsOutput=true</code> (and same for <code>Pack</code>) to reproduce.</li>
 </ul>
 <h3 id="get-version-fails-or-uses-fallback">Get Version fails or uses fallback</h3>
 <ul>

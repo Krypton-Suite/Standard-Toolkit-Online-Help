@@ -23,7 +23,7 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 - [KryptonCheckedListBox](Toolkit/Controls/KryptonCheckedListBox.md)
 - [KryptonColorButton](Toolkit/Controls/KryptonColorButton.md)
 - [KryptonComboBox](Toolkit/Controls/KryptonComboBox.md)
-- [KryptonCommandLinkButton](Toolkit/Controls/KryptonCommandLinkButton.md) (type lives in `Krypton.Utilities` from V110 onward)
+- [KryptonCommandLinkButton](Toolkit/Controls/KryptonCommandLinkButton.md) (type lives in `Krypton.Toolkit.Utilities` from V110 onward)
 - [KryptonDataGridView](Toolkit/Controls/KryptonDataGridView.md)
 - [KryptonDateTimePicker](Toolkit/Controls/KryptonDateTimePicker.md)
 - [KryptonDomainUpDown](Toolkit/Controls/KryptonDomainUpDown.md)
@@ -66,7 +66,7 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 
 ### Components
 
-- [KryptonAboutBox](Toolkit/Components/KryptonAboutBox.md) (type lives in `Krypton.Utilities` from V110 onward)
+- [KryptonAboutBox](Toolkit/Components/KryptonAboutBox.md) (type lives in `Krypton.Toolkit.Utilities` from V110 onward)
 - [KryptonCheckSet](Toolkit/Components/KryptonCheckSet.md)
 - [KryptonCommand](Toolkit/Components/KryptonCommand.md)
 - [KryptonContextMenu](Toolkit/Components/KryptonContextMenu.md)
@@ -84,7 +84,7 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 - [KryptonSaveFileDialog](Toolkit/Components/KryptonSaveFileDialog.md)
 - [KryptonTaskDialog](Toolkit/Components/KryptonTaskDialog.md)
 - [KryptonThemeBrowser](Toolkit/Components/KryptonThemeBrowser.md)
-- [KryptonToast / toast notifications](Toolkit/Components/KryptonToastNotification.md) (public API is `KryptonToast` in `Krypton.Utilities` from V110 onward; see topic for migration notes)
+- [KryptonToast / toast notifications](Toolkit/Components/KryptonToastNotification.md) (public API is `KryptonToast` in `Krypton.Toolkit.Utilities` from V110 onward; see topic for migration notes)
 
 ### Forms
 
@@ -103,7 +103,7 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 - [TaskbarThumbnailButtons](Toolkit/Utilities/TaskbarThumbnailButtons.md)
 - [UIAProviders](Toolkit/Utilities/UIAProviders.md)
 
-## Suite utilities (`Krypton.Utilities`)
+## Suite utilities (`Krypton.Toolkit.Utilities`)
 
 - [KryptonExceptionDialog — Quick Start](Utilities/KryptonExceptionDialogQuickStart.md)
 - [KryptonExceptionDialog — API reference](Utilities/KryptonExceptionDialog.md)

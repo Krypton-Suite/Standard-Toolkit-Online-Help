@@ -2,217 +2,170 @@
 
 ## Overview
 
-The KryptonWebView2 control requires the Microsoft WebView2 SDK assemblies to be available for compilation. This document explains how to set up the WebView2 SDK without using NuGet dependencies.
+`KryptonWebView2` is implemented in **`Krypton.Toolkit.Utilities`**. The project compiles the full control when bundled WebView2 assemblies exist under:
 
-**Quick Start**: Run `run.cmd` and select option 7 "WebView2 SDK Tools" → option 1 "Setup WebView2 SDK" for automated setup.
+`Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2/`
 
-**Latest Version**: The setup automatically detects and uses the latest stable WebView2 SDK version from NuGet.
+That defines `WEBVIEW2_AVAILABLE`. Without those DLLs, a minimal stub `Control` is built instead.
 
-## Setup Options
-
-### Option 1: Manual Download (Recommended)
-
-1. **Download WebView2 SDK**
-   - Visit: [Microsoft Edge WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)
-   - Download the latest WebView2 SDK
-   - Extract the downloaded package
-
-2. **Copy Required Assemblies**
-   - Create a `WebView2SDK` folder at the repository root (same level as `Source` folder)
-   - Copy the following files from the extracted SDK to `WebView2SDK`:
-
-     ```text
-     WebView2SDK/
-     ├── Microsoft.Web.WebView2.Core.dll
-     ├── Microsoft.Web.WebView2.WinForms.dll
-     └── WebView2Loader.dll
-     ```
-
-3. **Build the Solution**
-   - Rebuild the entire solution
-   - The KryptonWebView2 control should now compile successfully
-
-### Option 2: Using NuGet (Temporary)
-
-If you want to quickly get the assemblies without manual download:
-
-1. **Install NuGet Package**
-
-   ```cmd
-   dotnet add package Microsoft.Web.WebView2
-   ```
-
-2. **Copy Assemblies**
-   - Find the NuGet packages folder (usually `%USERPROFILE%\.nuget\packages\`)
-   - Navigate to the latest version folder (e.g., `microsoft.web.webview2\1.0.3485.44\`)
-   - Search for the required DLLs recursively in the package folder:
-     - `Microsoft.Web.WebView2.Core.dll`
-     - `Microsoft.Web.WebView2.WinForms.dll`
-     - `WebView2Loader.dll`
-   - Copy the found DLLs to the `WebView2SDK` folder
-   - Remove the NuGet package reference if desired
-
-3. **Clean Up**
-
-   ```cmd
-   dotnet remove package Microsoft.Web.WebView2
-   ```
-
-### Option 3: Using Setup Script (Recommended)
-
-#### Method A: Through Build System Menu (initial setup)
-
-1. **Run the Build System**
-
-   ```cmd
-   run.cmd
-   ```
-
-2. **Select Option 7**: "WebView2 SDK Tools"
-3. **Select Option 1**: "Setup WebView2 SDK"
-4. **Follow the automated process**
-
-#### Method B: Direct Script Execution (initial setup)
-
-Run the provided setup script directly:
+**Quick start (recommended):** From the repository root:
 
 ```cmd
-Setup-WebView2SDK.cmd
+Scripts\WebVew2\Populate-BundledWebView2.cmd
 ```
 
-Both methods will:
+Or run `run.cmd` → **WebView2 SDK Tools** (if your menu includes the populate/update options).
 
-- Check if WebView2 SDK is already installed
-- Automatically detect the latest stable WebView2 SDK version
-- Download and install WebView2 SDK via NuGet (if needed)
-- Dynamically locate and copy required assemblies to the WebView2SDK directory (handles different package structures)
-- Update project file with the latest version information
-- Clean up temporary NuGet references
-- Provide clear feedback on the setup status
-- Handle package structure changes automatically
+**Runtime:** End users still need the [WebView2 Runtime](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) installed (Evergreen or Fixed Version distribution).
 
-### Option 4: Update to Latest Version
+## Setup options
 
-If you already have WebView2 SDK installed and want to update to the latest version:
+### Option 1: Populate bundled DLLs (recommended)
 
-#### Method A: Through Build System Menu (update)
-
-1. **Run the Build System**
-
-   ```cmd
-   run.cmd
-   ```
-
-2. **Select Option 7**: "WebView2 SDK Tools"
-3. **Select Option 2**: "Update WebView2 SDK"
-4. **Follow the automated update process**
-
-#### Method B: Direct Script Execution (update)
-
-Run the update script directly:
+`Populate-BundledWebView2.cmd` downloads the latest stable `Microsoft.Web.WebView2` package, copies the required assemblies into `Lib/WebView2`, and removes the temporary PackageReference so the project uses only bundled references.
 
 ```cmd
-Scripts\Update-WebView2SDK.cmd
+Scripts\WebVew2\Populate-BundledWebView2.cmd
 ```
 
-Both methods will:
+Required files in `Lib/WebView2`:
 
-- Detect the latest stable WebView2 SDK version
-- Download the latest assemblies
-- Dynamically locate and copy assemblies to the WebView2SDK directory (handles different package structures)
-- Update project file references
-- Preserve your existing setup
-- Handle package structure changes automatically
+```text
+Lib/WebView2/
+├── Microsoft.Web.WebView2.Core.dll
+├── Microsoft.Web.WebView2.WinForms.dll
+└── WebView2Loader.dll
+```
 
-## File Structure After Setup
+You may commit these DLLs so CI and other developers do not need to run the script (see `.gitignore` un-ignore rule for this folder).
 
-Your repository should look like this:
+### Option 2: Manual copy
+
+1. Download the [WebView2 SDK](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) or install `Microsoft.Web.WebView2` via NuGet temporarily.
+2. Copy the three DLLs listed above into  
+   `Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2/`
+3. Rebuild `Krypton.Toolkit.Utilities`.
+
+### Option 3: Temporary NuGet (development only)
+
+```cmd
+dotnet add "Source/Krypton Components/Krypton.Toolkit.Utilities/Krypton.Toolkit.Utilities.csproj" package Microsoft.Web.WebView2
+dotnet restore "Source/Krypton Components/Krypton.Toolkit.Utilities/Krypton.Toolkit.Utilities.csproj"
+```
+
+Copy the DLLs from `%USERPROFILE%\.nuget\packages\microsoft.web.webview2\<version>\` into `Lib/WebView2`, then remove the package reference so the project matches the bundled layout:
+
+```cmd
+dotnet remove "Source/Krypton Components/Krypton.Toolkit.Utilities/Krypton.Toolkit.Utilities.csproj" package Microsoft.Web.WebView2
+```
+
+### Option 4: Legacy `WebView2SDK` folder (repository root)
+
+Older scripts under `Scripts/WebVew2/` (`Setup-WebView2SDK.cmd`, `Update-WebView2SDK.cmd`) populate a **`WebView2SDK`** folder at the repository root. **The project does not reference that folder** — it uses `Lib/WebView2` inside `Krypton.Toolkit.Utilities`.
+
+If you used the legacy scripts, either:
+
+- Run `Populate-BundledWebView2.cmd` instead, or  
+- Manually copy the three DLLs from `WebView2SDK\` into `Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2/`
+
+Some CI workflows may still populate `WebView2SDK`; ensure `Lib/WebView2` is populated before building `Krypton.Toolkit.Utilities`.
+
+## File structure after setup
 
 ```text
 Standard-Toolkit/
 ├── Source/
 │   └── Krypton Components/
-│       └── Krypton.Utilities/
-│           └── KryptonWebView2/
-│               └── Controls Toolkit/
-│                   └── KryptonWebView2.cs
+│       └── Krypton.Toolkit.Utilities/
+│           ├── Lib/
+│           │   └── WebView2/                    ← Build-time references (required)
+│           │       ├── Microsoft.Web.WebView2.Core.dll
+│           │       ├── Microsoft.Web.WebView2.WinForms.dll
+│           │       └── WebView2Loader.dll
+│           └── Components/
+│               └── KryptonWebView2/
+│                   └── Controls Toolkit/
+│                       └── KryptonWebView2.cs
 ├── Scripts/
-│   ├── Setup-WebView2SDK.cmd
-│   ├── Update-WebView2SDK.cmd
-│   ├── Get-LatestWebView2Version.ps1
-│   └── Update-WebView2ProjectVersion.ps1
-├── WebView2SDK/                    ← Created by setup script
-│   ├── Microsoft.Web.WebView2.Core.dll
-│   ├── Microsoft.Web.WebView2.WinForms.dll
-│   └── WebView2Loader.dll
-└── run.cmd                         ← Updated with WebView2 SDK Tools submenu
+│   └── WebVew2/
+│       ├── Populate-BundledWebView2.cmd         ← Recommended
+│       ├── Setup-WebView2SDK.cmd                ← Legacy (WebView2SDK at root)
+│       ├── Update-WebView2SDK.cmd
+│       ├── Get-LatestWebView2Version.ps1
+│       └── Update-WebView2ProjectVersion.ps1
+└── run.cmd
 ```
 
 ## Verification
 
-After setup, verify that the KryptonWebView2 control compiles:
-
-1. **Build the Solution**
+1. **Build Utilities**
 
    ```cmd
-   dotnet build "Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln"
+   dotnet build "Source/Krypton Components/Krypton.Toolkit.Utilities/Krypton.Toolkit.Utilities.csproj" -c Debug
    ```
 
-2. **Check for Errors**
-   - No compilation errors related to WebView2 types
-   - KryptonWebView2 appears in the toolbox
-   - Test form compiles successfully
+2. **Confirm**
+   - No errors for `Microsoft.Web.WebView2` types
+   - `WEBVIEW2_AVAILABLE` defined (DLLs present in `Lib/WebView2`)
+   - `KryptonWebView2` in the toolbox when `TestForm` / designer loads `Krypton.Toolkit.Utilities`
+
+3. **Run TestForm** (optional)
+
+   ```cmd
+   dotnet run --project "Source/Krypton Components/TestForm/TestForm.csproj" -c Debug
+   ```
+
+   Open the `KryptonWebView2` test scenario and confirm themed background colors follow the active palette.
 
 ## Troubleshooting
 
-### "WebView2 types not found" Error
+### "WebView2 types not found" or stub control only
 
-- Ensure the WebView2SDK folder exists at the repository root
-- Verify all three DLL files are present in WebView2SDK
-- Check that the project file references point to the correct paths
-- Rebuild the solution completely
+- Verify all three DLLs exist under  
+  `Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2/`
+- Run `Scripts\WebVew2\Populate-BundledWebView2.cmd`
+- Rebuild `Krypton.Toolkit.Utilities` (not only a dependent project)
 
-### Assembly Loading Errors
+### Legacy `WebView2SDK` at repository root
 
-- Ensure the DLLs are the correct architecture (AnyCPU or x64)
-- Check that the DLLs are not corrupted
-- Verify the file permissions allow reading
+- That folder alone does **not** enable `WEBVIEW2_AVAILABLE`
+- Copy assemblies into `Lib/WebView2` or run `Populate-BundledWebView2.cmd`
 
-### Designer Issues
+### Assembly loading errors
 
-- Reset the Visual Studio toolbox
-- Close and reopen Visual Studio
-- Ensure the control compiles without errors first
+- Use AnyCPU-compatible builds unless you intentionally target x64
+- Replace corrupted DLLs from a fresh NuGet package or SDK download
 
-### GitHub Actions Build Failures
+### Designer / toolbox issues
 
-If you encounter WebView2 SDK setup failures in GitHub Actions:
+- Build `Krypton.Toolkit.Utilities` successfully first
+- Reset the Visual Studio toolbox; restart the designer
+- Ensure `TestForm` references a configuration where `Lib/WebView2` DLLs exist
 
-- The workflow now uses dynamic assembly discovery to handle different package structures
-- Ensure the workflow has internet access to download the latest WebView2 SDK
-- Check that the NuGet cache is properly restored before the WebView2 setup step
-- The setup will automatically find assemblies regardless of their location within the package
+### GitHub Actions / CI
 
-## Runtime Requirements
+- Ensure the workflow copies or restores DLLs into **`Lib/WebView2`**, not only `WebView2SDK`
+- Restore needs network access to download the WebView2 package when DLLs are not committed
 
-Remember that end users need the WebView2 Runtime installed:
+## Runtime requirements
 
-- **Evergreen Distribution**: Users install from Microsoft's website
-- **Fixed Version**: Bundle with your application
-- **Download**: [Microsoft Edge WebView2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/)
+| Requirement | Notes |
+|-------------|--------|
+| Windows 10 1803+ | WebView2 host |
+| WebView2 Runtime | [Download](https://developer.microsoft.com/en-us/microsoft-edge/webview2/) — Evergreen or Fixed Version |
+| Application TFM | Same as `Krypton.Toolkit.Utilities` (e.g. `net472`, `net48`, `net8.0-windows`, …) |
 
-## Support
+Bundled SDK DLLs are for **compilation**. The **runtime** is a separate install on end-user machines (unless you ship Fixed Version).
 
-If you encounter issues:
+## Related documentation
 
-1. Check the [WebView2 documentation](https://docs.microsoft.com/en-us/microsoft-edge/webview2/)
-2. Verify your setup matches the requirements
-3. Test with the provided KryptonWebView2Test form
-4. Report issues to the Krypton Toolkit repository
+- [KryptonWebView2 documentation index](KryptonWebView2.md)
+- [Developer guide — theming](KryptonWebView2DeveloperGuide.md#theming-integration)
+- [API reference — State properties](KryptonWebView2APIReference.md)
+- [Microsoft WebView2 documentation](https://learn.microsoft.com/en-us/microsoft-edge/webview2/)
 
 ## Notes
 
-- The WebView2SDK folder should be added to `.gitignore` if you don't want to commit the assemblies
-- The assemblies are referenced with `Private=False` so they won't be copied to output
-- This setup allows the control to compile without NuGet dependencies
-- Runtime WebView2 functionality requires the WebView2 Runtime to be installed on target systems
+- Prefer committing `Lib/WebView2/*.dll` for repeatable CI, or run `Populate-BundledWebView2.cmd` in the pipeline before build.
+- Project references use `HintPath` under `Lib/WebView2`; assemblies are not pulled from a permanent NuGet PackageReference in the shipped layout.
+- After setup, configure appearance via **Visuals → State###** on `KryptonWebView2`, not `DefaultBackgroundColor` in the designer.

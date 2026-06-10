@@ -69,6 +69,14 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="build-workflow">Build Workflow</h1>
 
+<h2 id="quick-reference">Quick Reference</h2>
+<ul>
+<li>Workflow file: <code>.github/workflows/build.yml</code></li>
+<li>Workflow name: <code>Build</code></li>
+<li>Triggers: <code>pull_request</code>, <code>push</code>, <code>workflow_dispatch</code></li>
+<li>Runner: <code>windows-2025-vs2026</code></li>
+<li>Permissions: <code>contents: read</code></li>
+</ul>
 <h2 id="overview">Overview</h2>
 <p>The Build workflow provides continuous integration (CI) for the Krypton Standard Toolkit. It validates code changes by building the solution on pull requests and pushes to main branches, ensuring build integrity before code is merged or released.</p>
 <h2 id="purpose">Purpose</h2>
@@ -161,7 +169,7 @@
 </li>
 <li><p><strong>Build</strong></p>
 <ul>
-<li><code>msbuild Scripts/Build/nightly.proj /t:Rebuild ...</code></li>
+<li><code>msbuild /m Scripts/Build/nightly.proj /t:Rebuild ...</code> (<code>/m</code> on all orchestrated MSBuild steps; <code>nightly.proj</code> sets <code>BuildInParallel=&quot;true&quot;</code>)</li>
 </ul>
 </li>
 </ol>
@@ -189,6 +197,7 @@
 <li><p><strong>Build Release</strong></p>
 <ul>
 <li>Uses <code>Scripts/Build/build.proj</code> instead of <code>nightly.proj</code></li>
+<li>MSBuild invoked with <code>/m</code></li>
 <li>Configuration: <code>Release</code></li>
 <li>Platform: <code>Any CPU</code></li>
 <li>Target: <code>Build</code></li>
@@ -196,7 +205,7 @@
 </li>
 <li><p><strong>Pack Release</strong></p>
 <ul>
-<li>Uses <code>Scripts/Build/build.proj</code></li>
+<li>Uses <code>Scripts/Build/build.proj</code> (MSBuild <code>/m</code>)</li>
 <li>Configuration: <code>Release</code></li>
 <li>Platform: <code>Any CPU</code></li>
 <li>Target: <code>Pack</code></li>
@@ -388,7 +397,7 @@
 </ul>
 <h2 id="best-practices">Best Practices</h2>
 <ol>
-<li><strong>Keep Builds Fast</strong>: Leverage caching and parallel builds</li>
+<li><strong>Keep Builds Fast</strong>: Leverage caching; CI and <code>.cmd</code> scripts already use MSBuild <code>/m</code> (see <a href="../Build%20System/BuildScripts.html#parallel-builds">Build Scripts</a>)</li>
 <li><strong>Fail Fast</strong>: Build should fail on any compilation error</li>
 <li><strong>Consistent Environments</strong>: Use same SDK versions as local development</li>
 <li><strong>Clear Logs</strong>: Ensure build output is readable and actionable</li>
