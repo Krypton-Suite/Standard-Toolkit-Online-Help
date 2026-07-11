@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Cross-Project Source Linking | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Cross-Project Source Linking | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="cross-project-source-linking">Cross-Project Source Linking</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Several Krypton assemblies share C# source without duplicating files on disk. Historically this used MSBuild <code>&lt;Compile Include=&quot;..\...&quot; Link=&quot;...&quot;&gt;</code> so the same file compiled into multiple assemblies. Issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3855">#3855</a> centralizes shared interop in <code>Krypton.Interop</code> and documents the remaining compile-link patterns.</p>
+<p><strong>Packages:</strong> <code>Krypton.Interop</code> (<code>Source/Krypton Components/Krypton.Interop/</code>), shared MSBuild props (<code>Source/Krypton Components/Krypton.Shared/</code>).</p>
+<h2 id="why-not-a-normal-project-reference">Why not a normal project reference?</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Approach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Internal Win32/P/Invoke (<code>PI</code>, <code>Libraries</code>) used across Ribbon, Navigator, Docking, Utilities</td>
+<td><code>Krypton.Interop</code> assembly + <code>[InternalsVisibleTo]</code> friend grants</td>
+</tr>
+<tr>
+<td>Per-assembly analyzer suppressions (<code>GlobalSuppressions.cs</code>)</td>
+<td>MSBuild compile <strong>link</strong> into each assembly (suppressors apply per assembly)</td>
+</tr>
+<tr>
+<td>.NET Framework nullable polyfills (<code>AllowNullAttribute.cs</code>, etc.)</td>
+<td>Compiled into <code>Krypton.Interop</code>; friend assemblies consume via <code>InternalsVisibleTo</code></td>
+</tr>
+<tr>
+<td>Helpers that ship in Utilities but live under <code>Krypton.Toolkit</code> on disk</td>
+<td>MSBuild compile <strong>link</strong> into <code>Krypton.Toolkit.Utilities</code></td>
+</tr>
+</tbody>
+</table>
+<p>Linking or a dedicated interop assembly avoids expanding the public API (<code>PI</code> stays internal) and keeps a single canonical file for large interop surfaces.</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code class="lang-mermaid">flowchart TB
+    subgraph interop [Krypton.Interop]
+        PI[PlatformInvoke.cs]
+        Scroll[WIN32ScrollBars.cs]
+        Nullable[AllowNullAttribute.cs]
+    end
+
+    subgraph links [Compile links via Krypton.SharedCompileItems.props]
+        GS[GlobalSuppressions.cs]
+        FSH[FileSystemIconHelper.cs]
+        GTU[GeneralToolkitUtilities.cs]
+    end
+
+    Toolkit[Krypton.Toolkit] --&gt; interop
+    Ribbon[Krypton.Ribbon] --&gt; Toolkit
+    Navigator[Krypton.Navigator] --&gt; Toolkit
+    Docking[Krypton.Docking] --&gt; Toolkit
+    Workspace[Krypton.Workspace] --&gt; Toolkit
+    TU[Krypton.Toolkit.Utilities] --&gt; Toolkit
+    TU --&gt; links
+    NU[Krypton.Navigator.Utilities] --&gt; Toolkit
+    Ribbon --&gt; links
+    Navigator --&gt; links
+    Docking --&gt; links
+</code></pre>
+<p>Build order (orchestration and solution): <strong>Krypton.Interop</strong> → <strong>Krypton.Toolkit</strong> → parallel Ribbon/Navigator → Workspace → Docking → Utilities satellites.</p>
+<h2 id="shared-interop-project-kryptoninterop">Shared interop project (<code>Krypton.Interop</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Namespace</th>
+<th>Visibility</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>General/PlatformInvoke.cs</code></td>
+<td><code>Krypton.Toolkit</code></td>
+<td><code>internal</code> (<code>PI</code>, <code>Libraries</code>, …)</td>
+<td>Windows P/Invoke surface (~5k lines)</td>
+</tr>
+<tr>
+<td><code>General/HResult.cs</code></td>
+<td><code>Krypton.Toolkit</code></td>
+<td><code>internal</code> (<code>partial PI</code>)</td>
+<td>HRESULT constants extending <code>PI</code></td>
+</tr>
+<tr>
+<td><code>General/Scroll Bars/WIN32ScrollBars.cs</code></td>
+<td><code>Krypton.Toolkit</code></td>
+<td><code>public</code></td>
+<td>Scroll-bar structs for Navigator.Utilities</td>
+</tr>
+<tr>
+<td><code>Utilities/AllowNullAttribute.cs</code></td>
+<td><code>System.Diagnostics.CodeAnalysis</code></td>
+<td><code>internal</code> on net472</td>
+<td>Nullable polyfill attributes</td>
+</tr>
+</tbody>
+</table>
+<p><code>Krypton.Interop/Global/GlobalDeclarations.cs</code> declares <code>[InternalsVisibleTo]</code> for: <code>Krypton.Toolkit</code>, <code>Krypton.Ribbon</code>, <code>Krypton.Navigator</code>, <code>Krypton.Docking</code>, <code>Krypton.Workspace</code>, <code>Krypton.Toolkit.Utilities</code>, <code>Krypton.Navigator.Utilities</code>.</p>
+<p><strong>Consumer wiring:</strong> add a project reference only on <code>Krypton.Toolkit</code>:</p>
+<pre><code class="lang-xml">&lt;ProjectReference Include=&quot;..\Krypton.Interop\Krypton.Interop.csproj&quot; /&gt;
+</code></pre>
+<p>Other modules reference <code>Krypton.Toolkit</code> and receive <code>Krypton.Interop</code> transitively for compilation and runtime.</p>
+<p><strong>NuGet:</strong> <code>Krypton.Interop.dll</code> is bundled in module packages and in <code>Krypton.Standard.Toolkit</code> (not published as a standalone package). <code>Krypton.Shared/Krypton.Interop.Package.targets</code> adds the DLL to packable module nuspecs.</p>
+<h2 id="msbuild-compile-links-kryptonshared">MSBuild compile links (<code>Krypton.Shared</code>)</h2>
+<p>Import <code>Krypton.Shared/Krypton.SharedCompileItems.props</code> and set opt-in flags:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Linked files</th>
+<th>Used by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IncludeKryptonGlobalSuppressionsLink=true</code></td>
+<td><code>Krypton.Toolkit/General/GlobalSuppressions.cs</code></td>
+<td>Ribbon, Navigator, Docking</td>
+</tr>
+<tr>
+<td><code>IncludeKryptonUtilitiesSourceLinks=true</code></td>
+<td><code>FileSystemIconHelper.cs</code>, <code>GeneralToolkitUtilities.cs</code></td>
+<td>Toolkit.Utilities</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code class="lang-xml">&lt;Import Project=&quot;..\Krypton.Shared\Krypton.SharedCompileItems.props&quot; /&gt;
+&lt;PropertyGroup&gt;
+  &lt;IncludeKryptonGlobalSuppressionsLink&gt;true&lt;/IncludeKryptonGlobalSuppressionsLink&gt;
+&lt;/PropertyGroup&gt;
+</code></pre>
+<p>Canonical on-disk paths remain under <code>Krypton.Toolkit/</code> for Utilities helpers until those types are moved into the Utilities project folder.</p>
+<h2 id="adding-new-shared-code">Adding new shared code</h2>
+<ol>
+<li><strong>Internal interop or polyfills used by multiple assemblies</strong> → add to <code>Krypton.Interop</code>, extend <code>[InternalsVisibleTo]</code> if a new consumer assembly is introduced, ensure <code>Krypton.Standard.Toolkit</code> still packs the DLL (already handled by shared targets).</li>
+<li><strong>Per-assembly analyzer suppressions</strong> → extend <code>GlobalSuppressions.cs</code> and keep compile links (do not move to Interop).</li>
+<li><strong>Public API</strong> → put the type in the owning module assembly; do not link or hide in Interop.</li>
+<li><strong>Utilities-only helper still under Toolkit folder</strong> → add an entry to <code>Krypton.SharedCompileItems.props</code> with a new opt-in property; document in this file.</li>
+</ol>
+<p>Always add a one-line header comment in the source file pointing here.</p>
+<h2 id="validation">Validation</h2>
+<pre><code class="lang-powershell">dotnet build &quot;.\Source\Krypton Components\Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+</code></pre>
+<p>Confirm <code>Bin\Debug\&lt;tfm&gt;\Krypton.Interop.dll</code> is produced and copied alongside other module outputs. After Pack, CI runs <code>Scripts/CI/Test-KryptonInteropInPackages.ps1</code> to assert <code>lib/*/Krypton.Interop.dll</code> is present in each packable module <code>.nupkg</code>. Run TestForm smoke scenarios that exercise P/Invoke-heavy paths (message boxes, file icons, scroll bars).</p>
+<h2 id="related-files">Related files</h2>
+<ul>
+<li><code>Scripts/Build/Krypton.Orchestration.targets</code> — builds Interop before Toolkit</li>
+<li><code>Source/Krypton Components/Directory.Build.targets</code> — imports <code>Krypton.Interop.Package.targets</code></li>
+<li><code>Source/Krypton Components/Krypton.Standard.Toolkit/Krypton.Standard.Toolkit.csproj</code> — explicit Interop DLL/XML/PDB pack entries</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

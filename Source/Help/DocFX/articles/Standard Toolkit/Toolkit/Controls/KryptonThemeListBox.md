@@ -27,11 +27,18 @@
 
 ### Built-in Themes
 
-- Professional System themes
-- Office 2003, 2007, 2010, 2013 themes
-- Office 365 variants
-- Sparkle themes
-- Custom theme support
+Theme selectors list every entry in `PaletteModeStrings.SupportedThemes`, including:
+
+- Professional System and Office 2003
+- Office 2007, 2010, and 2013 families (with dark/light variants where supported)
+- Microsoft 365 and Sparkle families (with dark/light variants)
+- Visual Studio render themes and Visual Studio 2022 Dark
+- Material Light/Dark (with Ripple variants)
+- Retro Green and Retro Blue (V110+)
+- Mac OS X Aqua, macOS Light, and macOS Dark (V110+)
+- Custom (when a global custom palette is applied)
+
+For custom palette display names after import, use `ThemeManager.ReturnPaletteModeAsString(KryptonManager)` — see [External Themes: Bundled Display Names](../Components/ExternalThemesBundledNames.md).
 
 ---
 

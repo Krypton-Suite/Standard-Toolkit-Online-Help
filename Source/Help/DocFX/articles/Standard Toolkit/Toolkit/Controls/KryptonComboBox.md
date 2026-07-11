@@ -107,3 +107,20 @@ If the parent Item has tooltips, and the button spec has tooltips, then
 the default is show both when hovering over the buttonspec. This can be disabled
 by setting `AllowButtonSpecTooltipPriority` to `true`, so that only 1 tooltip is
 displayed when hovering over any part of the control.
+
+## Multi-select and custom drop-downs (V110+)
+
+`KryptonComboBox` remains a **single-select** list combo backed by the standard embedded `ComboBox`. For other selection models use **`Krypton.Toolkit.Utilities`** types:
+
+| Scenario | Control |
+| --- | --- |
+| Multi-select with check boxes | [KryptonCheckedListComboBox](../../Utilities/KryptonComboDropDownControls.md#kryptoncheckedlistcombobox) |
+| Hierarchical tree picker | [KryptonTreeComboBox](../../Utilities/KryptonComboDropDownControls.md#kryptontreecombobox) |
+| Arbitrary UserControl in the drop-down | [KryptonComboBoxUserControl](../../Utilities/KryptonComboDropDownControls.md#kryptoncomboboxusercontrol) |
+
+See the full guide: [KryptonComboDropDownControls](../../Utilities/KryptonComboDropDownControls.md).
+
+## See also
+
+- [KryptonCheckedListBox](KryptonCheckedListBox.md)
+- [Controls index](../Controls.md)

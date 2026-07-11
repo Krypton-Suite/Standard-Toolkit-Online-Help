@@ -72,6 +72,8 @@ All string category properties follow this pattern:
 
 **V110+:** Some components that consume these strings (for example **`KryptonAboutBox`**, **`KryptonToast`**) live in **`Krypton.Toolkit.Utilities`**. The **`KryptonManager.Strings`** API remains in **`Krypton.Toolkit`** as the usual localization entry point.
 
+**Application custom strings** (key/value and strongly-typed sets) use a separate API — see **[KryptonCustomStrings](../../Utilities/KryptonCustomStrings.md)**. Do not confuse `KryptonManager.Strings.CustomStrings` with `KryptonCustomStrings`.
+
 #### KryptonGlobalToolkitStrings methods
 
 ##### Reset() (all categories)
@@ -1333,6 +1335,6 @@ This enables:
 
 ## See Also
 
-- [Localization and string management guide](../Utilities/LocalizationGuide.md)
-- [ExceptionHandler API documentation](../Utilities/ExceptionHandlerAPIDocumentation.md)
+- [Localization and string management guide](../../Utilities/LocalizationGuide.md)
+- [ExceptionHandler API documentation](../../Utilities/ExceptionHandlerAPIDocumentation.md)
 - [.NET Globalization Documentation](https://docs.microsoft.com/en-us/dotnet/standard/globalization-localization/)

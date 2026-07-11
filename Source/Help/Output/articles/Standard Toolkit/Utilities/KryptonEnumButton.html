@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonEnumButton | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonEnumButton | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonenumbutton">KryptonEnumButton</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonEnumButton</code> is a themed button that represents a single value of an enumeration and
+<strong>cycles through the enumeration's values each time it is clicked</strong>. It is intended as a compact
+alternative to a long list of radio buttons when the user only needs to toggle between the members
+of an <code>enum</code> (issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3838">#3838</a>).</p>
+<ul>
+<li><strong>Package / assembly:</strong> <code>Krypton.Toolkit.Utilities</code> (<code>Krypton.Toolkit.Utilities.csproj</code>).</li>
+<li><strong>Namespace:</strong> <code>Krypton.Toolkit.Utilities</code>.</li>
+<li><strong>Base type:</strong> <code>Krypton.Toolkit.KryptonButton</code> (so it inherits all button theming, palettes,
+<code>ButtonStyle</code>, <code>Values</code>, pulsing border, etc.).</li>
+<li><strong>NuGet:</strong> consumers install the <code>Krypton.Standard.Toolkit</code> package to get the utilities assembly.</li>
+</ul>
+<p>The button text is derived from the current enum member — the <code>DescriptionAttribute</code> text when
+present (and <code>UseDescriptionAttribute</code> is <code>true</code>), otherwise the field name (optionally humanised).</p>
+<p>Two controls ship as part of this feature:</p>
+<ul>
+<li><strong><code>KryptonEnumButton</code></strong> — a standard <code>KryptonButton</code> showing a single text line per value.</li>
+<li><strong><code>KryptonEnumCommandLinkButton</code></strong> — a <code>KryptonCommandLinkButton</code> (Vista/7-style command link)
+showing a bold heading plus a descriptive sub-text per value. See
+<a href="#command-link-variant-kryptonenumcommandlinkbutton">Command-link variant</a>.</li>
+</ul>
+<p>Both controls share the same cycling semantics, ordering/filtering, keyboard and mouse-wheel
+support, events, and strongly-typed helpers, because both delegate to a common engine.</p>
+<h2 id="architecture">Architecture</h2>
+<p>Neither control can share a base class (<code>KryptonEnumButton</code> extends <code>KryptonButton</code>, whereas
+<code>KryptonEnumCommandLinkButton</code> extends <code>KryptonCommandLinkButton</code> → <code>VisualSimpleBase</code>), so the shared
+behaviour lives in composed helper types rather than a common base:</p>
+<pre><code>KryptonButton (Krypton.Toolkit)                 KryptonCommandLinkButton (Krypton.Toolkit.Utilities)
+  └── KryptonEnumButton                            └── KryptonEnumCommandLinkButton
+        │                                                 │
+        └───────────────┬─────────────────────────────────┘
+                        │ owns (composition)
+                        ▼
+        EnumButtonValueCycler   ── enum type, active value list, selected index, clamp / wrap maths
+        EnumButtonTextHelper    ── description lookup + PascalCase humanisation (static)
+        EnumButtonSortOrder     ── Declaration | Value | Alphabetical
+</code></pre>
+<h3 id="enumbuttonvaluecycler-the-engine"><code>EnumButtonValueCycler</code> (the engine)</h3>
+<p><code>EnumButtonValueCycler</code> is an internal, UI-agnostic class that owns everything about <em>which</em> value is
+selected and <em>how</em> cycling moves between values. It knows nothing about display text, images, or
+events — the host control resolves presentation and raises events. This keeps the two controls
+behaviourally identical while rendering differently.</p>
+<p>Responsibilities:</p>
+<ul>
+<li>Holds the <code>EnumType</code> and reflects its public static fields
+(<code>Type.GetFields(BindingFlags.Public | BindingFlags.Static)</code>) in <strong>declaration order</strong>. Declaration
+order is used deliberately: <code>Enum.GetValues</code> collapses duplicate underlying values, whereas
+reflecting the fields gives one predictable cycle entry per declared member and lets each member
+carry its own <code>DescriptionAttribute</code>.</li>
+<li>Builds the <strong>active</strong> list = declared members minus <code>ExcludedValues</code>, re-ordered per <code>SortOrder</code>.</li>
+<li>Owns <code>SelectedIndex</code>, <code>Clamp</code>, <code>GetCycleTargetIndex(direction)</code> (peek without committing), and
+<code>CommitIndex</code>.</li>
+<li>Preserves the currently selected value across <code>SortOrder</code> / <code>ExcludedValues</code> changes where possible.</li>
+</ul>
+<h3 id="selection-text-and-images">Selection, text, and images</h3>
+<p>Each host control drives presentation from the engine:</p>
+<ul>
+<li><code>KryptonEnumButton</code> writes the resolved text to <code>base.Text</code> (which <code>KryptonButton</code> maps onto
+<code>Values.Text</code>) and, when an <code>ImageProvider</code> is set, writes <code>Values.Image</code>.</li>
+<li><code>KryptonEnumCommandLinkButton</code> writes <code>CommandLinkTextValues.Heading</code> /
+<code>.Description</code>, and (with an <code>ImageProvider</code>) <code>CommandLinkTextValues.Image</code>.</li>
+</ul>
+<p>The public <code>Text</code> property on <code>KryptonEnumButton</code> is overridden to be hidden and non-serialized
+(<code>[Browsable(false)]</code>, <code>[EditorBrowsable(Never)]</code>, <code>[DesignerSerializationVisibility(Hidden)]</code>,
+<code>[AllowNull]</code>) because the text is fully driven by the enum selection.</p>
+<h3 id="the-change-pipeline">The change pipeline</h3>
+<p>All selection changes (click, cycle, keyboard, wheel, <code>SelectedIndex</code> / <code>SelectedValue</code> setters) flow
+through a single private <code>TryChangeTo(index)</code> method that:</p>
+<ol>
+<li>Clamps the requested index and returns early if unchanged.</li>
+<li>Raises the cancelable <code>SelectedValueChanging</code> event; aborts if a handler sets <code>Cancel = true</code>.</li>
+<li>Commits the index in the engine.</li>
+<li>Updates the presentation (text/heading/description/image).</li>
+<li>Raises <code>SelectedValueChanged</code> and <code>EnumValueChanged</code>.</li>
+</ol>
+<p><code>OnClick</code> cycles to the next value <strong>before</strong> calling <code>base.OnClick</code>, so any handler attached to the
+standard <code>Click</code> event observes the newly selected value.</p>
+<h2 id="public-api">Public API</h2>
+<h3 id="properties">Properties</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EnumType</code></td>
+<td><code>Type?</code></td>
+<td><code>null</code></td>
+<td>The enum type to cycle through. Throws <code>ArgumentException</code> if the type is not an enum. Switching between two different enum types resets the selection to the first value. Has a design-time drop-down editor (see <a href="#design-time-enum-picker">Design-time enum picker</a>).</td>
+</tr>
+<tr>
+<td><code>SelectedIndex</code></td>
+<td><code>int</code></td>
+<td><code>0</code></td>
+<td>Zero-based index of the current value (within the active list). Clamped to the valid range.</td>
+</tr>
+<tr>
+<td><code>SelectedValue</code></td>
+<td><code>object?</code></td>
+<td><code>null</code></td>
+<td>The current boxed enum value; set to any value that belongs to <code>EnumType</code> to select it. <code>[Bindable(true)]</code> for data binding; hidden from the designer.</td>
+</tr>
+<tr>
+<td><code>SelectedDisplayText</code></td>
+<td><code>string</code></td>
+<td><code>&quot;&quot;</code></td>
+<td>The text currently shown on the button. Read-only.</td>
+</tr>
+<tr>
+<td><code>WrapAround</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>When <code>true</code>, cycling past the last value returns to the first (and vice versa); otherwise the selection clamps at the ends.</td>
+</tr>
+<tr>
+<td><code>UseDescriptionAttribute</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>When <code>true</code>, <code>DescriptionAttribute</code> text is used (falling back to the field name); when <code>false</code>, the field name is always used.</td>
+</tr>
+<tr>
+<td><code>HumanizeNames</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>When <code>true</code>, PascalCase / snake_case field names are shown with spaces (e.g. <code>ExtraLarge</code> → <code>Extra Large</code>) when no description is used.</td>
+</tr>
+<tr>
+<td><code>SortOrder</code></td>
+<td><code>EnumButtonSortOrder</code></td>
+<td><code>Declaration</code></td>
+<td>The cycle order: <code>Declaration</code>, <code>Value</code> (underlying numeric), or <code>Alphabetical</code> (member name).</td>
+</tr>
+<tr>
+<td><code>ExcludedValues</code></td>
+<td><code>IReadOnlyList&lt;object&gt;?</code></td>
+<td><code>null</code></td>
+<td>Values removed from the cycle. Assign in code; not serialized.</td>
+</tr>
+<tr>
+<td><code>ReverseOnRightClick</code></td>
+<td><code>bool</code></td>
+<td><code>false</code></td>
+<td>When <code>true</code>, a right-click cycles to the previous value.</td>
+</tr>
+<tr>
+<td><code>AllowKeyboardCycling</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>When <code>true</code>, Left/Up cycle previous and Right/Down cycle next while the button has focus.</td>
+</tr>
+<tr>
+<td><code>AllowMouseWheelCycling</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>When <code>true</code>, the mouse wheel cycles the value (wheel up = previous, wheel down = next).</td>
+</tr>
+<tr>
+<td><code>ImageProvider</code></td>
+<td><code>Func&lt;object, Image?&gt;?</code></td>
+<td><code>null</code></td>
+<td>Optional callback that supplies the button image per value (code-only, not serialized).</td>
+</tr>
+<tr>
+<td><code>Text</code></td>
+<td><code>string</code></td>
+<td>derived</td>
+<td>Overridden, hidden, and not serialized — the text is derived from the selection.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="methods">Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>void CycleNext()</code></td>
+<td>Advance to the next value (wrap or clamp per <code>WrapAround</code>).</td>
+</tr>
+<tr>
+<td><code>void CyclePrevious()</code></td>
+<td>Move to the previous value (wrap or clamp per <code>WrapAround</code>).</td>
+</tr>
+<tr>
+<td><code>void SetEnumType&lt;TEnum&gt;()</code></td>
+<td>Strongly-typed helper for <code>EnumType = typeof(TEnum)</code>.</td>
+</tr>
+<tr>
+<td><code>void SetSelectedValue&lt;TEnum&gt;(TEnum value)</code></td>
+<td>Assigns <code>EnumType</code> (if needed) and selects <code>value</code>.</td>
+</tr>
+<tr>
+<td><code>TEnum GetSelectedValue&lt;TEnum&gt;()</code></td>
+<td>Returns the current value cast to <code>TEnum</code> (or <code>default</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="events">Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Args</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SelectedValueChanging</code></td>
+<td><code>KryptonEnumButtonValueChangingEventArgs</code></td>
+<td>Raised <strong>before</strong> the value changes. Set <code>Cancel = true</code> to veto. Carries <code>CurrentValue</code>, <code>ProposedValue</code>, and <code>ProposedDisplayText</code>.</td>
+</tr>
+<tr>
+<td><code>SelectedValueChanged</code></td>
+<td><code>EventArgs</code></td>
+<td>Raised whenever the selected value changes (click, cycle, keyboard, wheel, or programmatic set). Also drives data binding.</td>
+</tr>
+<tr>
+<td><code>EnumValueChanged</code></td>
+<td><code>KryptonEnumButtonValueChangedEventArgs</code></td>
+<td>Same trigger as <code>SelectedValueChanged</code>, but carries the new <code>Value</code> (object) and <code>DisplayText</code>.</td>
+</tr>
+<tr>
+<td><code>Click</code> (inherited)</td>
+<td><code>EventArgs</code></td>
+<td>Still raised on every click, after the value has been cycled.</td>
+</tr>
+</tbody>
+</table>
+<p><code>KryptonEnumButtonValueChangedEventArgs</code> exposes <code>object? Value</code> and <code>string DisplayText</code>.
+<code>KryptonEnumButtonValueChangingEventArgs</code> derives from <code>CancelEventArgs</code> and exposes <code>CurrentValue</code>,
+<code>ProposedValue</code>, and <code>ProposedDisplayText</code>.</p>
+<h2 id="usage">Usage</h2>
+<h3 id="in-code-primary-pattern">In code (primary pattern)</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit.Utilities;
+
+var button = new KryptonEnumButton
+{
+    EnumType = typeof(DayOfWeek)   // shows &quot;Sunday&quot;, cycles to &quot;Monday&quot;, ...
+};
+
+button.EnumValueChanged += (s, e) =&gt;
+{
+    var day = (DayOfWeek)e.Value!;
+    Console.WriteLine($&quot;Now: {day} ({e.DisplayText})&quot;);
+};
+</code></pre>
+<h3 id="with-descriptionattribute-and-humanised-names">With <code>DescriptionAttribute</code> and humanised names</h3>
+<pre><code class="lang-csharp">public enum PizzaSize
+{
+    [Description(&quot;Small (9\&quot;)&quot;)]  Small,
+    [Description(&quot;Medium (11\&quot;)&quot;)] Medium,
+    [Description(&quot;Large (13\&quot;)&quot;)]  Large,
+    ExtraLarge                     // no description
+}
+
+button.EnumType = typeof(PizzaSize);      // &quot;Small (9&quot;)&quot; ... then &quot;ExtraLarge&quot;
+button.UseDescriptionAttribute = false;   // now shows field names
+button.HumanizeNames = true;              // &quot;ExtraLarge&quot; -&gt; &quot;Extra Large&quot;
+</code></pre>
+<h3 id="ordering-and-filtering">Ordering and filtering</h3>
+<pre><code class="lang-csharp">button.SortOrder = EnumButtonSortOrder.Alphabetical;   // cycle by member name
+button.ExcludedValues = new object[] { PizzaSize.ExtraLarge };  // drop a value from the cycle
+</code></pre>
+<h3 id="vetoing-a-change">Vetoing a change</h3>
+<pre><code class="lang-csharp">button.SelectedValueChanging += (s, e) =&gt;
+{
+    if (e.ProposedValue is PizzaSize.ExtraLarge &amp;&amp; !UserHasPremium)
+    {
+        e.Cancel = true;   // keep the current value
+    }
+};
+</code></pre>
+<h3 id="per-value-images">Per-value images</h3>
+<pre><code class="lang-csharp">var icons = new Dictionary&lt;TrafficLight, Image&gt; { /* ... */ };
+button.ImageProvider = value =&gt; icons[(TrafficLight)value];
+</code></pre>
+<h3 id="data-binding">Data binding</h3>
+<p><code>SelectedValue</code> is <code>[Bindable(true)]</code> and raises <code>SelectedValueChanged</code>, so it participates in
+standard WinForms binding:</p>
+<pre><code class="lang-csharp">label.DataBindings.Add(&quot;Text&quot;, button, &quot;SelectedValue&quot;, true, DataSourceUpdateMode.Never);
+</code></pre>
+<h3 id="keyboard-and-mouse-wheel">Keyboard and mouse wheel</h3>
+<p>While the button has focus, the arrow keys cycle the value (Left/Up = previous, Right/Down = next)
+and the mouse wheel cycles it (up = previous, down = next). Disable via <code>AllowKeyboardCycling</code> /
+<code>AllowMouseWheelCycling</code>.</p>
+<h3 id="strongly-typed-helpers-and-programmatic-cycling">Strongly-typed helpers and programmatic cycling</h3>
+<pre><code class="lang-csharp">button.SetSelectedValue(PizzaSize.Large);        // assigns EnumType + selects Large
+PizzaSize current = button.GetSelectedValue&lt;PizzaSize&gt;();
+
+button.WrapAround = false;   // stop at the ends instead of looping
+button.CycleNext();
+button.CyclePrevious();
+</code></pre>
+<h2 id="design-time-enum-picker">Design-time enum picker</h2>
+<p>Because there is no built-in property-grid editor for a <code>Type</code>, the <code>EnumType</code> property carries an
+<code>[Editor(typeof(EnumTypeEditor), typeof(UITypeEditor))]</code> attribute. <code>EnumTypeEditor</code> is a drop-down
+<code>UITypeEditor</code> that uses the design host's <code>ITypeDiscoveryService</code> to list every publicly-visible
+enumeration available in the current project, so the type can be chosen directly in the property grid
+(a <code>(none)</code> entry clears it). Assigning in code (in the form constructor after <code>InitializeComponent</code>)
+remains fully supported.</p>
+<p>Each control also has a designer (<code>KryptonEnumButtonDesigner</code> /
+<code>KryptonEnumCommandLinkButtonDesigner</code>) providing a smart-tag action list for the common behaviour
+toggles (wrap, reverse-on-right-click, sort order, keyboard/wheel cycling, description/humanise text,
+palette). The command-link designer deliberately derives from <code>ControlDesigner</code> (not
+<code>KryptonCommandLinkButtonDesigner</code>) so it does <strong>not</strong> offer Heading/Description/Image text editing,
+which are enum-driven at runtime.</p>
+<h2 id="accessibility">Accessibility</h2>
+<p>Each control returns a dedicated accessible object (<code>KryptonEnumButtonAccessibleObject</code> /
+<code>KryptonEnumCommandLinkButtonAccessibleObject</code>, both built on the shared
+<code>UtilitiesActionControlAccessibleObject&lt;T&gt;</code>). They report:</p>
+<ul>
+<li><strong>Name / Value</strong> — the current display text (heading for the command link).</li>
+<li><strong>Description</strong> — the current value's description, or <code>&quot;Cycles through &lt;EnumName&gt; values&quot;</code>.</li>
+<li><strong>Role</strong> — <code>PushButton</code>, with a <code>&quot;Cycle&quot;</code> default action that performs a click.</li>
+</ul>
+<h2 id="configuration--persistence">Configuration / persistence</h2>
+<p>Neither control has XML/<code>Storage</code> state of its own. For designer scenarios:</p>
+<ul>
+<li><code>EnumType</code> serializes as <code>typeof(X)</code> (default <code>null</code>, so it is only written when assigned).</li>
+<li><code>SelectedIndex</code> serializes as an <code>int</code> (default <code>0</code>).</li>
+<li>The behaviour flags (<code>WrapAround</code>, <code>UseDescriptionAttribute</code>, <code>HumanizeNames</code>, <code>SortOrder</code>,
+<code>ReverseOnRightClick</code>, <code>AllowKeyboardCycling</code>, <code>AllowMouseWheelCycling</code>) serialize as their
+non-default values.</li>
+<li><code>ExcludedValues</code> and the provider callbacks (<code>ImageProvider</code>, <code>HeadingProvider</code>,
+<code>DescriptionProvider</code>) are code-only and not serialized.</li>
+<li><code>Text</code> (and the command-link heading/description) are derived and not serialized.</li>
+<li>WinForms serializes properties alphabetically, so <code>EnumType</code> is written before <code>SelectedIndex</code>;
+the engine keeps a designer-written <code>SelectedIndex</code> on the first (from-<code>null</code>) <code>EnumType</code>
+assignment rather than forcing a reset.</li>
+</ul>
+<h2 id="command-link-variant-kryptonenumcommandlinkbutton">Command-link variant: KryptonEnumCommandLinkButton</h2>
+<p><code>KryptonEnumCommandLinkButton</code> provides the same enum-cycling behaviour but renders as a
+<code>KryptonCommandLinkButton</code> (bold heading + smaller description sub-text, optional UAC shield icon).</p>
+<ul>
+<li><strong>Base type:</strong> <code>Krypton.Toolkit.Utilities.KryptonCommandLinkButton</code> (which extends
+<code>VisualSimpleBase</code>, not <code>KryptonButton</code>), so it inherits the command-link layout, <code>StateCommon</code>
+palette states, <code>ButtonStyle</code>, <code>KryptonCommand</code>, <code>DialogResult</code>, and <code>UACShieldIcon</code>.</li>
+<li><strong>Text mapping (per value):</strong>
+<ul>
+<li><strong>Heading</strong> ← the enum field name (humanised when <code>HumanizeNames</code> is <code>true</code>), or
+<code>HeadingProvider(value)</code> when set.</li>
+<li><strong>Description</strong> ← the value's <code>DescriptionAttribute</code> text (when <code>UseDescriptionAttribute</code> is
+<code>true</code>), or <code>DescriptionProvider(value)</code> when set, otherwise blank.</li>
+</ul>
+</li>
+<li>A single enum decorated with <code>[Description]</code> therefore fills <strong>both</strong> command-link lines with no
+extra work — the member name becomes the heading and its description becomes the sub-text.</li>
+</ul>
+<p>It exposes the same members as <code>KryptonEnumButton</code> (including <code>HumanizeNames</code>, <code>SortOrder</code>,
+<code>ExcludedValues</code>, <code>AllowKeyboardCycling</code>, <code>AllowMouseWheelCycling</code>, <code>ImageProvider</code>, and the
+<code>SelectedValueChanging</code> / <code>SelectedValueChanged</code> / <code>EnumValueChanged</code> events), plus:</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SelectedHeadingText</code></td>
+<td><code>string</code></td>
+<td>The heading currently shown for the selected value.</td>
+</tr>
+<tr>
+<td><code>SelectedDescriptionText</code></td>
+<td><code>string</code></td>
+<td>The description currently shown for the selected value.</td>
+</tr>
+<tr>
+<td><code>HeadingProvider</code></td>
+<td><code>Func&lt;object, string&gt;?</code></td>
+<td>Optional callback for custom heading text (code-only, not serialized).</td>
+</tr>
+<tr>
+<td><code>DescriptionProvider</code></td>
+<td><code>Func&lt;object, string&gt;?</code></td>
+<td>Optional callback for custom description text (code-only, not serialized).</td>
+</tr>
+</tbody>
+</table>
+<p><code>EnumValueChanged.DisplayText</code> (and <code>SelectedValueChanging.ProposedDisplayText</code>) carry the <strong>heading</strong>
+for this control. Its <code>ImageProvider</code> sets <code>CommandLinkTextValues.Image</code> and disables the default
+command-link image so a per-value icon can be shown.</p>
+<pre><code class="lang-csharp">public enum BackupMode
+{
+    [Description(&quot;Backs up your files automatically on a schedule.&quot;)] Automatic,
+    [Description(&quot;You choose exactly what and when to back up.&quot;)]     Manual,
+    [Description(&quot;No backups are taken. You are on your own!&quot;)]       Disabled
+}
+
+var link = new KryptonEnumCommandLinkButton { EnumType = typeof(BackupMode) };
+// Heading:    &quot;Automatic&quot;
+// Description: &quot;Backs up your files automatically on a schedule.&quot;
+// after a click -&gt; &quot;Manual&quot; / &quot;You choose exactly what and when to back up.&quot;
+</code></pre>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li><strong>No <code>EnumType</code>:</strong> the value list is empty, <code>SelectedValue</code> is <code>null</code>, clicks/keys/wheel do not
+cycle, and the existing <code>Text</code> (or command-link heading/description defaults) is left untouched.</li>
+<li><strong>Non-enum type:</strong> assigning a non-enum <code>Type</code> throws <code>ArgumentException</code>.</li>
+<li><strong>Duplicate underlying values / <code>[Flags]</code> enums:</strong> each declared member is a separate cycle entry
+(reflection over fields, not <code>Enum.GetValues</code>).</li>
+<li><strong>Excluding the current value:</strong> if <code>ExcludedValues</code> removes the currently selected value, the
+selection falls back to the first remaining value.</li>
+<li><strong>Design mode:</strong> clicking, keyboard, and wheel do not cycle while hosted in the WinForms designer;
+<code>KryptonEnumButton</code> shows a <code>(KryptonEnumButton)</code> placeholder when no <code>EnumType</code> is assigned.</li>
+<li><strong><code>net472</code> compatibility:</strong> the controls use only APIs available on <code>net472</code> (<code>Array.Empty&lt;T&gt;</code>,
+<code>CustomAttributeExtensions.GetCustomAttribute&lt;T&gt;</code>, the <code>struct, Enum</code> generic constraint,
+<code>ITypeDiscoveryService</code>).</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

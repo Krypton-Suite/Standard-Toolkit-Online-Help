@@ -44,7 +44,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - `buildsolution.cmd` - Interactive builder
 - `purge.cmd` - Clean build artifacts
 - `publish.cmd` - Publish to NuGet
-- Visual Studio detection
+- MSBuild / Visual Studio discovery (`Scripts/Common/find-msbuild.cmd`, `vswhere`, overrides)
 - Logging and troubleshooting
 - [Parallel builds](Build%20System/BuildScripts.md#parallel-builds) (`/m` on all orchestration `.cmd` files)
 

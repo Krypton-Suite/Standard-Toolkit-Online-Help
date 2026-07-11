@@ -1,12 +1,12 @@
 # Krypton Exception Handling Documentation
 
-**V110+:** The public **`KryptonExceptionDialog`** API is implemented in **`Krypton.Toolkit.Utilities`**. The canonical quick start and API reference are under **[Utilities/KryptonExceptionDialogQuickStart.md](../../Utilities/KryptonExceptionDialogQuickStart.md)** and **[Utilities/KryptonExceptionDialog.md](../../Utilities/KryptonExceptionDialog.md)**. The files in this folder are legacy copies; prefer the Utilities topics when links are updated.
+**V110+:** The public **`KryptonExceptionDialog`** API is implemented in **`Krypton.Toolkit.Utilities`**. Start with **[KryptonExceptionDialogQuickStart.md](KryptonExceptionDialogQuickStart.md)** and **[KryptonExceptionDialog.md](KryptonExceptionDialog.md)**. Internal handler details are in **[ExceptionHandler](../../Utilities/ExceptionHandler.md)**.
 
 This directory contains documentation for the Krypton Toolkit exception handling features.
 
 ## Documentation Files
 
-### 1. [KryptonExceptionDialog](../../Utilities/KryptonExceptionDialog.md)
+### 1. [KryptonExceptionDialog](KryptonExceptionDialog.md)
 
 **Full API Reference Documentation** - Comprehensive, in-depth documentation covering:
 
@@ -28,7 +28,7 @@ This directory contains documentation for the Krypton Toolkit exception handling
 - Architecture reviews
 - Reference during development
 
-### 2. [KryptonExceptionDialog QuickStart](../../Utilities/KryptonExceptionDialogQuickStart.md)
+### 2. [KryptonExceptionDialog QuickStart](KryptonExceptionDialogQuickStart.md)
 
 **Quick Start Guide** - Get up and running in 5 minutes:
 
@@ -147,8 +147,8 @@ catch (Exception ex)
 
 ## Navigation
 
-- **[Start Here: Quick Start Guide →](../../Utilities/KryptonExceptionDialogQuickStart.md)**
-- **[Full API Reference →](../../Utilities/KryptonExceptionDialog.md)**
+- **[Start Here: Quick Start Guide →](KryptonExceptionDialogQuickStart.md)**
+- **[Full API Reference →](KryptonExceptionDialog.md)**
 
 ## Support
 

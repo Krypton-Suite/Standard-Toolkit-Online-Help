@@ -1,6 +1,6 @@
 # KryptonExceptionDialog - Quick Start Guide
 
-**V110+:** Use **`using Krypton.Toolkit.Utilities;`**. Canonical copy: **[Utilities/KryptonExceptionDialogQuickStart.md](../../Utilities/KryptonExceptionDialogQuickStart.md)**.
+**V110+:** Use **`using Krypton.Toolkit.Utilities;`**. Canonical copy: **[KryptonExceptionDialogQuickStart.md](KryptonExceptionDialogQuickStart.md)**.
 
 ## Overview
 

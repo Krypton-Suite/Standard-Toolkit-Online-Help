@@ -72,6 +72,50 @@
 <h2 id="overview">Overview</h2>
 <p>The Krypton Toolkit provides Windows Command Prompt (<code>.cmd</code>) batch scripts for convenient building, packaging, and maintenance. Scripts are organized under <code>Scripts/VS2022/</code>, <code>Scripts/Current/</code>, and <code>Scripts/Build/</code>. The root <code>run.cmd</code> launches an interactive menu and invokes these scripts. Each script set uses a <code>build.proj</code> in its directory.</p>
 <p>Orchestrated MSBuild invocations import root <code>Directory.Build.props</code>, so binaries and <code>.nupkg</code> files go to <code>Bin/</code> and <code>Bin/Packages/</code> by default. To match CI, you can pass <code>/p:UseArtifactsOutput=true</code>, which redirects outputs to <code>artifacts/bin/</code> and <code>artifacts/packages/</code>. Script <code>.proj</code> Clean/Push/archive targets follow <code>$(KryptonBuildOutputRoot)</code> and <code>$(KryptonPackageOutputRoot)</code> automatically.</p>
+<h2 id="msbuild-and-visual-studio-discovery">MSBuild and Visual Studio discovery</h2>
+<p>All orchestration <code>.cmd</code> scripts call the shared helper <code>Scripts/Common/find-msbuild.cmd</code> to locate <code>MSBuild.exe</code>. Discovery runs in this order:</p>
+<ol>
+<li><strong><code>MSBUILDPATH</code> or <code>MSBUILD_PATH</code></strong> — must point at the <code>MSBuild\Current\Bin</code> directory when set.</li>
+<li><strong><code>vswhere.exe</code></strong> — <code>%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe</code> resolves the real install path (including custom drives and non-default locations).</li>
+<li><strong>Fallback</strong> — standard folders under <code>%ProgramFiles%</code> or <code>%ProgramFiles(x86)%</code>.</li>
+</ol>
+<p>Each script folder passes a <strong>profile</strong> to the helper:</p>
+<table>
+<thead>
+<tr>
+<th>Script folder</th>
+<th>Profile</th>
+<th>Visual Studio generation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Scripts/Build/</code></td>
+<td><code>2019</code></td>
+<td>Visual Studio 2019</td>
+</tr>
+<tr>
+<td><code>Scripts/VS2022/</code></td>
+<td><code>2022</code></td>
+<td>Visual Studio 2022</td>
+</tr>
+<tr>
+<td><code>Scripts/Current/</code></td>
+<td><code>18</code></td>
+<td>Visual Studio 2026</td>
+</tr>
+</tbody>
+</table>
+<p>On success, the helper prints the resolved product, MSBuild path, and MSBuild tool version before the build starts:</p>
+<pre><code class="lang-text">Using build tools:
+  Visual Studio: Visual Studio Enterprise 2026
+  MSBuild path: A:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\Bin
+  MSBuild version: 18.7.8.30822
+</code></pre>
+<p>Override example:</p>
+<pre><code class="lang-cmd">set MSBUILDPATH=D:\DevTools\VS2022\MSBuild\Current\Bin
+Scripts\VS2022\build-stable.cmd
+</code></pre>
 <h2 id="core-build-scripts">Core Build Scripts</h2>
 <h3 id="build-stablecmd">build-stable.cmd</h3>
 <p><strong>Purpose</strong>: Builds stable/release packages interactively</p>
@@ -91,22 +135,14 @@ build-stable.cmd Clean     # Clean only
 </code></pre>
 <p><strong>Features</strong>:</p>
 <ul>
-<li>Auto-detects Visual Studio 2022 installation</li>
-<li>Supports Preview, Enterprise, Professional, Community, and BuildTools editions</li>
+<li>Locates MSBuild via <code>Scripts\Common\find-msbuild.cmd</code> (profile <code>2022</code> in this folder)</li>
+<li>Reports Visual Studio product, MSBuild path, and MSBuild version at startup</li>
 <li>Displays start and end timestamps with timezone</li>
 <li>Creates detailed build logs in <code>../Logs/stable-build-log.log</code></li>
 <li>Creates binary log in <code>../Logs/stable-build-log.binlog</code></li>
 <li>Shows build summary with timestamps</li>
 <li>Interactive menu option to return to main menu</li>
 </ul>
-<p><strong>Visual Studio Detection Order</strong>:</p>
-<ol>
-<li>Visual Studio 2022 Preview</li>
-<li>Visual Studio 2022 Enterprise</li>
-<li>Visual Studio 2022 Professional</li>
-<li>Visual Studio 2022 Community</li>
-<li>Visual Studio 2022 BuildTools</li>
-</ol>
 <p><strong>Output</strong>:</p>
 <ul>
 <li>Text log: <code>Logs/stable-build-log.log</code></li>
@@ -125,7 +161,7 @@ build-canary.cmd [target]
 </ul>
 <p><strong>Features</strong>:</p>
 <ul>
-<li>Same Visual Studio detection as build-stable.cmd</li>
+<li>Locates MSBuild via <code>find-msbuild.cmd</code> (same profile as other scripts in the folder)</li>
 <li>Builds using <code>canary.proj</code></li>
 <li>Outputs to <code>../Logs/canary-build-log.log</code> and <code>.binlog</code></li>
 <li>Packages go to <code>Bin/Packages/Canary/</code> unless the build used <code>UseArtifactsOutput=true</code> (<code>artifacts/packages/Canary/</code>)</li>
@@ -164,16 +200,20 @@ build-nightly.cmd Pack     # Pack nightly packages
 </ul>
 <h2 id="utility-scripts">Utility Scripts</h2>
 <h3 id="buildsolutioncmd">buildsolution.cmd</h3>
-<p><strong>Purpose</strong>: Interactive solution builder with VS 2019/2022 support</p>
+<p><strong>Purpose</strong>: Interactive solution builder (profile depends on script folder)</p>
 <p><strong>Usage</strong>:</p>
 <pre><code class="lang-cmd">cd Scripts\VS2022
 buildsolution.cmd [target]
 </code></pre>
+<p>Equivalent scripts exist under <code>Scripts\Build\</code> (prompts: 2019 or 2026) and <code>Scripts\Current\</code> (uses Visual Studio 2026 only).</p>
 <p><strong>Features</strong>:</p>
 <ul>
-<li>Prompts for Visual Studio version (2019 or 2022)</li>
+<li>Locates MSBuild via <code>find-msbuild.cmd</code> for the chosen generation</li>
+<li><code>Scripts\VS2022\</code>: prompts for Visual Studio 2019 or 2022</li>
+<li><code>Scripts\Build\</code>: prompts for Visual Studio 2019 or 2026</li>
+<li><code>Scripts\Current\</code>: builds with Visual Studio 2026</li>
 <li>Builds using <code>build.proj</code></li>
-<li>Interactive NuGet package creation prompt</li>
+<li>Interactive NuGet package creation prompt (<code>Scripts\VS2022\</code> and <code>Scripts\Build\</code> only)</li>
 <li>Displays completion timestamps</li>
 </ul>
 <p><strong>Workflow</strong>:</p>
@@ -253,22 +293,18 @@ main-menu.cmd
 </ul>
 <p><strong>Note</strong>: Assumes <code>run.cmd</code> exists in the repository root. The main-menu script is in <code>Scripts/</code>.</p>
 <h2 id="script-patterns">Script Patterns</h2>
-<h3 id="visual-studio-detection-pattern">Visual Studio Detection Pattern</h3>
-<p>All build scripts use this pattern:</p>
-<pre><code class="lang-batch">if exist &quot;%ProgramFiles%\Microsoft Visual Studio\2022\Preview\MSBuild\Current\Bin&quot; goto vs17prev
-if exist &quot;%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin&quot; goto vs17ent
-if exist &quot;%ProgramFiles%\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin&quot; goto vs17pro
-if exist &quot;%ProgramFiles%\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin&quot; goto vs17com
-if exist &quot;%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin&quot; goto vs17build
-
+<h3 id="msbuild-discovery-pattern">MSBuild discovery pattern</h3>
+<p>Build scripts delegate to the shared helper:</p>
+<pre><code class="lang-batch">call &quot;%SCRIPT_DIR%..\Common\find-msbuild.cmd&quot; 2022
+if errorlevel 1 (
 echo &quot;Unable to detect suitable environment. Check if VS 2022 is installed.&quot;
+echo.
 pause
 goto exitbatch
-
-:vs17prev
-set msbuildpath=%ProgramFiles%\Microsoft Visual Studio\2022\Preview\MSBuild\Current\Bin
+)
 goto build
 </code></pre>
+<p>Replace <code>2022</code> with <code>2019</code> in <code>Scripts\Build\</code> or <code>18</code> in <code>Scripts\Current\</code>. See <a href="#msbuild-and-visual-studio-discovery">MSBuild and Visual Studio discovery</a>.</p>
 <h3 id="logging-pattern">Logging Pattern</h3>
 <p>Scripts enable detailed logging and parallel builds:</p>
 <pre><code class="lang-batch">REM /m: multi-processor MSBuild (all logical CPUs).
@@ -346,33 +382,39 @@ echo Build succeeded!
 </code></pre>
 <h2 id="environment-requirements">Environment Requirements</h2>
 <h3 id="required-environment-variables">Required Environment Variables</h3>
-<p>None explicitly required, but these are respected:</p>
+<p>None explicitly required. These are used when present:</p>
 <ul>
-<li><code>ProgramFiles</code> - Visual Studio installation detection</li>
-<li><code>PATH</code> - For finding <code>nuget.exe</code> during publish</li>
+<li><code>ProgramFiles</code> / <code>ProgramFiles(x86)</code> — fallback MSBuild discovery</li>
+<li><code>PATH</code> — for finding <code>nuget.exe</code> during publish</li>
 </ul>
 <h3 id="optional-environment-variables">Optional Environment Variables</h3>
 <ul>
-<li><code>NUGET_API_KEY</code> - For automated package publishing</li>
-<li><code>MSBUILDPATH</code> - Override MSBuild location</li>
+<li><code>NUGET_API_KEY</code> — for automated package publishing</li>
+<li><code>MSBUILDPATH</code> or <code>MSBUILD_PATH</code> — override MSBuild location (<code>MSBuild\Current\Bin</code> directory)</li>
 </ul>
 <h3 id="setting-custom-msbuild-path">Setting Custom MSBuild Path</h3>
-<pre><code class="lang-cmd">set MSBUILDPATH=C:\CustomPath\MSBuild\Current\Bin
+<pre><code class="lang-cmd">set MSBUILDPATH=D:\DevTools\VS2022\MSBuild\Current\Bin
+cd Scripts\VS2022
 build-stable.cmd Build
 </code></pre>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="unable-to-detect-suitable-environment">&quot;Unable to detect suitable environment&quot;</h3>
-<p><strong>Cause</strong>: Visual Studio 2022 not found</p>
+<p><strong>Cause</strong>: <code>find-msbuild.cmd</code> could not resolve MSBuild for the script folder's profile (wrong VS generation, missing MSBuild workload, or no installation).</p>
 <p><strong>Solutions</strong>:</p>
 <ol>
-<li><p>Install Visual Studio 2022</p>
+<li><p>Install the Visual Studio generation that matches the script folder (2019 / 2022 / 2026).</p>
 </li>
-<li><p>Verify installation path:</p>
-<pre><code class="lang-cmd">dir &quot;%ProgramFiles%\Microsoft Visual Studio\2022\&quot;
+<li><p>List MSBuild-capable installations with <code>vswhere</code>:</p>
+<pre><code class="lang-cmd">&quot;%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe&quot; -all -products * -requires Microsoft.Component.MSBuild -property displayName,installationPath
 </code></pre>
 </li>
-<li><p>Manual MSBuild invocation:</p>
-<pre><code class="lang-cmd">&quot;C:\Path\To\MSBuild.exe&quot; /m /t:Build build.proj
+<li><p>Set an explicit path before running the script:</p>
+<pre><code class="lang-cmd">set MSBUILDPATH=D:\Path\To\MSBuild\Current\Bin
+build-stable.cmd Build
+</code></pre>
+</li>
+<li><p>Use <code>dotnet build</code> for a quick solution build without full orchestration:</p>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
 </code></pre>
 </li>
 </ol>
@@ -458,7 +500,7 @@ echo All operations completed!
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>

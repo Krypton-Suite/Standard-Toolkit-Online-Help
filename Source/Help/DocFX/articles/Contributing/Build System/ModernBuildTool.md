@@ -79,7 +79,9 @@ dotnet run --project Scripts/ModernBuild/ModernBuild.csproj
 ├─────────────────────────────────────────────────────────────────┤
 │ Build Settings                                                  │
 │ Project: Scripts/nightly.proj                                   │
-│ MSBuild: C:\Program Files\...\MSBuild.exe                       │
+│ Visual Studio: Visual Studio Enterprise 2026                    │
+│ MSBuild: A:\Program Files\...\MSBuild\Current\Bin\MSBuild.exe │
+│ MSBuild version: 18.7.8.30822                                   │
 │ Log: Logs/nightly-build.binlog                                  │
 ├─────────────────────────────────────────────────────────────────┤
 │ Summary (paged)                                                 │
@@ -96,7 +98,7 @@ dotnet run --project Scripts/ModernBuild/ModernBuild.csproj
 |-----------|-------------|
 | **Tasks** | Hotkeys and current selections |
 | **Live Output** | Streaming MSBuild/NuGet output |
-| **Build Settings** | Current project, MSBuild path, log location |
+| **Build Settings** | Current project, scripts profile, Visual Studio product, MSBuild path, MSBuild version, log location |
 | **Summary** | Recent log tail for quick diagnostics |
 | **Status Bar** | Run status, elapsed time, error/warning counts |
 
@@ -400,8 +402,9 @@ Displays:
 
 ### Required
 
-1. **Visual Studio 2022**
-   - ModernBuild auto-detects MSBuild via `vswhere.exe`
+1. **Visual Studio 2022 or newer** with the MSBuild component
+   - ModernBuild locates MSBuild via `vswhere.exe`, then falls back to `%ProgramFiles%` install paths
+   - Set `MSBUILDPATH` or `MSBUILD_PATH` to override (directory containing `MSBuild.exe`)
 
 2. **NuGet CLI**
    - Download: https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
@@ -435,20 +438,24 @@ ModernBuild looks for project files in these locations:
 
 ### "Could not find MSBuild.exe"
 
-**Cause**: Visual Studio 2022 not installed or not detected
+**Cause**: No suitable Visual Studio installation with MSBuild was found
 
 **Solutions**:
-1. Install Visual Studio 2022
-2. Verify installation:
+1. Install Visual Studio 2022 or newer with the **.NET desktop development** workload
+2. List installations (any drive or custom path):
+
 ```cmd
-dir "%ProgramFiles%\Microsoft Visual Studio\2022\"
+"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.Component.MSBuild -property displayName,installationPath
 ```
-3. ModernBuild checks these locations:
-   - Preview
-   - Enterprise
-   - Professional
-   - Community
-   - BuildTools
+
+3. Override before starting ModernBuild:
+
+```cmd
+set MSBUILDPATH=D:\DevTools\VS2022\MSBuild\Current\Bin
+dotnet run --project Scripts/ModernBuild/ModernBuild.csproj
+```
+
+4. Fallback probing checks common folders under `%ProgramFiles%` for Visual Studio 2026 (`18`) and Visual Studio 2022 editions (Insiders/Preview, Enterprise, Professional, Community, BuildTools)
 
 ### "nuget.exe not found"
 

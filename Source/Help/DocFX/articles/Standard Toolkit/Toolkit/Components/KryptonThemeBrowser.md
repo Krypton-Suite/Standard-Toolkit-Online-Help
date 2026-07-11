@@ -4,6 +4,8 @@
 
 The `KryptonThemeBrowser` class provides a static utility for displaying theme selection dialogs. It offers a centralized way to show theme browser dialogs with customizable data and layout options, enabling users to preview and select from available Krypton themes.
 
+The browser presents themes from the same supported set as `PaletteModeStrings.SupportedThemes` (including V110+ Retro and macOS palettes).
+
 ## Class Hierarchy
 
 ```text

@@ -4,6 +4,8 @@
 
 The `KryptonIntegratedToolBarManager` class provides a comprehensive toolbar management system for Krypton forms. It inherits from `Component` and offers integrated toolbar functionality with 14 predefined buttons, customizable orientation, alignment, and visibility controls. The manager handles the creation, attachment, and management of toolbar buttons within Krypton forms.
 
+Toolbar button commands should use [KryptonCommand](KryptonCommand.md) with `CommandType` set to the matching `IntegratedToolBar*` value ([#1133](https://github.com/Krypton-Suite/Standard-Toolkit/issues/1133)) instead of obsolete dedicated toolbar command component types.
+
 ## Class Hierarchy
 
 ```text

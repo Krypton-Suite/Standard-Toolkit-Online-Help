@@ -1,5 +1,9 @@
 # KryptonManager
 
+> **Superseded:** This short legacy topic has been replaced by the comprehensive **[KryptonManager](../Components/KryptonManager.md)** reference in `Components/`.
+
+---
+
 Use the *KryptonManager* component to modify global settings that affect all the
 *Krypton* controls in your application. Note that the global settings affect all
 controls and not just those on the same form as the *KryptonManager* instance.

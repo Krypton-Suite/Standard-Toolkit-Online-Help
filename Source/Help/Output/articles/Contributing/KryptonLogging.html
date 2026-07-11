@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Diagnostic Logging | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Diagnostic Logging | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-diagnostic-logging">Krypton Diagnostic Logging</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3856">#3856</a> replaces the legacy <code>CommonHelper.LogOutput</code> file-to-exe-directory design with a unified, thread-safe logging path owned by <code>KryptonLogger</code> in <code>Krypton.Toolkit</code>.</p>
+<p>All toolkit diagnostic messages flow through:</p>
+<ul>
+<li><code>KryptonLogger.Write(string)</code></li>
+<li><code>CommonHelper.LogOutput(string)</code> — preserved for binary compatibility; delegates to <code>KryptonLogger</code></li>
+<li><code>DebugLogger</code> (internal) — prefixes <code>[WM]</code> for theme-swap message tracing</li>
+</ul>
+<h2 id="architecture">Architecture</h2>
+<pre><code class="lang-mermaid">flowchart LR
+    Callers[&quot;Call sites\n(LogOutput, DebugLogger, …)&quot;] --&gt; KL[&quot;KryptonLogger&quot;]
+    KL --&gt; Custom[&quot;IKryptonLogger\n(optional)&quot;]
+    KL --&gt; Default[&quot;DefaultKryptonLogger&quot;]
+    Default --&gt; Debug[&quot;Debug.WriteLine&quot;]
+    Default --&gt; File[&quot;Optional file sink&quot;]
+</code></pre>
+<h3 id="key-types">Key types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Visibility</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IKryptonLogger</code></td>
+<td>public</td>
+<td>Application-provided sink (<code>Write(string)</code>)</td>
+</tr>
+<tr>
+<td><code>KryptonLogger</code></td>
+<td>public</td>
+<td>Static gateway; <code>Current</code>, <code>SetLogger</code>, <code>Write</code></td>
+</tr>
+<tr>
+<td><code>DefaultKryptonLogger</code></td>
+<td>internal</td>
+<td>Built-in sink: <code>Debug</code> + opt-in file</td>
+</tr>
+<tr>
+<td><code>DebugLogger</code></td>
+<td>internal</td>
+<td>WM/theme-swap tracing helper</td>
+</tr>
+</tbody>
+</table>
+<h2 id="default-behavior">Default behavior</h2>
+<ol>
+<li><strong>Always</strong> writes to <code>System.Diagnostics.Debug</code> (visible in Visual Studio Output, DebugView, etc.).</li>
+<li><strong>Never</strong> writes beside the executable or under <code>AppContext.BaseDirectory</code> by default.</li>
+<li><strong>Optionally</strong> appends timestamped lines to a file when enabled (see below).</li>
+<li>File appends are serialized with a lock so concurrent paint/dispose/designer paths do not corrupt the log.</li>
+</ol>
+<h2 id="optional-file-logging">Optional file logging</h2>
+<p>File output is <strong>opt-in</strong>. Set one of:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KRYPTON_LOG_PATH</code></td>
+<td>Full path to the log file (directory created if needed)</td>
+</tr>
+<tr>
+<td><code>KRYPTON_LOG_WM</code></td>
+<td>Alias of <code>KRYPTON_LOG_PATH</code> (backward compatibility for WM tracing)</td>
+</tr>
+<tr>
+<td><code>KRYPTON_LOG</code></td>
+<td>When <code>1</code>, <code>true</code>, <code>yes</code>, or <code>on</code> (case-insensitive), writes to <code>%LOCALAPPDATA%\Krypton-Suite\Toolkit\Krypton.log</code></td>
+</tr>
+</tbody>
+</table>
+<p>Example (PowerShell, current session):</p>
+<pre><code class="lang-powershell">$env:KRYPTON_LOG = '1'
+dotnet run --project &quot;.\Source\Krypton Components\TestForm\TestForm.csproj&quot; -c Debug
+</code></pre>
+<p>Example (explicit path):</p>
+<pre><code class="lang-powershell">$env:KRYPTON_LOG_PATH = &quot;$env:TEMP\krypton-test.log&quot;
+</code></pre>
+<h2 id="custom-logger">Custom logger</h2>
+<p>Implement <code>IKryptonLogger</code> and register at startup:</p>
+<pre><code class="lang-csharp">public sealed class MyLogger : IKryptonLogger
+{
+    public void Write(string message) =&gt; /* Serilog, ETW, etc. */;
+}
+
+// Before creating Krypton forms:
+KryptonLogger.SetLogger(new MyLogger());
+</code></pre>
+<p>Pass <code>null</code> to <code>KryptonLogger.SetLogger(null)</code> to restore the built-in default.</p>
+<h2 id="call-sites-in-the-toolkit">Call sites in the toolkit</h2>
+<table>
+<thead>
+<tr>
+<th>Location</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Clipping.cs</code></td>
+<td>Dispose failures restoring graphics clip</td>
+</tr>
+<tr>
+<td><code>KryptonCustomPaletteBase.cs</code></td>
+<td>Palette import version mismatch</td>
+</tr>
+<tr>
+<td><code>KryptonSplitterPanelDesigner.cs</code></td>
+<td>Designer overlay draw failure</td>
+</tr>
+<tr>
+<td><code>ThemeChangeCoordinator.cs</code>, <code>KryptonComboBox.cs</code></td>
+<td>Theme-swap WM tracing via <code>DebugLogger</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="validation">Validation</h2>
+<ol>
+<li>Run TestForm with no env vars — messages appear only in the debug output window.</li>
+<li>Set <code>KRYPTON_LOG=1</code> — confirm <code>%LOCALAPPDATA%\Krypton-Suite\Toolkit\Krypton.log</code> is created and appended.</li>
+<li>Set <code>KRYPTON_LOG_PATH</code> to a temp file — confirm writes go there.</li>
+<li>Install or run from a UAC-protected folder — confirm no write attempts next to the <code>.exe</code>.</li>
+<li>Register a custom <code>IKryptonLogger</code> — confirm all <code>LogOutput</code> traffic is received.</li>
+</ol>
+<h2 id="migration-notes">Migration notes</h2>
+<ul>
+<li><code>CommonHelper.LogOutput</code> signature is unchanged; no consumer code changes required.</li>
+<li>Debug builds no longer auto-create <code>logs\KryptonWM.log</code> under the application directory. Use <code>KRYPTON_LOG=1</code> or <code>KRYPTON_LOG_PATH</code> instead.</li>
+<li><code>KRYPTON_LOG_WM</code> continues to work as an explicit file path override.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

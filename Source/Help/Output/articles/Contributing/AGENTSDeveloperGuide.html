@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>AGENTS.md Developer Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="AGENTS.md Developer Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="agentsmd-developer-guide">AGENTS.md Developer Guide</h1>
+
+<p>This document explains the <strong>AGENTS.md</strong> feature in the Krypton Standard Toolkit repository: what it is, how AI-assisted development tools use it, how its content is organized, and how maintainers should evolve it over time.</p>
+<p>For the live rules file itself, see <a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/AGENTS.md">AGENTS.md</a> at the repository root. To view the <code>nightly</code> version, see <a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/alpha/AGENTS.md">AGENTS.md</a> on the <code>alpha</code> branch.</p>
+<hr>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#industry-context-and-adoption">Industry context and adoption</a></li>
+<li><a href="#how-tools-consume-agentsmd">How tools consume AGENTS.md</a></li>
+<li><a href="#relationship-to-other-documentation">Relationship to other documentation</a></li>
+<li><a href="#content-architecture">Content architecture</a></li>
+<li><a href="#section-reference-in-depth">Section reference (in depth)</a></li>
+<li><a href="#maintenance-workflow">Maintenance workflow</a></li>
+<li><a href="#verification-and-troubleshooting">Verification and troubleshooting</a></li>
+<li><a href="#evolution-and-changelog">Evolution and changelog</a></li>
+<li><a href="#faq">FAQ</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p><strong>AGENTS.md</strong> is a repository-root Markdown file that gives <strong>persistent, machine-readable project instructions</strong> to AI coding assistants (Cursor, GitHub Copilot, Codex, Windsurf, and similar tools).</p>
+<p>Its purpose in this repository is to:</p>
+<ul>
+<li>Put humans and AI agents on the <strong>same page</strong> about build commands, folder layout, coding conventions, and contribution norms.</li>
+<li>Reduce repeated explanations in every chat session (“use PowerShell, not Bash”, “don’t parallel-build all Krypton.* projects”, “C# 7.3 compatibility”, and so on).</li>
+<li>Capture <strong>lessons learned from real agent sessions</strong>—especially shell and tooling pitfalls—in one durable place.</li>
+</ul>
+<p>AGENTS.md is <strong>not</strong> application runtime code. It does not ship in NuGet packages. It is <strong>contributor and automation infrastructure</strong>, similar in spirit to <code>.editorconfig</code> or <code>CONTRIBUTING.md</code>, but optimized for LLM context injection.</p>
+<h3 id="key-facts">Key facts</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Location</strong></td>
+<td>Repository root: <code>AGENTS.md</code></td>
+</tr>
+<tr>
+<td><strong>Format</strong></td>
+<td>Markdown (UTF-8)</td>
+</tr>
+<tr>
+<td><strong>Audience</strong></td>
+<td>AI agents first; human contributors second</td>
+</tr>
+<tr>
+<td><strong>Introduced</strong></td>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/2444">#2444</a> (V100, August 2025)</td>
+</tr>
+<tr>
+<td><strong>Maintainers</strong></td>
+<td>Any contributor; changes via normal PR review</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="industry-context-and-adoption">Industry context and adoption</h2>
+<h3 id="the-agentsmd-convention">The agents.md convention</h3>
+<p>The <a href="https://agents.md">agents.md</a> initiative standardizes the <strong>filename</strong> <code>AGENTS.md</code> at a repository root. Before that agreement, tools used inconsistent names (<code>AGENT.md</code>, <code>.cursorrules</code>, tool-specific config files, etc.).</p>
+<p>Important nuance from the original feature discussion (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/2444">#2444</a>):</p>
+<ul>
+<li>The <strong>standard is the naming</strong>, not a mandated schema for file contents.</li>
+<li>Tools pass the file’s text into the <strong>start of an agent conversation</strong> (or equivalent system context), not to “bots” as standalone executables.</li>
+<li>Repositories may put <strong>whatever instructions they need</strong> inside the file.</li>
+</ul>
+<p>Krypton Suite adopted <code>AGENTS.md</code> so that all major AI tools can discover the same file without per-tool duplication.</p>
+<h3 id="why-this-repository-needs-it">Why this repository needs it</h3>
+<p>The Standard Toolkit is unusually demanding for automated assistants:</p>
+<ul>
+<li><strong>Windows-only</strong> build scripts (<code>.cmd</code>), MSBuild orchestration, and Visual Studio version profiles.</li>
+<li><strong>Multi-target</strong> builds (<code>net472</code> through <code>net11.0-windows</code>) with environment-dependent TFM sets.</li>
+<li><strong>Shared output directories</strong> that forbid naive parallel project builds.</li>
+<li><strong>WinForms</strong> designer constraints, global usings, BSD license headers, and <strong>C# 7.3</strong> compatibility on older TFMs.</li>
+<li><strong>No formal unit test suite</strong>—validation flows through <code>TestForm</code> and harnesses.</li>
+</ul>
+<p>Without AGENTS.md, agents repeatedly rediscover these constraints through failed builds and bad shell commands. The file front-loads that knowledge.</p>
+<hr>
+<h2 id="how-tools-consume-agentsmd">How tools consume AGENTS.md</h2>
+<p>Different tools load repository instructions through slightly different mechanisms. The effect is the same: the model sees AGENTS.md text <strong>before or during</strong> reasoning about the repo.</p>
+<h3 id="cursor">Cursor</h3>
+<p>In Cursor, <code>AGENTS.md</code> is typically surfaced as <strong>always-applied workspace rules</strong> (alongside user rules and optional <code>.cursor/rules</code>). The full file content is injected into the agent’s context for sessions opened in this workspace.</p>
+<p>Implications for authors:</p>
+<ul>
+<li>Keep sections <strong>scannable</strong> (headings, bullets, short imperative lines).</li>
+<li>Prefer <strong>actionable</strong> statements (“Use PowerShell”) over narrative prose.</li>
+<li>Put the highest-impact guardrails <strong>early</strong> (see <a href="#recent-tooling-mistakes-to-avoid">Recent Tooling Mistakes To Avoid</a>).</li>
+</ul>
+<h3 id="other-tools">Other tools</h3>
+<p>Tools that follow the agents.md convention (or allow a root instructions file) generally:</p>
+<ol>
+<li>Detect <code>AGENTS.md</code> at clone/open time.</li>
+<li>Prepend or merge its contents into the system prompt or project context.</li>
+<li>May also honor explicit <code>@AGENTS.md</code> references in user messages.</li>
+</ol>
+<p>There is <strong>no guarantee</strong> every tool loads the file automatically. When in doubt, <code>@AGENTS.md</code> in the prompt or linking from README (already done) improves discoverability for humans.</p>
+<h3 id="what-agentsmd-is-not">What AGENTS.md is <em>not</em></h3>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AGENTS.md</strong></td>
+<td>Repo-wide defaults for all agent work in this project</td>
+</tr>
+<tr>
+<td><strong><code>.cursor/rules/*.mdc</code></strong></td>
+<td>Cursor-specific, path-scoped, or conditional rules</td>
+</tr>
+<tr>
+<td><strong>User rules</strong></td>
+<td>Personal preferences in the IDE (apply across repos)</td>
+</tr>
+<tr>
+<td><strong>Agent Skills</strong></td>
+<td>Reusable task playbooks the agent reads when relevant</td>
+</tr>
+<tr>
+<td><strong><code>README.md</code></strong></td>
+<td>Human-facing project overview and marketing</td>
+</tr>
+<tr>
+<td><strong>Online Help</strong></td>
+<td>Long-form contributing and architecture articles</td>
+</tr>
+</tbody>
+</table>
+<p>Avoid duplicating large bodies of text across these layers. AGENTS.md should <strong>summarize and point</strong>; deep dives belong in Online Help or component READMEs.</p>
+<hr>
+<h2 id="relationship-to-other-documentation">Relationship to other documentation</h2>
+<p>Use this split when deciding where new information belongs:</p>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Primary home</th>
+<th>AGENTS.md role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Quick build/run commands</td>
+<td>AGENTS.md</td>
+<td>Canonical short form</td>
+</tr>
+<tr>
+<td>Interactive <code>run.cmd</code> menu</td>
+<td>AGENTS.md + <code>run.cmd</code></td>
+<td>Entry points and paths</td>
+</tr>
+<tr>
+<td>ModernBuild TUI</td>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Scripts/ModernBuild/README.md">Scripts/ModernBuild/README.md</a></td>
+<td>One-line pointer</td>
+</tr>
+<tr>
+<td>Branch policy / release workflow</td>
+<td><a href="https://krypton-suite.github.io/Standard-Toolkit-Online-Help/articles/Contributing/BranchPolicyandWorkflowHardening.html">Online Help</a></td>
+<td>Not duplicated</td>
+</tr>
+<tr>
+<td>General contributing ethics</td>
+<td><a href="https://krypton-suite.github.io/Standard-Toolkit-Online-Help/Source/Help/Output/articles/Contributing.html">Online Help Contributing</a></td>
+<td>PR/commit summary only</td>
+</tr>
+<tr>
+<td>Analyzer severities, header template</td>
+<td><code>Source/.editorconfig</code></td>
+<td>“Follow .editorconfig”</td>
+</tr>
+<tr>
+<td>Palette / component internals</td>
+<td>Component READMEs</td>
+<td>Not in AGENTS.md</td>
+</tr>
+<tr>
+<td>Long path setup</td>
+<td>README + Online Help</td>
+<td>One-line reminder</td>
+</tr>
+</tbody>
+</table>
+<p>Cross-links from README and sub-project READMEs (e.g. <code>TestForm/PaletteViewer/README.md</code>) intentionally send readers to AGENTS.md for <strong>standard command invocations</strong>.</p>
+<hr>
+<h2 id="content-architecture">Content architecture</h2>
+<p>AGENTS.md is organized as a single “Repository Guidelines” document with fixed top-level sections. Order matters: <strong>tooling pitfalls and environment</strong> come before structure and build commands, because agent failures often happen before any code is touched.</p>
+<pre><code>AGENTS.md
+├── Recent Tooling Mistakes To Avoid    ← agent-specific guardrails (added after field experience)
+├── Environment                         ← OS, shell, VS/SDK expectations
+├── Project Structure &amp; Module Organization
+├── Build, Test, and Development Commands
+├── Coding Style &amp; Naming Conventions
+├── C# Rules
+├── Testing Guidelines
+├── Commit &amp; Pull Request Guidelines
+└── Security &amp; Configuration Tips
+</code></pre>
+<p>Design principles used when editing:</p>
+<ol>
+<li><strong>Imperative mood</strong> — “Do not run build scripts unless instructed.”</li>
+<li><strong>One fact per bullet</strong> — easier for models to retrieve.</li>
+<li><strong>Correct examples</strong> — especially for shell commands; show the pattern that works on Windows.</li>
+<li><strong>Stable paths</strong> — use repo-relative paths consistent with README.</li>
+<li><strong>No stale duplication</strong> — if MSBuild discovery changes, update AGENTS.md in the same PR as <code>find-msbuild.cmd</code>.</li>
+</ol>
+<hr>
+<h2 id="section-reference-in-depth">Section reference (in depth)</h2>
+<h3 id="recent-tooling-mistakes-to-avoid">Recent Tooling Mistakes To Avoid</h3>
+<p>Added after repeated failures in AI-driven sessions (notably around <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3493">#3493</a> build-script work). Each bullet documents:</p>
+<ul>
+<li><strong>What went wrong</strong> — the failure mode.</li>
+<li><strong>Why</strong> — brief mechanism (e.g. <code>cmd.exe</code> expands <code>%VAR%</code> before <code>set</code>).</li>
+<li><strong>Correct example</strong> — copy-pasteable fix.</li>
+</ul>
+<p>Current topics:</p>
+<table>
+<thead>
+<tr>
+<th>Mistake</th>
+<th>Root cause</th>
+<th>Correct approach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stash name <code>&quot;%STASH_MSG%&quot;</code></td>
+<td><code>cmd.exe</code> one-liner <code>set</code> + use</td>
+<td>Separate commands or PowerShell</td>
+</tr>
+<tr>
+<td>PowerShell <code>$var</code> eaten by <code>cmd</code></td>
+<td>Nested shell quoting</td>
+<td>Run PowerShell directly</td>
+</tr>
+<tr>
+<td><code>git commit -m</code> with <code>--check</code> in body</td>
+<td>Git parses body as options</td>
+<td><code>git commit -F message-file</code></td>
+</tr>
+<tr>
+<td><code>gh</code> quoting failures</td>
+<td>Wrapper mishandles spaces</td>
+<td>JSON <code>--input</code> or argument arrays</td>
+</tr>
+<tr>
+<td><code>git stash store -m</code> rename</td>
+<td>Stash display name from original commit</td>
+<td>Re-stash with new message</td>
+</tr>
+<tr>
+<td>Over-escaped <code>rg</code> patterns</td>
+<td>Wrong literal match</td>
+<td>Single-quoted PowerShell pattern</td>
+</tr>
+<tr>
+<td><code>findstr</code> path experiments</td>
+<td>Fragile on Windows</td>
+<td><code>Select-String -LiteralPath</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>When to add a new bullet:</strong> after an agent (or human) hits the same footgun twice, and the fix is non-obvious. Do <strong>not</strong> use this section for general coding style—that belongs lower in the file.</p>
+<h3 id="environment">Environment</h3>
+<p>Establishes hard constraints:</p>
+<ul>
+<li><strong>OS:</strong> Windows (WinForms, <code>.cmd</code> scripts, <code>-windows</code> TFMs).</li>
+<li><strong>Shell for agents:</strong> PowerShell for agentic terminal use; <code>cmd.exe</code> only when reproducing batch behavior.</li>
+<li><strong>IDE:</strong> Visual Studio 2022+ and .NET SDKs from <code>net472</code> upward.</li>
+<li><strong>Build scripts:</strong> exist under <code>Scripts/</code> but agents must <strong>not</strong> run them unless the user explicitly asks—full solution builds are expensive and may require local VS profiles.</li>
+</ul>
+<p>This section prevents the most common cross-platform agent mistake: running Bash idioms or <code>dotnet</code> commands that ignore the repo’s MSBuild orchestration.</p>
+<h3 id="project-structure--module-organization">Project Structure &amp; Module Organization</h3>
+<p>Maps the monorepo layout:</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Source/Krypton Components/</code></td>
+<td>Core libraries + main <code>.sln</code></td>
+</tr>
+<tr>
+<td><code>Source/Krypton Components/TestForm/</code></td>
+<td>Sample app for manual validation</td>
+</tr>
+<tr>
+<td><code>Source/TestHarnesses/</code></td>
+<td>Focused repro projects</td>
+</tr>
+<tr>
+<td><code>Scripts/</code></td>
+<td>Build/packaging; <code>VS2022</code>, <code>Current</code>, <code>Build</code> subfolders</td>
+</tr>
+<tr>
+<td><code>Bin/</code></td>
+<td>Default build output (<code>&lt;Configuration&gt;/&lt;TFM&gt;/</code>)</td>
+</tr>
+<tr>
+<td><code>Documents/</code>, <code>Assets/</code>, <code>Logs/</code></td>
+<td>Docs, images, build logs</td>
+</tr>
+</tbody>
+</table>
+<p>Agents use this to place new files correctly and to find the solution file name verbatim:</p>
+<p><code>Krypton Toolkit Suite 2022 - VS2022.sln</code></p>
+<h3 id="build-test-and-development-commands">Build, Test, and Development Commands</h3>
+<p>The most frequently consulted section. It encodes three <strong>tiers</strong> of build workflow:</p>
+<h4 id="tier-1--everyday-developer-dotnet">Tier 1 — Everyday developer (<code>dotnet</code>)</h4>
+<pre><code class="lang-powershell">dotnet build &quot;.\Source\Krypton Components\Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
+dotnet run --project &quot;.\Source\Krypton Components\TestForm\TestForm.csproj&quot; -c Debug
+</code></pre>
+<p>Appropriate when the user wants a quick compile or to launch TestForm. SDK MSBuild respects <code>Directory.Build.props</code> TFM filtering.</p>
+<h4 id="tier-2--channel-scripts-explicit-user-request-only">Tier 2 — Channel scripts (explicit user request only)</h4>
+<table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>Toolset</th>
+<th>Profile</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.\run.cmd</code></td>
+<td>Interactive menu</td>
+<td>Chooses VS2022 vs Current</td>
+</tr>
+<tr>
+<td><code>Scripts\VS2022\build-*.cmd</code></td>
+<td>Visual Studio 2022</td>
+<td><code>2022</code></td>
+</tr>
+<tr>
+<td><code>Scripts\Current\build-*.cmd</code></td>
+<td>VS 2026 / major 18+</td>
+<td><code>current</code></td>
+</tr>
+</tbody>
+</table>
+<p>Scripts call <code>Scripts\Common\find-msbuild.cmd</code> with the profile, then MSBuild on <code>build.proj</code>.</p>
+<p><strong>MSBuild override:</strong> set <code>MSBUILDPATH</code> or <code>MSBUILD_PATH</code> to the folder containing <code>MSBuild.exe</code> (typically <code>...\MSBuild\Current\Bin</code>).</p>
+<h4 id="tier-3--phased-orchestration-ci-and-scripts">Tier 3 — Phased orchestration (CI and scripts)</h4>
+<p><code>Scripts/Build/Krypton.Orchestration.targets</code> defines <strong>phased</strong> builds:</p>
+<ol>
+<li><code>Krypton.Toolkit</code> (sequential—foundation)</li>
+<li><code>Krypton.Ribbon</code> + <code>Krypton.Navigator</code> (parallel with each other)</li>
+<li><code>Krypton.Workspace</code>, then <code>Krypton.Docking</code></li>
+<li>Satellite utility projects and packaging targets</li>
+</ol>
+<p><strong>Critical rule for agents:</strong> do <strong>not</strong> build all <code>Krypton.*</code> projects in one parallel MSBuild batch. Projects share <code>Bin/&lt;Configuration&gt;/&lt;tfm&gt;/</code> outputs; parallel races corrupt outputs. Scripts use <code>/m</code> <strong>within</strong> a project for multi-TFM parallelism, not across the whole component set at once.</p>
+<h4 id="target-frameworks">Target frameworks</h4>
+<p>TFMs are selected in <code>Source/Krypton Components/Directory.Build.props</code> based on:</p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Typical TFMs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VS 2019 / <code>ExcludeModernTargetFrameworks</code></td>
+<td><code>net472</code>, <code>net48</code>, <code>net481</code></td>
+</tr>
+<tr>
+<td>VS 2022 / <code>ExcludeVs2022UnsupportedTargetFrameworks</code></td>
+<td>Above + <code>net8.0-windows</code>, <code>net9.0-windows</code></td>
+</tr>
+<tr>
+<td>Full VS 2026, <code>ExcludeNet11</code> not set</td>
+<td>Adds <code>net10.0-windows</code>, <code>net11.0-windows</code></td>
+</tr>
+<tr>
+<td><code>TFMs=all</code> on script builds</td>
+<td>Widest set supported by toolset</td>
+</tr>
+</tbody>
+</table>
+<p>CI and SDK builds may see more TFMs than a local VS2022 full MSBuild session.</p>
+<h4 id="output-paths">Output paths</h4>
+<ul>
+<li>Default: <code>Bin\&lt;Configuration&gt;\&lt;TargetFramework&gt;\</code></li>
+<li>With <code>UseArtifactsOutput=true</code>: <code>artifacts\bin\&lt;Configuration&gt;\&lt;TargetFramework&gt;\</code></li>
+</ul>
+<h4 id="license-header-note">License header note</h4>
+<p>New files use the <strong>current Standard Toolkit BSD header</strong> from <code>Source/.editorconfig</code> (<code>file_header_template</code>). Do not use the legacy ComponentFactory header unless the file is derived from original ComponentFactory source.</p>
+<h3 id="coding-style--naming-conventions">Coding Style &amp; Naming Conventions</h3>
+<p>Points agents at authoritative sources:</p>
+<ul>
+<li><strong><code>.editorconfig</code></strong> under <code>Source/</code> — headers, analyzer severities, C# style.</li>
+<li><strong>UTF-8 with BOM</strong>, <strong>CRLF</strong>, <strong>4-space</strong> indentation.</li>
+<li><strong><code>global using</code></strong> in each project’s <code>GlobalDeclarations.cs</code> — agents must <strong>not</strong> add redundant <code>using</code> lines in ordinary source files.</li>
+<li><strong>No variable aliasing</strong>; reuse existing variables when possible.</li>
+</ul>
+<h3 id="c-rules">C# Rules</h3>
+<p>Repository-specific C# contract beyond style:</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Surgical edits</td>
+<td>Avoid drive-by refactors in agent PRs</td>
+</tr>
+<tr>
+<td>No empty <code>try/catch</code></td>
+<td>Noise without handling</td>
+</tr>
+<tr>
+<td>Fix warnings in touched code</td>
+<td>Keep analyzer debt from growing</td>
+</tr>
+<tr>
+<td>Switch expressions vs statements</td>
+<td>Expressions for pure dispatch only</td>
+</tr>
+<tr>
+<td><strong>C# 7.3 / <code>net472</code></strong></td>
+<td>Language features must not break oldest TFM</td>
+</tr>
+<tr>
+<td>WinForms designer patterns</td>
+<td>Fields at bottom; init in <code>Designer.cs</code></td>
+</tr>
+<tr>
+<td>No <code>yield return</code> in <code>catch</code></td>
+<td>Compiler/runtime constraint</td>
+</tr>
+</tbody>
+</table>
+<h3 id="testing-guidelines">Testing Guidelines</h3>
+<p>No xUnit/NUnit suite. Validation path:</p>
+<ol>
+<li><strong>TestForm</strong> — interactive scenarios, menu-launched tools (e.g. PaletteViewer).</li>
+<li><strong>TestHarnesses</strong> — minimal repros for isolated bugs.</li>
+</ol>
+<p>Bug-fix PRs should add or adjust a repro and describe <strong>manual test steps</strong> in the PR body.</p>
+<h3 id="commit--pull-request-guidelines">Commit &amp; Pull Request Guidelines</h3>
+<p>Aligns with team practice:</p>
+<ul>
+<li>Imperative commit subjects with issue/PR references: <code>Fix autosizing (#2433)</code>.</li>
+<li>PRs: description, linked issues, UI screenshots, breaking-change notes.</li>
+<li>Avoid boilerplate “validation noise” in commits/PRs unless checks failed or context is essential.</li>
+</ul>
+<h3 id="security--configuration-tips">Security &amp; Configuration Tips</h3>
+<ul>
+<li><strong>Long paths</strong> must be enabled on Windows for local builds (see README / Online Help).</li>
+<li><strong><code>-windows</code> TFMs</strong> require building on Windows.</li>
+</ul>
+<hr>
+<h2 id="maintenance-workflow">Maintenance workflow</h2>
+<h3 id="when-to-update-agentsmd">When to update AGENTS.md</h3>
+<p>Update in the <strong>same PR</strong> when you change:</p>
+<ul>
+<li>Build script paths, profiles, or orchestration</li>
+<li>Default shell expectations for automation</li>
+<li>TFM matrix or output directory layout</li>
+<li>Testing strategy (e.g. new harness location)</li>
+<li>License header policy</li>
+<li>Agent-observed tooling mistakes (new bullet under “Recent Tooling Mistakes”)</li>
+</ul>
+<h3 id="when-not-to-update">When <em>not</em> to update</h3>
+<ul>
+<li>Feature implementation details confined to one component</li>
+<li>Version release notes (use <code>Documents/Changelog/Changelog.md</code>)</li>
+<li>One-off user preferences (user rules)</li>
+<li>Lengthy tutorials (Online Help or <code>Scripts/ModernBuild/README.md</code>)</li>
+</ul>
+<h3 id="editing-checklist">Editing checklist</h3>
+<ol>
+<li>Read the changed area in the real script or props file—AGENTS.md must match reality.</li>
+<li>Keep bullets <strong>short</strong>; link out for essays.</li>
+<li>Prefer PowerShell examples for agent shell commands.</li>
+<li>If removing obsolete guidance, grep the repo for references (<code>README.md</code>, sub-READMEs).</li>
+<li>Note significant updates in <code>Documents/Changelog/Changelog.md</code> when the change is user-visible to contributors.</li>
+</ol>
+<h3 id="review-criteria">Review criteria</h3>
+<p>Reviewers should ask:</p>
+<ul>
+<li>Would an agent follow this without extra context?</li>
+<li>Is there a <strong>correct example</strong> for every “do not”?</li>
+<li>Does this duplicate README without adding agent-specific value?</li>
+<li>Did we document <strong>why</strong> (one phrase), not just <strong>what</strong>?</li>
+</ul>
+<hr>
+<h2 id="verification-and-troubleshooting">Verification and troubleshooting</h2>
+<p>There is no CI job that lints AGENTS.md compliance. Verification is <strong>manual and observational</strong>.</p>
+<h3 id="smoke-tests-with-cursor-recommended">Smoke tests with Cursor (recommended)</h3>
+<ol>
+<li>Open the repo in Cursor Agent mode.</li>
+<li>Ask: <em>“Build the solution in Debug and run TestForm.”</em>
+<ul>
+<li>Expect: PowerShell, quoted paths, <code>dotnet build</code> / <code>dotnet run</code>—not <code>Scripts\build-stable.cmd</code> unless asked.</li>
+</ul>
+</li>
+<li>Ask: <em>“Add a new public method to a Toolkit control.”</em>
+<ul>
+<li>Expect: no new <code>using</code> lines; C# 7.3-safe syntax; BSD header on new files.</li>
+</ul>
+</li>
+<li>Ask: <em>“Stash my changes with message X.”</em>
+<ul>
+<li>Expect: no <code>cmd.exe</code> one-liner stash bugs from the mistakes section.</li>
+</ul>
+</li>
+</ol>
+<h3 id="signs-agentsmd-is-stale">Signs AGENTS.md is stale</h3>
+<ul>
+<li>Agents propose deprecated paths (<code>Scripts/build-stable.cmd</code> at root without <code>VS2022/</code>).</li>
+<li>Agents use Bash (<code>ls</code>, <code>cat</code>, <code>export</code>).</li>
+<li>Agents parallel-build multiple <code>Krypton.*</code> csproj files.</li>
+<li>Agents add <code>using System;</code> to files in projects with <code>GlobalDeclarations.cs</code>.</li>
+</ul>
+<p>If you observe drift, fix AGENTS.md <strong>and</strong> consider whether README or script comments also need alignment.</p>
+<h3 id="explicit-invocation">Explicit invocation</h3>
+<p>Users can attach context in any tool that supports file references:</p>
+<pre><code>@AGENTS.md Please fix the build error in TestForm.
+</code></pre>
+<p>This is useful when workspace rules are disabled or when using tools that do not auto-load the file.</p>
+<hr>
+<h2 id="evolution-and-changelog">Evolution and changelog</h2>
+<table>
+<thead>
+<tr>
+<th>Date / version</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>V100 (Aug 2025)</strong></td>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/2444">#2444</a> — initial <code>AGENTS.md</code>; <code>cmd.exe</code> shell guidance; basic build commands</td>
+</tr>
+<tr>
+<td><strong>Subsequent</strong></td>
+<td>Phased orchestration documented; <code>run.cmd</code> VS2022 vs Current split</td>
+</tr>
+<tr>
+<td><strong>#3493</strong></td>
+<td>Script/TFM fixes; expanded build/MSBuild instructions; <strong>Recent Tooling Mistakes</strong> section</td>
+</tr>
+<tr>
+<td><strong>#3319</strong></td>
+<td><code>UseArtifactsOutput</code> / artifacts path note</td>
+</tr>
+<tr>
+<td><strong>Ongoing</strong></td>
+<td>PowerShell as primary agent shell; <code>find-msbuild.cmd</code> profiles; license header policy</td>
+</tr>
+</tbody>
+</table>
+<p>Initial file (V100) emphasized <code>cmd.exe</code> only. Current file intentionally prefers <strong>PowerShell for agentic work</strong> while retaining <code>cmd.exe</code> for batch fidelity—a deliberate shift after production agent sessions.</p>
+<p>Git history for the file:</p>
+<pre><code class="lang-powershell">git log --oneline --follow -- AGENTS.md
+</code></pre>
+<hr>
+<h2 id="faq">FAQ</h2>
+<h3 id="is-the-file-content-standardized-by-agentsmd">Is the file content standardized by agents.md?</h3>
+<p><strong>No.</strong> Only the <strong>filename and location</strong> are standardized. Content is repository-specific.</p>
+<h3 id="which-tools-automatically-read-agentsmd">Which tools automatically read AGENTS.md?</h3>
+<p>Any tool that implements the <a href="https://agents.md">agents.md</a> convention or documents root-level agent instructions. The exact list changes as vendors ship updates; Cursor is known to apply it as workspace rules in this repo. When unsupported, reference the file manually.</p>
+<h3 id="how-is-this-different-from-contributingmd">How is this different from CONTRIBUTING.md?</h3>
+<p><code>CONTRIBUTING.md</code> is a GitHub convention for <strong>human</strong> contributors. This repo routes long-form human guidance to <strong>Online Help</strong>. AGENTS.md is optimized for <strong>LLM context</strong>—shorter, more imperative, and including automation pitfalls humans rarely document.</p>
+<h3 id="should-we-add-cursorrules-too">Should we add <code>.cursor/rules</code> too?</h3>
+<p>Optional. Use <code>.cursor/rules</code> for <strong>path-specific</strong> or <strong>conditional</strong> Cursor-only rules. Keep universal truths in AGENTS.md so other tools benefit.</p>
+<h3 id="can-we-test-agents-before-they-start-reasoning">Can we test agents “before they start reasoning”?</h3>
+<p>Not externally. Validation is indirect: open a fresh agent session and spot-check behavior (see <a href="#verification-and-troubleshooting">Verification</a>). Some IDEs show which rules were loaded—use that to confirm AGENTS.md is present.</p>
+<h3 id="do-agents-run-ci-build-scripts-by-default">Do agents run CI build scripts by default?</h3>
+<p><strong>They should not.</strong> AGENTS.md explicitly forbids running <code>Scripts/</code> build presets unless the user instructs. This prevents accidental long builds and log churn on contributor machines.</p>
+<h3 id="what-about-non-windows-contributors">What about non-Windows contributors?</h3>
+<p>WinForms and <code>-windows</code> TFMs require Windows for meaningful builds. AGENTS.md states this plainly. Documentation edits and issue triage can happen on any OS; compile validation cannot.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

@@ -94,14 +94,14 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 
 ### Utilities
 
-- [ExceptionHandler](Toolkit/Utilities/ExceptionHandler.md)
-- [GlobalStaticValuesReference](Toolkit/Utilities/GlobalStaticValuesReference.md)
-- [IconExtraction](Toolkit/Utilities/IconExtractionIndex.md)
+- [ExceptionHandler](Utilities/ExceptionHandler.md)
+- [GlobalStaticValuesReference](Utilities/GlobalStaticValuesReference.md)
+- [IconExtraction](Utilities/IconExtractionIndex.md)
 - [KryptonJumpList](Toolkit/Components/KryptonJumpList.md)
-- [Localization](Toolkit/Utilities/LocalizationIndex.md)
-- [SystemIcons](Toolkit/Utilities/SystemIcons.md)
-- [TaskbarThumbnailButtons](Toolkit/Utilities/TaskbarThumbnailButtons.md)
-- [UIAProviders](Toolkit/Utilities/UIAProviders.md)
+- [Localization](Utilities/LocalizationIndex.md)
+- [SystemIcons](Utilities/SystemIcons.md)
+- [TaskbarThumbnailButtons](Utilities/TaskbarThumbnailButtons.md)
+- [UIAProviders](Utilities/UIAProviders.md)
 
 ## Suite utilities (`Krypton.Toolkit.Utilities`)
 

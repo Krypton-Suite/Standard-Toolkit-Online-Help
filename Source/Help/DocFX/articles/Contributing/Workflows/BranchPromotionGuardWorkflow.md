@@ -400,7 +400,7 @@ Check push trigger branch name in `canary.yml` (`Canary` vs `canary`). Align wit
 
 ### Coordinating with Repository Mirror
 
-After promotion merges, [`repo-mirror.yml`](RepositoryMirror.md) syncs updated `alpha`, `canary`, and `gold` refs to the mirror repository on push (if configured).
+After promotion merges, [`repo-mirror.yml`](RepositoryMirrorWorkflow.md) syncs updated `alpha`, `canary`, and `gold` refs to the mirror repository on push (if configured).
 
 ### Disabling promotion policy temporarily
 

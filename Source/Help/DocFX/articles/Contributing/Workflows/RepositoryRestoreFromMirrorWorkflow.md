@@ -19,7 +19,7 @@ Developer documentation for the **Repository Restore from Mirror** GitHub Action
 | Runner | `ubuntu-latest` |
 | Default mode | **Dry run** (`dry_run: true`) |
 
-**Umbrella documentation** (all backup layers, playbooks, architecture): [Repository backup and restore](RepositoryBackupAndRestore.md)
+**Umbrella documentation** (all backup layers, playbooks, architecture): [Repository backup and restore](RepositoryBackupAndRestoreWorkflow.md)
 
 ---
 
@@ -61,7 +61,7 @@ Typical use cases:
 - **Point-in-time recovery** — restore each branch to the latest commit at or before a UTC date, using full Git history retained on the mirror.
 - **Safe preview** — create `restore/…` branches for PR review before promoting recovered state to live branches.
 
-This workflow is the **inverse** of [Repository Mirror](RepositoryMirror.md) (source → mirror). It does **not** run automatically; every invocation is intentional and manual.
+This workflow is the **inverse** of [Repository Mirror](RepositoryMirrorWorkflow.md) (source → mirror). It does **not** run automatically; every invocation is intentional and manual.
 
 Introduced as part of [#3591](https://github.com/Krypton-Suite/Standard-Toolkit/issues/3591).
 
@@ -111,7 +111,7 @@ V85-LTS
 
 Use **Repository Restore** when the **mirror** is the authoritative recovery source. Use **Repository Mirror** to refresh the mirror after source is corrected. Use **Alpha Backup Sync** for in-repo `alpha-backup` or dated **file** snapshots.
 
-See [Repository backup and restore](RepositoryBackupAndRestore.md) for disaster recovery playbooks.
+See [Repository backup and restore](RepositoryBackupAndRestoreWorkflow.md) for disaster recovery playbooks.
 
 ---
 
@@ -164,7 +164,7 @@ flowchart TD
 - **Read mirror:** `MIRROR_REPO_TOKEN` (PAT; read access sufficient).
 - **Write source:** `${{ github.token }}` as `SOURCE_REPO_TOKEN` (workflow permission `contents: write`).
 
-Both tokens use the same temporary **credential helper** pattern as [Repository Mirror](RepositoryMirror.md). Remote URLs are not token-embedded.
+Both tokens use the same temporary **credential helper** pattern as [Repository Mirror](RepositoryMirrorWorkflow.md). Remote URLs are not token-embedded.
 
 The workflow bare-clones the **mirror**, fetches source branch tips for comparison, then pushes selected commits to the source remote.
 
@@ -203,7 +203,7 @@ Unlike scheduled mirror runs, restore **does not** depend on the default branch 
 
 ### Prerequisites
 
-1. [Repository Mirror](RepositoryMirror.md) has successfully populated `MIRROR_REPO` at least once.
+1. [Repository Mirror](RepositoryMirrorWorkflow.md) has successfully populated `MIRROR_REPO` at least once.
 2. `MIRROR_REPO` and `MIRROR_REPO_TOKEN` are configured on Standard-Toolkit.
 3. Mirror contains the branch(es) you intend to restore.
 
@@ -238,7 +238,7 @@ Per-run behaviour (dry run, mode, date, etc.) is controlled by **workflow dispat
 
 ### 1. Confirm mirror is operational
 
-Follow [Repository Mirror — Initial setup guide](RepositoryMirror.md#initial-setup-guide). Verify at least one successful mirror run against production or test mirror.
+Follow [Repository Mirror — Initial setup guide](RepositoryMirrorWorkflow.md#initial-setup-guide). Verify at least one successful mirror run against production or test mirror.
 
 ### 2. Verify configuration on Standard-Toolkit
 
@@ -397,7 +397,7 @@ Point-in-time restore requires the commit to still exist in the **mirror** clone
 
 ### Recommended test flow
 
-1. Ensure mirror is current ([Repository Mirror](RepositoryMirror.md) dry run or successful sync).
+1. Ensure mirror is current ([Repository Mirror](RepositoryMirrorWorkflow.md) dry run or successful sync).
 2. **Actions → Repository Restore from Mirror → Run workflow**
 3. Leave **`dry_run`** enabled
 4. Set **`branches`** to `alpha` (or another low-risk branch)
@@ -502,7 +502,7 @@ When `DISCORD_WEBHOOK_RESTORE` is configured, each completed run sends one embed
 
 ### Standard safe restore
 
-See [Repository backup and restore — Operational procedures](RepositoryBackupAndRestore.md#operational-procedures).
+See [Repository backup and restore — Operational procedures](RepositoryBackupAndRestoreWorkflow.md#operational-procedures).
 
 ### Compare mirror vs source before restore
 
@@ -591,8 +591,8 @@ When modifying the workflow, keep header comments in `repo-restore-from-mirror.y
 
 ## Related documentation
 
-- [Repository backup and restore](RepositoryBackupAndRestore.md) — architecture, playbooks, configuration tables
-- [Repository Mirror](RepositoryMirror.md) — source → mirror sync
+- [Repository backup and restore](RepositoryBackupAndRestoreWorkflow.md) — architecture, playbooks, configuration tables
+- [Repository Mirror](RepositoryMirrorWorkflow.md) — source → mirror sync
 - [Alpha Backup Sync](../AlphaBackupSync.md) — `alpha-backup` and dated file snapshots
 - [.github/REPOSITORY_BACKUP.md](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/REPOSITORY_BACKUP.md) — cheat sheet
 - [Kill Switches](../Build%20System/KillSwitches.md) — `REPO_RESTORE_DISABLED`
