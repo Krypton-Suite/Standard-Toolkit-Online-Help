@@ -26,3 +26,7 @@ then expand the *GlobalStrings* property and modify the strings as needed.
 ![KryptonMessageBox example appearance](../Images/KMB.png)
 
 Figure 1 – Example appearance
+
+## KryptonMessageBoxExtended (V110+)
+
+For timeouts, countdown buttons, extended button sets, footers, and richer layout options, use **`KryptonMessageBoxExtended`** in `Krypton.Toolkit.Utilities` — see [KryptonMessageBoxExtended](KryptonMessageBoxExtended.md).

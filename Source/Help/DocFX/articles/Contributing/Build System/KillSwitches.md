@@ -96,7 +96,7 @@ These use the same `variable == 'true'` pattern but live outside `release.yml`. 
 
 | Workflow | Variable | Effect when `true` |
 | --- | --- | --- |
-| [Repository Mirror](../Workflows/RepositoryMirror.md) (`repo-mirror.yml`) | `REPO_MIRROR_DISABLED` | Skips bare clone and all pushes to the mirror repo |
+| [Repository Mirror](../Workflows/RepositoryMirrorWorkflow.md) (`repo-mirror.yml`) | `REPO_MIRROR_DISABLED` | Skips bare clone and all pushes to the mirror repo |
 | [Repository Restore from Mirror](../Workflows/RepositoryRestoreFromMirrorWorkflow.md) (`repo-restore-from-mirror.yml`) | `REPO_RESTORE_DISABLED` | Skips mirror clone, validation, and all pushes to the source repo |
 | [Alpha Backup Sync](../AlphaBackupSync.md) (`alpha-backup-sync.yml`) | `ALPHA_BACKUP_SYNC_DISABLED` | Skips PR creation, backup-repo push, and Discord |
 | [Nightly Release](../Workflows/NightlyWorkflow.md) (`nightly.yml`) | `NIGHTLY_DISABLED` | Skips nightly build and publish (also gates `release-alpha` in `release.yml`) |

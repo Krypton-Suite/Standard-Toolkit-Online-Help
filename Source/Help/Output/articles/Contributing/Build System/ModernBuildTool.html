@@ -126,7 +126,9 @@ bin\Release\net10.0-windows\ModernBuild.exe
 ├─────────────────────────────────────────────────────────────────┤
 │ Build Settings                                                  │
 │ Project: Scripts/nightly.proj                                   │
-│ MSBuild: C:\Program Files\...\MSBuild.exe                       │
+│ Visual Studio: Visual Studio Enterprise 2026                    │
+│ MSBuild: A:\Program Files\...\MSBuild\Current\Bin\MSBuild.exe │
+│ MSBuild version: 18.7.8.30822                                   │
 │ Log: Logs/nightly-build.binlog                                  │
 ├─────────────────────────────────────────────────────────────────┤
 │ Summary (paged)                                                 │
@@ -155,7 +157,7 @@ bin\Release\net10.0-windows\ModernBuild.exe
 </tr>
 <tr>
 <td><strong>Build Settings</strong></td>
-<td>Current project, MSBuild path, log location</td>
+<td>Current project, scripts profile, Visual Studio product, MSBuild path, MSBuild version, log location</td>
 </tr>
 <tr>
 <td><strong>Summary</strong></td>
@@ -598,9 +600,10 @@ msbuildlogviewer Logs/nightly-build.binlog
 <h2 id="prerequisites">Prerequisites</h2>
 <h3 id="required">Required</h3>
 <ol>
-<li><p><strong>Visual Studio 2022</strong></p>
+<li><p><strong>Visual Studio 2022 or newer</strong> with the MSBuild component</p>
 <ul>
-<li>ModernBuild auto-detects MSBuild via <code>vswhere.exe</code></li>
+<li>ModernBuild locates MSBuild via <code>vswhere.exe</code>, then falls back to <code>%ProgramFiles%</code> install paths</li>
+<li>Set <code>MSBUILDPATH</code> or <code>MSBUILD_PATH</code> to override (directory containing <code>MSBuild.exe</code>)</li>
 </ul>
 </li>
 <li><p><strong>NuGet CLI</strong></p>
@@ -638,24 +641,22 @@ msbuildlogviewer Logs/nightly-build.binlog
 </ol>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="could-not-find-msbuildexe">&quot;Could not find MSBuild.exe&quot;</h3>
-<p><strong>Cause</strong>: Visual Studio 2022 not installed or not detected</p>
+<p><strong>Cause</strong>: No suitable Visual Studio installation with MSBuild was found</p>
 <p><strong>Solutions</strong>:</p>
 <ol>
-<li>Install Visual Studio 2022</li>
-<li>Verify installation:</li>
+<li>Install Visual Studio 2022 or newer with the <strong>.NET desktop development</strong> workload</li>
+<li>List installations (any drive or custom path):</li>
 </ol>
-<pre><code class="lang-cmd">dir &quot;%ProgramFiles%\Microsoft Visual Studio\2022\&quot;
+<pre><code class="lang-cmd">&quot;%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe&quot; -latest -products * -requires Microsoft.Component.MSBuild -property displayName,installationPath
 </code></pre>
 <ol start="3">
-<li>ModernBuild checks these locations:
-<ul>
-<li>Preview</li>
-<li>Enterprise</li>
-<li>Professional</li>
-<li>Community</li>
-<li>BuildTools</li>
-</ul>
-</li>
+<li>Override before starting ModernBuild:</li>
+</ol>
+<pre><code class="lang-cmd">set MSBUILDPATH=D:\DevTools\VS2022\MSBuild\Current\Bin
+dotnet run --project Scripts/ModernBuild/ModernBuild.csproj
+</code></pre>
+<ol start="4">
+<li>Fallback probing checks common folders under <code>%ProgramFiles%</code> for Visual Studio 2026 (<code>18</code>) and Visual Studio 2022 editions (Insiders/Preview, Enterprise, Professional, Community, BuildTools)</li>
 </ol>
 <h3 id="nugetexe-not-found">&quot;nuget.exe not found&quot;</h3>
 <p><strong>Cause</strong>: NuGet CLI not in PATH</p>
@@ -818,7 +819,7 @@ dotnet run --project Scripts/ModernBuild/ModernBuild.csproj
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>

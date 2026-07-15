@@ -1,439 +1,52 @@
-# Krypton Bug Reporting Dialog - API Reference
+# Bug reporting dialogs
 
-## Namespace
+## Overview
 
-```csharp
-Krypton.Toolkit.Utilities
-```
+The utilities assembly provides two bug-reporting paths:
 
-## Classes
+| API | Channel |
+| --- | --- |
+| **`KryptonBugReportingDialog`** | E-mail or file-based reports |
+| **`KryptonGitHubIssueReportDialog`** | GitHub Issues API — see [dedicated guide](KryptonGitHubIssueReportDialog.md) |
 
-### KryptonBugReportingDialog
+**Namespace:** `Krypton.Toolkit.Utilities`  
+**Assembly:** `Krypton.Toolkit.Utilities`
 
-Static class providing the main API for displaying bug reporting dialogs.
+Both integrate with [KryptonExceptionDialog](../Toolkit/Components/KryptonExceptionDialog.md).
 
-**Assembly:** `Krypton.Toolkit.Utilities.dll`
+## KryptonBugReportingDialog
 
-#### KryptonBugReportingDialog methods
-
-##### Show(Exception?, BugReportEmailConfig)
-
-```csharp
-public static DialogResult Show(Exception? exception, BugReportEmailConfig emailConfig)
-```
-
-Displays the bug reporting dialog with an optional exception.
-
-**Parameters:**
-
-- `exception` (`Exception?`): Optional exception to include in the bug report
-- `emailConfig` (`BugReportEmailConfig`): Email configuration (required, cannot be null)
-
-**Returns:** `DialogResult.OK` if sent successfully; `DialogResult.Cancel` otherwise
-
-**Exceptions:**
-
-- `ArgumentNullException`: Thrown when `emailConfig` is null
-
-**Remarks:**
-If an exception is provided, its details will be pre-populated in the bug description field.
-
----
-
-##### Show(BugReportEmailConfig)
+Collects exception details and optional user feedback for e-mail or file export.
 
 ```csharp
-public static DialogResult Show(BugReportEmailConfig emailConfig)
+using Krypton.Toolkit.Utilities;
+
+var emailConfig = new BugReportEmailConfig
+{
+    ToAddress = "support@example.com",
+    Subject = "Application error report"
+};
+
+KryptonBugReportingDialog.Show(exception, emailConfig);
 ```
 
-Displays the bug reporting dialog without an exception.
+Configure `BugReportEmailConfig` with recipient, subject, and SMTP or MAPI settings supported by your build.
 
-**Parameters:**
+`BugReportingHelper.ShowExceptionWithBugReporting` wraps exception display + bug report in one call.
 
-- `emailConfig` (`BugReportEmailConfig`): Email configuration (required, cannot be null)
+## KryptonGitHubIssueReportDialog
 
-**Returns:** `DialogResult.OK` if sent successfully; `DialogResult.Cancel` otherwise
-
-**Exceptions:**
-
-- `ArgumentNullException`: Thrown when `emailConfig` is null
-
----
-
-### BugReportEmailConfig
-
-Configuration class for SMTP email settings.
-
-**Assembly:** `Krypton.Toolkit.Utilities.dll`
-
-#### BugReportEmailConfig constructor
-
-##### BugReportEmailConfig()
+Creates GitHub issues from encrypted shipped configuration. Users enter title and description only.
 
 ```csharp
-public BugReportEmailConfig()
+KryptonGitHubIssueReportDialog.Show(this, secretKey, initialDescription: exception.ToString());
 ```
 
-Initializes a new instance with default values:
+See **[KryptonGitHubIssueReportDialog.md](KryptonGitHubIssueReportDialog.md)** for encrypted config setup, security notes, and overload reference.
 
-- `SmtpPort`: 587
-- `UseSsl`: true
-- All string properties: `string.Empty`
+## See also
 
-#### Properties
-
-##### SmtpServer
-
-```csharp
-public string SmtpServer { get; set; }
-```
-
-Gets or sets the SMTP server address.
-
-**Type:** `string`
-
-**Default:** `string.Empty`
-
-**Remarks:**
-Example: "smtp.gmail.com", "smtp-mail.outlook.com"
-
----
-
-##### SmtpPort
-
-```csharp
-public int SmtpPort { get; set; }
-```
-
-Gets or sets the SMTP server port.
-
-**Type:** `int`
-
-**Default:** `587`
-
-**Remarks:**
-Common ports: 25 (standard), 465 (SSL), 587 (TLS)
-
----
-
-##### UseSsl
-
-```csharp
-public bool UseSsl { get; set; }
-```
-
-Gets or sets a value indicating whether to use SSL/TLS encryption.
-
-**Type:** `bool`
-
-**Default:** `true`
-
-**Remarks:**
-Set to `true` for ports 465 and 587. Set to `false` for port 25 (if supported).
-
----
-
-##### FromEmail
-
-```csharp
-public string FromEmail { get; set; }
-```
-
-Gets or sets the sender email address.
-
-**Type:** `string`
-
-**Default:** `string.Empty`
-
-**Remarks:**
-This will appear as the "From" address in the email.
-
----
-
-##### ToEmail
-
-```csharp
-public string ToEmail { get; set; }
-```
-
-Gets or sets the recipient email address where bug reports are sent.
-
-**Type:** `string`
-
-**Default:** `string.Empty`
-
-**Remarks:**
-This is the email address that will receive bug reports.
-
----
-
-##### Username
-
-```csharp
-public string Username { get; set; }
-```
-
-Gets or sets the SMTP username for authentication.
-
-**Type:** `string`
-
-**Default:** `string.Empty`
-
-**Remarks:**
-Required if the SMTP server requires authentication. Often the same as `FromEmail`.
-
----
-
-##### Password
-
-```csharp
-public string Password { get; set; }
-```
-
-Gets or sets the SMTP password for authentication.
-
-**Type:** `string`
-
-**Default:** `string.Empty`
-
-**Remarks:**
-Required if the SMTP server requires authentication. For Gmail, use an App Password.
-
----
-
-##### RequiresAuthentication
-
-```csharp
-public bool RequiresAuthentication { get; }
-```
-
-Gets a value indicating whether SMTP authentication is required.
-
-**Type:** `bool` (read-only)
-
-**Returns:** `true` if `Username` is not null or empty; otherwise, `false`
-
-**Remarks:**
-This is a computed property based on whether `Username` is set.
-
----
-
-### BugReportEmailService
-
-Service class for sending bug report emails.
-
-**Assembly:** `Krypton.Toolkit.Utilities.dll`
-
-#### Constructor
-
-##### BugReportEmailService()
-
-```csharp
-public BugReportEmailService()
-```
-
-Initializes a new instance of the `BugReportEmailService` class.
-
-#### BugReportEmailService methods
-
-##### SendBugReport(BugReportEmailConfig, string, string, List&lt;string&gt;?)
-
-```csharp
-public bool SendBugReport(
-    BugReportEmailConfig config, 
-    string subject, 
-    string body, 
-    List<string>? attachments = null)
-```
-
-Sends a bug report email.
-
-**Parameters:**
-
-- `config` (`BugReportEmailConfig`): Email configuration (required, cannot be null)
-- `subject` (`string`): Email subject line
-- `body` (`string`): Email body content
-- `attachments` (`List<string>?`): Optional list of file paths to attach
-
-**Returns:** `true` if the email was sent successfully; otherwise, `false`
-
-**Exceptions:**
-
-- `ArgumentNullException`: Thrown when `config` is null
-- `InvalidOperationException`: Thrown when `SmtpServer` or `ToEmail` is not configured
-
-**Remarks:**
-
-- Only existing files will be attached (non-existent paths are skipped)
-- Email body is sent as plain text (not HTML)
-- All exceptions during sending are caught and return `false`
-
----
-
-### BugReportingHelper
-
-Helper class for integrating bug reporting with exception dialogs.
-
-**Assembly:** `Krypton.Toolkit.Utilities.dll`
-
-#### BugReportingHelper methods
-
-##### ShowExceptionWithBugReporting(Exception, BugReportEmailConfig, Color?, bool?, bool?)
-
-```csharp
-public static void ShowExceptionWithBugReporting(
-    Exception exception, 
-    BugReportEmailConfig emailConfig, 
-    Color? highlightColor = null, 
-    bool? showCopyButton = null, 
-    bool? showSearchBox = null)
-```
-
-Shows an exception dialog with integrated bug reporting capability.
-
-**Parameters:**
-
-- `exception` (`Exception`): The exception to display (required)
-- `emailConfig` (`BugReportEmailConfig`): Email configuration for bug reporting (required)
-- `highlightColor` (`Color?`): Optional highlight color for the exception dialog
-- `showCopyButton` (`bool?`): Optional flag to show the copy button in exception dialog
-- `showSearchBox` (`bool?`): Optional flag to show the search box in exception dialog
-
-**Remarks:**
-This method displays `KryptonExceptionDialog` with a "Report Bug" button. When clicked, it opens `KryptonBugReportingDialog` with the exception pre-populated.
-
----
-
-### KryptonBugReportingDialogStrings
-
-Localizable string resources for the bug reporting dialog.
-
-**Assembly:** `Krypton.Toolkit.Utilities.dll`
-
-#### KryptonBugReportingDialogStrings constructor
-
-##### KryptonBugReportingDialogStrings()
-
-```csharp
-public KryptonBugReportingDialogStrings()
-```
-
-Initializes a new instance with default English strings.
-
-#### KryptonBugReportingDialogStrings properties
-
-All properties are of type `string` and are localizable:
-
-- `WindowTitle`: Dialog window title
-- `EmailAddress`: Email address label text
-- `BugDescription`: Bug description label text
-- `StepsToReproduce`: Steps to reproduce label text
-- `Attachments`: Attachments label text
-- `AddScreenshot`: Add screenshot button text
-- `AddFile`: Add file button text
-- `Remove`: Remove button text
-- `Send`: Send button text
-- `Cancel`: Cancel button text
-- `Sending`: Sending status text
-- `SuccessTitle`: Success dialog title
-- `SuccessMessage`: Success dialog message
-- `ErrorTitle`: Error dialog title
-- `ErrorMessage`: Error dialog message
-- `InvalidEmail`: Invalid email error message
-- `RequiredFields`: Required fields error message
-
-#### KryptonBugReportingDialogStrings methods
-
-##### Reset()
-
-```csharp
-public void Reset()
-```
-
-Resets all string properties to their default values.
-
-##### IsDefault
-
-```csharp
-public bool IsDefault { get; }
-```
-
-Gets a value indicating if all strings are at their default values.
-
-**Type:** `bool` (read-only)
-
----
-
-## Integration with KryptonExceptionDialog
-
-### Extended Method Signature
-
-The `KryptonExceptionDialog.Show()` method has been extended with an optional callback parameter:
-
-```csharp
-public static void Show(
-    Exception exception, 
-    Color? highlightColor, 
-    bool? showCopyButton, 
-    bool? showSearchBox, 
-    Action<Exception>? bugReportCallback)
-```
-
-**Parameters:**
-
-- `bugReportCallback` (`Action<Exception>?`): Optional callback invoked when "Report Bug" button is clicked
-
-**Remarks:**
-When `bugReportCallback` is provided, a "Report Bug" button appears in the exception dialog. Clicking it invokes the callback with the exception as a parameter.
-
----
-
-## Type Aliases
-
-For convenience, the following types are used:
-
-- `DialogResult`: `System.Windows.Forms.DialogResult`
-- `Exception`: `System.Exception`
-- `Color`: `System.Drawing.Color`
-- `List<T>`: `System.Collections.Generic.List<T>`
-
----
-
-## Dependencies
-
-### Required Assemblies
-
-- `Krypton.Toolkit.dll`
-- `System.Windows.Forms.dll`
-- `System.Drawing.dll`
-- `System.Net.dll`
-
-### Required Namespaces
-
-- `System`
-- `System.Collections.Generic`
-- `System.Drawing`
-- `System.IO`
-- `System.Net`
-- `System.Net.Mail`
-- `System.Windows.Forms`
-- `Krypton.Toolkit`
-
----
-
-## Thread Safety
-
-- **KryptonBugReportingDialog**: Thread-safe (static methods)
-- **BugReportEmailConfig**: Not thread-safe (instance class)
-- **BugReportEmailService**: Not thread-safe (instance class, but can be used from multiple threads if instances are not shared)
-- **BugReportingHelper**: Thread-safe (static methods)
-
-**Note:** UI operations (dialog display) must be performed on the UI thread.
-
----
-
-## See Also
-
-- [Full Documentation](BugReportingDialog.md)
-- [Quick Reference](BugReportingDialogQuickReference.md)
-- [KryptonExceptionDialog API](KryptonExceptionDialog.md)
+- [KryptonGitHubIssueReportDialog](KryptonGitHubIssueReportDialog.md)
+- [KryptonExceptionDialog](../Toolkit/Components/KryptonExceptionDialog.md)
+- [KryptonExceptionDialog Quick Start](../Toolkit/Components/KryptonExceptionDialogQuickStart.md)
+- [Exception handling overview](../Toolkit/Components/ExceptionHandling.md)

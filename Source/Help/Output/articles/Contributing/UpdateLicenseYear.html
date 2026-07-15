@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>License header year automation | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="License header year automation | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="license-header-year-automation">License header year automation</h1>
+
+<p>Developer documentation for the automated license end-year update feature introduced to keep Krypton Suite source file headers aligned with the current calendar year.</p>
+<hr>
+<h2 id="table-of-contents">Table of contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#background-license-headers-in-this-repository">Background: license headers in this repository</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#components">Components</a></li>
+<li><a href="#matching-rules">Matching rules</a></li>
+<li><a href="#file-scope">File scope</a></li>
+<li><a href="#update-algorithm">Update algorithm</a></li>
+<li><a href="#encoding-and-line-endings">Encoding and line endings</a></li>
+<li><a href="#github-actions-workflow">GitHub Actions workflow</a></li>
+<li><a href="#dry-run-mode">Dry run mode</a></li>
+<li><a href="#pull-request-behaviour">Pull request behaviour</a></li>
+<li><a href="#local-development">Local development</a></li>
+<li><a href="#maintaining-headers-in-new-and-existing-files">Maintaining headers in new and existing files</a></li>
+<li><a href="#what-this-automation-does-not-update">What this automation does not update</a></li>
+<li><a href="#operational-runbook">Operational runbook</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#extending-or-modifying-the-automation">Extending or modifying the automation</a></li>
+<li><a href="#security-and-permissions">Security and permissions</a></li>
+<li><a href="#faq">FAQ</a></li>
+</ol>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>The Krypton Standard Toolkit repository carries BSD 3-Clause license headers on most source files. The <strong>modifications</strong> line records when ongoing Krypton Suite work began and the last year in which the file was maintained, using a range such as <code>2017 - 2026</code>.</p>
+<p>Each January (and on demand), maintainers previously had to update thousands of file headers manually. The <strong>Update License Year</strong> automation:</p>
+<ol>
+<li>Checks out the <code>alpha</code> branch.</li>
+<li>Scans the repository for eligible files.</li>
+<li>Updates the <strong>end year</strong> on lines containing <code>Modifications by Peter Wagner</code> when that year is behind the current calendar year.</li>
+<li>Opens a pull request back into <code>alpha</code> for review and merge.</li>
+</ol>
+<p>The automation is intentionally conservative: it only changes the end year, never the start year, and only on lines that match the Krypton modifications attribution pattern.</p>
+<h3 id="related-files">Related files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.github/workflows/update-license-year.yml</code></td>
+<td>GitHub Actions workflow definition</td>
+</tr>
+<tr>
+<td><code>.github/scripts/Update-LicenseYear.ps1</code></td>
+<td>PowerShell implementation</td>
+</tr>
+<tr>
+<td><code>.github/update-license-year-pr.md</code></td>
+<td>Short PR description template for the initial feature PR</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="background-license-headers-in-this-repository">Background: license headers in this repository</h2>
+<p>Krypton source files typically use a <code>#region BSD License</code> block at the top of the file. There are two historical attribution layers:</p>
+<h3 id="1-original-component-factory-attribution-unchanged">1. Original Component Factory attribution (unchanged)</h3>
+<p>Historical files retain the original Component Factory Pty Ltd notice, for example:</p>
+<pre><code class="lang-text">© Component Factory Pty Ltd, 2006 - 2016, (Version 4.5.0.0) All rights reserved.
+</code></pre>
+<p>This range is <strong>fixed</strong> and must <strong>not</strong> be updated by the automation.</p>
+<h3 id="2-krypton-suite-modifications-attribution-updated">2. Krypton Suite modifications attribution (updated)</h3>
+<p>Ongoing Krypton Suite work is attributed on a separate line, for example:</p>
+<pre><code class="lang-text">Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac &amp; Ahmed Abdelhameed et al. 2017 - 2026. All rights reserved.
+</code></pre>
+<p>The automation targets <strong>only</strong> this line (and close variants). The start year (<code>2017</code>, <code>2021</code>, <code>2024</code>, <code>2026</code>, etc.) reflects when the file was first created or first received Krypton modifications. The end year should reflect the current maintenance period.</p>
+<h3 id="header-variants-in-the-wild">Header variants in the wild</h3>
+<p>The repository has evolved over many years, so wording is not identical everywhere. All of the following are handled, provided the line contains <code>Modifications by Peter Wagner</code> and a four-digit year range:</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Example end-year format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full multi-contributor block comment</td>
+<td><code>... et al. 2017 - 2026. All rights reserved.</code></td>
+</tr>
+<tr>
+<td>Shorter TestForm-style header</td>
+<td><code>... et al. 2024 - 2026. All rights reserved.</code></td>
+</tr>
+<tr>
+<td>YAML comment prefix</td>
+<td><code># Modifications by ... 2025 - 2026. All rights reserved.</code></td>
+</tr>
+<tr>
+<td><code>.editorconfig</code> escaped template</td>
+<td><code>... et al. 2026 - 2026. All rights reserved.</code> inside <code>file_header_template</code></td>
+</tr>
+<tr>
+<td>Embedded seed text in <code>.cs</code> string literals</td>
+<td><code>... 2017 - 2026. All rights reserved.</code> inside a <code>@&quot;...&quot;</code> block</td>
+</tr>
+</tbody>
+</table>
+<p>Separator spacing around the dash is preserved (<code>-</code> vs <code>-</code>).</p>
+<h3 id="parallel-header-maintenance-mechanisms">Parallel header maintenance mechanisms</h3>
+<p>Headers are maintained through several complementary mechanisms:</p>
+<table>
+<thead>
+<tr>
+<th>Mechanism</th>
+<th>Location</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Per-file <code>#region BSD License</code> blocks</td>
+<td><code>*.cs</code> and related source</td>
+<td>Canonical in-file notice</td>
+</tr>
+<tr>
+<td><code>.licenseheader</code> project templates</td>
+<td>e.g. <code>Krypton.Toolkit.licenseheader</code></td>
+<td>IDE tooling for new files</td>
+</tr>
+<tr>
+<td><code>.editorconfig</code> <code>file_header_template</code></td>
+<td><code>Source/Current/.editorconfig</code>, <code>Source/Testing/.editorconfig</code></td>
+<td>Visual Studio / analyzer file-header insertion</td>
+</tr>
+<tr>
+<td>Runtime interpolated strings</td>
+<td><code>GlobalStaticValues.cs</code>, <code>KryptonCustomPaletteBase.cs</code></td>
+<td>UI seed text using <code>DateTime.Now.Year</code></td>
+</tr>
+</tbody>
+</table>
+<p>The automation updates static text in the first three categories. Runtime-interpolated strings are already dynamic and are out of scope.</p>
+<hr>
+<h2 id="architecture">Architecture</h2>
+<pre><code class="lang-mermaid">flowchart TD
+    subgraph triggers [Triggers]
+        Cron[&quot;Schedule: 1 Jan 06:00 UTC&quot;]
+        Manual[&quot;workflow_dispatch&quot;]
+        DryRun[&quot;dry_run input (manual only)&quot;]
+    end
+
+    subgraph runner [ubuntu-latest runner]
+        Checkout[&quot;checkout@v6\nref: alpha&quot;]
+        Script[&quot;Update-LicenseYear.ps1\n-Year &amp;lt;current year&amp;gt;&quot;]
+        Summary[&quot;GITHUB_STEP_SUMMARY\n(dry run only)&quot;]
+        PR[&quot;create-pull-request@v7\n(if changes &amp;amp; not dry run)&quot;]
+        NoOp[&quot;Log: no changes required&quot;]
+    end
+
+    subgraph output [Outputs]
+        Branch[&quot;automation/license-year-YYYY&quot;]
+        AlphaPR[&quot;PR → alpha&quot;]
+        Logs[&quot;Job logs / summary&quot;]
+    end
+
+    Cron --&gt; Checkout
+    Manual --&gt; Checkout
+    DryRun --&gt; Script
+    Checkout --&gt; Script
+    Script --&gt;|dry run| Summary
+    Script --&gt;|files changed, live run| PR
+    Script --&gt;|no changes| NoOp
+    PR --&gt; Branch
+    PR --&gt; AlphaPR
+    Script --&gt; Logs
+    Summary --&gt; Logs
+</code></pre>
+<h3 id="design-principles">Design principles</h3>
+<ol>
+<li><strong>Branch from <code>alpha</code>, merge to <code>alpha</code></strong> — active development for the toolkit flows through <code>alpha</code>; the automation never commits directly to protected branches.</li>
+<li><strong>Pull request, not direct push</strong> — even scheduled runs produce a reviewable PR rather than silent commits.</li>
+<li><strong>Idempotent updates</strong> — re-running when headers are already current is a no-op.</li>
+<li><strong>Minimal diff</strong> — only the end year changes; contributor names, punctuation, and separator spacing are preserved.</li>
+<li><strong>Safe matching</strong> — unrelated copyright lines (Component Factory, third-party JDH Software, etc.) are excluded by the match predicate.</li>
+</ol>
+<hr>
+<h2 id="components">Components</h2>
+<h3 id="githubworkflowsupdate-license-yearyml"><code>.github/workflows/update-license-year.yml</code></h3>
+<p>GitHub Actions workflow named <strong>Update License Year</strong>.</p>
+<p><strong>Triggers:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Trigger</th>
+<th><code>dry_run</code></th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>schedule</code> (<code>0 6 1 1 *</code>)</td>
+<td>n/a (always live)</td>
+<td>Updates files and opens PR if needed</td>
+</tr>
+<tr>
+<td><code>workflow_dispatch</code></td>
+<td><code>false</code> (default)</td>
+<td>Updates files and opens PR if needed</td>
+</tr>
+<tr>
+<td><code>workflow_dispatch</code></td>
+<td><code>true</code></td>
+<td>Previews changes only; no writes, no PR</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Permissions:</strong></p>
+<ul>
+<li><code>contents: write</code> — required to push the automation branch and commit changes via <code>create-pull-request</code>.</li>
+<li><code>pull-requests: write</code> — required to open the PR.</li>
+</ul>
+<p><strong>Runner:</strong> <code>ubuntu-latest</code> with PowerShell 7 (<code>pwsh</code>).</p>
+<h3 id="githubscriptsupdate-licenseyearps1"><code>.github/scripts/Update-LicenseYear.ps1</code></h3>
+<p>Standalone PowerShell 7 script usable locally or in CI.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-Year</code></td>
+<td><code>int</code></td>
+<td><code>(Get-Date).Year</code></td>
+<td>Target end year</td>
+</tr>
+<tr>
+<td><code>-DryRun</code></td>
+<td><code>switch</code></td>
+<td>off</td>
+<td>List affected files without writing</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Exit output:</strong> writes the count of affected files to stdout (captured by the workflow as <code>updated_files</code>).</p>
+<p><strong>Repository root resolution:</strong></p>
+<ul>
+<li>Uses <code>$env:GITHUB_WORKSPACE</code> when running in Actions.</li>
+<li>Falls back to <code>(Get-Location).Path</code> for local runs.</li>
+</ul>
+<hr>
+<h2 id="matching-rules">Matching rules</h2>
+<h3 id="regular-expression">Regular expression</h3>
+<pre><code class="lang-powershell">'(Modifications by Peter Wagner[^\r\n]*?)(\d{4})(\s*-\s*)(\d{4})'
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Capture group</th>
+<th>Content</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Prefix through start of year range</td>
+<td><code>Modifications by Peter Wagner ... et al. </code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Start year</td>
+<td><code>2017</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Separator (spaces + dash + spaces)</td>
+<td><code>-</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>End year</td>
+<td><code>2025</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="replacement-logic">Replacement logic</h3>
+<p>For each match on a given line:</p>
+<pre><code>if endYear &gt;= targetYear:
+    leave unchanged
+else:
+    replace endYear with targetYear
+</code></pre>
+<h3 id="examples">Examples</h3>
+<table>
+<thead>
+<tr>
+<th>Input range</th>
+<th>Target year</th>
+<th>Output range</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>2025 - 2025</code></td>
+<td>2026</td>
+<td><code>2025 - 2026</code></td>
+<td>Common for files created in the prior year</td>
+</tr>
+<tr>
+<td><code>2017 - 2025</code></td>
+<td>2026</td>
+<td><code>2017 - 2026</code></td>
+<td>Bulk of legacy toolkit files</td>
+</tr>
+<tr>
+<td><code>2017 - 2026</code></td>
+<td>2026</td>
+<td><code>2017 - 2026</code></td>
+<td>Already current</td>
+</tr>
+<tr>
+<td><code>2026 - 2026</code></td>
+<td>2027</td>
+<td><code>2026 - 2027</code></td>
+<td>Next calendar year rollover</td>
+</tr>
+<tr>
+<td><code>2006 - 2016</code></td>
+<td>any</td>
+<td>unchanged</td>
+<td>No <code>Modifications by Peter Wagner</code> on line</td>
+</tr>
+<tr>
+<td><code>2013-2021</code> (JDH)</td>
+<td>any</td>
+<td>unchanged</td>
+<td>Third-party header; different pattern</td>
+</tr>
+</tbody>
+</table>
+<h3 id="multiple-matches-per-file">Multiple matches per file</h3>
+<p>If a file contains more than one matching line (for example, a header block <strong>and</strong> an embedded string literal with the same attribution), <strong>all</strong> matching lines in that file are updated in a single pass.</p>
+<hr>
+<h2 id="file-scope">File scope</h2>
+<h3 id="included-extensions">Included extensions</h3>
+<table>
+<thead>
+<tr>
+<th>Extension / name</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.cs</code></td>
+<td>C# source, designers, global usings</td>
+</tr>
+<tr>
+<td><code>.licenseheader</code></td>
+<td>Project license header templates</td>
+</tr>
+<tr>
+<td><code>.yml</code>, <code>.yaml</code></td>
+<td>GitHub workflows, issue templates</td>
+</tr>
+<tr>
+<td><code>.md</code></td>
+<td>Documentation with header comments</td>
+</tr>
+<tr>
+<td><code>.editorconfig</code></td>
+<td><code>file_header_template</code> year range</td>
+</tr>
+</tbody>
+</table>
+<h3 id="excluded-paths">Excluded paths</h3>
+<p>Files under these directory segments are skipped:</p>
+<ul>
+<li><code>bin/</code></li>
+<li><code>obj/</code></li>
+<li><code>Artefacts/</code></li>
+<li><code>.git/</code></li>
+</ul>
+<h3 id="not-scanned">Not scanned</h3>
+<p>The following are intentionally <strong>not</strong> in scope today:</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*.csproj</code>, <code>*.sln</code>, <code>*.resx</code></td>
+<td>No standard modifications header</td>
+</tr>
+<tr>
+<td><code>LICENSE</code> (repo root)</td>
+<td>Uses <code>Copyright (c) YYYY - YYYY</code> without the modifications line</td>
+</tr>
+<tr>
+<td><code>Documents/License/License.md</code></td>
+<td>Same as above; update manually if required</td>
+</tr>
+<tr>
+<td>Binary and generated artefacts</td>
+<td>Excluded by path rules</td>
+</tr>
+</tbody>
+</table>
+<p>If new file types adopt the modifications header pattern, add their extension to the <code>$extensions</code> set in <code>Update-LicenseYear.ps1</code>.</p>
+<hr>
+<h2 id="update-algorithm">Update algorithm</h2>
+<p>High-level steps executed by <code>Update-LicenseYear.ps1</code>:</p>
+<ol>
+<li>Resolve repository root.</li>
+<li>Recursively enumerate all files under the root.</li>
+<li>For each file:
+<ol>
+<li>Skip if path matches an excluded segment.</li>
+<li>Skip if extension is not in the allow-list (unless the file is named <code>.editorconfig</code>).</li>
+<li>Read raw bytes from disk.</li>
+<li>Detect UTF-8 BOM presence and decode content accordingly.</li>
+<li>Apply regex replacement across the full file content.</li>
+<li>If content unchanged, continue to next file.</li>
+<li>If <code>-DryRun</code>, log <code>Would update: &lt;relative-path&gt;</code> and continue without writing.</li>
+<li>Otherwise, encode and write bytes back, preserving BOM state.</li>
+</ol>
+</li>
+<li>Emit summary and return the count of affected files.</li>
+</ol>
+<p>The script processes the <strong>entire repository tree</strong> under the checkout root, including <code>Source/Current</code>, <code>Source/Testing</code>, <code>Scripts/</code>, <code>.github/</code>, and <code>Documents/</code> when matching files exist there.</p>
+<hr>
+<h2 id="encoding-and-line-endings">Encoding and line endings</h2>
+<p>The Krypton repository standard (see <code>AGENTS.md</code> and <code>Source/*/.editorconfig</code>) is <strong>UTF-8 with BOM</strong> and <strong>CRLF</strong> line endings for C# source.</p>
+<p>The script is encoding-aware:</p>
+<ol>
+<li><strong>BOM detection</strong> — if the file begins with <code>EF BB BF</code>, it is treated as UTF-8 with BOM and the BOM is preserved on write.</li>
+<li><strong>No BOM</strong> — files without a BOM are written back without adding one.</li>
+<li><strong>Line endings</strong> — content is decoded and re-encoded as a single string; existing <code>\r\n</code> or <code>\n</code> sequences in the file are not normalised. The automation does not force CRLF conversion.</li>
+</ol>
+<p>This avoids the common pitfall of Linux CI runners rewriting entire trees to LF or stripping BOMs from WinForms designer files.</p>
+<hr>
+<h2 id="github-actions-workflow">GitHub Actions workflow</h2>
+<h3 id="step-by-step-execution">Step-by-step execution</h3>
+<h4 id="1-checkout-alpha">1. Checkout alpha</h4>
+<pre><code class="lang-yaml">uses: actions/checkout@v6
+with:
+  ref: alpha
+  fetch-depth: 0
+</code></pre>
+<p>The workflow always works from <code>alpha</code>, regardless of which branch contains the workflow definition.</p>
+<h4 id="2-update-license-header-end-year">2. Update license header end year</h4>
+<ul>
+<li>Determines <code>$year</code> from <code>(Get-Date).Year</code> on the runner (UTC date on <code>ubuntu-latest</code>).</li>
+<li>Parses <code>dry_run</code> from <code>workflow_dispatch</code> inputs; scheduled runs always perform a live update.</li>
+<li>Invokes <code>Update-LicenseYear.ps1</code>.</li>
+<li>Records <code>year</code>, <code>dry_run</code>, and <code>updated_files</code> as step outputs.</li>
+<li>In dry-run mode, writes a markdown summary to <code>$GITHUB_STEP_SUMMARY</code>.</li>
+</ul>
+<h4 id="3-create-pull-request-into-alpha">3. Create pull request into alpha</h4>
+<p>Runs only when:</p>
+<ul>
+<li><code>dry_run</code> is not <code>true</code>, <strong>and</strong></li>
+<li><code>updated_files</code> is not <code>0</code>.</li>
+</ul>
+<p>Uses <a href="https://github.com/peter-evans/create-pull-request"><code>peter-evans/create-pull-request@v7</code></a> with:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base</code></td>
+<td><code>alpha</code></td>
+</tr>
+<tr>
+<td><code>branch</code></td>
+<td><code>automation/license-year-YYYY</code></td>
+</tr>
+<tr>
+<td><code>delete-branch</code></td>
+<td><code>true</code> (branch removed after merge)</td>
+</tr>
+</tbody>
+</table>
+<p>If a PR from the same branch already exists, the action updates it with new commits.</p>
+<h4 id="4-no-changes-required">4. No changes required</h4>
+<p>Logs an informational message when <code>updated_files</code> is <code>0</code>, distinguishing dry-run vs live wording.</p>
+<hr>
+<h2 id="dry-run-mode">Dry run mode</h2>
+<p>Dry run is available <strong>only</strong> via manual <code>workflow_dispatch</code>. Scheduled January runs always apply changes.</p>
+<h3 id="github-ui">GitHub UI</h3>
+<ol>
+<li>Open <strong>Actions → Update License Year</strong>.</li>
+<li>Click <strong>Run workflow</strong>.</li>
+<li>Enable <strong>Preview changes without modifying files or creating a PR</strong>.</li>
+<li>Run.</li>
+</ol>
+<h3 id="what-to-expect">What to expect</h3>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Job log</td>
+<td>One <code>Would update: &lt;path&gt;</code> line per affected file</td>
+</tr>
+<tr>
+<td>Job summary</td>
+<td>Target year and total file count</td>
+</tr>
+<tr>
+<td>Repository</td>
+<td>Unchanged — no branch, commit, or PR</td>
+</tr>
+</tbody>
+</table>
+<h3 id="when-to-use-dry-run">When to use dry run</h3>
+<ul>
+<li>After merging workflow changes, to validate matching rules before the first live run.</li>
+<li>Before 1 January, to estimate PR size for the upcoming annual update.</li>
+<li>After modifying the regex or extension list, to verify scope.</li>
+</ul>
+<hr>
+<h2 id="pull-request-behaviour">Pull request behaviour</h2>
+<h3 id="branch-naming">Branch naming</h3>
+<pre><code>automation/license-year-2026
+</code></pre>
+<p>The year suffix matches the target end year applied by the script.</p>
+<h3 id="pr-title-and-commit-message">PR title and commit message</h3>
+<pre><code>chore: update license header end year to 2026
+Update license header end year to 2026
+</code></pre>
+<h3 id="pr-body-automated">PR body (automated)</h3>
+<p>The generated PR body includes:</p>
+<ul>
+<li>Target year</li>
+<li>Number of files updated</li>
+<li>Note that it was triggered by the Update License Year workflow</li>
+</ul>
+<h3 id="review-guidance">Review guidance</h3>
+<p>Automated license PRs are mechanically simple but can be large. Recommended review approach:</p>
+<ol>
+<li>Confirm the diff only touches year digits on <code>Modifications by Peter Wagner</code> lines.</li>
+<li>Spot-check <code>.licenseheader</code> and <code>.editorconfig</code> templates — these affect <strong>new</strong> files created by IDE tooling.</li>
+<li>Verify no unexpected paths appear (if they do, refine exclusions or the regex).</li>
+<li>Merge into <code>alpha</code> before the next development sprint if the run was triggered on 1 January.</li>
+</ol>
+<h3 id="re-running-after-merge">Re-running after merge</h3>
+<p>Once all headers show the current end year, subsequent runs (dry or live) report zero changes and do not open a new PR.</p>
+<hr>
+<h2 id="local-development">Local development</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li><a href="https://learn.microsoft.com/powershell/scripting/install/installing-powershell">PowerShell 7+</a> (<code>pwsh</code>)</li>
+</ul>
+<h3 id="preview-changes-recommended">Preview changes (recommended)</h3>
+<p>From the repository root:</p>
+<pre><code class="lang-powershell">pwsh -File .github/scripts/Update-LicenseYear.ps1 -Year 2026 -DryRun
+</code></pre>
+<h3 id="apply-changes-locally">Apply changes locally</h3>
+<pre><code class="lang-powershell">pwsh -File .github/scripts/Update-LicenseYear.ps1 -Year 2026
+</code></pre>
+<p>Review with <code>git diff</code> before committing. Local application is useful when testing regex changes; production updates should normally flow through the GitHub workflow and PR process.</p>
+<h3 id="target-a-specific-year">Target a specific year</h3>
+<pre><code class="lang-powershell">pwsh -File .github/scripts/Update-LicenseYear.ps1 -Year 2027 -DryRun
+</code></pre>
+<p>Useful when validating next-year rollover logic before 31 December.</p>
+<hr>
+<h2 id="maintaining-headers-in-new-and-existing-files">Maintaining headers in new and existing files</h2>
+<h3 id="adding-a-new-c-file">Adding a new C# file</h3>
+<ol>
+<li><p>Use the IDE file-header command (documented in <code>.editorconfig</code>):</p>
+<blockquote>
+<p>Visual Studio: <code>Ctrl+.</code> on first line → <strong>Add file header</strong>, or <strong>Fix all in Solution</strong>.</p>
+</blockquote>
+</li>
+<li><p>Or copy the <code>#region BSD License</code> block from a sibling file in the same project.</p>
+</li>
+<li><p>Set the <strong>start year</strong> to the file creation year. The <strong>end year</strong> should be the current calendar year.</p>
+</li>
+<li><p>Ensure the modifications line includes <code>Modifications by Peter Wagner</code> so future automation picks it up.</p>
+</li>
+</ol>
+<h3 id="updating-project-templates">Updating project templates</h3>
+<p>When the annual PR merges, verify these templates were included:</p>
+<ul>
+<li><code>Source/*/Krypton Components/*/*.licenseheader</code></li>
+<li><code>Source/Current/.editorconfig</code> → <code>file_header_template</code></li>
+<li><code>Source/Testing/.editorconfig</code> → <code>file_header_template</code></li>
+</ul>
+<p>If template files lag behind, new files created via IDE tooling may receive an outdated end year until the next automation run.</p>
+<h3 id="manual-mid-year-updates">Manual mid-year updates</h3>
+<p>Developers may set the end year to the current year when making substantial edits to a file. This is optional but keeps headers accurate between annual runs. The automation will skip files already at or beyond the target year.</p>
+<hr>
+<h2 id="what-this-automation-does-not-update">What this automation does not update</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Component Factory <code>2006 - 2016</code> lines</td>
+<td>Different attribution; historically fixed</td>
+</tr>
+<tr>
+<td>JDH Software <code>Copyright (C) 2013-2021</code></td>
+<td>Third-party code; different format</td>
+</tr>
+<tr>
+<td><code>GlobalStaticValues.DEFAULT_*_SEED_TEXT</code></td>
+<td>Uses <code>{DateTime.Now.Year}</code> at runtime</td>
+</tr>
+<tr>
+<td><code>KryptonCustomPaletteBase</code> export strings</td>
+<td>Uses <code>{DateTime.Now.Year}</code> at runtime</td>
+</tr>
+<tr>
+<td>Root <code>LICENSE</code> and <code>Documents/License/License.md</code></td>
+<td><code>Copyright (c)</code> format without modifications line</td>
+</tr>
+<tr>
+<td><code>ViewLayoutMonths.cs</code> <code>DateTime.Now.Year</code></td>
+<td>Unrelated calendar UI logic</td>
+</tr>
+</tbody>
+</table>
+<p>If the root <code>LICENSE</code> or <code>License.md</code> copyright range must track the calendar year, that remains a <strong>manual</strong> maintainer task unless the regex scope is deliberately extended.</p>
+<hr>
+<h2 id="operational-runbook">Operational runbook</h2>
+<h3 id="annual-process-automatic">Annual process (automatic)</h3>
+<table>
+<thead>
+<tr>
+<th>When</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 Jan, 06:00 UTC</td>
+<td>Scheduled workflow runs on <code>alpha</code></td>
+</tr>
+<tr>
+<td>After workflow completes</td>
+<td>Review PR <code>automation/license-year-YYYY</code></td>
+</tr>
+<tr>
+<td>Within first week of year</td>
+<td>Merge PR into <code>alpha</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="annual-process-manual-fallback">Annual process (manual fallback)</h3>
+<p>If the scheduled run fails or is disabled:</p>
+<ol>
+<li>Run <strong>Update License Year</strong> manually (<code>dry_run: false</code>).</li>
+<li>Review and merge the resulting PR.</li>
+</ol>
+<h3 id="pre-year-checklist-optional-december">Pre-year checklist (optional, December)</h3>
+<ol>
+<li>Run dry run on <code>alpha</code>.</li>
+<li>Note file count in team channel.</li>
+<li>Confirm <code>.editorconfig</code> <code>file_header_template</code> end year in active branches (automation fixes this in the PR).</li>
+</ol>
+<h3 id="post-merge-checklist">Post-merge checklist</h3>
+<ul>
+<li>[ ] Automation PR merged into <code>alpha</code></li>
+<li>[ ] Dry run reports <code>0</code> files would be updated</li>
+<li>[ ] New file header insertion in Visual Studio shows current end year</li>
+</ul>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="workflow-did-not-open-a-pr">Workflow did not open a PR</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Job succeeded, no PR</td>
+<td>All headers already current</td>
+<td>Expected; check log for <code>updated_files=0</code></td>
+</tr>
+<tr>
+<td>Job succeeded, no PR</td>
+<td>Dry run was enabled</td>
+<td>Re-run with dry run disabled</td>
+</tr>
+<tr>
+<td>Step skipped</td>
+<td><code>updated_files == 0</code></td>
+<td>Run locally with <code>-DryRun</code> to confirm</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pr-contains-unexpected-files">PR contains unexpected files</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow YAML files changed</td>
+<td>YAML headers use <code># Modifications by...</code></td>
+<td>Expected if end year was behind</td>
+</tr>
+<tr>
+<td><code>.md</code> files changed</td>
+<td>Header comment blocks in docs</td>
+<td>Expected if matched</td>
+</tr>
+<tr>
+<td>Build artefact paths</td>
+<td>Should not occur</td>
+<td>Report bug; verify <code>bin/</code>/<code>obj/</code> exclusions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="file-not-updated-but-should-have-been">File not updated but should have been</h3>
+<ol>
+<li>Confirm the line contains the exact substring <code>Modifications by Peter Wagner</code>.</li>
+<li>Confirm the file extension is in the allow-list.</li>
+<li>Confirm the end year is strictly less than the target year.</li>
+<li>Confirm the file is not under an excluded path.</li>
+</ol>
+<h3 id="file-updated-but-should-not-have-been">File updated but should not have been</h3>
+<ol>
+<li>Check whether the line incorrectly contains <code>Modifications by Peter Wagner</code> in embedded documentation or sample text.</li>
+<li>If a false positive is found, refine the regex or add a path exclusion and document the exception here.</li>
+</ol>
+<h3 id="powershell-errors-on-runner">PowerShell errors on runner</h3>
+<p>The script requires PowerShell 7 (<code>#requires -Version 7.0</code>). <code>ubuntu-latest</code> GitHub-hosted runners include <code>pwsh</code>. Self-hosted runners must install PowerShell 7.</p>
+<h3 id="create-pull-request-permission-errors"><code>create-pull-request</code> permission errors</h3>
+<p>Ensure workflow permissions grant <code>contents: write</code> and <code>pull-requests: write</code>. Organisation policies that restrict <code>GITHUB_TOKEN</code> may block branch push; consult repository admin settings.</p>
+<hr>
+<h2 id="extending-or-modifying-the-automation">Extending or modifying the automation</h2>
+<h3 id="add-a-new-file-extension">Add a new file extension</h3>
+<p>Edit <code>Update-LicenseYear.ps1</code>:</p>
+<pre><code class="lang-powershell">$extensions = [System.Collections.Generic.HashSet[string]]::new(
+    [string[]]@('.cs', '.licenseheader', '.yml', '.yaml', '.md', '.your-ext'),
+    [StringComparer]::OrdinalIgnoreCase
+)
+</code></pre>
+<p>Run <code>-DryRun</code> and review scope before merging.</p>
+<h3 id="change-the-target-branch">Change the target branch</h3>
+<p>Update both <code>checkout.ref</code> and <code>create-pull-request.base</code> in <code>update-license-year.yml</code>. Branch naming and documentation should stay aligned.</p>
+<h3 id="change-the-schedule">Change the schedule</h3>
+<p>Cron expression in <code>update-license-year.yml</code>:</p>
+<pre><code class="lang-yaml">- cron: '0 6 1 1 *'   # minute hour day month weekday (UTC)
+</code></pre>
+<h3 id="tighten-the-match-predicate">Tighten the match predicate</h3>
+<p>To require <code>All rights reserved</code> after the year range, extend the regex cautiously and re-run dry run across the full tree — some embedded strings may use different trailing text.</p>
+<h3 id="add-a-kill-switch">Add a kill switch</h3>
+<p>Other workflows in this repository (for example <code>alpha-backup-sync.yml</code>) use repository variables as kill switches. The same pattern can be added if maintainers want to disable scheduled runs without removing the workflow file.</p>
+<hr>
+<h2 id="security-and-permissions">Security and permissions</h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Token</td>
+<td>Default <code>GITHUB_TOKEN</code> scoped to the repository</td>
+</tr>
+<tr>
+<td>Branch access</td>
+<td>Writes only to <code>automation/license-year-*</code> branches, not directly to <code>alpha</code></td>
+</tr>
+<tr>
+<td>Fork PRs</td>
+<td>Workflow does not run on fork pull requests; it is schedule/dispatch only</td>
+</tr>
+<tr>
+<td>Script injection</td>
+<td><code>Year</code> is derived from the runner clock, not user input; <code>dry_run</code> is a boolean GitHub input</td>
+</tr>
+<tr>
+<td>Review</td>
+<td>All changes pass through a normal pull request review process</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="faq">FAQ</h2>
+<h3 id="why-alpha-and-not-master">Why <code>alpha</code> and not <code>master</code>?</h3>
+<p>Active toolkit development for the current major line flows through <code>alpha</code>. The automation targets the branch where day-to-day header drift occurs.</p>
+<h3 id="why-only-the-end-year">Why only the end year?</h3>
+<p>The start year records when Krypton modifications to that file began. Changing it would misrepresent file history. The end year communicates ongoing maintenance.</p>
+<h3 id="will-the-january-run-commit-directly-to-alpha">Will the January run commit directly to <code>alpha</code>?</h3>
+<p>No. It always opens a PR. Maintainers merge after review.</p>
+<h3 id="can-i-test-the-workflow-before-1-january">Can I test the workflow before 1 January?</h3>
+<p>Yes. Use <code>workflow_dispatch</code> with <strong>dry run</strong> enabled, or run the PowerShell script locally with <code>-DryRun</code>.</p>
+<h3 id="does-the-script-run-on-windows-agents">Does the script run on Windows agents?</h3>
+<p>The script is cross-platform. The workflow uses <code>ubuntu-latest</code> for consistency with other repository workflows.</p>
+<h3 id="what-if-two-maintainers-run-the-live-workflow-simultaneously">What if two maintainers run the live workflow simultaneously?</h3>
+<p><code>create-pull-request</code> updates an existing open PR on the same branch name rather than creating duplicates.</p>
+<h3 id="should-i-update-headers-in-my-feature-pr">Should I update headers in my feature PR?</h3>
+<p>Optional for the end year if your PR merges before the annual automation PR. Required: include a correctly formatted header on <strong>new</strong> files, with an appropriate start year and a current end year.</p>
+<hr>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/LICENSE">BSD 3-Clause License</a></li>
+<li><a href="AGENTSDeveloperGuide.html">Repository guidelines (<code>AGENTS.md</code>)</a> — encoding, line endings, and header conventions</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

@@ -362,6 +362,10 @@ toggle.ToggleSwitchValues.GradientDirection = LinearGradientMode.Vertical;
 toggle.ToggleSwitchValues.UseThemeColors = true; // Use theme colors for gradient
 ```
 
+### Knob Styles
+
+The `KryptonToggleSwitch` has a number of [knob styles](KryptonToggleSwitchKnobStyles.md) to choose from.
+
 ---
 
 ### Embossed Toggle

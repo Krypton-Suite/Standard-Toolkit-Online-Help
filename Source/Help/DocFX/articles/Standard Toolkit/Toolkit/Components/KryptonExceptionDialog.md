@@ -1,6 +1,6 @@
 # KryptonExceptionDialog API Documentation
 
-**V110+:** The public **`KryptonExceptionDialog`** API is in **`Krypton.Toolkit.Utilities`**. Prefer **[Utilities/KryptonExceptionDialog.md](../../Utilities/KryptonExceptionDialog.md)** and **[Quick Start](../../Utilities/KryptonExceptionDialogQuickStart.md)**; this file is a legacy mirror and may be out of date.
+**V110+:** The public **`KryptonExceptionDialog`** API is in **`Krypton.Toolkit.Utilities`**. Prefer **[KryptonExceptionDialog.md](KryptonExceptionDialog.md)** and **[Quick Start](KryptonExceptionDialogQuickStart.md)**.
 
 ## Overview
 
@@ -760,7 +760,8 @@ InnerException:
 - **VisualExceptionDialogForm** - Internal form implementation
 - **InternalSearchableExceptionTreeView** - Searchable tree view control
 - **InternalExceptionTreeView** - Exception tree view control
-- **KryptonBugReportingDialog** - Integrated bug reporting dialog
+- **KryptonBugReportingDialog** - E-mail/file bug reporting dialog
+- **KryptonGitHubIssueReportDialog** - GitHub Issues API bug reporting dialog
 - **KryptonManager.Strings.ExceptionDialogStrings** - Localization strings
 
 ---
@@ -777,7 +778,8 @@ InnerException:
 
 - [Krypton Toolkit Documentation](https://github.com/Krypton-Suite/Standard-Toolkit)
 - [Exception Handling Best Practices](https://docs.microsoft.com/dotnet/standard/exceptions/)
-- [Bug reporting dialog API](../../Utilities/BugReportingDialogAPI.md)
+- [Bug reporting dialogs](../../Utilities/BugReportingDialogAPI.md)
+- [GitHub issue report dialog](../../Utilities/KryptonGitHubIssueReportDialog.md)
 
 ---
 

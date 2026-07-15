@@ -4,6 +4,9 @@
 
 `KryptonSearchBox` is a modern, feature-rich search input control that extends `KryptonTextBox` to provide a comprehensive search experience with built-in suggestions, search history, and customizable display options. It is designed for Windows Forms applications using the Krypton Toolkit.
 
+**Namespace:** `Krypton.Toolkit.Utilities`  
+**Assembly:** `Krypton.Toolkit.Utilities` (included in the `Krypton.Standard.Toolkit` NuGet package)
+
 ## Key Features
 
 - **Search and Clear Buttons**: Integrated search and clear buttons with customizable visibility
@@ -26,7 +29,7 @@ System.Object
               └─ System.Windows.Forms.TextBoxBase
                   └─ System.Windows.Forms.TextBox
                       └─ Krypton.Toolkit.KryptonTextBox
-                          └─ Krypton.Toolkit.KryptonSearchBox
+                          └─ Krypton.Toolkit.Utilities.KryptonSearchBox
 ```
 
 ## API Reference

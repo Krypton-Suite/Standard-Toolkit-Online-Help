@@ -1,70 +1,126 @@
-# Krypton Toolkit — Controls
+# Controls documentation index
 
-Reference topics for controls in the `Krypton.Toolkit` assembly. Topics follow [DOCUMENTATION_STANDARD.md](Controls/DOCUMENTATION_STANDARD.md).
+Topics under `Documents/Development/Controls/` describe Krypton WinForms controls and related value types.
 
-**Coverage:** **Comprehensive** = API catalog + usage guides · **Legacy** = palette/state tutorials, limited API · **Needs work** = thin stub
+**Authoring standard:** [Controls/DOCUMENTATION_STANDARD.md](Controls/DOCUMENTATION_STANDARD.md)
 
-| Control | Topic | Coverage |
-|---------|-------|----------|
-| BindingNavigator | [KryptonBindingNavigator](Controls/KryptonBindingNavigator.md) | Comprehensive |
-| BorderEdge | [KryptonBorderEdge](Controls/KryptonBorderEdge.md) | Comprehensive |
-| BreadCrumb | [KryptonBreadCrumb](Controls/KryptonBreadCrumb.md) | Legacy |
-| Button | [KryptonButton](Controls/KryptonButton.md) | Legacy |
-| ButtonSpec | [ButtonSpec](Controls/ButtonSpec.md) | Legacy |
-| ButtonStyle | [ButtonStyle](Controls/ButtonStyle.md) | Comprehensive |
-| CaptionValues | [CaptionValues](Controls/CaptionValues.md) | Comprehensive |
-| CheckBox | [KryptonCheckBox](Controls/KryptonCheckBox.md) | Legacy |
-| CheckButton | [KryptonCheckButton](Controls/KryptonCheckButton.md) | Legacy |
-| CheckedListBox | [KryptonCheckedListBox](Controls/KryptonCheckedListBox.md) | Legacy |
-| ColorButton | [KryptonColorButton](Controls/KryptonColorButton.md) | Legacy |
-| ComboBox | [KryptonComboBox](Controls/KryptonComboBox.md) | Legacy |
-| Command (interface) | [IKryptonCommand](Controls/IKryptonCommand.md) | Comprehensive |
-| CommandLinkButton | [KryptonCommandLinkButton](Controls/KryptonCommandLinkButton.md) | Comprehensive |
-| CommandLinkImageValues | [CommandLinkImageValues](Controls/CommandLinkImageValues.md) | Comprehensive |
-| CommandLinkTextValues | [CommandLinkTextValues](Controls/CommandLinkTextValues.md) | Comprehensive |
-| DataGridView | [KryptonDataGridView](Controls/KryptonDataGridView.md) | Comprehensive |
-| DateTimePicker | [KryptonDateTimePicker](Controls/KryptonDateTimePicker.md) | Legacy |
-| DomainUpDown | [KryptonDomainUpDown](Controls/KryptonDomainUpDown.md) | Legacy |
-| DropButton | [KryptonDropButton](Controls/KryptonDropButton.md) | Legacy |
-| Group | [KryptonGroup](Controls/KryptonGroup.md) | Comprehensive |
-| GroupBox | [KryptonGroupBox](Controls/KryptonGroupBox.md) | Comprehensive |
-| Header | [KryptonHeader](Controls/KryptonHeader.md) | Legacy |
-| HeaderGroup | [KryptonHeaderGroup](Controls/KryptonHeaderGroup.md) | Legacy |
-| Label | [KryptonLabel](Controls/KryptonLabel.md) | Legacy |
-| LinkLabel | [KryptonLinkLabel](Controls/KryptonLinkLabel.md) | Legacy |
-| LinkWrapLabel | [KryptonLinkWrapLabel](Controls/KryptonLinkWrapLabel.md) | Comprehensive |
-| ListBox | [KryptonListBox](Controls/KryptonListBox.md) | Legacy |
-| ListView | [KryptonListView](Controls/KryptonListView.md) | Comprehensive |
-| Manager (original) | [KryptonManagerOriginal](Controls/KryptonManagerOriginal.md) | Needs work |
-| MaskedTextBox | [KryptonMaskedTextBox](Controls/KryptonMaskedTextBox.md) | Legacy |
-| MenuStrip | [KryptonMenuStrip](Controls/KryptonMenuStrip.md) | Comprehensive |
-| MonthCalendar | [KryptonMonthCalendar](Controls/KryptonMonthCalendar.md) | Legacy |
-| NumericUpDown | [KryptonNumericUpDown](Controls/KryptonNumericUpDown.md) | Legacy |
-| Panel | [KryptonPanel](Controls/KryptonPanel.md) | Comprehensive |
-| PictureBox | [KryptonPictureBox](Controls/KryptonPictureBox.md) | Comprehensive |
-| PoweredByButton | [KryptonPoweredByButton](Controls/KryptonPoweredByButton.md) | Comprehensive |
-| PrintDocument | [KryptonPrintDocument](Controls/KryptonPrintDocument.md) | Comprehensive |
-| PrintPreviewControl | [KryptonPrintPreviewControl](Controls/KryptonPrintPreviewControl.md) | Comprehensive |
-| ProgressBar | [KryptonProgressBar](Controls/KryptonProgressBar.md) | Comprehensive |
-| PropertyGrid | [KryptonPropertyGrid](Controls/KryptonPropertyGrid.md) | Comprehensive |
-| RadioButton | [KryptonRadioButton](Controls/KryptonRadioButton.md) | Legacy |
-| RichTextBox | [KryptonRichTextBox](Controls/KryptonRichTextBox.md) | Legacy |
-| Scrollbars | [KryptonScrollbars](Controls/KryptonScrollbars.md) | Comprehensive |
-| SearchBox | [KryptonSearchBox](Controls/KryptonSearchBox.md) | Comprehensive |
-| Separator | [KryptonSeparator](Controls/KryptonSeparator.md) | Legacy |
-| SplitContainer | [KryptonSplitContainer](Controls/KryptonSplitContainer.md) | Legacy |
-| Splitter | [KryptonSplitter](Controls/KryptonSplitter.md) | Comprehensive |
-| StatusStrip | [KryptonStatusStrip](Controls/KryptonStatusStrip.md) | Comprehensive |
-| TableLayoutPanel | [KryptonTableLayoutPanel](Controls/KryptonTableLayoutPanel.md) | Comprehensive |
-| TextBox | [KryptonTextBox](Controls/KryptonTextBox.md) | Legacy |
-| ThemeComboBox | [KryptonThemeComboBox](Controls/KryptonThemeComboBox.md) | Comprehensive |
-| ThemeListBox | [KryptonThemeListBox](Controls/KryptonThemeListBox.md) | Comprehensive |
-| ToggleSwitch | [KryptonToggleSwitch](Controls/KryptonToggleSwitch.md) | Comprehensive |
-| ToolStrip | [KryptonToolStrip](Controls/KryptonToolStrip.md) | Comprehensive |
-| ToolStripContainer | [KryptonToolStripContainer](Controls/KryptonToolStripContainer.md) | Comprehensive |
-| TrackBar | [KryptonTrackBar](Controls/KryptonTrackBar.md) | Legacy |
-| TreeView | [KryptonTreeView](Controls/KryptonTreeView.md) | Legacy |
-| WebBrowser | [KryptonWebBrowser](Controls/KryptonWebBrowser.md) | Comprehensive |
-| WrapLabel | [KryptonWrapLabel](Controls/KryptonWrapLabel.md) | Comprehensive |
+**V110+ assembly note:** Several controls ship in **`Krypton.Toolkit.Utilities`** (referenced by the `Krypton.Standard.Toolkit` NuGet package). Topics that apply call this out in the overview.
 
-Forms and components: [Forms](Forms/KryptonForm.md) · [Components](Components.md)
+## Coverage tiers
+
+| Tier | Meaning |
+| --- | --- |
+| **Comprehensive** | Follows `DOCUMENTATION_STANDARD.md` (overview, API, usage, see also) |
+| **Standard** | Solid API coverage; may lack full usage guides |
+| **Legacy** | Short or superseded topic — prefer the linked canonical doc |
+
+## Input and editing
+
+| Topic | Tier | Assembly |
+| --- | --- | --- |
+| [KryptonButton](Controls/KryptonButton.md) | Standard | Krypton.Toolkit |
+| [KryptonCheckBox](Controls/KryptonCheckBox.md) | Standard | Krypton.Toolkit |
+| [KryptonCheckButton](Controls/KryptonCheckButton.md) | Standard | Krypton.Toolkit |
+| [KryptonRadioButton](Controls/KryptonRadioButton.md) | Standard | Krypton.Toolkit |
+| [KryptonTextBox](Controls/KryptonTextBox.md) | Standard | Krypton.Toolkit |
+| [KryptonMaskedTextBox](Controls/KryptonMaskedTextBox.md) | Standard | Krypton.Toolkit |
+| [KryptonRichTextBox](Controls/KryptonRichTextBox.md) | Standard | Krypton.Toolkit |
+| [KryptonComboBox](Controls/KryptonComboBox.md) | Standard | Krypton.Toolkit |
+| [KryptonNumericUpDown](Controls/KryptonNumericUpDown.md) | Standard | Krypton.Toolkit |
+| [KryptonDomainUpDown](Controls/KryptonDomainUpDown.md) | Standard | Krypton.Toolkit |
+| [KryptonDateTimePicker](Controls/KryptonDateTimePicker.md) | Standard | Krypton.Toolkit |
+| [KryptonMonthCalendar](Controls/KryptonMonthCalendar.md) | Standard | Krypton.Toolkit |
+| [KryptonColorButton](Controls/KryptonColorButton.md) | Standard | Krypton.Toolkit |
+| [KryptonDropButton](Controls/KryptonDropButton.md) | Standard | Krypton.Toolkit |
+| [KryptonToggleSwitch](Controls/KryptonToggleSwitch.md) | Standard | Krypton.Toolkit |
+| [KryptonTrackBar](Controls/KryptonTrackBar.md) | Standard | Krypton.Toolkit |
+| [KryptonSearchBox](Controls/KryptonSearchBox.md) | Standard | Krypton.Toolkit.Utilities |
+| [KryptonPropertyGrid](Controls/KryptonPropertyGrid.md) | Standard | Krypton.Toolkit |
+
+## Lists and navigation
+
+| Topic | Tier | Assembly |
+| --- | --- | --- |
+| [KryptonListBox](Controls/KryptonListBox.md) | Standard | Krypton.Toolkit |
+| [KryptonCheckedListBox](Controls/KryptonCheckedListBox.md) | Standard | Krypton.Toolkit |
+| [KryptonListView](Controls/KryptonListView.md) | Standard | Krypton.Toolkit |
+| [KryptonTreeView](Controls/KryptonTreeView.md) | Standard | Krypton.Toolkit |
+| [KryptonBreadCrumb](Controls/KryptonBreadCrumb.md) | Standard | Krypton.Toolkit |
+| [KryptonBindingNavigator](Controls/KryptonBindingNavigator.md) | Standard | Krypton.Toolkit |
+
+## Layout and containers
+
+| Topic | Tier | Assembly |
+| --- | --- | --- |
+| [KryptonPanel](Controls/KryptonPanel.md) | Comprehensive | Krypton.Toolkit |
+| [KryptonGroup](Controls/KryptonGroup.md) | Standard | Krypton.Toolkit |
+| [KryptonGroupBox](Controls/KryptonGroupBox.md) | Comprehensive | Krypton.Toolkit |
+| [KryptonHeader](Controls/KryptonHeader.md) | Standard | Krypton.Toolkit |
+| [KryptonHeaderGroup](Controls/KryptonHeaderGroup.md) | Standard | Krypton.Toolkit |
+| [KryptonSplitContainer](Controls/KryptonSplitContainer.md) | Standard | Krypton.Toolkit |
+| [KryptonSplitter](Controls/KryptonSplitter.md) | Standard | Krypton.Toolkit |
+| [KryptonTableLayoutPanel](Controls/KryptonTableLayoutPanel.md) | Standard | Krypton.Toolkit |
+| [KryptonToolStripContainer](Controls/KryptonToolStripContainer.md) | Standard | Krypton.Toolkit |
+| [KryptonBorderEdge](Controls/KryptonBorderEdge.md) | Comprehensive | Krypton.Toolkit |
+| [KryptonSeparator](Controls/KryptonSeparator.md) | Standard | Krypton.Toolkit |
+
+## Data display
+
+| Topic | Tier | Assembly |
+| --- | --- | --- |
+| [KryptonDataGridView](Controls/KryptonDataGridView.md) | Comprehensive | Krypton.Toolkit |
+| [KryptonLabel](Controls/KryptonLabel.md) | Standard | Krypton.Toolkit |
+| [KryptonLinkLabel](Controls/KryptonLinkLabel.md) | Standard | Krypton.Toolkit |
+| [KryptonWrapLabel](Controls/KryptonWrapLabel.md) | Comprehensive | Krypton.Toolkit |
+| [KryptonLinkWrapLabel](Controls/KryptonLinkWrapLabel.md) | Standard | Krypton.Toolkit |
+| [KryptonPictureBox](Controls/KryptonPictureBox.md) | Standard | Krypton.Toolkit |
+| [KryptonProgressBar](Controls/KryptonProgressBar.md) | Standard | Krypton.Toolkit |
+| [KryptonCircularProgressBar](Controls/KryptonCircularProgressBar.md) | Standard | Krypton.Toolkit.Utilities |
+
+## Menus, toolbars, and chrome
+
+| Topic | Tier | Assembly |
+| --- | --- | --- |
+| [KryptonMenuStrip](Controls/KryptonMenuStrip.md) | Standard | Krypton.Toolkit |
+| [KryptonStatusStrip](Controls/KryptonStatusStrip.md) | Standard | Krypton.Toolkit |
+| [KryptonToolStrip](Controls/KryptonToolStrip.md) | Standard | Krypton.Toolkit |
+| [KryptonThemeComboBox](Controls/KryptonThemeComboBox.md) | Standard | Krypton.Toolkit |
+| [KryptonThemeListBox](Controls/KryptonThemeListBox.md) | Standard | Krypton.Toolkit |
+| [KryptonPoweredByButton](Controls/KryptonPoweredByButton.md) | Standard | Krypton.Toolkit |
+
+## Command link and button specs
+
+| Topic | Tier | Assembly |
+| --- | --- | --- |
+| [KryptonCommandLinkButton](Controls/KryptonCommandLinkButton.md) | Standard | Krypton.Toolkit.Utilities |
+| [CommandLinkTextValues](Controls/CommandLinkTextValues.md) | Standard | Krypton.Toolkit.Utilities |
+| [CommandLinkImageValues](Controls/CommandLinkImageValues.md) | Standard | Krypton.Toolkit.Utilities |
+| [ButtonSpec](Controls/ButtonSpec.md) | Standard | Krypton.Toolkit |
+| [ButtonStyle](Controls/ButtonStyle.md) | Standard | Krypton.Toolkit |
+| [CaptionValues](Controls/CaptionValues.md) | Standard | Krypton.Toolkit |
+| [IKryptonCommand](Controls/IKryptonCommand.md) | Standard | Krypton.Toolkit |
+
+## Scrolling, printing, and hosting
+
+| Topic | Tier | Assembly |
+| --- | --- | --- |
+| [KryptonScrollbars](Controls/KryptonScrollbars.md) | Standard | Krypton.Toolkit |
+| [KryptonPrintDocument](Controls/KryptonPrintDocument.md) | Standard | Krypton.Toolkit |
+| [KryptonPrintPreviewControl](Controls/KryptonPrintPreviewControl.md) | Standard | Krypton.Toolkit / Utilities |
+| [KryptonWebBrowser](Controls/KryptonWebBrowser.md) | Standard | Krypton.Toolkit |
+| [KryptonWebView2](../Utilities/KryptonWebView2.md) | Standard | Krypton.Toolkit.Utilities |
+
+## Superseded topics
+
+| Topic | Canonical replacement |
+| --- | --- |
+| [KryptonManagerOriginal](Controls/KryptonManagerOriginal.md) | [KryptonManager](Components/KryptonManager.md) |
+
+## Related documentation
+
+- [Components](Components.md) — dialogs, managers, context menus, task dialogs
+- [Forms](Forms.md) — `KryptonForm`, system menu, title bar
+- [Utilities](../Utilities.md) — localization, icons, accessibility, exception handling
+- [Krypton.Toolkit.Utilities index](../Utilities/KryptonToolkitUtilitiesIndex.md) — V110+ utilities assembly topics
+- [Localization index](../Utilities/LocalizationIndex.md) — built-in and application custom strings
+- [Documentation images](Images/README.md) — screenshot conventions

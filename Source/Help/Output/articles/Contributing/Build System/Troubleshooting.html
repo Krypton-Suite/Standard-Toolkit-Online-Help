@@ -72,41 +72,51 @@
 <h2 id="overview">Overview</h2>
 <p>This guide provides solutions to common issues encountered when building, developing, and deploying the Krypton Toolkit. Issues are organized by category with symptoms, causes, and detailed solutions.</p>
 <h2 id="build-system-issues">Build System Issues</h2>
-<h3 id="visual-studio-2022-not-detected">Visual Studio 2022 Not Detected</h3>
+<h3 id="visual-studio--msbuild-not-detected">Visual Studio / MSBuild Not Detected</h3>
 <p><strong>Symptoms</strong>:</p>
 <ul>
 <li>Build scripts report &quot;Unable to detect suitable environment&quot;</li>
 <li>MSBuild not found</li>
+<li>ModernBuild reports &quot;Could not find MSBuild.exe&quot;</li>
 </ul>
 <p><strong>Causes</strong>:</p>
 <ul>
-<li>Visual Studio 2022 not installed</li>
-<li>Non-standard installation path</li>
-<li>Missing MSBuild component</li>
+<li>Required Visual Studio generation not installed for the script folder (<code>Scripts/Build/</code> → 2019, <code>Scripts/VS2022/</code> → 2022, <code>Scripts/Current/</code> → 2026)</li>
+<li>Custom or non-system-drive installation not visible to fallback probing (resolved by <code>vswhere</code> when the VS Installer is present)</li>
+<li>Missing MSBuild / &quot;.NET desktop development&quot; workload</li>
+<li>Wrong script folder for the toolset you have installed</li>
 </ul>
 <p><strong>Solutions</strong>:</p>
 <ol>
-<li><strong>Verify Visual Studio Installation</strong>:</li>
+<li><strong>List installations with vswhere</strong> (works for any drive or custom path):</li>
 </ol>
-<pre><code class="lang-cmd">dir &quot;%ProgramFiles%\Microsoft Visual Studio\2022\&quot;
+<pre><code class="lang-cmd">&quot;%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe&quot; -all -products * -requires Microsoft.Component.MSBuild -property displayName,installationPath,installationVersion
 </code></pre>
-<p>Expected editions: Preview, Enterprise, Professional, Community, BuildTools</p>
 <ol start="2">
-<li><p><strong>Install Visual Studio 2022</strong>:</p>
+<li><p><strong>Install or repair Visual Studio</strong>:</p>
 <ul>
 <li>Download from: <a href="https://visualstudio.microsoft.com/downloads/">https://visualstudio.microsoft.com/downloads/</a></li>
-<li>Install &quot;.NET desktop development&quot; workload</li>
+<li>Install the <strong>.NET desktop development</strong> workload (includes MSBuild)</li>
 </ul>
 </li>
-<li><p><strong>Manually Specify MSBuild Path</strong>:</p>
+<li><p><strong>Override MSBuild path</strong> (batch scripts and ModernBuild):</p>
 </li>
 </ol>
-<pre><code class="lang-cmd">set MSBUILDPATH=C:\CustomPath\MSBuild\Current\Bin
-cd Scripts
-&quot;%MSBUILDPATH%\msbuild.exe&quot; /t:Build build.proj
+<pre><code class="lang-cmd">set MSBUILDPATH=D:\DevTools\VS2022\MSBuild\Current\Bin
+cd Scripts\VS2022
+build-stable.cmd Build
 </code></pre>
+<p><code>MSBUILD_PATH</code> is also accepted. The directory must contain <code>MSBuild.exe</code>.</p>
 <ol start="4">
-<li><strong>Use dotnet build Instead</strong>:</li>
+<li><p><strong>Confirm the script profile matches your install</strong>:</p>
+<ul>
+<li>Use <code>Scripts\VS2022\</code> for Visual Studio 2022</li>
+<li>Use <code>Scripts\Current\</code> for Visual Studio 2026</li>
+<li>Use <code>Scripts\Build\</code> for Visual Studio 2019 (or interactive 2019/2026 in <code>buildsolution.cmd</code>)</li>
+</ul>
+</li>
+<li><p><strong>Use dotnet build instead</strong> (solution only, not full channel orchestration):</p>
+</li>
 </ol>
 <pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln&quot; -c Debug
 </code></pre>
@@ -956,7 +966,7 @@ msbuildlogviewer Logs/stable-build.binlog
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>

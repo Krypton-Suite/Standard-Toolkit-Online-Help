@@ -93,6 +93,6 @@ the toolbox.
 
 ## Utilities
 
-* [ExceptionHandler](Toolkit/Utilities/ExceptionHandler.md)
-* [IconExtraction](Toolkit/Utilities/IconExtractionIndex.md)
-* [IconExtractionWithFallback](Toolkit/Utilities/IconExtractionWithFallback.md)
+* [ExceptionHandler](Utilities/ExceptionHandler.md)
+* [IconExtraction](Utilities/IconExtractionIndex.md)
+* [IconExtractionWithFallback](Utilities/IconExtractionWithFallback.md)

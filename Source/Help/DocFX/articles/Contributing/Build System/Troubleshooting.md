@@ -6,38 +6,48 @@ This guide provides solutions to common issues encountered when building, develo
 
 ## Build System Issues
 
-### Visual Studio 2022 Not Detected
+### Visual Studio / MSBuild Not Detected
 
 **Symptoms**:
 - Build scripts report "Unable to detect suitable environment"
 - MSBuild not found
+- ModernBuild reports "Could not find MSBuild.exe"
 
 **Causes**:
-- Visual Studio 2022 not installed
-- Non-standard installation path
-- Missing MSBuild component
+- Required Visual Studio generation not installed for the script folder (`Scripts/Build/` → 2019, `Scripts/VS2022/` → 2022, `Scripts/Current/` → 2026)
+- Custom or non-system-drive installation not visible to fallback probing (resolved by `vswhere` when the VS Installer is present)
+- Missing MSBuild / ".NET desktop development" workload
+- Wrong script folder for the toolset you have installed
 
 **Solutions**:
 
-1. **Verify Visual Studio Installation**:
+1. **List installations with vswhere** (works for any drive or custom path):
+
 ```cmd
-dir "%ProgramFiles%\Microsoft Visual Studio\2022\"
+"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -all -products * -requires Microsoft.Component.MSBuild -property displayName,installationPath,installationVersion
 ```
 
-Expected editions: Preview, Enterprise, Professional, Community, BuildTools
-
-2. **Install Visual Studio 2022**:
+2. **Install or repair Visual Studio**:
    - Download from: https://visualstudio.microsoft.com/downloads/
-   - Install ".NET desktop development" workload
+   - Install the **.NET desktop development** workload (includes MSBuild)
 
-3. **Manually Specify MSBuild Path**:
+3. **Override MSBuild path** (batch scripts and ModernBuild):
+
 ```cmd
-set MSBUILDPATH=C:\CustomPath\MSBuild\Current\Bin
-cd Scripts
-"%MSBUILDPATH%\msbuild.exe" /t:Build build.proj
+set MSBUILDPATH=D:\DevTools\VS2022\MSBuild\Current\Bin
+cd Scripts\VS2022
+build-stable.cmd Build
 ```
 
-4. **Use dotnet build Instead**:
+`MSBUILD_PATH` is also accepted. The directory must contain `MSBuild.exe`.
+
+4. **Confirm the script profile matches your install**:
+   - Use `Scripts\VS2022\` for Visual Studio 2022
+   - Use `Scripts\Current\` for Visual Studio 2026
+   - Use `Scripts\Build\` for Visual Studio 2019 (or interactive 2019/2026 in `buildsolution.cmd`)
+
+5. **Use dotnet build instead** (solution only, not full channel orchestration):
+
 ```cmd
 dotnet build "Source/Krypton Components/Krypton Toolkit Suite 2022 - VS2022.sln" -c Debug
 ```

@@ -113,40 +113,44 @@ public PaletteMode GlobalPaletteMode
 
 **Available Themes:**
 
+Themes selectable in the designer match `PaletteModeStrings.SupportedThemes`. Representative values:
+
 ```csharp
-// Office Themes
+// Professional
+PaletteMode.ProfessionalSystem
+PaletteMode.ProfessionalOffice2003
+
+// Office 2007 / 2010 (each colour has optional DarkMode / LightMode variants)
 PaletteMode.Office2007Blue
-PaletteMode.Office2007Silver
-PaletteMode.Office2007White
-PaletteMode.Office2007Black
 PaletteMode.Office2010Blue
-PaletteMode.Office2010Silver
-PaletteMode.Office2010White
-PaletteMode.Office2010Black
+
+// Office 2013
+PaletteMode.Office2013White
 PaletteMode.Office2013DarkGray
 PaletteMode.Office2013LightGray
-PaletteMode.Office2013White
 
-// Microsoft 365 Themes
+// Microsoft 365 (includes DarkMode, LightMode, BlackDarkModeAlternate)
 PaletteMode.Microsoft365Blue
-PaletteMode.Microsoft365DarkGray
 PaletteMode.Microsoft365Black
 
-// Sparkle Themes
+// Sparkle, Visual Studio, Material
 PaletteMode.SparkleBlue
-PaletteMode.SparkleOrange
-PaletteMode.SparklePurple
+PaletteMode.VisualStudio2010Render365
+PaletteMode.VisualStudio2022Dark
+PaletteMode.MaterialLight
 
-// Professional Themes
-PaletteMode.ProfessionalOffice2003
-PaletteMode.ProfessionalSystem
+// Retro and macOS (V110+)
+PaletteMode.RetroGreen
+PaletteMode.RetroBlue
+PaletteMode.MacOSXAqua
+PaletteMode.MacOSLight
+PaletteMode.MacOSDark
 
-// Visual Studio Themes
-PaletteMode.VisualStudio2010Blue
-
-// Custom Theme
+// Custom imported palette
 PaletteMode.Custom
 ```
+
+`PaletteMode.Microsoft365DarkGray` and `PaletteMode.VisualStudio2010Blue` are **not** in the supported theme list. Use `Microsoft365Black` / dark-mode variants and `VisualStudio2010Render*` values instead. Query `PaletteModeStrings.SupportedThemesMap` for the full current set.
 
 **Usage Examples:**
 

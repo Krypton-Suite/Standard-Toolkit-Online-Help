@@ -12,6 +12,8 @@ This control provides:
 - Anti-aliasing support for improved rendering
 - Multiple page layout options (columns and rows)
 
+**V110+:** An updated implementation also ships in **`Krypton.Toolkit.Utilities`** (`namespace Krypton.Toolkit.Utilities`). New projects referencing `Krypton.Standard.Toolkit` should prefer the Utilities assembly type when both are available.
+
 ## Namespace
 
 ```csharp

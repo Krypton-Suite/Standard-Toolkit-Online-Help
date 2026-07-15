@@ -112,7 +112,7 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Umbrella documentation</strong> (all backup layers, playbooks, architecture): <a href="RepositoryBackupAndRestore.html">Repository backup and restore</a></p>
+<p><strong>Umbrella documentation</strong> (all backup layers, playbooks, architecture): <a href="RepositoryBackupAndRestoreWorkflow.html">Repository backup and restore</a></p>
 <hr>
 <h2 id="table-of-contents">Table of contents</h2>
 <ol>
@@ -149,7 +149,7 @@
 <li><strong>Point-in-time recovery</strong> — restore each branch to the latest commit at or before a UTC date, using full Git history retained on the mirror.</li>
 <li><strong>Safe preview</strong> — create <code>restore/…</code> branches for PR review before promoting recovered state to live branches.</li>
 </ul>
-<p>This workflow is the <strong>inverse</strong> of <a href="RepositoryMirror.html">Repository Mirror</a> (source → mirror). It does <strong>not</strong> run automatically; every invocation is intentional and manual.</p>
+<p>This workflow is the <strong>inverse</strong> of <a href="RepositoryMirrorWorkflow.html">Repository Mirror</a> (source → mirror). It does <strong>not</strong> run automatically; every invocation is intentional and manual.</p>
 <p>Introduced as part of <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3591">#3591</a>.</p>
 <hr>
 <h2 id="what-is-restored-and-what-is-not">What is restored (and what is not)</h2>
@@ -238,7 +238,7 @@ V85-LTS
 </tbody>
 </table>
 <p>Use <strong>Repository Restore</strong> when the <strong>mirror</strong> is the authoritative recovery source. Use <strong>Repository Mirror</strong> to refresh the mirror after source is corrected. Use <strong>Alpha Backup Sync</strong> for in-repo <code>alpha-backup</code> or dated <strong>file</strong> snapshots.</p>
-<p>See <a href="RepositoryBackupAndRestore.html">Repository backup and restore</a> for disaster recovery playbooks.</p>
+<p>See <a href="RepositoryBackupAndRestoreWorkflow.html">Repository backup and restore</a> for disaster recovery playbooks.</p>
 <hr>
 <h2 id="architecture-overview">Architecture overview</h2>
 <pre><code class="lang-mermaid">flowchart TD
@@ -286,7 +286,7 @@ V85-LTS
 <li><strong>Read mirror:</strong> <code>MIRROR_REPO_TOKEN</code> (PAT; read access sufficient).</li>
 <li><strong>Write source:</strong> <code>${{ github.token }}</code> as <code>SOURCE_REPO_TOKEN</code> (workflow permission <code>contents: write</code>).</li>
 </ul>
-<p>Both tokens use the same temporary <strong>credential helper</strong> pattern as <a href="RepositoryMirror.html">Repository Mirror</a>. Remote URLs are not token-embedded.</p>
+<p>Both tokens use the same temporary <strong>credential helper</strong> pattern as <a href="RepositoryMirrorWorkflow.html">Repository Mirror</a>. Remote URLs are not token-embedded.</p>
 <p>The workflow bare-clones the <strong>mirror</strong>, fetches source branch tips for comparison, then pushes selected commits to the source remote.</p>
 <hr>
 <h2 id="triggers-and-manual-dispatch-inputs">Triggers and manual dispatch inputs</h2>
@@ -373,7 +373,7 @@ V85-LTS
 <p><strong>Recommendation:</strong> Merge <code>repo-restore-from-mirror.yml</code> to <strong><code>master</code></strong> so maintainers can run it from the default branch without switching branches in the UI.</p>
 <h3 id="prerequisites">Prerequisites</h3>
 <ol>
-<li><a href="RepositoryMirror.html">Repository Mirror</a> has successfully populated <code>MIRROR_REPO</code> at least once.</li>
+<li><a href="RepositoryMirrorWorkflow.html">Repository Mirror</a> has successfully populated <code>MIRROR_REPO</code> at least once.</li>
 <li><code>MIRROR_REPO</code> and <code>MIRROR_REPO_TOKEN</code> are configured on Standard-Toolkit.</li>
 <li>Mirror contains the branch(es) you intend to restore.</li>
 </ol>
@@ -438,7 +438,7 @@ V85-LTS
 <hr>
 <h2 id="initial-setup-and-prerequisites">Initial setup and prerequisites</h2>
 <h3 id="1-confirm-mirror-is-operational">1. Confirm mirror is operational</h3>
-<p>Follow <a href="RepositoryMirror.html#initial-setup-guide">Repository Mirror — Initial setup guide</a>. Verify at least one successful mirror run against production or test mirror.</p>
+<p>Follow <a href="RepositoryMirrorWorkflow.html#initial-setup-guide">Repository Mirror — Initial setup guide</a>. Verify at least one successful mirror run against production or test mirror.</p>
 <h3 id="2-verify-configuration-on-standard-toolkit">2. Verify configuration on Standard-Toolkit</h3>
 <table>
 <thead>
@@ -607,7 +607,7 @@ V85-LTS
 <h2 id="testing-and-dry-run">Testing and dry run</h2>
 <h3 id="recommended-test-flow">Recommended test flow</h3>
 <ol>
-<li>Ensure mirror is current (<a href="RepositoryMirror.html">Repository Mirror</a> dry run or successful sync).</li>
+<li>Ensure mirror is current (<a href="RepositoryMirrorWorkflow.html">Repository Mirror</a> dry run or successful sync).</li>
 <li><strong>Actions → Repository Restore from Mirror → Run workflow</strong></li>
 <li>Leave <strong><code>dry_run</code></strong> enabled</li>
 <li>Set <strong><code>branches</code></strong> to <code>alpha</code> (or another low-risk branch)</li>
@@ -807,7 +807,7 @@ V85-LTS
 <hr>
 <h2 id="operational-procedures">Operational procedures</h2>
 <h3 id="standard-safe-restore">Standard safe restore</h3>
-<p>See <a href="RepositoryBackupAndRestore.html#operational-procedures">Repository backup and restore — Operational procedures</a>.</p>
+<p>See <a href="RepositoryBackupAndRestoreWorkflow.html#operational-procedures">Repository backup and restore — Operational procedures</a>.</p>
 <h3 id="compare-mirror-vs-source-before-restore">Compare mirror vs source before restore</h3>
 <pre><code class="lang-cmd">git ls-remote https://github.com/Krypton-Suite/Standard-Toolkit-Mirror.git refs/heads/alpha
 git ls-remote https://github.com/Krypton-Suite/Standard-Toolkit.git refs/heads/alpha
@@ -951,8 +951,8 @@ git ls-remote https://github.com/Krypton-Suite/Standard-Toolkit.git refs/heads/a
 <hr>
 <h2 id="related-documentation">Related documentation</h2>
 <ul>
-<li><a href="RepositoryBackupAndRestore.html">Repository backup and restore</a> — architecture, playbooks, configuration tables</li>
-<li><a href="RepositoryMirror.html">Repository Mirror</a> — source → mirror sync</li>
+<li><a href="RepositoryBackupAndRestoreWorkflow.html">Repository backup and restore</a> — architecture, playbooks, configuration tables</li>
+<li><a href="RepositoryMirrorWorkflow.html">Repository Mirror</a> — source → mirror sync</li>
 <li><a href="../AlphaBackupSync.html">Alpha Backup Sync</a> — <code>alpha-backup</code> and dated file snapshots</li>
 <li><a href="https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/REPOSITORY_BACKUP.md">.github/REPOSITORY_BACKUP.md</a> — cheat sheet</li>
 <li><a href="../Build%20System/KillSwitches.html">Kill Switches</a> — <code>REPO_RESTORE_DISABLED</code></li>
@@ -982,7 +982,7 @@ git ls-remote https://github.com/Krypton-Suite/Standard-Toolkit.git refs/heads/a
             </span>
       <span>Krypton Component Suite
 BSD 3-Clause License
-© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka Wagnerp), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
       
           </div>
         </div>

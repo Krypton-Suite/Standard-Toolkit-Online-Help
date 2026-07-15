@@ -2,6 +2,7 @@
 
 If you are wanting to contribute to the toolkit, the articles below will guide you through the process.
 
+* [AGENTS](Contributing/AGENTSDeveloperGuide.md)
 * [Allowing for Longer Path and File Names](Contributing/AllowingforLongerPathandFileNames.md)
 * [Alpha Branch Backup](Contributing/AlphaBackupSync.md)
 * [Applying Licence Headers](Contributing/ApplyingLicenceHeaders.md)
@@ -18,6 +19,7 @@ If you are wanting to contribute to the toolkit, the articles below will guide y
 * [How to Manage 'Using' Statements](Contributing/HowtoManageUsingStatements.md)
 * [Installing .NET SDK Preview Versions](Contributing/InstallingNETSDKPreviewVersions.md)
 * [Target Framework Management](Contributing/TargetFrameworkManagement.md)
+* [Update License Year](Contributing/Workflows/UpdateLicenseYearWorkflow.md)
 * [Kill Switches](Contributing/Build%20System/KillSwitches.md)
 * [Krypton RTL Audit Summary](Contributing/Auditing/KryptonRTLAuditSummary.md)
 * [Krypton Toolkit Audit](Contributing/Auditing/KryptonToolkitAudit.md)

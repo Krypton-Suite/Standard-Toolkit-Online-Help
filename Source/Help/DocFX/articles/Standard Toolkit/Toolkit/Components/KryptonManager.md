@@ -71,15 +71,21 @@ public PaletteMode GlobalPaletteMode { get; set; }
 
 **Supported Palette Modes:**
 
+Selectable themes match `PaletteModeStrings.SupportedThemes` in source. Grouped by family:
+
 - **Professional**: `ProfessionalSystem`, `ProfessionalOffice2003`
-- **Office 2007**: `Office2007Blue`, `Office2007Silver`, `Office2007White`, `Office2007Black` (with Dark/Light mode variants)
-- **Office 2010**: `Office2010Blue`, `Office2010Silver`, `Office2010White`, `Office2010Black` (with Dark/Light mode variants)
-- **Office 2013**: `Office2013White`
-- **Sparkle**: `SparkleBlue`, `SparkleOrange`, `SparklePurple` (with Dark/Light mode variants)
-- **Microsoft 365**: `Microsoft365Blue`, `Microsoft365Silver`, `Microsoft365White`, `Microsoft365Black` (with Dark/Light mode variants)
-- **Visual Studio**: `VisualStudio2010Render2007`, `VisualStudio2010Render2010`, `VisualStudio2010Render2013`, `VisualStudio2010Render365`
+- **Office 2007**: `Office2007Blue`, `Office2007Silver`, `Office2007White`, `Office2007Black` plus `*DarkMode` and `*LightMode` variants for Blue and Silver
+- **Office 2010**: `Office2010Blue`, `Office2010Silver`, `Office2010White`, `Office2010Black` plus `*DarkMode` and `*LightMode` variants for Blue and Silver
+- **Office 2013**: `Office2013White`, `Office2013DarkGray`, `Office2013LightGray`
+- **Sparkle**: `SparkleBlue`, `SparkleOrange`, `SparklePurple` plus `*DarkMode` and `*LightMode` variants
+- **Microsoft 365**: `Microsoft365Blue`, `Microsoft365Silver`, `Microsoft365White`, `Microsoft365Black` plus `*DarkMode`, `*LightMode`, and `Microsoft365BlackDarkModeAlternate`
+- **Visual Studio**: `VisualStudio2010Render2007`, `VisualStudio2010Render2010`, `VisualStudio2010Render2013`, `VisualStudio2010Render365`, `VisualStudio2022Dark`
 - **Material**: `MaterialLight`, `MaterialDark`, `MaterialLightRipple`, `MaterialDarkRipple`
+- **Retro**: `RetroGreen`, `RetroBlue`
+- **macOS / Aqua**: `MacOSXAqua`, `MacOSLight`, `MacOSDark`
 - **Special**: `Custom`, `Global`
+
+Some `PaletteMode` enum members exist for import compatibility but are not offered in the designer theme list (for example commented entries in `PaletteModeStrings.SupportedThemes`). Use `PaletteModeStrings.SupportedThemesMap` at runtime for the authoritative selectable set.
 
 ### GlobalCustomPalette Property
 

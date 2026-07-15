@@ -530,3 +530,8 @@ public class InstallationWizard : Form
     }
 }
 ```
+
+## See also
+
+- [KryptonCircularProgressBar](KryptonCircularProgressBar.md) — circular ring variant (`Krypton.Toolkit.Utilities`, V110+)
+- [Controls index](../Controls.md)

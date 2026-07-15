@@ -4,6 +4,8 @@
 
 The `KryptonThemeComboBox` class provides a Krypton-themed ComboBox control that allows users to select from available Krypton themes. It inherits from `KryptonComboBox` and implements `IKryptonThemeSelectorBase` to provide theme selection functionality with automatic synchronization with the global palette system.
 
+Items are populated from `PaletteModeStrings.SupportedThemes` (the same list used by `KryptonManager` and other theme selectors), including V110+ **Retro** (`RetroGreen`, `RetroBlue`) and **macOS** (`MacOSXAqua`, `MacOSLight`, `MacOSDark`) palettes when present in the supported set.
+
 ## Class Hierarchy
 
 ```text

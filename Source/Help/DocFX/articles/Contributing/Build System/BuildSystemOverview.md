@@ -170,9 +170,12 @@ Generated archives:
 1. **Windows 10/11**
    - Long paths must be enabled for local builds
 
-2. **Visual Studio 2022**
-   - Any edition: Preview, Enterprise, Professional, Community, or BuildTools
-   - Required workload: .NET desktop development
+2. **Visual Studio 2022 or 2026** (match the script folder you use)
+   - `Scripts/VS2022/` — Visual Studio 2022
+   - `Scripts/Current/` — Visual Studio 2026
+   - `Scripts/Build/` — Visual Studio 2019 (legacy)
+   - Required workload: **.NET desktop development** (includes MSBuild)
+   - Discovery uses `Scripts/Common/find-msbuild.cmd` (`vswhere.exe`, then standard paths). See [Build Scripts](BuildScripts.md#msbuild-and-visual-studio-discovery).
 
 3. **.NET SDKs**
    - .NET Framework 4.7.2-4.8.1 developer packs

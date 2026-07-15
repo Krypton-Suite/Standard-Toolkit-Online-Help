@@ -42,7 +42,52 @@ ImageLarge property will be used instead.
 
 ## ImageTransparentColor
 
-A collection that contains the top level set of context menu items.
+Transparent colour applied when drawing `ImageSmall` / `ImageLarge`.
+
+## CommandType
+
+`CommandType` selects a built-in button-spec role. When set to anything other than `General`, the command automatically configures default text and palette images for that role and can synchronize an assigned `ButtonSpec`.
+
+```csharp
+var helpCommand = new KryptonCommand
+{
+    CommandType = KryptonCommandType.HelpCommand
+};
+// Text and ImageSmall are populated from the active palette's button-spec images
+```
+
+### KryptonCommandType values
+
+| Value | Typical use |
+| --- | --- |
+| `General` | Default — no automatic button-spec mapping |
+| `HelpCommand` | Help button spec |
+| `IntegratedToolBarCopyCommand` | Integrated toolbar Copy |
+| `IntegratedToolBarCutCommand` | Integrated toolbar Cut |
+| `IntegratedToolBarNewCommand` | Integrated toolbar New |
+| `IntegratedToolBarOpenCommand` | Integrated toolbar Open |
+| `IntegratedToolBarPageSetupCommand` | Integrated toolbar Page Setup |
+| `IntegratedToolBarPasteCommand` | Integrated toolbar Paste |
+| `IntegratedToolBarPrintCommand` | Integrated toolbar Print |
+| `IntegratedToolBarPrintPreviewCommand` | Integrated toolbar Print Preview |
+| `IntegratedToolBarQuickPrintCommand` | Integrated toolbar Quick Print |
+| `IntegratedToolBarRedoCommand` | Integrated toolbar Redo |
+| `IntegratedToolBarSaveAllCommand` | Integrated toolbar Save All |
+| `IntegratedToolBarSaveAsCommand` | Integrated toolbar Save As |
+| `IntegratedToolBarSaveCommand` | Integrated toolbar Save |
+| `IntegratedToolBarUndoCommand` | Integrated toolbar Undo |
+
+### AssignedButtonSpec
+
+When `CommandType` is not `General`, assign a `ButtonSpecAny` to `AssignedButtonSpec` to keep its `Type`, images, and `KryptonCommand` link synchronized with the command:
+
+```csharp
+helpCommand.AssignedButtonSpec = myHeaderHelpButtonSpec;
+```
+
+Palette changes trigger automatic image refresh for non-`General` command types.
+
+Implements [#1133](https://github.com/Krypton-Suite/Standard-Toolkit/issues/1133). Prefer `CommandType` over obsolete per-button toolbar command component types on [KryptonIntegratedToolBarManager](KryptonIntegratedToolBarManager.md).
 
 ## Text
 

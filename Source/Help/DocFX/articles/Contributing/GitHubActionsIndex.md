@@ -25,7 +25,7 @@ This directory contains comprehensive documentation for all GitHub Actions workf
 | **Auto-complete Linked Issues** | `auto-complete-issues.yml` | Close/label linked issues on merges | [Auto-complete Linked Issues](Workflows/AutoCompleteIssuesWorkflow.md) |
 | **Auto-label PR Backup** | `auto-label-pr-backup.yml` | Label backup automation PRs | [Auto-label PR Backup Workflow](Workflows/AutoLabelPRBackupWorkflow.md) |
 | **Alpha Backup Sync** | `alpha-backup-sync.yml` | Sync `alpha` into `alpha-backup` and optional backup repo push | [Alpha Backup Sync](AlphaBackupSync.md) |
-| **Repository Mirror** | `repo-mirror.yml` | Mirror major branches and tags to an external GitHub repo | [Repository Mirror](Workflows/RepositoryMirror.md) |
+| **Repository Mirror** | `repo-mirror.yml` | Mirror major branches and tags to an external GitHub repo | [Repository Mirror](Workflows/RepositoryMirrorWorkflow.md) |
 | **Repository Restore from Mirror** | `repo-restore-from-mirror.yml` | Manual disaster recovery: restore branches/tags from mirror to source | [Repository Restore from Mirror](Workflows/RepositoryRestoreFromMirrorWorkflow.md) |
 | **Master merge guard** | `master-guard.yml` | Enforce `gold` / Dependabot → `master` PR sources | [Master merge guard](Workflows/MasterMergeGuardWorkflow.md) |
 | **Branch promotion guard** | `branch-promotion-guard.yml` | Enforce `alpha` → `canary` and `canary` → `gold` PR sources | [Branch promotion guard](Workflows/BranchPromotionGuardWorkflow.md) |
@@ -523,9 +523,9 @@ We welcome feedback on workflow documentation:
 - [Templates Release Workflow Documentation](Workflows/TemplatesReleaseWorkflow.md)
 - [CodeQL Workflow Documentation](Workflows/CodeQLWorkflow.md)
 - [Auto-complete Linked Issues Documentation](Workflows/AutoCompleteIssuesWorkflow.md)
-- [Repository Mirror Documentation](Workflows/RepositoryMirror.md)
+- [Repository Mirror Documentation](Workflows/RepositoryMirrorWorkflow.md)
 - [Repository Restore from Mirror](Workflows/RepositoryRestoreFromMirrorWorkflow.md)
-- [Repository backup and restore](Workflows/RepositoryBackupAndRestore.md) (umbrella / playbooks)
+- [Repository backup and restore](Workflows/RepositoryBackupAndRestoreWorkflow.md) (umbrella / playbooks)
 - [Alpha Backup Sync Documentation](AlphaBackupSync.md)
 - [Branch promotion policy](BranchPromotionPolicy.md)
 - [Master merge guard documentation](Workflows/MasterMergeGuardWorkflow.md)

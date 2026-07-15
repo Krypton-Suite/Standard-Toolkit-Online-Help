@@ -1,6 +1,6 @@
 # Control documentation standard
 
-Use this structure when authoring or upgrading topics under `Documents/Toolkit/Controls/`.
+Use this structure when authoring or upgrading topics under `Documents/Development/Controls/`.
 
 ## Required sections
 
@@ -24,7 +24,7 @@ Use this structure when authoring or upgrading topics under `Documents/Toolkit/C
 - Match existing repo voice: complete sentences, *italics* for designer property paths in prose, `` `csharp` `` for types and members in API blocks.
 - Document **hidden** WinForms properties when users migrating from `DataGridView` need to know palette replaces them.
 - Cross-link related topics with relative paths (`[KryptonGroup](KryptonGroup.md)`).
-- Screenshots live in `Documents/Toolkit/Images/`; reference as `../Images/...`.
+- Screenshots live in `Documents/Development/Images/`; reference as `../Images/...`.
 - Prefer accuracy from source (`Source/Krypton Components/Krypton.Toolkit`) over memory.
 - V110+ assembly moves: note `Krypton.Toolkit.Utilities` when applicable.
 

@@ -204,6 +204,6 @@ GitHub may show `Workflow name / Job name`. Search for **Allowed source branch**
 - [PR branch policy workflow](Workflows/PRBranchPolicyWorkflow.md)
 - [Sync .github from master workflow](Workflows/SyncGitHubFromMasterWorkflow.md)
 - [GitHub Workflow Index](GitHubWorkflowIndex.md)
-- [Repository Mirror](Workflows/RepositoryMirror.md) — mirrors `alpha`, `canary`, `gold`, `master`
-- [Repository backup and restore](Workflows/RepositoryBackupAndRestore.md) — manual mirror → source recovery ([#3591](https://github.com/Krypton-Suite/Standard-Toolkit/issues/3591)); workflow detail: [Repository Restore from Mirror](Workflows/RepositoryRestoreFromMirrorWorkflow.md)
+- [Repository Mirror](Workflows/RepositoryMirrorWorkflow.md) — mirrors `alpha`, `canary`, `gold`, `master`
+- [Repository backup and restore](Workflows/RepositoryBackupAndRestoreWorkflow.md) — manual mirror → source recovery ([#3591](https://github.com/Krypton-Suite/Standard-Toolkit/issues/3591)); workflow detail: [Repository Restore from Mirror](Workflows/RepositoryRestoreFromMirrorWorkflow.md)
 - [Release Workflow](Workflows/ReleaseWorkflow.md) — publishes on push to release branches

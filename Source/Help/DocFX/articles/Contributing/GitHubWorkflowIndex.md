@@ -32,8 +32,8 @@ The repository uses several automated workflows to handle builds, releases, issu
 - **[Auto-complete Linked Issues](Workflows/AutoCompleteIssuesWorkflow.md)** - Closes linked issues and applies completion labels on merged PRs in the configured branch direction.
 - **[Auto-label PR Backup Workflow](Workflows/AutoLabelPRBackupWorkflow.md)** - Adds backup-maintenance labels to `alpha` -> `alpha-backup` PRs that modify backup automation.
 - **[Alpha Backup Sync](AlphaBackupSync.md)** - Nightly/manual automation to sync `alpha` into `alpha-backup`, with optional backup-repo push and Discord notifications.
-- **[Repository Mirror](Workflows/RepositoryMirror.md)** - Mirrors major branches (`master`, `gold`, `canary`, `alpha`, `V105-LTS`, `V85-LTS`) and tags to a separate GitHub repository via force-push. **Requires the workflow file on `master` for the daily schedule.**
-- **[Repository Restore from Mirror](Workflows/RepositoryRestoreFromMirrorWorkflow.md)** - Manual-only workflow to restore branches (and optionally tags) from the mirror back into the source repo. Supports dry run (default), `new_branch`, point-in-time `restore_date`, and guarded `force_push`. Umbrella guide: [Repository backup and restore](Workflows/RepositoryBackupAndRestore.md).
+- **[Repository Mirror](Workflows/RepositoryMirrorWorkflow.md)** - Mirrors major branches (`master`, `gold`, `canary`, `alpha`, `V105-LTS`, `V85-LTS`) and tags to a separate GitHub repository via force-push. **Requires the workflow file on `master` for the daily schedule.**
+- **[Repository Restore from Mirror](Workflows/RepositoryRestoreFromMirrorWorkflow.md)** - Manual-only workflow to restore branches (and optionally tags) from the mirror back into the source repo. Supports dry run (default), `new_branch`, point-in-time `restore_date`, and guarded `force_push`. Umbrella guide: [Repository backup and restore](Workflows/RepositoryBackupAndRestoreWorkflow.md).
 
 ### Branch policy and CI alignment ([#3610](https://github.com/Krypton-Suite/Standard-Toolkit/issues/3610))
 
@@ -113,7 +113,7 @@ The repository uses several automated workflows to handle builds, releases, issu
 - `RELEASE_DISABLED` - Kill switch for **`release-master`** and **`release-v105-lts`**
 - `CANARY_DISABLED` - Kill switch for canary releases (`release-canary`)
 - `DOTNET_PREVIEW_SETUP_VERSION`, `DOTNET_PREVIEW_SDK_BAND`, `USE_DOTNET_PREVIEW` - Repository **Variables** for preview SDK behaviour (see [GitHub Actions Workflows](GitHubActionsWorkflows.md#repository-variables-net-preview--ci))
-- `MIRROR_REPO`, `MIRROR_BRANCHES`, `MIRROR_SYNC_TAGS`, `REPO_MIRROR_DISABLED` - Repository Mirror configuration (see [Repository Mirror](Workflows/RepositoryMirror.md#configuration-reference))
+- `MIRROR_REPO`, `MIRROR_BRANCHES`, `MIRROR_SYNC_TAGS`, `REPO_MIRROR_DISABLED` - Repository Mirror configuration (see [Repository Mirror](Workflows/RepositoryMirrorWorkflow.md#configuration-reference))
 
 ### Mirror & backup secrets (optional)
 
@@ -134,7 +134,7 @@ The workflows are designed around the following branch structure:
 - **canary** - Pre-release testing builds
 - **V105-LTS** - Long-Term Support branch (v105); **`release-v105-lts`** in `release.yml`, **`DISCORD_WEBHOOK_MASTER`**
 - **gold** - Release candidate branch
-- **V85-LTS** - Long-Term Support branch (v85); mirrored by [Repository Mirror](Workflows/RepositoryMirror.md) when present on source
+- **V85-LTS** - Long-Term Support branch (v85); mirrored by [Repository Mirror](Workflows/RepositoryMirrorWorkflow.md) when present on source
 
 ## Troubleshooting
 
