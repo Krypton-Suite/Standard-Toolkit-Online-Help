@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Accessibility Themes | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Accessibility Themes | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="accessibility-themes">Accessibility Themes</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4168">#4168</a> adds fixed builtin <code>PaletteMode</code> accessibility themes:</p>
+<table>
+<thead>
+<tr>
+<th>Accent set</th>
+<th>Surfaces</th>
+<th>Accents (#4165 philosophy)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>High Contrast</td>
+<td>Black / white</td>
+<td>Neon green, yellow, cyan</td>
+</tr>
+<tr>
+<td>Deuteranopia</td>
+<td>Cool neutrals</td>
+<td>Blue / orange / purple</td>
+</tr>
+<tr>
+<td>Protanopia</td>
+<td>Warm neutrals</td>
+<td>Blue / brown / magenta</td>
+</tr>
+</tbody>
+</table>
+<p>Each accent set is available on five renderers:</p>
+<table>
+<thead>
+<tr>
+<th>Renderer</th>
+<th>PaletteMode examples</th>
+<th>Display names</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microsoft 365 (default)</td>
+<td><code>HighContrast</code>, <code>Deuteranopia</code>, <code>Protanopia</code></td>
+<td>High Contrast, …</td>
+</tr>
+<tr>
+<td>Office 2007</td>
+<td><code>Office2007HighContrast</code>, …</td>
+<td>Office 2007 - High Contrast, …</td>
+</tr>
+<tr>
+<td>Office 2010</td>
+<td><code>Office2010HighContrast</code>, …</td>
+<td>Office 2010 - High Contrast, …</td>
+</tr>
+<tr>
+<td>Office 2013</td>
+<td><code>Office2013HighContrast</code>, …</td>
+<td>Office 2013 - High Contrast, …</td>
+</tr>
+<tr>
+<td>Sparkle</td>
+<td><code>SparkleHighContrast</code>, …</td>
+<td>Sparkle - High Contrast, …</td>
+</tr>
+</tbody>
+</table>
+<p>These are <strong>app-wide themes</strong>, not Windows SystemColors High Contrast binding, and not light/dark pairs.</p>
+<h2 id="relationship-to-dialog-button-colors-4165">Relationship to dialog button colors (#4165)</h2>
+<p><code>KryptonDialogButtonColorScheme</code> remains <strong>orthogonal</strong>. Selecting an accessibility <code>PaletteMode</code> does <strong>not</strong> automatically set <code>KryptonManager.DialogButtonColors</code>.</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code>ThemeComboBox / ThemeManager.ApplyTheme
+        |
+PaletteModeStrings.SupportedThemes  (order-locked with PaletteMode enum)
+        |
+KryptonManager.GetPaletteForMode
+        |
+Palette{OfficeYear?}{Accent}
+        |
+PaletteMicrosoft365Base | PaletteOffice2007Base | PaletteOffice2010Base | PaletteOffice2013Base
+        + AccessibilityPaletteAccents.Apply* (SetArrayColor gold remaps)
+        + shared Schemes/Palette{Accent}_BaseScheme
+</code></pre>
+<h2 id="public-api">Public API</h2>
+<pre><code class="lang-csharp">ThemeManager.ApplyTheme(PaletteMode.Office2010Deuteranopia, manager);
+// or
+KryptonManager.GlobalPaletteMode = PaletteMode.Office2007HighContrast;
+</code></pre>
+<p>Unprefixed modes (<code>HighContrast</code>, …) keep Microsoft 365 chrome. Office-prefixed modes reuse the same colour schemes with era-specific geometry, control-box images, and toolbar packs.</p>
+<h2 id="colour-schemes">Colour schemes</h2>
+<p>Under <code>Palette Builtin/Accessibility/</code>:</p>
+<ul>
+<li>Shared schemes: <code>Schemes/PaletteHighContrast_BaseScheme.cs</code>, <code>PaletteDeuteranopia_BaseScheme.cs</code>, <code>PaletteProtanopia_BaseScheme.cs</code></li>
+<li>M365: <code>PaletteHighContrast.cs</code>, <code>PaletteDeuteranopia.cs</code>, <code>PaletteProtanopia.cs</code></li>
+<li>Office: <code>PaletteOffice2007*</code>, <code>PaletteOffice2010*</code>, <code>PaletteOffice2013*</code> (nine thin palette classes)</li>
+<li>Sparkle: <code>PaletteSparkleHighContrast</code>, <code>PaletteSparkleDeuteranopia</code>, <code>PaletteSparkleProtanopia</code> + <code>AccessibilitySparkleAccents</code> (Sparkle chrome arrays, not <code>SetArrayColor</code>)</li>
+<li><code>AccessibilityPaletteAccents.cs</code> — remaps family gold hover/checked arrays via <code>SetArrayColor</code></li>
+<li><code>AccessibilityHighContrastChrome.cs</code> — High Contrast overrides for ControlClient / context-menu backs (combo drop-downs)</li>
+</ul>
+<h2 id="validation">Validation</h2>
+<p>TestForm: <strong>4168 Accessibility Themes</strong> (<code>AccessibilityThemesDemo</code>).</p>
+<ol>
+<li>Switch M365, Office 2007 / 2010 / 2013, and Sparkle variants; confirm accents and family chrome.</li>
+<li>Open the Theme combo on High Contrast; drop-down list should be black (not white SystemColors.Window).</li>
+<li>Confirm all fifteen themes appear in Theme Controls / ThemeComboBox.</li>
+<li>Optional MessageBox compares matching #4165 dialog button schemes.</li>
+<li>Closing the demo restores the previous global theme.</li>
+</ol>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>Enum order must stay aligned with <code>PaletteModeStrings.SupportedThemes</code> (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/1328">#1328</a>).</li>
+<li>Not a dynamic OS High Contrast theme; colours are fixed design tokens.</li>
+<li>Toolbar images follow the renderer family (M365 / Office 2007 / 2010 / 2013 packs).</li>
+<li>Family bases hardcode <code>ControlClient</code> / context-menu backs to <code>SystemColors.Window</code> / white; High Contrast palettes override via <code>AccessibilityHighContrastChrome</code> so combo drop-downs stay black.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

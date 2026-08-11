@@ -61,7 +61,7 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 - [KryptonTrackBar](Toolkit/Controls/KryptonTrackBar.md)
 - [KryptonTreeView](Toolkit/Controls/KryptonTreeView.md)
 - [KryptonWebBrowser](Toolkit/Controls/KryptonWebBrowser.md)
-- [KryptonWebView2](Utilities/KryptonWebView2.md)
+- [KryptonWebView2](Toolkit Utilities/KryptonWebView2.md)
 - [KryptonWrapLabel](Toolkit/Controls/KryptonWrapLabel.md)
 
 ### Components
@@ -94,21 +94,21 @@ As a minimum you should read the [Overview - Structure](Overview/Structure.md) s
 
 ### Utilities
 
-- [ExceptionHandler](Utilities/ExceptionHandler.md)
-- [GlobalStaticValuesReference](Utilities/GlobalStaticValuesReference.md)
-- [IconExtraction](Utilities/IconExtractionIndex.md)
+- [ExceptionHandler](Toolkit Utilities/ExceptionHandler.md)
+- [GlobalStaticValuesReference](Toolkit Utilities/GlobalStaticValuesReference.md)
+- [IconExtraction](Toolkit Utilities/IconExtractionIndex.md)
 - [KryptonJumpList](Toolkit/Components/KryptonJumpList.md)
-- [Localization](Utilities/LocalizationIndex.md)
-- [SystemIcons](Utilities/SystemIcons.md)
-- [TaskbarThumbnailButtons](Utilities/TaskbarThumbnailButtons.md)
-- [UIAProviders](Utilities/UIAProviders.md)
+- [Localization](Toolkit Utilities/LocalizationIndex.md)
+- [SystemIcons](Toolkit Utilities/SystemIcons.md)
+- [TaskbarThumbnailButtons](Toolkit Utilities/TaskbarThumbnailButtons.md)
+- [UIAProviders](Toolkit Utilities/UIAProviders.md)
 
 ## Suite utilities (`Krypton.Toolkit.Utilities`)
 
-- [KryptonExceptionDialog — Quick Start](Utilities/KryptonExceptionDialogQuickStart.md)
-- [KryptonExceptionDialog — API reference](Utilities/KryptonExceptionDialog.md)
-- [Bug reporting dialog](Utilities/BugReportingDialog.md)
-- [GitHub bug reporting](Utilities/GitHubBugReporting.md)
+- [KryptonExceptionDialog — Quick Start](Toolkit Utilities/KryptonExceptionDialogQuickStart.md)
+- [KryptonExceptionDialog — API reference](Toolkit Utilities/KryptonExceptionDialog.md)
+- [Bug reporting dialog](Toolkit Utilities/BugReportingDialog.md)
+- [GitHub bug reporting](Toolkit Utilities/GitHubBugReporting.md)
 
 ## Ribbon
 

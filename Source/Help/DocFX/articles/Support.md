@@ -13,6 +13,7 @@ The following articles contain answers to common questions.
 * [Removal of IPalette](Support/IPaletteRemoval.md)
 * [Joining Our Discord Server](Support/JoiningOurDiscordServer.md)
 * [Krypton Module Versions](Support/KryptonModuleVersions.md)
+* [Native GDI Text Rendering](Support/NativeGDITextRendering.md)
 * [Package Support Information](Support/PackageSupportInformation.md)
 * [Package Version Descriptions](Support/PackageVersionDescriptions.md)
 * [Reporting a Issue](Support/ReportingaIssue.md)

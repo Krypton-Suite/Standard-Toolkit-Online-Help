@@ -66,7 +66,7 @@ For general GitHub Actions workflow information, see:
 | --- | --- | --- | --- |
 | Build | CI validation | PR/Push/Manual | Build artifacts |
 | Release | Stable releases | Push to release branches/Manual | NuGet packages |
-| Nightly | Bleeding-edge builds | Schedule (00:00 UTC)/Manual | Nightly NuGet packages |
+| Nightly | Bleeding-edge builds | Schedule (23:42 UTC)/Manual | Nightly NuGet packages |
 
 ## Common Tasks
 

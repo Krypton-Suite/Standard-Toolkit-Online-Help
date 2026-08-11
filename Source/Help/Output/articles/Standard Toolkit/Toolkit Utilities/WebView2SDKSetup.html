@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>WebView2 SDK Setup for KryptonWebView2 | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="WebView2 SDK Setup for KryptonWebView2 | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="webview2-sdk-setup-for-kryptonwebview2">WebView2 SDK Setup for KryptonWebView2</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonWebView2</code> is implemented in <strong><code>Krypton.Toolkit.Utilities</code></strong>. The project compiles the full control when bundled WebView2 assemblies exist under:</p>
+<p><code>Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2/</code></p>
+<p>That defines <code>WEBVIEW2_AVAILABLE</code>. Without those DLLs, a minimal stub <code>Control</code> is built instead.</p>
+<p><strong>Quick start (recommended):</strong> From the repository root:</p>
+<pre><code class="lang-cmd">Scripts\WebVew2\Populate-BundledWebView2.cmd
+</code></pre>
+<p>Or run <code>run.cmd</code> → <strong>WebView2 SDK Tools</strong> (if your menu includes the populate/update options).</p>
+<p><strong>Runtime:</strong> End users still need the <a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/">WebView2 Runtime</a> installed (Evergreen or Fixed Version distribution).</p>
+<h2 id="setup-options">Setup options</h2>
+<h3 id="option-1-populate-bundled-dlls-recommended">Option 1: Populate bundled DLLs (recommended)</h3>
+<p><code>Populate-BundledWebView2.cmd</code> downloads the latest stable <code>Microsoft.Web.WebView2</code> package, copies the required assemblies into <code>Lib/WebView2</code>, and removes the temporary PackageReference so the project uses only bundled references.</p>
+<pre><code class="lang-cmd">Scripts\WebVew2\Populate-BundledWebView2.cmd
+</code></pre>
+<p>Required files in <code>Lib/WebView2</code>:</p>
+<pre><code class="lang-text">Lib/WebView2/
+├── Microsoft.Web.WebView2.Core.dll
+├── Microsoft.Web.WebView2.WinForms.dll
+└── WebView2Loader.dll
+</code></pre>
+<p>You may commit these DLLs so CI and other developers do not need to run the script (see <code>.gitignore</code> un-ignore rule for this folder).</p>
+<h3 id="option-2-manual-copy">Option 2: Manual copy</h3>
+<ol>
+<li>Download the <a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/">WebView2 SDK</a> or install <code>Microsoft.Web.WebView2</code> via NuGet temporarily.</li>
+<li>Copy the three DLLs listed above into<br>
+<code>Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2/</code></li>
+<li>Rebuild <code>Krypton.Toolkit.Utilities</code>.</li>
+</ol>
+<h3 id="option-3-temporary-nuget-development-only">Option 3: Temporary NuGet (development only)</h3>
+<pre><code class="lang-cmd">dotnet add &quot;Source/Krypton Components/Krypton.Toolkit.Utilities/Krypton.Toolkit.Utilities.csproj&quot; package Microsoft.Web.WebView2
+dotnet restore &quot;Source/Krypton Components/Krypton.Toolkit.Utilities/Krypton.Toolkit.Utilities.csproj&quot;
+</code></pre>
+<p>Copy the DLLs from <code>%USERPROFILE%\.nuget\packages\microsoft.web.webview2\&lt;version&gt;\</code> into <code>Lib/WebView2</code>, then remove the package reference so the project matches the bundled layout:</p>
+<pre><code class="lang-cmd">dotnet remove &quot;Source/Krypton Components/Krypton.Toolkit.Utilities/Krypton.Toolkit.Utilities.csproj&quot; package Microsoft.Web.WebView2
+</code></pre>
+<h3 id="option-4-legacy-webview2sdk-folder-repository-root">Option 4: Legacy <code>WebView2SDK</code> folder (repository root)</h3>
+<p>Older scripts under <code>Scripts/WebVew2/</code> (<code>Setup-WebView2SDK.cmd</code>, <code>Update-WebView2SDK.cmd</code>) populate a <strong><code>WebView2SDK</code></strong> folder at the repository root. <strong>The project does not reference that folder</strong> — it uses <code>Lib/WebView2</code> inside <code>Krypton.Toolkit.Utilities</code>.</p>
+<p>If you used the legacy scripts, either:</p>
+<ul>
+<li>Run <code>Populate-BundledWebView2.cmd</code> instead, or</li>
+<li>Manually copy the three DLLs from <code>WebView2SDK\</code> into <code>Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2/</code></li>
+</ul>
+<p>Some CI workflows may still populate <code>WebView2SDK</code>; ensure <code>Lib/WebView2</code> is populated before building <code>Krypton.Toolkit.Utilities</code>.</p>
+<h2 id="file-structure-after-setup">File structure after setup</h2>
+<pre><code class="lang-text">Standard-Toolkit/
+├── Source/
+│   └── Krypton Components/
+│       └── Krypton.Toolkit.Utilities/
+│           ├── Lib/
+│           │   └── WebView2/                    ← Build-time references (required)
+│           │       ├── Microsoft.Web.WebView2.Core.dll
+│           │       ├── Microsoft.Web.WebView2.WinForms.dll
+│           │       └── WebView2Loader.dll
+│           └── Components/
+│               └── KryptonWebView2/
+│                   └── Controls Toolkit/
+│                       └── KryptonWebView2.cs
+├── Scripts/
+│   └── WebVew2/
+│       ├── Populate-BundledWebView2.cmd         ← Recommended
+│       ├── Setup-WebView2SDK.cmd                ← Legacy (WebView2SDK at root)
+│       ├── Update-WebView2SDK.cmd
+│       ├── Get-LatestWebView2Version.ps1
+│       └── Update-WebView2ProjectVersion.ps1
+└── run.cmd
+</code></pre>
+<h2 id="verification">Verification</h2>
+<ol>
+<li><p><strong>Build Utilities</strong></p>
+<pre><code class="lang-cmd">dotnet build &quot;Source/Krypton Components/Krypton.Toolkit.Utilities/Krypton.Toolkit.Utilities.csproj&quot; -c Debug
+</code></pre>
+</li>
+<li><p><strong>Confirm</strong></p>
+<ul>
+<li>No errors for <code>Microsoft.Web.WebView2</code> types</li>
+<li><code>WEBVIEW2_AVAILABLE</code> defined (DLLs present in <code>Lib/WebView2</code>)</li>
+<li><code>KryptonWebView2</code> in the toolbox when <code>TestForm</code> / designer loads <code>Krypton.Toolkit.Utilities</code></li>
+</ul>
+</li>
+<li><p><strong>Run TestForm</strong> (optional)</p>
+<pre><code class="lang-cmd">dotnet run --project &quot;Source/Krypton Components/TestForm/TestForm.csproj&quot; -c Debug
+</code></pre>
+<p>Open the <code>KryptonWebView2</code> test scenario and confirm themed background colors follow the active palette.</p>
+</li>
+</ol>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="webview2-types-not-found-or-stub-control-only">&quot;WebView2 types not found&quot; or stub control only</h3>
+<ul>
+<li>Verify all three DLLs exist under<br>
+<code>Source/Krypton Components/Krypton.Toolkit.Utilities/Lib/WebView2/</code></li>
+<li>Run <code>Scripts\WebVew2\Populate-BundledWebView2.cmd</code></li>
+<li>Rebuild <code>Krypton.Toolkit.Utilities</code> (not only a dependent project)</li>
+</ul>
+<h3 id="legacy-webview2sdk-at-repository-root">Legacy <code>WebView2SDK</code> at repository root</h3>
+<ul>
+<li>That folder alone does <strong>not</strong> enable <code>WEBVIEW2_AVAILABLE</code></li>
+<li>Copy assemblies into <code>Lib/WebView2</code> or run <code>Populate-BundledWebView2.cmd</code></li>
+</ul>
+<h3 id="assembly-loading-errors">Assembly loading errors</h3>
+<ul>
+<li>Use AnyCPU-compatible builds unless you intentionally target x64</li>
+<li>Replace corrupted DLLs from a fresh NuGet package or SDK download</li>
+</ul>
+<h3 id="designer--toolbox-issues">Designer / toolbox issues</h3>
+<ul>
+<li>Build <code>Krypton.Toolkit.Utilities</code> successfully first</li>
+<li>Reset the Visual Studio toolbox; restart the designer</li>
+<li>Ensure <code>TestForm</code> references a configuration where <code>Lib/WebView2</code> DLLs exist</li>
+</ul>
+<h3 id="github-actions--ci">GitHub Actions / CI</h3>
+<ul>
+<li>Ensure the workflow copies or restores DLLs into <strong><code>Lib/WebView2</code></strong>, not only <code>WebView2SDK</code></li>
+<li>Restore needs network access to download the WebView2 package when DLLs are not committed</li>
+</ul>
+<h2 id="runtime-requirements">Runtime requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows 10 1803+</td>
+<td>WebView2 host</td>
+</tr>
+<tr>
+<td>WebView2 Runtime</td>
+<td><a href="https://developer.microsoft.com/en-us/microsoft-edge/webview2/">Download</a> — Evergreen or Fixed Version</td>
+</tr>
+<tr>
+<td>Application TFM</td>
+<td>Same as <code>Krypton.Toolkit.Utilities</code> (e.g. <code>net472</code>, <code>net48</code>, <code>net8.0-windows</code>, …)</td>
+</tr>
+</tbody>
+</table>
+<p>Bundled SDK DLLs are for <strong>compilation</strong>. The <strong>runtime</strong> is a separate install on end-user machines (unless you ship Fixed Version).</p>
+<h2 id="related-documentation">Related documentation</h2>
+<ul>
+<li><a href="KryptonWebView2.html">KryptonWebView2 documentation index</a></li>
+<li><a href="KryptonWebView2DeveloperGuide.html#theming-integration">Developer guide — theming</a></li>
+<li><a href="KryptonWebView2APIReference.html">API reference — State properties</a></li>
+<li><a href="https://learn.microsoft.com/en-us/microsoft-edge/webview2/">Microsoft WebView2 documentation</a></li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Prefer committing <code>Lib/WebView2/*.dll</code> for repeatable CI, or run <code>Populate-BundledWebView2.cmd</code> in the pipeline before build.</li>
+<li>Project references use <code>HintPath</code> under <code>Lib/WebView2</code>; assemblies are not pulled from a permanent NuGet PackageReference in the shipped layout.</li>
+<li>After setup, configure appearance via <strong>Visuals → State###</strong> on <code>KryptonWebView2</code>, not <code>DefaultBackgroundColor</code> in the designer.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

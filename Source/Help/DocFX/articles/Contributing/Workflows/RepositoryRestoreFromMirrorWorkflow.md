@@ -94,7 +94,7 @@ V85-LTS
 - Branches **not** in the restore list (unchanged on source)
 - Source-only tags when `sync_tags` is `false` (default)
 - Source-only tags with names not present on mirror when `sync_tags` is `true` (mirror tags are force-pushed; source-only tag names are not deleted)
-- File snapshots from [Alpha Backup Sync](../AlphaBackupSync.md) dated directories (those exclude `.git`)
+- File snapshots from [Alpha Backup Sync](../AlphaBackupSync.md) zip artifacts (those exclude `.git`; use the companion `.bundle` for history)
 - Commits never mirrored or garbage-collected on the mirror
 
 ---
@@ -593,7 +593,7 @@ When modifying the workflow, keep header comments in `repo-restore-from-mirror.y
 
 - [Repository backup and restore](RepositoryBackupAndRestoreWorkflow.md) — architecture, playbooks, configuration tables
 - [Repository Mirror](RepositoryMirrorWorkflow.md) — source → mirror sync
-- [Alpha Backup Sync](../AlphaBackupSync.md) — `alpha-backup` and dated file snapshots
+- [Alpha Backup Sync](../AlphaBackupSync.md) — `alpha-backup` and zip + `.bundle` snapshots
 - [.github/REPOSITORY_BACKUP.md](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/REPOSITORY_BACKUP.md) — cheat sheet
 - [Kill Switches](../Build%20System/KillSwitches.md) — `REPO_RESTORE_DISABLED`
 - [GitHub Workflow Index](../GitHubWorkflowIndex.md) — all workflow documentation

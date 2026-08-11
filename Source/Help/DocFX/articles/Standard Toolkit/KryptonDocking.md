@@ -9,6 +9,7 @@ Learn more about the capabilities of `Krypton Docking` using the following secti
 
 ## Intermediate
 
+* [Drag Target Priority](Docking/KryptonDockingDragTargetPriority.md)
 * [Flags](Docking/KryptonDockingFlags.md)
 * [Persistence](Docking/KryptonDockingPersistence.md)
 * [Hierarchy](Docking/KryptonDockingHierarchy.md)

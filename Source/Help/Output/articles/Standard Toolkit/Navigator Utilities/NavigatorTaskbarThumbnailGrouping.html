@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Navigator Taskbar Thumbnails &amp; Snap Groups | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Navigator Taskbar Thumbnails &amp; Snap Groups | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="navigator-taskbar-thumbnails--snap-groups">Navigator Taskbar Thumbnails &amp; Snap Groups</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Windows taskbar integration for navigator pages and multi-window Snap Groups lives in two layers:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Package</th>
+<th>Issue</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Per-page (and TabGroup) thumbnails</td>
+<td><code>Krypton.Navigator.Utilities</code></td>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/882">#882</a>, <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4129">#4129</a></td>
+<td>Registers hidden proxy HWNDs with <code>ITaskbarList3.RegisterTab</code> so the host’s taskbar flyout shows one thumbnail per page, plus optional composite <strong>Group | …</strong> entries for caption tab groups</td>
+</tr>
+<tr>
+<td>OS Snap Groups</td>
+<td><code>Krypton.Toolkit</code> / <code>Krypton.Docking</code></td>
+<td><a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4129">#4129</a></td>
+<td>Eligibility only — Windows creates Snap Group previews when ≥2 <strong>taskbar-visible</strong> windows are snapped together</td>
+</tr>
+</tbody>
+</table>
+<p>These are different shell features. TabGroup composites use <code>RegisterTab</code>. Real Snap Groups are owned by Explorer and cannot be synthesised for pages inside a single form.</p>
+<h2 id="architecture-navigator-thumbnails">Architecture (navigator thumbnails)</h2>
+<pre><code>KryptonNavigatorTaskbarThumbnails
+        │
+        ▼
+NavigatorTaskbarThumbnailManager
+        │
+        ▼
+NavigatorTaskbarHostCoordinator  (one per ShowInTaskbar host)
+        │  ordered slots: [Group A] [A1] [A2] [ungrouped] …
+        ▼
+NavigatorTaskbarThumbnailProxy / NavigatorTaskbarGroupThumbnailProxy
+        │  DWM iconic bitmaps + ITaskbarList3/4
+        ▼
+Host Form taskbar button flyout
+</code></pre>
+<h2 id="usage--page-thumbnails-882">Usage — page thumbnails (#882)</h2>
+<ol>
+<li>Add <code>KryptonNavigatorTaskbarThumbnails</code> to the form.</li>
+<li>Set <code>Navigator</code> to the <code>KryptonNavigator</code>.</li>
+<li>Leave <code>Enabled</code> true.</li>
+<li>Clear <code>KryptonPageFlags.AllowTaskbarThumbnail</code> on pages that should not appear (wizard steps, etc.).</li>
+</ol>
+<pre><code class="lang-csharp">taskbarThumbnails.Navigator = kryptonNavigator;
+taskbarThumbnails.Enabled = true;
+</code></pre>
+<h2 id="usage--tabgroup-composites-4129">Usage — TabGroup composites (#4129)</h2>
+<p>Requires a <code>KryptonNavigatorFormIntegrator</code> that owns the same navigator and has <code>AllowTabGroups</code> true. Catalog membership is <code>KryptonPage.TabGroupId</code> → <code>FormIntegrator.TabGroups</code>.</p>
+<pre><code class="lang-csharp">taskbarThumbnails.FormIntegrator = integrator;
+taskbarThumbnails.ShowTabGroupThumbnails = true;
+</code></pre>
+<p>Flyout order (Explorer-like):</p>
+<p><code>Group | Work</code> → member pages → ungrouped pages …</p>
+<ul>
+<li>Clicking a group thumbnail activates the first visible member (or brings the host forward if the selected page is already in the group).</li>
+<li>Group thumbnails never close members from the flyout X.</li>
+<li><code>MaxThumbnails</code> counts <strong>group slots + page slots</strong>.</li>
+<li>Customise collages via <code>QueryTabGroupThumbnail</code>.</li>
+</ul>
+<h2 id="usage--windows-11-snap-groups-4129">Usage — Windows 11 Snap Groups (#4129)</h2>
+<p>Snap Groups appear automatically when the user snaps ≥2 windows that each have a taskbar button. Apps only stay eligible.</p>
+<h3 id="peer-kryptonform-windows">Peer <code>KryptonForm</code> windows</h3>
+<ul>
+<li><code>ShowInTaskbar = true</code></li>
+<li><code>Owner = null</code> (do not own peer document windows)</li>
+<li>Avoid <code>FormBorderStyle.*ToolWindow</code></li>
+<li>Set one process AppUserModelID <strong>before first UI</strong> (e.g. <code>JumpList.AppId</code> or <code>SetCurrentProcessExplicitAppUserModelID</code>)</li>
+</ul>
+<h3 id="docking-floats-opt-in">Docking floats (opt-in)</h3>
+<p>By default <code>KryptonFloatingWindow</code> uses <code>ShowInTaskbar = false</code> and is owned by the main form — excluded from Snap Groups.</p>
+<pre><code class="lang-csharp">KryptonDockingFloating floating = dockingManager.ManageFloating(&quot;Floating&quot;, this);
+floating.ShowFloatingWindowsInTaskbar = true; // new floats only
+</code></pre>
+<p>Keep the same process AUMID as the main form. Expect extra taskbar buttons when floats are visible.</p>
+<h3 id="os-setting">OS setting</h3>
+<p>Settings → System → Multitasking → Snap windows → <strong>Show my snapped windows when I hover over taskbar apps, in Task View, and when I press Alt+Tab</strong>.</p>
+<h2 id="testform-demos">TestForm demos</h2>
+<ul>
+<li><code>Feature882NavigatorTaskbarThumbnailsDemo</code> — pages, merge, close modes, and <strong>Tab group composites</strong> checkbox.</li>
+<li><code>Feature4129SnapGroupsDemo</code> — peer window + optional floats in taskbar.</li>
+</ul>
+<h2 id="key-types">Key types</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonNavigatorTaskbarThumbnails</code></td>
+<td>Public opt-in component</td>
+</tr>
+<tr>
+<td><code>KryptonPageFlags.AllowTaskbarThumbnail</code></td>
+<td>Per-page include/exclude</td>
+</tr>
+<tr>
+<td><code>QueryTaskbarThumbnailEventArgs</code></td>
+<td>Custom page bitmap</td>
+</tr>
+<tr>
+<td><code>QueryTaskbarTabGroupThumbnailEventArgs</code></td>
+<td>Custom group collage</td>
+</tr>
+<tr>
+<td><code>KryptonDockingFloating.ShowFloatingWindowsInTaskbar</code></td>
+<td>Opt-in float taskbar buttons</td>
+</tr>
+<tr>
+<td><code>JumpListValues.AppId</code></td>
+<td>Process AUMID</td>
+</tr>
+</tbody>
+</table>
+<h2 id="out-of-scope">Out of scope</h2>
+<ul>
+<li>Fabricating OS Snap Groups for in-process pages (use TabGroup composites instead).</li>
+<li>Changing the default float <code>ShowInTaskbar</code> behaviour.</li>
+<li>Per-window AUMID helpers beyond process-level <code>AppId</code>.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

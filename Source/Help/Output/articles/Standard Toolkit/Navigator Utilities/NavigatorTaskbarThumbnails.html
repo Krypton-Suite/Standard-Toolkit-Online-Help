@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Navigator Taskbar Thumbnails | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Navigator Taskbar Thumbnails | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="navigator-taskbar-thumbnails">Navigator Taskbar Thumbnails</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/882">#882</a>: opt-in Windows taskbar <strong>tabbed thumbnails</strong> (IE-style flyout) for <code>KryptonNavigator</code> pages, provided by <strong><code>Krypton.Navigator.Utilities</code></strong>.</p>
+<p>When a <code>KryptonNavigatorTaskbarThumbnails</code> component is attached to a navigator and enabled, each eligible page appears as its own preview in the host form’s taskbar flyout. Clicking a thumbnail selects that page and restores the host.</p>
+<p>Package: download <strong><code>Krypton.Standard.Toolkit</code></strong> — types live in assembly <code>Krypton.Navigator.Utilities</code>. The Utilities project itself is not separately packable.</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code class="lang-text">KryptonNavigatorTaskbarThumbnails (1..N on a form)
+        │  Navigator + Enabled / IncludeHiddenPages / …
+        ▼
+NavigatorTaskbarThumbnailManager (per-component adapter)
+        │
+        ▼
+NavigatorTaskbarHostCoordinator (one per ShowInTaskbar host Form)
+        ├── single NativeWindow for TaskbarButtonCreated
+        ├── ITaskbarList3 (+ ITaskbarList4.SetTabProperties)
+        ├── merged tab catalog (navigator, page) → proxy HWND
+        └── host overlay / progress / thumb-bar from selected page
+        │
+        ▼
+NavigatorTaskbarThumbnailProxy (off-screen WS_VISIBLE Form per page)
+        │  RegisterTab / SetTabOrder / SetTabActive / SetTabProperties
+        ▼
+DWM iconic bitmaps (WM_DWMSENDICONICTHUMBNAIL / LIVEPREVIEW)
+</code></pre>
+<p><code>KryptonPage</code> is a child control, so it cannot be registered with <code>ITaskbarList3::RegisterTab</code> directly. Each page gets a small hidden, owned, off-screen proxy window that remains <code>WS_VISIBLE</code> so thumbnail clicks deliver activation. DWM asks that proxy for bitmaps via iconic messages.</p>
+<p>Multiple enabled components on the <strong>same taskbar-visible host</strong> merge their eligible pages into <strong>one</strong> flyout (shared tab order and active tab).</p>
+<h2 id="public-api">Public API</h2>
+<h3 id="kryptonnavigatortaskbarthumbnails"><code>KryptonNavigatorTaskbarThumbnails</code></h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Navigator</code></td>
+<td><code>null</code></td>
+<td>Navigator whose pages are registered</td>
+</tr>
+<tr>
+<td><code>Enabled</code></td>
+<td><code>true</code></td>
+<td>Master switch for registration</td>
+</tr>
+<tr>
+<td><code>IncludeHiddenPages</code></td>
+<td><code>false</code></td>
+<td>Include pages with <code>LastVisibleSet == false</code></td>
+</tr>
+<tr>
+<td><code>AllowCloseFromThumbnail</code></td>
+<td><code>true</code></td>
+<td>Thumbnail close (X) runs <code>PerformCloseAction</code></td>
+</tr>
+<tr>
+<td><code>ActiveTabUsesAppPreview</code></td>
+<td><code>true</code></td>
+<td>Active tab uses host window for thumbnail/Peek (<code>STPF_*WHENACTIVE</code>)</td>
+</tr>
+<tr>
+<td><code>MaxThumbnails</code></td>
+<td><code>0</code></td>
+<td>Per-component cap on registered pages; <code>0</code> = unlimited</td>
+</tr>
+<tr>
+<td><code>UseSelectedPageOverlay</code></td>
+<td><code>false</code></td>
+<td>Drive host overlay icon via <code>QueryOverlay</code></td>
+</tr>
+<tr>
+<td><code>UseSelectedPageProgress</code></td>
+<td><code>false</code></td>
+<td>Drive host progress via <code>QueryProgress</code></td>
+</tr>
+<tr>
+<td><code>UseSelectedPageThumbnailButtons</code></td>
+<td><code>false</code></td>
+<td>Drive host thumb-bar via <code>QueryThumbnailButtons</code></td>
+</tr>
+<tr>
+<td><code>RefreshThumbnails()</code></td>
+<td></td>
+<td>Force re-sync of registration</td>
+</tr>
+</tbody>
+</table>
+<p>Events:</p>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QueryThumbnail</code></td>
+<td>Optional custom page thumbnail / live-preview bitmap</td>
+</tr>
+<tr>
+<td><code>QueryOverlay</code></td>
+<td>Host overlay icon for the selected page</td>
+</tr>
+<tr>
+<td><code>QueryProgress</code></td>
+<td>Host progress for the selected page</td>
+</tr>
+<tr>
+<td><code>QueryThumbnailButtons</code></td>
+<td>Up to 7 host thumbnail toolbar buttons</td>
+</tr>
+</tbody>
+</table>
+<p>Overlay, progress, and thumbnail toolbar buttons are <strong>group-level Shell features</strong> on the host HWND. “Tied to selected page” means the coordinator updates the host from the currently active merged page — not per-tab Shell UI.</p>
+<p>Designer: dropping the component auto-assigns the first <code>KryptonNavigator</code> on the root form. Smart-tag exposes the main behavior properties.</p>
+<h3 id="kryptonpageflagsallowtaskbarthumbnail-0x0800"><code>KryptonPageFlags.AllowTaskbarThumbnail</code> (<code>0x0800</code>)</h3>
+<p>Defined on <code>KryptonPage</code> in <strong><code>Krypton.Navigator</code></strong>. Included in <code>KryptonPageFlags.All</code> (on by default). Clear it for wizard steps that must not appear:</p>
+<pre><code class="lang-csharp">wizardPage.ClearFlags(KryptonPageFlags.AllowTaskbarThumbnail);
+</code></pre>
+<p>Editable at design time via the page Flags dialog and the page smart-tag (“Allow Taskbar Thumbnail”).</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">using Krypton.Navigator.Utilities;
+
+var taskbarThumbnails = new KryptonNavigatorTaskbarThumbnails(components)
+{
+    Navigator = navigator,
+    Enabled = true,
+    ActiveTabUsesAppPreview = true
+};
+
+taskbarThumbnails.QueryThumbnail += (s, e) =&gt;
+{
+    // Optional: e.Thumbnail = RenderPreview(e.Page, e.Size);
+    // Ownership of e.Thumbnail stays with the handler; the component clones it.
+};
+
+// Exclude a wizard page
+page.ClearFlags(KryptonPageFlags.AllowTaskbarThumbnail);
+</code></pre>
+<h3 id="multi-navigator-merge">Multi-navigator merge</h3>
+<p>Attach one component per navigator. If both share the same <code>ShowInTaskbar</code> host form, their eligible pages merge into one taskbar group (component attach order, then each navigator’s <code>Pages</code> order).</p>
+<h3 id="host-shell-status-selected-page">Host shell status (selected page)</h3>
+<pre><code class="lang-csharp">taskbarThumbnails.UseSelectedPageOverlay = true;
+taskbarThumbnails.UseSelectedPageProgress = true;
+taskbarThumbnails.QueryOverlay += (s, e) =&gt;
+{
+    e.Icon = statusIcon;          // ownership remains with handler
+    e.Description = e.Page.Text;
+};
+taskbarThumbnails.QueryProgress += (s, e) =&gt;
+{
+    e.State = TaskbarProgressState.Normal;
+    e.Completed = 40;
+    e.Total = 100;
+};
+</code></pre>
+<h2 id="snapshots-and-refresh">Snapshots and refresh</h2>
+<ul>
+<li>Prefer <code>QueryThumbnail</code> when provided.</li>
+<li>Otherwise capture via <code>PrintWindow</code> (fallback <code>DrawToBitmap</code>), <code>Format32bppArgb</code>.</li>
+<li>Snapshots are taken when a page loses selection, on idle after sync/insert, and (debounced ~200 ms) when the selected page paints/invalidates.</li>
+<li>Never-visited / inactive pages are forced into a capturable size when possible; otherwise a placeholder with caption/image is used.</li>
+</ul>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li><strong>Design mode</strong> — no registration.</li>
+<li><strong>Windows 7+</strong> — requires taskbar tab APIs; Peek flags use <code>ITaskbarList4</code> when available.</li>
+<li><strong>Taskbar host</strong> — coordinator walks <code>FindForm()</code> / <code>Owner</code> until a form with <code>ShowInTaskbar</code> is found. If none (typical float window), pages are unregistered rather than bound to a non-taskbar HWND.</li>
+<li><strong>Docking float / redock</strong> — floated pages leave the merged catalog; redocking back onto the host re-registers them (driven by parent/visible/page events; no hard Docking project reference).</li>
+<li><strong>Close from thumbnail</strong> — always routes through <code>PerformCloseAction</code>. <code>AllowCloseFromThumbnail == false</code> and <code>CloseButtonAction.None</code> keep the proxy alive (<code>WM_CLOSE</code> is swallowed). Unregister only when the page is removed or becomes ineligible.</li>
+<li><strong>Win11 click / Peek</strong> — proxy handles <code>WM_ACTIVATE</code> / <code>OnActivated</code> with deferred page select + host restore; active tab Peek uses the host frame when <code>ActiveTabUsesAppPreview</code> is true.</li>
+</ul>
+<h2 id="validation">Validation</h2>
+<p>TestForm demo: <strong><code>Feature882NavigatorTaskbarThumbnailsDemo</code></strong> (registered on <code>StartScreen</code>).</p>
+<p>Manual Win11 checks:</p>
+<ol>
+<li>Hover taskbar — never-visited pages show real/forced snapshots, not empty placeholders.</li>
+<li>Edit selected page content — thumbnail refreshes after debounce.</li>
+<li>Click thumbnail — correct page/navigator selected; host restored.</li>
+<li>Peek active tab — host-frame preview when <code>ActiveTabUsesAppPreview</code> is on.</li>
+<li>Thumbnail X — respects remove / hide / cancel / deny.</li>
+<li>Enable second navigator — merged flyout, one active tab.</li>
+<li>Selected-page overlay/progress/thumb buttons update the host taskbar button.</li>
+</ol>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

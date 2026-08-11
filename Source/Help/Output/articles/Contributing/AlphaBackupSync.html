@@ -79,7 +79,7 @@
 <li><a href="#setup">Setup</a></li>
 <li><a href="#workflow-logic-step-by-step">Workflow Logic (Step by Step)</a></li>
 <li><a href="#auto-merge">Auto-Merge</a></li>
-<li><a href="#separate-repository-backup-dated-directories">Separate Repository Backup (Dated Directories)</a>
+<li><a href="#separate-repository-backup-zip--bundle-snapshots">Separate Repository Backup (Zip + Bundle Snapshots)</a>
 <ul>
 <li><a href="#setting-up-backup_repo_token">Setting up BACKUP_REPO_TOKEN</a></li>
 </ul>
@@ -92,15 +92,15 @@
 </ol>
 <hr>
 <h2 id="overview">Overview</h2>
-<p>The <strong>Alpha to Alpha-Backup Sync</strong> workflow is a GitHub Actions automation that keeps a backup of the <code>alpha</code> branch when it has commits in the last 24 hours. It runs at midnight UTC (or on manual trigger) and:</p>
+<p>The <strong>Alpha to Alpha-Backup Sync</strong> workflow is a GitHub Actions automation that keeps a backup of the <code>alpha</code> branch when it has commits in the last 24 hours. It runs at 23:27 UTC (or on manual trigger) and:</p>
 <ol>
 <li><strong>Same-repo backup</strong>: Creates or updates the <code>alpha-backup</code> branch via a PR from <code>alpha</code>, with optional auto-merge when approved.</li>
-<li><strong>Separate-repo backup</strong> (optional): Pushes a full snapshot of <code>alpha</code> into a dated directory in another repository (e.g. <code>Standard Toolkit Backup - 2025-02-03</code>).</li>
+<li><strong>Separate-repo backup</strong> (optional): Pushes a <strong>zip</strong> working-tree snapshot and a <strong>git bundle</strong> of <code>alpha</code> into a fixed folder in another repository (under <code>Source/Nightly/Standard Toolkit/</code>).</li>
 <li><strong>Discord</strong> (optional): Sends a notification summarizing the run.</li>
 </ol>
 <h3 id="purpose">Purpose</h3>
 <ul>
-<li><strong>Backup</strong>: Maintain <code>alpha-backup</code> in the same repo and/or dated snapshots in a separate backup repo.</li>
+<li><strong>Backup</strong>: Maintain <code>alpha-backup</code> in the same repo and/or zip + <code>.bundle</code> snapshots in a separate backup repo.</li>
 <li><strong>Automation</strong>: No manual copying; the workflow detects recent activity and proposes the sync via a PR, and optionally pushes to a backup repo.</li>
 <li><strong>Visibility</strong>: Optional Discord notifications when changes are detected.</li>
 </ul>
@@ -139,8 +139,8 @@
 <td>Does not open a PR when <code>alpha-backup</code> is already up to date with <code>alpha</code>.</td>
 </tr>
 <tr>
-<td><strong>Dated backup dirs</strong></td>
-<td>Optional push to a separate repo into directories like <code>Standard Toolkit Backup - YYYY-MM-DD</code>.</td>
+<td><strong>Zip + bundle snapshots</strong></td>
+<td>Optional push to a separate repo: <code>*.zip</code> (tree without <code>.git</code>) and <code>*.bundle</code> (full <code>alpha</code> history for <code>git clone</code>).</td>
 </tr>
 <tr>
 <td><strong>Kill switch</strong></td>
@@ -176,7 +176,7 @@
 <tbody>
 <tr>
 <td><strong>Schedule</strong></td>
-<td>Daily at <strong>00:00 UTC</strong> (<code>cron: '0 0 * * *'</code>).</td>
+<td>Daily at <strong>23:27 UTC</strong> (<code>cron: '27 23 * * *'</code>; off-hour offset to reduce GitHub schedule queue delay).</td>
 </tr>
 <tr>
 <td><strong>Manual</strong></td>
@@ -219,8 +219,9 @@
 <li><strong>Secrets</strong>: Add <code>BACKUP_REPO_TOKEN</code> — see <a href="#setting-up-backup_repo_token">Setting up BACKUP_REPO_TOKEN</a> below.</li>
 <li>Optional variables:
 <ul>
-<li><code>BACKUP_DIR_PREFIX</code>: Directory name prefix (default: <code>Standard Toolkit Backup</code>).</li>
+<li><code>BACKUP_DIR_PREFIX</code>: File name prefix (default: <code>Standard Toolkit Backup</code>).</li>
 <li><code>BACKUP_BRANCH</code>: Branch to push to (default: <code>main</code>).</li>
+<li><code>BACKUP_SNAPSHOT_KEEP</code>: How many newest zip and bundle snapshots to retain of each type (default when unset: <code>14</code>).</li>
 </ul>
 </li>
 </ol>
@@ -261,17 +262,23 @@
 <li>When a PR exists (has <code>pr_node_id</code>), calls GraphQL <code>enablePullRequestAutoMerge</code> with merge method <code>MERGE</code>.</li>
 <li>If the repo does not have &quot;Allow auto-merge&quot; enabled, logs a warning and continues.</li>
 </ul>
-<h3 id="step-7-push-alpha-to-backup-repository-dated-directory">Step 7: Push alpha to backup repository (dated directory)</h3>
+<h3 id="step-7-push-alpha-to-backup-repository-zip--bundle">Step 7: Push alpha to backup repository (zip + bundle)</h3>
 <ul>
 <li>Runs only when <code>BACKUP_REPO</code> and <code>BACKUP_REPO_TOKEN</code> are set.</li>
 <li>Clones the backup repo.</li>
-<li>Creates directory <code>{BACKUP_DIR_PREFIX} - YYYY-MM-DD</code> (e.g. <code>Standard Toolkit Backup - 2025-02-03</code>).</li>
-<li>Copies full alpha contents (excluding <code>.git</code>) into that directory.</li>
+<li>Creates two artifacts under <code>Source/Nightly/Standard Toolkit/</code>:
+<ul>
+<li><code>{BACKUP_DIR_PREFIX} - YYYY-MM-DD.zip</code> — working-tree snapshot (excludes <code>.git</code>; browse/extract without Git).</li>
+<li><code>{BACKUP_DIR_PREFIX} - YYYY-MM-DD.bundle</code> — <code>git bundle</code> of the full <code>alpha</code> history (disaster recovery).</li>
+</ul>
+</li>
+<li>Prunes older zip/bundle files beyond <code>BACKUP_SNAPSHOT_KEEP</code> (default 30 of each type).</li>
+<li>Removes legacy dated directories at the backup repo root (pre-bundle layout).</li>
 <li>Commits and pushes to <code>BACKUP_BRANCH</code> (default <code>main</code>).</li>
 </ul>
 <h3 id="step-8-discord-notification">Step 8: Discord notification</h3>
 <ul>
-<li>When <code>DISCORD_WEBHOOK_ALPHA_BACKUP</code> is set, sends an embed with branch status, PR link (if any), backup repo info (if pushed), and workflow run link.</li>
+<li>When <code>DISCORD_WEBHOOK_ALPHA_BACKUP</code> is set, sends an embed with branch status, PR link (if any), backup zip/bundle paths (if pushed), and workflow run link.</li>
 </ul>
 <hr>
 <h2 id="auto-merge">Auto-Merge</h2>
@@ -282,8 +289,8 @@
 </ul>
 <p>Merge method is <code>MERGE</code> (merge commit). If &quot;Allow auto-merge&quot; is not enabled on the repo, the step logs a warning and continues without failing.</p>
 <hr>
-<h2 id="separate-repository-backup-dated-directories">Separate Repository Backup (Dated Directories)</h2>
-<p>When <code>BACKUP_REPO</code> and <code>BACKUP_REPO_TOKEN</code> are configured, the workflow pushes a full snapshot of <code>alpha</code> into the backup repo.</p>
+<h2 id="separate-repository-backup-zip--bundle-snapshots">Separate Repository Backup (Zip + Bundle Snapshots)</h2>
+<p>When <code>BACKUP_REPO</code> and <code>BACKUP_REPO_TOKEN</code> are configured, the workflow pushes two artifacts of <code>alpha</code> into the backup repo under a fixed folder.</p>
 <h3 id="setting-up-backup_repo_token">Setting up BACKUP_REPO_TOKEN</h3>
 <p>The token must have push access to the backup repository. You can use a <strong>classic PAT</strong> or a <strong>fine-grained PAT</strong>; both work. Fine-grained PATs are recommended for tighter scoping.</p>
 <h4 id="option-a-fine-grained-pat-recommended">Option A: Fine-grained PAT (recommended)</h4>
@@ -316,19 +323,43 @@
 </ol>
 <h4 id="org--multi-repo-access">Org / multi-repo access</h4>
 <p>PATs are created from a user account. A PAT from a user who is an org member (or has push access to the backup repo) works for org repositories. There is no separate &quot;org PAT&quot; — the token just needs push access to the backup repo. Fine-grained PATs can be scoped to specific org repos for least privilege.</p>
-<h3 id="directory-structure">Directory structure</h3>
-<p>Each run creates a new dated directory at the root of the backup repo:</p>
+<h3 id="artifact-layout">Artifact layout</h3>
+<p>Each run updates files under a fixed directory (not a new root-level dated folder):</p>
 <pre><code class="lang-plaintext">Standard-Toolkit-Backup/
-├── Standard Toolkit Backup - 2025-02-01/
-│   ├── Source/
-│   ├── Documents/
-│   ├── .github/
-│   └── ... (full alpha contents, excluding .git)
-├── Standard Toolkit Backup - 2025-02-02/
-│   └── ...
-├── Standard Toolkit Backup - 2025-02-03/
-│   └── ...
+└── Source/
+    └── Nightly/
+        └── Standard Toolkit/
+            ├── Standard Toolkit Backup - 2026-07-30.zip
+            ├── Standard Toolkit Backup - 2026-07-30.bundle
+            ├── Standard Toolkit Backup - 2026-07-31.zip
+            ├── Standard Toolkit Backup - 2026-07-31.bundle
+            └── ...
 </code></pre>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Contents</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*.zip</code></td>
+<td>Working tree excluding <code>.git</code> (and excluding <code>*.bundle</code> files)</td>
+<td>Browse or extract files without Git</td>
+</tr>
+<tr>
+<td><code>*.bundle</code></td>
+<td>Full <code>alpha</code> history via <code>git bundle create … alpha</code></td>
+<td>Disaster recovery / restore a clone</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Restore from bundle:</strong></p>
+<pre><code class="lang-bash">git clone &quot;Standard Toolkit Backup - YYYY-MM-DD.bundle&quot; restored-repo
+</code></pre>
+<p>Legacy dated directories at the backup repo root (the pre-bundle layout) are removed on each successful snapshot run.</p>
 <h3 id="configuration">Configuration</h3>
 <table>
 <thead>
@@ -356,7 +387,7 @@
 <td><code>BACKUP_DIR_PREFIX</code></td>
 <td>No</td>
 <td><code>Standard Toolkit Backup</code></td>
-<td>Prefix for the directory name</td>
+<td>Prefix for the zip/bundle file names</td>
 </tr>
 <tr>
 <td><code>BACKUP_BRANCH</code></td>
@@ -364,13 +395,19 @@
 <td><code>main</code></td>
 <td>Branch in the backup repo to push to</td>
 </tr>
+<tr>
+<td><code>BACKUP_SNAPSHOT_KEEP</code></td>
+<td>No</td>
+<td><code>14</code> (when unset)</td>
+<td>Newest zip and bundle snapshots to retain of each type</td>
+</tr>
 </tbody>
 </table>
 <h3 id="behaviour">Behaviour</h3>
 <ul>
 <li>Date is UTC (<code>YYYY-MM-DD</code>).</li>
-<li>Contents are copied with <code>rsync</code> (excluding <code>.git</code>).</li>
-<li>Each run adds a new directory; previous backups remain.</li>
+<li>Zip is created before the bundle so the zip does not include the <code>.bundle</code> file.</li>
+<li>Each run adds/updates today’s zip + bundle; older artifacts beyond <code>BACKUP_SNAPSHOT_KEEP</code> are pruned (default <code>14</code> when the variable is unset).</li>
 <li>If the backup repo is empty, the workflow creates the initial commit on the configured branch.</li>
 </ul>
 <hr>
@@ -383,7 +420,7 @@
 <h3 id="message-contents">Message contents</h3>
 <ul>
 <li>Title: &quot;Alpha → Alpha-Backup Sync&quot;</li>
-<li>Description: Branch status, PR link (if any), backup repo and directory (if pushed), workflow run link</li>
+<li>Description: Branch status, PR link (if any), backup repo and zip/bundle paths (if pushed), workflow run link</li>
 <li>Footer: &quot;Alpha Backup Sync&quot;</li>
 <li>Colour: Blue</li>
 </ul>
@@ -449,7 +486,7 @@
 <ul>
 <li>Check <strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong> → <strong>Variables</strong> for <code>ALPHA_BACKUP_SYNC_DISABLED</code> = <code>true</code>. Set to <code>false</code> or delete to re-enable.</li>
 </ul>
-<h3 id="workflow-does-not-run-at-midnight">Workflow does not run at midnight</h3>
+<h3 id="workflow-does-not-run-on-schedule">Workflow does not run on schedule</h3>
 <ul>
 <li>Confirm the workflow file is on the default branch and Actions are enabled.</li>
 <li>GitHub may skip scheduled runs for inactive repos; use manual run to verify.</li>
@@ -481,7 +518,7 @@
 <li>Confirm <code>DISCORD_WEBHOOK_ALPHA_BACKUP</code> is set and the run had <code>has_changes == 'true'</code>.</li>
 <li>Check the &quot;Discord notification&quot; step log for errors.</li>
 </ul>
-<h3 id="how-to-test-without-waiting-for-midnight">How to test without waiting for midnight</h3>
+<h3 id="how-to-test-without-waiting-for-the-schedule">How to test without waiting for the schedule</h3>
 <p>Use <strong>Actions</strong> → <strong>Alpha to Alpha-Backup Sync</strong> → <strong>Run workflow</strong>. Ensure <code>alpha</code> has at least one commit in the last 24 hours.</p>
 <hr>
 <h2 id="see-also">See Also</h2>

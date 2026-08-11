@@ -70,20 +70,22 @@ flowchart LR
   end
 
   subgraph file_backup["Optional BACKUP_REPO"]
-    dated_dirs["Standard Toolkit Backup - YYYY-MM-DD/"]
+    alpha_snaps["Source/Nightly/Standard Toolkit/\n*.zip + *.bundle"]
+    mirror_snaps["Source/Nightly/Standard Toolkit Mirror/\n*.bundle"]
   end
 
   source -->|"Repository Mirror\n(schedule / push / manual)"| mirror
   mirror -->|"Repository Restore\n(manual only)"| source
-  alpha -->|"Alpha Backup Sync\n(daily PR + optional rsync)"| alpha_backup_branch
-  alpha -->|"rsync (no .git)"| dated_dirs
+  alpha -->|"Alpha Backup Sync\n(daily PR + optional zip/bundle)"| alpha_backup_branch
+  alpha -->|"zip + bundle"| alpha_snaps
+  source -->|"mirror offline bundle"| mirror_snaps
 ```
 
 **Data flow summary:**
 
 - **Mirror** keeps a separate GitHub repository in sync with configured branches on the source. It uses bare clones and force-pushes refs so the mirror holds complete object history for those branches.
 - **Restore** is the inverse: clone the mirror bare, resolve target commits, push back to the source (either to new `restore/…` branches or via force-push).
-- **Alpha sync** creates merge commits on `alpha-backup` via automated PRs when `alpha` had activity in the last 24 hours. Optionally copies a **file snapshot** (no Git metadata) into a second repository under dated folders.
+- **Alpha sync** creates merge commits on `alpha-backup` via automated PRs when `alpha` had activity in the last 24 hours. Optionally stores **zip + `.bundle`** snapshots in a second repository under `Source/Nightly/Standard Toolkit/`.
 
 ---
 
@@ -97,7 +99,8 @@ flowchart LR
 | Roll `alpha` back to how it was on a specific UTC date | **Repository Restore** with `restore_date` (history must exist on mirror) |
 | Recover one known good commit on one branch | **Repository Restore** with `commit_sha` + single `branches` input |
 | Compare alpha vs last known backup branch in-repo | **`alpha-backup`** branch (merge or reset locally) |
-| Recover **files only** from a past day (no commits/merges) | **BACKUP_REPO** dated directory (manual copy-out) |
+| Recover **files only** from a past day (no commits/merges) | **BACKUP_REPO** zip snapshot (manual extract) |
+| Recover **Git history** for `alpha` from a past day | **BACKUP_REPO** `.bundle` (`git clone` the bundle) |
 | Routine off-site replica | **Repository Mirror** (automatic) |
 
 ### What each mechanism cannot do
@@ -106,7 +109,7 @@ flowchart LR
 |-----------|--------|
 | Mirror | Restore by itself; it only copies **current** source state (plus retained history on mirror) |
 | Restore | Recover objects never pushed to the mirror; restore whole-repo “snapshot at midnight” across all branches as one atomic unit |
-| Alpha file backup | Restore Git history, tags, or branch relationships |
+| Alpha file backup | Restore Git history from the zip alone (use the companion `.bundle`) |
 | GitHub UI | Arbitrary point-in-time full-repo restore without Git operations |
 
 ---
@@ -120,7 +123,7 @@ flowchart LR
 
 | Trigger | When it runs |
 |---------|----------------|
-| `schedule` | Daily at **02:00 UTC** (uses workflow file on default branch `master`) |
+| `schedule` | Daily at **02:12 UTC** (uses workflow file on default branch `master`) |
 | `push` | Pushes to configured major branches when this workflow file exists on that branch |
 | `workflow_dispatch` | Manual run; supports **Dry run** input |
 
@@ -233,7 +236,7 @@ Set repository variable `REPO_RESTORE_DISABLED=true`.
 
 | Trigger | When |
 |---------|------|
-| `schedule` | Daily at **00:00 UTC** |
+| `schedule` | Daily at **23:27 UTC** |
 | `workflow_dispatch` | Manual |
 
 ### Behaviour
@@ -243,7 +246,7 @@ Set repository variable `REPO_RESTORE_DISABLED=true`.
 3. Ensure `alpha-backup` branch exists (create from `alpha` if missing).
 4. Open PR `alpha` → `alpha-backup` (or reuse existing open PR).
 5. Attempt to enable **auto-merge** on the PR (requires repo setting *Allow auto-merge*).
-6. Optionally push a **file snapshot** of `alpha` to `BACKUP_REPO` under `Standard Toolkit Backup - YYYY-MM-DD/` (no `.git` directory in the snapshot).
+6. Optionally push **zip + `.bundle`** snapshots of `alpha` to `BACKUP_REPO` under `Source/Nightly/Standard Toolkit/` (`Standard Toolkit Backup - YYYY-MM-DD.zip` / `.bundle`). The zip excludes `.git`; the bundle preserves `alpha` history for `git clone`.
 
 ### Kill switch
 
@@ -287,7 +290,7 @@ All variables and secrets are configured under **Repository Settings → Secrets
 | Name | Type | Purpose |
 |------|------|---------|
 | `ALPHA_BACKUP_SYNC_DISABLED` | Variable | Kill switch |
-| `BACKUP_REPO` | Variable | Optional second repo for dated file snapshots |
+| `BACKUP_REPO` | Variable | Optional second repo for zip + `.bundle` snapshots |
 | `BACKUP_REPO_TOKEN` | Secret | PAT with push access to `BACKUP_REPO` |
 | `BACKUP_DIR_PREFIX` | Variable | Default: `Standard Toolkit Backup` |
 | `BACKUP_BRANCH` | Variable | Branch in backup repo; default: `main` |
@@ -578,8 +581,8 @@ The restore step exposes outputs consumed by Discord notification:
 ## Limitations and non-goals
 
 1. **No whole-repository time machine** — Branches are restored independently; there is no single “repo at 2025-06-01” snapshot unless every branch tip happened to match that instant.
-2. **Mirror lag** — Scheduled mirror runs at 02:00 UTC; push-triggered runs reduce lag. Restore from mirror tip reflects last successful mirror, not necessarily latest source second.
-3. **Alpha file backups are not Git backups** — Dated directories exclude `.git`.
+2. **Mirror lag** — Scheduled mirror runs at 02:12 UTC; push-triggered runs reduce lag. Restore from mirror tip reflects last successful mirror, not necessarily latest source second.
+3. **Alpha file backups are not Git backups** — Zip snapshots exclude `.git`. Use the companion `.bundle` artifact for history-preserving disaster recovery.
 4. **Deleted history** — Commits never mirrored, or garbage-collected on mirror, cannot be restored by these workflows.
 5. **Restore does not delete** — Extra branches or tags on source that are absent on mirror are **not** removed by restore (unlike mirror’s prune behaviour). Tag sync force-pushes mirror tags but does not delete source-only tags unless overwritten by name.
 6. **Not a replacement for GitHub Enterprise backup appliances** — This is org-managed Git mirroring via Actions.

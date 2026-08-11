@@ -18,6 +18,7 @@ Learn more about the capabilities of the `KryptonRibbon` using the following sec
 * [KeyTips & Keyboard Access](Ribbon/KryptonRibbonKeyTipsAndKeyboardAccess.md)
 * [Notification Bar](Ribbon/KryptonRibbonNotificationBar.md)
 * [ButtonSpecs](Ribbon/ButtonSpecs.md)
+* [Show Tab Headers](Ribbon/RibbonShowTabHeaders.md)
 
 ## Events
 
@@ -27,4 +28,8 @@ Learn more about the capabilities of the `KryptonRibbon` using the following sec
 ## Standalone Controls
 
 * [BackStage View](Ribbon/Components/BackStage%20View/KryptonRibbonBackstageView.md)
-* [KryptonGallery](Ribbon/KryptonGallery.md)
+* [Krypton Gallery](Ribbon/KryptonGallery.md)
+
+## Utilities
+
+* [Ribbon Utilities](Ribbon/Utilities/KryptonRibbonUtilities.md)

@@ -116,7 +116,7 @@ Automated **Nightly Release** from `alpha` with 24h change detection and optiona
 
 **Key Features**:
 
-- ⏰ Scheduled execution (00:00 UTC daily)
+- ⏰ Scheduled execution (23:42 UTC daily)
 - 🔍 Change detection (24h on `alpha`; optional `NIGHTLY_RELEASE_RETENTION_CHECK_DAYS` or dispatch input `retention_check_days`, max 90)
 - 🖥️ Runner `windows-2025-vs2026`; MSBuild via `Scripts/Build/nightly.proj`
 - 🌐 WebView2 prerelease resolve + Actions cache
@@ -126,7 +126,7 @@ Automated **Nightly Release** from `alpha` with 24h change detection and optiona
 
 **Triggers**:
 
-- Scheduled: `0 0 * * *` (UTC)
+- Scheduled: `42 23 * * *` (UTC)
 - Manual: `workflow_dispatch` (optional `retention_check_days`)
 
 **Workflow Behavior**:
@@ -233,10 +233,10 @@ Event: Push to V105-LTS
 ├─ Release Workflow → release-v105-lts (stable NuGet + Discord via MASTER webhook)
 └─ Canary LTS Release Workflow → canary-lts-release (Canary packages from LTS branch)
 
-Event: Cron Schedule (00:00 UTC)
+Event: Cron Schedule (23:42 UTC)
 └─ Nightly Workflow → Check changes → Build if needed
 
-Event: Cron Schedule (02:00 UTC)
+Event: Cron Schedule (02:12 UTC)
 └─ Repository Mirror → Sync branches + tags to MIRROR_REPO (if configured)
 
 Event: Push to major branch (master, gold, canary, alpha, V105-LTS, V85-LTS)

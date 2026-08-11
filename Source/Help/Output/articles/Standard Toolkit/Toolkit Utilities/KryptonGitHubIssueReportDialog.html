@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonGitHubIssueReportDialog | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonGitHubIssueReportDialog | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptongithubissuereportdialog">KryptonGitHubIssueReportDialog</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonGitHubIssueReportDialog</code> displays a Krypton-themed dialog that creates GitHub issues via the REST API. End users enter only <strong>title</strong> and <strong>description</strong>; repository owner, name, and personal access token are loaded from encrypted configuration supplied by the developer.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit.Utilities</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit.Utilities</code><br>
+<strong>Type:</strong> Static class (<code>ToolboxItem(false)</code>)</p>
+<p>Related types:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BugReportGitHubConfig</code></td>
+<td>Owner, repository name, PAT</td>
+</tr>
+<tr>
+<td><code>BugReportGitHubConfigEncryption</code></td>
+<td>AES-256 encrypt/decrypt config files</td>
+</tr>
+<tr>
+<td><code>BugReportGitHubService</code></td>
+<td>Issues API submission</td>
+</tr>
+<tr>
+<td><code>BugReportGitHubResult</code></td>
+<td>Success/failure result data</td>
+</tr>
+</tbody>
+</table>
+<h2 id="developer-setup">Developer setup</h2>
+<ol>
+<li>Create a GitHub <a href="https://github.com/settings/tokens">personal access token</a> with <code>repo</code> (or <code>public_repo</code>) scope.</li>
+<li>Build a <code>BugReportGitHubConfig</code>:</li>
+</ol>
+<pre><code class="lang-csharp">var config = new BugReportGitHubConfig
+{
+    Owner = &quot;YourOrg&quot;,
+    RepositoryName = &quot;YourRepo&quot;,
+    PersonalAccessToken = patFromSecureStore
+};
+</code></pre>
+<ol start="3">
+<li>Encrypt and ship the config file (do <strong>not</strong> commit the PAT or secret key to source control):</li>
+</ol>
+<pre><code class="lang-csharp">using System.Security;
+
+var secret = new SecureString();
+foreach (char c in Environment.GetEnvironmentVariable(&quot;BUG_REPORT_KEY&quot;)!)
+{
+    secret.AppendChar(c);
+}
+secret.MakeReadOnly();
+
+BugReportGitHubConfigEncryption.SaveEncryptedConfig(
+    config,
+    @&quot;C:\YourApp\github-bugreport.enc&quot;,
+    secret);
+</code></pre>
+<ol start="4">
+<li>At runtime, load with the same secret and show the dialog:</li>
+</ol>
+<pre><code class="lang-csharp">DialogResult result = KryptonGitHubIssueReportDialog.Show(
+    owner: this,
+    secretKey: secret);
+</code></pre>
+<p><code>DialogResult.OK</code> indicates the issue was created successfully.</p>
+<h2 id="show-overloads">Show overloads</h2>
+<table>
+<thead>
+<tr>
+<th>Overload</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Show(owner, secretKey)</code></td>
+<td>Default encrypted config path</td>
+</tr>
+<tr>
+<td><code>Show(owner, secretKey, configFilePath)</code></td>
+<td>Custom config file location</td>
+</tr>
+<tr>
+<td><code>Show(owner, secretKey, configFilePath, initialDescription)</code></td>
+<td>Pre-fill description (e.g. exception stack trace)</td>
+</tr>
+<tr>
+<td><code>Show(owner, config)</code></td>
+<td>In-memory config (no file)</td>
+</tr>
+<tr>
+<td><code>Show(owner, config, initialDescription)</code></td>
+<td>In-memory config + pre-filled body</td>
+</tr>
+</tbody>
+</table>
+<h3 id="exception-dialog-integration">Exception dialog integration</h3>
+<pre><code class="lang-csharp">string details = exception.ToString();
+KryptonGitHubIssueReportDialog.Show(
+    this,
+    secretKey,
+    initialDescription: details);
+</code></pre>
+<h2 id="security-notes">Security notes</h2>
+<ul>
+<li>Config files use <strong>AES-256-CBC</strong> with a random IV per save; key derived via SHA-256 from your secret.</li>
+<li>Store the decryption secret outside source (environment variable, OS vault, deployment secret).</li>
+<li>PATs should use minimum required scope and be rotated periodically.</li>
+<li>Users never see Owner, RepositoryName, or PAT fields in the dialog UI.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p><strong>&quot;Failed to load GitHub configuration&quot;</strong></p>
+<ul>
+<li>Encrypted file missing, corrupted, or wrong secret key</li>
+<li>Verify <code>BugReportGitHubConfigEncryption.GetDefaultConfigFilePath()</code> or your custom path</li>
+</ul>
+<p><strong><code>InvalidOperationException</code> on in-memory config</strong></p>
+<ul>
+<li><code>BugReportGitHubConfig.IsValid</code> is false — set Owner, RepositoryName, and PersonalAccessToken</li>
+</ul>
+<p><strong>API errors after submit</strong></p>
+<ul>
+<li>PAT expired or lacks <code>repo</code> / <code>public_repo</code> scope</li>
+<li>Repository does not allow issue creation for the token's user</li>
+</ul>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="BugReportingDialogAPI.html">Bug reporting dialog API</a> — e-mail/file reports via <code>KryptonBugReportingDialog</code></li>
+<li><a href="../Toolkit/Components/KryptonExceptionDialog.html">KryptonExceptionDialog</a></li>
+<li><a href="../Toolkit/Components/ExceptionHandling.html">Exception handling overview</a></li>
+<li><a href="KryptonToolkitUtilitiesIndex.html">Krypton Toolkit Utilities index</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

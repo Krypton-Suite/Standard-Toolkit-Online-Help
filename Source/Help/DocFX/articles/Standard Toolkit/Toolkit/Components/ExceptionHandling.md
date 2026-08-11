@@ -1,6 +1,6 @@
 # Krypton Exception Handling Documentation
 
-**V110+:** The public **`KryptonExceptionDialog`** API is implemented in **`Krypton.Toolkit.Utilities`**. Start with **[KryptonExceptionDialogQuickStart.md](KryptonExceptionDialogQuickStart.md)** and **[KryptonExceptionDialog.md](KryptonExceptionDialog.md)**. Internal handler details are in **[ExceptionHandler](../../Utilities/ExceptionHandler.md)**.
+**V110+:** The public **`KryptonExceptionDialog`** API is implemented in **`Krypton.Toolkit.Utilities`**. Start with **[KryptonExceptionDialogQuickStart.md](KryptonExceptionDialogQuickStart.md)** and **[KryptonExceptionDialog.md](KryptonExceptionDialog.md)**. Internal handler details are in **[ExceptionHandler](../../Toolkit Utilities/ExceptionHandler.md)**.
 
 This directory contains documentation for the Krypton Toolkit exception handling features.
 

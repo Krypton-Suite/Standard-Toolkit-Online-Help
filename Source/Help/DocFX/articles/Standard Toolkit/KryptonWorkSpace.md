@@ -11,4 +11,5 @@ sections.
 * [Sizing](Workspace/WorkspaceSizing.md)
 * [Persistence](Workspace/WorkspacePersistence.md)
 * [Page Dragging](Workspace/WorkspacePageDragging.md)
+* [Page Tag Persistence](Workspace/WorkspacePageTagPersistence.md)
 * [Events](Workspace/WorkspaceEvents.md)

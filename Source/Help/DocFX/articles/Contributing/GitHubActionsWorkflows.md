@@ -46,7 +46,7 @@ See [Branch promotion policy](BranchPromotionPolicy.md) for the full `alpha` →
 │  │             │  │  RELEASES    │  │   NIGHTLY    │          │
 │  │ • All PRs   │  │              │  │              │          │
 │  │ • All Push  │  │ • master     │  │ • Schedule   │          │
-│  │             │  │ • V105-LTS   │  │   (00:00 UTC)│          │
+│  │             │  │ • V105-LTS   │  │   (23:42 UTC)│          │
 │  │ Fast build  │  │ • canary     │  │ • Manual     │          │
 │  │ Validation  │  │ • alpha      │  │              │          │
 │  │             │  │              │  │ alpha branch │          │
@@ -381,18 +381,18 @@ See [.github/workflows/release.yml](https://github.com/Krypton-Suite/Standard-To
 
 ### Purpose (nightly.yml)
 
-Automatically build and publish nightly packages from the alpha branch every day at midnight UTC.
+Automatically build and publish nightly packages from the alpha branch every day at 23:42 UTC.
 
 ### Triggers (nightly.yml)
 
 ```yaml
 on:
   schedule:
-    - cron: '0 0 * * *'  # Midnight UTC daily
+    - cron: '42 23 * * *'  # 23:42 UTC daily (off-hour offset)
   workflow_dispatch:      # Manual trigger for testing
 ```
 
-**Scheduled**: Runs every night at 00:00 UTC  
+**Scheduled**: Runs every night at 23:42 UTC  
 **Manual**: Can be triggered from GitHub Actions UI
 
 ### Important: Branch Behavior
@@ -930,7 +930,7 @@ Package Krypton.Toolkit.110.26.1.1.nupkg already exists - skipped
 
 ### Customizing Nightly Schedule
 
-**Current**: `'0 0 * * *'` (midnight UTC daily)
+**Current**: `'42 23 * * *'` (23:42 UTC daily)
 
 **Change to different time**:
 
@@ -1271,7 +1271,7 @@ Before merging workflow changes:
 - [ ] Manual trigger works
 - [ ] Checks out alpha branch correctly
 - [ ] Handles unchanged version (no spam)
-- [ ] Midnight UTC schedule working (check next day)
+- [ ] 23:42 UTC schedule working (check next day)
 
 ---
 
@@ -1283,7 +1283,7 @@ Before merging workflow changes:
 | --- | --- | --- |
 | build.yml | PR, Push to any release branch | ✅ workflow_dispatch |
 | release.yml | Push to master / V105-LTS / canary / alpha | ✅ workflow_dispatch |
-| nightly.yml | Daily at 00:00 UTC | ✅ workflow_dispatch |
+| nightly.yml | Daily at 23:42 UTC | ✅ workflow_dispatch |
 | master-guard.yml | PR to master | — |
 | branch-promotion-guard.yml | PR to canary or gold | — |
 
@@ -1359,4 +1359,4 @@ gh run watch [run-id]
 ✅ **Read Next**: [Build System Guide](BuildSystemDocumentationIndex.md) for MSBuild scripts and project structure  
 ✅ **Setup**: Configure GitHub Secrets (NUGET_API_KEY and Discord webhooks)  
 ✅ **Test**: Manually trigger nightly workflow to verify configuration  
-✅ **Monitor**: Watch first automated nightly build at midnight UTC  
+✅ **Monitor**: Watch first automated nightly build at 23:42 UTC  

@@ -778,8 +778,8 @@ InnerException:
 
 - [Krypton Toolkit Documentation](https://github.com/Krypton-Suite/Standard-Toolkit)
 - [Exception Handling Best Practices](https://docs.microsoft.com/dotnet/standard/exceptions/)
-- [Bug reporting dialogs](../../Utilities/BugReportingDialogAPI.md)
-- [GitHub issue report dialog](../../Utilities/KryptonGitHubIssueReportDialog.md)
+- [Bug reporting dialogs](../../Toolkit Utilities/BugReportingDialogAPI.md)
+- [GitHub issue report dialog](../../Toolkit Utilities/KryptonGitHubIssueReportDialog.md)
 
 ---
 

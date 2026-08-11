@@ -28,7 +28,7 @@ The workflow triggers on:
 
 - `push` to `master`, `V105-LTS`, `V85-LTS`, `alpha`, `canary`, `gold`
 - `pull_request` targeting the same branches
-- weekly schedule: Monday 00:00 UTC (`0 0 * * 1`)
+- weekly schedule: Monday 00:41 UTC (`41 0 * * 1`; off-hour offset to reduce GitHub schedule queue delay)
 
 ## Permissions
 

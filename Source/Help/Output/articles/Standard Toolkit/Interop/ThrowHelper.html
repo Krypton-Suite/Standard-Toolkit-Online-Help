@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>ThrowHelper | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="ThrowHelper | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="throwhelper">ThrowHelper</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>ThrowHelper</code> (<code>Krypton.Interop</code>) is a shared internal static class that moves exception construction onto a cold path. Call sites stay smaller and more likely to be inlined; methods marked with <code>[DoesNotReturn]</code> only throw.</p>
+<p>This addresses <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4142">#4142</a>. Helpers are visible to sibling toolkit assemblies via <code>InternalsVisibleTo</code> and are <strong>not</strong> part of the public NuGet API.</p>
+<h2 id="api">API</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ThrowIfNull(argument, paramName?)</code></td>
+<td>Null check with optional <code>[CallerArgumentExpression]</code></td>
+</tr>
+<tr>
+<td><code>ThrowArgumentNullException(...)</code> / <code>&lt;T&gt;</code></td>
+<td>Parameter null (statement or <code>??</code> / ternary / switch arm)</td>
+</tr>
+<tr>
+<td><code>ThrowArgumentException(...)</code> / <code>&lt;T&gt;</code></td>
+<td>Invalid argument</td>
+</tr>
+<tr>
+<td><code>ThrowArgumentOutOfRangeException(...)</code> / <code>&lt;T&gt;</code></td>
+<td>Out-of-range (including palette switch discard arms)</td>
+</tr>
+<tr>
+<td><code>ThrowInvalidOperationException(...)</code> / <code>&lt;T&gt;</code></td>
+<td>Invalid state</td>
+</tr>
+<tr>
+<td><code>ThrowNullReferenceException(...)</code> / <code>&lt;T&gt;</code></td>
+<td><strong>Legacy only</strong> — preserve existing NRE + <code>SharedStaticFunctions</code> messages</td>
+</tr>
+<tr>
+<td><code>ThrowNotSupportedException(...)</code> / <code>&lt;T&gt;</code></td>
+<td>Unsupported operation</td>
+</tr>
+<tr>
+<td><code>ThrowNotImplementedException(...)</code> / <code>&lt;T&gt;</code></td>
+<td>Stub / not-yet-implemented members</td>
+</tr>
+<tr>
+<td><code>ThrowObjectDisposedException(...)</code> / <code>&lt;T&gt;</code></td>
+<td>Use after dispose</td>
+</tr>
+<tr>
+<td><code>ThrowInvalidCastException(...)</code> / <code>&lt;T&gt;</code></td>
+<td>Invalid cast</td>
+</tr>
+<tr>
+<td><code>ThrowWin32Exception(...)</code> / <code>&lt;T&gt;</code></td>
+<td>Win32 / P/Invoke failure</td>
+</tr>
+</tbody>
+</table>
+<p>Prefer <strong>ArgumentNullException</strong> for new parameter validation. Do not mass-convert NRE call sites to ArgumentNullException.</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">ThrowHelper.ThrowIfNull(ribbon);
+
+if (ribbon is null)
+{
+    ThrowHelper.ThrowArgumentNullException(nameof(ribbon));
+}
+
+_ribbon = ribbon ?? ThrowHelper.ThrowArgumentNullException&lt;KryptonRibbon&gt;(nameof(ribbon));
+
+_ =&gt; ThrowHelper.ThrowArgumentOutOfRangeException&lt;PaletteGraphicsHint&gt;(nameof(style))
+</code></pre>
+<h3 id="flow-analysis-note">Flow analysis note</h3>
+<p>Roslyn does not always honour <code>[DoesNotReturn]</code> across assemblies for definite assignment (e.g. <code>is not Type x</code> pattern variables). When that happens, follow the helper with an unreachable exit the compiler accepts, for example <code>throw null!;</code> or <code>return ThrowHelper.ThrowXxx&lt;T&gt;(...)</code>.</p>
+<h3 id="platforminvoke-note">PlatformInvoke note</h3>
+<p><code>PlatformInvoke.cs</code> lives in the <code>Krypton.Toolkit</code> namespace inside the Interop assembly. Prefer the qualified form <code>Krypton.Interop.ThrowHelper</code> there to avoid name collisions with other <code>ThrowHelper</code> types (for example CsWin32-generated helpers).</p>
+<h2 id="roll-out-status">Roll-out status</h2>
+<p>Statement and expression throws for ArgumentNull / Argument / OutOfRange / InvalidOperation / NullReference / NotSupported / NotImplemented / ObjectDisposed / InvalidCast / Win32 are converted across Toolkit / Ribbon / Navigator / Workspace / Docking / Utilities / Interop / TestForm. Intentional leftovers include <code>DebugTools.NotImplemented(...)</code> and any exception types without a helper.</p>
+<p>Mechanical converters (re-run carefully; review ternary / expression-bodied constructors and generic type inference):</p>
+<pre><code class="lang-powershell">powershell -NoProfile -File .\Scripts\UnitTest\Convert-ThrowHelpers.ps1
+powershell -NoProfile -File .\Scripts\UnitTest\Convert-ThrowHelpers-Pass2.ps1
+</code></pre>
+<p>Pass 1 covers statement forms; Pass 2 covers <code>??</code> / <code>=&gt;</code> expression forms (large palette switches need a long method lookback). Prefer fixing remaining sites by hand over blind re-runs.</p>
+<h2 id="polyfills-net472">Polyfills (<code>net472</code>)</h2>
+<p>Under <code>#if NETFRAMEWORK</code> in <code>Krypton.Interop/Utilities/</code>:</p>
+<ul>
+<li><code>DoesNotReturnAttribute</code> / <code>DoesNotReturnIfAttribute</code></li>
+<li><code>CallerArgumentExpressionAttribute</code></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

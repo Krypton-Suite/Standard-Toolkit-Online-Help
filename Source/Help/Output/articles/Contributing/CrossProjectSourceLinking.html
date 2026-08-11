@@ -142,7 +142,7 @@
 <td><code>General/PlatformInvoke.cs</code></td>
 <td><code>Krypton.Toolkit</code></td>
 <td><code>internal</code> (<code>PI</code>, <code>Libraries</code>, …)</td>
-<td>Windows P/Invoke surface (~5k lines)</td>
+<td>Windows P/Invoke surface (~6k lines). On <strong>net8.0+</strong> eligible APIs use source-generated <code>[LibraryImport]</code>; <strong>.NET Framework</strong> TFMs keep <code>[DllImport]</code> (<a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3874">#3874</a>).</td>
 </tr>
 <tr>
 <td><code>General/HResult.cs</code></td>
@@ -170,6 +170,14 @@
 </code></pre>
 <p>Other modules reference <code>Krypton.Toolkit</code> and receive <code>Krypton.Interop</code> transitively for compilation and runtime.</p>
 <p><strong>NuGet:</strong> <code>Krypton.Interop.dll</code> is bundled in module packages and in <code>Krypton.Standard.Toolkit</code> (not published as a standalone package). <code>Krypton.Shared/Krypton.Interop.Package.targets</code> adds the DLL to packable module nuspecs.</p>
+<h3 id="libraryimport-vs-dllimport-platforminvokecs">LibraryImport vs DllImport (<code>PlatformInvoke.cs</code>)</h3>
+<p><code>PI</code> is a <code>partial</code> class. Prefer extending it with the dual-declaration pattern already used in the file:</p>
+<ul>
+<li><code>#if NET8_0_OR_GREATER</code> → <code>[LibraryImport(...)]</code> + <code>partial</code> method (source-generated marshalling).</li>
+<li><code>#else</code> → classic <code>[DllImport(...)]</code> for <code>net472</code> / <code>net48</code> / <code>net481</code>.</li>
+</ul>
+<p>String-returning Win32 helpers that fill a caller buffer (for example <code>GetClassName</code>, <code>GetMenuString</code>, <code>LoadString</code>) expose <code>[Out] char[]</code> overloads on modern TFMs plus managed helpers (<code>GetClassNameString</code>, <code>GetMenuStringString</code>, string-returning <code>LoadString</code>) that truncate at the 4096-character cap instead of returning empty when the native API fills the buffer.</p>
+<p>When adding new P/Invokes, keep Framework and modern TFM declarations in sync and reuse existing helper patterns rather than inventing a third marshalling style.</p>
 <h2 id="msbuild-compile-links-kryptonshared">MSBuild compile links (<code>Krypton.Shared</code>)</h2>
 <p>Import <code>Krypton.Shared/Krypton.SharedCompileItems.props</code> and set opt-in flags:</p>
 <table>

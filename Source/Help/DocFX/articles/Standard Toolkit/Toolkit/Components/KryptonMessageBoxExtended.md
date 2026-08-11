@@ -46,7 +46,7 @@ DialogResult result = KryptonMessageBoxExtended.Show(
 
 ## Countdown button
 
-Use with [KryptonCountdownButton](../../Utilities/KryptonCountdownButton.md) semantics on dialog buttons:
+Use with [KryptonCountdownButton](../../Toolkit Utilities/KryptonCountdownButton.md) semantics on dialog buttons:
 
 ```csharp
 KryptonMessageBoxExtended.Show(
@@ -65,4 +65,4 @@ Additional overloads support owner window, custom icons, checkbox text, footer l
 
 - [KryptonMessageBox](KryptonMessageBox.md)
 - [KryptonMessageBox API Documentation](KryptonMessageBoxAPIDocumentation.md)
-- [Krypton Toolkit Utilities index](../../Utilities/KryptonToolkitUtilitiesIndex.md)
+- [Krypton Toolkit Utilities index](../../Toolkit Utilities/KryptonToolkitUtilitiesIndex.md)

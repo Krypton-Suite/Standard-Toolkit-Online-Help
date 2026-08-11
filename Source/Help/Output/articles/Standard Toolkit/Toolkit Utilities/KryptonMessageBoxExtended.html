@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonMessageBoxExtended Foldable Footer - Developer Guide | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonMessageBoxExtended Foldable Footer - Developer Guide | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonmessageboxextended-foldable-footer---developer-guide">KryptonMessageBoxExtended Foldable Footer - Developer Guide</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonMessageBoxExtended</code> (in the <code>Krypton.Toolkit.Utilities</code> assembly) supports an <strong>optional expandable
+(&quot;foldable&quot;) footer</strong>: a collapsible region below the message body and above/around the buttons that reveals
+extra content on demand. It is the message-box equivalent of the collapsible details region in
+<a href="KryptonFoldableDialog.html"><code>KryptonFoldableDialog</code></a>, and is intended for scenarios such as
+&quot;Show details&quot; stack traces, opt-in &quot;Do not show again&quot; style check boxes, or long secondary explanations that
+should not clutter the initial dialog.</p>
+<p>The footer is <strong>off by default</strong> and fully backwards compatible: existing <code>Show(...)</code> calls are unaffected.
+It can be enabled in two ways:</p>
+<ul>
+<li><strong>Per-call parameters</strong> on the parameterised <code>Show(...)</code> overloads (<code>footerText</code>, <code>footerExpanded</code>,
+<code>footerContentType</code>, <code>footerRichTextBoxHeight</code>).</li>
+<li><strong>Data model</strong> via <code>Show(KryptonMessageBoxExtendedData)</code> using the <code>ShowMoreDetailsOption</code>,
+<code>MoreDetailsMessageText</code>, and <code>MoreDetailsButtonText</code> properties.</li>
+</ul>
+<h2 id="architecture">Architecture</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonMessageBoxExtended</code> (<code>Controls Toolkit</code>)</td>
+<td>Public static entry point. <code>Show(...)</code> overloads forward the footer parameters to <code>ShowCore</code>.</td>
+</tr>
+<tr>
+<td><code>VisualMessageBoxExtendedForm</code> (<code>Controls Visuals</code>)</td>
+<td>Standard (LTR) host form. Owns the footer panel, toggle button and the three content controls.</td>
+</tr>
+<tr>
+<td><code>VisualRTLMessageBoxExtendedForm</code> (<code>Controls Visuals</code>)</td>
+<td>Right-to-left host form (used when <code>MessageBoxOptions.RightAlign</code>/<code>RtlReading</code> is set). Mirrors the footer behaviour.</td>
+</tr>
+<tr>
+<td><code>ExtendedKryptonMessageBoxFooterContentType</code> (<code>General/Definitions.cs</code>)</td>
+<td>Selects the footer content control: <code>Text</code>, <code>CheckBox</code>, or <code>RichTextBox</code>.</td>
+</tr>
+<tr>
+<td><code>KryptonManager.Strings.FoldableDialogStrings</code> (<code>Krypton.Toolkit</code>)</td>
+<td>Localizable source of the <code>Show Details</code> / <code>Hide Details</code> toggle captions, shared with <code>KryptonFoldableDialog</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="layout">Layout</h3>
+<p>The footer lives inside the message-content <code>TableLayoutPanel</code> as a column-spanning <code>KryptonPanel</code>
+(<code>_panelFooter</code>, <code>PanelAlternate</code> back style) with a top <code>KryptonBorderEdge</code> separator. The panel hosts:</p>
+<ul>
+<li><code>_footerToggleButton</code> - a <code>LowProfile</code> <code>KryptonButton</code> that expands/collapses the region.</li>
+<li><code>_footerWrapLabel</code> - shown for <code>ExtendedKryptonMessageBoxFooterContentType.Text</code>.</li>
+<li><code>_footerCheckBox</code> - shown for <code>ExtendedKryptonMessageBoxFooterContentType.CheckBox</code>.</li>
+<li><code>_footerRichTextBox</code> - shown for <code>ExtendedKryptonMessageBoxFooterContentType.RichTextBox</code>.</li>
+</ul>
+<h3 id="control-flow">Control flow</h3>
+<ol>
+<li><code>Show(...)</code> → <code>ShowCore(...)</code> constructs the visual form, forwarding <code>footerText</code>, <code>footerExpanded</code>,
+<code>footerContentType</code>, and <code>footerRichTextBoxHeight</code>.</li>
+<li>The form constructor calls <code>SetupFooter(...)</code>, which decides whether the footer is shown
+(<code>showFooter = !string.IsNullOrEmpty(footerText) || contentType == CheckBox</code>), configures the relevant
+content control, then calls <code>UpdateFooterExpandedState(...)</code> for the initial state.</li>
+<li><code>UpdateFooterExpandedState(expanded, contentType)</code> toggles content visibility, sets the toggle caption
+(glyph + shared strings), computes the footer height, and re-runs <code>UpdateSizing(...)</code> so the whole message
+box grows/shrinks to fit.</li>
+<li><code>FooterToggleButton_Click</code> flips the current expanded state and re-invokes <code>UpdateFooterExpandedState</code>.</li>
+</ol>
+<h2 id="public-api">Public API</h2>
+<p>The feature is exposed through the two footer-aware <code>Show</code> overloads (LTR owner and non-owner), plus the
+<code>footer*</code> parameters threaded through <code>ShowCore</code>:</p>
+<pre><code class="lang-csharp">public static DialogResult Show(
+    IWin32Window owner,
+    string messageText,
+    string caption = &quot;&quot;,
+    ExtendedMessageBoxButtons buttons = ExtendedMessageBoxButtons.OK,
+    ExtendedKryptonMessageBoxIcon icon = ExtendedKryptonMessageBoxIcon.None,
+    bool showCloseButton = true,
+    string? footerText = null,
+    bool footerExpanded = false,
+    ExtendedKryptonMessageBoxFooterContentType footerContentType = ExtendedKryptonMessageBoxFooterContentType.Text,
+    int? footerRichTextBoxHeight = null,
+    bool? showCtrlCopy = null,
+    Font? messageBoxTypeface = null);
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>footerText</code></td>
+<td>The content for the footer. For <code>Text</code>/<code>RichTextBox</code> it is the body; for <code>CheckBox</code> it is the check-box caption. If empty and the type is not <code>CheckBox</code>, the footer is hidden.</td>
+</tr>
+<tr>
+<td><code>footerExpanded</code></td>
+<td>When <code>true</code>, the footer starts expanded; otherwise collapsed.</td>
+</tr>
+<tr>
+<td><code>footerContentType</code></td>
+<td><code>Text</code> (wrap label), <code>CheckBox</code>, or <code>RichTextBox</code>.</td>
+</tr>
+<tr>
+<td><code>footerRichTextBoxHeight</code></td>
+<td>Fixed height in pixels for the rich-text content (only used when the type is <code>RichTextBox</code>; ignored otherwise).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="toggle-caption">Toggle caption</h3>
+<p>The toggle button caption combines a triangle glyph with the shared, localizable strings so it matches
+<code>KryptonFoldableDialog</code>:</p>
+<ul>
+<li>Collapsed: <code>▼  {KryptonManager.Strings.FoldableDialogStrings.CollapseText}</code> (default <code>&amp;Show Details</code>).</li>
+<li>Expanded: <code>▲  {KryptonManager.Strings.FoldableDialogStrings.ExpandText}</code> (default <code>H&amp;ide Details</code>).</li>
+</ul>
+<p>Override <code>KryptonManager.Strings.FoldableDialogStrings.CollapseText</code> / <code>ExpandText</code> to localize both the
+message-box footer and the foldable dialog at once.</p>
+<h3 id="data-model-kryptonmessageboxextendeddata">Data model (<code>KryptonMessageBoxExtendedData</code>)</h3>
+<p><code>Show(KryptonMessageBoxExtendedData data, bool showCloseButton = true)</code> configures the message box (and its
+footer) from a data object. The footer is driven by the following properties:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ShowMoreDetailsOption</code></td>
+<td>Master switch. When <code>true</code> (and <code>MoreDetailsMessageText</code> is non-empty) the footer is shown as a <code>RichTextBox</code>.</td>
+</tr>
+<tr>
+<td><code>MoreDetailsMessageText</code></td>
+<td>The details body rendered in the footer's rich-text control.</td>
+</tr>
+<tr>
+<td><code>MoreDetailsExpanded</code></td>
+<td>When <code>true</code> the details region starts expanded; otherwise it starts collapsed.</td>
+</tr>
+<tr>
+<td><code>MoreDetailsButtonText</code></td>
+<td>Optional custom toggle caption. When set it is used for both states (with the ▼/▲ glyph); when empty the shared <code>FoldableDialogStrings</code> captions are used.</td>
+</tr>
+</tbody>
+</table>
+<p>This path routes through the standard <code>VisualMessageBoxExtendedForm</code> (RTL is handled in-form via
+<code>RightToLeftLayout</code> from <code>KryptonMessageBoxExtendedData.Options</code>).</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">// A stack-trace style &quot;Show details&quot; footer.
+KryptonMessageBoxExtended.Show(
+    this,
+    &quot;An unhandled exception has occurred in your application.&quot;,
+    &quot;Krypton Message Box Extended&quot;,
+    ExtendedMessageBoxButtons.OKCancel,
+    ExtendedKryptonMessageBoxIcon.Error,
+    footerText: exception.ToString(),
+    footerContentType: ExtendedKryptonMessageBoxFooterContentType.RichTextBox,
+    footerRichTextBoxHeight: 160);
+</code></pre>
+<pre><code class="lang-csharp">// A collapsible check-box footer, expanded by default.
+KryptonMessageBoxExtended.Show(
+    &quot;Update installed successfully.&quot;,
+    &quot;Setup&quot;,
+    ExtendedMessageBoxButtons.OK,
+    ExtendedKryptonMessageBoxIcon.Information,
+    footerText: &quot;Do not remind me again&quot;,
+    footerExpanded: true,
+    footerContentType: ExtendedKryptonMessageBoxFooterContentType.CheckBox);
+</code></pre>
+<pre><code class="lang-csharp">// Data-model path with a custom &quot;more details&quot; toggle caption.
+var data = new KryptonMessageBoxExtendedData
+{
+    Owner = this,
+    Caption = &quot;Visual Studio Just-In-Time Debugger&quot;,
+    MessageText = &quot;An exception 'System.InvalidOperationException' has occurred in MyApp.exe.&quot;,
+    Buttons = ExtendedMessageBoxButtons.YesNo,
+    Icon = ExtendedKryptonMessageBoxIcon.Error,
+    ShowMoreDetailsOption = true,
+    MoreDetailsExpanded = false,
+    MoreDetailsButtonText = &quot;Stack trace&quot;,
+    MoreDetailsMessageText = exception.ToString()
+};
+
+KryptonMessageBoxExtended.Show(data);
+</code></pre>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li><strong>RTL</strong>: When <code>MessageBoxOptions.RightAlign</code>/<code>RtlReading</code> route to <code>VisualRTLMessageBoxExtendedForm</code>, the same
+footer behaviour and captions apply; the current footer <code>Show</code> overloads do not set RTL options, so RTL is
+reached through the fuller <code>Show</code>/<code>ShowCore</code> paths.</li>
+<li><strong>Sizing</strong>: <code>UpdateFooterExpandedState</code> measures text content with <code>Graphics.MeasureString</code>, enforces a
+minimum expanded height, and calls <code>UpdateSizing</code> so the message box re-computes its client size each toggle.</li>
+<li><strong><code>net472</code></strong>: No new language features are used; the feature is compatible with all supported target
+frameworks.</li>
+<li><strong>Backwards compatibility</strong>: All footer parameters are optional with non-footer defaults; existing callers
+and serialized designer state are unaffected.</li>
+</ul>
+<h2 id="validation">Validation</h2>
+<p>Use the <strong>&quot;Message Box Extended - Foldable Footer&quot;</strong> demo registered in <code>StartScreen</code> (<code>TestForm</code>):</p>
+<pre><code class="lang-powershell">dotnet run --project &quot;.\Source\Krypton Components\TestForm\TestForm.csproj&quot; -c Debug
+</code></pre>
+<p>The demo lets you set the message, caption, icon, buttons, footer text, footer content type, RichTextBox
+height, and the initial expanded state, and includes a &quot;Show JIT-style Preset&quot; button that reproduces a
+Visual Studio Just-In-Time debugger style dialog with an expanded rich-text stack trace.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

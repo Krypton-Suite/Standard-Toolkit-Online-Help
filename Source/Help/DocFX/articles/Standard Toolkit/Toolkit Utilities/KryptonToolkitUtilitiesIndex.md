@@ -41,6 +41,7 @@ Public types in the **`Krypton.Toolkit.Utilities`** assembly ship with the **`Kr
 | --- | --- |
 | [KryptonFloatingToolbars](KryptonFloatingToolbars.md) | Floatable tool strip and menu strip |
 | [KryptonFloatingToolbarPanels](KryptonFloatingToolbarPanels.md) | Dock panel hosts (`ToolStripPanelExtended`, etc.) |
+| [KryptonRadialMenu](KryptonRadialMenu.md) | The Krypton radial menu |
 
 ## Web and authentication
 

@@ -1019,5 +1019,5 @@ await newBrowser.EnsureCoreWebView2Async();
 - [KryptonContextMenu](../Components/KryptonContextMenu.md) — context menu control
 - [KryptonRichTextBox](KryptonRichTextBox.md) — alternative for rich text
 - [WebView2](https://docs.microsoft.com/en-us/microsoft-edge/webview2/) — modern browser control
-- [KryptonWebView2](../../Utilities/KryptonWebView2.md)
+- [KryptonWebView2](../../Toolkit Utilities/KryptonWebView2.md)
 - [HtmlDocument](https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.htmldocument) - Document manipulation
