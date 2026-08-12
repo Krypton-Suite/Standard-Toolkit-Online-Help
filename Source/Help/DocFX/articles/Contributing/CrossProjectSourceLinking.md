@@ -52,7 +52,7 @@ Build order (orchestration and solution): **Krypton.Interop** → **Krypton.Tool
 
 | File | Namespace | Visibility | Notes |
 |------|-----------|------------|-------|
-| `General/PlatformInvoke.cs` | `Krypton.Toolkit` | `internal` (`PI`, `Libraries`, …) | Windows P/Invoke surface (~5k lines) |
+| `General/PlatformInvoke.cs` | `Krypton.Toolkit` | `internal` (`PI`, `Libraries`, …) | Windows P/Invoke surface (~6k lines). On **net8.0+** eligible APIs use source-generated `[LibraryImport]`; **.NET Framework** TFMs keep `[DllImport]` ([#3874](https://github.com/Krypton-Suite/Standard-Toolkit/issues/3874)). |
 | `General/HResult.cs` | `Krypton.Toolkit` | `internal` (`partial PI`) | HRESULT constants extending `PI` |
 | `General/Scroll Bars/WIN32ScrollBars.cs` | `Krypton.Toolkit` | `public` | Scroll-bar structs for Navigator.Utilities |
 | `Utilities/AllowNullAttribute.cs` | `System.Diagnostics.CodeAnalysis` | `internal` on net472 | Nullable polyfill attributes |
@@ -68,6 +68,17 @@ Build order (orchestration and solution): **Krypton.Interop** → **Krypton.Tool
 Other modules reference `Krypton.Toolkit` and receive `Krypton.Interop` transitively for compilation and runtime.
 
 **NuGet:** `Krypton.Interop.dll` is bundled in module packages and in `Krypton.Standard.Toolkit` (not published as a standalone package). `Krypton.Shared/Krypton.Interop.Package.targets` adds the DLL to packable module nuspecs.
+
+### LibraryImport vs DllImport (`PlatformInvoke.cs`)
+
+`PI` is a `partial` class. Prefer extending it with the dual-declaration pattern already used in the file:
+
+- `#if NET8_0_OR_GREATER` → `[LibraryImport(...)]` + `partial` method (source-generated marshalling).
+- `#else` → classic `[DllImport(...)]` for `net472` / `net48` / `net481`.
+
+String-returning Win32 helpers that fill a caller buffer (for example `GetClassName`, `GetMenuString`, `LoadString`) expose `[Out] char[]` overloads on modern TFMs plus managed helpers (`GetClassNameString`, `GetMenuStringString`, string-returning `LoadString`) that truncate at the 4096-character cap instead of returning empty when the native API fills the buffer.
+
+When adding new P/Invokes, keep Framework and modern TFM declarations in sync and reuse existing helper patterns rather than inventing a third marshalling style.
 
 ## MSBuild compile links (`Krypton.Shared`)
 

@@ -6,7 +6,7 @@
 |------|-------|
 | Workflow file | `.github/workflows/nightly.yml` |
 | Workflow name (Actions UI) | **Nightly Release** |
-| Triggers | `schedule` (`0 0 * * *` UTC), `workflow_dispatch` |
+| Triggers | `schedule` (`42 23 * * *` UTC), `workflow_dispatch` |
 | Runner | `windows-2025-vs2026` |
 | Environment | `production` (approval before publish, when configured) |
 | Checkout branch | `alpha` (`fetch-depth: 0`) |
@@ -32,7 +32,7 @@ The **Nightly Release** workflow builds and publishes bleeding-edge NuGet packag
 
 ### Scheduled
 
-- **Cron:** `0 0 * * *` (midnight UTC daily)
+- **Cron:** `42 23 * * *` (23:42 UTC daily; off-hour offset to reduce GitHub schedule queue delay)
 - Uses the workflow definition on the branch where the schedule is registered (typically after merge to `master` or the default branch that hosts the file).
 
 ### Manual (`workflow_dispatch`)
@@ -234,7 +234,7 @@ Accepted version format: `^[1-9]\d{2,}\.\d+\.\d+\.\d+$`
 ## Workflow flow
 
 ```text
-Trigger (schedule 00:00 UTC or workflow_dispatch)
+Trigger (schedule 23:42 UTC or workflow_dispatch)
     │
     ├─> Kill switch (NIGHTLY_DISABLED)
     │       └─> disabled → stop

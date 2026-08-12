@@ -108,7 +108,7 @@ Topics under `Documents/Development/Controls/` describe Krypton WinForms control
 | [KryptonPrintDocument](Controls/KryptonPrintDocument.md) | Standard | Krypton.Toolkit |
 | [KryptonPrintPreviewControl](Controls/KryptonPrintPreviewControl.md) | Standard | Krypton.Toolkit / Utilities |
 | [KryptonWebBrowser](Controls/KryptonWebBrowser.md) | Standard | Krypton.Toolkit |
-| [KryptonWebView2](../Utilities/KryptonWebView2.md) | Standard | Krypton.Toolkit.Utilities |
+| [KryptonWebView2](../Toolkit Utilities/KryptonWebView2.md) | Standard | Krypton.Toolkit.Utilities |
 
 ## Superseded topics
 
@@ -120,7 +120,7 @@ Topics under `Documents/Development/Controls/` describe Krypton WinForms control
 
 - [Components](Components.md) — dialogs, managers, context menus, task dialogs
 - [Forms](Forms.md) — `KryptonForm`, system menu, title bar
-- [Utilities](../Utilities.md) — localization, icons, accessibility, exception handling
-- [Krypton.Toolkit.Utilities index](../Utilities/KryptonToolkitUtilitiesIndex.md) — V110+ utilities assembly topics
-- [Localization index](../Utilities/LocalizationIndex.md) — built-in and application custom strings
+- [Utilities](../KryptonToolkitUtilities.md) — localization, icons, accessibility, exception handling
+- [Krypton.Toolkit.Utilities index](../Toolkit Utilities/KryptonToolkitUtilitiesIndex.md) — V110+ utilities assembly topics
+- [Localization index](../Toolkit Utilities/LocalizationIndex.md) — built-in and application custom strings
 - [Documentation images](Images/README.md) — screenshot conventions

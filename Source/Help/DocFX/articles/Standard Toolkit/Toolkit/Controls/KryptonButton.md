@@ -90,6 +90,10 @@ presses the *Enter* key. The *KryptonButton* also supports the default button
 mechanism and *OverrideDefault* settings are applied to the appearance whenever
 the control has been designated as the default.
 
+## Overlay Images
+
+You can also set [overlay images](OverlayImage.md) for button images.
+
 ## Examples of Appearance
 
 Figure 2 shows the appearance when the default *ButtonStyle* of *Standalone* is

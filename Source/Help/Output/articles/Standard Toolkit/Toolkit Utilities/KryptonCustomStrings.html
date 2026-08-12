@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonCustomStrings | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonCustomStrings | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptoncustomstrings">KryptonCustomStrings</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonCustomStrings</code> and <code>KryptonCustomStringsManager</code> let applications define and localize their own strings independently of the built-in <code>KryptonManager.Strings</code> categories. Use this API for application-specific labels, messages, and strongly-typed string sets that should participate in the same designer and reset patterns as toolkit strings.</p>
+<p>Implements <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3757">GitHub Issue #3757</a>.</p>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit.Utilities</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit.Utilities</code> (included in the <code>Krypton.Standard.Toolkit</code> NuGet package)</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonCustomStrings</code></td>
+<td>Static API for key/value strings and registered string sets</td>
+</tr>
+<tr>
+<td><code>KryptonCustomStringsManager</code></td>
+<td>Non-visual component for designer access to <code>CustomStrings</code></td>
+</tr>
+<tr>
+<td><code>KryptonCustomStringValues</code></td>
+<td>Expandable key/value collection (<code>CustomStrings</code> property)</td>
+</tr>
+</tbody>
+</table>
+<p>Built-in toolkit strings remain on <strong><code>KryptonManager.Strings</code></strong> — see <a href="LocalizationGuide.html">Localization Guide</a> and <a href="../Toolkit/Components/KryptonManagerStringsAPIReference.html">KryptonManager.Strings API Reference</a>.</p>
+<h2 id="keyvalue-custom-strings">Key/value custom strings</h2>
+<h3 id="static-api">Static API</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit.Utilities;
+
+// Set and read by key
+KryptonCustomStrings.Set(&quot;SaveDraft&quot;, &quot;S&amp;ave Draft&quot;);
+string label = KryptonCustomStrings.Get(&quot;SaveDraft&quot;, defaultValue: &quot;Save Draft&quot;);
+
+// Reset all key/value entries to defaults
+KryptonCustomStrings.ResetValues();
+</code></pre>
+<p><code>KryptonCustomStrings.Values</code> exposes the underlying <code>KryptonCustomStringValues</code> collection for designer serialization and bulk edits.</p>
+<h3 id="designer-workflow">Designer workflow</h3>
+<ol>
+<li>Drop a <strong><code>KryptonCustomStringsManager</code></strong> on the form or add it to the component tray.</li>
+<li>Expand <strong>CustomStrings</strong> in the property grid.</li>
+<li>Add keys and localized values; changes persist through the manager component.</li>
+</ol>
+<h2 id="strongly-typed-string-sets">Strongly-typed string sets</h2>
+<p>Register application string classes that inherit <code>GlobalId</code> (same pattern as toolkit string categories):</p>
+<pre><code class="lang-csharp">public class DemoAppStrings : GlobalId
+{
+    public string SaveDraft { get; set; } = &quot;S&amp;ave Draft&quot;;
+    public string DiscardChanges { get; set; } = &quot;&amp;Discard Changes&quot;;
+
+    public override bool IsDefault =&gt; /* compare to defaults */;
+    public void Reset() { /* restore defaults */ }
+}
+
+// Registration (typically at startup)
+var appStrings = new DemoAppStrings();
+KryptonCustomStrings.RegisterStringSet(&quot;DemoApp&quot;, appStrings);
+
+// Retrieval
+DemoAppStrings? strings = KryptonCustomStrings.GetStringSet&lt;DemoAppStrings&gt;(&quot;DemoApp&quot;);
+kbtnSave.Text = strings?.SaveDraft ?? &quot;Save&quot;;
+</code></pre>
+<h3 id="registry-api">Registry API</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RegisterStringSet(name, stringSet)</code></td>
+<td>Register or replace a named set</td>
+</tr>
+<tr>
+<td><code>GetStringSet&lt;T&gt;(name)</code></td>
+<td>Get a registered set by name and type</td>
+</tr>
+<tr>
+<td><code>TryGetStringSet(name, out stringSet)</code></td>
+<td>Non-throwing lookup</td>
+</tr>
+<tr>
+<td><code>ContainsStringSet(name)</code></td>
+<td>Returns whether the name is registered</td>
+</tr>
+<tr>
+<td><code>UnregisterStringSet(name)</code></td>
+<td>Remove a registration</td>
+</tr>
+<tr>
+<td><code>ResetStringSets()</code></td>
+<td>Call <code>Reset()</code> on every registered set</td>
+</tr>
+</tbody>
+</table>
+<h2 id="relationship-to-kryptonmanagerstrings">Relationship to KryptonManager.Strings</h2>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonManager.Strings</code></td>
+<td>Built-in toolkit UI strings (OK, Cancel, ribbon labels, etc.)</td>
+</tr>
+<tr>
+<td><code>KryptonManager.Strings.CustomStrings</code></td>
+<td>Small fixed set of toolkit custom action strings</td>
+</tr>
+<tr>
+<td><code>KryptonCustomStrings</code></td>
+<td><strong>Application-owned</strong> keys and typed sets in <code>Krypton.Toolkit.Utilities</code></td>
+</tr>
+</tbody>
+</table>
+<p>Do not confuse <code>KryptonManager.Strings.CustomStrings</code> with <code>KryptonCustomStrings</code> — they serve different scopes.</p>
+<h2 id="localization">Localization</h2>
+<ul>
+<li>Mark string properties with <code>[Localizable(true)]</code> on your typed string classes where appropriate.</li>
+<li>Use <code>.resx</code> satellite assemblies or your preferred localization pipeline to assign values before or after <code>RegisterStringSet</code>.</li>
+<li>Call <code>ResetValues()</code> / <code>ResetStringSets()</code> to restore defaults when switching languages.</li>
+</ul>
+<h2 id="example">Example</h2>
+<p>See <code>TestForm/ApplicationStringsTest.cs</code> for key/value and typed-set demos wired to buttons and text boxes.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="LocalizationIndex.html">Localization index</a></li>
+<li><a href="LocalizationGuide.html">Localization Guide</a></li>
+<li><a href="../Toolkit/Components/KryptonManagerStringsAPIReference.html">KryptonManager.Strings API Reference</a></li>
+<li><a href="../Toolkit/Components/KryptonManager.html">KryptonManager</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

@@ -10,7 +10,7 @@
 6. [Setup](#setup)
 7. [Workflow Logic (Step by Step)](#workflow-logic-step-by-step)
 8. [Auto-Merge](#auto-merge)
-9. [Separate Repository Backup (Dated Directories)](#separate-repository-backup-dated-directories)
+9. [Separate Repository Backup (Zip + Bundle Snapshots)](#separate-repository-backup-zip--bundle-snapshots)
    - [Setting up BACKUP_REPO_TOKEN](#setting-up-backup_repo_token)
 10. [Discord Notifications](#discord-notifications)
 11. [Security and Permissions](#security-and-permissions)
@@ -22,15 +22,15 @@
 
 ## Overview
 
-The **Alpha to Alpha-Backup Sync** workflow is a GitHub Actions automation that keeps a backup of the `alpha` branch when it has commits in the last 24 hours. It runs at midnight UTC (or on manual trigger) and:
+The **Alpha to Alpha-Backup Sync** workflow is a GitHub Actions automation that keeps a backup of the `alpha` branch when it has commits in the last 24 hours. It runs at 23:27 UTC (or on manual trigger) and:
 
 1. **Same-repo backup**: Creates or updates the `alpha-backup` branch via a PR from `alpha`, with optional auto-merge when approved.
-2. **Separate-repo backup** (optional): Pushes a full snapshot of `alpha` into a dated directory in another repository (e.g. `Standard Toolkit Backup - 2025-02-03`).
+2. **Separate-repo backup** (optional): Pushes a **zip** working-tree snapshot and a **git bundle** of `alpha` into a fixed folder in another repository (under `Source/Nightly/Standard Toolkit/`).
 3. **Discord** (optional): Sends a notification summarizing the run.
 
 ### Purpose
 
-- **Backup**: Maintain `alpha-backup` in the same repo and/or dated snapshots in a separate backup repo.
+- **Backup**: Maintain `alpha-backup` in the same repo and/or zip + `.bundle` snapshots in a separate backup repo.
 - **Automation**: No manual copying; the workflow detects recent activity and proposes the sync via a PR, and optionally pushes to a backup repo.
 - **Visibility**: Optional Discord notifications when changes are detected.
 
@@ -46,7 +46,7 @@ The **Alpha to Alpha-Backup Sync** workflow is a GitHub Actions automation that 
 | **Auto-merge** | Enables auto-merge on the PR so it merges when requirements (e.g. approval) are met. |
 | **No duplicate PRs** | Reuses an existing open PR from `alpha` → `alpha-backup` instead of opening another. |
 | **No no-op PRs** | Does not open a PR when `alpha-backup` is already up to date with `alpha`. |
-| **Dated backup dirs** | Optional push to a separate repo into directories like `Standard Toolkit Backup - YYYY-MM-DD`. |
+| **Zip + bundle snapshots** | Optional push to a separate repo: `*.zip` (tree without `.git`) and `*.bundle` (full `alpha` history for `git clone`). |
 | **Kill switch** | Can be disabled via repository variable without changing code. |
 | **Discord (optional)** | Sends a summary when changes are detected. |
 | **Manual run** | Can be triggered from the Actions tab via **Run workflow**. |
@@ -66,7 +66,7 @@ The **Alpha to Alpha-Backup Sync** workflow is a GitHub Actions automation that 
 
 | Trigger | When |
 | --- | --- |
-| **Schedule** | Daily at **00:00 UTC** (`cron: '0 0 * * *'`). |
+| **Schedule** | Daily at **23:27 UTC** (`cron: '27 23 * * *'`; off-hour offset to reduce GitHub schedule queue delay). |
 | **Manual** | **Actions** → **Alpha to Alpha-Backup Sync** → **Run workflow** → **Run workflow**. |
 
 ---
@@ -112,8 +112,9 @@ The workflow is defined in:
 2. **Variables**: Add `BACKUP_REPO` with value `owner/repo` (e.g. `Krypton-Suite/Standard-Toolkit-Backup`).
 3. **Secrets**: Add `BACKUP_REPO_TOKEN` — see [Setting up BACKUP_REPO_TOKEN](#setting-up-backup_repo_token) below.
 4. Optional variables:
-   - `BACKUP_DIR_PREFIX`: Directory name prefix (default: `Standard Toolkit Backup`).
+   - `BACKUP_DIR_PREFIX`: File name prefix (default: `Standard Toolkit Backup`).
    - `BACKUP_BRANCH`: Branch to push to (default: `main`).
+   - `BACKUP_SNAPSHOT_KEEP`: How many newest zip and bundle snapshots to retain of each type (default when unset: `14`).
 
 ---
 
@@ -154,17 +155,20 @@ The workflow is defined in:
 - When a PR exists (has `pr_node_id`), calls GraphQL `enablePullRequestAutoMerge` with merge method `MERGE`.
 - If the repo does not have "Allow auto-merge" enabled, logs a warning and continues.
 
-### Step 7: Push alpha to backup repository (dated directory)
+### Step 7: Push alpha to backup repository (zip + bundle)
 
 - Runs only when `BACKUP_REPO` and `BACKUP_REPO_TOKEN` are set.
 - Clones the backup repo.
-- Creates directory `{BACKUP_DIR_PREFIX} - YYYY-MM-DD` (e.g. `Standard Toolkit Backup - 2025-02-03`).
-- Copies full alpha contents (excluding `.git`) into that directory.
+- Creates two artifacts under `Source/Nightly/Standard Toolkit/`:
+  - `{BACKUP_DIR_PREFIX} - YYYY-MM-DD.zip` — working-tree snapshot (excludes `.git`; browse/extract without Git).
+  - `{BACKUP_DIR_PREFIX} - YYYY-MM-DD.bundle` — `git bundle` of the full `alpha` history (disaster recovery).
+- Prunes older zip/bundle files beyond `BACKUP_SNAPSHOT_KEEP` (default 30 of each type).
+- Removes legacy dated directories at the backup repo root (pre-bundle layout).
 - Commits and pushes to `BACKUP_BRANCH` (default `main`).
 
 ### Step 8: Discord notification
 
-- When `DISCORD_WEBHOOK_ALPHA_BACKUP` is set, sends an embed with branch status, PR link (if any), backup repo info (if pushed), and workflow run link.
+- When `DISCORD_WEBHOOK_ALPHA_BACKUP` is set, sends an embed with branch status, PR link (if any), backup zip/bundle paths (if pushed), and workflow run link.
 
 ---
 
@@ -179,9 +183,9 @@ Merge method is `MERGE` (merge commit). If "Allow auto-merge" is not enabled on 
 
 ---
 
-## Separate Repository Backup (Dated Directories)
+## Separate Repository Backup (Zip + Bundle Snapshots)
 
-When `BACKUP_REPO` and `BACKUP_REPO_TOKEN` are configured, the workflow pushes a full snapshot of `alpha` into the backup repo.
+When `BACKUP_REPO` and `BACKUP_REPO_TOKEN` are configured, the workflow pushes two artifacts of `alpha` into the backup repo under a fixed folder.
 
 ### Setting up BACKUP_REPO_TOKEN
 
@@ -216,22 +220,34 @@ The token must have push access to the backup repository. You can use a **classi
 
 PATs are created from a user account. A PAT from a user who is an org member (or has push access to the backup repo) works for org repositories. There is no separate "org PAT" — the token just needs push access to the backup repo. Fine-grained PATs can be scoped to specific org repos for least privilege.
 
-### Directory structure
+### Artifact layout
 
-Each run creates a new dated directory at the root of the backup repo:
+Each run updates files under a fixed directory (not a new root-level dated folder):
 
 ```plaintext
 Standard-Toolkit-Backup/
-├── Standard Toolkit Backup - 2025-02-01/
-│   ├── Source/
-│   ├── Documents/
-│   ├── .github/
-│   └── ... (full alpha contents, excluding .git)
-├── Standard Toolkit Backup - 2025-02-02/
-│   └── ...
-├── Standard Toolkit Backup - 2025-02-03/
-│   └── ...
+└── Source/
+    └── Nightly/
+        └── Standard Toolkit/
+            ├── Standard Toolkit Backup - 2026-07-30.zip
+            ├── Standard Toolkit Backup - 2026-07-30.bundle
+            ├── Standard Toolkit Backup - 2026-07-31.zip
+            ├── Standard Toolkit Backup - 2026-07-31.bundle
+            └── ...
 ```
+
+| Artifact | Contents | Use when |
+|----------|----------|----------|
+| `*.zip` | Working tree excluding `.git` (and excluding `*.bundle` files) | Browse or extract files without Git |
+| `*.bundle` | Full `alpha` history via `git bundle create … alpha` | Disaster recovery / restore a clone |
+
+**Restore from bundle:**
+
+```bash
+git clone "Standard Toolkit Backup - YYYY-MM-DD.bundle" restored-repo
+```
+
+Legacy dated directories at the backup repo root (the pre-bundle layout) are removed on each successful snapshot run.
 
 ### Configuration
 
@@ -239,14 +255,15 @@ Standard-Toolkit-Backup/
 | --- | --- | --- | --- |
 | `BACKUP_REPO` | Yes (for backup) | — | Full repo name, e.g. `Krypton-Suite/Standard-Toolkit-Backup` |
 | `BACKUP_REPO_TOKEN` | Yes (for backup) | — | PAT with push access to the backup repo |
-| `BACKUP_DIR_PREFIX` | No | `Standard Toolkit Backup` | Prefix for the directory name |
+| `BACKUP_DIR_PREFIX` | No | `Standard Toolkit Backup` | Prefix for the zip/bundle file names |
 | `BACKUP_BRANCH` | No | `main` | Branch in the backup repo to push to |
+| `BACKUP_SNAPSHOT_KEEP` | No | `14` (when unset) | Newest zip and bundle snapshots to retain of each type |
 
 ### Behaviour
 
 - Date is UTC (`YYYY-MM-DD`).
-- Contents are copied with `rsync` (excluding `.git`).
-- Each run adds a new directory; previous backups remain.
+- Zip is created before the bundle so the zip does not include the `.bundle` file.
+- Each run adds/updates today’s zip + bundle; older artifacts beyond `BACKUP_SNAPSHOT_KEEP` are pruned (default `14` when the variable is unset).
 - If the backup repo is empty, the workflow creates the initial commit on the configured branch.
 
 ---
@@ -261,7 +278,7 @@ Standard-Toolkit-Backup/
 ### Message contents
 
 - Title: "Alpha → Alpha-Backup Sync"
-- Description: Branch status, PR link (if any), backup repo and directory (if pushed), workflow run link
+- Description: Branch status, PR link (if any), backup repo and zip/bundle paths (if pushed), workflow run link
 - Footer: "Alpha Backup Sync"
 - Colour: Blue
 
@@ -302,7 +319,7 @@ Standard-Toolkit-Backup/
 
 - Check **Settings** → **Secrets and variables** → **Actions** → **Variables** for `ALPHA_BACKUP_SYNC_DISABLED` = `true`. Set to `false` or delete to re-enable.
 
-### Workflow does not run at midnight
+### Workflow does not run on schedule
 
 - Confirm the workflow file is on the default branch and Actions are enabled.
 - GitHub may skip scheduled runs for inactive repos; use manual run to verify.
@@ -334,7 +351,7 @@ Standard-Toolkit-Backup/
 - Confirm `DISCORD_WEBHOOK_ALPHA_BACKUP` is set and the run had `has_changes == 'true'`.
 - Check the "Discord notification" step log for errors.
 
-### How to test without waiting for midnight
+### How to test without waiting for the schedule
 
 Use **Actions** → **Alpha to Alpha-Backup Sync** → **Run workflow**. Ensure `alpha` has at least one commit in the last 24 hours.
 

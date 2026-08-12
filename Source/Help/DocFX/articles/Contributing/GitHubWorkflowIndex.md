@@ -51,15 +51,15 @@ The repository uses several automated workflows to handle builds, releases, issu
 | Build TestForm | PR/Push/Manual | Validate TestForm sample + linked resources | CI validation logs |
 | CodeQL Advanced | PR/Push/Schedule | Security and quality static analysis | Code scanning alerts |
 | Release | Push to release branches/Manual | Stable releases | NuGet packages |
-| Nightly | Schedule (00:00 UTC)/Manual | Bleeding-edge builds | Nightly NuGet packages |
+| Nightly | Schedule (23:42 UTC)/Manual | Bleeding-edge builds | Nightly NuGet packages |
 | Canary Release | Push to `Canary`/Manual | Standalone canary publishing | Canary NuGet packages |
 | Templates Release | Push on `Templates/**`/Manual | Publish VS template assets | ZIP + VSIX release assets |
 | Auto-Assign PR | PR opened | Assign PR author | Assignment |
 | Auto-Label Issues | Issue opened/edited | Label and title issues | Labels, title prefix |
 | Auto-complete Issues | PR closed (merged, gated branches)/Manual | Label + close linked issues and clear assignees | Issue lifecycle updates |
 | Auto-label PR Backup | PR opened/sync/reopened (`alpha` -> `alpha-backup`) | Tag backup workflow modification PRs | PR label updates |
-| Alpha Backup Sync | Schedule (00:00 UTC)/Manual | Sync `alpha` to `alpha-backup` + optional off-repo backup | PR sync + optional backup snapshot |
-| Repository Mirror | Push to major branches/Schedule (02:00 UTC)/Manual (optional dry run) | Mirror branches + tags to external repo | Force-pushed refs on mirror repo |
+| Alpha Backup Sync | Schedule (23:27 UTC)/Manual | Sync `alpha` to `alpha-backup` + optional off-repo zip/bundle backup | PR sync + optional zip + `.bundle` snapshots |
+| Repository Mirror | Push to major branches/Schedule (02:12 UTC)/Manual (optional dry run) | Mirror branches + tags to external repo | Force-pushed refs on mirror repo + optional offline `.bundle` |
 | Repository Restore from Mirror | Manual only | Restore branches/tags from mirror to source | `restore/…` branches or force-pushed tips |
 | PR branch policy | PR opened/sync/reopened (same repo) | Validate branch pairing and `.github/`-only rules | Warnings or failed check |
 | Sync .github from master | Push to `master` (`.github/**`)/Mon 03:30 UTC/Manual | Copy `.github/` tree to release branches | Sync PRs per target branch |

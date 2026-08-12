@@ -4,7 +4,7 @@
 
 - Workflow file: [`.github/workflows/repo-mirror.yml`](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/repo-mirror.yml)
 - Workflow name (Actions UI): **Repository Mirror**
-- Triggers: `push` (major branches), `schedule` (`0 2 * * *`), `workflow_dispatch` (optional **Dry run** input)
+- Triggers: `push` (major branches), `schedule` (`12 2 * * *`), `workflow_dispatch` (optional **Dry run** input)
 - Runner: `ubuntu-latest`
 - Permissions: `contents: read` (source via `${{ github.token }}`); mirror push uses `MIRROR_REPO_TOKEN` PAT via Git credential helper
 
@@ -31,16 +31,17 @@ Developer documentation for the **Repository Mirror** GitHub Actions workflow.
 8. [Initial setup guide](#initial-setup-guide)
 9. [Creating and rotating `MIRROR_REPO_TOKEN`](#creating-and-rotating-mirror_repo_token)
 10. [Execution flow (step by step)](#execution-flow-step-by-step)
-11. [Testing and dry run](#testing-and-dry-run)
-12. [Branch and tag behaviour](#branch-and-tag-behaviour)
-13. [Security model](#security-model)
-14. [Kill switch](#kill-switch)
-15. [Discord notifications](#discord-notifications)
-16. [Concurrency and performance](#concurrency-and-performance)
-17. [Operational procedures](#operational-procedures)
-18. [Troubleshooting](#troubleshooting)
-19. [Limitations and design decisions](#limitations-and-design-decisions)
-20. [Maintaining and extending the workflow](#maintaining-and-extending-the-workflow)
+11. [Offline bundle snapshot](#offline-bundle-snapshot)
+12. [Testing and dry run](#testing-and-dry-run)
+13. [Branch and tag behaviour](#branch-and-tag-behaviour)
+14. [Security model](#security-model)
+15. [Kill switch](#kill-switch)
+16. [Discord notifications](#discord-notifications)
+17. [Concurrency and performance](#concurrency-and-performance)
+18. [Operational procedures](#operational-procedures)
+19. [Troubleshooting](#troubleshooting)
+20. [Limitations and design decisions](#limitations-and-design-decisions)
+21. [Maintaining and extending the workflow](#maintaining-and-extending-the-workflow)
 
 ---
 
@@ -91,16 +92,17 @@ Branches are configurable via `MIRROR_BRANCHES`. Tags are configurable via `MIRR
 This repository also has [`alpha-backup-sync.yml`](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/alpha-backup-sync.yml), which:
 
 - Syncs only the `alpha` branch into an **`alpha-backup`** branch **within the same repo** (via PR).
-- Optionally copies a **filesystem snapshot** of `alpha` into a **dated folder** in a backup repo (e.g. `Standard Toolkit Backup - 2026-05-30/`).
+- Optionally stores **zip + `.bundle`** snapshots of `alpha` under `Source/Nightly/Standard Toolkit/` in a backup repo (shared `BACKUP_REPO` / `BACKUP_REPO_TOKEN`).
 
 | Aspect | Repository Mirror | Alpha Backup Sync |
 |--------|-------------------|-------------------|
 | Scope | Six major branches (+ tags) | `alpha` only |
-| Target layout | Same branch names on mirror | Dated directory *or* `alpha-backup` branch |
-| Update mechanism | Direct `git push --force` | PR merge / folder copy |
+| Target layout | Same branch names on mirror | Zip + `.bundle` under fixed folder *or* `alpha-backup` branch |
+| Update mechanism | Direct `git push --force` | PR merge / artifact push |
 | Trigger | Push to major branches, daily cron, manual | Daily cron, manual |
+| Offline DR artifact | Optional `.bundle` of all mirrored refs | Optional zip + `.bundle` of `alpha` |
 
-Use **Repository Mirror** when you need a **branch-faithful** copy of the main lines. Use **Alpha Backup Sync** when you need **point-in-time folder snapshots** or in-repo `alpha-backup` branch management.
+Use **Repository Mirror** when you need a **branch-faithful** copy of the main lines. Use **Alpha Backup Sync** when you need **point-in-time zip/bundle snapshots** or in-repo `alpha-backup` branch management.
 
 **Recovery:** When the source repo needs to be rebuilt from the mirror, use [Repository Restore from Mirror](RepositoryRestoreFromMirrorWorkflow.md) (`repo-restore-from-mirror.yml`) — manual only, dry run by default. See also [Repository backup and restore](RepositoryBackupAndRestoreWorkflow.md).
 
@@ -112,7 +114,7 @@ Use **Repository Mirror** when you need a **branch-faithful** copy of the main l
 flowchart TD
     subgraph triggers [Triggers]
         PUSH[Push to major branch]
-        CRON[Daily cron 02:00 UTC]
+        CRON[Daily cron 02:12 UTC]
         MANUAL[workflow_dispatch]
     end
 
@@ -163,7 +165,7 @@ The workflow never checks out a working tree. It uses a **bare clone** of the so
 | Trigger | When it runs | Notes |
 |---------|--------------|-------|
 | `push` | Any push to `master`, `gold`, `canary`, `alpha`, `V105-LTS`, or `V85-LTS` | Runs **only if this workflow file exists on the branch that was pushed**; mirrors **all** configured branches on each run, not only the branch that was pushed |
-| `schedule` | `0 2 * * *` — daily at **02:00 UTC** | Runs **only from the repository default branch** (`master`); see [Deployment requirements](#deployment-requirements) |
+| `schedule` | `12 2 * * *` — daily at **02:12 UTC** | Runs **only from the repository default branch** (`master`); see [Deployment requirements](#deployment-requirements) |
 | `workflow_dispatch` | Manual run from Actions tab | Optional **Dry run** input validates config and lists refs without pushing; use before first production sync |
 
 ### Manual dispatch inputs
@@ -182,11 +184,11 @@ The push trigger branch list is defined in the workflow YAML. If you add a new �
 
 GitHub Actions evaluates workflow definitions **per branch**. This affects when the mirror actually runs in production.
 
-### Scheduled runs (`0 2 * * *`)
+### Scheduled runs (`12 2 * * *`)
 
 GitHub **only registers cron schedules from the default branch** (`master` in this repository).
 
-| Scenario | Daily 02:00 UTC cron active? |
+| Scenario | Daily 02:12 UTC cron active? |
 |----------|------------------------------|
 | `repo-mirror.yml` merged to **`master`** | Yes |
 | `repo-mirror.yml` exists only on **`alpha`** (or other non-default branches) | **No** — schedule is not registered |
@@ -237,6 +239,11 @@ If either is missing, the mirror step fails with an explicit error.
 | `MIRROR_SYNC_TAGS` | **Variable** | Tag sync **on** | Set to `false` (case-sensitive) to skip tag push. Any other value (including unset) enables tag sync. |
 | `REPO_MIRROR_DISABLED` | **Variable** | Mirror **enabled** | Set to `true` to disable the workflow without deleting the YAML file. |
 | `DISCORD_WEBHOOK_MIRROR` | **Secret** | No notifications | Discord incoming webhook URL for success/failure embeds. |
+| `BACKUP_REPO` | **Variable** | Offline snapshot skipped | Same backup repo as Alpha Backup Sync (`owner/repo`). After a successful non-dry-run mirror, stores a `.bundle` under `Source/Nightly/Standard Toolkit Mirror/`. |
+| `BACKUP_REPO_TOKEN` | **Secret** | Offline snapshot skipped | PAT with push access to `BACKUP_REPO` (shared with Alpha Backup Sync). |
+| `BACKUP_DIR_PREFIX` | **Variable** | `Standard Toolkit Mirror Backup` | Prefix for the mirror `.bundle` file name. |
+| `BACKUP_BRANCH` | **Variable** | `main` | Branch in `BACKUP_REPO` to push snapshots to. |
+| `BACKUP_SNAPSHOT_KEEP` | **Variable** | `14` when unset | Newest mirror `.bundle` files to retain. Invalid values also fall back to `14`. |
 
 ### Variable vs secret
 
@@ -365,11 +372,39 @@ Fails the job if `GITHUB_REPOSITORY` is not `Krypton-Suite/Standard-Toolkit`. Pr
 12. Writes outputs including push/delete/prune/missing branch lists and tag status.
 13. Exits with error on missing configured branches, branch failures, or tag push/prune failures.
 
-#### Step 4 — Discord notification
+#### Step 4 — Offline bundle snapshot (optional)
 
-Runs when kill switch passed and mirror step was not skipped (`always()` so failures are reported too). No-op if `DISCORD_WEBHOOK_MIRROR` is unset. Reports push/delete/prune/missing branches, tag status, and dry-run mode.
+Runs after a successful **non-dry-run** mirror when `BACKUP_REPO` and `BACKUP_REPO_TOKEN` are set (same credentials as Alpha Backup Sync). Creates a full-history `git bundle` from the bare clone (`--all`) and pushes it to:
+
+`Source/Nightly/Standard Toolkit Mirror/{BACKUP_DIR_PREFIX} - YYYY-MM-DD.bundle`
+
+Retains the newest `BACKUP_SNAPSHOT_KEEP` bundles. Skipped on dry run or when backup config is missing. See [Offline bundle snapshot](#offline-bundle-snapshot).
+
+#### Step 5 — Discord notification
+
+Runs when kill switch passed and mirror step was not skipped (`always()` so failures are reported too). No-op if `DISCORD_WEBHOOK_MIRROR` is unset. Reports push/delete/prune/missing branches, tag status, dry-run mode, and optional offline bundle path.
 
 ---
+
+## Offline bundle snapshot
+
+After a successful live mirror, the workflow can store a **git bundle** of all refs from the bare source clone in the shared backup repository. This is a disaster-recovery artifact independent of the live mirror remote.
+
+| Item | Value |
+|------|-------|
+| Condition | Non-dry-run success + `BACKUP_REPO` + `BACKUP_REPO_TOKEN` |
+| Path | `Source/Nightly/Standard Toolkit Mirror/` |
+| File | `{BACKUP_DIR_PREFIX} - YYYY-MM-DD.bundle` (default prefix `Standard Toolkit Mirror Backup`) |
+| Contents | `git bundle create … --all` from the bare clone |
+| Retention | Newest `BACKUP_SNAPSHOT_KEEP` bundles (`14` when unset or invalid) |
+
+**Restore from bundle:**
+
+```bash
+git clone "Standard Toolkit Mirror Backup - YYYY-MM-DD.bundle" restored-repo
+```
+
+Use the live **Repository Mirror** remote for day-to-day standby clones; use the offline `.bundle` when you need a dated, portable full-history archive without relying on the mirror GitHub repo being reachable.
 
 ## Testing and dry run
 
@@ -664,7 +699,7 @@ When modifying the workflow, keep header comments in `repo-mirror.yml` in sync w
 - [AGENTS.md](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/AGENTS.md) — repository guidelines and CI overview
 - [`.github/workflows/alpha-backup-sync.yml`](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/alpha-backup-sync.yml) — alpha-specific backup (different strategy)
 - [`.github/workflows/build.yml`](https://github.com/Krypton-Suite/Standard-Toolkit/tree/master/.github/workflows/build.yml) — branch set used for CI on major lines
-- [Alpha Backup Sync](../AlphaBackupSync.md) — dated snapshots and in-repo `alpha-backup`
+- [Alpha Backup Sync](../AlphaBackupSync.md) — zip + `.bundle` snapshots and in-repo `alpha-backup`
 - [Repository Restore from Mirror](RepositoryRestoreFromMirrorWorkflow.md) — mirror → source restore (`repo-restore-from-mirror.yml`)
 - [Repository backup and restore](RepositoryBackupAndRestoreWorkflow.md) — umbrella guide (architecture, playbooks)
 - [GitHub Workflow Index](../GitHubWorkflowIndex.md) — all workflow documentation
@@ -672,4 +707,4 @@ When modifying the workflow, keep header comments in `repo-mirror.yml` in sync w
 
 ---
 
-*Last updated to match `repo-mirror.yml` including mirror equivalence (branch/tag prune), missing-branch failure, and verification checklist (2026).*
+*Last updated to match `repo-mirror.yml` including off-hour cron (`12 2 * * *`), offline `.bundle` snapshots, mirror equivalence (branch/tag prune), missing-branch failure, and verification checklist (2026).*

@@ -114,11 +114,11 @@ displayed when hovering over any part of the control.
 
 | Scenario | Control |
 | --- | --- |
-| Multi-select with check boxes | [KryptonCheckedListComboBox](../../Utilities/KryptonComboDropDownControls.md#kryptoncheckedlistcombobox) |
-| Hierarchical tree picker | [KryptonTreeComboBox](../../Utilities/KryptonComboDropDownControls.md#kryptontreecombobox) |
-| Arbitrary UserControl in the drop-down | [KryptonComboBoxUserControl](../../Utilities/KryptonComboDropDownControls.md#kryptoncomboboxusercontrol) |
+| Multi-select with check boxes | [KryptonCheckedListComboBox](../../Toolkit Utilities/KryptonComboDropDownControls.md#kryptoncheckedlistcombobox) |
+| Hierarchical tree picker | [KryptonTreeComboBox](../../Toolkit Utilities/KryptonComboDropDownControls.md#kryptontreecombobox) |
+| Arbitrary UserControl in the drop-down | [KryptonComboBoxUserControl](../../Toolkit Utilities/KryptonComboDropDownControls.md#kryptoncomboboxusercontrol) |
 
-See the full guide: [KryptonComboDropDownControls](../../Utilities/KryptonComboDropDownControls.md).
+See the full guide: [KryptonComboDropDownControls](../../Toolkit Utilities/KryptonComboDropDownControls.md).
 
 ## See also
 

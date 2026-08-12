@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonNavigator Form Integration | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonNavigator Form Integration | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonnavigator-form-integration">KryptonNavigator Form Integration</h1>
+
+<p>Browser and Windows Explorer-style apps place document tabs in (or next to) the window caption while still offering minimize, maximize/restore, and close. This feature addresses <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/925">issue #925</a> and the related form button specs work in <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/927">issue #927</a>.</p>
+<p>It also covers <strong>browser-style tab groups</strong>, <strong>IDE-style document groups</strong> (<code>KryptonDocumentGroupHelper</code> / <code>KryptonWorkspace</code>), and <strong>multi-strip caption</strong> mode.</p>
+<h2 id="overview">Overview</h2>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Assembly</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonNavigator.Owner</code> / <code>ControlKryptonFormFeatures</code></td>
+<td><code>Krypton.Navigator</code></td>
+<td>Bind a form and choose who owns caption buttons</td>
+</tr>
+<tr>
+<td><code>Button.FormMinimizeButton</code> / <code>FormMaximizeButton</code> / <code>FormCloseButton</code></td>
+<td><code>Krypton.Navigator</code></td>
+<td>Fixed specs that send <code>SendSysCommand</code> to <code>Owner</code></td>
+</tr>
+<tr>
+<td><code>KryptonPage.TabGroupId</code></td>
+<td><code>Krypton.Navigator</code></td>
+<td>Browser-style group membership (empty = ungrouped)</td>
+</tr>
+<tr>
+<td><code>KryptonNavigatorFormIntegrator</code></td>
+<td><code>Krypton.Navigator.Utilities</code></td>
+<td>Turnkey wiring of form + navigator / workspace modes</td>
+</tr>
+<tr>
+<td><code>NavigatorTabGroup</code> / <code>NavigatorTabGroupCollection</code></td>
+<td><code>Krypton.Navigator.Utilities</code></td>
+<td>Group catalog (title, color, collapsed)</td>
+</tr>
+<tr>
+<td><code>NavigatorTabGroupAppearance</code></td>
+<td><code>Krypton.Navigator.Utilities</code></td>
+<td>Wash / accent / underline / border options for group chrome</td>
+</tr>
+<tr>
+<td><code>NavigatorTabGroupBarAccent</code></td>
+<td><code>Krypton.Navigator.Utilities</code></td>
+<td>Light colored borders on normal bar tabs</td>
+</tr>
+<tr>
+<td><code>NavigatorTabGroupLayoutSerializer</code></td>
+<td><code>Krypton.Navigator.Utilities</code></td>
+<td>Direct <code>KNFI</code> / <code>NTG</code> XML helpers</td>
+</tr>
+<tr>
+<td><code>ViewLayoutNavigatorCaptionTabs</code></td>
+<td><code>Krypton.Navigator.Utilities</code> (internal)</td>
+<td>Tab strip injected into form caption</td>
+</tr>
+<tr>
+<td><code>ViewLayoutCaptionDocumentGroups</code></td>
+<td><code>Krypton.Navigator.Utilities</code> (internal)</td>
+<td>One caption strip per workspace cell</td>
+</tr>
+<tr>
+<td><code>KryptonDocumentGroupHelper</code></td>
+<td><code>Krypton.Workspace</code></td>
+<td>IDE-style split / move / close-empty helpers</td>
+</tr>
+<tr>
+<td><code>KryptonForm.CustomCaptionAreas</code></td>
+<td><code>Krypton.Toolkit</code></td>
+<td>Multi-region caption drag hit-testing</td>
+</tr>
+</tbody>
+</table>
+<p>Ship via the aggregate <code>Krypton.Standard.Toolkit</code> NuGet package (<code>Krypton.Navigator.Utilities</code> / <code>Krypton.Workspace</code>).</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code class="lang-text">CaptionIntegrated (default, single navigator):
+  KryptonForm caption
+    ├── InjectViewElement(ViewLayoutNavigatorCaptionTabs, Left)
+    │     └── optional group headers / accents / collapse
+    └── Form min / max / close (ControlBox)
+  Client area
+    └── KryptonNavigator (NavigatorMode.Panel) — page content only
+
+CaptionIntegrated + Workspace (multi-strip):
+  KryptonForm caption
+    └── InjectViewElement(ViewLayoutCaptionDocumentGroups, Left)
+          └── one ViewLayoutNavigatorCaptionTabs per workspace cell
+  Client area
+    └── KryptonWorkspace (cells = document groups)
+
+ClientChrome:
+  KryptonForm (ControlBox=false)
+  └── KryptonNavigator (BarTab*) + FormMinimize/Maximize/Close specs
+        └── optional NavigatorTabGroupBarAccent on grouped pages
+
+CaptionAdjacent:
+  KryptonForm (normal caption)
+  └── KryptonNavigator (unchanged mode) + optional Form.Text sync
+</code></pre>
+<p><code>CaptionIntegrated</code> follows the same inject/revoke pattern as <code>KryptonRibbon</code> (<code>KryptonForm.InjectViewElement</code> / <code>RevokeViewElement</code>).</p>
+<h2 id="public-api">Public API</h2>
+<h3 id="kryptonnavigator">KryptonNavigator</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Owner</code></td>
+<td><code>KryptonForm</code> that receives system commands from form button specs</td>
+</tr>
+<tr>
+<td><code>ControlKryptonFormFeatures</code></td>
+<td><code>true</code> = form keeps exclusive caption buttons; <code>false</code> = navigator may show form min/max/close</td>
+</tr>
+<tr>
+<td><code>Button.FormMinimizeButton</code> / <code>FormMaximizeButton</code> / <code>FormCloseButton</code></td>
+<td>Fixed specs; <code>SC_MINIMIZE</code> / <code>SC_MAXIMIZE</code> / <code>SC_CLOSE</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="kryptonpage">KryptonPage</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TabGroupId</code></td>
+<td>Stable id referencing a <code>NavigatorTabGroup</code> in the host catalog; empty = ungrouped. Travels with tear-out and layout save/load.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="kryptonnavigatorformintegrator">KryptonNavigatorFormIntegrator</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Default</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Form</code> / <code>Navigator</code></td>
+<td>null</td>
+<td>Targets for classic single-strip integration</td>
+</tr>
+<tr>
+<td><code>Workspace</code></td>
+<td>null</td>
+<td>When set with CaptionIntegrated, drives multi-strip caption over workspace cells</td>
+</tr>
+<tr>
+<td><code>Enabled</code></td>
+<td>true</td>
+<td>Apply / revoke</td>
+</tr>
+<tr>
+<td><code>Mode</code></td>
+<td><code>CaptionIntegrated</code></td>
+<td>See modes below</td>
+</tr>
+<tr>
+<td><code>SyncFormTitle</code></td>
+<td>false</td>
+<td>Copy selected page text to <code>Form.Text</code> (ignored in CaptionIntegrated)</td>
+</tr>
+<tr>
+<td><code>SuppressFormTitleWhenClientChrome</code></td>
+<td>true</td>
+<td>Clear title when not syncing in ClientChrome / CaptionIntegrated</td>
+</tr>
+<tr>
+<td><code>AllowTearOut</code></td>
+<td>true</td>
+<td>Drag tabs outside any target to create a new window</td>
+</tr>
+<tr>
+<td><code>CloseEmptySourceWindowAfterLastTabMoved</code></td>
+<td>true</td>
+<td>Browser-like close of emptied source window</td>
+</tr>
+<tr>
+<td><code>UseBuiltInTabContextMenu</code></td>
+<td>true</td>
+<td>Show default caption-tab menu when page does not provide one</td>
+</tr>
+<tr>
+<td><code>IncludeFormSystemMenuInTabContextMenu</code></td>
+<td>true</td>
+<td>Also include form system-menu commands on the built-in tab menu</td>
+</tr>
+<tr>
+<td><code>ShowNewTabButton</code></td>
+<td>false</td>
+<td>CaptionIntegrated: show a <code>+</code> button after the last tab</td>
+</tr>
+<tr>
+<td><code>AllowTabGroups</code></td>
+<td>true</td>
+<td>Enable caption group chrome / built-in group menu commands</td>
+</tr>
+<tr>
+<td><code>TabGroups</code></td>
+<td>(collection)</td>
+<td>Host catalog of <code>NavigatorTabGroup</code> entries</td>
+</tr>
+<tr>
+<td><code>TabGroupAppearance</code></td>
+<td>(defaults)</td>
+<td>Wash strength, header accent, member underline, and member border options (Property Grid expandable)</td>
+</tr>
+<tr>
+<td><code>CreateGroup</code> / <code>AssignPageToGroup</code> / <code>UngroupPage</code></td>
+<td></td>
+<td>Membership helpers (also cluster siblings / apply bar accents)</td>
+</tr>
+<tr>
+<td><code>ToggleGroupCollapsed</code> / <code>MergeTabGroupsFrom</code></td>
+<td></td>
+<td>Collapse toggle; cross-window catalog merge</td>
+</tr>
+<tr>
+<td><code>SaveLayout*</code> / <code>LoadLayout*</code></td>
+<td></td>
+<td>Persist groups + page order (navigator) or workspace layout + <code>NTG</code></td>
+</tr>
+<tr>
+<td><code>Apply()</code> / <code>Revoke()</code></td>
+<td></td>
+<td>Manual apply / restore</td>
+</tr>
+<tr>
+<td><code>IsIntegrated</code></td>
+<td></td>
+<td>Whether settings are applied</td>
+</tr>
+<tr>
+<td><code>IntegrationChanged</code></td>
+<td></td>
+<td>Fired after apply or revoke</td>
+</tr>
+<tr>
+<td><code>TabContextMenuOpening</code></td>
+<td></td>
+<td>Customize the built-in caption-tab menu before show</td>
+</tr>
+<tr>
+<td><code>NewTabButtonClick</code></td>
+<td></td>
+<td>Fired when the caption <code>+</code> button is clicked; host creates the page</td>
+</tr>
+<tr>
+<td><code>TabGroupChanged</code></td>
+<td></td>
+<td>Fired when group catalog or membership chrome should refresh</td>
+</tr>
+</tbody>
+</table>
+<h3 id="modes">Modes</h3>
+<ul>
+<li><strong>CaptionIntegrated</strong> — Injects tabs into the form caption; navigator becomes <code>Panel</code> (content only); form keeps <code>ControlBox</code>. Requires themed <code>KryptonForm</code> chrome. With <code>Workspace</code> set, injects one strip per cell instead.</li>
+<li><strong>ClientChrome</strong> — <code>ControlKryptonFormFeatures = false</code>, <code>Form.ControlBox = false</code>; navigator hosts form button specs.</li>
+<li><strong>CaptionAdjacent</strong> — Form keeps caption buttons; optional title sync only.</li>
+</ul>
+<h2 id="usage">Usage</h2>
+<h3 id="minimal-captionintegrated-host">Minimal CaptionIntegrated host</h3>
+<pre><code class="lang-csharp">var integrator = new KryptonNavigatorFormIntegrator
+{
+    Form = this,
+    Navigator = kryptonNavigator1,
+    Mode = NavigatorFormIntegrationMode.CaptionIntegrated,
+    SyncFormTitle = false,
+    AllowTearOut = true,
+    CloseEmptySourceWindowAfterLastTabMoved = true,
+    ShowNewTabButton = true,
+    Enabled = true
+};
+
+integrator.NewTabButtonClick += (_, _) =&gt; AddPage();
+
+NavigatorTabGroup work = integrator.CreateGroup(&quot;Work&quot;, Color.DodgerBlue, kryptonNavigator1.Pages[0]);
+integrator.AssignPageToGroup(kryptonNavigator1.Pages[1], work.Id);
+</code></pre>
+<p>Leave <code>SyncFormTitle</code> false in CaptionIntegrated — that mode always clears <code>Form.Text</code> so the caption is not crowded by tabs and a duplicate title.</p>
+<p>Restore a saved layout with <code>integrator.LoadLayoutFromFile(...)</code> after pages exist (or after workspace pages are recreated via <code>UniqueName</code> matching).</p>
+<h3 id="caption-new-tab--button">Caption new-tab (<code>+</code>) button</h3>
+<p><code>ShowNewTabButton</code> is CaptionIntegrated-only. The control is a compact chrome <code>+</code> (not a full-width tab); hovering shows a tooltip from <code>NavigatorFormIntegrationStrings.NewTab</code>. The integrator does not create pages itself; handle <code>NewTabButtonClick</code> (and/or menu / toolbar actions) to add a <code>KryptonPage</code>. Glyph / tooltip text come from <code>KryptonManager.Strings.NavigatorIntegrationStrings.NewTabButton</code> / <code>NewTab</code>.</p>
+<h3 id="built-in-tab-context-menu">Built-in tab context menu</h3>
+<p>When a page does not already provide <code>KryptonContextMenu</code> or <code>ContextMenuStrip</code>, caption tabs can use the integrator's built-in menu. Menu text (and rename-dialog cue/prompt) comes from <code>KryptonManager.Strings.NavigatorIntegrationStrings</code> and is refreshed each time the menu opens; form system commands use <code>SystemMenuStrings</code>.</p>
+<ul>
+<li><code>Move to new window</code></li>
+<li><code>Close tab</code> (<code>Ctrl+W</code>)</li>
+<li><code>Close other tabs</code></li>
+<li><code>Close tabs to the right</code></li>
+<li>When <code>AllowTabGroups</code> is enabled: Add to group, New group, Ungroup, Rename (<code>KryptonInputBox</code>), Recolor (<code>KryptonColorDialog</code>), Collapse/Expand</li>
+</ul>
+<p>Right-clicking a caption tab shows this menu. Empty caption space still opens the themed form system menu (<code>KryptonSystemMenuListener</code> skips interactive chrome content).</p>
+<p>Use <code>TabContextMenuOpening</code> to add, remove, or reorder menu items without replacing the whole feature:</p>
+<pre><code class="lang-csharp">integrator.TabContextMenuOpening += (s, e) =&gt;
+{
+    if (e.ContextMenuStrip.Items[&quot;MyNewTab&quot;] == null)
+    {
+        e.ContextMenuStrip.Items.Insert(0, new ToolStripMenuItem(
+            KryptonManager.Strings.NavigatorIntegrationStrings.NewTab, null, (_, _) =&gt; AddPage())
+        {
+            Name = &quot;MyNewTab&quot;,
+            ShortcutKeys = Keys.Control | Keys.T
+        });
+    }
+};
+</code></pre>
+<h2 id="browser-style-tab-groups">Browser-style tab groups</h2>
+<h3 id="model">Model</h3>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonPage.TabGroupId</code></td>
+<td>Membership; empty = ungrouped</td>
+</tr>
+<tr>
+<td><code>NavigatorTabGroup</code></td>
+<td>Catalog entry: <code>Id</code>, <code>Title</code>, <code>Color</code>, <code>Collapsed</code></td>
+</tr>
+<tr>
+<td><code>Integrator.TabGroups</code></td>
+<td>Host catalog</td>
+</tr>
+<tr>
+<td><code>Integrator.TabGroupAppearance</code></td>
+<td>Shared visual options for every group in that integrator</td>
+</tr>
+<tr>
+<td><code>AllowTabGroups</code></td>
+<td>Enables caption chrome for groups</td>
+</tr>
+</tbody>
+</table>
+<h3 id="caption-chrome">Caption chrome</h3>
+<p><code>ViewLayoutNavigatorCaptionTabs</code> renders:</p>
+<ul>
+<li>A group header chip before each contiguous run (collapsed headers show <code>Title (n)</code>), washed with the group color and optionally finished with a solid accent bar</li>
+<li>Member tabs keep a solid group-color underline in every state (including selected), so the run reads as one colored cluster</li>
+<li>Collapsed groups hide member tabs (header click expands / activates)</li>
+<li>Drag a <strong>group header</strong> or any member tab to move/tear out the <strong>whole group</strong></li>
+<li>Drop onto the same strip to <strong>reorder</strong>, or onto another grouped tab / group header to <strong>join</strong> that group (instead of always tearing out)</li>
+<li>Drag a torn-out tab back over another integrated window to <strong>remerge</strong> (docking Transfer glyph or the integrator drop area); empty source windows close when that option is enabled</li>
+</ul>
+<h3 id="group-appearance-tabgroupappearance">Group appearance (<code>TabGroupAppearance</code>)</h3>
+<p>Adjustable at runtime and in the Visual Studio Property Grid (select the integrator → Appearance → TabGroupAppearance):</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>HeaderWashAlpha</code></td>
+<td>80</td>
+<td>Soft wash alpha (0–255) on expanded headers</td>
+</tr>
+<tr>
+<td><code>CollapsedHeaderWashAlpha</code></td>
+<td>110</td>
+<td>Soft wash alpha on collapsed headers</td>
+</tr>
+<tr>
+<td><code>ShowHeaderAccent</code></td>
+<td>true</td>
+<td>Solid accent bar under the header</td>
+</tr>
+<tr>
+<td><code>HeaderAccentHeight</code></td>
+<td>3</td>
+<td>Accent bar height in pixels (0–8)</td>
+</tr>
+<tr>
+<td><code>ShowMemberUnderline</code></td>
+<td>true</td>
+<td>Solid underline on member tabs</td>
+</tr>
+<tr>
+<td><code>MemberUnderlineHeight</code></td>
+<td>3</td>
+<td>Underline height in pixels (0–8)</td>
+</tr>
+<tr>
+<td><code>ShowMemberBorder</code></td>
+<td>true</td>
+<td>Tinted tab border via <code>NavigatorTabGroupBarAccent</code></td>
+</tr>
+<tr>
+<td><code>MemberBorderWidth</code></td>
+<td>2</td>
+<td>Border width in pixels (0–6; 0 clears the override)</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="lang-csharp">integrator.TabGroupAppearance.HeaderWashAlpha = 120;
+integrator.TabGroupAppearance.ShowMemberBorder = false;
+</code></pre>
+<p>Changes raise <code>PropertyChanged</code>, sync bar accents, and rebuild caption chrome. Non-default values serialize into the host form’s <code>.Designer.cs</code>.</p>
+<h3 id="bar-mode-accents-non-caption">Bar-mode accents (non-caption)</h3>
+<p>When pages carry <code>TabGroupId</code> and the catalog knows the group, <code>NavigatorTabGroupBarAccent</code> tints page <code>State*.Tab</code> borders so <strong>BarTab</strong> / similar modes show a colored rim without full caption headers (honours <code>TabGroupAppearance.ShowMemberBorder</code> / <code>MemberBorderWidth</code> when called through the integrator). Call <code>SyncNavigator</code> / <code>SyncWorkspace</code> after manual membership edits if you are not going through the integrator APIs.</p>
+<h3 id="tear-out">Tear-out</h3>
+<p><code>TryTearOutPages</code> copies referenced <code>NavigatorTabGroup</code> definitions onto the new window’s integrator (<code>MergeTabGroupsFrom</code>) so color/title/collapsed and bar accents survive. Tear-out feedback shows a lightweight <code>New window</code> overlay while dragging outside registered targets. Dragging back onto a registered integrator drop area remerges instead of spawning another host.</p>
+<h3 id="drag-to-split-workspace">Drag-to-split (Workspace)</h3>
+<p>With <code>Workspace</code> assigned, caption-tab drag registers the workspace as a <code>DragTargetProvider</code>, so dropping on a <strong>cell edge</strong> uses the normal workspace split targets (same as dragging from a cell tab strip).</p>
+<h2 id="save--load-layouts">Save / load layouts</h2>
+<h3 id="navigator-only-xml-knfi">Navigator-only XML (<code>KNFI</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Root <code>KNFI</code> (<code>V=&quot;1&quot;</code>)</td>
+<td>Navigator form-integration layout document</td>
+</tr>
+<tr>
+<td><code>NTG</code> / <code>G</code></td>
+<td>Group catalog (<code>Id</code>, <code>Title</code>, <code>C</code>, <code>Collapsed</code>)</td>
+</tr>
+<tr>
+<td><code>Pages</code> / <code>P</code></td>
+<td>Page order + <code>TabGroupId</code> (<code>UN</code>, <code>TG</code>)</td>
+</tr>
+<tr>
+<td><code>Selected</code></td>
+<td>Selected page <code>UniqueName</code></td>
+</tr>
+</tbody>
+</table>
+<p>APIs: <code>SaveLayoutToXml</code> / <code>SaveLayoutToFile</code> / <code>SaveLayoutToArray</code> and matching <code>LoadLayout*</code>.</p>
+<h3 id="workspace--multi-strip">Workspace / multi-strip</h3>
+<p>When <code>Workspace</code> is set, integrator <code>SaveLayout*</code> / <code>LoadLayout*</code> delegate to the workspace:</p>
+<ul>
+<li>Page <code>TabGroupId</code> is stored as the <code>TG</code> attribute on each <code>KP</code> page element</li>
+<li>Group catalog is embedded in workspace <code>GlobalSaving</code> / <code>GlobalLoading</code> as an <code>NTG</code> element inside <code>CGD</code></li>
+</ul>
+<h3 id="docking">Docking</h3>
+<ul>
+<li>If a docking workspace is the same <code>KryptonWorkspace</code> instance the integrator binds, docking <code>SaveConfig</code> / <code>LoadConfig</code> already nests workspace layout XML; the integrator’s <code>GlobalSaving</code> / <code>GlobalLoading</code> hooks then persist <code>NTG</code> with that workspace document. Keep the integrator attached for the duration of save/load.</li>
+<li>Standalone navigators inside docking float windows should call <code>SaveLayout*</code> / <code>LoadLayout*</code> (or <code>MergeTabGroupsFrom</code>) per host if they are not the workspace being configured.</li>
+</ul>
+<p>Helper: <code>NavigatorTabGroupLayoutSerializer</code> for direct catalog / navigator layout XML if you are not using the integrator.</p>
+<p>Smoke: <code>Source/TestHarnesses/NavigatorTabGroupLayoutSmoke</code> round-trips navigator and workspace layouts (exit code <code>0</code> = pass).</p>
+<h2 id="ide-style-document-groups-workspace">IDE-style document groups (Workspace)</h2>
+<p>Each <code>KryptonWorkspaceCell</code> is an independent tab strip / page set. Drag-to-edge already splits cells.</p>
+<p>Programmatic helpers in <code>Krypton.Workspace.KryptonDocumentGroupHelper</code>:</p>
+<ul>
+<li><code>SplitActiveCell(workspace, orientation)</code></li>
+<li><code>MovePageToNewCell(workspace, page, orientation)</code></li>
+<li><code>CloseEmptyCells(workspace)</code></li>
+</ul>
+<h3 id="multi-strip-caption">Multi-strip caption</h3>
+<p>Set <code>KryptonNavigatorFormIntegrator.Workspace</code> with <code>Mode = CaptionIntegrated</code>.</p>
+<p><code>ViewLayoutCaptionDocumentGroups</code> injects <strong>one</strong> <code>ViewLayoutNavigatorCaptionTabs</code> per workspace cell. Browser-style groups still apply <strong>within</strong> a strip.</p>
+<p><code>KryptonForm.CustomCaptionAreas</code> supports multiple client-coordinate drag bands (plus legacy <code>CustomCaptionArea</code>). DPI changes rebuild strips and refresh non-client chrome.</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>CaptionIntegrated needs custom form chrome (<code>UseThemeFormChromeBorderWidth</code>). Without it, injection has nowhere visible to land.</li>
+<li>Avoid combining CaptionIntegrated with a Ribbon that also injects caption content without testing.</li>
+<li>When maximized, caption tabs are vertically centered with an edge inset so they are not flush against the monitor borders (the form region clips the outer chrome).</li>
+<li><code>Revoke()</code> / <code>Enabled = false</code> restores <code>ControlBox</code>, <code>Text</code>, <code>AllowIconDisplay</code>, <code>Owner</code>, <code>ControlKryptonFormFeatures</code>, and <code>NavigatorMode</code>.</li>
+<li>Caption tabs currently mirror page text/image with a simplified button renderer (not the full navigator tab border path). Visual parity with <code>BarTabOnly</code> can be tightened later.</li>
+<li>If <code>CloseEmptySourceWindowAfterLastTabMoved</code> is enabled, moving the final tab closes the now-empty source window.</li>
+<li>Whole-group tear-out removes every visible drag-allowed member of the group from the source navigator.</li>
+<li>Layout load matches pages by <code>UniqueName</code>; unknown names are skipped. Pages present in the navigator but missing from the layout keep their content but move after restored pages.</li>
+<li>Caption-tab drag coordinates account for window borders (<code>RealWindowBorders</code>); drops on the local strip cancel tear-out and reorder/join instead.</li>
+</ul>
+<h2 id="validation">Validation</h2>
+<ul>
+<li>TestForm demo: <strong>Navigator Form Integration (#925)</strong> (<code>NavigatorFormIntegrationDemo</code>) — includes live Wash / Member border / Member underline / Header accent controls.</li>
+<li>Optional PowerShell helpers under <code>Scripts/Verification/</code> (see <code>Scripts/Verification/README.md</code>), including <code>Get-NavigatorTabGroupColourShot.ps1</code> for a caption colour screenshot.</li>
+</ul>
+<h2 id="packages">Packages</h2>
+<ul>
+<li><code>Krypton.Navigator</code> — form button specs, <code>TabGroupId</code></li>
+<li><code>Krypton.Navigator.Utilities</code> — integrator, caption strips, group catalog / appearance, bar accents, layout serializer</li>
+<li><code>Krypton.Workspace</code> — <code>KryptonDocumentGroupHelper</code>, page <code>TG</code> persistence</li>
+<li><code>Krypton.Toolkit</code> — <code>NavigatorFormIntegrationStrings</code>, <code>CustomCaptionAreas</code></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

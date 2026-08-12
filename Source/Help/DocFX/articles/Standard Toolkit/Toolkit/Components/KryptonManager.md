@@ -194,6 +194,8 @@ public KryptonGlobalToolkitStrings ToolkitStrings { get; }
 
 **ToolkitStrings** - The *KryptonMessageBox* has buttons that use the string values from this section. If you would like to alter the strings displayed on those buttons then you can do so by altering the values in this area. If you have set the *Localization* property on your *Form* to *True* then these values will be stored on a per-language setting allowing your message box to have different display strings per language you choose to define. The *ToolkitStrings* also contains strings used throughout the toolkit that you can customize. You will note that sub-sections are labelled accordingly to which sections of the toolkit they will affect.
 
+Please see [translations](Translations.md) to see how you can save/load strings from a database.
+
 ### ToolkitColors Property
 
 ```csharp

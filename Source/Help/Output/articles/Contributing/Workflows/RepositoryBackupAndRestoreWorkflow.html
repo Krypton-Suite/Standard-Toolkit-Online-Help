@@ -157,19 +157,21 @@
   end
 
   subgraph file_backup[&quot;Optional BACKUP_REPO&quot;]
-    dated_dirs[&quot;Standard Toolkit Backup - YYYY-MM-DD/&quot;]
+    alpha_snaps[&quot;Source/Nightly/Standard Toolkit/\n*.zip + *.bundle&quot;]
+    mirror_snaps[&quot;Source/Nightly/Standard Toolkit Mirror/\n*.bundle&quot;]
   end
 
   source --&gt;|&quot;Repository Mirror\n(schedule / push / manual)&quot;| mirror
   mirror --&gt;|&quot;Repository Restore\n(manual only)&quot;| source
-  alpha --&gt;|&quot;Alpha Backup Sync\n(daily PR + optional rsync)&quot;| alpha_backup_branch
-  alpha --&gt;|&quot;rsync (no .git)&quot;| dated_dirs
+  alpha --&gt;|&quot;Alpha Backup Sync\n(daily PR + optional zip/bundle)&quot;| alpha_backup_branch
+  alpha --&gt;|&quot;zip + bundle&quot;| alpha_snaps
+  source --&gt;|&quot;mirror offline bundle&quot;| mirror_snaps
 </code></pre>
 <p><strong>Data flow summary:</strong></p>
 <ul>
 <li><strong>Mirror</strong> keeps a separate GitHub repository in sync with configured branches on the source. It uses bare clones and force-pushes refs so the mirror holds complete object history for those branches.</li>
 <li><strong>Restore</strong> is the inverse: clone the mirror bare, resolve target commits, push back to the source (either to new <code>restore/…</code> branches or via force-push).</li>
-<li><strong>Alpha sync</strong> creates merge commits on <code>alpha-backup</code> via automated PRs when <code>alpha</code> had activity in the last 24 hours. Optionally copies a <strong>file snapshot</strong> (no Git metadata) into a second repository under dated folders.</li>
+<li><strong>Alpha sync</strong> creates merge commits on <code>alpha-backup</code> via automated PRs when <code>alpha</code> had activity in the last 24 hours. Optionally stores <strong>zip + <code>.bundle</code></strong> snapshots in a second repository under <code>Source/Nightly/Standard Toolkit/</code>.</li>
 </ul>
 <hr>
 <h2 id="backup-mechanisms-compared">Backup mechanisms compared</h2>
@@ -200,7 +202,11 @@
 </tr>
 <tr>
 <td>Recover <strong>files only</strong> from a past day (no commits/merges)</td>
-<td><strong>BACKUP_REPO</strong> dated directory (manual copy-out)</td>
+<td><strong>BACKUP_REPO</strong> zip snapshot (manual extract)</td>
+</tr>
+<tr>
+<td>Recover <strong>Git history</strong> for <code>alpha</code> from a past day</td>
+<td><strong>BACKUP_REPO</strong> <code>.bundle</code> (<code>git clone</code> the bundle)</td>
 </tr>
 <tr>
 <td>Routine off-site replica</td>
@@ -227,7 +233,7 @@
 </tr>
 <tr>
 <td>Alpha file backup</td>
-<td>Restore Git history, tags, or branch relationships</td>
+<td>Restore Git history from the zip alone (use the companion <code>.bundle</code>)</td>
 </tr>
 <tr>
 <td>GitHub UI</td>
@@ -250,7 +256,7 @@
 <tbody>
 <tr>
 <td><code>schedule</code></td>
-<td>Daily at <strong>02:00 UTC</strong> (uses workflow file on default branch <code>master</code>)</td>
+<td>Daily at <strong>02:12 UTC</strong> (uses workflow file on default branch <code>master</code>)</td>
 </tr>
 <tr>
 <td><code>push</code></td>
@@ -423,7 +429,7 @@
 <tbody>
 <tr>
 <td><code>schedule</code></td>
-<td>Daily at <strong>00:00 UTC</strong></td>
+<td>Daily at <strong>23:27 UTC</strong></td>
 </tr>
 <tr>
 <td><code>workflow_dispatch</code></td>
@@ -438,7 +444,7 @@
 <li>Ensure <code>alpha-backup</code> branch exists (create from <code>alpha</code> if missing).</li>
 <li>Open PR <code>alpha</code> → <code>alpha-backup</code> (or reuse existing open PR).</li>
 <li>Attempt to enable <strong>auto-merge</strong> on the PR (requires repo setting <em>Allow auto-merge</em>).</li>
-<li>Optionally push a <strong>file snapshot</strong> of <code>alpha</code> to <code>BACKUP_REPO</code> under <code>Standard Toolkit Backup - YYYY-MM-DD/</code> (no <code>.git</code> directory in the snapshot).</li>
+<li>Optionally push <strong>zip + <code>.bundle</code></strong> snapshots of <code>alpha</code> to <code>BACKUP_REPO</code> under <code>Source/Nightly/Standard Toolkit/</code> (<code>Standard Toolkit Backup - YYYY-MM-DD.zip</code> / <code>.bundle</code>). The zip excludes <code>.git</code>; the bundle preserves <code>alpha</code> history for <code>git clone</code>.</li>
 </ol>
 <h3 id="kill-switch-2">Kill switch</h3>
 <p><code>ALPHA_BACKUP_SYNC_DISABLED=true</code></p>
@@ -546,7 +552,7 @@
 <tr>
 <td><code>BACKUP_REPO</code></td>
 <td>Variable</td>
-<td>Optional second repo for dated file snapshots</td>
+<td>Optional second repo for zip + <code>.bundle</code> snapshots</td>
 </tr>
 <tr>
 <td><code>BACKUP_REPO_TOKEN</code></td>
@@ -917,8 +923,8 @@
 <h2 id="limitations-and-non-goals">Limitations and non-goals</h2>
 <ol>
 <li><strong>No whole-repository time machine</strong> — Branches are restored independently; there is no single “repo at 2025-06-01” snapshot unless every branch tip happened to match that instant.</li>
-<li><strong>Mirror lag</strong> — Scheduled mirror runs at 02:00 UTC; push-triggered runs reduce lag. Restore from mirror tip reflects last successful mirror, not necessarily latest source second.</li>
-<li><strong>Alpha file backups are not Git backups</strong> — Dated directories exclude <code>.git</code>.</li>
+<li><strong>Mirror lag</strong> — Scheduled mirror runs at 02:12 UTC; push-triggered runs reduce lag. Restore from mirror tip reflects last successful mirror, not necessarily latest source second.</li>
+<li><strong>Alpha file backups are not Git backups</strong> — Zip snapshots exclude <code>.git</code>. Use the companion <code>.bundle</code> artifact for history-preserving disaster recovery.</li>
 <li><strong>Deleted history</strong> — Commits never mirrored, or garbage-collected on mirror, cannot be restored by these workflows.</li>
 <li><strong>Restore does not delete</strong> — Extra branches or tags on source that are absent on mirror are <strong>not</strong> removed by restore (unlike mirror’s prune behaviour). Tag sync force-pushes mirror tags but does not delete source-only tags unless overwritten by name.</li>
 <li><strong>Not a replacement for GitHub Enterprise backup appliances</strong> — This is org-managed Git mirroring via Actions.</li>

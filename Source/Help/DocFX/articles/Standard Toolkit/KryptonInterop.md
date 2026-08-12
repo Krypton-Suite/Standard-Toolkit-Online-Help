@@ -5,6 +5,7 @@ The Krypton Standard Toolkit uses Win32 P/Invoke through the internal **`Krypton
 ## Topics
 
 - [LibraryImport dual-path interop](Interop/LibraryImportDualPathInterop.md) — `[LibraryImport]` on modern TFMs with `[DllImport]` fallback for .NET Framework
+- [ThrowHelper](Interop/ThrowHelper.md)
 
 ## Related documentation
 
