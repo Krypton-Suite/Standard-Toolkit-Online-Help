@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Krypton Radial Menu — Developer Guide | Krypton Standard Toolkit Documentation </title>
+      <title>Krypton Radial Menu | Krypton Standard Toolkit Documentation </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Krypton Radial Menu — Developer Guide | Krypton Standard Toolkit Documentation ">
+      <meta name="title" content="Krypton Radial Menu | Krypton Standard Toolkit Documentation ">
     
     
       <link rel="shortcut icon" href="../../../Krypton.ico">
@@ -67,12 +67,10 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="krypton-radial-menu--developer-guide">Krypton Radial Menu — Developer Guide</h1>
+<h1 id="krypton-radial-menu">Krypton Radial Menu</h1>
 
 <h2 id="overview">Overview</h2>
-<p><code>KryptonRadialMenu</code> is a OneNote-style radial popup menu in the <code>Krypton.Toolkit.Utilities</code> assembly (issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4172">#4172</a>). It is a designer <code>Component</code> (same role as <code>KryptonContextMenu</code>), not a form-hosted control and not tied to BarManager/Ribbon.</p>
-<p>Consumers obtain it via the <code>Krypton.Standard.Toolkit</code> NuGet package (<code>Krypton.Toolkit.Utilities</code> assembly). There is no standalone Utilities NuGet package.</p>
-<h2 id="architecture">Architecture</h2>
+<p>Radial menus live in <code>Krypton.Toolkit.Utilities</code> (issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4172">#4172</a>). There are two host models that share the same item types, Values, painter, and interaction core:</p>
 <table>
 <thead>
 <tr>
@@ -83,225 +81,74 @@
 <tbody>
 <tr>
 <td><code>KryptonRadialMenu</code></td>
-<td>Public component: <code>Show</code> / <code>ShowPopup</code> / <code>Close</code>, lifecycle events, appearance proxies, outer-ring / shadow <code>State###</code>, context-menu import / live sync</td>
+<td>Designer <code>Component</code> (like <code>KryptonContextMenu</code>) — popup via <code>Show</code> / <code>ShowPopup</code> / <code>Close</code></td>
 </tr>
 <tr>
-<td><code>KryptonRadialMenuPresenter</code></td>
-<td>Opt-in PreferRadial helper; registers <code>KryptonContextMenu.AlternativeShow</code> when enabled</td>
-</tr>
-<tr>
-<td><code>KryptonRadialMenuItemCollection</code></td>
-<td>Restricted collection of radial item types</td>
-</tr>
-<tr>
-<td><code>KryptonRadialMenuItem</code></td>
-<td>Command sector with optional nested <code>Items</code> and <code>KryptonCommand</code></td>
-</tr>
-<tr>
-<td><code>KryptonRadialMenuSliderItem</code></td>
-<td>Arc slider editor when activated</td>
-</tr>
-<tr>
-<td><code>KryptonRadialMenuColorPaletteItem</code></td>
-<td>Colour swatch ring (<code>ColorScheme</code> aligned with context-menu colour columns)</td>
-</tr>
-<tr>
-<td><code>KryptonRadialMenuFontListItem</code></td>
-<td>Scrollable font-family ring</td>
-</tr>
-<tr>
-<td><code>KryptonRadialMenuTextItem</code></td>
-<td>In-ring text editor (confirm / Esc cancel)</td>
-</tr>
-<tr>
-<td><code>KryptonRadialMenuCalendarItem</code></td>
-<td>Month / day editor (wheel changes month)</td>
-</tr>
-<tr>
-<td><code>VisualRadialMenuPopup</code></td>
-<td>Internal <code>VisualPopup</code> host: circular <code>Region</code>, shadow paths, keyboard, a11y, paging</td>
-</tr>
-<tr>
-<td><code>KryptonRadialMenuContextMenuBridge</code></td>
-<td>Projects supported <code>KryptonContextMenuItemBase</code> types into radial items</td>
-</tr>
-<tr>
-<td><code>RadialLayoutEngine</code> / <code>RadialMenuPainter</code></td>
-<td>Equal-angle annular sectors, hit-test (<code>OuterRing</code> vs body), GDI+ painting</td>
+<td><code>KryptonRadialMenuControl</code></td>
+<td>Form-hosted <code>Control</code> — always visible Syncfusion-style surface</td>
 </tr>
 </tbody>
 </table>
-<pre><code class="lang-text">KryptonContextMenu.Show
-        │
-        ├─ AlternativeShow hook (Utilities Presenter when PreferRadial)
-        │         └─ KryptonRadialMenu (live-synced projection)
-        │
-        └─ null hook → VisualContextMenu (linear)
+<p>Consumers obtain both via the <code>Krypton.Standard.Toolkit</code> NuGet package (<code>Krypton.Toolkit.Utilities</code> assembly).</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code class="lang-text">KryptonRadialMenu (Component)          KryptonRadialMenuControl (Control)
+        │                                         │
+        └──────────┬──────────────────────────────┘
+                   ▼
+         RadialMenuInteractionCore
+                   │
+         RadialMenuPainter / RadialLayoutEngine
+                   │
+         Items + KryptonRadialMenuValues
 </code></pre>
-<h2 id="public-api">Public API</h2>
-<h3 id="showing-and-closing">Showing and closing</h3>
+<p>Shared public item types: <code>KryptonRadialMenuItem</code>, <code>SliderItem</code>, <code>ColorPaletteItem</code>, <code>FontListItem</code>, <code>TextItem</code>, <code>CalendarItem</code>.</p>
+<p>Popup-only: <code>VisualRadialMenuPopup</code>, PreferRadial / <code>KryptonRadialMenuPresenter</code>, context-menu <code>ImportFrom</code> / live sync, open/close animation, circular shadow.</p>
+<p>Hosted-only: optional hub (<code>UseHub</code>), float-out while dragging (<code>AllowMove</code> past the parent → borderless <code>VisualRadialMenuFloatForm</code>).</p>
+<h2 id="kryptonradialmenu-popup-component">KryptonRadialMenu (popup Component)</h2>
 <pre><code class="lang-csharp">var menu = new KryptonRadialMenu();
 menu.Items.Add(new KryptonRadialMenuItem(&quot;Save&quot;, (_, _) =&gt; Save()));
-menu.Items.Add(new KryptonRadialMenuTextItem { Label = &quot;Note&quot;, Text = &quot;Hello&quot; });
-menu.Show(this);                    // centred on mouse
-menu.Show(this, clientPoint);       // centred on control client point (converted to screen)
+menu.Show(this);
+menu.Show(this, clientPoint);
 menu.ShowPopup(this, screenPt, animated: true);
-menu.Close();                       // reverse close animation when AnimationStyle != None
+menu.Close();
 </code></pre>
-<h3 id="appearance--behaviour">Appearance / behaviour</h3>
-<p>Proxied on <code>KryptonRadialMenu</code> / <code>Values</code> unless noted:</p>
+<p>Key properties: <code>MenuRadius</code>, <code>InnerRadius</code>, <code>Glyph</code>, <code>DisplayStyle</code>, <code>ItemImageSize</code>, <code>OuterRingThickness</code> (default <strong>10</strong>), <code>ShowShadow</code> / <code>StateShadow###</code>, outer-ring <code>State###</code>, <code>StartAngle</code>, <code>MaxVisibleItems</code>, <code>AnimationStyle</code>, <code>AllowMove</code>.</p>
+<p>Pointer model:</p>
 <ul>
-<li><code>MenuRadius</code> / <code>InnerRadius</code> — outer and centre radii</li>
-<li><code>Glyph</code> — centre image at the root level</li>
-<li><code>MenuColor</code> / <code>SubMenuHoverColor</code> — accents (empty uses defaults)</li>
-<li><code>DisplayStyle</code> — <code>Text</code>, <code>Image</code>, <code>ImageAboveText</code>, <code>TextAboveImage</code></li>
-<li><code>ItemImageSize</code> — sector icon size in pixels (default <code>24</code>); DPI-scaled in the popup when available</li>
-<li>Per-item <code>Image</code> / <code>ImageTransparentColor</code>; <code>KryptonRadialMenuItem</code> also resolves <code>KryptonCommand.ImageSmall</code> / <code>ImageLarge</code> when <code>Image</code> is unset</li>
-<li><code>ShowShadow</code> — circular <code>VisualPopupShadow</code> (default <code>true</code>; applied when the popup is created)</li>
-<li><code>ShadowOpacity</code> — form opacity for the shadow (default <code>0.18</code>)</li>
-<li><code>ShowCheckedGlyph</code> — draws a ✓ (and marker) on checked sectors (default <code>true</code>)</li>
-<li><code>StartAngle</code> — first sector angle in degrees (default <code>-90</code> = top)</li>
-<li><code>MaxVisibleItems</code> — <code>0</code> unlimited; otherwise page window with prev/next affordances</li>
-<li><code>HitPadding</code> — extra annular hit padding for touch (default <code>4</code>)</li>
-<li><code>SubMenuGlyph</code> — Unicode character on the outer-ring arc for items that open a child/editor (default <code>›</code>); size scales with <code>OuterRingThickness</code></li>
-<li><code>OuterRingThickness</code> — outer-ring stroke / hit-band width (<code>0</code> hides the stroke)</li>
-<li><code>AnimationStyle</code> / <code>AnimationDuration</code> — <code>None</code>, <code>FadeScale</code>, <code>Sweep</code> (default), <code>Spiral</code>, <code>Pop</code>; also plays on navigate and reverse close</li>
-<li><code>PaletteMode</code> / <code>LocalCustomPalette</code> — resolved for painting and State### redirects</li>
-<li><code>AllowMove</code> — drag the centre button to reposition; shadow tracks the popup; a click without dragging still backs/closes</li>
-<li>Per-item <code>ToolTipValues</code> / <code>ToolTipText</code> — Krypton <code>VisualPopupToolTip</code> on hover (<code>EnableToolTips</code> required)</li>
+<li>Outer-ring band opens children / editors and shows <code>SubMenuGlyph</code> (default <code>›</code>) with contrasting ink on the rim.</li>
+<li>Sector body on parents raises <code>ItemClick</code> only; leaf body click still activates.</li>
+<li>Keyboard Enter still opens children / editors.</li>
+<li>Slice fills stop at the inner edge of the outer ring so thick rings do not cover sector content; outer-ring tracking uses a distinct accent when palette border colours are too similar.</li>
 </ul>
-<h4 id="outer-ring-state-paletteborder">Outer-ring <code>State###</code> (<code>PaletteBorder</code>)</h4>
-<ul>
-<li><code>StateCommon</code> / <code>StateNormal</code> / <code>StateTracking</code> / <code>StatePressed</code> / <code>StateDisabled</code></li>
-<li>Per-sector ring arcs use these colours; thickness remains <code>OuterRingThickness</code></li>
-</ul>
-<h4 id="prefixed-shadow-stateshadow-paletteback">Prefixed shadow <code>StateShadow###</code> (<code>PaletteBack</code>)</h4>
-<ul>
-<li><code>StateShadowCommon</code> / <code>StateShadowNormal</code> / <code>StateShadowTracking</code> / <code>StateShadowPressed</code> / <code>StateShadowDisabled</code></li>
-<li><code>Color1</code> tints the three-layer shadow ramp (default common colour black)</li>
-<li>Mapping while open: disabled → pressed (mouse down / drag) → tracking (pointer over) → normal</li>
-</ul>
-<h3 id="outer-ring-vs-sector-body">Outer ring vs sector body</h3>
-<p>Pointer interaction is split:</p>
-<ul>
-<li><strong>Outer-ring band</strong> (glyph arc) — only pointer path that opens a nested submenu or editor ring (<code>HasChildren</code>)</li>
-<li><strong>Sector body</strong> on a parent/editor — raises <code>ItemClick</code> but does <strong>not</strong> drill in</li>
-<li><strong>Leaf</strong> sector body — <code>PerformClick</code> / AutoClose as before</li>
-<li><strong>Keyboard Enter/Space</strong> — still opens children/editors (ring is the pointer/touch affordance)</li>
-</ul>
-<p>RTL hosts (<code>RightToLeft.Yes</code>) mirror start angle / sweep.</p>
-<h3 id="events">Events</h3>
-<ul>
-<li><code>Opening</code> / <code>Opened</code> / <code>Closing</code> / <code>Closed</code></li>
-<li><code>ItemClick</code> — any activated item</li>
-<li><code>CenterButtonClick</code> — root centre click (before close)</li>
-<li>Per-item: <code>Click</code>, <code>ValueChanged</code>, <code>SelectedColorChanged</code>, <code>SelectedFontChanged</code>, <code>TextChanged</code>, <code>SelectedDateChanged</code></li>
-</ul>
-<h3 id="interaction-model">Interaction model</h3>
-<ol>
-<li>Equal-angle sectors for visible items; centre button closes at root or navigates back (clearer back chevron when nested).</li>
-<li>Parent / editor items open a child or editor ring only via the outer-ring band (or keyboard Enter).</li>
-<li>Slider / colour / font / text / calendar items open an editor ring; centre returns to the previous ring.</li>
-<li>Outside click, Alt, or Escape dismisses via <code>VisualPopupManager</code> (with close animation when enabled).</li>
-<li>Keyboard: Left/Right/Up/Down move focus; Home/End jump; Enter/Space activate; Back backs out; Escape backs nested/editor levels, then dismisses at root.</li>
-<li>Accessibility: custom <code>AccessibleObject</code> exposes sectors (and editor cells) as menu items.</li>
-</ol>
-<h2 id="context-menu-bridge">Context-menu bridge</h2>
-<pre><code class="lang-csharp">var radial = KryptonRadialMenu.FromContextMenu(existingContextMenu, liveSync: true);
-// or
-radial.ImportFrom(existingContextMenu, liveSync: true);
-radial.RefreshFromContextMenu();
-</code></pre>
-<p>Import builds <strong>copies / projections</strong> for display. Live dual-hosting of the same item instance in both UIs is not supported.</p>
-<p>Live sync:</p>
-<ol>
-<li><strong>Collection</strong> — root <code>Items</code> changes re-import the projection.</li>
-<li><strong>Property</strong> — <code>PropertyChanged</code> on bridged <code>Tag</code> sources updates common twins (<code>Text</code> / <code>Enabled</code> / <code>Visible</code> / <code>Checked</code> / <code>Image</code>) without a full rebuild when possible.</li>
-</ol>
-<h3 id="preferradial-soft-hook">PreferRadial soft hook</h3>
+<p>PreferRadial:</p>
 <pre><code class="lang-csharp">KryptonRadialMenuPresenter.PreferRadialContextMenus = true;
-contextMenu.Show(this, pt); // radial via KryptonContextMenu.AlternativeShow
-// or explicitly:
-KryptonRadialMenuPresenter.Show(contextMenu, this, clientPoint);
+contextMenu.Show(this, pt); // radial via AlternativeShow
 </code></pre>
-<p>When PreferRadial is <code>true</code>, Utilities registers a soft hook on <code>KryptonContextMenu.AlternativeShow</code> so normal <code>Show</code> call sites present a live-synced radial projection. There is <strong>no</strong> Toolkit → Utilities project reference.</p>
-<h3 id="mapping-table">Mapping table</h3>
-<table>
-<thead>
-<tr>
-<th>Source</th>
-<th>Radial result</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>KryptonContextMenuItems</code></td>
-<td>Children flattened into the current level</td>
-</tr>
-<tr>
-<td><code>KryptonContextMenuItem</code></td>
-<td><code>KryptonRadialMenuItem</code> (click invokes <code>source.PerformClick</code>)</td>
-</tr>
-<tr>
-<td><code>KryptonContextMenuLinkLabel</code></td>
-<td><code>KryptonRadialMenuItem</code> (<code>PerformClick</code>)</td>
-</tr>
-<tr>
-<td><code>KryptonContextMenuCheckBox</code> / <code>CheckButton</code> / <code>RadioButton</code></td>
-<td>Checked-style <code>KryptonRadialMenuItem</code></td>
-</tr>
-<tr>
-<td><code>KryptonContextMenuColorColumns</code></td>
-<td><code>KryptonRadialMenuColorPaletteItem</code></td>
-</tr>
-<tr>
-<td><code>KryptonContextMenuImageSelect</code></td>
-<td>Parent item with per-image children setting <code>SelectedIndex</code></td>
-</tr>
-<tr>
-<td><code>KryptonContextMenuComboBox</code></td>
-<td>Parent item with children for each entry (<code>SelectedIndex</code>)</td>
-</tr>
-<tr>
-<td><code>KryptonContextMenuTextBox</code></td>
-<td><code>KryptonRadialMenuTextItem</code> (commit pushes text back to source)</td>
-</tr>
-<tr>
-<td><code>KryptonContextMenuProgressBar</code></td>
-<td>Disabled display sector (<code>Value/Maximum</code>)</td>
-</tr>
-<tr>
-<td><code>KryptonContextMenuMonthCalendar</code></td>
-<td><code>KryptonRadialMenuCalendarItem</code> (commit pushes selection back)</td>
-</tr>
-<tr>
-<td><code>Heading</code>, <code>Separator</code></td>
-<td>Skipped</td>
-</tr>
-</tbody>
-</table>
-<h2 id="validation">Validation</h2>
-<p>TestForm demo: <strong>Radial Menu (#4172)</strong> (<code>RadialMenuDemo</code>), registered in <code>StartScreen.AddButtons()</code>.</p>
-<p>Manual steps:</p>
-<ol>
-<li>Open the demo; leave <strong>Native radial items</strong> selected.</li>
-<li>Right-click — open Edit / Note / editors via the <strong>outer ring</strong>; body click on a parent does not drill; Bold body still toggles.</li>
-<li>Exercise DisplayStyle / ItemImageSize / Show shadow / Checked glyph / Animation; drag centre with AllowMove and confirm shadow follows.</li>
-<li>Arrow keys + Enter; Esc backs out then dismisses (close animation).</li>
-<li>Switch to <strong>Imported from KryptonContextMenu</strong> — TextBox/MonthCalendar project to text/calendar items; separators absent.</li>
-<li>Enable <strong>PreferRadialContextMenus</strong> and use a normal context-menu <code>Show</code> path.</li>
-</ol>
-<p>Unit-test helpers: <code>Scripts/UnitTests/UnitTest-RadialMenu.ps1</code> (CI include), <code>Start-RadialMenuDemoHost.ps1</code>, <code>Invoke-RadialMenuScreenshot.ps1</code>.</p>
-<p>Manual theme check: exercise under a few <code>PaletteMode</code> values; a full theme-matrix GIF farm is out of scope.</p>
-<h2 id="edge-cases">Edge cases</h2>
+<p>Bridge (popup Component only): <code>ImportFrom</code> / <code>FromContextMenu</code> with optional live sync. Outer-ring <code>State###</code> (<code>PaletteBorder</code>) colour the rim.</p>
+<h2 id="kryptonradialmenucontrol-hosted-control">KryptonRadialMenuControl (hosted Control)</h2>
+<pre><code class="lang-csharp">var control = new KryptonRadialMenuControl
+{
+    MenuRadius = 120,
+    Dock = DockStyle.Fill
+};
+control.Items.Add(new KryptonRadialMenuItem(&quot;Bold&quot;, (_, _) =&gt; ToggleBold()));
+control.ItemClick += (_, e) =&gt; { /* … */ };
+Controls.Add(control);
+</code></pre>
 <ul>
-<li>Empty <code>Items</code> still shows a centre-only popup that closes on centre click.</li>
-<li>Bridged command items do not copy <code>KryptonCommand</code> onto the radial item (avoids double execute); they call <code>PerformClick</code> on the source.</li>
-<li>Font list shows up to eight families at a time; mouse wheel scrolls the list.</li>
-<li>Circular <code>Region</code> clips the popup; shadow uses three concentric ellipse paths when <code>ShowShadow</code> is true and tracks location changes.</li>
-<li><code>ShowShadow</code> is read when the popup is constructed — change it before the next <code>Show</code>.</li>
-<li>Packaging remains the <code>Krypton.Standard.Toolkit</code> NuGet package (no standalone Utilities package).</li>
+<li>Always visible by default; optional <code>UseHub</code> shows a centre hub — press to expand, centre / Esc / AutoClose collapses. Caption via <code>HubText</code> (default <code>+</code>) or <code>Glyph</code> image (image wins when set).</li>
+<li>Optional <code>AllowMove</code> — drag the hub (collapsed) or centre (expanded) to reposition; short click still expands/activates. Docked controls undock on the first drag. Dragging outside the parent floats in a borderless top-level window (<code>IsFloating</code> / <code>Float</code> / <code>DockBack</code> / <code>FloatingChanged</code>); dropping back over the original parent docks again.</li>
+<li>Same <code>OuterRingThickness</code>, outer-ring hit model, and editor rings as the popup.</li>
+<li>Effective radius = <code>Min(MenuRadius, available client radius)</code> so resize does not clip badly.</li>
+<li>Designer: collection editor + action list (Menu Radius / Inner Radius / Display Style / Edit Items).</li>
 </ul>
+<pre><code class="lang-csharp">control.UseHub = true;          // start collapsed
+control.HubText = &quot;Menu&quot;;       // or control.Glyph = myImage;
+control.OuterRingThickness = 10;
+control.Expand();               // or press the hub
+control.Collapse();             // or root centre / Esc
+control.ExpandedChanged += ...;
+</code></pre>
 
 </article>
           </div>
