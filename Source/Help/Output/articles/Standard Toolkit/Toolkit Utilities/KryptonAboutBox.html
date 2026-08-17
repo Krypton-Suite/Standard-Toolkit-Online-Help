@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton About Box | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton About Box | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-about-box">Krypton About Box</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonAboutBox</code> is the comprehensive About dialog for applications built on the Standard Toolkit. It lives in the <code>Krypton.Toolkit.Utilities</code> assembly (<code>Krypton.Standard.Toolkit</code> NuGet package) and addresses <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/2222">issue #2222</a>.</p>
+<p>The dialog has two audiences:</p>
+<ul>
+<li><strong>Users</strong> — product name, version, copyright, company, and description (VB About Box).</li>
+<li><strong>Developers</strong> — application properties, loaded assemblies, and per-assembly attributes (<a href="https://blog.codinghorror.com/about-the-about-box/">About The About Box</a>).</li>
+</ul>
+<p>An optional Toolkit Information page can credit Krypton (license, Discord, docs, referenced assembly versions).</p>
+<h2 id="architecture">Architecture</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonAboutBox</code></td>
+<td>Public static <code>Show</code> / <code>ShowAsync</code> entry point</td>
+</tr>
+<tr>
+<td><code>KryptonAboutBoxData</code></td>
+<td>Host identity, images, RTL, toolkit-page flag</td>
+</tr>
+<tr>
+<td><code>KryptonAboutToolkitData</code></td>
+<td>Optional Toolkit page chrome and link text</td>
+</tr>
+<tr>
+<td><code>VisualAboutBoxForm</code></td>
+<td>Designer-backed dialog (RTL applied at runtime)</td>
+</tr>
+<tr>
+<td><code>KryptonAboutBoxUtilities</code></td>
+<td>Assembly attribute scrape, grids, build date</td>
+</tr>
+<tr>
+<td><code>InternalAssemblyDetails</code></td>
+<td>Assembly combo + attribute grid</td>
+</tr>
+</tbody>
+</table>
+<p>Strings remain on <code>KryptonManager.Strings.AboutBoxStrings</code> and <code>AboutBoxBasicStrings</code> in <code>Krypton.Toolkit</code> so they stay localisable with the rest of the toolkit.</p>
+<pre><code>KryptonAboutBox.Show(...)
+        │
+        ▼
+VisualAboutBoxForm
+        ├── General / Description / Theme
+        ├── File Information
+        │     ├── Application (AppDomain + assembly names)
+        │     ├── Assemblies (loaded assemblies)
+        │     └── Assembly Details (attributes for a selected assembly)
+        └── Toolkit Information (optional)
+</code></pre>
+<h2 id="public-api">Public API</h2>
+<h3 id="zero-config">Zero-config</h3>
+<pre><code class="lang-csharp">KryptonAboutBox.Show();
+KryptonAboutBox.Show(typeof(MainForm).Assembly);
+
+await KryptonAboutBox.ShowAsync();
+</code></pre>
+<p><code>Show()</code> uses <code>Assembly.GetEntryAssembly()</code>, then <code>GetCallingAssembly()</code> if the host has no entry assembly. Name, version, copyright, company, and description come from file version info and assembly attributes.</p>
+<h3 id="data-object">Data object</h3>
+<pre><code class="lang-csharp">var data = new KryptonAboutBoxData
+{
+    CurrentAssembly = typeof(MainForm).Assembly,
+    ApplicationName = &quot;My App&quot;,          // optional override
+    Version = &quot;1.2.3&quot;,                   // optional
+    Copyright = &quot;Copyright © 2026&quot;,      // optional
+    Company = &quot;Example Ltd&quot;,             // optional
+    Description = &quot;Short description.&quot;,  // optional
+    HeaderImage = Resources.Header,
+    MainImage = Resources.Logo,
+    ShowToolkitInformation = true,
+    ShowSystemInformationButton = true,
+    UseFullBuiltOnDate = true,
+    UseRtlLayout = KryptonUseRTLLayout.No
+};
+
+KryptonAboutBox.Show(data, new KryptonAboutToolkitData());
+</code></pre>
+<p>When a string override is empty, the matching attribute / <code>FileVersionInfo</code> value is used.</p>
+<h3 id="toolkit-page">Toolkit page</h3>
+<p><code>KryptonAboutToolkitData</code> controls Discord / developer / version buttons, theme combo, system information, and link text. <code>LinkArea</code> values that still match the constructor defaults are replaced with areas computed from the actual caption so localisation does not break the clickable range. Custom <code>LinkArea</code> values that fit the caption are honoured.</p>
+<h2 id="pages">Pages</h2>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>General</td>
+<td>Logo, version, build date, <strong>binary date/time</strong>, copyright, company</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Assembly description / file description</td>
+</tr>
+<tr>
+<td>File Information → Application</td>
+<td>AppDomain base directory, friendly name, build date, binary date/time, entry/executing/current assembly</td>
+</tr>
+<tr>
+<td>File Information → Assemblies</td>
+<td>Name, version, binary date/time, location for loaded assemblies</td>
+</tr>
+<tr>
+<td>File Information → Assembly Details</td>
+<td>Combo of loaded assemblies and their custom attributes</td>
+</tr>
+<tr>
+<td>Theme</td>
+<td>Live <code>KryptonThemeComboBox</code></td>
+</tr>
+<tr>
+<td>Toolkit Information</td>
+<td>Optional Krypton attribution, Discord, docs, referenced versions</td>
+</tr>
+</tbody>
+</table>
+<p>OK closes with <code>DialogResult.OK</code>. System Information launches <code>MSInfo32.exe</code>.</p>
+<h2 id="rtl">RTL</h2>
+<p>Set <code>KryptonAboutBoxData.UseRtlLayout</code> to <code>KryptonUseRTLLayout.Yes</code>. The main form sets <code>RightToLeft</code> and <code>RightToLeftLayout</code>. There is no separate RTL form.</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>Empty <code>Assembly.Location</code> (single-file publish): file version info is skipped; attributes and <code>AssemblyName</code> are still used. Build date and binary date/time may be blank.</li>
+<li>Binary date/time uses the PE COFF <code>TimeDateStamp</code> only when it is a plausible calendar date (2000 through now). Deterministic SDK builds store a content hash in that field (which can decode as nonsense dates such as 2069); those are ignored and the file last-write time is used instead.</li>
+<li><code>net472</code> through current Windows TFMs: AppDomain fields use <code>BaseDirectory</code> and <code>FriendlyName</code> only (no obsolete <code>SetupInformation</code>).</li>
+<li>Theme and Toolkit pages are extra relative to a classic About box; hide Toolkit with <code>ShowToolkitInformation = false</code>.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

@@ -33,6 +33,17 @@
 - Edit the md file(s) [in the `DocFX\articles` subdirectory] to reflect the content, and add the pictures into the images directory.
 - If new content is added then update the `yml index` files.
 
+## API metadata (toolkit source)
+
+DocFX extracts API reference from **sibling** clones next to this repository (same parent folder, e.g. `Z:\Development\Krypton\`):
+
+- Standard Toolkit → `../Standard-Toolkit/Source/Krypton Components/` → `api/`
+- Extended Toolkit → `../Extended-Toolkit/Source/Krypton Toolkit/` → `api-extended/`
+
+Keep those trees current when you want metadata to match local toolkit source. Extended metadata is generated for `net8.0-windows` only, and skips Ultimate/Lite aggregates, tests, examples, and helper tools.
+
+DocFX cannot take a Git URL in `metadata.src`. If a sibling folder is missing, `run.cmd` clones [Krypton-Suite/Standard-Toolkit](https://github.com/Krypton-Suite/Standard-Toolkit) and/or [Krypton-Suite/Extended-Toolkit](https://github.com/Krypton-Suite/Extended-Toolkit) there as a fallback. GitHub Actions checks out the same repositories beside this repo.
+
 ---
 
 ## Build

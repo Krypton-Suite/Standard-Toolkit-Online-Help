@@ -17,6 +17,8 @@ See [Setup Guide](.github/SETUP_GITHUB_PAGES.md) for configuration details.
 
 ## 🛠️ Local Development
 
+Local builds expect **sibling** clones of [Standard-Toolkit](https://github.com/Krypton-Suite/Standard-Toolkit) and [Extended-Toolkit](https://github.com/Krypton-Suite/Extended-Toolkit) at `../Standard-Toolkit/` and `../Extended-Toolkit/` (same parent folder as this repo). Standard API pages come from the first clone; Extended API pages from the second. If a sibling is missing, `run.cmd` clones the GitHub repository there as a fallback.
+
 To build the documentation locally:
 
 ```bash
