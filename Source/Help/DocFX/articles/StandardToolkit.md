@@ -105,6 +105,7 @@ This document provides links to the documentation provided, each will be split u
 * [Krypton Command Link Button](Standard%20Toolkit/Toolkit/Controls/KryptonCommandLinkButton.md)
 * [Krypton DataGridView](Standard%20Toolkit/Toolkit/Controls/KryptonDataGridView.md)
 * [Krypton Date Time Picker](Standard%20Toolkit/Toolkit/Controls/KryptonDateTimePicker.md)
+    * [Krypton Date Time Picker Calendar View](Standard%20Toolkit/Toolkit/Controls/KryptonDateTimePickerCalendarView.md)
 * [Krypton Domain Up Down](Standard%20Toolkit/Toolkit/Controls/KryptonDomainUpDown.md)
 * [Krypton Drop Button](Standard%20Toolkit/Toolkit/Controls/KryptonDropButton.md)
 * [Krypton Group](Standard%20Toolkit/Toolkit/Controls/KryptonGroup.md)

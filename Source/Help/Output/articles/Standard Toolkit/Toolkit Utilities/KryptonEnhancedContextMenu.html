@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Enhanced Context Menu | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Enhanced Context Menu | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-enhanced-context-menu">Krypton Enhanced Context Menu</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/3862">#3862</a> adds an Office 2007+-style shortcut menu without replacing <code>KryptonContextMenu</code>.</p>
+<p>The Office model is not a new item renderer. It is:</p>
+<ol>
+<li><strong>Paired Mini Toolbar</strong> — a compact formatting strip drawn immediately above (or below) the shortcut menu.</li>
+<li><strong>Command persistence</strong> — clicking a Mini Toolbar command dismisses the menu list but <strong>keeps the Mini Toolbar</strong> so several formatting clicks can happen without reopening.</li>
+<li><strong>Selection Mini Toolbar</strong> — on text selection, the same bar appears near the selection, faded until the mouse approaches, using a non-activating layered window.</li>
+<li><strong>Richer menus</strong> — in-menu <strong>galleries</strong> with hover live-preview, plus compact font/size combos on the Mini Toolbar.</li>
+</ol>
+<p><strong>Packages</strong></p>
+<ul>
+<li><code>Krypton.Toolkit</code> — <code>KryptonContextMenuGallery</code> (and related item/range types).</li>
+<li><code>Krypton.Toolkit.Utilities</code> — <code>KryptonEnhancedContextMenu</code>, <code>KryptonMiniToolbar</code>, Mini Toolbar item types, and the visual popups.</li>
+</ul>
+<p>Do not hook <code>KryptonContextMenu.AlternativeShow</code>. That remains the radial-menu presenter. Enhanced menus are opt-in per component and show their own popup.</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code>App / TestForm
+  ├─ KryptonEnhancedContextMenu  (Utilities component)
+  │    ├─ KryptonMiniToolbar
+  │    ├─ KryptonContextMenu     (owned or assigned)
+  │    ├─ VisualMiniToolbarPopup   (separate window, stacked first)
+  │    └─ VisualEnhancedContextMenu (menu-only VisualPopup)
+  ├─ KryptonMiniToolbar.Attach(Control)
+  │    └─ VisualMiniToolbarPopup     (selection fade; not a modal VisualPopupManager menu)
+  └─ KryptonContextMenu.Items
+       └─ KryptonContextMenuGallery  (Toolkit item; TrackingImage live preview)
+</code></pre>
+<p><strong>Paired right-click</strong> shows <strong>two</strong> <code>VisualPopup</code> windows with a configurable pixel gap (<code>MiniToolbarGap</code>, default 2), left-aligned like Office: <code>VisualMiniToolbarPopup</code> (own chrome) stacked first, then <code>VisualEnhancedContextMenu</code> (menu columns only) as the current tracked popup. Clicking the Mini Toolbar dismisses the menu popup but can leave the bar (<code>KeepMiniToolbarAfterCommand</code>). Clicking a menu item, Esc, or click-outside dismisses both. In-menu gallery tiles stretch to the menu width so captions stay readable.</p>
+<p><strong>Selection fade</strong> uses a <strong>separate</strong> <code>VisualMiniToolbarPopup</code>: <code>WS_EX_NOACTIVATE</code> + <code>WS_EX_LAYERED</code>, opacity ramped by mouse distance, dismissed on selection collapse or click-away. Same <code>KryptonMiniToolbar</code> item model; different host. It is not pushed onto <code>VisualPopupManager</code> as a modal menu.</p>
+<p>Palette chrome uses <code>PaletteBackStyle.ContextMenuOuter</code> and hosted Mini Toolbar controls inherit <code>PaletteMode</code> / <code>LocalCustomPalette</code> from <code>KryptonMiniToolbar</code>, so the leftover bar tracks the active Krypton theme (including <code>GlobalPaletteChanged</code>). There are no new <code>PaletteMode</code> values.</p>
+<h2 id="public-api">Public API</h2>
+<h3 id="kryptonenhancedcontextmenu-kryptontoolkitutilities"><code>KryptonEnhancedContextMenu</code> (<code>Krypton.Toolkit.Utilities</code>)</h3>
+<p>Component that owns or references a <code>KryptonContextMenu</code> plus a <code>KryptonMiniToolbar</code>. <code>Show(...)</code> overloads mirror <code>KryptonContextMenu.Show</code>. Events <code>Opening</code> / <code>Opened</code> / <code>Closing</code> / <code>Closed</code> forward from the paired popup.</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MiniToolbar</code></td>
+<td>owned instance</td>
+<td>Compact strip shown with the menu. <strong>Settable</strong> — assign a tray <code>KryptonMiniToolbar</code>, or edit the owned <code>Items</code> in the designer.</td>
+</tr>
+<tr>
+<td><code>Menu</code></td>
+<td>owned <code>KryptonContextMenu</code></td>
+<td><strong>Settable</strong> — assign an existing menu, or configure <code>Menu.Items</code> in the designer (Content serialization).</td>
+</tr>
+<tr>
+<td><code>ShowMiniToolbar</code></td>
+<td><code>true</code></td>
+<td>Hide the strip and show a normal stacked menu.</td>
+</tr>
+<tr>
+<td><code>MiniToolbarPosition</code></td>
+<td><code>Auto</code></td>
+<td><code>Above</code> / <code>Below</code> / <code>Auto</code> (below when the anchor is near the top of the screen).</td>
+</tr>
+<tr>
+<td><code>MiniToolbarGap</code></td>
+<td><code>2</code></td>
+<td>Pixel gap between the Mini Toolbar and the paired menu (<code>0</code> or more).</td>
+</tr>
+<tr>
+<td><code>KeepMiniToolbarAfterCommand</code></td>
+<td><code>true</code></td>
+<td>Mini Toolbar click dismisses the list but keeps the bar.</td>
+</tr>
+<tr>
+<td><code>Enabled</code></td>
+<td><code>true</code></td>
+<td><code>Show</code> returns <code>false</code> when disabled.</td>
+</tr>
+<tr>
+<td><code>IsShowing</code></td>
+<td>—</td>
+<td>Paired popup is visible.</td>
+</tr>
+</tbody>
+</table>
+<p><code>Show</code> closes any already-open paired popup before opening at the new screen location. It does <strong>not</strong> call <code>KryptonContextMenu.Show</code>, so <code>AlternativeShow</code> / radial presenters are not invoked.</p>
+<h3 id="kryptonminitoolbar-kryptontoolkitutilities"><code>KryptonMiniToolbar</code> (<code>Krypton.Toolkit.Utilities</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Items</code></td>
+<td>Horizontal Mini Toolbar items.</td>
+</tr>
+<tr>
+<td><code>Show(Rectangle screenAnchor)</code></td>
+<td>Tracked opaque popup (standalone).</td>
+</tr>
+<tr>
+<td><code>Hide()</code></td>
+<td>Dismiss the standalone / selection popup.</td>
+</tr>
+<tr>
+<td><code>Attach(Control)</code> / <code>Detach()</code></td>
+<td>Selection fade on <code>TextBoxBase</code>, <code>KryptonTextBox</code>, or <code>KryptonRichTextBox</code>.</td>
+</tr>
+<tr>
+<td><code>IdleOpacity</code></td>
+<td>Idle layered alpha (0–255, default 40).</td>
+</tr>
+<tr>
+<td><code>ApproachDistance</code></td>
+<td>Mouse distance in pixels at which opacity reaches 255 (default 80).</td>
+</tr>
+<tr>
+<td><code>PaletteMode</code> / <code>LocalCustomPalette</code> / <code>StateCommon</code></td>
+<td>Chrome redirect.</td>
+</tr>
+<tr>
+<td><code>ItemClick</code></td>
+<td>Raised when any hosted item is activated.</td>
+</tr>
+</tbody>
+</table>
+<p>Buttons bind to <code>KryptonCommand</code> so Bold / Italic / Colour can be shared with ribbon and menu items.</p>
+<h3 id="mini-toolbar-item-types">Mini Toolbar item types</h3>
+<p>All derive from <code>KryptonMiniToolbarItemBase</code> (<code>Visible</code>, <code>Enabled</code>, <code>Image</code>, <code>Text</code>, <code>ToolTipText</code>, <code>Tag</code>, <code>Click</code>).</p>
+<ul>
+<li><code>KryptonMiniToolbarButton</code> — <code>Push</code> or <code>Check</code>; optional <code>KryptonCommand</code>.</li>
+<li><code>KryptonMiniToolbarSplitButton</code> — body click plus drop-down <code>KryptonContextMenu</code> (for example colour columns).</li>
+<li><code>KryptonMiniToolbarComboBox</code> — compact font family / size list (<code>Width</code> default 108, <code>Items</code>, <code>SelectedIndexChanged</code>).</li>
+<li><code>KryptonMiniToolbarSeparator</code> — vertical edge.</li>
+<li><code>KryptonMiniToolbarGallery</code> — one-row <code>ImageList</code> gallery with <code>TrackingImage</code> and <code>MaxVisibleItems</code>.</li>
+</ul>
+<h3 id="kryptoncontextmenugallery-kryptontoolkit"><code>KryptonContextMenuGallery</code> (<code>Krypton.Toolkit</code>)</h3>
+<p><code>KryptonContextMenuItemBase</code> modelled on <code>KryptonContextMenuImageSelect</code>: grid, <code>SelectedIndex</code>, <code>AutoClose</code>, plus optional captions, heading <code>Ranges</code>, and a <strong>More…</strong> drop (<code>MoreItems</code> / <code>MoreText</code>, default from <code>KryptonManager.Strings.ContextMenuStrings.GalleryMore</code>).</p>
+<p>When <code>Items</code> is empty, cells are synthesised from <code>ImageList</code> (<code>ImageIndexStart</code> / <code>ImageIndexEnd</code>, <code>LineItems</code>). Live preview is the existing <code>TrackingImage</code> (<code>ImageSelectEventArgs</code>) — the host applies formatting on hover and reverts when <code>ImageIndex</code> is <code>-1</code>.</p>
+<p>Do <strong>not</strong> put <code>KryptonGallery</code> (Ribbon) into Toolkit. Utilities may host ribbon galleries inside a Mini Toolbar item because Utilities already references Ribbon; the compact Mini Toolbar gallery in this feature uses <code>ImageList</code> instead.</p>
+<p>Designer: gallery is in <code>KryptonContextMenuCollection</code> / item collection <code>RestrictTypes</code> and collection editors.</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">var menu = new KryptonEnhancedContextMenu();
+menu.MiniToolbar.Items.Add(new KryptonMiniToolbarButton
+{
+    ButtonType = KryptonMiniToolbarButtonType.Check,
+    KryptonCommand = cmdBold,
+    ToolTipText = &quot;Bold&quot;
+});
+menu.Menu.Items.Add(new KryptonContextMenuHeading(&quot;Clipboard&quot;));
+var items = new KryptonContextMenuItems();
+items.Items.Add(new KryptonContextMenuItem(&quot;Cut&quot;) { KryptonCommand = cmdCut });
+menu.Menu.Items.Add(items);
+
+var gallery = new KryptonContextMenuGallery { ShowItemText = true, LineItems = 5 };
+gallery.Items.Add(new KryptonContextMenuGalleryItem(&quot;Heading&quot;) { Image = headingImage });
+gallery.TrackingImage += (_, e) =&gt;
+{
+    if (e.ImageIndex &lt; 0) { RevertPreview(); return; }
+    ApplyPreview(e.ImageIndex);
+};
+menu.Menu.Items.Add(gallery);
+
+menu.Show(this, Control.MousePosition);
+menu.MiniToolbar.Attach(kryptonRichTextBox1); // selection fade
+</code></pre>
+<p>Typical pattern: share <code>KryptonCommand</code> instances between Mini Toolbar buttons, context-menu items, and ribbon buttons. Handle formatting in <code>KryptonCommand.Execute</code> (and <code>TrackingImage</code> for preview).</p>
+<p>Use a <strong>second</strong> <code>KryptonMiniToolbar</code> for <code>Attach</code> if the same instance is also hosted in a paired popup — the two hosts would otherwise fight over a single popup field.</p>
+<h2 id="configuration--persistence">Configuration / persistence</h2>
+<p>The Mini Toolbar and paired menu are <strong>designer- and runtime-configurable</strong>. Office 2007 did not offer QAT-style end-user customisation of the Mini Toolbar; this API is for the application developer.</p>
+<p><strong>Visual Studio designer</strong></p>
+<ul>
+<li>Drop <code>KryptonEnhancedContextMenu</code> or <code>KryptonMiniToolbar</code> on a form.</li>
+<li>Smart-tag / action list: <strong>Edit Mini Toolbar Items...</strong>, <strong>Edit Menu Items...</strong>, plus <code>ShowMiniToolbar</code>, <code>KeepMiniToolbarAfterCommand</code>, <code>MiniToolbarPosition</code>, <code>IdleOpacity</code>, <code>ApproachDistance</code>, <code>ShowShadow</code>.</li>
+<li>Property grid: expand <code>MiniToolbar</code> / <code>Menu</code> (<code>DesignerSerializationVisibility.Content</code>). Combo box items use <code>KryptonDesignerStringCollectionEditor</code>.</li>
+<li>Hide a command at runtime or in the designer with <code>KryptonMiniToolbarItemBase.Visible</code>.</li>
+<li>Assign <code>MiniToolbar</code> or <code>Menu</code> to a separate tray component to share configuration.</li>
+</ul>
+<p><strong>Runtime</strong></p>
+<pre><code class="lang-csharp">menu.ShowMiniToolbar = true;
+menu.MiniToolbarPosition = KryptonMiniToolbarPosition.Above;
+menu.KeepMiniToolbarAfterCommand = true;
+menu.MiniToolbar.IdleOpacity = 40;
+menu.MiniToolbar.ApproachDistance = 80;
+menu.MiniToolbar.Items[0].Visible = false;
+</code></pre>
+<ul>
+<li>Localisation: <code>KryptonContextMenuStrings.GalleryMore</code>.</li>
+<li>No XML persistence schema. Theme follows <code>PaletteMode.Global</code> unless overridden.</li>
+</ul>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li><strong>RTL</strong> — Mini Toolbar flow follows the host <code>RightToLeft</code>; <code>Auto</code> position still prefers above unless the anchor is near the top of the working area.</li>
+<li><strong>DPI</strong> — padding comes from existing context-menu palette metrics.</li>
+<li><strong>Keyboard</strong> — Menu key / Shift+F10 should call <code>Show(..., keyboardActivated: true)</code>. Esc closes the paired popup (or the leftover Mini Toolbar after a command).</li>
+<li><strong>Focus</strong> — paired popup is activating (current <code>VisualPopup</code> style). Selection popup is non-activating so typing continues in the editor.</li>
+<li><strong>Radial collision</strong> — if both features are on the form, <code>KryptonEnhancedContextMenu.Show</code> bypasses <code>AlternativeShow</code>.</li>
+<li><strong>TFMs</strong> — C# 7.3-compatible public surface; <code>net472</code> and later Windows TFMs.</li>
+<li><strong>Binary compatibility</strong> — additive types and optional properties only. <code>KryptonContextMenu.VisualContextMenu</code> is <code>protected internal</code> so Utilities can compose views; <code>InternalsVisibleTo</code> is granted to <code>Krypton.Toolkit.Utilities</code>.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

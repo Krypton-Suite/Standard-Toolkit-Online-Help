@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>VisualForm / KryptonForm fade in/out (FadeValues) | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="VisualForm / KryptonForm fade in/out (FadeValues) | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="visualform--kryptonform-fade-inout-fadevalues">VisualForm / KryptonForm fade in/out (<code>FadeValues</code>)</h1>
+
+<p>Package: <code>Krypton.Toolkit</code>.</p>
+<h2 id="overview">Overview</h2>
+<p><code>VisualForm</code> (and therefore <code>KryptonForm</code>) can fade in when shown and fade out when closing. Fading is <strong>opt-in</strong> and <strong>off by default</strong>, so existing forms are unchanged. Settings live on <code>VisualForm.FadeValues</code> next to <code>ShadowValues</code> / <code>BlurValues</code> and serialize in the designer.</p>
+<p>This replaces the old <code>Thread.Sleep</code> opacity loops (see TestForm <code>FadeFormTest</code>) and the commented <code>VisualForm.FadeValues</code> stub. Opacity is stepped with a WinForms <code>Timer</code> (10 ms) so the UI message pump stays alive.</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code>VisualForm.FadeValues           (designer-serializable settings)
+    -&gt; VisualForm.OnShown       (auto fade-in when FadingEnabled &amp;&amp; FadeIn)
+    -&gt; VisualForm.OnFormClosing (cancel close, fade-out, then Close)
+    -&gt; FadeIn / FadeOut / FadeOutAndClose (manual, ignore FadingEnabled)
+KryptonForm.SetVisibleCore      (skips borderless opacity snap when auto fade-in is active)
+</code></pre>
+<p>Speed presets map through internal <code>KryptonFormFadeSpeed</code> units: each tick adds or subtracts <code>units / 1000</code> from <code>Form.Opacity</code>. <code>Normal</code> (50) is about 0.2 s; <code>Slowest</code> (1) is about 10 s; <code>Fastest</code> (100) is about 0.1 s.</p>
+<p><code>KryptonFormFadeController</code> remains the internal helper used by async dialog wrappers. Native form fading does <strong>not</strong> call <code>Show()</code> from the fade engine (the form is already visible).</p>
+<h2 id="public-api">Public API</h2>
+<h3 id="visualformfadevalues"><code>VisualForm.FadeValues</code></h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FadingEnabled</code></td>
+<td><code>false</code></td>
+<td>Automatic fade-in on show and fade-out on close</td>
+</tr>
+<tr>
+<td><code>FadeIn</code></td>
+<td><code>true</code></td>
+<td>Used when <code>FadingEnabled</code> is true</td>
+</tr>
+<tr>
+<td><code>FadeOut</code></td>
+<td><code>true</code></td>
+<td>Used when <code>FadingEnabled</code> is true</td>
+</tr>
+<tr>
+<td><code>FadeSpeed</code></td>
+<td><code>Normal</code></td>
+<td><code>FadeSpeedChoice</code> preset</td>
+</tr>
+<tr>
+<td><code>CustomFadeSpeed</code></td>
+<td><code>50</code></td>
+<td>Used only when <code>FadeSpeed == Custom</code>. Typical range 1–100</td>
+</tr>
+</tbody>
+</table>
+<h3 id="methods-and-events">Methods and events</h3>
+<ul>
+<li><code>FadeIn()</code> — fade from the current opacity to the target (usually 1, or the designer <code>Opacity</code> if it was set before show).</li>
+<li><code>FadeOut()</code> — fade to transparent; does <strong>not</strong> close.</li>
+<li><code>FadeOutAndClose()</code> — fade to transparent, then close.</li>
+<li><code>FadeInCompleted</code> / <code>FadeOutCompleted</code>.</li>
+</ul>
+<p>Manual methods work even when <code>FadingEnabled</code> is <code>false</code>.</p>
+<h2 id="usage">Usage</h2>
+<p>Designer: expand <strong>FadeValues</strong> on a <code>KryptonForm</code> and set <code>FadingEnabled</code> to <code>true</code>.</p>
+<pre><code class="lang-csharp">var form = new KryptonForm();
+form.FadeValues.FadingEnabled = true;
+form.FadeValues.FadeSpeed = FadeSpeedChoice.Slow;
+form.Show();
+</code></pre>
+<pre><code class="lang-csharp">// One-shot animation without enabling automatic fading
+form.FadeValues.FadeSpeed = FadeSpeedChoice.Fast;
+form.FadeIn();
+</code></pre>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li><strong>Default off</strong> — no behavior change for existing <code>KryptonForm</code> subclasses.</li>
+<li><strong>Designer</strong> — <code>DesignMode</code> skips auto fade so the designer surface does not animate.</li>
+<li><strong>Close reasons</strong> — <code>WindowsShutDown</code>, <code>TaskManagerClosing</code>, and <code>ApplicationExitCall</code> skip fade-out so the process can exit.</li>
+<li><strong>User cancel</strong> — <code>FormClosing</code> handlers run first. If they set <code>e.Cancel</code>, fade-out does not start.</li>
+<li><strong>Borderless first show</strong> — the Windows 11 borderless opacity snap is skipped when a native fade-in is active so the two do not fight.</li>
+<li><strong>Target opacity</strong> — fade-in restores the <code>Opacity</code> captured before the form is shown (not always 1.0).</li>
+<li><strong>Message boxes</strong> — <code>KryptonMessageBoxExtended</code> <code>UseFade</code> is a separate Utilities path. Do not also set <code>FadeValues.FadingEnabled</code> on the same instance.</li>
+<li><strong>Toasts</strong> — <code>VisualToastBaseForm</code> inherits <code>KryptonForm</code> and can use <code>FadeValues</code> if a toast host opts in.</li>
+</ul>
+<h2 id="validation">Validation</h2>
+<p>TestForm demo: <code>FadeFormTest</code>, registered as <strong>KryptonForm FadeValues</strong>.</p>
+<ol>
+<li>Open the demo — the form fades in.</li>
+<li><strong>Fade Out</strong> then <strong>Fade In</strong> — opacity animates without closing.</li>
+<li>Edit <code>FadeValues.FadeSpeed</code> in the property grid and fade again.</li>
+<li><strong>Open faded child</strong> — a second <code>KryptonForm</code> with <code>FadingEnabled</code> fades in; close it to fade out.</li>
+<li>Close the demo (title-bar close or <strong>Fade Out and Close</strong>) — fade-out then close.</li>
+<li>Set <code>FadingEnabled</code> to <code>false</code> in the grid, reopen — no automatic fade.</li>
+</ol>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

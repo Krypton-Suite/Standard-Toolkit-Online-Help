@@ -24,12 +24,26 @@ concurrency:
 jobs:
   build:
     runs-on: windows-latest
+    timeout-minutes: 120
     
     steps:
-      - name: Checkout repository
+      - name: Checkout documentation
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
+          path: Standard-Toolkit-Online-Help
+          fetch-depth: 0
+
+      - name: Checkout Standard-Toolkit
+        uses: actions/checkout@v4
+        with:
+          repository: Krypton-Suite/Standard-Toolkit
+          path: Standard-Toolkit
+
+      - name: Checkout Extended-Toolkit
+        uses: actions/checkout@v4
+        with:
+          repository: Krypton-Suite/Extended-Toolkit
+          path: Extended-Toolkit
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -41,14 +55,14 @@ jobs:
 
       - name: Build Documentation
         run: |
-          cd Source/Help/DocFX
+          cd Standard-Toolkit-Online-Help/Source/Help/DocFX
           docfx docfx.json
         shell: pwsh
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: Source/Help/Output
+          path: Standard-Toolkit-Online-Help/Source/Help/Output
 
   deploy:
     # Only deploy on push to main/master branches

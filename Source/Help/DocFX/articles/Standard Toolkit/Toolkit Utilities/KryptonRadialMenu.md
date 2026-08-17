@@ -42,11 +42,12 @@ menu.ShowPopup(this, screenPt, animated: true);
 menu.Close();
 ```
 
-Key properties: `MenuRadius`, `InnerRadius`, `Glyph`, `DisplayStyle`, `ItemImageSize`, `OuterRingThickness` (default **10**), `ShowShadow` / `StateShadow###`, outer-ring `State###`, `StartAngle`, `MaxVisibleItems`, `AnimationStyle`, `AllowMove`.
+Key properties: `MenuRadius`, `InnerRadius`, `Glyph`, `DisplayStyle`, `ItemImageSize`, `OuterRingThickness` (default **10**), `ShowOuterRingOnLeaves` (default **true**), `ShowShadow` / `StateShadow###`, outer-ring `State###`, `StartAngle`, `MaxVisibleItems`, `AnimationStyle`, `AllowMove`.
 
 Pointer model:
 
 - Outer-ring band opens children / editors and shows `SubMenuGlyph` (default `›`) with contrasting ink on the rim.
+- When `ShowOuterRingOnLeaves` is `false`, leaf slices omit the rim arc; the outer band on those slices hits as sector body.
 - Sector body on parents raises `ItemClick` only; leaf body click still activates.
 - Keyboard Enter still opens children / editors.
 - Slice fills stop at the inner edge of the outer ring so thick rings do not cover sector content; outer-ring tracking uses a distinct accent when palette border colours are too similar.

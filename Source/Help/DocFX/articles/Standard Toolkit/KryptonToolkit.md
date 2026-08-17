@@ -16,6 +16,7 @@ the toolbox.
 * [KryptonComboBox](Toolkit/Controls/KryptonComboBox.md)  
 * [KryptonDataGridView](Toolkit/Controls/KryptonDataGridView.md)  
 * [KryptonDateTimePicker](Toolkit/Controls/KryptonDateTimePicker.md)  
+    * [KryptonDateTimePickerCalendarView](Toolkit/Controls/KryptonDateTimePickerCalendarView.md)
 * [KryptonDomainUpDown](Toolkit/Controls/KryptonDomainUpDown.md)  
 * [KryptonDropDown](Toolkit/Controls/KryptonDropButton.md)  
 * [KryptonGroup](Toolkit/Controls/KryptonGroup.md)  
@@ -53,7 +54,7 @@ the toolbox.
 * [KryptonTrackBar](Toolkit/Controls/KryptonTrackBar.md)  
 * [KryptonTreeView](Toolkit/Controls/KryptonTreeView.md)  
 * [KryptonWebBrowser](Toolkit/Controls/KryptonWebBrowser.md)
-* [KryptonWebView2](Toolkit Utilities/KryptonWebView2.md)
+* [KryptonWebView2](Toolkit%20Utilities/KryptonWebView2.md)
 * [KryptonWrapLabel](Toolkit/Controls/KryptonWrapLabel.md)
 
 ## Components  
@@ -71,6 +72,7 @@ the toolbox.
 * [KryptonHelpProvider](Toolkit/Components/KryptonHelpProvider.md)
 * [KryptonInputBox](Toolkit/Components/KryptonInputBox.md)  
 * [KryptonIntegratedToolBarManager](Toolkit/Components/KryptonIntegratedToolBarManager.md)
+* [KryptonInteractiveToolTips](Toolkit/Components/KryptonInteractiveToolTips.md)
 * [KryptonManager](Toolkit/Components/KryptonManager.md)  
   * [Touchscreen Support](Toolkit/Components/TouchscreenSupport.md)
 * [KryptonMessageBox](Toolkit/Components/KryptonMessageBox.md)  
@@ -93,6 +95,6 @@ the toolbox.
 
 ## Utilities
 
-* [ExceptionHandler](Toolkit Utilities/ExceptionHandler.md)
-* [IconExtraction](Toolkit Utilities/IconExtractionIndex.md)
-* [IconExtractionWithFallback](Toolkit Utilities/IconExtractionWithFallback.md)
+* [ExceptionHandler](Toolkit%20Utilities/ExceptionHandler.md)
+* [IconExtraction](Toolkit%20Utilities/IconExtractionIndex.md)
+* [IconExtractionWithFallback](Toolkit%20Utilities/IconExtractionWithFallback.md)

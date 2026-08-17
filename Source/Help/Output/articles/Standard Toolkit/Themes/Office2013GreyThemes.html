@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Office grey chrome themes (2007 / 2010 / 2013 / 365 / Material) | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Office grey chrome themes (2007 / 2010 / 2013 / 365 / Material) | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="office-grey-chrome-themes-2007--2010--2013--365--material">Office grey chrome themes (2007 / 2010 / 2013 / 365 / Material)</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/942">#942</a> is <strong>grey window chrome</strong> with a light document area. Dark Grey is not a full dark mode and is not Microsoft 365 dark mode.</p>
+<p>Office 2013 Light Grey / Dark Grey already had <code>PaletteMode</code> values. Family variants reuse the same colour maps (<code>PaletteOffice2013LightGray_BaseScheme</code> / <code>PaletteOffice2013DarkGray_BaseScheme</code>) with each family's renderer and glyphs.</p>
+<h2 id="architecture">Architecture</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PaletteOffice2013LightGray_BaseScheme</code> / <code>DarkGray_BaseScheme</code></td>
+<td>Shared chrome + light document colours</td>
+</tr>
+<tr>
+<td><code>PaletteOffice2013LightGray</code> / <code>DarkGray</code></td>
+<td>Office 2013 renderer</td>
+</tr>
+<tr>
+<td><code>PaletteOffice2007LightGray</code> / <code>DarkGray</code></td>
+<td>Office 2007 renderer</td>
+</tr>
+<tr>
+<td><code>PaletteOffice2010LightGray</code> / <code>DarkGray</code></td>
+<td>Office 2010 renderer</td>
+</tr>
+<tr>
+<td><code>PaletteMicrosoft365LightGray</code> / <code>DarkGray</code></td>
+<td>Microsoft 365 renderer</td>
+</tr>
+<tr>
+<td><code>PaletteMaterialLightGray</code> / <code>DarkGray</code> (+ Ripple subclasses)</td>
+<td>Material renderer</td>
+</tr>
+</tbody>
+</table>
+<p>Grey themes keep a <strong>light client/document surface</strong>. The ribbon control still uses <code>PaletteBackStyle.PanelClient</code> (light). <code>ViewDrawRibbonPanel</code> paints the <strong>tabs strip</strong> with <code>GetRibbonTabRowBackgroundSolidColor</code> when that colour is not empty.</p>
+<h2 id="chrome-colours-sampled">Chrome colours (sampled)</h2>
+<p>Light Grey:</p>
+<ul>
+<li>Title / tab row / status: <code>230,230,230</code></li>
+<li>Ribbon groups / selected tab: <code>243,243,243</code></li>
+<li>Caption and header text: <code>59,59,59</code></li>
+</ul>
+<p>Dark Grey:</p>
+<ul>
+<li>Title / tab row / status: <code>51,51,51</code> (active header <code>38,38,38</code>)</li>
+<li>Ribbon groups / selected tab: <code>102,102,102</code></li>
+<li>Caption and header text: white</li>
+<li>Client / inputs / grids: same light colours as Office 2013 White</li>
+<li>File / App tab: charcoal (<code>51,51,51</code> / hover <code>70,70,70</code>) with white text</li>
+<li>Dark Grey paints <code>RibbonGroupArea</code> as a solid fill so light group/button text stays readable</li>
+</ul>
+<h2 id="glyphs">Glyphs</h2>
+<ul>
+<li>Light Grey: dark glyphs on light chrome (2007 Silver, 2013/2010 light, Material generated from the light scheme).</li>
+<li>Dark Grey: light-on-dark control-box glyphs (2007 Black, 2010 Black). Checkboxes and radios stay on Silver/light strips because the document area is light.</li>
+</ul>
+<h2 id="public-api">Public API</h2>
+<p>Office 2013 values already existed. <strong>2007 / 2010 / 365 / Material grey modes are appended immediately before <code>PaletteMode.Custom</code></strong> so existing enum integers do not shift.</p>
+<pre><code class="lang-csharp">kryptonManager.GlobalPaletteMode = PaletteMode.Office2013DarkGray;
+kryptonManager.GlobalPaletteMode = PaletteMode.Office2007LightGray;
+kryptonManager.GlobalPaletteMode = PaletteMode.Microsoft365DarkGray;
+kryptonManager.GlobalPaletteMode = PaletteMode.MaterialLightGrayRipple;
+</code></pre>
+<h2 id="validation">Validation</h2>
+<p>TestForm demo: <strong>942 Grey Themes</strong> (<code>Office2013GrayThemesDemo</code>), registered in <code>StartScreen.AddButtons()</code>. Switch family variants and check caption contrast, ribbon tab row, headers, status strip, and light client controls.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
