@@ -6,6 +6,8 @@ Issue [#4234](https://github.com/Krypton-Suite/Standard-Toolkit/issues/4234) ask
 
 The feature lives in `Krypton.Toolkit.Utilities`. It does **not** add new `PaletteMode` values. Generated themes are `KryptonCustomPaletteBase` instances that can be applied immediately, registered with `ThemeManager.RegisterCustomTheme` so they appear in theme selectors, or exported as Krypton palette XML.
 
+Screen sampling for seed colours is documented separately in [Krypton Screen Colour Picker](KryptonScreenColorPicker.md).
+
 ## Architecture
 
 A builtin palette is a 242-slot `KryptonColorSchemeBase` plus family look-up tables for hover/pressed buttons. XML customs snapshot thousands of per-style/state properties. The generator therefore:
@@ -65,7 +67,7 @@ KryptonCustomThemeGenerator.Export(palette, @"C:\Themes\Contoso.xml");
 
 ### `KryptonCustomThemeBuilder`
 
-Interactive dialog (`Show()` / `Show(owner)` / `Show(seed)`): colour pickers, hex fields, donor combo, live preview on the dialog, Apply, Register, Export XML, Reset.
+Interactive dialog (`Show()` / `Show(owner)` / `Show(seed)`): colour pickers, hex fields, dropper buttons, donor combo, live preview on the dialog, Apply, Register, Export XML, Reset. Droppers call `KryptonScreenColorPicker` (see [Krypton Screen Colour Picker](Krypton-Screen-Color-Picker.md)).
 
 ## Usage
 
@@ -82,16 +84,3 @@ Interactive dialog (`Show()` / `Show(owner)` / `Show(seed)`): colour pickers, he
 - Glyphs (checkboxes, caption buttons) are reused from the donor family; they are not recoloured bitmaps.
 - `RegisterCustomTheme` names must not collide with builtin theme display names or the `"Custom"` / `"Custom - "` prefix.
 - net472 compatible; no new `PaletteMode` values.
-
-## Validation
-
-TestForm demo: **Custom Theme Generator (#4234)** (`CustomThemeGeneratorDemo`), registered in `StartScreen.AddButtons()`.
-
-Manual steps:
-
-1. Open the demo. Default seed is Contoso `#0078D4` on Office 2010 Blue.
-2. Change hex or click **Use RGB** (`0, 120, 212`) and **Apply**. Buttons, header, and caption should follow the seed.
-3. Switch donor to a dark family and Apply. Surfaces should go dark; buttons keep a bright accent.
-4. **Register**, then pick the name in the theme combo.
-5. **Export XML** and confirm a palette file is written.
-6. **Open Builder** and confirm the Utilities dialog previews without changing the host until Apply.

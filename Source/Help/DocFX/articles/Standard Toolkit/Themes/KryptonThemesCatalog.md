@@ -7,7 +7,7 @@ V110 splits builtin palettes so `Krypton.Toolkit` stays a smaller core, while ex
 ### Packages
 
 - `Krypton.Toolkit` — 14 core palettes: Professional System / Office 2003; Office 2007 / 2010 / Microsoft 365 **Blue, Silver, Black**; **Sparkle Blue, Orange, Purple**.
-- `Krypton.Themes` — Visual Studio, Material, macOS, Office 2013, Sparkle dark/light variants, dark/light/white/gray/lime/accessibility, and related helpers.
+- `Krypton.Themes` — Visual Studio, Material, macOS, Office 2013, Sparkle dark/light variants, dark/light/white/gray/lime/accessibility, Issue #1551 Materialize packs, and related helpers.
 - `Krypton.Standard.Toolkit` — bundles Toolkit, Themes, and the other suite assemblies.
 
 ### Toolkit-only vs Standard vs Lite
@@ -17,8 +17,10 @@ Lite pack channels are a **TFM subset**, not a smaller theme set. `PackLite` and
 ## Architecture
 
 - `IKryptonThemeProvider` / `KryptonThemeDescriptor` describe a `PaletteMode`, family key, core vs extra, concrete type, and factory.
-- `KryptonCoreThemeProvider` (internal, Toolkit) registers the 14 core palettes.
-- `KryptonExtendedThemeProvider` (Themes) is advertised with `[assembly: KryptonThemeProvider(typeof(KryptonExtendedThemeProvider))]`.
+- `KryptonCoreThemeProvider` (internal, Toolkit) registers the 14 core palettes. `KryptonThemeCatalog.CorePaletteCount` is derived from registered core descriptors.
+- `KryptonExtendedThemeProvider` (Themes) is advertised with `[assembly: KryptonThemeProvider(typeof(KryptonExtendedThemeProvider))]`. Extra rows pass **family** and **chrome kind** explicitly (no name guessing).
+- `KryptonThemeDescriptor` also carries `ChromeKind` (toolbar images) and `ShieldIconStyle` (UAC artwork). `KryptonThemeChrome` reads those so new palettes do not need `PaletteMode` switch arms.
+- Toolkit `Palette Builtin` keeps cores, shared bases (`PaletteOffice2007Base`, `PaletteMaterialBase`, `PaletteMacOSBase`, `PaletteRetroBase`, `PaletteVisualStudioBase`, `PaletteSparkleBase`, Microsoft 365 base), Theme Catalog types, and `MacOSPaletteSharedAssets`. Extra implementations (including Issue #1551 Materialize packs) live under `Krypton.Themes/Palette Builtin`. Microsoft 365 Blue is a core Official theme.
 - `KryptonThemeCatalog.DiscoverThemes()` scans loaded assemblies, tries `Assembly.Load("Krypton.Themes")` once, then probes `Krypton.Themes.dll` beside `AppContext.BaseDirectory`, the Toolkit assembly, and the entry assembly. `LoadFrom` requires the same public key token as Toolkit.
 - If an extra `PaletteMode` is requested and Themes is not loaded, `GetPalette` / `GetPaletteForMode` **fall back to Microsoft 365 Blue** (design time and runtime). The requested mode is not rewritten; subscribe to `KryptonThemeCatalog.MissingThemeFallback` to log it. Fallback instances are not cached under the extra mode, so loading Themes later in the same process still yields the real palette.
 - Theme combos, lists, ribbon combo, and `KryptonThemeBrowser` use `ThemeManager.GetThemesArray()`. `ShowExtraThemes` / `KryptonThemeBrowserData.ShowExtraThemes` list cores only when false.
@@ -33,7 +35,7 @@ Default: implement the palette as an **extra** in `Krypton.Themes`. Only put a p
 ### 1. Choose placement and family
 
 - **Extra** — file under `Source/Krypton Components/Krypton.Themes/…` (mirror Toolkit `Palette Builtin` folder layout where practical). Register in `KryptonExtendedThemeProvider`.
-- **Core** — file under `Source/Krypton Components/Krypton.Toolkit/Palette Builtin/…`. Register in `KryptonCoreThemeProvider`, and update `KryptonThemeCatalog.IsKnownExtraMode` so the new core is not treated as missing-Themes.
+- **Core** — file under `Source/Krypton Components/Krypton.Toolkit/Palette Builtin/…`. Register in `KryptonCoreThemeProvider` with `isCore: true` so `IsCoreMode` and `CorePaletteCount` stay accurate.
 - Pick a `KryptonThemeFamilies` key (or add a new constant). Extras that share a family with cores (e.g. Sparkle) should be hideable with `SetFamilyEnabled(family, false, extraOnly: true)`.
 
 Concrete types stay in namespace `Krypton.Toolkit` in both assemblies.
@@ -59,24 +61,28 @@ Selectors, converters, and designers all consume `SupportedThemes`; a mismatch s
 **Extra** (`KryptonExtendedThemeProvider`):
 
 ```csharp
-Extra(PaletteMode.MyNewTheme, typeof(PaletteMyNewTheme), () => new PaletteMyNewTheme()),
+Extra(PaletteMode.MyNewTheme, KryptonThemeFamilies.Office2007, KryptonThemeChromeKind.Office2007,
+    typeof(PaletteMyNewTheme), () => new PaletteMyNewTheme()),
 ```
 
-Extend `FamilyFor(PaletteMode)` when the name does not already map to the right `KryptonThemeFamilies` value.
+Pass `KryptonThemeShieldIconStyle` only when it is not `KryptonThemeChrome.DefaultShieldIconStyle(chrome)`.
+
+Do not infer family from the enum name. Colour packs (Lime Green, Materialize, Gray, Accessibility) use their own family with the **chrome kind** of the renderer they wrap.
 
 **Core** (`KryptonCoreThemeProvider`):
 
 ```csharp
-Core(PaletteMode.MyNewTheme, KryptonThemeFamilies.MyFamily, typeof(PaletteMyNewTheme),
-    () => KryptonManager.PaletteMyNewTheme),
+Core(PaletteMode.MyNewTheme, KryptonThemeFamilies.MyFamily, KryptonThemeChromeKind.Office2007,
+    typeof(PaletteMyNewTheme), () => KryptonManager.PaletteMyNewTheme),
 ```
 
-Also add a typed lazy accessor on `KryptonManager` and exclude the mode from `IsKnownExtraMode`.
+Also add a typed lazy accessor on `KryptonManager`, and verify `KryptonThemeCatalog.CorePaletteCount` after registration when adding a core palette.
 
 ### 5. `KryptonManager` accessor
 
-- Extra: `public static PaletteBase PaletteMyNewTheme => GetPaletteForMode(PaletteMode.MyNewTheme);`
+- Extra: prefer `GetPaletteForMode`. Do not add a new `Palette*` singleton unless a named property is still required. Existing extra accessors return `PaletteBase`.
 - Core: typed property with a private static lazy field (same pattern as `PaletteSparkleBlue`).
+- Toolbar images and theme-based UAC shields follow `KryptonThemeChromeKind` / `KryptonThemeShieldIconStyle`. Do not add per-mode switch arms.
 
 ### 6. Converters and designer
 
@@ -99,21 +105,24 @@ Also add a typed lazy accessor on `KryptonManager` and exclude the mode from `Is
 | Enum order ≠ `SupportedThemes` | Wrong labels / designer bugs |
 | New value after `Custom` | Serialization / converter issues |
 | Extra registered only in Toolkit | Themes never discover it; paints Microsoft 365 Blue until Themes loads |
-| Core omitted from `IsKnownExtraMode` allow-list inversion | Treated as missing Themes assembly |
+| Family inferred from enum name | Wrong `SetFamilyEnabled` grouping |
+| Per-mode toolbar / shield switch | Every new extra palette has to touch Toolkit again |
+| Core registered without `isCore: true` | Wrong `CorePaletteCount`; extra fallback when Themes missing |
 | New Sparkle family disable without `extraOnly` | Hides core Sparkle Blue/Orange/Purple |
 
 ## Public API
 
 | Type | Role |
 |------|------|
-| `KryptonThemeCatalog` | Register, discover, `IsImplementationAvailable`, `IsCoreMode`, `GetPalette`, `GetDescriptors`, `GetFamilies`, `GetDisplayName`, `GetUnimplementedBuiltinModes`, `MissingThemeFallback` |
+| `KryptonThemeCatalog` | Register, discover, `IsImplementationAvailable`, `IsCoreMode`, `GetPalette`, `GetDescriptors`, `TryGetDescriptor`, `GetFamilies`, `GetDisplayName`, `GetUnimplementedBuiltinModes`, `CorePaletteCount`, `MissingThemeFallback` |
 | `KryptonThemeAvailability` | `SetEnabled`, `SetFamilyEnabled` (`extraOnly`), `AllowCustomThemes`, `IsSelectable`, `Export` / `Import`, `Reset` |
 | `KryptonThemeFamilies` | Family keys |
+| `KryptonThemeChromeKind` / `KryptonThemeShieldIconStyle` / `KryptonThemeChrome` | Chrome era, UAC shield era, toolbar images |
 | `KryptonManager.AutoDiscoverThemes` | Opt out of loading extra palettes |
 | `KryptonThemeComboBox` / `KryptonThemeListBox` / `KryptonRibbonGroupThemeComboBox` | Rebuild by theme name, `ShowExtraThemes` |
 | `KryptonThemeBrowserData.ShowExtraThemes` | Theme browser list filter |
 
-Official Sparkle / Office / 365 core `KryptonManager.Palette*` accessors stay **typed**. Extra accessors return `PaletteBase`.
+Official Sparkle / Office / 365 core `KryptonManager.Palette*` accessors stay **typed**. Extra accessors return `PaletteBase` and are **`[Obsolete]`** — use `GetPaletteForMode`.
 
 `PaletteModeConverter.GetStandardValues` lists selectable, available modes plus `Global`.
 
@@ -159,3 +168,5 @@ See `Source/TestHarnesses/ThemeProviderSample`. Mark the assembly with `KryptonT
 - `MacOSCustomPaletteHelper` ships in Themes.
 - Hiding Sparkle without `extraOnly: true` also hides core Sparkle Blue/Orange/Purple.
 - Only signed `Krypton.Themes.dll` matching Toolkit’s public key token is `LoadFrom`’d. Other provider assemblies must already be loaded (project reference or your own `LoadFrom`).
+- Without a descriptor (Themes not loaded), `KryptonThemeChrome` guesses chrome and shield from the `PaletteMode` name. Registered descriptors always win.
+- Do not add a parallel string theme-id system. `PaletteMode` remains the public identity; `Custom` stays last. Third-party palettes can only implement unused enum values.

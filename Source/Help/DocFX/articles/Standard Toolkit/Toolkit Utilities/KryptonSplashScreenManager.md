@@ -4,7 +4,7 @@
 
 Issue [#4180](https://github.com/Krypton-Suite/Standard-Toolkit/issues/4180) asked for a splash that stays alive while the rest of the application starts: fade in/out, live status and progress, logging, background image, semi-transparency, theming, and exception handling — without blocking the owner thread, and without `Microsoft.VisualBasic` or WPF `System.Windows.SplashScreen`.
 
-`KryptonSplashScreenManager` in **Krypton.Toolkit.Utilities** is that implementation. It is **not** a replacement for the existing modal [`KryptonSplashScreen`](../../Source/Krypton%20Components/Krypton.Toolkit/Controls%20Toolkit/KryptonSplashScreen.cs) in `Krypton.Toolkit`.
+`KryptonSplashScreenManager` in **Krypton.Toolkit.Utilities** is that implementation. It is **not** a replacement for the existing modal [`KryptonSplashScreen`](xref:Krypton.Toolkit.KryptonSplashScreen) in `Krypton.Toolkit`.
 
 | Type | Assembly | Behaviour |
 |------|----------|-----------|

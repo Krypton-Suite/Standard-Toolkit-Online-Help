@@ -166,7 +166,7 @@ Preview SDK installation is conditional on **`USE_DOTNET_PREVIEW`** (repository 
 
 **Cache Strategy**:
 
-- **Key**: `${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}`
+- **Key**: `{% raw %}${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}{% endraw %}`
 - **Path**: `~/.nuget/packages`
 - **Restore Keys**: Falls back to partial match if exact key not found
 
