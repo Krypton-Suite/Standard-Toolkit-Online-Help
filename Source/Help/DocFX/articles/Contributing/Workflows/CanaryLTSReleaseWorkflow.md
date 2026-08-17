@@ -164,7 +164,7 @@ When disabled, the first step writes a warning and sets `enabled=false`; all sub
 
 - **Action**: `actions/cache@v5`
 - **Path**: `~/.nuget/packages`
-- **Key**: `${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}`
+- **Key**: `{% raw %}${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}{% endraw %}`
 - **Condition**: Kill switch enabled.
 - **Purpose**: Speeds up restore by reusing the NuGet package cache across runs when project files are unchanged.
 

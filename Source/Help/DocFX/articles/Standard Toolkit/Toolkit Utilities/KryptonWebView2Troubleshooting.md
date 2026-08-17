@@ -429,6 +429,7 @@
 
 2. **Inject Theme CSS:**
 
+   {% raw %}
    ```csharp
    private async Task InjectThemeCSS()
    {
@@ -451,6 +452,7 @@
        }
    }
    ```
+   {% endraw %}
 
 ## JavaScript Integration Issues
 
@@ -465,6 +467,7 @@
 
 1. **Wait for Document Ready:**
 
+   {% raw %}
    ```csharp
    private async Task ExecuteScriptWhenReady(string script)
    {
@@ -484,6 +487,7 @@
        }
    }
    ```
+   {% endraw %}
 
 2. **Handle Script Errors:**
 

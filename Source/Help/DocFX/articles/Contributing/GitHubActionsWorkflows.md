@@ -1016,11 +1016,13 @@ To save build outputs for download:
 
 **To limit concurrency** (prevent simultaneous releases):
 
+{% raw %}
 ```yaml
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false  # Queue instead of cancel
 ```
+{% endraw %}
 
 **Use case**: Prevent two releases from running at same time
 
@@ -1102,6 +1104,7 @@ jobs:
 
 **Example**:
 
+{% raw %}
 ```yaml
 - name: Workflow Status
   if: always()
@@ -1110,6 +1113,7 @@ jobs:
     webhook: ${{ secrets.DISCORD_WEBHOOK_STATUS }}
     status: ${{ job.status }}
 ```
+{% endraw %}
 
 #### Workflow Run Analytics
 
@@ -1207,6 +1211,7 @@ When moving to a new preview band (for example the next major):
 
 **Advanced**: Also cache MSBuild output
 
+{% raw %}
 ```yaml
 - name: Cache Build
   uses: actions/cache@v4
@@ -1216,6 +1221,7 @@ When moving to a new preview band (for example the next major):
       **/obj
     key: build-${{ hashFiles('**/*.cs') }}
 ```
+{% endraw %}
 
 **Trade-off**: Faster builds vs. cache storage usage
 

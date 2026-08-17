@@ -315,6 +315,7 @@ Do **not** set `DefaultBackgroundColor = Color.White` in the designer; it is syn
 
 The following subclass injects palette colors into **document** CSS. Control chrome still updates automatically when the global palette or focus state changes.
 
+{% raw %}
 ```csharp
 public class ThemeAwareWebView2 : KryptonWebView2
 {
@@ -386,11 +387,13 @@ public class ThemeAwareWebView2 : KryptonWebView2
     }
 }
 ```
+{% endraw %}
 
 ## JavaScript Integration
 
 ### Bidirectional Communication
 
+{% raw %}
 ```csharp
 public class JavaScriptBridge
 {
@@ -511,6 +514,7 @@ public class ThemeHostObject
     }
 }
 ```
+{% endraw %}
 
 ## Navigation Control
 
