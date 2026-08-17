@@ -40,7 +40,7 @@ DocFX extracts API reference from **sibling** clones next to this repository (sa
 - Standard Toolkit → `../Standard-Toolkit/Source/Krypton Components/` → `api/`
 - Extended Toolkit → `../Extended-Toolkit/Source/Krypton Toolkit/` → `api-extended/`
 
-Keep those trees current when you want metadata to match local toolkit source. Extended metadata is generated for `net8.0-windows` only, and skips Ultimate/Lite aggregates, tests, examples, and helper tools.
+Keep those trees current when you want metadata to match local toolkit source. Standard and Extended metadata are generated for `net10.0-windows` only. Pinning that TFM is required because the toolkit projects multi-target (including .NET Framework, where `ReadOnlySpan<T>` comes from `System.Memory` rather than the BCL). Extended also skips Ultimate/Lite aggregates, tests, examples, and helper tools.
 
 DocFX cannot take a Git URL in `metadata.src`. If a sibling folder is missing, `run.cmd` clones [Krypton-Suite/Standard-Toolkit](https://github.com/Krypton-Suite/Standard-Toolkit) and/or [Krypton-Suite/Extended-Toolkit](https://github.com/Krypton-Suite/Extended-Toolkit) there as a fallback. GitHub Actions checks out the same repositories beside this repo.
 
