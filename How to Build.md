@@ -3,20 +3,19 @@
 ## What
 
 - The help content is a combination of code trawling and MarkDown files.
-- Published output is a **NuGet-versioned** site: `/v/<PackageVersion>/`, with `/` redirecting to the latest Stable version from `versions.json`.
+- Published output is a **multi-version** site: `/master/`, `/alpha/`, `/v105-lts/`, with `/` redirecting to `/master/`.
 
 ---
 
 ## Automated Build (GitHub Actions)
 
-- **Validation:** `.github/workflows/build.yml` builds a disposable `v/local-dev/` tree on push/PR (does not publish Pages).
-- **Publish:** `.github/workflows/publish-docs-version.yml` builds one NuGet version into the `docs-versions` branch and deploys GitHub Pages (triggered by `repository_dispatch` from Standard-Toolkit or manual `workflow_dispatch`).
+- The documentation is built by `.github/workflows/build.yml` on push/PR to main/master.
+- A matrix builds Standard + Extended API for toolkit branches `master`, `alpha`, and `V105-LTS` in parallel.
+- A merge job stitches the three trees, adds the root redirect, and deploys to GitHub Pages.
 - To enable Pages:
   1. Go to your repository Settings → Pages
   2. Under "Source", select "GitHub Actions"
-  3. Docs URL: `https://<username>.github.io/<repository-name>/`
-
-See [Versions](Source/Help/DocFX/articles/Versions.md) and [Publish Docs From Toolkit](Source/Help/DocFX/articles/Contributing/Workflows/PublishDocsFromToolkit.md).
+  3. The documentation will be available at `https://<username>.github.io/<repository-name>/`
 
 ---
 
@@ -34,7 +33,7 @@ See [Versions](Source/Help/DocFX/articles/Versions.md) and [Publish Docs From To
 
 - Edit the md file(s) [in the `DocFX\articles` subdirectory] to reflect the content, and add the pictures into the images directory.
 - If new content is added then update the `yml index` files.
-- Articles are included in each version tree at publish time.
+- Articles are **shared** across version trees; only API metadata changes per toolkit branch.
 
 ## API metadata (toolkit source)
 
@@ -45,11 +44,11 @@ DocFX extracts API reference from toolkit clones:
 
 **Local fast path:** sibling folders next to this repo (`../Standard-Toolkit/`, `../Extended-Toolkit/`).
 
-**Published version path:** `Scripts/Build-VersionedDocs.ps1 -Channel … -Version … -StandardRef …` checks out toolkits at those refs under `.toolkit-src/` unless `-UseSiblings` is set.
+**Multi-version path:** `Scripts/Build-VersionedDocs.ps1` clones each branch under `.toolkit-src/` (gitignored) unless `-UseSiblings` is set.
 
-Metadata is generated for **`net8.0-windows`**. Both Standard and Extended metadata allow compilation errors so a broken module does not abort the whole docs build. Extended skips Ultimate/Lite aggregates, tests, examples, and helper tools. Standard skips `TestForm` and `Krypton.Standard.Toolkit`. Unresolved article xrefs are warnings (see `rules` in `docfx.json`).
+Metadata is generated for **`net8.0-windows`** only (common TFM across master / alpha / V105-LTS). Both Standard and Extended metadata allow compilation errors so a broken module (or missing optional NuGet) does not abort the whole docs build. Extended skips Ultimate/Lite aggregates, tests, examples, and helper tools. Standard skips `TestForm` and `Krypton.Standard.Toolkit`. Unresolved article xrefs are warnings (see `rules` in `docfx.json`).
 
-DocFX cannot take a Git URL in `metadata.src`. CI checks out both toolkits beside this repo.
+DocFX cannot take a Git URL in `metadata.src`. GitHub Actions checks out both toolkits at the matrix branch beside this repo.
 
 ---
 
@@ -72,26 +71,35 @@ docfx docfx.json --serve
 
 View at [http://localhost:8080](http://localhost:8080).
 
-### Option 2: Build current siblings into `site/v/local-dev`
+### Option 2: Build current siblings into `site/master`
 
 ```cmd
 run.cmd build
 ```
 
-Output: `Source\Help\Output\site\v\local-dev\` plus stub `versions.json` / root redirect.
+Output: `Source\Help\Output\site\master\` plus root redirect at `site\index.html`.
 
-### Option 3: Reproduce a published NuGet version
+### Option 3: Build all versions (master, alpha, V105-LTS)
 
-```powershell
-.\Scripts\Build-VersionedDocs.ps1 `
-  -Channel stable `
-  -Version 110.26.11.328 `
-  -StandardRef <sha-or-tag> `
-  -ExtendedRef <sha-or-tag> `
-  -OutputRoot Source\Help\Output\site
+```cmd
+run.cmd all
 ```
 
-With `-UpdateCatalog`, also merges into `versions.json` and prunes old canary/nightly under that output root.
+Or:
+
+```powershell
+.\Scripts\Build-VersionedDocs.ps1 -All -OutputRoot Source\Help\Output\site
+```
+
+Output:
+
+```text
+Source/Help/Output/site/
+  index.html      → redirects to master/
+  master/
+  alpha/
+  v105-lts/
+```
 
 ### Tip
 
@@ -111,4 +119,3 @@ With `-UpdateCatalog`, also merges into `versions.json` and prunes old canary/ni
 
 - [DocFX walkthrough overview](http://dotnet.github.io/docfx/tutorial/walkthrough/walkthrough_overview.html)
 - [Versions](Source/Help/DocFX/articles/Versions.md)
-- [Publish Docs From Toolkit](Source/Help/DocFX/articles/Contributing/Workflows/PublishDocsFromToolkit.md)
