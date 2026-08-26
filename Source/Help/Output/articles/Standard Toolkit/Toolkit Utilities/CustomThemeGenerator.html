@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Custom Theme Generator | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Custom Theme Generator | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="custom-theme-generator">Custom Theme Generator</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4234">#4234</a> asked for an easier way to create custom themes: the consumer supplies a few colours (hexadecimal or RGB) and the toolkit builds a full palette from those seeds and related colours in the spectrum.</p>
+<p>The feature lives in <code>Krypton.Toolkit.Utilities</code>. It does <strong>not</strong> add new <code>PaletteMode</code> values. Generated themes are <code>KryptonCustomPaletteBase</code> instances that can be applied immediately, registered with <code>ThemeManager.RegisterCustomTheme</code> so they appear in theme selectors, or exported as Krypton palette XML.</p>
+<p>Screen sampling for seed colours is documented separately in <a href="KryptonScreenColorPicker.html">Krypton Screen Colour Picker</a>.</p>
+<h2 id="architecture">Architecture</h2>
+<p>A builtin palette is a 242-slot <code>KryptonColorSchemeBase</code> plus family look-up tables for hover/pressed buttons. XML customs snapshot thousands of per-style/state properties. The generator therefore:</p>
+<ol>
+<li>Copies a <strong>donor</strong> builtin scheme (Office 2010 Blue or Microsoft 365 Blue, light or dark).</li>
+<li><strong>Hue-shifts</strong> chromatic slots toward the seed primary (neutrals stay readable).</li>
+<li><strong>Overwrites</strong> button, header, form, input, and menu accent slots with tints and shades derived from primary / secondary / surface.</li>
+<li>Applies the remapped scheme to a <strong>new</strong> family palette instance (<code>ApplyScheme</code>). It never mutates <code>KryptonManager.GetPaletteForMode</code> singletons.</li>
+<li>Snapshots that instance into <code>KryptonCustomPaletteBase.PopulateFromBase</code>.</li>
+<li><strong>Patches</strong> Tracking / Pressed / Checked button colours on the custom tree. Those fills come from a type-keyed LUT (Office gold/orange) and would otherwise leak after snapshot.</li>
+</ol>
+<pre><code>Seed colours --&gt; Remap donor scheme --&gt; Throwaway family palette
+        --&gt; PopulateFromBase --&gt; Patch LUT states --&gt; Custom palette
+        --&gt; Apply / Register / Export
+</code></pre>
+<h2 id="public-api">Public API</h2>
+<p>Namespace: <code>Krypton.Toolkit.Utilities</code></p>
+<h3 id="kryptoncustomthemeseed"><code>KryptonCustomThemeSeed</code></h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Name</code></td>
+<td>Display name for selectors and XML</td>
+</tr>
+<tr>
+<td><code>Primary</code></td>
+<td>Required brand / accent colour</td>
+</tr>
+<tr>
+<td><code>Secondary</code></td>
+<td>Optional; analogous hue (~30°) when omitted</td>
+</tr>
+<tr>
+<td><code>Surface</code></td>
+<td>Optional panel/client colour; derived from primary when omitted</td>
+</tr>
+<tr>
+<td><code>DonorMode</code></td>
+<td>One of the supported donors below</td>
+</tr>
+</tbody>
+</table>
+<h3 id="kryptoncustomthemegenerator"><code>KryptonCustomThemeGenerator</code></h3>
+<p>Supported donors (<code>SupportedDonorModes</code>):</p>
+<ul>
+<li><code>PaletteMode.Office2010Blue</code></li>
+<li><code>PaletteMode.Office2010BlueDarkMode</code></li>
+<li><code>PaletteMode.Microsoft365Blue</code></li>
+<li><code>PaletteMode.Microsoft365BlackDarkMode</code></li>
+</ul>
+<p>Colour parse (<code>TryParseColor</code>): <code>#RGB</code>, <code>#RRGGBB</code>, <code>#AARRGGBB</code>, <code>r,g,b</code>, <code>rgb(r,g,b)</code>, or a named HTML colour. <code>FormatColor</code> writes <code>#RRGGBB</code>.</p>
+<pre><code class="lang-csharp">var palette = KryptonCustomThemeGenerator.Create(&quot;Contoso&quot;, &quot;#0078D4&quot;);
+ThemeManager.RegisterCustomTheme(&quot;Contoso&quot;, () =&gt; KryptonCustomThemeGenerator.Create(&quot;Contoso&quot;, &quot;#0078D4&quot;));
+ThemeManager.ApplyTheme(palette, kryptonManager);
+
+KryptonCustomThemeGenerator.Register(new KryptonCustomThemeSeed
+{
+    Name = &quot;Contoso Dark&quot;,
+    Primary = Color.FromArgb(0x00, 0x78, 0xD4),
+    DonorMode = PaletteMode.Microsoft365BlackDarkMode
+}, apply: true, manager: kryptonManager);
+
+KryptonCustomThemeGenerator.Export(palette, @&quot;C:\Themes\Contoso.xml&quot;);
+</code></pre>
+<h3 id="kryptoncustomthemebuilder"><code>KryptonCustomThemeBuilder</code></h3>
+<p>Interactive dialog (<code>Show()</code> / <code>Show(owner)</code> / <code>Show(seed)</code>): colour pickers, hex fields, dropper buttons, donor combo, live preview on the dialog, Apply, Register, Export XML, Reset. Droppers call <code>KryptonScreenColorPicker</code> (see <a href="Krypton-Screen-Color-Picker.md">Krypton Screen Colour Picker</a>).</p>
+<h2 id="usage">Usage</h2>
+<ol>
+<li>Reference <code>Krypton.Toolkit.Utilities</code> (NuGet package <code>Krypton.Standard.Toolkit</code>).</li>
+<li>Create a seed (or call <code>Create(name, primaryHex)</code>).</li>
+<li>Apply with <code>ThemeManager.ApplyTheme</code>, and/or <code>Register</code> so <code>KryptonThemeComboBox</code> lists the name.</li>
+<li>Optionally export XML and load later with <code>KryptonCustomPaletteBase.Import</code>.</li>
+</ol>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li><strong>Do not</strong> add a <code>PaletteMode</code> per user theme. The enum is closed and must stay aligned with <code>PaletteModeStrings</code>.</li>
+<li><strong>Do not</strong> call <code>PaletteBase.RegisterColor&lt;PaletteOffice2010Blue, …&gt;</code> from consumer code. That LUT is type-keyed and would retint every Office 2010 Blue instance in the process.</li>
+<li>Material / Sparkle / Visual Studio donors are out of scope for v1 (Material uses an overlay fill model).</li>
+<li>Glyphs (checkboxes, caption buttons) are reused from the donor family; they are not recoloured bitmaps.</li>
+<li><code>RegisterCustomTheme</code> names must not collide with builtin theme display names or the <code>&quot;Custom&quot;</code> / <code>&quot;Custom - &quot;</code> prefix.</li>
+<li>net472 compatible; no new <code>PaletteMode</code> values.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
