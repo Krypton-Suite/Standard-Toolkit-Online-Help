@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonMessageBoxExtended foldable details | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonMessageBoxExtended foldable details | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonmessageboxextended-foldable-details">KryptonMessageBoxExtended foldable details</h1>
+
+<p>Package: <code>Krypton.Toolkit.Utilities</code>.</p>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonMessageBoxExtended</code> can show a collapsible details region, matching <code>KryptonFoldableDialog</code>: an expander with ▼ / ▲ glyphs and localizable Show/Hide Details captions. The expander is <strong>opt-in</strong> and hidden when there is no details text (unless the footer is a checkbox).</p>
+<h2 id="public-api">Public API</h2>
+<p>Preferred surface is <code>KryptonMessageBoxExtendedData</code> plus <code>Show</code> / <code>ShowAsync</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DetailsText</code></td>
+<td>Details body. Non-empty shows the expander (FoldableDialog-style alias for <code>MoreDetailsMessageText</code>)</td>
+</tr>
+<tr>
+<td><code>Expanded</code></td>
+<td>Start expanded (alias for <code>MoreDetailsExpanded</code>)</td>
+</tr>
+<tr>
+<td><code>ExpandButtonText</code></td>
+<td>Caption while expanded (Hide Details)</td>
+</tr>
+<tr>
+<td><code>CollapseButtonText</code></td>
+<td>Caption while collapsed (Show Details)</td>
+</tr>
+<tr>
+<td><code>FooterContentType</code></td>
+<td><code>Text</code>, <code>CheckBox</code>, or <code>RichTextBox</code>. <code>null</code> + details text uses <code>RichTextBox</code></td>
+</tr>
+<tr>
+<td><code>FooterRichTextBoxHeight</code></td>
+<td>Details height. <code>null</code> uses 180 (same as FoldableDialog)</td>
+</tr>
+<tr>
+<td><code>ShowMoreDetailsOption</code></td>
+<td>Explicit opt-in; also set automatically when <code>DetailsText</code> is non-empty</td>
+</tr>
+<tr>
+<td><code>MoreDetailsButtonText</code></td>
+<td>Single caption for both states when expand/collapse strings are empty</td>
+</tr>
+</tbody>
+</table>
+<p>Existing <code>Show(..., footerText, footerExpanded, footerContentType, footerRichTextBoxHeight)</code> overloads still work.</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">var result = KryptonMessageBoxExtended.Show(new KryptonMessageBoxExtendedData
+{
+    Caption = &quot;Error&quot;,
+    MessageText = &quot;The operation failed.&quot;,
+    Icon = ExtendedKryptonMessageBoxIcon.Error,
+    Buttons = ExtendedMessageBoxButtons.OK,
+    DetailsText = exception.ToString(),
+    Expanded = false
+});
+</code></pre>
+<p>Custom expander captions (same defaults as <code>KryptonManager.Strings.FoldableDialogStrings</code>):</p>
+<pre><code class="lang-csharp">data.ExpandButtonText = KryptonManager.Strings.FoldableDialogStrings.ExpandText;
+data.CollapseButtonText = KryptonManager.Strings.FoldableDialogStrings.CollapseText;
+</code></pre>
+<h2 id="behaviour">Behaviour</h2>
+<ul>
+<li>Collapsed: toggle only. Expanded: details content plus toggle; the form is re-sized via <code>UpdateSizing</code>.</li>
+<li>Glyphs and default strings are shared with <code>KryptonFoldableDialog</code>.</li>
+<li>Do not also enable <code>VisualForm.FadeValues.FadingEnabled</code> on the same instance if you use <code>UseFade</code>.</li>
+</ul>
+<h2 id="validation">Validation</h2>
+<p>TestForm demo: <code>MessageBoxExtendedFoldableDemo</code> (registered as <strong>Message Box Extended - Foldable Footer</strong>).</p>
+<ol>
+<li>Show with footer text — expander visible; expand/collapse resizes the dialog.</li>
+<li>JIT preset — data path with <code>DetailsText</code> / <code>Expanded</code>.</li>
+<li>Compare with <strong>Foldable Dialog</strong> (<code>FoldableDialogDemo</code>) for caption and glyph parity.</li>
+</ol>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
