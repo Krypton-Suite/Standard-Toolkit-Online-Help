@@ -3,16 +3,15 @@
 ## What
 
 - The help content is a combination of code trawling and MarkDown files.
-- Published output is a **multi-version** site: `/master/`, `/alpha/`, `/v105-lts/`, with `/` redirecting to `/master/`.
 
 ---
 
 ## Automated Build (GitHub Actions)
 
-- The documentation is built by `.github/workflows/build.yml` on push/PR to main/master.
-- A matrix builds Standard + Extended API for toolkit branches `master`, `alpha`, and `V105-LTS` in parallel.
-- A merge job stitches the three trees, adds the root redirect, and deploys to GitHub Pages.
-- To enable Pages:
+- The documentation is automatically built using GitHub Actions whenever changes are pushed to the main/master branch
+- The workflow file is located at `.github/workflows/docfx-build.yml`
+- The built documentation is automatically deployed to GitHub Pages
+- To enable this:
   1. Go to your repository Settings → Pages
   2. Under "Source", select "GitHub Actions"
   3. The documentation will be available at `https://<username>.github.io/<repository-name>/`
@@ -33,73 +32,43 @@
 
 - Edit the md file(s) [in the `DocFX\articles` subdirectory] to reflect the content, and add the pictures into the images directory.
 - If new content is added then update the `yml index` files.
-- Articles are **shared** across version trees; only API metadata changes per toolkit branch.
 
 ## API metadata (toolkit source)
 
-DocFX extracts API reference from toolkit clones:
+DocFX extracts API reference from **sibling** clones next to this repository (same parent folder, e.g. `Z:\Development\Krypton\`):
 
-- Standard Toolkit → `Source/Krypton Components/` → `api/`
-- Extended Toolkit → `Source/Krypton Toolkit/` → `api-extended/`
+- Standard Toolkit → `../Standard-Toolkit/Source/Krypton Components/` → `api/`
+- Extended Toolkit → `../Extended-Toolkit/Source/Krypton Toolkit/` → `api-extended/`
 
-**Local fast path:** sibling folders next to this repo (`../Standard-Toolkit/`, `../Extended-Toolkit/`).
+Keep those trees current when you want metadata to match local toolkit source. Standard and Extended metadata are generated for `net10.0-windows` only. Pinning that TFM is required because the toolkit projects multi-target (including .NET Framework, where `ReadOnlySpan<T>` comes from `System.Memory` rather than the BCL). Extended also skips Ultimate/Lite aggregates, tests, examples, and helper tools.
 
-**Multi-version path:** `Scripts/Build-VersionedDocs.ps1` clones each branch under `.toolkit-src/` (gitignored) unless `-UseSiblings` is set.
-
-Metadata is generated for **`net8.0-windows`** only (common TFM across master / alpha / V105-LTS). Extended skips Ultimate/Lite aggregates, tests, examples, and helper tools. Standard skips `TestForm` and `Krypton.Standard.Toolkit`.
-
-DocFX cannot take a Git URL in `metadata.src`. GitHub Actions checks out both toolkits at the matrix branch beside this repo.
+DocFX cannot take a Git URL in `metadata.src`. If a sibling folder is missing, `run.cmd` clones [Krypton-Suite/Standard-Toolkit](https://github.com/Krypton-Suite/Standard-Toolkit) and/or [Krypton-Suite/Extended-Toolkit](https://github.com/Krypton-Suite/Extended-Toolkit) there as a fallback. GitHub Actions checks out the same repositories beside this repo.
 
 ---
 
 ## Build
 
-### Option 1: Serve current siblings (fast)
+### Option 1: Build and Serve (Recommended for Development)
 
-From the repository root:
-
-```cmd
-run.cmd
-```
-
-Or:
+- Open a command line at the `Source/Help/DocFX` directory
+- Run the following command to build and serve the documentation:
 
 ```cmd
-cd Source\Help\DocFX
 docfx docfx.json --serve
 ```
 
-View at [http://localhost:8080](http://localhost:8080).
+- Now you can view the generated website at [http://localhost:8080](http://localhost:8080)
 
-### Option 2: Build current siblings into `site/master`
+### Option 2: Build Only
 
-```cmd
-run.cmd build
-```
-
-Output: `Source\Help\Output\site\master\` plus root redirect at `site\index.html`.
-
-### Option 3: Build all versions (master, alpha, V105-LTS)
+- Navigate to the `Source/Help/DocFX` directory
+- Run:
 
 ```cmd
-run.cmd all
+docfx docfx.json
 ```
 
-Or:
-
-```powershell
-.\Scripts\Build-VersionedDocs.ps1 -All -OutputRoot Source\Help\Output\site
-```
-
-Output:
-
-```text
-Source/Help/Output/site/
-  index.html      → redirects to master/
-  master/
-  alpha/
-  v105-lts/
-```
+- The output will be generated in `Source/Help/Output`
 
 ### Tip
 
@@ -118,4 +87,3 @@ Source/Help/Output/site/
 ## More Info
 
 - [DocFX walkthrough overview](http://dotnet.github.io/docfx/tutorial/walkthrough/walkthrough_overview.html)
-- [Versions](Source/Help/DocFX/articles/Versions.md)
