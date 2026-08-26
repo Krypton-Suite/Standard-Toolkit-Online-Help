@@ -46,19 +46,6 @@ if not exist "%DOCFX_CONFIG%" (
 )
 
 REM ============================================
-REM Multi-version build: run.cmd all
-REM ============================================
-if /I "%MODE%"=="all" (
-    echo [INFO] Building master, alpha, and V105-LTS into "%SITE_ROOT%"
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%REPO_ROOT%Scripts\Build-VersionedDocs.ps1" -All -OutputRoot "%SITE_ROOT%"
-    if errorlevel 1 exit /b 1
-    echo [INFO] Multi-version site ready at "%SITE_ROOT%"
-    echo [INFO] Open "%SITE_ROOT%\index.html" or serve that folder with DocFX/any static server.
-    endlocal
-    exit /b 0
-)
-
-REM ============================================
 REM Ensure sibling toolkit sources
 REM DocFX metadata.src cannot use a Git URL, so clone
 REM the sibling folder from GitHub when it is missing.
@@ -69,22 +56,28 @@ call :EnsureSiblingToolkit "Extended-Toolkit" "%EXTENDED_TOOLKIT_ROOT%" "%EXTEND
 if errorlevel 1 exit /b 1
 
 REM ============================================
-REM Single-version build into site/master (default local layout)
+REM Dev build into site/v/local-dev (does not touch docs-versions)
 REM ============================================
 if /I "%MODE%"=="build" (
-    echo [INFO] Building current siblings into "%SITE_ROOT%\master"
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%REPO_ROOT%Scripts\Build-VersionedDocs.ps1" -Branch master -OutputRoot "%SITE_ROOT%" -UseSiblings -SkipClone
+    echo [INFO] Building current siblings into "%SITE_ROOT%\v\local-dev"
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%REPO_ROOT%Scripts\Build-VersionedDocs.ps1" -LocalDev -OutputRoot "%SITE_ROOT%" -UseSiblings -SkipClone
     if errorlevel 1 exit /b 1
-    copy /Y "%REPO_ROOT%Scripts\root-redirect.index.html" "%SITE_ROOT%\index.html" >nul
     endlocal
     exit /b 0
+)
+
+if /I "%MODE%"=="all" (
+    echo [INFO] "run.cmd all" is deprecated. Use Build-VersionedDocs.ps1 -Channel/-Version/-StandardRef for NuGet versions,
+    echo [INFO] or "run.cmd build" for a local-dev tree. See articles\Versions.md
+    endlocal
+    exit /b 1
 )
 
 REM ============================================
 REM Start DocFX (serve current siblings; classic Output path)
 REM ============================================
 echo [INFO] Starting DocFX server (current sibling toolkits)...
-echo [INFO] Tip: use "run.cmd all" for master/alpha/V105-LTS trees under Output\site\
+echo [INFO] Tip: use "run.cmd build" for v\local-dev under Output\site\
 
 start "" "%DOCFX%" "%DOCFX_CONFIG%" --serve
 
