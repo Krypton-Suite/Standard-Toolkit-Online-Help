@@ -79,6 +79,25 @@ jobs:
             -UseSiblings `
             -SkipClone
 
+      - name: Diagnose output directory
+        if: always()
+        shell: pwsh
+        run: |
+          $slug = "${{ matrix.slug }}"
+          $root = Join-Path $env:GITHUB_WORKSPACE "site"
+          Write-Host "GITHUB_WORKSPACE=$env:GITHUB_WORKSPACE"
+          Write-Host "Expected: $(Join-Path $root $slug)"
+          if (Test-Path $root) {
+            Get-ChildItem -Force $root -Recurse -Depth 2 | Select-Object -First 80 FullName
+          }
+          else {
+            Write-Host "site/ does not exist"
+          }
+          $index = Join-Path $root "$slug/index.html"
+          if (-not (Test-Path $index)) {
+            Write-Host "::error::Missing $index"
+          }
+
       - name: Upload version artifact
         uses: actions/upload-artifact@v4
         with:
