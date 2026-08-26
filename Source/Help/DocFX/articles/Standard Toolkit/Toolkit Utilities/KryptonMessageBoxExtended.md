@@ -1,4 +1,4 @@
-# KryptonMessageBoxExtended Foldable Footer
+# KryptonMessageBoxExtended Foldable Footer - Developer Guide
 
 ## Overview
 
@@ -159,3 +159,15 @@ KryptonMessageBoxExtended.Show(data);
   frameworks.
 - **Backwards compatibility**: All footer parameters are optional with non-footer defaults; existing callers
   and serialized designer state are unaffected.
+
+## Validation
+
+Use the **"Message Box Extended - Foldable Footer"** demo registered in `StartScreen` (`TestForm`):
+
+```powershell
+dotnet run --project ".\Source\Krypton Components\TestForm\TestForm.csproj" -c Debug
+```
+
+The demo lets you set the message, caption, icon, buttons, footer text, footer content type, RichTextBox
+height, and the initial expanded state, and includes a "Show JIT-style Preset" button that reproduces a
+Visual Studio Just-In-Time debugger style dialog with an expanded rich-text stack trace.

@@ -3,20 +3,14 @@
 ## What
 
 - The help content is a combination of code trawling and MarkDown files.
-- Published output is a **NuGet-versioned** site: `/v/<PackageVersion>/`, with `/` redirecting to the latest Stable version from `versions.json`.
 
 ---
 
 ## Automated Build (GitHub Actions)
 
-- **Validation:** `.github/workflows/build.yml` builds a disposable `v/local-dev/` tree on push/PR (does not publish Pages).
-- **Publish:** `.github/workflows/publish-docs-version.yml` builds one NuGet version into the `docs-versions` branch and deploys GitHub Pages (triggered by `repository_dispatch` from Standard-Toolkit or manual `workflow_dispatch`).
-- To enable Pages:
-  1. Go to your repository Settings → Pages
-  2. Under "Source", select "GitHub Actions"
-  3. Docs URL: `https://<username>.github.io/<repository-name>/`
-
-See [Versions](Source/Help/DocFX/articles/Versions.md) and [Publish Docs From Toolkit](Source/Help/DocFX/articles/Contributing/Workflows/PublishDocsFromToolkit.md).
+- **Validation:** `.github/workflows/build.yml` builds DocFX for toolkit branches `master`, `alpha`, and `V105-LTS` on push/PR.
+- **Publish (NuGet versions):** `.github/workflows/publish-docs-version.yml` publishes `/v/<PackageVersion>/` to GitHub Pages.
+- To enable Pages: Settings → Pages → Source = GitHub Actions.
 
 ---
 
@@ -34,28 +28,23 @@ See [Versions](Source/Help/DocFX/articles/Versions.md) and [Publish Docs From To
 
 - Edit the md file(s) [in the `DocFX\articles` subdirectory] to reflect the content, and add the pictures into the images directory.
 - If new content is added then update the `yml index` files.
-- Articles are included in each version tree at publish time.
 
 ## API metadata (toolkit source)
 
-DocFX extracts API reference from toolkit clones:
+DocFX extracts API reference from **sibling** clones next to this repository (same parent folder, e.g. `Z:\Development\Krypton\`):
 
-- Standard Toolkit → `Source/Krypton Components/` → `api/`
-- Extended Toolkit → `Source/Krypton Toolkit/` → `api-extended/`
+- Standard Toolkit → `../Standard-Toolkit/Source/Krypton Components/` → `api/`
+- Extended Toolkit → `../Extended-Toolkit/Source/Krypton Toolkit/` → `api-extended/`
 
-**Local fast path:** sibling folders next to this repo (`../Standard-Toolkit/`, `../Extended-Toolkit/`).
+Keep those trees current when you want metadata to match local toolkit source. Standard and Extended metadata are generated for `net10.0-windows` only. Pinning that TFM is required because the toolkit projects multi-target (including .NET Framework, where `ReadOnlySpan<T>` comes from `System.Memory` rather than the BCL). Extended also skips Ultimate/Lite aggregates, tests, examples, and helper tools.
 
-**Published version path:** `Scripts/Build-VersionedDocs.ps1 -Channel … -Version … -StandardRef …` checks out toolkits at those refs under `.toolkit-src/` unless `-UseSiblings` is set.
-
-Metadata is generated for **`net8.0-windows`**. Both Standard and Extended metadata allow compilation errors so a broken module does not abort the whole docs build. Extended skips Ultimate/Lite aggregates, tests, examples, and helper tools. Standard skips `TestForm` and `Krypton.Standard.Toolkit`. Unresolved article xrefs are warnings (see `rules` in `docfx.json`).
-
-DocFX cannot take a Git URL in `metadata.src`. CI checks out both toolkits beside this repo.
+DocFX cannot take a Git URL in `metadata.src`. If a sibling folder is missing, `run.cmd` clones [Krypton-Suite/Standard-Toolkit](https://github.com/Krypton-Suite/Standard-Toolkit) and/or [Krypton-Suite/Extended-Toolkit](https://github.com/Krypton-Suite/Extended-Toolkit) there as a fallback. GitHub Actions checks out the same repositories beside this repo.
 
 ---
 
 ## Build
 
-### Option 1: Serve current siblings (fast)
+### Option 1: Build and Serve (Recommended for Development)
 
 From the repository root:
 
@@ -63,35 +52,34 @@ From the repository root:
 run.cmd
 ```
 
-Or:
+Or from `Source/Help/DocFX`:
 
 ```cmd
-cd Source\Help\DocFX
 docfx docfx.json --serve
 ```
 
 View at [http://localhost:8080](http://localhost:8080).
 
-### Option 2: Build current siblings into `site/v/local-dev`
+### Option 2: Build current siblings into `v/local-dev`
 
 ```cmd
 run.cmd build
 ```
 
-Output: `Source\Help\Output\site\v\local-dev\` plus stub `versions.json` / root redirect.
+### Option 3: Build API docs for master, alpha, and V105-LTS
 
-### Option 3: Reproduce a published NuGet version
-
-```powershell
-.\Scripts\Build-VersionedDocs.ps1 `
-  -Channel stable `
-  -Version 110.26.11.328 `
-  -StandardRef <sha-or-tag> `
-  -ExtendedRef <sha-or-tag> `
-  -OutputRoot Source\Help\Output\site
+```cmd
+run.cmd all
 ```
 
-With `-UpdateCatalog`, also merges into `versions.json` and prunes old canary/nightly under that output root.
+Or:
+
+```powershell
+.\Scripts\Build-VersionedDocs.ps1 -BranchTips
+.\Scripts\Build-VersionedDocs.ps1 -Branch master
+```
+
+Output: `Source/Help/Output/site/v/master/`, `v/alpha/`, `v/v105-lts/`.
 
 ### Tip
 
@@ -110,5 +98,3 @@ With `-UpdateCatalog`, also merges into `versions.json` and prunes old canary/ni
 ## More Info
 
 - [DocFX walkthrough overview](http://dotnet.github.io/docfx/tutorial/walkthrough/walkthrough_overview.html)
-- [Versions](Source/Help/DocFX/articles/Versions.md)
-- [Publish Docs From Toolkit](Source/Help/DocFX/articles/Contributing/Workflows/PublishDocsFromToolkit.md)

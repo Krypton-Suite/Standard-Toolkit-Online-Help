@@ -67,7 +67,7 @@ KryptonCustomThemeGenerator.Export(palette, @"C:\Themes\Contoso.xml");
 
 ### `KryptonCustomThemeBuilder`
 
-Interactive dialog (`Show()` / `Show(owner)` / `Show(seed)`): colour pickers, hex fields, dropper buttons, donor combo, live preview on the dialog, Apply, Register, Export XML, Reset. Droppers call `KryptonScreenColorPicker` (see [Krypton Screen Colour Picker](KryptonScreenColorPicker.md)).
+Interactive dialog (`Show()` / `Show(owner)` / `Show(seed)`): colour pickers, hex fields, dropper buttons, donor combo, live preview on the dialog, Apply, Register, Export XML, Reset. Droppers call `KryptonScreenColorPicker` (see [Krypton Screen Colour Picker](Krypton-Screen-Color-Picker.md)).
 
 ## Usage
 

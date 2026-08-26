@@ -28,11 +28,19 @@
 .PARAMETER LocalDev
   Build current sibling checkouts into v/local-dev/ without cloning.
 
+.PARAMETER BranchTips
+  Build toolkit branch tips master, alpha, and V105-LTS into
+  v/master/, v/alpha/, and v/v105-lts/ (dev/CI only; does not update the NuGet catalog).
+
+.PARAMETER Branch
+  Build a single toolkit branch tip: master | alpha | V105-LTS.
+
 .PARAMETER OutputRoot
   Directory that receives v/<version>/ (default: Source/Help/Output/site).
 
 .PARAMETER UseSiblings
   Use ../Standard-Toolkit and ../Extended-Toolkit as-is (CI / local).
+  Only valid for a single checked-out ref (LocalDev or one matrix job).
 
 .PARAMETER SkipClone
   Do not fetch/clone; require toolkit sources at the resolved paths.
@@ -63,6 +71,13 @@ param(
 
     [Parameter(ParameterSetName = 'LocalDev')]
     [switch] $LocalDev,
+
+    [Parameter(ParameterSetName = 'BranchTips')]
+    [switch] $BranchTips,
+
+    [Parameter(ParameterSetName = 'Branch')]
+    [ValidateSet('master', 'alpha', 'V105-LTS')]
+    [string] $Branch,
 
     [string] $OutputRoot,
 
@@ -101,23 +116,48 @@ if (-not (Test-Path $DocfxPath)) {
     $DocfxPath = Join-Path $env:USERPROFILE '.dotnet\tools\docfx.exe'
 }
 
+function Get-BranchSlug {
+    param([string] $GitBranch)
+    switch ($GitBranch) {
+        'master'   { 'master' }
+        'alpha'    { 'alpha' }
+        'V105-LTS' { 'v105-lts' }
+        default    { throw "Unsupported branch: $GitBranch" }
+    }
+}
+
 if ($LocalDev) {
     $Channel = 'stable'
     $Version = 'local-dev'
+    $StandardRef = 'HEAD'
+    $ExtendedRef = 'HEAD'
     $UseSiblings = $true
     $SkipClone = $true
     $UpdateCatalog = $false
 }
+elseif ($BranchTips) {
+    $UpdateCatalog = $false
+    if ($UseSiblings) {
+        throw '-BranchTips cannot use -UseSiblings (each branch needs its own checkout). Omit -UseSiblings or use -Branch with a matrix job.'
+    }
+}
+elseif ($Branch) {
+    $Channel = 'stable'
+    $Version = Get-BranchSlug $Branch
+    $StandardRef = $Branch
+    $ExtendedRef = $Branch
+    $UpdateCatalog = $false
+}
 else {
     if (-not $StandardRef) {
-        throw 'StandardRef is required unless -LocalDev is set.'
+        throw 'StandardRef is required unless -LocalDev, -Branch, or -BranchTips is set.'
     }
     if (-not $ExtendedRef) {
         $ExtendedRef = $StandardRef
     }
 }
 
-# Folder segment under v/ — keep NuGet version chars (letters, digits, ., -)
+# Folder segment under v/ — keep NuGet / branch slug chars (letters, digits, ., -)
 function Get-VersionFolderName {
     param([string] $PackageVersion)
     if ($PackageVersion -notmatch '^[A-Za-z0-9._-]+$') {
@@ -321,19 +361,7 @@ function Build-OneVersion {
 New-Item -ItemType Directory -Force -Path $OutputRoot | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $OutputRoot 'v') | Out-Null
 
-$folderName = Get-VersionFolderName -PackageVersion $Version
-Build-OneVersion -FolderName $folderName -StdRef $StandardRef -ExtRef $ExtendedRef
-
-if ($UpdateCatalog) {
-    $catalogArgs = @{
-        SiteRoot = $OutputRoot
-        Channel  = $Channel
-        Version  = $Version
-    }
-    if ($Line) { $catalogArgs['Line'] = $Line }
-    & (Join-Path $PSScriptRoot 'Update-VersionsCatalog.ps1') @catalogArgs
-}
-else {
+function Write-StubSiteFiles {
     $templateRedirect = Join-Path $PSScriptRoot 'root-redirect.index.html'
     $indexPath = Join-Path $OutputRoot 'index.html'
     if (-not (Test-Path $indexPath) -and (Test-Path $templateRedirect)) {
@@ -346,4 +374,34 @@ else {
     }
 }
 
-Write-Host "[INFO] Done. Output: $OutputRoot\v\$folderName"
+if ($BranchTips) {
+    foreach ($b in @('master', 'alpha', 'V105-LTS')) {
+        $Channel = 'stable'
+        $Version = Get-BranchSlug $b
+        $StandardRef = $b
+        $ExtendedRef = $b
+        $folderName = Get-VersionFolderName -PackageVersion $Version
+        Build-OneVersion -FolderName $folderName -StdRef $StandardRef -ExtRef $ExtendedRef
+    }
+    Write-StubSiteFiles
+    Write-Host "[INFO] Done. Branch-tip trees under: $OutputRoot\v\{master,alpha,v105-lts}"
+}
+else {
+    $folderName = Get-VersionFolderName -PackageVersion $Version
+    Build-OneVersion -FolderName $folderName -StdRef $StandardRef -ExtRef $ExtendedRef
+
+    if ($UpdateCatalog) {
+        $catalogArgs = @{
+            SiteRoot = $OutputRoot
+            Channel  = $Channel
+            Version  = $Version
+        }
+        if ($Line) { $catalogArgs['Line'] = $Line }
+        & (Join-Path $PSScriptRoot 'Update-VersionsCatalog.ps1') @catalogArgs
+    }
+    else {
+        Write-StubSiteFiles
+    }
+
+    Write-Host "[INFO] Done. Output: $OutputRoot\v\$folderName"
+}

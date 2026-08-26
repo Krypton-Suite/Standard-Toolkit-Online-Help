@@ -33,4 +33,4 @@ Conceptual articles are baked into each version tree at publish time. API pages 
 
 Until Standard-Toolkit emits `repository_dispatch` (`docs-publish`), use **Actions → Publish Docs Version** with channel, version, and git refs. See [Publishing docs from toolkit releases](Contributing/Workflows/PublishDocsFromToolkit.md).
 
-Pushes and PRs to this repo only **validate** a disposable `v/local-dev/` build; they do not publish version trees.
+Pushes and PRs to this repo **validate** DocFX against toolkit branch tips (`master`, `alpha`, `V105-LTS`) into disposable `v/<slug>/` trees; they do not publish NuGet version trees. Use `run.cmd all` locally for the same three branch tips.

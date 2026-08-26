@@ -1,7 +1,7 @@
 name: Validate DocFX Documentation
 
-# PR / push validation only. Published site versions are deployed by
-# publish-docs-version.yml (NuGet-aligned trees on the docs-versions branch).
+# Validates DocFX against toolkit branch tips (master, alpha, V105-LTS).
+# Published NuGet-aligned trees are deployed by publish-docs-version.yml.
 
 on:
   push:
@@ -25,6 +25,17 @@ jobs:
   validate:
     runs-on: windows-latest
     timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - branch: master
+            slug: master
+          - branch: alpha
+            slug: alpha
+          - branch: V105-LTS
+            slug: v105-lts
+
     steps:
       - name: Enable long path support on Windows
         if: runner.os == 'Windows'
@@ -35,18 +46,18 @@ jobs:
         with:
           path: Standard-Toolkit-Online-Help
 
-      - name: Checkout Standard-Toolkit
+      - name: Checkout Standard-Toolkit (${{ matrix.branch }})
         uses: actions/checkout@v4
         with:
           repository: Krypton-Suite/Standard-Toolkit
-          ref: master
+          ref: ${{ matrix.branch }}
           path: Standard-Toolkit
 
-      - name: Checkout Extended-Toolkit
+      - name: Checkout Extended-Toolkit (${{ matrix.branch }})
         uses: actions/checkout@v4
         with:
           repository: Krypton-Suite/Extended-Toolkit
-          ref: master
+          ref: ${{ matrix.branch }}
           path: Extended-Toolkit
 
       - name: Setup .NET
@@ -59,11 +70,11 @@ jobs:
       - name: Install DocFX
         run: dotnet tool install -g docfx
 
-      - name: Build disposable local-dev tree
+      - name: Build API docs (${{ matrix.branch }})
         shell: pwsh
         run: |
           & "Standard-Toolkit-Online-Help/Scripts/Build-VersionedDocs.ps1" `
-            -LocalDev `
+            -Branch "${{ matrix.branch }}" `
             -OutputRoot (Join-Path $env:GITHUB_WORKSPACE "site") `
             -UseSiblings `
             -SkipClone
@@ -71,7 +82,7 @@ jobs:
       - name: Verify output
         shell: pwsh
         run: |
-          $index = Join-Path $env:GITHUB_WORKSPACE "site\v\local-dev\index.html"
+          $index = Join-Path $env:GITHUB_WORKSPACE "site\v\${{ matrix.slug }}\index.html"
           if (-not (Test-Path $index)) {
             Write-Host "::error::Missing $index"
             Get-ChildItem -Force (Join-Path $env:GITHUB_WORKSPACE "site") -Recurse -Depth 3 |

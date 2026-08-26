@@ -69,35 +69,61 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="documentation-versions">Documentation versions</h1>
 
-<p>This site publishes a separate documentation tree for each supported toolkit branch tip:</p>
+<p>This site publishes a separate documentation tree for each <strong>NuGet package version</strong> that has been released. Trees live under <code>/v/&lt;PackageVersion&gt;/</code>. The site root redirects to the latest <strong>Stable</strong> version listed in <code>versions.json</code>.</p>
+<h2 id="channels-and-retention">Channels and retention</h2>
 <table>
 <thead>
 <tr>
-<th>Version</th>
-<th>Path</th>
-<th>Toolkit branches</th>
+<th>Channel</th>
+<th>Typical package id</th>
+<th>Path example</th>
+<th>Retention</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Master</strong> (default)</td>
-<td><code>/master/</code></td>
-<td><code>Standard-Toolkit</code> + <code>Extended-Toolkit</code> @ <code>master</code></td>
+<td><strong>Stable</strong></td>
+<td><code>Krypton.Standard.Toolkit</code></td>
+<td><code>/v/110.26.11.328/</code></td>
+<td>Keep every published version</td>
 </tr>
 <tr>
-<td><strong>Alpha</strong></td>
-<td><code>/alpha/</code></td>
-<td>@ <code>alpha</code></td>
+<td><strong>LTS</strong></td>
+<td><code>Krypton.Standard.Toolkit</code> (from an LTS line, e.g. <code>V105-LTS</code>)</td>
+<td><code>/v/105.25.11.310/</code></td>
+<td>Keep every published version</td>
 </tr>
 <tr>
-<td><strong>V105-LTS</strong></td>
-<td><code>/v105-lts/</code></td>
-<td>@ <code>V105-LTS</code></td>
+<td><strong>Canary</strong></td>
+<td><code>Krypton.Standard.Toolkit.Canary</code></td>
+<td><code>/v/110.26.6.173-beta/</code></td>
+<td>Latest only</td>
+</tr>
+<tr>
+<td><strong>Nightly</strong></td>
+<td><code>Krypton.Standard.Toolkit.Nightly</code></td>
+<td><code>/v/110.26.8.221-alpha/</code></td>
+<td>Latest only</td>
 </tr>
 </tbody>
 </table>
-<p>Conceptual articles are shared across versions. API reference pages reflect the selected branch.</p>
-<p>Use the version dropdown in the top navigation to switch trees. The site root redirects to <code>/master/</code>.</p>
+<p>Dropdown labels use the <strong>exact NuGet version string</strong> (same as on nuget.org), grouped by channel. LTS entries may also record a <code>line</code> (e.g. <code>V105-LTS</code>); new LTS lines are added when those packages are published—nothing is hard-coded to a single LTS branch name.</p>
+<h2 id="site-layout">Site layout</h2>
+<pre><code class="lang-text">/
+  index.html       → redirect to latest Stable
+  versions.json    → catalog for the navbar dropdown
+  v/&lt;version&gt;/     → full DocFX tree (articles + api + api-extended)
+</code></pre>
+<p>Conceptual articles are baked into each version tree at publish time. API pages reflect the toolkit sources at the SHA used for that NuGet package.</p>
+<h2 id="how-versions-are-published">How versions are published</h2>
+<ol>
+<li>A Stable / LTS / Canary / Nightly NuGet publish in <strong>Standard-Toolkit</strong> (or a manual <code>workflow_dispatch</code>) triggers <code>publish-docs-version.yml</code> in this repo.</li>
+<li>DocFX builds against the release <code>standard_ref</code> / <code>extended_ref</code>.</li>
+<li>Output is merged into the long-lived <code>docs-versions</code> branch (<code>v/&lt;version&gt;/</code>), old Canary/Nightly trees are pruned, and <code>versions.json</code> is updated.</li>
+<li>That branch tree is deployed to GitHub Pages.</li>
+</ol>
+<p>Until Standard-Toolkit emits <code>repository_dispatch</code> (<code>docs-publish</code>), use <strong>Actions → Publish Docs Version</strong> with channel, version, and git refs. See <a href="Contributing/Workflows/PublishDocsFromToolkit.html">Publishing docs from toolkit releases</a>.</p>
+<p>Pushes and PRs to this repo only <strong>validate</strong> a disposable <code>v/local-dev/</code> build; they do not publish version trees.</p>
 
 </article>
           </div>

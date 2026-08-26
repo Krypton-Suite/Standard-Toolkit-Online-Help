@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-      <title>Screen colour picker and custom theme generator | Krypton Standard Toolkit Documentation </title>
+      <title>Krypton Screen Colour Picker | Krypton Standard Toolkit Documentation </title>
       <meta name="viewport" content="width=device-width">
-      <meta name="title" content="Screen colour picker and custom theme generator | Krypton Standard Toolkit Documentation ">
+      <meta name="title" content="Krypton Screen Colour Picker | Krypton Standard Toolkit Documentation ">
     
     
       <link rel="shortcut icon" href="../../../Krypton.ico">
@@ -67,331 +67,245 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="screen-colour-picker-and-custom-theme-generator">Screen colour picker and custom theme generator</h1>
+<h1 id="krypton-screen-colour-picker">Krypton Screen Colour Picker</h1>
 
 <h2 id="overview">Overview</h2>
-<p><code>KryptonScreenColorPicker</code> is a <strong>static</strong> helper in <code>Krypton.Toolkit.Utilities</code> that captures a colour from the virtual desktop with a full-screen magnifier overlay. <code>KryptonColorPicker</code> is a <strong>toolbox / component-tray</strong> wrapper (same idea as <code>ColorDialog</code>) that stores <code>Color</code>, flyout style, zoom, magnifier size, visible formats, and raises <code>ColorChanged</code>.</p>
-<p>The <strong>Custom Theme Generator</strong> (<code>KryptonCustomThemeBuilder</code> / <code>KryptonCustomThemeGenerator</code>) uses the same picker as an eyedropper so authors can sample seed colours, remap a builtin donor scheme into a <code>KryptonCustomPaletteBase</code>, register it, and export XML.</p>
-<p>Packages: <code>Krypton.Toolkit.Utilities</code> (picker and generator). Optional extra palettes still come from <code>Krypton.Themes</code>.</p>
+<p><code>KryptonScreenColorPicker</code> is a PowerToys-style eyedropper for WinForms. The consumer calls a static <code>TryPick</code> method; the toolkit freezes a screenshot of the virtual desktop, shows a full-screen overlay with a magnified pixel grid, and returns the colour under the cursor when the user clicks.</p>
+<p><strong>Problem solved.</strong> Palette and theme UIs need colours taken from other windows, not only from a standard colour dialog. The Windows <code>ColorDialog</code> cannot sample the screen. This API fills that gap without adding Cyotek ColorPicker (or any other third-party colour package) to <code>Krypton.Toolkit.Utilities</code>.</p>
+<p><strong>Scope.</strong> Screen capture, overlay UX, hex/RGB readout, zoom, cancel, and a small eyedropper glyph for buttons. It does <strong>not</strong> persist history, copy to the clipboard, or host a colour wheel.</p>
+<p><strong>Package.</strong> <code>Krypton.Toolkit.Utilities</code> (<code>Krypton.Standard.Toolkit</code> NuGet). Namespace <code>Krypton.Toolkit.Utilities</code>. Original Krypton code inspired by the <a href="https://github.com/microsoft/PowerToys/tree/main/src/modules/colorPicker">PowerToys Color Picker</a> overlay behaviour (screenshot, zoomed grid, hex/RGB). Do not copy PowerToys sources.</p>
+<p>Related: <a href="CustomThemeGenerator.html">Custom Theme Generator</a> uses dropper buttons that call this API.</p>
 <h2 id="architecture">Architecture</h2>
+<p>Three types live under <code>Source/Krypton Components/Krypton.Toolkit.Utilities/Components/Krypton Screen Color Picker/</code>:</p>
 <table>
 <thead>
 <tr>
 <th>Type</th>
+<th>Visibility</th>
+<th>File</th>
 <th>Role</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>KryptonScreenColorPicker</code></td>
-<td>Public static API (<code>TryPick</code>, <code>FormatColor</code>, <code>BindColorFormatList</code>, <code>DefaultFlyoutStyle</code>, <code>VisibleColorFormats</code>, <code>Strings</code>)</td>
-</tr>
-<tr>
-<td><code>KryptonColorPicker</code></td>
-<td><code>Component</code> for the VS toolbox / form tray; <code>ShowDialog</code> / <code>TryPick</code> plus bindable <code>Color</code></td>
-</tr>
-<tr>
-<td><code>KryptonScreenColorPickerFlyoutStyle</code></td>
-<td>Classic vs Krypton flyout chrome</td>
-</tr>
-<tr>
-<td><code>KryptonScreenColorPickerColorFormat</code></td>
-<td>Flags for which colour representations appear on the flyout</td>
-</tr>
-<tr>
-<td><code>KryptonScreenColorPickerStrings</code></td>
-<td>Localisable overlay, flyout, format, and style strings (<code>[Localizable(true)]</code>)</td>
+<td>public static</td>
+<td><code>Controls Toolkit/KryptonScreenColorPicker.cs</code></td>
+<td>Entry point: hide owner, capture, show overlay, restore owner</td>
 </tr>
 <tr>
 <td><code>VisualScreenColorPickerOverlay</code></td>
-<td>Full-screen <code>TransparencyKey</code> form; live neighbourhood capture; keyboard/wheel zoom</td>
+<td>internal <code>Form</code></td>
+<td><code>Controls Visuals/VisualScreenColorPickerOverlay.cs</code></td>
+<td>Full-screen frozen desktop + magnifier HUD</td>
 </tr>
 <tr>
-<td><code>VisualScreenColorPickerKryptonFlyoutForm</code></td>
-<td>TopMost click-through window hosting the themed flyout (not a child of the overlay)</td>
-</tr>
-<tr>
-<td><code>VisualScreenColorPickerKryptonFlyout</code></td>
-<td><code>KryptonHeaderGroup</code>: colour-name heading, magnifier, swatch, format labels</td>
-</tr>
-<tr>
-<td><code>VisualScreenColorPickerClassicFlyoutForm</code></td>
-<td>TopMost click-through window that GDI-paints the PowerToys-style HUD</td>
-</tr>
-<tr>
-<td><code>ScreenColorPickerMagnifierPainter</code></td>
-<td>Shared nearest-neighbour magnifier draw</td>
-</tr>
-<tr>
-<td><code>ScreenColorPickerColorFormatter</code></td>
-<td>Formats a <code>Color</code> according to <code>KryptonScreenColorPickerColorFormat</code></td>
-</tr>
-<tr>
-<td><code>KryptonCustomThemeBuilder</code></td>
-<td>Static <code>Show</code> for the generator dialog</td>
-</tr>
-<tr>
-<td><code>KryptonCustomThemeGenerator</code></td>
-<td>Seed-to-palette remapper (<code>Create</code>, <code>Register</code>, <code>Export</code>)</td>
-</tr>
-<tr>
-<td><code>KryptonCustomThemeSeed</code></td>
-<td>Name, primary/secondary/surface colours, and donor <code>PaletteMode</code></td>
-</tr>
-<tr>
-<td><code>VisualCustomThemeBuilderForm</code></td>
-<td>Seed editor with eyedropper, flyout/format options, apply/register/export</td>
+<td><code>ScreenColorPickerGlyph</code></td>
+<td>internal static</td>
+<td><code>General/ScreenColorPickerGlyph.cs</code></td>
+<td>16×16 eyedropper bitmap used by <code>CreateDropperGlyphImage</code></td>
 </tr>
 </tbody>
 </table>
-<p>The overlay is <strong>not</strong> the flyout parent. Both Classic and Krypton HUDs live in their own small TopMost forms (<code>WS_EX_NOACTIVATE</code>, <code>ShowWithoutActivation</code>). Mouse hits pass through (<code>WM_NCHITTEST</code> → <code>HTTRANSPARENT</code>) so the overlay still receives click-to-sample. The overlay only paints the instruction banner (Classic GDI or a <code>KryptonPanel</code>). That keeps the magnifier from leaving trails when the cursor moves quickly.</p>
-<pre><code>KryptonColorPicker.ShowDialog / KryptonScreenColorPicker.TryPick
-        │
-        ▼
-  hide owner (Opacity = 0)  ──►  VisualScreenColorPickerOverlay.ShowDialog (no owner)
-        │                              │
-        │                              ├─ 16 ms timer: CopyFromScreen neighbourhood
-        │                              ├─ Classic: VisualScreenColorPickerClassicFlyoutForm
-        │                              └─ Krypton: VisualScreenColorPickerKryptonFlyoutForm
-        │                                        └─ VisualScreenColorPickerKryptonFlyout
-        ▼
-  restore owner Opacity
+<p>The overlay is a <strong>borderless <code>Form</code></strong>, not a <code>KryptonForm</code>. It must sit above everything, match <code>SystemInformation.VirtualScreen</code>, and paint a bitmap 1:1. Krypton chrome would fight that.</p>
+<pre><code>TryPick(owner)
+    --&gt; resolve owner Form (or FindForm)
+    --&gt; Opacity = 0 on that form (so colours behind it can be sampled)
+    --&gt; CopyFromScreen(VirtualScreen) into a 32bpp bitmap
+    --&gt; ShowDialog VisualScreenColorPickerOverlay (TopMost, no owner parent)
+            paint screenshot
+            mouse move: sample GetPixel, invalidate old+new magnifier
+            click / Enter / Space --&gt; DialogResult.OK
+            Esc / right-click --&gt; Cancel
+    --&gt; restore owner Opacity
+    --&gt; overlay Dispose disposes the screenshot bitmap
 </code></pre>
-<p><code>TryPick</code> hides a visible owner (<code>Opacity = 0</code>) so the dialog chrome is not sampled, then restores it. The overlay is shown <strong>without</strong> a WinForms owner so the hidden form is not treated as a modal parent. When the owner is a <code>KryptonForm</code>, its <code>LocalCustomPalette</code> is passed to the Krypton flyout.</p>
-<h3 id="colour-capture">Colour capture</h3>
-<p><code>Graphics.CopyFromScreen</code> reads an odd-sized square around the cursor (<code>MagnifierSize</code> 7–21, default 11). The overlay timer (16 ms) recaptures while the cursor is still so the readout stays live if the pixel under the cursor changes (video, animations). Mouse-move skips recapture when the cursor has not moved, to avoid redundant GDI copies. The centre cell is the picked colour.</p>
-<h3 id="flyout-placement">Flyout placement</h3>
-<p><code>MoveFlyout</code> places the HUD at cursor + (4, 4), then clamps it to the virtual screen with an 8 px inset and below the instruction banner. The overlay does not invalidate the whole virtual desktop on mouse move.</p>
-<h3 id="magnifier-preview-size">Magnifier preview size</h3>
-<p>Classic preview width is an exact multiple of the odd source-pixel count so nearest-neighbour cells stay square, with a minimum of about 220 px. Krypton sizes the magnifier as <code>magnifierSize * zoom</code> and keeps a minimum flyout width of 280 px.</p>
+<p>Ownership of the screenshot bitmap transfers to the overlay constructor. <code>using</code> on the overlay always disposes the bitmap, including cancel and capture-success paths after the dialog closes.</p>
 <h2 id="features">Features</h2>
+<h3 id="capture">Capture</h3>
 <ul>
-<li><strong>Left click / Enter / Space:</strong> accept the colour under the cursor.</li>
-<li><strong>Right click / Escape:</strong> cancel (<code>DialogResult.Cancel</code>; <code>TryPick</code> returns <code>false</code>).</li>
-<li><strong>Wheel:</strong> change zoom (6–24, default 12, steps of 2). <strong>Ctrl+wheel:</strong> change magnifier source size (7–21 odd).</li>
-<li><strong>Keyboard zoom (no wheel):</strong> <code>+</code> / <code>-</code> (including numpad), Page Up/Down, Up/Down. <strong>Magnifier size:</strong> <code>[</code> / <code>]</code>, or Ctrl with <code>+</code>/<code>-</code> / Page / arrows.</li>
-<li><strong>F12 / Print Screen:</strong> copy a screenshot of the current screen (desktop through the transparent overlay, plus banner and flyout) to the clipboard.</li>
-<li><strong>Classic flyout:</strong> dark rounded HUD (PowerToys-style), independent of the current palette; painted in its own window. Visible formats are listed under the preview (including known name when that flag is on).</li>
-<li><strong>Krypton flyout:</strong> <code>KryptonHeaderGroup</code> using <code>KryptonManager.CurrentGlobalPalette</code> and an optional owner <code>LocalCustomPalette</code>. Header <strong>heading</strong> is the nearest web <code>KnownColor</code> name when <code>KnownName</code> is visible, otherwise hex. Header <strong>description</strong> is empty. Remaining visible formats are stacked as <code>KryptonLabel</code>s in a <code>KryptonPanel</code> (<code>PanelBackStyle = PanelAlternate</code>) with a colour swatch.</li>
-<li><strong>Visible formats:</strong> <code>Hex</code>, <code>HexAlpha</code>, <code>HexInteger</code>, <code>Rgb</code>, <code>Rgba</code>, <code>Hsl</code>, <code>Hsv</code>, <code>Cmyk</code>, <code>Decimal</code>, <code>Vector</code>, <code>KnownName</code>. Default: <code>KnownName | Hex | Rgb | Hsl</code>. Empty or unknown bits fall back to that default set.</li>
-<li><strong>Localisation:</strong> <code>KryptonScreenColorPicker.Strings</code> / <code>KryptonColorPicker.Strings</code> (same singleton). Overlay instructions, window title, flyout style names, format labels, “Custom”, and <code>string.Format</code> templates for RGB/HSL/etc. are properties with <code>DefaultValue</code> / <code>ShouldSerialize*</code> / <code>Reset*</code>.</li>
-<li><strong>Global defaults:</strong> <code>DefaultFlyoutStyle</code> (defaults to <strong>Krypton</strong>), <code>DefaultMagnifierSize</code>, <code>DefaultZoom</code>, and <code>VisibleColorFormats</code> apply to static <code>TryPick</code> when those arguments are omitted. After a session, magnifier size and zoom are written back to the static defaults. A <code>KryptonColorPicker</code> instance has its own copies (except <code>Strings</code>).</li>
-<li><strong>Multi-monitor:</strong> overlay union of all screens (<code>SystemInformation.VirtualScreen</code>).</li>
+<li>Snapshot covers the <strong>virtual screen</strong> (all monitors), not only the primary display.</li>
+<li>Format is <code>PixelFormat.Format32bppArgb</code>.</li>
+<li><code>CopyFromScreen</code> failures (secure desktop, some GPU/capture policies) dispose the bitmap and make <code>TryPick</code> return <code>false</code>.</li>
+<li>Empty or invalid <code>VirtualScreen</code> also returns <code>false</code>.</li>
 </ul>
-<h2 id="public-api">Public API</h2>
-<h3 id="static-picker">Static picker</h3>
-<pre><code class="lang-csharp">public static class KryptonScreenColorPicker
-{
-    public const int MinimumMagnifierSize = 7;
-    public const int MaximumMagnifierSize = 21;
-    public const int MinimumZoom = 6;
-    public const int MaximumZoom = 24;
-
-    public static KryptonScreenColorPickerFlyoutStyle DefaultFlyoutStyle { get; set; }
-    public static int DefaultMagnifierSize { get; set; }
-    public static int DefaultZoom { get; set; }
-    public static KryptonScreenColorPickerColorFormat VisibleColorFormats { get; set; }
-    public static KryptonScreenColorPickerStrings Strings { get; }
-    public static IReadOnlyList&lt;KryptonScreenColorPickerColorFormat&gt; DefinedColorFormats { get; }
-    public static KryptonScreenColorPickerColorFormat AllColorFormats { get; }
-
-    public static int ClampMagnifierSize(int size);
-    public static int ClampZoom(int zoom);
-
-    public static bool TryPick(out Color color);
-    public static bool TryPick(IWin32Window? owner, out Color color);
-    public static bool TryPick(IWin32Window? owner, KryptonScreenColorPickerFlyoutStyle flyoutStyle, out Color color);
-    public static bool TryPick(IWin32Window? owner, KryptonScreenColorPickerFlyoutStyle flyoutStyle, int magnifierSize, out Color color);
-    public static bool TryPick(IWin32Window? owner, KryptonScreenColorPickerFlyoutStyle flyoutStyle, int magnifierSize, int zoom, KryptonScreenColorPickerColorFormat visibleFormats, out Color color);
-
-    public static string FormatColor(Color color, KryptonScreenColorPickerColorFormat format);
-    public static string GetColorFormatDisplayName(KryptonScreenColorPickerColorFormat format);
-    public static void BindColorFormatList(KryptonCheckedListBox list);
-    public static string GetFlyoutStyleDisplayName(KryptonScreenColorPickerFlyoutStyle style);
-    public static Image CreateDropperGlyphImage();
-}
-</code></pre>
-<p>The static type stays <code>[ToolboxItem(false)]</code> because a <code>static</code> class cannot be a tray component. Drop <code>KryptonColorPicker</code> from the toolbox onto a form instead.</p>
-<p>There is no throwing <code>Pick</code> helper; prefer <code>TryPick</code> or <code>KryptonColorPicker.ShowDialog</code>. <code>BindColorFormatList</code> takes a <code>KryptonCheckedListBox</code> and writes check changes back to <code>VisibleColorFormats</code>.</p>
-<h3 id="toolbox-component">Toolbox component</h3>
-<pre><code class="lang-csharp">[ToolboxItem(true)]
-[ToolboxBitmap(typeof(KryptonColorDialog), &quot;ToolboxBitmaps.KryptonColorDialog.bmp&quot;)]
-public class KryptonColorPicker : Component
-{
-    public Color Color { get; set; }
-    public KryptonScreenColorPickerFlyoutStyle FlyoutStyle { get; set; }
-    public int MagnifierSize { get; set; }
-    public int Zoom { get; set; }
-    public KryptonScreenColorPickerColorFormat VisibleColorFormats { get; set; }
-    public KryptonScreenColorPickerStrings Strings { get; }
-
-    public event EventHandler? ColorChanged;
-
-    public DialogResult ShowDialog();
-    public DialogResult ShowDialog(IWin32Window? owner);
-    public bool TryPick(out Color color);
-    public bool TryPick(IWin32Window? owner, out Color color);
-    public void BindColorFormatList(KryptonCheckedListBox list);
-}
-</code></pre>
-<p><code>Strings</code> is the same shared instance as <code>KryptonScreenColorPicker.Strings</code>. After a pick session, the component copies the last magnifier size and zoom from the static defaults.</p>
-<h3 id="flyout-style">Flyout style</h3>
-<pre><code class="lang-csharp">public enum KryptonScreenColorPickerFlyoutStyle
-{
-    Classic = 0,
-    Krypton = 1
-}
-</code></pre>
-<h3 id="colour-formats">Colour formats</h3>
-<pre><code class="lang-csharp">[Flags]
-public enum KryptonScreenColorPickerColorFormat
-{
-    None = 0,
-    Hex = 1,
-    HexAlpha = 2,
-    HexInteger = 4,
-    Rgb = 8,
-    Rgba = 16,
-    Hsl = 32,
-    Hsv = 64,
-    Cmyk = 128,
-    Decimal = 256,
-    Vector = 512,
-    KnownName = 1024
-}
-</code></pre>
-<h3 id="custom-theme-generator">Custom theme generator</h3>
-<pre><code class="lang-csharp">public static class KryptonCustomThemeBuilder
-{
-    public static DialogResult Show();
-    public static DialogResult Show(IWin32Window? owner);
-    public static DialogResult Show(KryptonCustomThemeSeed seed);
-    public static DialogResult Show(IWin32Window? owner, KryptonCustomThemeSeed seed);
-}
-
-public static class KryptonCustomThemeGenerator
-{
-    public static IReadOnlyList&lt;PaletteMode&gt; SupportedDonorModes { get; }
-    public static bool IsSupportedDonor(PaletteMode mode);
-    public static string GetDonorDisplayName(PaletteMode mode);
-    public static bool TryParseColor(string? text, out Color color);
-    public static string FormatColor(Color color);
-    public static KryptonCustomThemeSeed CreateRandomSeed(string? namePrefix = null);
-    public static KryptonCustomPaletteBase Create(string name, string primaryHex);
-    public static KryptonCustomPaletteBase Create(string name, Color primary, Color? secondary, Color? surface, PaletteMode donorMode);
-    public static KryptonCustomPaletteBase Create(KryptonCustomThemeSeed seed);
-    public static void Register(KryptonCustomThemeSeed seed, bool apply = false, KryptonManager? manager = null);
-    public static void Export(KryptonCustomPaletteBase palette, string filePath, bool ignoreDefaults = true);
-}
-</code></pre>
-<p>Supported donors: Office 2010 Blue, Office 2010 Blue Dark, Microsoft 365 Blue, Microsoft 365 Black Dark.</p>
-<h2 id="usage">Usage</h2>
-<pre><code class="lang-csharp">if (KryptonScreenColorPicker.TryPick(this, out Color color))
-{
-    kryptonPanel1.StateCommon.Color1 = color;
-}
-
-KryptonScreenColorPicker.DefaultFlyoutStyle = KryptonScreenColorPickerFlyoutStyle.Krypton;
-KryptonScreenColorPicker.VisibleColorFormats =
-    KryptonScreenColorPickerColorFormat.Hex |
-    KryptonScreenColorPickerColorFormat.Rgb |
-    KryptonScreenColorPickerColorFormat.Hsl;
-
-KryptonScreenColorPicker.Strings.OverlayInstructions =
-    &quot;Click to pick · Esc cancel · +/- zoom&quot;;
-</code></pre>
-<pre><code class="lang-csharp">// Component on the form (or created in code)
-kryptonColorPicker1.FlyoutStyle = KryptonScreenColorPickerFlyoutStyle.Krypton;
-if (kryptonColorPicker1.ShowDialog() == DialogResult.OK)
-{
-    kryptonButton1.StateCommon.Back.Color1 = kryptonColorPicker1.Color;
-}
-</code></pre>
-<pre><code class="lang-csharp">var seed = new KryptonCustomThemeSeed
-{
-    Name = &quot;Acme Blue&quot;,
-    Primary = Color.FromArgb(0x00, 0x78, 0xD4),
-    DonorMode = PaletteMode.Office2010Blue
-};
-
-KryptonCustomThemeBuilder.Show(this, seed);
-
-KryptonCustomPaletteBase palette = KryptonCustomThemeGenerator.Create(seed);
-KryptonCustomThemeGenerator.Register(seed, apply: true);
-</code></pre>
-<p>Designer: drop <code>KryptonColorPicker</code> in the tray. Set <code>FlyoutStyle</code>, <code>VisibleColorFormats</code>, <code>Zoom</code>, and <code>MagnifierSize</code> in the property grid. Assign <code>Strings</code> only when you need non-English (or custom) overlay text; it is the same shared instance as <code>KryptonScreenColorPicker.Strings</code>.</p>
-<h2 id="configuration--persistence">Configuration / persistence</h2>
-<p>The picker itself does not persist. After a pick, <code>DefaultMagnifierSize</code> and <code>DefaultZoom</code> remember the last session values for the process.</p>
-<p>The theme generator writes <code>KryptonCustomPaletteBase</code> XML via <code>KryptonCustomThemeGenerator.Export</code>. <code>Register</code> stores a factory under the seed name so the theme appears in theme selectors. The builder dialog samples colours with <code>KryptonScreenColorPicker.TryPick</code> into the seed (primary / secondary / surface).</p>
-<h2 id="edge-cases">Edge cases</h2>
+<h3 id="owner-hiding">Owner hiding</h3>
+<p>When <code>owner</code> is (or belongs to) a <strong>visible</strong> <code>Form</code>:</p>
+<ol>
+<li>Previous <code>Opacity</code> is stored.</li>
+<li><code>Opacity</code> is set to <code>0</code>, <code>Update()</code> + <code>DoEvents()</code> run so the compositor shows whatever was behind the dialog.</li>
+<li>The snapshot is taken.</li>
+<li><code>finally</code> restores opacity even if capture or the overlay throws.</li>
+</ol>
+<p>The overlay is <strong>not</strong> shown with <code>ShowDialog(ownerForm)</code>. A fully transparent owner as dialog parent is unreliable; <code>TopMost</code> plus <code>WS_EX_TOPMOST</code> is enough.</p>
+<p>Passing <code>null</code>, a non-form <code>IWin32Window</code> that does not map to a <code>Form</code>, or a hidden form skips the opacity dance.</p>
+<h3 id="overlay-hud">Overlay HUD</h3>
 <ul>
-<li><strong>Owner hide:</strong> sampling the owner form is avoided by opacity, not by excluding a rectangle (the overlay still covers that area).</li>
-<li><strong>Cancellation:</strong> <code>TryPick</code> returns <code>false</code> and <code>color</code> is <code>Color.Empty</code>.</li>
-<li><strong>MagnifierSize:</strong> odd integers 7–21; even values are decremented into range. <code>Zoom</code> is 6–24.</li>
-<li><strong>Krypton flyout theme:</strong> uses <code>KryptonManager.CurrentGlobalPalette</code> plus the owner form’s <code>LocalCustomPalette</code> when present. It does not take a separate palette argument on <code>TryPick</code>.</li>
-<li><strong>Click-through flyout:</strong> <code>WM_NCHITTEST</code> → <code>HTTRANSPARENT</code> so clicks pass through to the overlay. Do not parent the flyout to the overlay (<code>TransparencyKey</code> would punch through child pixels).</li>
-<li><strong>Classic vs overlay paint:</strong> Classic chrome used to be drawn on the overlay (trails while moving). It now uses <code>VisualScreenColorPickerClassicFlyoutForm</code>, same window model as Krypton.</li>
-<li><strong>Visible formats = 0:</strong> <code>Normalize</code> substitutes the default set (<code>KnownName | Hex | Rgb | Hsl</code>), not hex-only.</li>
-<li><strong>KnownName:</strong> nearest opaque non-system <code>KnownColor</code> by RGB distance. Exact matches return immediately; otherwise the closest web colour name.</li>
-<li><strong>Localisation scope:</strong> strings are application-wide (one static instance), not per <code>KryptonColorPicker</code> component.</li>
-<li><strong>Clipboard:</strong> F12 / Print Screen copy an image, not format text. Another process holding the clipboard is ignored.</li>
-<li><strong>net472:</strong> supported; no APIs newer than the Utilities project C# language version.</li>
+<li>Cross cursor, no taskbar button, key preview, mouse capture on show.</li>
+<li>Banner: <code>Click to pick  ·  Esc or right-click to cancel  ·  Mouse wheel zooms</code>.</li>
+<li>Magnifier: 11×11 source pixels, nearest-neighbour scale, optional grid when zoom ≥ 8, white/black outline on the centre pixel.</li>
+<li>Footer: colour swatch, <code>#RRGGBB</code>, <code>RGB(r, g, b)</code>, current zoom.</li>
+<li>Magnifier prefers the lower-right of the cursor and flips left/up when it would leave the overlay. It stays below the banner.</li>
 </ul>
-<h2 id="file-map">File map</h2>
+<h3 id="zoom">Zoom</h3>
 <table>
 <thead>
 <tr>
-<th>Path</th>
-<th>Contents</th>
+<th>Constant</th>
+<th>Value</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>…/Krypton Screen Color Picker/Controls Toolkit/KryptonScreenColorPicker.cs</code></td>
-<td>Static picker API</td>
+<td>Default <code>_zoom</code></td>
+<td>12</td>
 </tr>
 <tr>
-<td><code>…/Krypton Screen Color Picker/Controls Toolkit/KryptonColorPicker.cs</code></td>
-<td>Toolbox <code>Component</code></td>
+<td>Minimum</td>
+<td>6</td>
 </tr>
 <tr>
-<td><code>…/Krypton Screen Color Picker/General/Definitions.cs</code></td>
-<td><code>KryptonScreenColorPickerColorFormat</code>, <code>KryptonScreenColorPickerFlyoutStyle</code></td>
+<td>Maximum</td>
+<td>24</td>
 </tr>
 <tr>
-<td><code>…/Krypton Screen Color Picker/General/ScreenColorPickerColorFormatter.cs</code></td>
-<td>Format / bind helpers</td>
-</tr>
-<tr>
-<td><code>…/Krypton Screen Color Picker/General/ScreenColorPickerMagnifierPainter.cs</code></td>
-<td>Magnifier GDI</td>
-</tr>
-<tr>
-<td><code>…/Krypton Screen Color Picker/General/ScreenColorPickerGlyph.cs</code></td>
-<td>Eyedropper glyph</td>
-</tr>
-<tr>
-<td><code>…/Krypton Screen Color Picker/General/VisualScreenColorPickerClassicFlyoutForm.cs</code></td>
-<td>Classic HUD window</td>
-</tr>
-<tr>
-<td><code>…/Krypton Screen Color Picker/Controls Visuals/VisualScreenColorPickerOverlay.cs</code></td>
-<td>Overlay + input</td>
-</tr>
-<tr>
-<td><code>…/Krypton Screen Color Picker/Controls Visuals/VisualScreenColorPickerKryptonFlyout.cs</code></td>
-<td>Themed flyout control + form</td>
-</tr>
-<tr>
-<td><code>…/Krypton Screen Color Picker/Translations/KryptonScreenColorPickerStrings.cs</code></td>
-<td>Localisable strings</td>
-</tr>
-<tr>
-<td><code>…/Krypton Custom Theme Generator/…</code></td>
-<td>Seed types, remapper, builder form, <code>KryptonCustomThemeBuilder</code> / <code>KryptonCustomThemeGenerator</code></td>
+<td>Wheel step</td>
+<td>±2</td>
 </tr>
 </tbody>
 </table>
+<h3 id="confirm--cancel">Confirm / cancel</h3>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Left click, Enter, Space</td>
+<td><code>TryPick</code> returns <code>true</code>; <code>color</code> is the hover pixel</td>
+</tr>
+<tr>
+<td>Escape, right click</td>
+<td><code>TryPick</code> returns <code>false</code>; <code>color</code> is <code>Color.Empty</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="painting-why-trails-were-a-bug">Painting (why trails were a bug)</h3>
+<p>The overlay is a full-screen bitmap. Invalidating only the <strong>new</strong> magnifier rectangle left previous rounded frames on screen.</p>
+<p>Current rules:</p>
+<ul>
+<li><code>ControlStyles.Opaque</code> so WinForms does not fill the clip with <code>BackColor</code>.</li>
+<li><code>OnPaintBackground</code> / <code>OnPaint</code> blit the screenshot <strong>1:1</strong> into <code>ClipRectangle</code> (<code>CompositingMode.SourceCopy</code>, <code>PixelOffsetMode.None</code>).</li>
+<li>Mouse-move and wheel invalidate the <strong>union</strong> of previous and current magnifier bounds, inflated by 8px for anti-aliased corners.</li>
+<li>Nearest-neighbour + <code>PixelOffsetMode.Half</code> is used <strong>only</strong> for the magnified 11×11 patch, not for restoring the desktop.</li>
+</ul>
+<h3 id="eyedropper-glyph">Eyedropper glyph</h3>
+<p><code>CreateDropperGlyphImage()</code> returns a new 16×16 ARGB bitmap (dark shaft, steel-blue bulb). Callers <strong>must dispose</strong> it (typically from the host form <code>Dispose</code>). Sharing one instance across several buttons is supported; dispose once.</p>
+<h2 id="public-api">Public API</h2>
+<p>Namespace: <code>Krypton.Toolkit.Utilities</code></p>
+<pre><code class="lang-csharp">[ToolboxItem(false)]
+[DesignerCategory(&quot;code&quot;)]
+public static class KryptonScreenColorPicker
+{
+    public static Image CreateDropperGlyphImage();
+    public static bool TryPick(out Color color);
+    public static bool TryPick(IWin32Window? owner, out Color color);
+}
+</code></pre>
+<h3 id="createdropperglyphimage"><code>CreateDropperGlyphImage</code></h3>
+<ul>
+<li>Returns a disposable <code>Image</code> for <code>KryptonButton.Values.Image</code> (or any <code>Image</code> slot).</li>
+<li>Not designer-serialised; create at runtime.</li>
+</ul>
+<h3 id="trypickout-color-color"><code>TryPick(out Color color)</code></h3>
+<p>Equivalent to <code>TryPick(null, out color)</code>. Does not hide any window. Useful when nothing on-screen needs to be sampled <strong>through</strong> the caller.</p>
+<h3 id="trypickiwin32window-owner-out-color-color"><code>TryPick(IWin32Window? owner, out Color color)</code></h3>
+<table>
+<thead>
+<tr>
+<th>Return</th>
+<th><code>color</code></th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>true</code></td>
+<td>sampled ARGB from <code>GetPixel</code></td>
+<td>User confirmed</td>
+</tr>
+<tr>
+<td><code>false</code></td>
+<td><code>Color.Empty</code></td>
+<td>Cancel, failed capture, or invalid virtual screen</td>
+</tr>
+</tbody>
+</table>
+<p><code>owner</code> may be a <code>Form</code> or a <code>Control</code> (resolved with <code>FindForm()</code>). Null is allowed.</p>
+<p>There are no events, no instance, no designer toolbox item, and no configuration object.</p>
+<h2 id="usage">Usage</h2>
+<h3 id="minimal">Minimal</h3>
+<pre><code class="lang-csharp">using Krypton.Toolkit.Utilities;
+
+if (KryptonScreenColorPicker.TryPick(this, out Color color))
+{
+    kbtnAccent.SelectedColor = color;
+}
+</code></pre>
+<h3 id="dropper-button-on-a-krypton-form">Dropper button on a Krypton form</h3>
+<pre><code class="lang-csharp">_dropperGlyph = KryptonScreenColorPicker.CreateDropperGlyphImage();
+kbtnPick.Values.Image = _dropperGlyph;
+kbtnPick.Values.Text = string.Empty;
+kbtnPick.AccessibleName = &quot;Pick colour from screen&quot;;
+kbtnPick.ToolTipValues.EnableToolTips = true;
+kbtnPick.ToolTipValues.Heading = &quot;Screen colour picker&quot;;
+kbtnPick.ToolTipValues.Description =
+    &quot;Hides this form, then magnifies pixels under the cursor. Click to sample, Esc or right-click to cancel.&quot;;
+
+private void kbtnPick_Click(object sender, EventArgs e)
+{
+    if (!KryptonScreenColorPicker.TryPick(this, out Color color))
+    {
+        return;
+    }
+
+    kbtnAccent.SelectedColor = color;
+    ktxtHex.Text = KryptonCustomThemeGenerator.FormatColor(color);
+}
+
+protected override void Dispose(bool disposing)
+{
+    if (disposing)
+    {
+        components?.Dispose();
+        _dropperGlyph?.Dispose();
+    }
+    base.Dispose(disposing);
+}
+</code></pre>
+<p>Call <code>TryPick</code> from the UI thread (STA). <code>ShowDialog</code> and <code>CopyFromScreen</code> are not marshalled.</p>
+<h3 id="theme-builder-integration">Theme builder integration</h3>
+<p><code>VisualCustomThemeBuilderForm</code> and <code>CustomThemeGeneratorDemo</code> wire Primary / Secondary / Surface droppers this way. Secondary and Surface also check their enable checkboxes when a colour is picked.</p>
+<h2 id="configuration--persistence">Configuration / persistence</h2>
+<p>None. Zoom is session-only (starts at 12). There is no XML, no user setting, and no MSBuild property. Sampled colours are returned to the caller; persistence is the caller's job (theme seed, colour button, file, and so on).</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li><strong>UI thread.</strong> Must run on the WinForms STA thread that owns the owner form.</li>
+<li><strong>net472.</strong> Uses only APIs available on .NET Framework 4.7.2 (no <code>CopyFromScreen</code> overloads or C# features beyond the Utilities ceiling).</li>
+<li><strong>DPI.</strong> Overlay <code>Bounds</code> = <code>VirtualScreen</code>. Capture and <code>Cursor.Position</code> use the same screen space. Per-monitor DPI mismatches can still offset the sample if the process DPI awareness disagrees with <code>CopyFromScreen</code>; the host app's <code>ApplicationHighDpiMode</code> applies (<code>SystemAware</code> in Toolkit/Utilities projects).</li>
+<li><strong>Protected content.</strong> DRM / UAC secure desktop / some full-screen exclusive apps can make <code>CopyFromScreen</code> throw or return black. <code>TryPick</code> returns <code>false</code>; it does not show an error dialog.</li>
+<li><strong>Multi-monitor.</strong> Virtual screen can have a negative origin. Sample coordinates subtract <code>_virtualScreen.Left/Top</code> before <code>GetPixel</code>.</li>
+<li><strong>Magnifier source rect.</strong> The 11×11 <code>DrawImage</code> source may extend past bitmap edges; GDI+ clips. The confirmed colour is always a clamped centre pixel.</li>
+<li><strong>Owner dispose.</strong> <code>finally</code> checks <code>!ownerForm.IsDisposed</code> before restoring opacity.</li>
+<li><strong>Modal overlay.</strong> <code>ShowDialog()</code> without an owner. The caller’s message loop is blocked until pick or cancel. Nested <code>TryPick</code> from the overlay is not supported.</li>
+<li><strong>Performance.</strong> <code>GetPixel</code> on mouse move is acceptable for this modal path. Do not call <code>Invalidate()</code> for the entire 4K surface on every move; dirty-rect restore is required to avoid trails.</li>
+<li><strong>Not a live sampler.</strong> The desktop is frozen at click-to-start time. Animations and videos will not update under the cursor.</li>
+<li><strong>Glyph lifetime.</strong> Each <code>CreateDropperGlyphImage()</code> allocates. Do not call it per paint.</li>
+<li><strong>Breaking changes.</strong> First release of this type; no migration. It is not in <code>Krypton.Toolkit</code> (core). Consumers that only reference Toolkit must add Utilities.</li>
+</ul>
 
 </article>
           </div>

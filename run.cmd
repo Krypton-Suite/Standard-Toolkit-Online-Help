@@ -46,9 +46,19 @@ if not exist "%DOCFX_CONFIG%" (
 )
 
 REM ============================================
+REM Branch tips: master + alpha + V105-LTS
+REM ============================================
+if /I "%MODE%"=="all" (
+    echo [INFO] Building master, alpha, and V105-LTS into "%SITE_ROOT%\v\..."
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%REPO_ROOT%Scripts\Build-VersionedDocs.ps1" -BranchTips -OutputRoot "%SITE_ROOT%"
+    if errorlevel 1 exit /b 1
+    echo [INFO] Branch-tip site ready at "%SITE_ROOT%"
+    endlocal
+    exit /b 0
+)
+
+REM ============================================
 REM Ensure sibling toolkit sources
-REM DocFX metadata.src cannot use a Git URL, so clone
-REM the sibling folder from GitHub when it is missing.
 REM ============================================
 call :EnsureSiblingToolkit "Standard-Toolkit" "%STANDARD_TOOLKIT_ROOT%" "%STANDARD_TOOLKIT_SRC%" "%STANDARD_TOOLKIT_REPO%"
 if errorlevel 1 exit /b 1
@@ -56,7 +66,7 @@ call :EnsureSiblingToolkit "Extended-Toolkit" "%EXTENDED_TOOLKIT_ROOT%" "%EXTEND
 if errorlevel 1 exit /b 1
 
 REM ============================================
-REM Dev build into site/v/local-dev (does not touch docs-versions)
+REM Dev build into site/v/local-dev
 REM ============================================
 if /I "%MODE%"=="build" (
     echo [INFO] Building current siblings into "%SITE_ROOT%\v\local-dev"
@@ -66,18 +76,11 @@ if /I "%MODE%"=="build" (
     exit /b 0
 )
 
-if /I "%MODE%"=="all" (
-    echo [INFO] "run.cmd all" is deprecated. Use Build-VersionedDocs.ps1 -Channel/-Version/-StandardRef for NuGet versions,
-    echo [INFO] or "run.cmd build" for a local-dev tree. See articles\Versions.md
-    endlocal
-    exit /b 1
-)
-
 REM ============================================
-REM Start DocFX (serve current siblings; classic Output path)
+REM Start DocFX (serve current siblings)
 REM ============================================
 echo [INFO] Starting DocFX server (current sibling toolkits)...
-echo [INFO] Tip: use "run.cmd build" for v\local-dev under Output\site\
+echo [INFO] Tip: "run.cmd all" builds master/alpha/V105-LTS under Output\site\v\
 
 start "" "%DOCFX%" "%DOCFX_CONFIG%" --serve
 
