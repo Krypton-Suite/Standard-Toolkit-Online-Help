@@ -10,30 +10,27 @@ Published site layout:
 
 | Path | Content |
 |------|---------|
-| `/` | Redirects to latest Stable (`versions.json` → `default`) |
-| `/versions.json` | Catalog for the navbar version dropdown |
-| `/v/<PackageVersion>/` | Articles + Standard/Extended API for that NuGet version |
+| `/` | Redirects to `/master/` |
+| `/master/` | Articles + Standard/Extended API from toolkit `master` |
+| `/alpha/` | Same layout from toolkit `alpha` |
+| `/v105-lts/` | Same layout from toolkit `V105-LTS` |
 
-Channels: **Stable** and **LTS** keep every published version; **Canary** and **Nightly** keep latest only. Dropdown labels are exact NuGet version strings.
+Articles are shared across versions; API pages reflect the selected toolkit branch tip. Use the version dropdown in the site navbar to switch.
 
-> **Note:** Older bookmarks to `/master/...`, `/alpha/...`, or `/v105-lts/...` should use `/v/<PackageVersion>/...` after the NuGet-aligned cutover.
+> **Note:** Bookmarks to the old root `/api/...` paths should use `/master/api/...` (or another version prefix) after this cutover.
 
 ## Automated Builds
 
-| Workflow | Role |
-|----------|------|
-| `.github/workflows/build.yml` | PR/push validation — disposable `v/local-dev/` only |
-| `.github/workflows/publish-docs-version.yml` | Publish one version to the `docs-versions` branch and deploy Pages |
+Documentation is automatically built and deployed using GitHub Actions:
+- Builds automatically on every push to main/master
+- Validates on pull requests
+- Builds `master`, `alpha`, and `V105-LTS` in parallel, then merges into one GitHub Pages site
 
-Publishing is triggered by `repository_dispatch` (`docs-publish`) from Standard-Toolkit after a NuGet push, or manually via **Actions → Publish Docs Version**.
-
-**Secret (in Standard-Toolkit):** a PAT with `actions:write` on this repo (e.g. `DOCS_DISPATCH_TOKEN`) so release workflows can dispatch. See [Publish Docs From Toolkit](Source/Help/DocFX/articles/Contributing/Workflows/PublishDocsFromToolkit.md).
-
-See [Setup Guide](.github/SETUP_GITHUB_PAGES.md) for Pages configuration.
+See [Setup Guide](.github/SETUP_GITHUB_PAGES.md) for configuration details.
 
 ## Local Development
 
-Local builds expect **sibling** clones of [Standard-Toolkit](https://github.com/Krypton-Suite/Standard-Toolkit) and [Extended-Toolkit](https://github.com/Krypton-Suite/Extended-Toolkit) at `../Standard-Toolkit/` and `../Extended-Toolkit/`. If a sibling is missing, `run.cmd` clones the GitHub repository there as a fallback.
+Local builds expect **sibling** clones of [Standard-Toolkit](https://github.com/Krypton-Suite/Standard-Toolkit) and [Extended-Toolkit](https://github.com/Krypton-Suite/Extended-Toolkit) at `../Standard-Toolkit/` and `../Extended-Toolkit/` (same parent folder as this repo). If a sibling is missing, `run.cmd` clones the GitHub repository there as a fallback.
 
 ```bash
 # Install DocFX
@@ -42,20 +39,19 @@ dotnet tool install -g docfx
 # Fast loop: serve docs from current sibling toolkit checkouts
 run.cmd
 
-# Build current siblings into Source/Help/Output/site/v/local-dev/
+# Build current siblings into Source/Help/Output/site/master/
 run.cmd build
+
+# Build all three versions (clones under .toolkit-src/ when not using siblings)
+run.cmd all
 ```
 
-Or with PowerShell:
+Or with PowerShell directly:
 
 ```powershell
-.\Scripts\Build-VersionedDocs.ps1 -LocalDev -UseSiblings -SkipClone -OutputRoot Source\Help\Output\site
-
-.\Scripts\Build-VersionedDocs.ps1 `
-  -Channel stable `
-  -Version 110.26.11.328 `
-  -StandardRef <sha-or-tag> `
-  -ExtendedRef <sha-or-tag>
+.\Scripts\Build-VersionedDocs.ps1 -All
+.\Scripts\Build-VersionedDocs.ps1 -Branch alpha
+.\Scripts\Build-VersionedDocs.ps1 -Branch master -UseSiblings -SkipClone -OutputRoot Source\Help\Output\site
 ```
 
-For more details, see [How to Build.md](How%20to%20Build.md) and [Versions](Source/Help/DocFX/articles/Versions.md).
+For more details, see [How to Build.md](How%20to%20Build.md).
