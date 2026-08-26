@@ -57,44 +57,6 @@ $(function () {
 })
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Version switcher for multi-branch sites (/master/, /alpha/, /v105-lts/)
-  (function insertVersionSwitcher() {
-    const versions = [
-      { slug: "master", label: "Master" },
-      { slug: "alpha", label: "Alpha" },
-      { slug: "v105-lts", label: "V105-LTS" }
-    ];
-    const match = location.pathname.match(/^(.*\/)?(master|alpha|v105-lts)(\/|$)/i);
-    if (!match) {
-      return;
-    }
-    const prefix = match[1] || "/";
-    const current = match[2].toLowerCase();
-    const nav = document.querySelector(".navbar-nav") || document.querySelector("header nav ul");
-    if (!nav) {
-      return;
-    }
-    const li = document.createElement("li");
-    li.className = "krypton-version-switcher";
-    const select = document.createElement("select");
-    select.setAttribute("aria-label", "Documentation version");
-    select.title = "Toolkit branch for API docs";
-    versions.forEach((v) => {
-      const opt = document.createElement("option");
-      opt.value = prefix + v.slug + "/";
-      opt.textContent = v.label;
-      if (v.slug === current) {
-        opt.selected = true;
-      }
-      select.appendChild(opt);
-    });
-    select.addEventListener("change", () => {
-      location.href = select.value;
-    });
-    li.appendChild(select);
-    nav.appendChild(li);
-  })();
-
   document.querySelectorAll("pre > code").forEach((codeBlock) => {
     const button = document.createElement("button");
     button.className = "copy-code-button";
