@@ -1,48 +1,76 @@
 <#
 .SYNOPSIS
-  Builds DocFX documentation for one or all toolkit branches (master, alpha, V105-LTS).
+  Builds DocFX documentation for a NuGet package version into v/<version>/.
 
 .DESCRIPTION
-  Each version is an isolated DocFX output tree under <OutputRoot>/<slug>/ so API UIDs
-  do not collide across branches.
+  Checks out Standard-Toolkit and Extended-Toolkit at the given refs (SHA/tag/branch),
+  builds a full DocFX tree under <OutputRoot>/v/<Version>/, and optionally updates
+  versions.json / root redirect when -UpdateCatalog is set.
 
   Do not pass DocFX --output together with build.dest — DocFX resolves {output}/{dest}.
-  This script patches build.output per version and runs DocFX without -o so HTML lands
-  in <OutputRoot>/<slug>/. Metadata YAML stays under DocFX/api and api-extended.
+  This script patches build.output per version and runs DocFX without -o.
 
-.PARAMETER Branch
-  Toolkit git branch: master | alpha | V105-LTS
+.PARAMETER Channel
+  stable | lts | canary | nightly
 
-.PARAMETER All
-  Build master, alpha, and V105-LTS into <OutputRoot>/<slug>/ and write a root redirect.
+.PARAMETER Version
+  Exact NuGet PackageVersion (e.g. 110.26.11.328 or 110.26.8.221-alpha).
+
+.PARAMETER StandardRef
+  Git SHA, tag, or branch of Standard-Toolkit for that package.
+
+.PARAMETER ExtendedRef
+  Matching Extended-Toolkit SHA/tag/branch (defaults to StandardRef).
+
+.PARAMETER Line
+  Optional LTS line name (e.g. V105-LTS) stored in versions.json.
+
+.PARAMETER LocalDev
+  Build current sibling checkouts into v/local-dev/ without cloning.
 
 .PARAMETER OutputRoot
-  Directory that receives version folders (default: Source/Help/Output/site).
+  Directory that receives v/<version>/ (default: Source/Help/Output/site).
 
 .PARAMETER UseSiblings
-  Use ../Standard-Toolkit and ../Extended-Toolkit as-is (CI / local current checkout).
-  When omitted, clones are kept under .toolkit-src/.
+  Use ../Standard-Toolkit and ../Extended-Toolkit as-is (CI / local).
 
 .PARAMETER SkipClone
-  Do not fetch/clone; require toolkit sources to already exist at the resolved paths.
+  Do not fetch/clone; require toolkit sources at the resolved paths.
+
+.PARAMETER UpdateCatalog
+  After a successful build, merge this version into versions.json and prune canary/nightly.
 
 .PARAMETER DocfxPath
   Path to docfx.exe (default: ~/.dotnet/tools/docfx.exe).
 #>
-[CmdletBinding(DefaultParameterSetName = 'Branch')]
+[CmdletBinding(DefaultParameterSetName = 'Publish')]
 param(
-    [Parameter(ParameterSetName = 'Branch')]
-    [ValidateSet('master', 'alpha', 'V105-LTS')]
-    [string] $Branch = 'master',
+    [Parameter(ParameterSetName = 'Publish', Mandatory = $true)]
+    [ValidateSet('stable', 'lts', 'canary', 'nightly')]
+    [string] $Channel,
 
-    [Parameter(ParameterSetName = 'All')]
-    [switch] $All,
+    [Parameter(ParameterSetName = 'Publish', Mandatory = $true)]
+    [string] $Version,
+
+    [Parameter(ParameterSetName = 'Publish')]
+    [string] $StandardRef,
+
+    [Parameter(ParameterSetName = 'Publish')]
+    [string] $ExtendedRef,
+
+    [Parameter(ParameterSetName = 'Publish')]
+    [string] $Line,
+
+    [Parameter(ParameterSetName = 'LocalDev')]
+    [switch] $LocalDev,
 
     [string] $OutputRoot,
 
     [switch] $UseSiblings,
 
     [switch] $SkipClone,
+
+    [switch] $UpdateCatalog,
 
     [string] $DocfxPath
 )
@@ -73,14 +101,29 @@ if (-not (Test-Path $DocfxPath)) {
     $DocfxPath = Join-Path $env:USERPROFILE '.dotnet\tools\docfx.exe'
 }
 
-function Get-VersionSlug {
-    param([string] $GitBranch)
-    switch ($GitBranch) {
-        'master'   { 'master' }
-        'alpha'    { 'alpha' }
-        'V105-LTS' { 'v105-lts' }
-        default    { throw "Unsupported branch: $GitBranch" }
+if ($LocalDev) {
+    $Channel = 'stable'
+    $Version = 'local-dev'
+    $UseSiblings = $true
+    $SkipClone = $true
+    $UpdateCatalog = $false
+}
+else {
+    if (-not $StandardRef) {
+        throw 'StandardRef is required unless -LocalDev is set.'
     }
+    if (-not $ExtendedRef) {
+        $ExtendedRef = $StandardRef
+    }
+}
+
+# Folder segment under v/ — keep NuGet version chars (letters, digits, ., -)
+function Get-VersionFolderName {
+    param([string] $PackageVersion)
+    if ($PackageVersion -notmatch '^[A-Za-z0-9._-]+$') {
+        throw "Version contains characters unsafe for a URL path segment: $PackageVersion"
+    }
+    return $PackageVersion
 }
 
 function Get-RelativeUnixPath {
@@ -95,11 +138,11 @@ function Get-RelativeUnixPath {
     return ($rel -replace '\\', '/').TrimEnd('/') + '/'
 }
 
-function Ensure-ToolkitClone {
+function Ensure-ToolkitAtRef {
     param(
         [string] $Name,
         [string] $RepoUrl,
-        [string] $GitBranch,
+        [string] $GitRef,
         [string] $DestPath,
         [string] $MarkerRelativePath
     )
@@ -113,20 +156,28 @@ function Ensure-ToolkitClone {
     }
 
     if (-not (Test-Path (Join-Path $DestPath '.git'))) {
-        Write-Host "[INFO] Cloning $Name ($GitBranch) into $DestPath ..."
+        Write-Host "[INFO] Cloning $Name into $DestPath ..."
         New-Item -ItemType Directory -Force -Path (Split-Path $DestPath -Parent) | Out-Null
-        git clone --branch $GitBranch --single-branch --depth 1 $RepoUrl $DestPath
+        git clone --filter=blob:none --no-checkout $RepoUrl $DestPath
         if ($LASTEXITCODE -ne 0) { throw "Failed to clone $Name." }
-        return
     }
 
-    Write-Host "[INFO] Updating $Name at $DestPath to $GitBranch ..."
+    Write-Host "[INFO] Checking out $Name @ $GitRef ..."
     Push-Location $DestPath
     try {
-        git fetch --depth 1 origin $GitBranch
-        if ($LASTEXITCODE -ne 0) { throw "Failed to fetch $Name ($GitBranch)." }
-        git checkout -B $GitBranch FETCH_HEAD
-        if ($LASTEXITCODE -ne 0) { throw "Failed to checkout $Name ($GitBranch)." }
+        git fetch --depth 1 origin $GitRef
+        if ($LASTEXITCODE -ne 0) {
+            # Full fetch for tags/SHAs that shallow fetch may miss
+            git fetch --tags origin
+            if ($LASTEXITCODE -ne 0) { throw "Failed to fetch $Name ($GitRef)." }
+            git fetch origin $GitRef
+            if ($LASTEXITCODE -ne 0) { throw "Failed to fetch $Name ($GitRef)." }
+        }
+        git checkout --force FETCH_HEAD
+        if ($LASTEXITCODE -ne 0) {
+            git checkout --force $GitRef
+            if ($LASTEXITCODE -ne 0) { throw "Failed to checkout $Name ($GitRef)." }
+        }
     }
     finally {
         Pop-Location
@@ -192,15 +243,18 @@ function Assert-VersionOutput {
 
 function Build-OneVersion {
     param(
-        [string] $GitBranch,
-        [string] $Slug
+        [string] $FolderName,
+        [string] $StdRef,
+        [string] $ExtRef
     )
 
     Write-Host "============================================"
-    Write-Host " Building documentation for $GitBranch -> $Slug"
+    Write-Host " Building documentation -> v/$FolderName"
+    Write-Host " Channel=$Channel Version=$Version"
     Write-Host "============================================"
 
     $patchSrc = $false
+    $safeKey = ($FolderName -replace '[^A-Za-z0-9._-]', '_')
     if ($UseSiblings) {
         $parent = Split-Path $RepoRoot -Parent
         $standardRoot = Join-Path $parent 'Standard-Toolkit'
@@ -215,28 +269,28 @@ function Build-OneVersion {
         Write-Host "[INFO] Using sibling Extended-Toolkit: $extendedRoot"
     }
     else {
-        $standardRoot = Join-Path $ToolkitSrcRoot "Standard-Toolkit-$Slug"
-        $extendedRoot = Join-Path $ToolkitSrcRoot "Extended-Toolkit-$Slug"
-        Ensure-ToolkitClone -Name 'Standard-Toolkit' `
+        $standardRoot = Join-Path $ToolkitSrcRoot "Standard-Toolkit-$safeKey"
+        $extendedRoot = Join-Path $ToolkitSrcRoot "Extended-Toolkit-$safeKey"
+        Ensure-ToolkitAtRef -Name 'Standard-Toolkit' `
             -RepoUrl 'https://github.com/Krypton-Suite/Standard-Toolkit.git' `
-            -GitBranch $GitBranch `
+            -GitRef $StdRef `
             -DestPath $standardRoot `
             -MarkerRelativePath 'Source\Krypton Components'
-        Ensure-ToolkitClone -Name 'Extended-Toolkit' `
+        Ensure-ToolkitAtRef -Name 'Extended-Toolkit' `
             -RepoUrl 'https://github.com/Krypton-Suite/Extended-Toolkit.git' `
-            -GitBranch $GitBranch `
+            -GitRef $ExtRef `
             -DestPath $extendedRoot `
             -MarkerRelativePath 'Source\Krypton Toolkit'
         $patchSrc = $true
     }
 
-    $versionOut = Join-Path $OutputRoot $Slug
+    $versionOut = Join-Path $OutputRoot "v\$FolderName"
     if (Test-Path $versionOut) {
         Remove-Item -Recurse -Force $versionOut
     }
     New-Item -ItemType Directory -Force -Path $versionOut | Out-Null
 
-    $tempConfig = Join-Path $DocfxDir "docfx.$Slug.json"
+    $tempConfig = Join-Path $DocfxDir ("docfx.{0}.json" -f $safeKey)
     Write-VersionConfig `
         -BuildOutput $versionOut `
         -DestConfigPath $tempConfig `
@@ -250,7 +304,7 @@ function Build-OneVersion {
         Write-Host "[INFO] Config: $tempConfig"
         & $DocfxPath $tempConfig
         if ($LASTEXITCODE -ne 0) {
-            throw "DocFX failed for $GitBranch (exit $LASTEXITCODE)."
+            throw "DocFX failed for $Version (exit $LASTEXITCODE)."
         }
     }
     finally {
@@ -263,29 +317,33 @@ function Build-OneVersion {
     Assert-VersionOutput -VersionOut $versionOut
 }
 
-function Write-RootRedirect {
-    param([string] $SiteRoot)
-
-    $template = Join-Path $PSScriptRoot 'root-redirect.index.html'
-    $indexPath = Join-Path $SiteRoot 'index.html'
-    Copy-Item -Force -Path $template -Destination $indexPath
-    Write-Host "[INFO] Wrote root redirect: $indexPath"
-}
-
 # --- main ---
 New-Item -ItemType Directory -Force -Path $OutputRoot | Out-Null
+New-Item -ItemType Directory -Force -Path (Join-Path $OutputRoot 'v') | Out-Null
 
-if ($All) {
-    foreach ($b in @('master', 'alpha', 'V105-LTS')) {
-        Build-OneVersion -GitBranch $b -Slug (Get-VersionSlug $b)
+$folderName = Get-VersionFolderName -PackageVersion $Version
+Build-OneVersion -FolderName $folderName -StdRef $StandardRef -ExtRef $ExtendedRef
+
+if ($UpdateCatalog) {
+    $catalogArgs = @{
+        SiteRoot = $OutputRoot
+        Channel  = $Channel
+        Version  = $Version
     }
-    Write-RootRedirect -SiteRoot $OutputRoot
+    if ($Line) { $catalogArgs['Line'] = $Line }
+    & (Join-Path $PSScriptRoot 'Update-VersionsCatalog.ps1') @catalogArgs
 }
 else {
-    Build-OneVersion -GitBranch $Branch -Slug (Get-VersionSlug $Branch)
-    if (-not $UseSiblings) {
-        Write-RootRedirect -SiteRoot $OutputRoot
+    $templateRedirect = Join-Path $PSScriptRoot 'root-redirect.index.html'
+    $indexPath = Join-Path $OutputRoot 'index.html'
+    if (-not (Test-Path $indexPath) -and (Test-Path $templateRedirect)) {
+        Copy-Item -Force $templateRedirect $indexPath
+    }
+    $templateCatalog = Join-Path $PSScriptRoot 'site-templates\versions.json'
+    $catalogPath = Join-Path $OutputRoot 'versions.json'
+    if (-not (Test-Path $catalogPath) -and (Test-Path $templateCatalog)) {
+        Copy-Item -Force $templateCatalog $catalogPath
     }
 }
 
-Write-Host "[INFO] Done. Output: $OutputRoot"
+Write-Host "[INFO] Done. Output: $OutputRoot\v\$folderName"

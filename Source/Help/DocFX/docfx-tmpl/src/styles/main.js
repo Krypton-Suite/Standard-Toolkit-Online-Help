@@ -57,42 +57,91 @@ $(function () {
 })
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Version switcher for multi-branch sites (/master/, /alpha/, /v105-lts/)
+  // Version switcher: loads /versions.json (NuGet package versions by channel)
   (function insertVersionSwitcher() {
-    const versions = [
-      { slug: "master", label: "Master" },
-      { slug: "alpha", label: "Alpha" },
-      { slug: "v105-lts", label: "V105-LTS" }
-    ];
-    const match = location.pathname.match(/^(.*\/)?(master|alpha|v105-lts)(\/|$)/i);
+    const match = location.pathname.match(/^(.*\/)?v\/([^/]+)(\/|$)/i);
     if (!match) {
       return;
     }
     const prefix = match[1] || "/";
-    const current = match[2].toLowerCase();
+    const current = decodeURIComponent(match[2]);
+    const pageSuffix = location.pathname.slice(match[0].length);
     const nav = document.querySelector(".navbar-nav") || document.querySelector("header nav ul");
     if (!nav) {
       return;
     }
-    const li = document.createElement("li");
-    li.className = "krypton-version-switcher";
-    const select = document.createElement("select");
-    select.setAttribute("aria-label", "Documentation version");
-    select.title = "Toolkit branch for API docs";
-    versions.forEach((v) => {
-      const opt = document.createElement("option");
-      opt.value = prefix + v.slug + "/";
-      opt.textContent = v.label;
-      if (v.slug === current) {
-        opt.selected = true;
-      }
-      select.appendChild(opt);
-    });
-    select.addEventListener("change", () => {
-      location.href = select.value;
-    });
-    li.appendChild(select);
-    nav.appendChild(li);
+
+    function siteRootFromPrefix(p) {
+      // prefix is everything before "v/<version>/", e.g. "/Standard-Toolkit-Online-Help/"
+      return p;
+    }
+
+    const root = siteRootFromPrefix(prefix);
+    const catalogUrl = root + "versions.json";
+
+    fetch(catalogUrl)
+      .then((r) => {
+        if (!r.ok) throw new Error("versions.json " + r.status);
+        return r.json();
+      })
+      .then((catalog) => {
+        const channelOrder = [
+          { key: "stable", label: "Stable" },
+          { key: "lts", label: "LTS" },
+          { key: "canary", label: "Canary" },
+          { key: "nightly", label: "Nightly" }
+        ];
+        const li = document.createElement("li");
+        li.className = "krypton-version-switcher";
+        const select = document.createElement("select");
+        select.setAttribute("aria-label", "Documentation version");
+        select.title = "NuGet package version for API docs";
+
+        channelOrder.forEach((ch) => {
+          const entries = (catalog.channels && catalog.channels[ch.key]) || [];
+          if (!entries.length) return;
+          const group = document.createElement("optgroup");
+          group.label = ch.label;
+          entries.forEach((entry) => {
+            const opt = document.createElement("option");
+            const versionPath = (entry.path || ("v/" + entry.version + "/")).replace(/^\//, "");
+            opt.value = root + versionPath;
+            opt.textContent = entry.version;
+            opt.dataset.version = entry.version;
+            if (entry.version === current) {
+              opt.selected = true;
+            }
+            group.appendChild(opt);
+          });
+          select.appendChild(group);
+        });
+
+        if (!select.options.length) {
+          return;
+        }
+
+        select.addEventListener("change", () => {
+          const base = select.value.endsWith("/") ? select.value : select.value + "/";
+          if (!pageSuffix) {
+            location.href = base;
+            return;
+          }
+          const candidate = base + pageSuffix;
+          fetch(candidate, { method: "GET", cache: "no-store" })
+            .then((r) => {
+              location.href = r.ok ? candidate : base;
+            })
+            .catch(() => {
+              location.href = base;
+            });
+        });
+
+        li.appendChild(select);
+        nav.appendChild(li);
+      })
+      .catch(() => {
+        /* catalog missing on local single-tree builds */
+      });
   })();
 
   document.querySelectorAll("pre > code").forEach((codeBlock) => {
