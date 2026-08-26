@@ -6,6 +6,7 @@
 
 * Jump to [Nightly](#nightly)
 * Jump to [Canary](#canary)
+* Jump to [Release Candidate](#release-candidate)
 * Jump to [Stable](#stable)
 * Jump to [LTS](#long-term-support-lts)
 * Jump to [Canary (LTS)](#canary-lts)
@@ -23,6 +24,7 @@
 | ![Module name badge](<https://img.shields.io/badge/Module-Navigator-000080.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Navigator.Nightly?color=000080&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Navigator.Nightly/>) |
 | ![Module name badge](<https://img.shields.io/badge/Module-Ribbon-000080.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Ribbon.Nightly?color=000080&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Ribbon.Nightly/>) |
 | ![Module name badge](<https://img.shields.io/badge/Module-Workspace-000080.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Workspace.Nightly?color=000080&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Workspace.Nightly/>) |
+| ![Module name badge](<https://img.shields.io/badge/Module-Standard Toolkit-000080.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Standard.Toolkit.Nightly?color=000080&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Standard.Toolkit.Nightly/>) |
 
 Read the latest [release notes](<https://github.com/Krypton-Suite/Standard-Toolkit/blob/alpha/Documents/Changelog/Changelog.md>)
 
@@ -43,10 +45,32 @@ Go to [Top](#channel-releases)
 | ![Module name badge](<https://img.shields.io/badge/Module-Navigator-yellow.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Navigator.Canary?color=yellow&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Navigator.Canary/>) |
 | ![Module name badge](<https://img.shields.io/badge/Module-Ribbon-yellow.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Ribbon.Canary?color=yellow&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Ribbon.Canary/>) |
 | ![Module name badge](<https://img.shields.io/badge/Module-Workspace-yellow.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Workspace.Canary?color=yellow&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Workspace.Canary/>) |
+| ![Module name badge](<https://img.shields.io/badge/Module-Standard Toolkit-yellow.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Standard.Toolkit.Canary?color=yellow&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Standard.Toolkit.Canary/>) |
 
 Read the latest [release notes](<https://github.com/Krypton-Suite/Standard-Toolkit/blob/canary/Documents/Changelog/Changelog.md>)
 
 Compare [Canary & Master](<https://github.com/Krypton-Suite/Standard-Toolkit/compare/master...canary>)
+
+Go to [Top](#channel-releases)
+
+===============================================================================
+
+## Release Candidate
+
+| Module Name | Current Version | Link |
+| --- | --- | --- |
+| ![Module name badge](<https://img.shields.io/badge/Module-Toolkit-000080.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Toolkit.RC?color=000080&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Toolkit.RC/>) |
+| ![Module name badge](<https://img.shields.io/badge/Module-Docking-000080.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Docking.RC?color=000080&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Docking.RC/>) |
+| ![Module name badge](<https://img.shields.io/badge/Module-Navigator-000080.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Navigator.RC?color=000080&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Navigator.RC/>) |
+| ![Module name badge](<https://img.shields.io/badge/Module-Ribbon-000080.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Ribbon.RC?color=000080&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Ribbon.RC/>) |
+| ![Module name badge](<https://img.shields.io/badge/Module-Workspace-000080.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Workspace.RC?color=000080&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Workspace.RC/>) |
+| ![Module name badge](<https://img.shields.io/badge/Module-Standard Toolkit-000080.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Standard.Toolkit.RC?color=000080&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Standard.Toolkit.RC/>) |
+
+Read the latest [release notes](<https://github.com/Krypton-Suite/Standard-Toolkit/blob/alpha/Documents/Changelog/Changelog.md>)
+
+Compare [Nightly & Canary](<https://github.com/Krypton-Suite/Standard-Toolkit/compare/canary...alpha>)
+
+Compare [Nightly & Master](<https://github.com/Krypton-Suite/Standard-Toolkit/compare/master...alpha>)
 
 Go to [Top](#channel-releases)
 
@@ -61,6 +85,7 @@ Go to [Top](#channel-releases)
 | ![Module name badge](<https://img.shields.io/badge/Module-Navigator-84d658.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/v/Krypton.Navigator?color=64a343&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Navigator/>) |
 | ![Module name badge](<https://img.shields.io/badge/Module-Ribbon-84d658.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/v/Krypton.Ribbon?color=64a343&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Ribbon/>) |
 | ![Module name badge](<https://img.shields.io/badge/Module-Workspace-84d658.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/v/Krypton.Workspace?color=64a343&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Workspace/>) |
+| ![Module name badge](<https://img.shields.io/badge/Module-Standard Toolkit-84d658.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Standard.Toolkit?color=84d658&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Standard.Toolkit/>) |
 
 Read the latest [release notes](<https://github.com/Krypton-Suite/Standard-Toolkit/blob/master/Documents/Help/Changelog.md>)
 
@@ -77,6 +102,7 @@ Go to [Top](#channel-releases)
 | ![Module name badge](<https://img.shields.io/badge/Module-Navigator-00ACED.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Navigator.LTS?color=informational&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Navigator.LTS/>) |
 | ![Module name badge](<https://img.shields.io/badge/Module-Ribbon-00ACED.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Ribbon.LTS?color=informational&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Ribbon.LTS/>) |
 | ![Module name badge](<https://img.shields.io/badge/Module-Workspace-00ACED.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Workspace.LTS?color=informational&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Workspace.LTS/>) |
+| ![Module name badge](<https://img.shields.io/badge/Module-Standard Toolkit-00ACED.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Standard.Toolkit.LTS?color=00ACED&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Standard.Toolkit.LTS/>) |
 
 Go to [Top](#channel-releases)
 
@@ -91,6 +117,7 @@ Go to [Top](#channel-releases)
 | ![Module name badge](<https://img.shields.io/badge/Module-Navigator-yellow.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Navigator.LTS.Canary?color=yellow&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Navigator.LTS.Canary/>) |
 | ![Module name badge](<https://img.shields.io/badge/Module-Ribbon-yellow.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Ribbon.LTS.Canary?color=yellow&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Ribbon.LTS.Canary/>) |
 | ![Module name badge](<https://img.shields.io/badge/Module-Workspace-yellow.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Workspace.LTS.Canary?color=yellow&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Workspace.LTS.Canary/>) |
+| ![Module name badge](<https://img.shields.io/badge/Module-Standard Toolkit-yellow.svg?style=flat-square>) | ![Nuget](<https://img.shields.io/nuget/vpre/Krypton.Standard.Toolkit.LTS.Canary?color=yellow&label=Version&logo=nuget&style=flat-square>) | [![Download package on NuGet](<https://img.shields.io/badge/Download-Link-9cf.svg?style=flat-square>)](<https://www.nuget.org/packages/Krypton.Standard.Toolkit.LTS.Canary/>) |
 
 ===============================================================================
 

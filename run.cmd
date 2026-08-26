@@ -8,12 +8,15 @@ set "REPO_ROOT=%~dp0"
 set "DOCFX=%USERPROFILE%\.dotnet\tools\docfx.exe"
 set "DOCFX_CONFIG=%REPO_ROOT%Source\Help\DocFX\docfx.json"
 set "DOCFX_URL=http://localhost:8080"
+set "SITE_ROOT=%REPO_ROOT%Source\Help\Output\site"
 set "STANDARD_TOOLKIT_ROOT=%REPO_ROOT%..\Standard-Toolkit"
 set "STANDARD_TOOLKIT_SRC=%STANDARD_TOOLKIT_ROOT%\Source\Krypton Components"
 set "STANDARD_TOOLKIT_REPO=https://github.com/Krypton-Suite/Standard-Toolkit.git"
 set "EXTENDED_TOOLKIT_ROOT=%REPO_ROOT%..\Extended-Toolkit"
 set "EXTENDED_TOOLKIT_SRC=%EXTENDED_TOOLKIT_ROOT%\Source\Krypton Toolkit"
 set "EXTENDED_TOOLKIT_REPO=https://github.com/Krypton-Suite/Extended-Toolkit.git"
+set "MODE=%~1"
+if "%MODE%"=="" set "MODE=serve"
 
 echo ============================================
 echo DocFX Build Script
@@ -43,6 +46,19 @@ if not exist "%DOCFX_CONFIG%" (
 )
 
 REM ============================================
+REM Multi-version build: run.cmd all
+REM ============================================
+if /I "%MODE%"=="all" (
+    echo [INFO] Building master, alpha, and V105-LTS into "%SITE_ROOT%"
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%REPO_ROOT%Scripts\Build-VersionedDocs.ps1" -All -OutputRoot "%SITE_ROOT%"
+    if errorlevel 1 exit /b 1
+    echo [INFO] Multi-version site ready at "%SITE_ROOT%"
+    echo [INFO] Open "%SITE_ROOT%\index.html" or serve that folder with DocFX/any static server.
+    endlocal
+    exit /b 0
+)
+
+REM ============================================
 REM Ensure sibling toolkit sources
 REM DocFX metadata.src cannot use a Git URL, so clone
 REM the sibling folder from GitHub when it is missing.
@@ -53,18 +69,27 @@ call :EnsureSiblingToolkit "Extended-Toolkit" "%EXTENDED_TOOLKIT_ROOT%" "%EXTEND
 if errorlevel 1 exit /b 1
 
 REM ============================================
-REM Start DocFX
+REM Single-version build into site/master (default local layout)
 REM ============================================
-echo [INFO] Starting DocFX server...
+if /I "%MODE%"=="build" (
+    echo [INFO] Building current siblings into "%SITE_ROOT%\master"
+    powershell -NoProfile -ExecutionPolicy Bypass -File "%REPO_ROOT%Scripts\Build-VersionedDocs.ps1" -Branch master -OutputRoot "%SITE_ROOT%" -UseSiblings -SkipClone
+    if errorlevel 1 exit /b 1
+    copy /Y "%REPO_ROOT%Scripts\root-redirect.index.html" "%SITE_ROOT%\index.html" >nul
+    endlocal
+    exit /b 0
+)
+
+REM ============================================
+REM Start DocFX (serve current siblings; classic Output path)
+REM ============================================
+echo [INFO] Starting DocFX server (current sibling toolkits)...
+echo [INFO] Tip: use "run.cmd all" for master/alpha/V105-LTS trees under Output\site\
 
 start "" "%DOCFX%" "%DOCFX_CONFIG%" --serve
 
-REM Give server time to spin up
 timeout /t 2 >nul
 
-REM ============================================
-REM Open browser
-REM ============================================
 echo [INFO] Opening browser at %DOCFX_URL%
 start "" "%DOCFX_URL%"
 
