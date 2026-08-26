@@ -4,11 +4,8 @@
 
 .DESCRIPTION
   Each version is an isolated DocFX output tree under <OutputRoot>/<slug>/ so API UIDs
-  do not collide across branches.
-
-  Do not pass DocFX --output together with build.dest — DocFX resolves {output}/{dest}.
-  This script patches build.output per version and runs DocFX without -o so HTML lands
-  in <OutputRoot>/<slug>/. Metadata YAML stays under DocFX/api and api-extended.
+  do not collide across branches. Articles come from this Online-Help repo; API metadata
+  is generated from Standard-Toolkit and Extended-Toolkit at the requested git ref.
 
 .PARAMETER Branch
   Toolkit git branch: master | alpha | V105-LTS
@@ -21,7 +18,7 @@
 
 .PARAMETER UseSiblings
   Use ../Standard-Toolkit and ../Extended-Toolkit as-is (CI / local current checkout).
-  When omitted, clones are kept under .toolkit-src/.
+  When omitted with -Branch/-All, clones are kept under .toolkit-src/.
 
 .PARAMETER SkipClone
   Do not fetch/clone; require toolkit sources to already exist at the resolved paths.
@@ -137,57 +134,24 @@ function Ensure-ToolkitClone {
     }
 }
 
-function Write-VersionConfig {
+function New-VersionedDocfxConfig {
     param(
-        [string] $BuildOutput,
-        [string] $DestConfigPath,
         [string] $StandardRoot,
         [string] $ExtendedRoot,
-        [bool] $PatchSrcPaths
+        [string] $DestConfigPath
     )
 
+    $stdRel = Get-RelativeUnixPath -FromDir $DocfxDir -ToDir (Join-Path $StandardRoot 'Source\Krypton Components')
+    $extRel = Get-RelativeUnixPath -FromDir $DocfxDir -ToDir (Join-Path $ExtendedRoot 'Source\Krypton Toolkit')
+
     $text = [System.IO.File]::ReadAllText($DocfxConfig)
-
-    if ($PatchSrcPaths) {
-        $stdRel = Get-RelativeUnixPath -FromDir $DocfxDir -ToDir (Join-Path $StandardRoot 'Source\Krypton Components')
-        $extRel = Get-RelativeUnixPath -FromDir $DocfxDir -ToDir (Join-Path $ExtendedRoot 'Source\Krypton Toolkit')
-        $text = $text.Replace(
-            '"src": "../../../../Standard-Toolkit/Source/Krypton Components/"',
-            ('"src": "{0}"' -f $stdRel))
-        $text = $text.Replace(
-            '"src": "../../../../Extended-Toolkit/Source/Krypton Toolkit/"',
-            ('"src": "{0}"' -f $extRel))
-    }
-
-    $buildOutJson = ($BuildOutput -replace '\\', '/')
-    if ($text -notmatch '"output"\s*:') {
-        throw 'docfx.json must use build.output (not build.dest) for versioned builds.'
-    }
-    $text = [regex]::Replace($text, '"output"\s*:\s*"[^"]*"', ('"output": "{0}"' -f $buildOutJson), 1)
+    $text = $text.Replace(
+        '"src": "../../../../Standard-Toolkit/Source/Krypton Components/"',
+        ('"src": "{0}"' -f $stdRel))
+    $text = $text.Replace(
+        '"src": "../../../../Extended-Toolkit/Source/Krypton Toolkit/"',
+        ('"src": "{0}"' -f $extRel))
     [System.IO.File]::WriteAllText($DestConfigPath, $text)
-}
-
-function Assert-VersionOutput {
-    param([string] $VersionOut)
-
-    $index = Join-Path $VersionOut 'index.html'
-    if (-not (Test-Path $index)) {
-        Write-Host "[ERROR] Expected DocFX output missing: $index"
-        Write-Host '[ERROR] Version directory contents:'
-        if (Test-Path $VersionOut) {
-            Get-ChildItem -Force $VersionOut | ForEach-Object { Write-Host ("  " + $_.Name) }
-        }
-        else {
-            Write-Host '  (directory does not exist)'
-        }
-        Write-Host '[ERROR] OutputRoot contents:'
-        if (Test-Path $OutputRoot) {
-            Get-ChildItem -Force $OutputRoot | ForEach-Object { Write-Host ("  " + $_.Name) }
-        }
-        throw "DocFX did not produce index.html under $VersionOut"
-    }
-
-    Write-Host "[INFO] Verified output: $index"
 }
 
 function Build-OneVersion {
@@ -200,7 +164,7 @@ function Build-OneVersion {
     Write-Host " Building documentation for $GitBranch -> $Slug"
     Write-Host "============================================"
 
-    $patchSrc = $false
+    $tempConfig = $null
     if ($UseSiblings) {
         $parent = Split-Path $RepoRoot -Parent
         $standardRoot = Join-Path $parent 'Standard-Toolkit'
@@ -211,8 +175,7 @@ function Build-OneVersion {
         if (-not (Test-Path (Join-Path $extendedRoot 'Source\Krypton Toolkit'))) {
             throw "UseSiblings requires $extendedRoot\Source\Krypton Toolkit"
         }
-        Write-Host "[INFO] Using sibling Standard-Toolkit: $standardRoot"
-        Write-Host "[INFO] Using sibling Extended-Toolkit: $extendedRoot"
+        $configToUse = $DocfxConfig
     }
     else {
         $standardRoot = Join-Path $ToolkitSrcRoot "Standard-Toolkit-$Slug"
@@ -227,7 +190,10 @@ function Build-OneVersion {
             -GitBranch $GitBranch `
             -DestPath $extendedRoot `
             -MarkerRelativePath 'Source\Krypton Toolkit'
-        $patchSrc = $true
+
+        $tempConfig = Join-Path $DocfxDir "docfx.$Slug.json"
+        New-VersionedDocfxConfig -StandardRoot $standardRoot -ExtendedRoot $extendedRoot -DestConfigPath $tempConfig
+        $configToUse = $tempConfig
     }
 
     $versionOut = Join-Path $OutputRoot $Slug
@@ -236,31 +202,18 @@ function Build-OneVersion {
     }
     New-Item -ItemType Directory -Force -Path $versionOut | Out-Null
 
-    $tempConfig = Join-Path $DocfxDir "docfx.$Slug.json"
-    Write-VersionConfig `
-        -BuildOutput $versionOut `
-        -DestConfigPath $tempConfig `
-        -StandardRoot $standardRoot `
-        -ExtendedRoot $extendedRoot `
-        -PatchSrcPaths $patchSrc
-
     Push-Location $DocfxDir
     try {
-        Write-Host "[INFO] Running DocFX metadata+build -> $versionOut"
-        Write-Host "[INFO] Config: $tempConfig"
-        & $DocfxPath $tempConfig
-        if ($LASTEXITCODE -ne 0) {
-            throw "DocFX failed for $GitBranch (exit $LASTEXITCODE)."
-        }
+        Write-Host "[INFO] Running DocFX -> $versionOut"
+        & $DocfxPath $configToUse --output $versionOut
+        if ($LASTEXITCODE -ne 0) { throw "DocFX failed for $GitBranch (exit $LASTEXITCODE)." }
     }
     finally {
         Pop-Location
-        if (Test-Path $tempConfig) {
+        if ($tempConfig -and (Test-Path $tempConfig)) {
             Remove-Item -Force $tempConfig
         }
     }
-
-    Assert-VersionOutput -VersionOut $versionOut
 }
 
 function Write-RootRedirect {
