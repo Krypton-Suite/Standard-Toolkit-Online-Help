@@ -46,7 +46,7 @@ DocFX extracts API reference from toolkit clones:
 
 **Multi-version path:** `Scripts/Build-VersionedDocs.ps1` clones each branch under `.toolkit-src/` (gitignored) unless `-UseSiblings` is set.
 
-Metadata is generated for **`net8.0-windows`** only (common TFM across master / alpha / V105-LTS). Both Standard and Extended metadata allow compilation errors so a broken module (or missing optional NuGet) does not abort the whole docs build. Extended skips Ultimate/Lite aggregates, tests, examples, and helper tools. Standard skips `TestForm` and `Krypton.Standard.Toolkit`. Unresolved article xrefs are warnings (see `rules` in `docfx.json`).
+Metadata is generated for **`net8.0-windows`** only (common TFM across master / alpha / V105-LTS). Extended skips Ultimate/Lite aggregates, tests, examples, and helper tools. Standard skips `TestForm` and `Krypton.Standard.Toolkit`.
 
 DocFX cannot take a Git URL in `metadata.src`. GitHub Actions checks out both toolkits at the matrix branch beside this repo.
 
