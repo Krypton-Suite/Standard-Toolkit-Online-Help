@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonTagInputControl | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonTagInputControl | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptontaginputcontrol">KryptonTagInputControl</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonTagInputControl</code> is a wrap-capable tag editor in <code>Krypton.Toolkit.Utilities</code>. Tags appear as themed <code>KryptonHeader</code> chips with an optional close button spec; a trailing <code>KryptonTextBox</code> accepts new values. It lives in the Utilities assembly (the <code>Krypton.Standard.Toolkit</code> NuGet package), not in core <code>Krypton.Toolkit</code>.</p>
+<h2 id="architecture">Architecture</h2>
+<ul>
+<li><strong>Host:</strong> <code>KryptonTagInputControl</code> derives from <code>KryptonPanel</code> so the surface follows the current palette (<code>PanelClient</code>).</li>
+<li><strong>Layout:</strong> An inner <code>FlowLayoutPanel</code> wraps chips and keeps the editor last.</li>
+<li><strong>Chips:</strong> Internal <code>KryptonTagChip</code> (<code>KryptonHeader</code>, <code>HeaderStyle.Secondary</code>) plus a <code>ButtonSpecAny</code> close glyph (<code>PaletteButtonSpecStyle.Close</code>).</li>
+<li><strong>Values:</strong> <code>KryptonTagInputValues</code> (<code>Storage</code>) holds behaviour and appearance so a fresh Toolbox drop does not show <strong>Modified</strong>.</li>
+<li><strong>Collection:</strong> <code>KryptonTagCollection</code> raises add/remove through the owner so <code>Tags.Add</code> and <code>AddTag</code> share validation.</li>
+</ul>
+<pre><code>KryptonTagInputControl : KryptonPanel
+  FlowLayoutPanel (dock fill, wrap)
+    KryptonTagChip... (one per tag)
+    KryptonTextBox (always last)
+</code></pre>
+<h2 id="public-api">Public API</h2>
+<h3 id="control">Control</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Tags</code></td>
+<td><code>KryptonTagCollection</code> of current tag strings</td>
+</tr>
+<tr>
+<td><code>Suggestions</code></td>
+<td><code>AutoCompleteStringCollection</code> for the editor</td>
+</tr>
+<tr>
+<td><code>Values</code></td>
+<td><code>KryptonTagInputValues</code></td>
+</tr>
+<tr>
+<td><code>ReadOnly</code></td>
+<td>Hides the editor and disables chip close buttons</td>
+</tr>
+<tr>
+<td><code>AddTag</code> / <code>RemoveTag</code> / <code>ClearTags</code></td>
+<td>Programmatic collection changes</td>
+</tr>
+<tr>
+<td><code>SetSuggestions</code></td>
+<td>Replace the suggestion list</td>
+</tr>
+<tr>
+<td><code>SetCategoryColor</code> / <code>TryGetCategoryColor</code> / <code>RemoveCategoryColor</code> / <code>ClearCategoryColors</code></td>
+<td>Per-tag fill overrides</td>
+</tr>
+</tbody>
+</table>
+<h3 id="events">Events</h3>
+<ul>
+<li><code>TagAdding</code> (<code>KryptonTagCancelEventArgs</code>) — set <code>Cancel</code> to reject</li>
+<li><code>TagAdded</code> / <code>TagRemoved</code> (<code>KryptonTagEventArgs</code>)</li>
+<li><code>TagsChanged</code></li>
+</ul>
+<h3 id="values">Values</h3>
+<p>Defaults (all <code>IsDefault</code>): <code>CueHintText</code> empty, <code>InputWidth</code> 120, <code>MaxTags</code> 0 (unlimited), <code>ChipRounding</code> 6, <code>AllowDuplicates</code> false, <code>CaseSensitive</code> false, <code>AllowCustomTags</code> true, <code>CommitOnEnter</code> true, <code>CommitOnComma</code> true, <code>RemoveLastOnBackspace</code> true, <code>ShowRemoveButton</code> true, <code>EnableSuggestions</code> true, <code>ClearOnEscape</code> true.</p>
+<p>Tab is <strong>not</strong> a commit key so focus navigation is preserved.</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">var tags = new KryptonTagInputControl
+{
+    Dock = DockStyle.Top,
+    Height = 72
+};
+tags.Values.CueHintText = &quot;Add a tag&quot;;
+tags.SetSuggestions(new[] { &quot;Bug&quot;, &quot;Feature&quot;, &quot;Security&quot; });
+tags.SetCategoryColor(&quot;Bug&quot;, Color.IndianRed);
+tags.TagAdded += (_, e) =&gt; { /* persist e.Tag */ };
+form.Controls.Add(tags);
+</code></pre>
+<p>Designer: drop from the Toolbox (<code>Krypton Tag Input</code>), edit <code>Tags</code> / <code>Suggestions</code> / <code>Values</code> in the property grid. Smart tags expose read-only, duplicates, max tags, cue hint, suggestions, and remove buttons.</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>Empty or whitespace input is ignored.</li>
+<li><code>AllowCustomTags = false</code> accepts only suggestion matches (using <code>CaseSensitive</code>).</li>
+<li><code>MaxTags</code> hides the editor when the limit is reached.</li>
+<li>Category colours use case-insensitive names; chip text contrast switches to white or black from luminance.</li>
+<li><code>net472</code> does not use <code>List&lt;T&gt;.Contains(item, comparer)</code>; matching is <code>string.Equals</code> with <code>StringComparison</code>.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

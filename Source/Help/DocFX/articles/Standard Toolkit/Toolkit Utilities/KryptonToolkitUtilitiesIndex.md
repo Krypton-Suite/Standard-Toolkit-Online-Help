@@ -15,6 +15,7 @@ Public types in the **`Krypton.Toolkit.Utilities`** assembly ship with the **`Kr
 
 | Topic | Description |
 | --- | --- |
+| [KryptonTagInput](KryptonTagInput.md) | |
 | [KryptonSearchBox](../Toolkit/Controls/KryptonSearchBox.md) | Search box with suggestions and history |
 | [KryptonCountdownButton](KryptonCountdownButton.md) | Button with live countdown suffix |
 | [KryptonAutoTextSuggestion](KryptonAutoTextSuggestion.md) | Auto-complete suggestions for text controls |

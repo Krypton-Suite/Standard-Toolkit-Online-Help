@@ -129,8 +129,27 @@ kryptonRibbon.FloatingWindowText = KryptonManager.Strings.MiscellaneousStrings.R
 <ul>
 <li>This property is used when the ribbon is detached into a floating window</li>
 <li>The text appears in the floating window's title bar</li>
-<li>Defaults to &quot;Ribbon&quot; if not set</li>
+<li>Defaults to &quot;Ribbon&quot; if not set (or <code>KryptonManager.Strings.MiscellaneousStrings.RibbonFloatingWindowText</code>)</li>
+<li>Can be changed at design time or dynamically at runtime (updating it while floating immediately changes the title of the active floating window)</li>
 <li>Can be localized for multi-language support</li>
+</ul>
+<hr>
+<h4 id="allowdragreattach"><code>AllowDragReattach</code></h4>
+<p><strong>Type</strong>: <code>bool</code><br>
+<strong>Default</strong>: <code>true</code><br>
+<strong>Category</strong>: <code>Behavior</code><br>
+<strong>Access</strong>: Read/Write</p>
+<p>Gets or sets whether dragging the floating ribbon window near the parent window will automatically show a docking preview indicator and snap/reattach upon release.</p>
+<pre><code class="lang-csharp">// Enable drag-to-reattach with docking preview (default)
+kryptonRibbon.AllowDragReattach = true;
+
+// Disable drag-to-reattach
+kryptonRibbon.AllowDragReattach = false;
+</code></pre>
+<p><strong>Usage Notes</strong>:</p>
+<ul>
+<li>When <code>true</code>, dragging the floating window over the parent form's upper dock area displays a semi-transparent dock preview glyph (<code>VisualRibbonDropSolidWindow</code>) and releasing the window reattaches the ribbon</li>
+<li>When <code>false</code>, the floating window can be dragged freely without snapping/reattaching to the parent form</li>
 </ul>
 <hr>
 <h4 id="savepreferencesonstatechange"><code>SavePreferencesOnStateChange</code></h4>
@@ -260,6 +279,7 @@ The following properties are automatically preserved and restored during reattac
 <p><strong>Automatic Reattachment</strong>:
 The ribbon automatically reattaches when:</p>
 <ul>
+<li>The floating window is dragged over the parent form's snap zone and released (when <code>AllowDragReattach</code> is <code>true</code>)</li>
 <li>The floating window is closed by the user</li>
 <li>The floating window's title bar is double-clicked</li>
 <li>The floating window is disposed</li>
@@ -267,9 +287,31 @@ The ribbon automatically reattaches when:</p>
 </ul>
 <p><strong>User Interaction</strong>:</p>
 <ul>
+<li><strong>Drag-Out to Detach</strong>: When attached and <code>AllowDetach</code> is enabled, clicking and dragging any ribbon tab or the empty tabs header area outward tears the ribbon out into an interactive floating window</li>
+<li><strong>Drag-to-Reattach</strong>: Dragging the floating window over the top of the parent window displays a semi-transparent dock preview indicator (<code>VisualRibbonDropSolidWindow</code>), and releasing drops and reattaches the ribbon</li>
 <li><strong>Double-Click Title Bar</strong>: Double-clicking the floating window's title bar reattaches the ribbon</li>
-<li><strong>Double-Click Caption Area</strong>: When attached, double-clicking the ribbon's caption area detaches it (if <code>AllowDetach</code> is enabled)</li>
+<li><strong>Double-Click Caption Area</strong>: When attached, double-clicking the ribbon's tabs area detaches it (if <code>AllowDetach</code> is enabled)</li>
 </ul>
+<hr>
+<h4 id="detachanddrag"><code>DetachAndDrag()</code></h4>
+<p><strong>Signature</strong>: <code>public bool DetachAndDrag(Point screenPoint)</code></p>
+<p>Detaches the ribbon into a floating window and immediately initiates an interactive window drag operation centered under the cursor.</p>
+<p><strong>Parameters</strong>:</p>
+<ul>
+<li><code>screenPoint</code>: Current mouse cursor position in screen coordinates</li>
+</ul>
+<p><strong>Returns</strong>: <code>true</code> if the ribbon was successfully detached and the drag loop was initiated; otherwise, <code>false</code></p>
+<p><strong>Preconditions</strong>:</p>
+<ul>
+<li><code>AllowDetach</code> must be <code>true</code></li>
+<li>Ribbon must have a valid parent control and form</li>
+<li>Ribbon must not already be detached</li>
+</ul>
+<p><strong>Example</strong>:</p>
+<pre><code class="lang-csharp">// Programmatically initiate drag-out detachment
+Point cursorScreenPos = Cursor.Position;
+kryptonRibbon.DetachAndDrag(cursorScreenPos);
+</code></pre>
 <hr>
 <h4 id="savedetachpreferences"><code>SaveDetachPreferences()</code></h4>
 <p><strong>Signature</strong>: <code>public void SaveDetachPreferences()</code></p>

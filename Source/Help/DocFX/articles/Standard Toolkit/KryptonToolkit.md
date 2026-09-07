@@ -39,6 +39,7 @@ the toolbox.
 * [KryptonProgressBar](Toolkit/Controls/KryptonProgressBar.md)
 * [KryptonPropertyGrid](Toolkit/Controls/KryptonPropertyGrid.md)
 * [KryptonRadioButton](Toolkit/Controls/KryptonRadioButton.md)  
+* [KryptonRating](Toolkit/Controls/KryptonRating.md)
 * [KryptonRichTextBox](Toolkit/Controls/KryptonRichTextBox.md)  
 * [KryptonScrollBars](Toolkit/Controls/KryptonScrollBars.md)
 * [KryptonSeparator](Toolkit/Controls/KryptonSeparator.md)  
@@ -98,3 +99,8 @@ the toolbox.
 * [ExceptionHandler](Toolkit%20Utilities/ExceptionHandler.md)
 * [IconExtraction](Toolkit%20Utilities/IconExtractionIndex.md)
 * [IconExtractionWithFallback](Toolkit%20Utilities/IconExtractionWithFallback.md)
+
+## Miscellaneous
+
+* [Designer Verbs](Toolkit/DesignerVerbs.md)
+* [RTL Support](Toolkit/ToolkitRTL.md)

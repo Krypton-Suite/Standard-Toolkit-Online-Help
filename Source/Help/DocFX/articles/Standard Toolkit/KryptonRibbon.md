@@ -8,6 +8,7 @@ Learn more about the capabilities of the `KryptonRibbon` using the following sec
 
 ## Operation
 
+* [RTL Support](Ribbon/KryptonRibbonRTL.md)
 * [Tabs](Ribbon/KryptonRibbonTabs.md)
 * [Groups](Ribbon/KryptonRibbonGroups.md)
 * [Group Containers](Ribbon/KryptonRibbonGroupContainers.md)

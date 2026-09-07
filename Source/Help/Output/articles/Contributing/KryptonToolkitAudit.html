@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Toolkit - WinForms Controls &amp; Features Audit | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Toolkit - WinForms Controls &amp; Features Audit | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-toolkit---winforms-controls--features-audit">Krypton Toolkit - WinForms Controls &amp; Features Audit</h1>
+
+<p><strong>Last reviewed:</strong> 2026-09-07 against V110 Nightly (Build 2611) source.</p>
+<p>This audit compares the Standard Toolkit against standard Windows Forms controls and common modern UI patterns. Package placement matters: many extras live in <code>Krypton.Toolkit.Utilities</code> (NuGet: <a href="https://www.nuget.org/packages/Krypton.Standard.Toolkit">Krypton.Standard.Toolkit</a>), not in <code>Krypton.Toolkit</code>.</p>
+<hr>
+<h2 id="executive-summary">Executive Summary</h2>
+<p>Core <code>Krypton.Toolkit</code> covers almost every commonly used WinForms control, plus theming, ribbon/navigator/docking/workspace in sibling assemblies, and a large Utilities catalog. Remaining standard gaps are specialised (page setup, charting, a dedicated <code>SplitButton</code> type) rather than everyday form controls.</p>
+<p>Previous versions of this document were out of date. Notable corrections from this review:</p>
+<table>
+<thead>
+<tr>
+<th>Claim in the old audit</th>
+<th>Actual status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonToolTip</code> not implemented</td>
+<td>Implemented in <code>Krypton.Toolkit</code> (<code>IExtenderProvider</code>, hosted content, palette)</td>
+</tr>
+<tr>
+<td><code>KryptonPrintPreviewDialog</code> / <code>PrintPreviewControl</code> missing</td>
+<td>Implemented in <code>Krypton.Toolkit</code></td>
+</tr>
+<tr>
+<td><code>KryptonHScrollBar</code> / <code>KryptonVScrollBar</code> missing</td>
+<td>Implemented; <code>KryptonScrollBar</code> is obsolete (remove in V120 LTS)</td>
+</tr>
+<tr>
+<td><code>KryptonSplitButton</code> fully implemented</td>
+<td><strong>No such type.</strong> Use <code>KryptonDropButton</code> with <code>Splitter</code> (default <code>true</code>)</td>
+</tr>
+<tr>
+<td>Markdown editor / preview fully implemented</td>
+<td><strong>No such types</strong></td>
+</tr>
+<tr>
+<td><code>KryptonCodeEditor</code> / <code>KryptonSearchBox</code> / <code>KryptonAboutBox</code> in core</td>
+<td>They are in <code>Krypton.Toolkit.Utilities</code></td>
+</tr>
+<tr>
+<td><code>KryptonCommandLinkButton</code> in core</td>
+<td>Vista-style command link is Utilities; core has <code>KryptonAlternateCommandLinkButton</code></td>
+</tr>
+<tr>
+<td>ListView virtual / groups / tile, TreeView checkboxes, ComboBox DropDownList</td>
+<td>All present on the core controls</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Coverage of common WinForms UI controls:</strong> effectively complete for everyday forms. <strong>Quality:</strong> high, with ongoing DPI/accessibility work rather than a blank slate.</p>
+<hr>
+<h2 id="1-implemented-controls--kryptontoolkit">1. IMPLEMENTED CONTROLS — <code>Krypton.Toolkit</code></h2>
+<h3 id="core-input">Core input</h3>
+<ul>
+<li><strong>KryptonButton</strong></li>
+<li><strong>KryptonCheckBox</strong></li>
+<li><strong>KryptonCheckButton</strong></li>
+<li><strong>KryptonRadioButton</strong></li>
+<li><strong>KryptonTextBox</strong> — includes <code>CueHint</code> watermark/placeholder</li>
+<li><strong>KryptonMaskedTextBox</strong></li>
+<li><strong>KryptonRichTextBox</strong> — includes justify (#4008)</li>
+<li><strong>KryptonComboBox</strong> — <code>DropDown</code>, <code>DropDownList</code>, and <code>Simple</code> (#4339); <code>AutoCompleteMode</code> / <code>AutoCompleteSource</code>; <code>DrawMode</code> exposed</li>
+<li><strong>KryptonNumericUpDown</strong> / <strong>KryptonDomainUpDown</strong> — themed glyphs (#4049)</li>
+<li><strong>KryptonDateTimePicker</strong> — month/year-only display (#4193)</li>
+<li><strong>KryptonMonthCalendar</strong></li>
+<li><strong>KryptonColorButton</strong></li>
+<li><strong>KryptonTrackBar</strong></li>
+<li><strong>KryptonDropButton</strong> — drop-down button; <code>Splitter</code> defaults to <code>true</code> (split-button behaviour)</li>
+<li><strong>KryptonAlternateCommandLinkButton</strong> — command-link styled <code>KryptonButton</code> (the Vista-style <code>KryptonCommandLinkButton</code> is Utilities)</li>
+</ul>
+<h3 id="extended-input-krypton-specific">Extended input (Krypton-specific)</h3>
+<ul>
+<li><strong>KryptonCheckSet</strong> — mutually exclusive checkbox group</li>
+<li><strong>KryptonToggleSwitch</strong> — styles and optional vertical orientation</li>
+<li><strong>KryptonCalcInput</strong></li>
+<li><strong>KryptonSearchBox</strong> is <strong>not</strong> in core; see Utilities</li>
+<li><strong>KryptonRating</strong> — Toolbox star/heart/circle/image ratings; Full / Half / Exact precision (#3928)</li>
+<li><strong>KryptonTagInput</strong> / <strong>KryptonTagChip</strong> — wrap-capable tag editor (#3927)</li>
+</ul>
+<h3 id="display">Display</h3>
+<ul>
+<li><strong>KryptonLabel</strong> / <strong>KryptonLinkLabel</strong> / <strong>KryptonWrapLabel</strong> / <strong>KryptonLinkWrapLabel</strong></li>
+<li><strong>KryptonProgressBar</strong></li>
+<li><strong>KryptonPictureBox</strong></li>
+<li><strong>KryptonHScrollBar</strong> / <strong>KryptonVScrollBar</strong></li>
+<li><strong>KryptonScrollBar</strong> — obsolete wrapper; use H/V; removal planned for V120 LTS</li>
+<li><strong>KryptonPropertyGrid</strong></li>
+<li><strong>KryptonBorderEdge</strong> / <strong>KryptonSeparator</strong></li>
+</ul>
+<h3 id="list-and-data">List and data</h3>
+<ul>
+<li><strong>KryptonListBox</strong> / <strong>KryptonCheckedListBox</strong></li>
+<li><strong>KryptonListView</strong> — <code>VirtualMode</code> / <code>VirtualListSize</code> / <code>RetrieveVirtualItem</code> / <code>CacheVirtualItems</code> (#3847); <code>ShowGroups</code>; <code>View</code> including Tile; <code>StateImageList</code>; <code>Sorting</code>; themed column headers; <code>ShowItemToolTips</code> via <code>KryptonToolTip</code> (#4336)</li>
+<li><strong>KryptonTreeView</strong> — <code>CheckBoxes</code>; <code>StateImageList</code> / <code>ImageList</code>; <code>MultiSelect</code>; <code>RightToLeftLayout</code></li>
+<li><strong>KryptonDataGridView</strong> — inherits <code>DataGridView</code> (including <code>VirtualMode</code>) plus custom columns:
+<ul>
+<li>TextBox, ComboBox, CheckBox, Button, Link, Image</li>
+<li>DateTimePicker, NumericUpDown, DomainUpDown, MaskedTextBox</li>
+<li>Progress, Rating, Icon</li>
+</ul>
+</li>
+<li><strong>KryptonBindingNavigator</strong> — First/Previous/Next/Last, position, count, Add/Delete, BindingSource</li>
+</ul>
+<h3 id="container-and-layout">Container and layout</h3>
+<ul>
+<li><strong>KryptonPanel</strong> / <strong>KryptonGroup</strong> / <strong>KryptonGroupBox</strong></li>
+<li><strong>KryptonHeader</strong> / <strong>KryptonHeaderGroup</strong></li>
+<li><strong>KryptonSplitContainer</strong> / <strong>KryptonSplitter</strong></li>
+<li><strong>KryptonTableLayoutPanel</strong> / <strong>KryptonFlowLayoutPanel</strong></li>
+<li><strong>KryptonBreadCrumb</strong></li>
+<li><strong>KryptonToolStripContainer</strong></li>
+</ul>
+<h3 id="form-and-dialogs">Form and dialogs</h3>
+<ul>
+<li><strong>KryptonForm</strong> — caption chrome, help button, fade values, pulsing border, <code>MenuBar</code> / title-bar menu bind, RTL caption buttons</li>
+<li><strong>KryptonFormTitleBar</strong></li>
+<li><strong>KryptonMessageBox</strong> — optional Copy button; overlay icons</li>
+<li><strong>KryptonInputBox</strong> / <strong>KryptonInputBoxManager</strong></li>
+<li><strong>KryptonTaskDialog</strong> — Vista-style; RTF on rich-text elements (#4287)</li>
+<li><strong>KryptonColorDialog</strong> / <strong>KryptonFontDialog</strong></li>
+<li><strong>KryptonOpenFileDialog</strong> / <strong>KryptonSaveFileDialog</strong> / <strong>KryptonFolderBrowserDialog</strong> — shell wrappers (<code>FileDialogWrapper</code> / <code>ShellDialogWrapper</code>), DPI-aware custom UI</li>
+<li><strong>KryptonPrintDialog</strong> / <strong>KryptonPrintDocument</strong></li>
+<li><strong>KryptonPrintPreviewDialog</strong> / <strong>KryptonPrintPreviewControl</strong></li>
+<li><strong>KryptonInformationBox</strong></li>
+<li><strong>KryptonSplashScreen</strong> — static Show / ShowAsync API (richer manager is Utilities)</li>
+<li>Toolkit also has an <strong>internal</strong> <code>KryptonExceptionDialog</code> helper; the public consumer API is Utilities</li>
+</ul>
+<p>There is <strong>no</strong> public <code>KryptonAboutBox</code> in core; that lives in Utilities.</p>
+<h3 id="menu-and-toolbar">Menu and toolbar</h3>
+<ul>
+<li><strong>KryptonContextMenu</strong> — full <code>ContextMenuStrip</code> replacement, plus:
+<ul>
+<li>CheckBox, CheckButton, RadioButton, Item, Items</li>
+<li>ComboBox, TextBox, LinkLabel</li>
+<li>ColorColumns, ImageSelect, MonthCalendar, ProgressBar</li>
+<li>Heading, Separator</li>
+<li>Gallery / GalleryItem / GalleryRange (in-menu galleries, live preview) (#3862)</li>
+<li>Mini Toolbar pairing (designer-configurable)</li>
+</ul>
+</li>
+<li><strong>KryptonMenuBar</strong> — native bar (not a <code>MenuStrip</code> subclass); <code>KryptonContextMenuItem</code> tops + context drop-downs; assign <code>KryptonForm.MenuBar</code> (#4242)</li>
+<li><strong>KryptonMenuStrip</strong> — themed <code>MenuStrip</code> with <code>PaletteMode</code> / <code>Palette</code> (#1110 / #2689)</li>
+<li><strong>KryptonToolStrip</strong> / <strong>KryptonToolStripMenuItem</strong> / <strong>KryptonToolStripComboBox</strong> / <strong>KryptonToolStripThemeComboBox</strong></li>
+<li><strong>KryptonStatusStrip</strong> / <strong>KryptonProgressBarToolStripItem</strong></li>
+</ul>
+<h3 id="web">Web</h3>
+<ul>
+<li><strong>KryptonWebBrowser</strong> — wraps <code>WebBrowser</code> (IE engine). Modern Chromium hosting is <strong>KryptonWebView2</strong> in Utilities.</li>
+</ul>
+<h3 id="notifications-and-chrome-helpers">Notifications and chrome helpers</h3>
+<ul>
+<li><strong>KryptonToastNotificationManager</strong> — Toolbox stub; <strong>toast UI is <code>KryptonToast</code> in Utilities</strong></li>
+<li><strong>KryptonPoweredByButton</strong> / <strong>KryptonToolkitPoweredByControl</strong></li>
+<li><strong>KryptonSystemMenu</strong></li>
+</ul>
+<h3 id="providers-and-components">Providers and components</h3>
+<ul>
+<li><strong>KryptonToolTip</strong> — <code>IExtenderProvider</code> (<code>SetKryptonToolTipTitle</code> / Description / Image / Content); themed <code>VisualPopupToolTip</code>; optional hosted controls (hyperlinks, any Control) (#4192)</li>
+<li><strong>KryptonErrorProvider</strong></li>
+<li><strong>KryptonNotifyIcon</strong></li>
+<li><strong>KryptonHelpProvider</strong> / <strong>KryptonHelpCommand</strong></li>
+<li><strong>KryptonFileSystemWatcher</strong></li>
+<li><strong>KryptonTimer</strong></li>
+<li><strong>KryptonCommand</strong> and integrated toolbar commands (Cut/Copy/Paste/Save/Print/PrintPreview/PageSetup/QuickPrint)</li>
+<li><strong>KryptonManager</strong> — global palette, strings, touchscreen scaling, pulsing-border defaults</li>
+<li><strong>KryptonCustomPaletteBase</strong> — <code>.kthemex</code> / <code>.ktheme</code> / XML; collections; thumbnails</li>
+<li><strong>KryptonThemeBrowser</strong> / <strong>KryptonThemeComboBox</strong> / <strong>KryptonThemeListBox</strong> / <strong>KryptonThemeListView</strong> (previews, live hover preview) (#3870)</li>
+</ul>
+<hr>
+<h2 id="2-implemented-controls--kryptontoolkitutilities">2. IMPLEMENTED CONTROLS — <code>Krypton.Toolkit.Utilities</code></h2>
+<p>Require the <strong>Krypton.Standard.Toolkit</strong> package (<code>Krypton.Toolkit.Utilities</code> assembly).</p>
+<h3 id="editors-and-specialised-input">Editors and specialised input</h3>
+<ul>
+<li><strong>KryptonCodeEditor</strong> — native syntax highlighting, line numbers, folding, auto-complete (14+ languages); no Scintilla dependency</li>
+<li><strong>KryptonSearchBox</strong> — search/clear button specs on <code>KryptonTextBox</code></li>
+<li><strong>KryptonAutoTextSuggestion</strong></li>
+<li><strong>KryptonTreeComboBox</strong></li>
+<li><strong>KryptonMultiColumnComboBox</strong></li>
+<li><strong>KryptonCheckedListComboBox</strong></li>
+<li><strong>KryptonComboBoxUserControl</strong> — drop-down hosting an arbitrary user control</li>
+<li><strong>KryptonTagInputControl</strong> — panel-hosted tag editor (core also has <code>KryptonTagInput</code>)</li>
+<li><strong>KryptonEnumButton</strong> / <strong>KryptonEnumCommandLinkButton</strong></li>
+<li><strong>KryptonCountdownButton</strong></li>
+<li><strong>KryptonCheckBoxExtended</strong></li>
+<li><strong>KryptonKnob</strong> / <strong>KryptonKnobAlternate</strong></li>
+<li><strong>KryptonCircularProgressBar</strong></li>
+<li><strong>KryptonQRCode</strong></li>
+<li><strong>KryptonDropZone</strong></li>
+<li><strong>KryptonCommandLinkButton</strong> — Vista-style command link</li>
+</ul>
+<p>There is <strong>no</strong> <code>KryptonMarkdownEditor</code> or <code>KryptonMarkdownPreview</code>.</p>
+<h3 id="dialogs-and-shells">Dialogs and shells</h3>
+<ul>
+<li><strong>KryptonAboutBox</strong> — comprehensive About (#2222)</li>
+<li><strong>KryptonExceptionDialog</strong> — public API</li>
+<li><strong>KryptonFoldableDialog</strong></li>
+<li><strong>KryptonMessageBoxExtended</strong></li>
+<li><strong>KryptonBugReportingDialog</strong> / GitHub issue report</li>
+<li><strong>KryptonSystemInformation</strong> — msinfo32-style (#3176)</li>
+<li><strong>KryptonSplashScreenManager</strong></li>
+<li><strong>KryptonToast</strong> — toast notifications (use this, not the Toolkit manager stub)</li>
+<li><strong>KryptonOAuth2</strong> login UI</li>
+</ul>
+<h3 id="file-system-browser-colour">File system, browser, colour</h3>
+<ul>
+<li><strong>KryptonFileSystemListView</strong> / <strong>KryptonFileSystemTreeView</strong> / <strong>KryptonSystemTreeView</strong></li>
+<li><strong>KryptonExplorerBrowser</strong> / <strong>KryptonBrowserControl</strong></li>
+<li><strong>KryptonWebView2</strong> — Chromium (<code>WebView2</code>)</li>
+<li><strong>KryptonScreenColorPicker</strong> / <strong>KryptonColourPicker</strong></li>
+<li><strong>KryptonCheckSum</strong> / verify-file checksum UI</li>
+</ul>
+<h3 id="menus-strips-radial">Menus, strips, radial</h3>
+<ul>
+<li><strong>KryptonRadialMenu</strong> / <strong>KryptonRadialMenuControl</strong></li>
+<li><strong>KryptonEnhancedContextMenu</strong> / <strong>KryptonMiniToolbar</strong></li>
+<li>ToolStrip suite (#4048): enhanced strip/status, hosted editors, MRU items, UAC shield, loading circle, toolbar slider, blinking status label, floating toolbars</li>
+<li><strong>KryptonHtmlToolTipContent</strong> — HTML fragment helper for <code>KryptonToolTip</code> hosted content</li>
+</ul>
+<h3 id="logging-palettes-strings">Logging, palettes, strings</h3>
+<ul>
+<li><strong>KryptonLog</strong> / <strong>KryptonLogViewer</strong></li>
+<li><strong>KryptonPaletteCollectionEditor</strong></li>
+<li><strong>KryptonPaletteFileListBox</strong> / <strong>KryptonPaletteFileComboBox</strong> / <strong>KryptonPaletteFileTreeView</strong></li>
+<li><strong>KryptonCustomThemeGenerator</strong> / <strong>KryptonCustomThemeBuilder</strong></li>
+<li><strong>KryptonCustomStrings</strong> / <strong>KryptonCustomStringsManager</strong></li>
+<li><strong>KryptonMultiSelectTreeView</strong> — rubber-band / Ctrl-Shift selection (core <code>KryptonTreeView</code> also has <code>MultiSelect</code>)</li>
+<li><strong>KryptonPrintPreviewControl</strong> — Utilities variant (Toolkit also has one)</li>
+</ul>
+<hr>
+<h2 id="3-sibling-libraries">3. SIBLING LIBRARIES</h2>
+<table>
+<thead>
+<tr>
+<th>Assembly</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Krypton.Themes</strong></td>
+<td>Extra builtin palettes (optional; auto-discovered). Toolkit must not project-reference Themes.</td>
+</tr>
+<tr>
+<td><strong>Krypton.Ribbon</strong></td>
+<td>Office-style ribbon, galleries, QAT, backstage, <code>KryptonRibbonToolbar</code>. RTL (#2382). DPI-scaled QAT overflow (#4253, #4254).</td>
+</tr>
+<tr>
+<td><strong>Krypton.Navigator</strong></td>
+<td>Full <code>TabControl</code> replacement (15+ modes: bar tabs, ribbon tabs, Outlook, buttons, stacked, …).</td>
+</tr>
+<tr>
+<td><strong>Krypton.Navigator.Utilities</strong></td>
+<td><code>KryptonNavigatorFormIntegrator</code> (caption-integrated tabs, #925), <code>KryptonTabbedMdiManager</code>, <code>KryptonNavigatorTaskbarThumbnails</code> (#882, #4129).</td>
+</tr>
+<tr>
+<td><strong>Krypton.Workspace</strong></td>
+<td>Tileable workspace of <code>KryptonPage</code>s.</td>
+</tr>
+<tr>
+<td><strong>Krypton.Docking</strong></td>
+<td>Docking via <code>KryptonDockingManager</code> (auto-hide, float, persist).</td>
+</tr>
+<tr>
+<td><strong>Krypton.Toolkit.JumpList</strong></td>
+<td><code>WpfJumpListBridge</code> — WinForms jump lists via WPF <code>System.Windows.Shell.JumpList</code>.</td>
+</tr>
+<tr>
+<td><strong>Krypton.Interop</strong></td>
+<td>Internal Win32 / nullable polyfills; bundled in module packages, not a consumer package.</td>
+</tr>
+</tbody>
+</table>
+<p>For simple tabs, use <code>KryptonNavigator</code> with <code>NavigatorMode.BarTabGroup</code>. There is no separate <code>KryptonTabControl</code>.</p>
+<hr>
+<h2 id="4-remaining-standard-winforms-gaps">4. REMAINING STANDARD WINFORMS GAPS</h2>
+<p>Only items that still have no Krypton type (or no dedicated type) belong here.</p>
+<h3 id="use-a-sibling-or-existing-control-instead">Use a sibling or existing control instead</h3>
+<table>
+<thead>
+<tr>
+<th>Standard</th>
+<th>Use instead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TabControl</td>
+<td><code>KryptonNavigator</code> (<code>BarTabGroup</code> for simple tabs)</td>
+</tr>
+<tr>
+<td>ContextMenuStrip</td>
+<td><code>KryptonContextMenu</code></td>
+</tr>
+<tr>
+<td>SplitButton</td>
+<td><code>KryptonDropButton</code> (<code>Splitter</code> defaults to <code>true</code>). No <code>KryptonSplitButton</code> class.</td>
+</tr>
+<tr>
+<td>WebBrowser (Chromium)</td>
+<td><code>KryptonWebView2</code> (Utilities). <code>KryptonWebBrowser</code> is the IE <code>WebBrowser</code> wrapper.</td>
+</tr>
+<tr>
+<td>ToolTip</td>
+<td><code>KryptonToolTip</code> (core) and/or per-control <code>ToolTipValues</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="not-implemented-and-usually-not-needed">Not implemented (and usually not needed)</h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Impact</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>PageSetupDialog</strong></td>
+<td>Low</td>
+<td>Printing; <code>KryptonIntegratedToolbarPageSetupCommand</code> exists, but no themed page-setup dialog.</td>
+</tr>
+<tr>
+<td><strong>ImageList</strong></td>
+<td>Low</td>
+<td>Non-visual; standard <code>ImageList</code> works with ListView/TreeView/ToolStrip.</td>
+</tr>
+<tr>
+<td><strong>BindingSource</strong></td>
+<td>Low</td>
+<td>Non-visual; works with Krypton data controls. <code>KryptonBindingNavigator</code> is the themed navigator.</td>
+</tr>
+<tr>
+<td><strong>BackgroundWorker</strong></td>
+<td>None</td>
+<td>Non-visual; no themed version required.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="not-implemented-optional-product">Not implemented (optional product)</h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Impact</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chart</strong> (<code>System.Windows.Forms.DataVisualization.Charting</code>)</td>
+<td>Medium</td>
+<td>Not part of inbox WinForms on all TFMs; recommend a third-party chart or a future Utilities control.</td>
+</tr>
+<tr>
+<td><strong>Dedicated KryptonSplitButton</strong></td>
+<td>Low</td>
+<td>API sugar over <code>KryptonDropButton</code>; not required for parity.</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="5-remaining-modern--advanced-gaps">5. REMAINING MODERN / ADVANCED GAPS</h2>
+<h3 id="missing-not-in-toolkit-or-utilities">Missing (not in Toolkit or Utilities)</h3>
+<ul>
+<li><strong>Markdown editor / preview</strong> — previously listed as done; there is no <code>KryptonMarkdownEditor</code> or <code>KryptonMarkdownPreview</code>. Closest: <code>KryptonCodeEditor</code> (Utilities) with Markdown highlighting, or host HTML in <code>KryptonWebView2</code>.</li>
+<li><strong>Automatic OS dark / light follow</strong> — many dark, light, and high-contrast <strong>builtin palettes</strong> exist (#1551, #942, #4168). There is no automatic switch when Windows “Apps use light theme” or High Contrast changes.</li>
+<li><strong>Charting</strong> — see above.</li>
+</ul>
+<h3 id="implemented-were-listed-as-gaps">Implemented (were listed as gaps)</h3>
+<ul>
+<li><strong>Search box</strong> — <code>KryptonSearchBox</code> (Utilities)</li>
+<li><strong>Rating</strong> — <code>KryptonRating</code> (core)</li>
+<li><strong>Tag / token input</strong> — <code>KryptonTagInput</code> (core) and <code>KryptonTagInputControl</code> (Utilities)</li>
+<li><strong>Code editor</strong> — <code>KryptonCodeEditor</code> (Utilities)</li>
+<li><strong>Breadcrumb</strong> — <code>KryptonBreadCrumb</code></li>
+<li><strong>Touch scaling</strong> — <code>KryptonManager.UseTouchscreenSupport</code> / <code>TouchscreenSettings</code></li>
+<li><strong>Print preview</strong> — <code>KryptonPrintPreviewDialog</code> / <code>KryptonPrintPreviewControl</code> (core)</li>
+<li><strong>Standalone H/V scrollbars</strong> — <code>KryptonHScrollBar</code> / <code>KryptonVScrollBar</code></li>
+</ul>
+<h3 id="high-dpi--scaling">High DPI / scaling</h3>
+<p><strong>Status:</strong> Substantial support; remaining work is verification on individual controls, not a missing subsystem.</p>
+<ul>
+<li><code>VisualForm</code> / <code>KryptonForm</code> handle <code>DpiChanged</code> and update DPI factors.</li>
+<li>Ribbon QAT overflow, extra button, and related glyphs scale with DPI (#3851, #4253, #4254).</li>
+<li>High-DPI magenta image-border fix (#3736).</li>
+<li>File dialogs handle <code>DpiChanged</code>.</li>
+<li>Per-monitor DPI awareness is an <strong>application</strong> manifest / <code>ApplicationConfiguration</code> setting; Krypton cannot force it for the host exe.</li>
+</ul>
+<hr>
+<h2 id="6-accessibility">6. ACCESSIBILITY</h2>
+<p>Not a blank audit. Coverage is real but not a substitute for Narrator/JAWS/NVDA sign-off on every control.</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AccessibleName / Description / Role</strong></td>
+<td>Inherited from <code>Control</code>; usable on all Krypton controls</td>
+</tr>
+<tr>
+<td><strong>Custom AccessibleObject</strong></td>
+<td>Present for TextBox, ComboBox, ListBox, ListView, CheckedListBox, Numeric/Domain UpDown, MaskedTextBox, RichTextBox, RadioButton, CheckButton, DropButton, ColorButton, LinkWrapLabel, Rating, command links, ButtonSpecs (#3658)</td>
+</tr>
+<tr>
+<td><strong>Keyboard / tab order</strong></td>
+<td>Standard WinForms tab order; mnemonics on buttons/labels; MenuBar Alt activation; Ribbon keytips</td>
+</tr>
+<tr>
+<td><strong>High contrast palettes</strong></td>
+<td>Builtin modes: <code>HighContrast</code>, Office 2007/2010/2013, Sparkle, Material (+ Ripple) (#4168). Glass/transparency disabled when <code>SystemInformation.HighContrast</code></td>
+</tr>
+<tr>
+<td><strong>Automatic high-contrast theme switch</strong></td>
+<td>Not implemented (palettes exist; app must select them)</td>
+</tr>
+<tr>
+<td><strong>Screen readers (Narrator / JAWS / NVDA)</strong></td>
+<td>Partial via UIA from AccessibleObjects; no dedicated automation-peer layer (WinForms uses MSAA/UIA, not WPF AutomationPeer)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-feature-completeness-on-existing-controls">7. FEATURE COMPLETENESS ON EXISTING CONTROLS</h2>
+<h3 id="kryptonlistview">KryptonListView</h3>
+<ul>
+<li>Virtual mode, groups, tile/large/small/details views, state images, sorting property, themed headers, Krypton item tooltips — <strong>present</strong></li>
+<li>Open: dedicated sort <strong>glyphs</strong> in themed headers (column click is exposed; visual indicator completeness still worth a pass)</li>
+</ul>
+<h3 id="kryptontreeview">KryptonTreeView</h3>
+<ul>
+<li>CheckBoxes, ImageList, StateImageList, MultiSelect, RightToLeftLayout — <strong>present</strong></li>
+<li>Open: node state persistence is application-level, not a built-in serializer</li>
+</ul>
+<h3 id="kryptoncombobox">KryptonComboBox</h3>
+<ul>
+<li>DropDown / DropDownList / Simple, AutoComplete, DrawMode — <strong>present</strong></li>
+<li>Grid combo cells still reject <code>Simple</code> (always-visible list cannot live in a cell)</li>
+</ul>
+<h3 id="kryptondatagridview">KryptonDataGridView</h3>
+<ul>
+<li>Inherits standard <code>DataGridView</code> features including VirtualMode</li>
+<li>Extra column types as listed above</li>
+<li>Themed overlay scrollbars (native scroll path restored #3682)</li>
+<li>Open: treat “every DGV event/paint customisation” as inherited unless a specific gap is filed</li>
+</ul>
+<h3 id="kryptontextbox">KryptonTextBox</h3>
+<ul>
+<li>CueHint (optional shimmer), AutoComplete, ButtonSpecs, pulsing border — <strong>present</strong></li>
+</ul>
+<h3 id="cross-cutting">Cross-cutting</h3>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTL</td>
+<td>Forms, many controls, Ribbon (#2382). Continue to verify Utilities extras.</td>
+</tr>
+<tr>
+<td>Touch</td>
+<td>Global scale via <code>KryptonManager</code></td>
+</tr>
+<tr>
+<td>Designer “Modified” on drop</td>
+<td>Constructor factory defaults (#4325)</td>
+</tr>
+<tr>
+<td>Pulsing / glowing borders</td>
+<td>Per-control and <code>KryptonManager.PulsingBorderValues</code> (#4248, #3784)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="8-winforms-on-net-5">8. WINFORMS ON .NET 5+</h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Task dialogs</td>
+<td><code>KryptonTaskDialog</code></td>
+</tr>
+<tr>
+<td>Async Show / ShowDialog (.NET 9+)</td>
+<td><code>KryptonFormAsync</code> helpers; splash/message APIs expose <code>ShowAsync</code> where applicable (#4177)</td>
+</tr>
+<tr>
+<td>Dark / light</td>
+<td>Many builtin dark/light palettes; no auto OS follow</td>
+</tr>
+<tr>
+<td>High contrast</td>
+<td>Builtin palettes; no auto OS follow</td>
+</tr>
+<tr>
+<td>File pickers</td>
+<td>Custom Krypton shell dialogs, not the raw Win11 <code>IFileDialog</code> chrome (by design for theming)</td>
+</tr>
+<tr>
+<td>UIA</td>
+<td>Custom AccessibleObjects; not a full Win11 UIA rewrite</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="9-what-krypton-has-that-stock-winforms-does-not">9. WHAT KRYPTON HAS THAT STOCK WINFORMS DOES NOT</h2>
+<ul>
+<li>Theme catalog (core + extra Themes assembly), <code>.kthemex</code> / collections / thumbnails / live preview</li>
+<li>Ribbon, Navigator, Workspace, Docking</li>
+<li>Native MenuBar + rich ContextMenu (galleries, mini toolbar)</li>
+<li>Toggle switch, rating, tag input, calc input, breadcrumb</li>
+<li>Toast (Utilities), splash, About, exception, foldable dialog, system information</li>
+<li>Code editor, search box, knobs, radial menu, WebView2, screen colour picker, QR, drop zone</li>
+<li>Command links, enum buttons, binding navigator</li>
+<li>Jump lists (JumpList assembly)</li>
+</ul>
+<hr>
+<h2 id="10-recommendations">10. RECOMMENDATIONS</h2>
+<h3 id="critical">Critical</h3>
+<p>None remaining for standard WinForms coverage. Previous critical items (<code>ErrorProvider</code>, <code>ToolTip</code>, <code>FlowLayoutPanel</code>, <code>NotifyIcon</code>, <code>HelpProvider</code>, <code>Splitter</code>) are done.</p>
+<h3 id="high-quality-not-missing-controls">High (quality, not missing controls)</h3>
+<ol>
+<li><strong>Accessibility pass</strong> — exercise Narrator (and optionally NVDA) on MenuBar, TagInput, Rating, ListView virtual mode, Navigator caption tabs, Ribbon RTL.</li>
+<li><strong>DPI spot-check</strong> — Utilities extras and remaining owner-draw controls at 150% / 200% per-monitor.</li>
+<li><strong>Document WinForms → Krypton mapping</strong> for consumers (this file plus README); keep Utilities vs Toolkit placement explicit.</li>
+</ol>
+<h3 id="medium-optional-new-product">Medium (optional new product)</h3>
+<ol>
+<li><strong>Markdown editor / preview</strong> — only if product wants a first-class control; do not document as existing.</li>
+<li><strong>Page setup dialog</strong> — themed <code>PageSetupDialog</code> if print apps need it.</li>
+<li><strong>OS theme follow</strong> — optional <code>KryptonManager</code> hook for AppsUseLightTheme / High Contrast.</li>
+<li><strong>Charting</strong> — prefer documenting a third-party recommendation over a from-scratch chart.</li>
+</ol>
+<h3 id="low">Low</h3>
+<ol>
+<li>Dedicated <code>KryptonSplitButton</code> subclass (cosmetic API over <code>KryptonDropButton</code>).</li>
+<li>Themed <code>ImageList</code> / <code>BindingSource</code> — not useful.</li>
+<li>Remove obsolete <code>KryptonScrollBar</code> in V120 LTS (already planned).</li>
+<li>Flesh out or delete <code>KryptonToastNotificationManager</code> so consumers are not pointed at an empty Toolkit stub.</li>
+</ol>
+<h3 id="do-not-implement-as-a-separate-control">Do not implement as a separate control</h3>
+<ul>
+<li><strong>KryptonTabControl</strong> — Navigator <code>BarTabGroup</code> is the replacement.</li>
+</ul>
+<hr>
+<h2 id="11-control-mapping-table">11. CONTROL MAPPING TABLE</h2>
+<table>
+<thead>
+<tr>
+<th>Standard WinForms</th>
+<th>Krypton equivalent</th>
+<th>Assembly</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Button</td>
+<td>KryptonButton</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>SplitButton</td>
+<td>KryptonDropButton (<code>Splitter</code>)</td>
+<td>Toolkit</td>
+<td>No <code>KryptonSplitButton</code> type</td>
+</tr>
+<tr>
+<td>CheckBox</td>
+<td>KryptonCheckBox</td>
+<td>Toolkit</td>
+<td>Extended variant in Utilities</td>
+</tr>
+<tr>
+<td>RadioButton</td>
+<td>KryptonRadioButton</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>TextBox</td>
+<td>KryptonTextBox</td>
+<td>Toolkit</td>
+<td>CueHint, ButtonSpecs</td>
+</tr>
+<tr>
+<td>Search-style TextBox</td>
+<td>KryptonSearchBox</td>
+<td>Utilities</td>
+<td></td>
+</tr>
+<tr>
+<td>RichTextBox</td>
+<td>KryptonRichTextBox</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>MaskedTextBox</td>
+<td>KryptonMaskedTextBox</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>ComboBox</td>
+<td>KryptonComboBox</td>
+<td>Toolkit</td>
+<td>Simple + DropDownList + AutoComplete</td>
+</tr>
+<tr>
+<td>ListBox</td>
+<td>KryptonListBox</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>CheckedListBox</td>
+<td>KryptonCheckedListBox</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>ListView</td>
+<td>KryptonListView</td>
+<td>Toolkit</td>
+<td>Virtual, groups, tile</td>
+</tr>
+<tr>
+<td>TreeView</td>
+<td>KryptonTreeView</td>
+<td>Toolkit</td>
+<td>CheckBoxes, StateImageList, MultiSelect</td>
+</tr>
+<tr>
+<td>DataGridView</td>
+<td>KryptonDataGridView</td>
+<td>Toolkit</td>
+<td>Extra column types</td>
+</tr>
+<tr>
+<td>Label / LinkLabel</td>
+<td>KryptonLabel / LinkLabel / Wrap*</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>PictureBox</td>
+<td>KryptonPictureBox</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>ProgressBar</td>
+<td>KryptonProgressBar</td>
+<td>Toolkit</td>
+<td>Circular in Utilities</td>
+</tr>
+<tr>
+<td>TrackBar</td>
+<td>KryptonTrackBar</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>HScrollBar / VScrollBar</td>
+<td>KryptonHScrollBar / KryptonVScrollBar</td>
+<td>Toolkit</td>
+<td><code>KryptonScrollBar</code> obsolete</td>
+</tr>
+<tr>
+<td>NumericUpDown / DomainUpDown</td>
+<td>KryptonNumericUpDown / DomainUpDown</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>DateTimePicker / MonthCalendar</td>
+<td>KryptonDateTimePicker / MonthCalendar</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>Panel / GroupBox</td>
+<td>KryptonPanel / GroupBox / Group</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>SplitContainer / Splitter</td>
+<td>KryptonSplitContainer / Splitter</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>TabControl</td>
+<td>KryptonNavigator</td>
+<td>Navigator</td>
+<td><code>BarTabGroup</code> for simple tabs</td>
+</tr>
+<tr>
+<td>TableLayoutPanel / FlowLayoutPanel</td>
+<td>KryptonTableLayoutPanel / FlowLayoutPanel</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>Form</td>
+<td>KryptonForm</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>ToolStrip / StatusStrip / MenuStrip</td>
+<td>KryptonToolStrip / StatusStrip / MenuStrip</td>
+<td>Toolkit</td>
+<td>Native MenuBar also available</td>
+</tr>
+<tr>
+<td>ContextMenuStrip</td>
+<td>KryptonContextMenu</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>WebBrowser</td>
+<td>KryptonWebBrowser</td>
+<td>Toolkit</td>
+<td>IE engine</td>
+</tr>
+<tr>
+<td>WebView2</td>
+<td>KryptonWebView2</td>
+<td>Utilities</td>
+<td>Chromium</td>
+</tr>
+<tr>
+<td>PropertyGrid</td>
+<td>KryptonPropertyGrid</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>ErrorProvider</td>
+<td>KryptonErrorProvider</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>ToolTip</td>
+<td>KryptonToolTip</td>
+<td>Toolkit</td>
+<td>Also <code>ToolTipValues</code> on controls</td>
+</tr>
+<tr>
+<td>NotifyIcon</td>
+<td>KryptonNotifyIcon</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>HelpProvider</td>
+<td>KryptonHelpProvider</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>BindingNavigator</td>
+<td>KryptonBindingNavigator</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>Timer</td>
+<td>KryptonTimer</td>
+<td>Toolkit</td>
+<td>Optional; <code>System.Windows.Forms.Timer</code> is fine</td>
+</tr>
+<tr>
+<td>FileSystemWatcher</td>
+<td>KryptonFileSystemWatcher</td>
+<td>Toolkit</td>
+<td>Optional</td>
+</tr>
+<tr>
+<td>ImageList / BindingSource</td>
+<td>(standard)</td>
+<td>—</td>
+<td>Work as-is</td>
+</tr>
+<tr>
+<td>PrintDialog</td>
+<td>KryptonPrintDialog</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>PrintPreviewDialog / Control</td>
+<td>KryptonPrintPreviewDialog / Control</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>PageSetupDialog</td>
+<td>(none)</td>
+<td>—</td>
+<td>Toolbar PageSetup command only</td>
+</tr>
+<tr>
+<td>Open/Save/Folder dialogs</td>
+<td>KryptonOpenFileDialog / Save / FolderBrowser</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>FontDialog / ColorDialog</td>
+<td>KryptonFontDialog / ColorDialog</td>
+<td>Toolkit</td>
+<td>Screen picker in Utilities</td>
+</tr>
+<tr>
+<td>MessageBox</td>
+<td>KryptonMessageBox</td>
+<td>Toolkit</td>
+<td>Extended / foldable in Utilities</td>
+</tr>
+<tr>
+<td>TaskDialog</td>
+<td>KryptonTaskDialog</td>
+<td>Toolkit</td>
+<td></td>
+</tr>
+<tr>
+<td>About</td>
+<td>KryptonAboutBox</td>
+<td>Utilities</td>
+<td></td>
+</tr>
+<tr>
+<td>Chart</td>
+<td>(none)</td>
+<td>—</td>
+<td>Recommend third-party</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="12-conclusion">12. CONCLUSION</h2>
+<p>The toolkit’s <strong>standard WinForms coverage is complete</strong> for the controls applications actually theme. Gaps called out in older audits (<code>ToolTip</code>, print preview, H/V scrollbars, ListView virtual mode, TreeView checkboxes, ComboBox styles) are implemented. Several items were <strong>mis-filed</strong> as core Toolkit (code editor, search box, About box, Vista command link) or <strong>never existed</strong> (markdown editor, <code>KryptonSplitButton</code>).</p>
+<p><strong>Immediate documentation actions (this review):</strong> treat <code>KryptonToolTip</code> as done; send toast/About/exception/search/code-editor consumers to Utilities; recommend <code>KryptonDropButton</code> for split buttons; stop listing markdown as shipped.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

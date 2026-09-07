@@ -134,6 +134,33 @@ private void UpdateToggleButton()
 }
 </code></pre>
 <hr>
+<h3 id="example-2b-drag-to-reattach-custom-floating-title-and-programmatic-drag">Example 2b: Drag-to-Reattach, Custom Floating Title, and Programmatic Drag</h3>
+<pre><code class="lang-csharp">public void ConfigureDetachableRibbon()
+{
+    // Enable detach and drag-to-reattach features
+    _ribbon.AllowDetach = true;
+    _ribbon.AllowDragReattach = true;
+
+    // Set custom title bar text for the floating window
+    _ribbon.FloatingWindowText = &quot;Word Processing Tools&quot;;
+
+    // You can also change the title dynamically while the ribbon is already floating
+    if (_ribbon.IsDetached)
+    {
+        _ribbon.FloatingWindowText = &quot;Document 1 - Ribbon&quot;;
+    }
+}
+
+// Programmatic tear-out and drag initiation (e.g. from a custom gesture or tool strip)
+private void OnCustomTearOutInitiated(Point screenPoint)
+{
+    if (_ribbon.AllowDetach &amp;&amp; !_ribbon.IsDetached)
+    {
+        _ribbon.DetachAndDrag(screenPoint);
+    }
+}
+</code></pre>
+<hr>
 <h2 id="event-handling">Event Handling</h2>
 <h3 id="example-3-update-ui-on-state-change">Example 3: Update UI on State Change</h3>
 <pre><code class="lang-csharp">public MainForm()
