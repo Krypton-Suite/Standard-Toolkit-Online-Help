@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonSplitButton | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonSplitButton | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonsplitbutton">KryptonSplitButton</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonSplitButton</code> is a <code>KryptonDropButton</code> that is <strong>always</strong> a split: the button body raises <code>Click</code> (and executes <code>KryptonCommand</code>), and the chevron raises <code>DropDown</code> then shows <code>KryptonContextMenu</code> or <code>ContextMenuStrip</code>.</p>
+<p>It lives in <code>Krypton.Toolkit</code>. Rendering, palettes, and menu positioning are unchanged from <code>KryptonDropButton</code>.</p>
+<h2 id="why-a-dedicated-type">Why a dedicated type</h2>
+<p>Split behaviour already existed in two other places:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Default</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonButton</code></td>
+<td>No chevron</td>
+<td>Push button. <code>ShowSplitOption = true</code> is the legacy opt-in.</td>
+</tr>
+<tr>
+<td><code>KryptonDropButton</code></td>
+<td>Chevron + splitter</td>
+<td>Split by default. <code>Splitter = false</code> makes the whole button a drop-down.</td>
+</tr>
+<tr>
+<td><code>KryptonSplitButton</code></td>
+<td>Always split</td>
+<td>Toolbox type for “Save + menu” (WinForms <code>SplitButton</code> / <code>ToolStripSplitButton</code>).</td>
+</tr>
+</tbody>
+</table>
+<p><code>ShowSplitOption</code> is kept for compatibility. Prefer <code>KryptonSplitButton</code> for new UI.</p>
+<p><code>Krypton.Toolkit.Utilities</code> <code>KryptonMiniToolbarSplitButton</code> is a mini-toolbar item, not this control.</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code>VisualSimpleBase
+  └── KryptonDropButton          // Splitter optional; mnemonic opens menu when Splitter is true
+        ├── KryptonButton        // DropDown/Splitter off; ShowSplitOption re-enables both
+        │     └── KryptonCheckButton
+        └── KryptonSplitButton   // Splitter locked on; mnemonic fires Click
+</code></pre>
+<p><code>KryptonSplitButton</code> is a <strong>sibling</strong> of <code>KryptonButton</code>, not a subclass. <code>KryptonDropButton</code> used to special-case <code>this is KryptonButton</code> for click routing and <code>WM_CONTEXTMENU</code>. Those are now virtuals:</p>
+<ul>
+<li><code>OpensDropDownOnNonSplitterClick</code> — <code>true</code> on drop-down; <code>false</code> on <code>KryptonButton</code></li>
+<li><code>SuppressSystemContextMenu</code> — <code>true</code> on drop-down / split; <code>false</code> on <code>KryptonButton</code></li>
+<li><code>MnemonicPerformsDropDown</code> — follows <code>Splitter</code> on drop-down; <code>false</code> on <code>KryptonSplitButton</code></li>
+</ul>
+<p><code>Splitter</code> is <code>virtual</code>. The split-button override always returns <code>true</code> and ignores <code>false</code>.</p>
+<p>Accessibility: <code>KryptonSplitButtonAccessibleObject</code> advertises <code>AccessibleRole.SplitButton</code>. Default action is still <strong>Press</strong> (<code>PerformClick</code>).</p>
+<p>Designer: reuses <code>KryptonDropButtonDesigner</code>. The smart tag omits <code>Splitter</code> when the component is a <code>KryptonSplitButton</code>.</p>
+<h2 id="public-api">Public API</h2>
+<pre><code class="lang-csharp">public class KryptonSplitButton : KryptonDropButton
+{
+    public KryptonSplitButton();
+
+    // Always true. Hidden. Setting false is ignored.
+    public override bool Splitter { get; set; }
+}
+</code></pre>
+<p>Inherited (the ones that matter for consumers):</p>
+<ul>
+<li><code>Click</code> / <code>PerformClick()</code> — button body</li>
+<li><code>DropDown</code> / <code>PerformDropDown()</code> — chevron</li>
+<li><code>KryptonContextMenu</code>, <code>ContextMenuStrip</code></li>
+<li><code>DropDownPosition</code>, <code>DropDownOrientation</code></li>
+<li><code>KryptonCommand</code> — executed from <code>OnClick</code> (body), not from the chevron</li>
+<li><code>Values</code>, palettes, <code>ButtonStyle</code>, badges, pulsing border</li>
+</ul>
+<p>There is no <code>ShowSplitOption</code> on this type. There is no WinForms-style <code>DefaultItem</code> (last menu item becomes the caption) in v1.</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">var save = new KryptonSplitButton
+{
+    Values = { Text = &quot;&amp;Save&quot; },
+    KryptonContextMenu = menu // items: Save, Save As, Save All
+};
+save.Click += (_, _) =&gt; SaveDocument();
+</code></pre>
+<p>Designer: drop <strong>KryptonSplitButton</strong> from the Toolbox, assign <code>KryptonContextMenu</code>, handle <code>Click</code>.</p>
+<p>Mnemonic (<code>&amp;Save</code> / Alt+S) fires <code>Click</code>, not the menu. That differs from <code>KryptonDropButton</code> with <code>Splitter = true</code>, where the mnemonic opens the drop-down.</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>Casting to <code>KryptonDropButton</code> and setting <code>Splitter = false</code> still leaves the splitter on (virtual override).</li>
+<li><code>KryptonButton.ShowSplitOption</code> is unchanged, including mnemonic → drop-down when the splitter is on.</li>
+<li>Do not change <code>KryptonDropButton.Splitter</code> default (<code>true</code>); that would be breaking.</li>
+<li>Right-click system context menu is suppressed (same as <code>KryptonDropButton</code>). Attach <code>KryptonContextMenu</code> for the chevron.</li>
+<li><code>net472</code> / C# 7.3 only.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

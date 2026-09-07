@@ -43,6 +43,7 @@ the toolbox.
 * [KryptonRichTextBox](Toolkit/Controls/KryptonRichTextBox.md)  
 * [KryptonScrollBars](Toolkit/Controls/KryptonScrollBars.md)
 * [KryptonSeparator](Toolkit/Controls/KryptonSeparator.md)  
+* [KryptonSplitButton](Toolkit/Controls/KryptonSplitButton.md)
 * [KryptonSplitContainer](Toolkit/Controls/KryptonSplitContainer.md)  
 * [KryptonSplitter](Toolkit/Controls/KryptonSplitter.md)
 * [KryptonStatusStrip](Toolkit/Controls/KryptonStatusStrip.md)

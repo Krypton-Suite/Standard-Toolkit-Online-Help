@@ -19,6 +19,7 @@ Topics under `Documents/Development/Controls/` describe Krypton WinForms control
 | Topic | Tier | Assembly |
 | --- | --- | --- |
 | [KryptonButton](Controls/KryptonButton.md) | Standard | Krypton.Toolkit |
+| [KryptonSplitButton](Controls/KryptonSplitButton.md) | Standard | Krypton.Toolkit |
 | [KryptonCheckBox](Controls/KryptonCheckBox.md) | Standard | Krypton.Toolkit |
 | [KryptonCheckButton](Controls/KryptonCheckButton.md) | Standard | Krypton.Toolkit |
 | [KryptonRadioButton](Controls/KryptonRadioButton.md) | Standard | Krypton.Toolkit |

@@ -133,6 +133,7 @@ This document provides links to the documentation provided, each will be split u
 * [Krypton Scroll Bars](Standard%20Toolkit/Toolkit/Controls/KryptonScrollBars.md)
 * [Krypton Search Box](Standard%20Toolkit/Toolkit/Controls/KryptonSearchBox.md)
 * [Krypton Separator](Standard%20Toolkit/Toolkit/Controls/KryptonSeparator.md)
+* [Krypton Split Button](Standard%20Toolkit/Toolkit/Controls/KryptonSplitButton.md)
 * [Krypton Split Container](Standard%20Toolkit/Toolkit/Controls/KryptonSplitContainer.md)
 * [Krypton Splitter](Standard%20Toolkit/Toolkit/Controls/KryptonSplitter.md)
 * [Krypton Status Strip](Standard%20Toolkit/Toolkit/Controls/KryptonStatusStrip.md)
