@@ -168,7 +168,7 @@ The workflow is defined in:
 
 ### Step 8: Discord notification
 
-- When `DISCORD_WEBHOOK_ALPHA_BACKUP` is set, sends an embed with branch status, PR link (if any), backup zip/bundle paths (if pushed), and workflow run link.
+- When `DISCORD_WEBHOOK_ALPHA_BACKUP` is set, sends an embed with branch status, linked `alpha` commit SHA, PR link (if any), backup zip/bundle paths (if pushed), and workflow run link.
 
 ---
 
@@ -278,7 +278,7 @@ Legacy dated directories at the backup repo root (the pre-bundle layout) are rem
 ### Message contents
 
 - Title: "Alpha → Alpha-Backup Sync"
-- Description: Branch status, PR link (if any), backup repo and zip/bundle paths (if pushed), workflow run link
+- Description: Branch status, linked `alpha` commit SHA, PR link (if any), backup repo and zip/bundle paths (if pushed), workflow run link
 - Footer: "Alpha Backup Sync"
 - Colour: Blue
 

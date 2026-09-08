@@ -1,8 +1,8 @@
-# Translations (XML & JSON)
+﻿# Translations (XML & JSON)
 
 ## Overview
 
-The **Translations** feature lets applications export the built-in Krypton toolkit string sets to a versioned `Translations.xml` or `Translations.json` file and import them back at design-time or at runtime. It also covers application-defined custom strings through a companion persistence layer in `Krypton.Toolkit.Utilities`. It covers:
+The **Translations** feature lets applications export the built-in Krypton toolkit string sets to a versioned `ToolkitTranslations.xml` or `ToolkitTranslations.json` file and import them back at design-time or at runtime. It also covers application-defined custom strings through a companion persistence layer in `Krypton.Toolkit.Utilities`. It covers:
 
 - `KryptonManager.Strings` (`KryptonGlobalToolkitStrings`) — all shared toolkit strings (buttons, dialogs, message boxes, property-grid labels, …)
 - `KryptonDockingManager.Strings` (`DockingManagerStrings`) — docking context-menu and tooltip text
@@ -23,6 +23,7 @@ KryptonManager.Strings          (KryptonGlobalToolkitStrings)
     │ ExportToJson / ExportToJsonFile
     │ ImportFromJsonFile
     │ (static helpers)
+    │ KryptonManager.DefaultTranslationsBaseName (`ToolkitTranslations`)
     │ KryptonManager.AutoDiscoverTranslations (bool, default true)
     │ KryptonManager.LoadTranslationsFromFile
     │ KryptonManager.TryLoadTranslationsFromFile
@@ -43,7 +44,7 @@ ToolkitStringsJsonPersistence   (internal static, Krypton.Toolkit)
     ImportFromJson() — JSON → XmlDocument → ToolkitStringsXmlPersistence.Import()
 
 ToolkitStringsXmlMerge          (public static, Krypton.Toolkit)
-    MergeFiles() / Merge() — combine two Translations.xml documents
+    MergeFiles() / Merge() — combine two ToolkitTranslations.xml documents
 
 KryptonDockingManager.Strings   (DockingManagerStrings)
     ExportToXmlFile / ExportToXmlDocument
@@ -99,9 +100,10 @@ KryptonCombinedTranslations     (public static, Krypton.Toolkit.Utilities)
 
 | Attribute | Meaning |
 |---|---|
-| `Version` | Integer format version (currently `1`). Import rejects files with a lower version number. |
+| `Version` | Integer structural format version (currently `1`). Older/newer files load best-effort; catalog drift uses Analyze / Merge Missing. |
 | `Culture` | `CultureInfo.Name` at export time. On import, a mismatch emits a `Debug.WriteLine` warning (controllable via `warnOnCultureMismatch`). |
 | `Generated` | Timestamp — informational only. |
+| `ToolkitVersion` | Optional informational toolkit assembly version that wrote the file. |
 | `Value` | The string value. |
 | `IsNull` | `"true"` if the property value is `null` (rare). |
 
@@ -157,17 +159,17 @@ static bool TryLoadTranslationsFromFile(string path, bool refreshOpenForms = fal
 static bool TryLoadCultureSpecificTranslations(
         string? directory = null,
         CultureInfo? culture = null,
-        string baseName = "Translations",
+        string baseName = KryptonManager.DefaultTranslationsBaseName /* "ToolkitTranslations" */,
         bool refreshOpenForms = false);
 static bool TrySwitchTranslationsCulture(
         CultureInfo culture,
         string? directory = null,
-        string baseName = "Translations",
+        string baseName = KryptonManager.DefaultTranslationsBaseName /* "ToolkitTranslations" */,
         bool refreshOpenForms = true);
 static bool TrySwitchTranslationsCulture(
         string cultureName,
         string? directory = null,
-        string baseName = "Translations",
+        string baseName = KryptonManager.DefaultTranslationsBaseName /* "ToolkitTranslations" */,
         bool refreshOpenForms = true);
 static CultureInfo? ActiveTranslationsCulture { get; }
 
@@ -255,7 +257,7 @@ static event EventHandler? CustomStringsImported;
 
 ### Startup auto-load (zero-code — recommended for built-in toolkit strings)
 
-Simply place `Translations.xml` (or `Translations.json`) in the application's output directory and set **Copy to Output Directory = Copy if newer**. `KryptonManager` discovers and loads it automatically before any control is shown. No code is required.
+Simply place `ToolkitTranslations.xml` (or `ToolkitTranslations.json`) in the application's output directory and set **Copy to Output Directory = Copy if newer**. `KryptonManager` discovers and loads it automatically before any control is shown. No code is required.
 
 This applies to the built-in toolkit string sets managed by `KryptonManager.Strings`. `KryptonCustomStrings` are application-defined and should be registered before import.
 
@@ -268,13 +270,13 @@ Use when auto-discovery is disabled or when loading a culture-specific file:
 ```csharp
 KryptonManager.AutoDiscoverTranslations = false; // suppress auto-discovery if needed
 KryptonManager.TryLoadTranslationsFromFile(
-    Path.Combine(AppContext.BaseDirectory, "Translations.xml"));
+    Path.Combine(AppContext.BaseDirectory, "ToolkitTranslations.xml"));
 ```
 
 ### Explicit startup load (throws on error)
 
 ```csharp
-KryptonManager.LoadTranslationsFromFile("Translations.xml");
+KryptonManager.LoadTranslationsFromFile("ToolkitTranslations.xml");
 ```
 
 ### Runtime load with immediate UI refresh
@@ -290,7 +292,7 @@ KryptonManager.Strings.ImportFromXmlFile(
 
 ```csharp
 using var stream = Assembly.GetExecutingAssembly()
-    .GetManifestResourceStream("MyApp.Resources.Translations.xml")!;
+    .GetManifestResourceStream("MyApp.Resources.ToolkitTranslations.xml")!;
 KryptonManager.Strings.ImportFromStream(stream);
 ```
 
@@ -362,7 +364,7 @@ KryptonManager.Strings.FileSystemListViewStrings.UseOSStrings = true;      // Na
 
 While enabled, getters prefer the OS MUI text for the current UI language and fall back to the toolkit defaults if a resource cannot be loaded. Custom property values remain stored and are used again when the flag is turned off. `Reset()` clears the flag back to `false`.
 
-This flag is a runtime/design-time option; it is **not** written into `Translations.xml` / `.json` (persistence only walks localisable string properties).
+This flag is a runtime/design-time option; it is **not** written into `ToolkitTranslations.xml` / `.json` (persistence only walks localisable string properties).
 
 ---
 
@@ -386,17 +388,17 @@ Demo name: **`ApplicationStringsTest`** (registered in `StartScreen.AddButtons()
 The `KryptonManager` Smart Tag (design-time action list) exposes these translation actions:
 
 - **Import Translations from Xml file…** — opens a file picker, loads the selected XML file, and notifies `IComponentChangeService` so the Property Grid refreshes immediately.
-- **Export Translations to Xml file…** — opens a save dialog and writes `Translations.xml` at the chosen location (non-default strings only).
+- **Export Translations to Xml file…** — opens a save dialog and writes `ToolkitTranslations.xml` at the chosen location (non-default strings only).
 - **Import Translations from Json file…** — same as above but for a JSON translations file.
-- **Export Translations to Json file…** — opens a save dialog and writes `Translations.json` (non-default strings only).
+- **Export Translations to Json file…** — opens a save dialog and writes `ToolkitTranslations.json` (non-default strings only).
 - **Generate Translation Template…** — exports XML with `includeDefaults: true`, producing a complete template with every overridable string and its XML comment.
 - **Switch Translations Culture…** — prompts for a culture name and optional translations directory, then calls `TrySwitchTranslationsCulture` with graceful fallback.
-- **UI Culture** (Smart Tag property) — dropdown of common cultures (free-form entry allowed). Changing it switches the designer UI culture and loads matching `Translations.{culture}.*` files.
+- **UI Culture** (Smart Tag property) — dropdown of common cultures (free-form entry allowed). Changing it switches the designer UI culture and loads matching `ToolkitTranslations.{culture}.*` files.
 - **Use Windows Language Pack** (Smart Tag property) — toggles `UseWindowsLanguagePackStrings` so matching dialog buttons / Explorer column headers use the installed Windows language pack.
 
 No code is required to use these verbs at design time. Design-time culture switching affects the Visual Studio designer session only; runtime apps should call `TrySwitchTranslationsCulture` (or use their own UI).
 
-The **Translations.xml Demo** (`TranslationsXmlDemoForm` in TestForm) also exposes a **Use Windows language pack strings** checkbox for interactive validation.
+The **ToolkitTranslations.xml Demo** (`TranslationsXmlDemoForm` in TestForm) also exposes a **Use Windows language pack strings** checkbox for interactive validation.
 
 `KryptonCustomStringsManager` also exposes designer verbs for XML/JSON import/export of application-defined custom strings.
 
@@ -406,9 +408,9 @@ The **Translations.xml Demo** (`TranslationsXmlDemoForm` in TestForm) also expos
 
 `KryptonManager` automatically probes the application's base directory at type-initialisation time (i.e. the first time any Krypton type is used). It looks for these files **in priority order**, using the current UI culture:
 
-1. `Translations.{exact-culture}.xml` — e.g. `Translations.en-GB.xml`
-2. `Translations.{neutral-culture}.xml` — e.g. `Translations.en.xml`
-3. `Translations.xml` — culture-agnostic default
+1. `ToolkitTranslations.{exact-culture}.xml` — e.g. `ToolkitTranslations.en-GB.xml`
+2. `ToolkitTranslations.{neutral-culture}.xml` — e.g. `ToolkitTranslations.en.xml`
+3. `ToolkitTranslations.xml` — culture-agnostic default
 4. The same three candidates with `.json` (XML is preferred over JSON)
 
 The first file that exists **and loads successfully** wins. Missing files are skipped. Invalid files are traced to `Debug.WriteLine` and the next candidate is tried — auto-discovery never throws or blocks startup.
@@ -427,7 +429,7 @@ This is useful in unit-test hosts, tools that manage translations entirely in co
 
 1. Export a template via the `KryptonManager` designer verb **Generate Translation Template…** or call `ExportToXmlFile` with `includeDefaults: true`.
 2. Edit the file to supply your translated strings. The XML comments explain each string.
-3. Name culture-specific files with a dotted culture suffix (`Translations.fr-FR.xml`, `Translations.fr.xml`) and keep an optional default `Translations.xml` as fallback.
+3. Name culture-specific files with a dotted culture suffix (`ToolkitTranslations.fr-FR.xml`, `ToolkitTranslations.fr.xml`) and keep an optional default `ToolkitTranslations.xml` as fallback.
 4. Add the file(s) to your project and set **Copy to Output Directory = Copy if newer**.
 5. Ship. No code changes are required — auto-discovery picks up the best match on first run.
 
@@ -436,16 +438,16 @@ This is useful in unit-test hosts, tools that manage translations entirely in co
 Ship multiple files side by side:
 
 ```
-Translations.en-GB.xml
-Translations.en.xml
-Translations.fr-FR.xml
-Translations.xml
+ToolkitTranslations.en-GB.xml
+ToolkitTranslations.en.xml
+ToolkitTranslations.fr-FR.xml
+ToolkitTranslations.xml
 ```
 
 Auto-discovery (and `TryLoadCultureSpecificTranslations`) resolve them with graceful fallback. To switch culture at runtime:
 
 ```csharp
-// Sets CurrentUICulture, reloads Translations.fr-FR.xml (or fallback), refreshes open forms.
+// Sets CurrentUICulture, reloads ToolkitTranslations.fr-FR.xml (or fallback), refreshes open forms.
 // Returns false when no file matched — built-in defaults are restored in that case.
 KryptonManager.TrySwitchTranslationsCulture("fr-FR", refreshOpenForms: true);
 
@@ -481,10 +483,10 @@ Toolkit strings can also be exported/imported as JSON via `ToolkitStringsJsonPer
 
 ```csharp
 // Export to JSON file
-KryptonManager.Strings.ExportToJsonFile("Translations.json", includeDefaults: true);
+KryptonManager.Strings.ExportToJsonFile("ToolkitTranslations.json", includeDefaults: true);
 
 // Import from JSON file
-KryptonManager.Strings.ImportFromJsonFile("Translations.json");
+KryptonManager.Strings.ImportFromJsonFile("ToolkitTranslations.json");
 ```
 
 The JSON structure mirrors the XML hierarchy:
@@ -510,14 +512,14 @@ JSON import works by converting the JSON into the canonical XML format internall
 
 ## Merge Utility
 
-`ToolkitStringsXmlMerge` merges two Translations.xml files — useful when upgrading the toolkit and carrying custom translations forward:
+`ToolkitStringsXmlMerge` merges two ToolkitTranslations.xml files — useful when upgrading the toolkit and carrying custom translations forward:
 
 ```csharp
 // Merge: overlay values overwrite baseline; baseline-only values are kept.
 ToolkitStringsXmlMerge.MergeFiles(
-    baselinePath: "Translations-Template.xml",    // fresh export from new toolkit version
-    overlayPath:  "Translations-Custom.xml",       // user's existing customisations
-    outputPath:   "Translations-Merged.xml");
+    baselinePath: "ToolkitTranslations-Template.xml",    // fresh export from new toolkit version
+    overlayPath:  "ToolkitTranslations-Custom.xml",       // user's existing customisations
+    outputPath:   "ToolkitTranslations-Merged.xml");
 
 // In-memory merge:
 var merged = ToolkitStringsXmlMerge.Merge(baselineDoc, overlayDoc);
@@ -529,11 +531,11 @@ var merged = ToolkitStringsXmlMerge.Merge(baselineDoc, overlayDoc);
 
 ## XSD Schema
 
-`Documents/Assets/Translations.xsd` provides an XML Schema that external editors can reference for IntelliSense and validation. Reference it in your `Translations.xml`:
+`Documents/Assets/ToolkitTranslations.xsd` provides an XML Schema that external editors can reference for IntelliSense and validation. Reference it in your `ToolkitTranslations.xml`:
 
 ```xml
 <KryptonTranslations xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                     xsi:noNamespaceSchemaLocation="Translations.xsd"
+                     xsi:noNamespaceSchemaLocation="ToolkitTranslations.xsd"
                      Version="1" Culture="en-GB" Generated="...">
 ```
 
@@ -565,7 +567,7 @@ The event is **not** raised by the lower-level `Strings.ImportFromXmlFile` / `Im
 |---|---|
 | File not found (`TryLoadTranslationsFromFile`) | Returns `false`; `Debug.WriteLine` trace. |
 | File not found (`LoadTranslationsFromFile`) | Throws `FileNotFoundException` (from `XmlDocument.Load`). |
-| Version < 1 | `ArgumentException` thrown with a descriptive message. |
+| Unrecognised / older / newer `Version` | `Debug.WriteLine` warning; import continues best-effort. |
 | Unknown element names | Silently ignored. |
 | Culture mismatch | `Debug.WriteLine` warning; import continues. |
 | `null` string value | Serialised as `IsNull="true" Value=""`; restored as `null`. |

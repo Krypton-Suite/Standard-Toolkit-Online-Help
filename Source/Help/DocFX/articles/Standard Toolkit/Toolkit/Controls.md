@@ -19,9 +19,11 @@ Topics under `Documents/Development/Controls/` describe Krypton WinForms control
 | Topic | Tier | Assembly |
 | --- | --- | --- |
 | [KryptonButton](Controls/KryptonButton.md) | Standard | Krypton.Toolkit |
+| [KryptonSplitButton](Controls/KryptonSplitButton.md) | Standard | Krypton.Toolkit |
 | [KryptonCheckBox](Controls/KryptonCheckBox.md) | Standard | Krypton.Toolkit |
 | [KryptonCheckButton](Controls/KryptonCheckButton.md) | Standard | Krypton.Toolkit |
 | [KryptonRadioButton](Controls/KryptonRadioButton.md) | Standard | Krypton.Toolkit |
+| [KryptonRating](Controls/KryptonRating.md) | Standard | Krypton.Toolkit |
 | [KryptonTextBox](Controls/KryptonTextBox.md) | Standard | Krypton.Toolkit |
 | [KryptonMaskedTextBox](Controls/KryptonMaskedTextBox.md) | Standard | Krypton.Toolkit |
 | [KryptonRichTextBox](Controls/KryptonRichTextBox.md) | Standard | Krypton.Toolkit |
@@ -44,6 +46,7 @@ Topics under `Documents/Development/Controls/` describe Krypton WinForms control
 | [KryptonListBox](Controls/KryptonListBox.md) | Standard | Krypton.Toolkit |
 | [KryptonCheckedListBox](Controls/KryptonCheckedListBox.md) | Standard | Krypton.Toolkit |
 | [KryptonListView](Controls/KryptonListView.md) | Standard | Krypton.Toolkit |
+| [KryptonListViewVirtualMode](Controls/KryptonListViewVirtualMode.md) | Standard | Krypton.Toolkit |
 | [KryptonTreeView](Controls/KryptonTreeView.md) | Standard | Krypton.Toolkit |
 | [KryptonBreadCrumb](Controls/KryptonBreadCrumb.md) | Standard | Krypton.Toolkit |
 | [KryptonBindingNavigator](Controls/KryptonBindingNavigator.md) | Standard | Krypton.Toolkit |
@@ -81,11 +84,13 @@ Topics under `Documents/Development/Controls/` describe Krypton WinForms control
 
 | Topic | Tier | Assembly |
 | --- | --- | --- |
-| [KryptonMenuStrip](Controls/KryptonMenuStrip.md) | Standard | Krypton.Toolkit |
+| [KryptonMenuBar](Components/KryptonMenuBar.md) | Standard | Krypton.Toolkit |
+| [KryptonMenuStrip](Components/KryptonMenuStrip.md) | Standard | Krypton.Toolkit |
 | [KryptonStatusStrip](Controls/KryptonStatusStrip.md) | Standard | Krypton.Toolkit |
 | [KryptonToolStrip](Controls/KryptonToolStrip.md) | Standard | Krypton.Toolkit |
 | [KryptonThemeComboBox](Controls/KryptonThemeComboBox.md) | Standard | Krypton.Toolkit |
 | [KryptonThemeListBox](Controls/KryptonThemeListBox.md) | Standard | Krypton.Toolkit |
+| [KryptonThemeListView](Controls/KryptonThemeListView.md) | Standard | Krypton.Toolkit |
 | [KryptonPoweredByButton](Controls/KryptonPoweredByButton.md) | Standard | Krypton.Toolkit |
 
 ## Command link and button specs

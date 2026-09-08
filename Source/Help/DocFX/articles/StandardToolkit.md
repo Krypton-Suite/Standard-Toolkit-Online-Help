@@ -44,6 +44,7 @@ This document provides links to the documentation provided, each will be split u
 
 * [Krypton Ribbon Overview](Standard%20Toolkit/Ribbon/KryptonRibbonOverview.md)
 * [Krypton Ribbon Backstage View](Standard%20Toolkit/Ribbon/Components/BackStage%20View/KryptonRibbonBackstageView.md)
+* [RTL Support](Standard%20Toolkit/Ribbon/KryptonRibbonRTL.md)
 * [Krypton Ribbon Tabs](Standard%20Toolkit/Ribbon/KryptonRibbonTabs.md)
 * [Krypton Ribbon Groups](Standard%20Toolkit/Ribbon/KryptonRibbonGroups.md)
 * [Krypton Ribbon Group Containers](Standard%20Toolkit/Ribbon/KryptonRibbonGroupContainers.md)
@@ -57,6 +58,7 @@ This document provides links to the documentation provided, each will be split u
 * [Item Events](Standard%20Toolkit/Ribbon/ItemEvents.md)
 * [Krypton Gallery](Standard%20Toolkit/Ribbon/KryptonGallery.md)
 * [Krypton Ribbon Notification Bar](Standard%20Toolkit/Ribbon/KryptonRibbonNotificationBar.md)
+* [Translations](Standard%20Toolkit/Ribbon/Translations.md)
 
 ## [Krypton Toolkit](Standard%20Toolkit/KryptonToolkit.md)
 
@@ -127,10 +129,12 @@ This document provides links to the documentation provided, each will be split u
 * [Krypton ProgressBar](Standard%20Toolkit/Toolkit/Controls/KryptonProgressBar.md)
 * [Krypton PropertyGrid](Standard%20Toolkit/Toolkit/Controls/KryptonPropertyGrid.md)
 * [Krypton Radio Button](Standard%20Toolkit/Toolkit/Controls/KryptonRadioButton.md)
+* [Krypton Rating](Standard%20Toolkit/Toolkit/Controls/KryptonRating.md)
 * [Krypton RichTextBox](Standard%20Toolkit/Toolkit/Controls/KryptonRichTextBox.md)
 * [Krypton Scroll Bars](Standard%20Toolkit/Toolkit/Controls/KryptonScrollBars.md)
 * [Krypton Search Box](Standard%20Toolkit/Toolkit/Controls/KryptonSearchBox.md)
 * [Krypton Separator](Standard%20Toolkit/Toolkit/Controls/KryptonSeparator.md)
+* [Krypton Split Button](Standard%20Toolkit/Toolkit/Controls/KryptonSplitButton.md)
 * [Krypton Split Container](Standard%20Toolkit/Toolkit/Controls/KryptonSplitContainer.md)
 * [Krypton Splitter](Standard%20Toolkit/Toolkit/Controls/KryptonSplitter.md)
 * [Krypton Status Strip](Standard%20Toolkit/Toolkit/Controls/KryptonStatusStrip.md)
@@ -138,6 +142,7 @@ This document provides links to the documentation provided, each will be split u
 * [Krypton TextBox](Standard%20Toolkit/Toolkit/Controls/KryptonTextBox.md)
 * [Krypton Theme ComboBox](Standard%20Toolkit/Toolkit/Controls/KryptonThemeComboBox.md)
 * [Krypton Theme ListBox](Standard%20Toolkit/Toolkit/Controls/KryptonThemeListBox.md)
+* [Krypton Theme List View](Standard%20Toolkit/Toolkit/Controls/KryptonThemeListView.md)
 * [Krypton Toggle Switch](Standard%20Toolkit/Toolkit/Controls/KryptonToggleSwitch.md)
     * [Knob Styles](Standard%20Toolkit/Toolkit/Controls/KryptonToggleSwitchKnobStyles.md)
 * [Krypton Tool Strip](Standard%20Toolkit/Toolkit/Controls/KryptonToolStrip.md)
@@ -194,4 +199,5 @@ This document provides links to the documentation provided, each will be split u
 * [Workspace Page Dragging](Standard%20Toolkit/Workspace/WorkspacePageDragging.md)
 * [Workspace Page Tag Persistence](Standard%20Toolkit/Workspace/WorkspacePageTagPersistence.md)
 * [Workspace Persistence](Standard%20Toolkit/Workspace/WorkspacePersistence.md)
+* [RTL Support](Standard%20Toolkit/Workspace/WorkspaceRTL.md)
 * [Workspace Sizing](Standard%20Toolkit/Workspace/WorkspaceSizing.md)

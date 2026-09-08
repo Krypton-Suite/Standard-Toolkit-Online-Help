@@ -189,6 +189,7 @@ Accepted version format: `^[1-9]\d{2,}\.\d+\.\d+\.\d+$`
 
 **Content highlights:**
 
+- Version and a linked commit SHA (`git rev-parse HEAD` on the `alpha` checkout)
 - Nightly package links (Toolkit, Ribbon, Navigator, Workspace, Docking, Standard.Toolkit)
 - Target frameworks including **.NET 11.0**
 - Changelog: `alpha` branch path `Documents/Changelog/Changelog.md`

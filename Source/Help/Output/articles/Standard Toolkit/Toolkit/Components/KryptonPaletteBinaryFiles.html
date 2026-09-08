@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Custom palette files | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Custom palette files | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="custom-palette-files">Custom palette files</h1>
+
+<p>Maintainer notes for <code>.kthemex</code> XML, the optional native <code>.ktheme</code> KPLT container, and
+multi-theme <code>.ktheme</code> collections used by <code>KryptonCustomPaletteBase</code>.</p>
+<p>These names were never in a public release. Do <strong>not</strong> keep <code>.kpalx</code> or <code>.kpal</code> as
+aliases. The only shipped legacy extension is <strong><code>.xml</code></strong>.</p>
+<h2 id="overview">Overview</h2>
+<p>Custom palettes persist as versioned XML (<code>KryptonPalette</code> root, schema
+<code>SharedStaticConstants.CURRENT_SUPPORTED_PALETTE_VERSION</code>). The dedicated XML extension is
+<strong><code>.kthemex</code></strong> — the same human-readable XML previously saved as <code>.xml</code>. Legacy <code>.xml</code>
+paths remain supported until V120 LTS.</p>
+<p>An optional compact <code>.ktheme</code> KPLT container (native persist by default, or compressed XML
+via explicit <code>KryptonPaletteFileFormat</code>) is available from a <code>.ktheme</code> path. A <code>.ktheme</code>
+<strong>collection</strong> (payload kind 2) stores several named themes in one file. <code>.kthemex</code> remains
+one document.</p>
+<table>
+<thead>
+<tr>
+<th>Extension</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.kthemex</code></td>
+<td>Preferred XML theme (<code>KryptonPaletteFile.Extension</code>)</td>
+</tr>
+<tr>
+<td><code>.ktheme</code></td>
+<td>Optional KPLT binary container (<code>BinaryExtension</code>)</td>
+</tr>
+<tr>
+<td><code>.xml</code></td>
+<td>Released legacy XML (<code>XmlExtension</code>); remove in V120 LTS</td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>.xml</code> is legacy.</strong> New files should be <code>.kthemex</code>. Call <code>KryptonPaletteFile.UpgradeXmlToKthemex</code>
+(or <code>KryptonCustomPaletteBase.UpgradeXmlToKthemex</code> to rewrite and load) to convert
+<code>theme.xml</code> → <code>theme.kthemex</code> (source left in place; schema upgraded via
+<code>ImportWithUpgrade</code>). Interactive loads warn first — see <strong>Legacy <code>.xml</code> load warning</strong>.
+V120 LTS TODOs mark where <code>.xml</code> extension support can be removed; <code>.kthemex</code> stays an
+XML document and <code>Export(bool)</code> still returns XML bytes.</p>
+<p>Package: <code>Krypton.Toolkit</code> owns persistence and <code>KryptonCustomPaletteBase</code> import/export
+(Toolkit cannot project-reference Themes). <code>Krypton.Themes</code> consumes those APIs through
+<code>KryptonThemeCustomPaletteHelper</code> so extra palettes (macOS, Material, Visual Studio, …)
+can be populated and written as <code>.kthemex</code>, <code>.ktheme</code>, or XML. Folder selectors that list
+those files live in <code>Krypton.Toolkit.Utilities</code> (see <strong>Selector controls</strong>).</p>
+<p>Authoring and maintaining files is a Demos app, not a Toolkit package: <strong>Krypton Palette
+Author</strong> (see <strong>Authoring app</strong>). Palette Upgrade Tool remains the separate installer for
+pre-v21 XML schema upgrades. TestForm <code>PaletteBinaryDemo</code> is the maintainer round-trip
+harness, not an editor.</p>
+<h2 id="preferred-format-kthemex">Preferred format: <code>.kthemex</code></h2>
+<p><code>.kthemex</code> is XML. <code>Export(&quot;theme.kthemex&quot;)</code> writes <code>ExportToXmlDocument</code> bytes (UTF-8, with
+BOM when that is how XML export already behaves). A text editor can open the file.
+<code>Import</code> sniffs XML (<code>&lt;</code>, optional UTF-8 BOM / whitespace) regardless of extension.</p>
+<h2 id="optional-kplt-container">Optional KPLT container</h2>
+<p>Little-endian <code>BinaryReader</code> / <code>BinaryWriter</code>, used only for <code>.ktheme</code> / explicit
+<code>PaletteCompressedXml</code> / <code>PaletteBinary</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Size</th>
+<th>Field</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>4</td>
+<td>ASCII magic <code>KPLT</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>2</td>
+<td>Container version (<code>uint16</code>, currently 1)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2</td>
+<td>Payload kind (<code>uint16</code>): 0 = Deflate XML, 1 = native persist, 2 = named collection</td>
+</tr>
+<tr>
+<td>8</td>
+<td>4</td>
+<td>Palette schema version (<code>int32</code>, same as XML <code>Version</code>)</td>
+</tr>
+<tr>
+<td>12</td>
+<td>2</td>
+<td>Name length (<code>uint16</code>)</td>
+</tr>
+<tr>
+<td>14</td>
+<td>N</td>
+<td>UTF-8 palette or collection name (may be empty)</td>
+</tr>
+<tr>
+<td>14+N</td>
+<td>*</td>
+<td>Payload</td>
+</tr>
+</tbody>
+</table>
+<p>Do <strong>not</strong> bump the KPLT container version for collections or the thumbnail catalog.
+Implementation: <code>KryptonPaletteBinaryPersistence</code> (internal). Public surface:
+<code>KryptonPaletteFileFormat</code>, <code>KryptonPaletteFile</code>, and the import/export overloads on
+<code>KryptonCustomPaletteBase</code>.</p>
+<h2 id="payload-kinds">Payload kinds</h2>
+<ul>
+<li><strong>Kind 0 (<code>PaletteCompressedXml</code>)</strong> — <code>DeflateStream</code> of the existing
+<code>ExportToXmlDocument</code> output. Upgrade path: inflate, then the XML PaletteUpgradeTool /
+<code>ImportWithUpgrade</code> XSLT.</li>
+<li><strong>Kind 1 (<code>PaletteBinary</code>, default for <code>.ktheme</code>)</strong> — tagged persist stream that
+walks the same <code>[KryptonPersist]</code> tree as XML. Leaf values use the same type names and
+invariant <code>TypeConverter</code> strings (including Font <code>&quot;(none)&quot;</code>). Images are a PNG blob
+table at the start of the payload, referenced by string id. Unknown properties are
+skipped; missing properties keep their current values.</li>
+<li><strong>Kind 2 (collection)</strong> — several named kind-1 payloads in one container. See
+<strong>Multi-theme <code>.ktheme</code> collection</strong>. New single-theme files must stay readable by older
+toolkits, so the container version stays 1.</li>
+</ul>
+<p>Native files are written at the current schema version only. Pre-v21 themes stay XML +
+PaletteUpgradeTool. <code>BinaryFormatter</code> is not used. JSON is not a palette format.</p>
+<h2 id="import-sniffing">Import sniffing</h2>
+<p><code>Import(string)</code> / <code>Import(Stream)</code> peek the first bytes:</p>
+<ol>
+<li><code>KPLT</code> → container (switch on payload kind)</li>
+<li>XML (<code>&lt;</code>, optional UTF-8 BOM / whitespace) → <code>ImportFromXmlDocument</code></li>
+<li>Otherwise → throw</li>
+</ol>
+<p><code>ThemeManager.ApplyTheme(string)</code> therefore accepts both formats with no call-site change.
+A non-silent apply of a <code>.xml</code> path shows <strong>Legacy <code>.xml</code> load warning</strong> and may rewrite
+to <code>.kthemex</code> before applying. Silent apply still loads <code>.xml</code> as-is.
+A multi-theme collection needs <code>ApplyTheme(themeFile, themeName, silent, manager)</code> (or
+<code>Import(path, themeName)</code>). Unnamed <code>Import</code> on a collection with more than one theme throws
+and lists the names. A collection with exactly one theme loads that entry.</p>
+<p>XML documents write a <code>Name</code> attribute on the <code>KryptonPalette</code> root when
+<code>PaletteName</code> is set. <code>ImportFromXmlDocument</code> restores that attribute so <code>.kthemex</code>
+round-trips the display name the same way the KPLT header does.</p>
+<h2 id="persist-type-map">Persist type map</h2>
+<p>Leaf <code>[KryptonPersist]</code> properties are written with a <code>Type</code> attribute from
+<code>KryptonCustomPaletteBase.TypeToString</code>. New persistable value types <strong>must</strong> be
+added to <code>_typeTests</code> (import uses the inverse <code>StringToType</code> map). Missing entries
+throw <code>Unrecognised type '…' for export</code> — that is how <code>PaletteCornerRounding</code>
+broke full exports until it was registered.</p>
+<h2 id="shell-icons">Shell icons</h2>
+<p><code>.ktheme</code> and <code>.kthemex</code> share the Stable Kr tile (<code>Krypton.Toolkit.Utilities</code> resource
+<code>Krypton Stable.png</code>, embedded as <code>Resources/KryptonPalette.ico</code>, 16/32/48).</p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IsPaletteExtension</code></td>
+<td>True for <code>.ktheme</code> / <code>.kthemex</code> only (path or extension). False for <code>.xml</code>, <code>.kpal</code>, <code>.kpalx</code></td>
+</tr>
+<tr>
+<td><code>CreateShellIcon</code></td>
+<td>Icon from the embedded ICO (caller disposes)</td>
+</tr>
+<tr>
+<td><code>EnsureShellAssociations</code></td>
+<td>Per-user <code>HKCU\Software\Classes</code> ProgIds + <code>DefaultIcon</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>EnsureShellAssociations</code> extracts the ICO to
+<code>%LocalAppData%\Krypton-Suite\KryptonPalette.ico</code>, registers
+<code>Krypton.Toolkit.PaletteXml</code> (<code>.kthemex</code>) and <code>Krypton.Toolkit.PaletteBinary</code> (<code>.ktheme</code>),
+then notifies the shell. It also removes leftover per-user <code>.kpal</code> / <code>.kpalx</code> keys from
+this unreleased work when they still point at those ProgIds. Import/export dialogs, the
+theme browser export, and <code>PaletteBinaryDemo</code> call it automatically.
+<code>FileSystemIconHelper.GetFileIcon</code> returns the embedded icon for <code>IsPaletteExtension</code>
+so Krypton file dialogs do not wait on Explorer.</p>
+<h2 id="export-rules">Export rules</h2>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Export(string path, …)</code></td>
+<td><code>.kthemex</code> / <code>.xml</code> / other → XML; <code>.ktheme</code> → native persist stream</td>
+</tr>
+<tr>
+<td><code>Export(string, bool, bool, KryptonPaletteFileFormat)</code></td>
+<td>Explicit XML / compressed-XML / native</td>
+</tr>
+<tr>
+<td><code>ExportPalette(Stream, format, ignoreDefaults)</code></td>
+<td>Stream equivalent of the explicit format</td>
+</tr>
+<tr>
+<td><code>Export(bool)</code> / <code>Export(Stream)</code></td>
+<td><strong>XML bytes</strong> (unchanged, binary compatible)</td>
+</tr>
+</tbody>
+</table>
+<p>File dialogs use <code>KryptonPaletteFile.DialogFilter</code>: <code>.kthemex</code> first, then <code>.ktheme</code>
+(Krypton theme containers), then legacy <code>.xml</code>.</p>
+<p><code>FormatFromPath</code> maps <code>.ktheme</code> to <code>PaletteBinary</code> and every other extension (including
+<code>.kthemex</code> and <code>.xml</code>) to <code>Xml</code>. That is not an alias for unreleased names: <code>.kpal</code> is
+not listed, not scanned, and <code>IsPaletteExtension</code> is false.</p>
+<h2 id="convert--rewrite">Convert / rewrite</h2>
+<p><code>KryptonPaletteFile.Convert(source, destination)</code> loads the source with
+<code>ImportWithUpgrade</code>, then exports to the destination path (or an explicit
+<code>KryptonPaletteFileFormat</code>). Use this to rewrite current <code>.kthemex</code> / <code>.ktheme</code>, or to
+produce an optional native <code>.ktheme</code> from XML.</p>
+<p><code>ImportWithUpgrade</code> peeks the schema version first. When it is below
+<code>CURRENT_SUPPORTED_PALETTE_VERSION</code>, XML (and kind-0 compressed XML) is upgraded
+<strong>before</strong> import: structural XSLT for versions below 20, then the <code>Version</code>
+attribute is set to the current persist version (so schema 20 and 21 convert
+without a version-mismatch dialog). Native <code>.ktheme</code> that is not already current
+still cannot be upgraded.</p>
+<p>For the dedicated <strong><code>.xml</code> → <code>.kthemex</code></strong> path, prefer <code>UpgradeXmlToKthemex</code>. Interactive
+loads should go through <code>PromptLegacyXmlUpgrade</code> (already called from <code>Import</code> when
+<code>silent</code> is false).</p>
+<p>To convert a folder of legacy <code>.xml</code> palettes:</p>
+<pre><code class="lang-csharp">var result = KryptonPaletteFile.UpgradeXmlToKthemexFromDirectory(@&quot;C:\Themes&quot;, searchSubdirectories: true);
+// result.ConvertedPaths / SourcePaths / SkippedPaths / Errors
+</code></pre>
+<p>Nested folders are included by default. Non-palette <code>.xml</code> is skipped. One failure does not
+stop the rest. <code>KryptonCustomPaletteBase.UpgradeXmlToKthemexFromDirectory</code> is the same rewrite
+(optionally with a folder dialog) and does <strong>not</strong> import into the component.</p>
+<pre><code class="lang-csharp">// Same folder: theme.xml → theme.kthemex (source .xml is not deleted)
+var kthemexPath = KryptonPaletteFile.UpgradeXmlToKthemex(@&quot;C:\Themes\theme.xml&quot;);
+
+// Explicit destination (must be .kthemex)
+KryptonPaletteFile.UpgradeXmlToKthemex(@&quot;C:\Themes\theme.xml&quot;, @&quot;C:\Themes\Out\theme.kthemex&quot;);
+
+using (var palette = new KryptonCustomPaletteBase())
+{
+    // Rewrite and import into this instance
+    palette.UpgradeXmlToKthemex(@&quot;C:\Themes\theme.xml&quot;);
+
+    // Interactive: warn, then upgrade / load anyway / cancel
+    var toLoad = KryptonPaletteFile.PromptLegacyXmlUpgrade(@&quot;C:\Themes\other.xml&quot;, silent: false);
+    if (toLoad != null)
+    {
+        palette.Import(toLoad, silent: true);
+    }
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Legacy <code>.xml</code> via <code>UpgradeXmlToKthemex</code></td>
+<td><code>.kthemex</code> beside the source (or an explicit <code>.kthemex</code> path)</td>
+</tr>
+<tr>
+<td>Folder of <code>.xml</code> via <code>UpgradeXmlToKthemexFromDirectory</code></td>
+<td>Each palette <code>.xml</code> → <code>.kthemex</code> beside the source; non-palette XML skipped</td>
+</tr>
+<tr>
+<td>Current-schema <code>.xml</code> / <code>.kthemex</code> via <code>Convert</code></td>
+<td>Re-exported at the current schema</td>
+</tr>
+<tr>
+<td>Older XML (schema below current, including 21)</td>
+<td>Schema raised, then export</td>
+</tr>
+<tr>
+<td>Older XML with structural XSLT (below 20), or compressed-XML <code>.ktheme</code> kind 0</td>
+<td>XSLT, version bump, then export</td>
+</tr>
+<tr>
+<td>Native <code>.ktheme</code> (kind 1)</td>
+<td>Import only when already current schema</td>
+</tr>
+<tr>
+<td><code>.json</code></td>
+<td>Throws — JSON is not a Krypton palette document</td>
+</tr>
+</tbody>
+</table>
+<p>Default <code>ignoreDefaults</code> is <code>false</code> so converted files keep explicit persist values.</p>
+<p>Designer verbs on <code>KryptonCustomPaletteBase</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Verb</th>
+<th>API</th>
+<th>File rewrite</th>
+<th>Loads into the component</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Upgrade Palette</strong></td>
+<td><code>ImportWithUpgrade</code></td>
+<td>No</td>
+<td>Yes (schema XSLT)</td>
+</tr>
+<tr>
+<td><strong>Upgrade .xml to .kthemex...</strong></td>
+<td><code>UpgradeXmlToKthemex(bool)</code></td>
+<td>Yes (<code>theme.xml</code> → <code>theme.kthemex</code>)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Upgrade folder .xml to .kthemex...</strong></td>
+<td><code>UpgradeXmlToKthemexFromDirectory(bool)</code></td>
+<td>Yes (each <code>theme.xml</code> → <code>theme.kthemex</code>)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Convert palette file...</strong></td>
+<td><code>ConvertFile(bool)</code></td>
+<td>Yes (chosen destination)</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>TestForm <code>PaletteBinaryDemo</code> has <strong>Upgrade .xml to .kthemex...</strong>
+(<code>KryptonCustomPaletteBase.UpgradeXmlToKthemex</code>), <strong>Upgrade folder .xml to .kthemex...</strong>
+(<code>UpgradeXmlToKthemexFromDirectory</code>), and <strong>Convert XML to .kthemex...</strong>
+(<code>ConvertFile</code>).</p>
+<p><code>Convert</code> is single-theme. Unnamed import of a multi-theme collection fails, so those files
+are not rewritten as a unit.</p>
+<h3 id="phasing-out-xml-v120-lts">Phasing out <code>.xml</code> (V120 LTS)</h3>
+<p><code>// ToDo V120 LTS:</code> comments mark the <code>.xml</code> <strong>extension</strong> (not <code>.kthemex</code> XML content):</p>
+<ul>
+<li><code>KryptonPaletteFile.XmlExtension</code>, <code>DialogFilter</code> (<code>*.xml</code>), <code>FormatFromPath</code></li>
+<li><code>IsLegacyXmlExtension</code> / <code>PromptLegacyXmlUpgrade</code> (stop offering “load .xml anyway”)</li>
+<li><code>GetPaletteFiles</code> / selector <code>IncludeXml</code> (default true)</li>
+<li><code>UpgradeXmlToKthemexFromDirectory</code> / designer folder verb</li>
+<li>Designer convert open-dialog <code>DefaultExt</code></li>
+<li>Path <code>Export</code> / <code>Import</code> remarks that still advertise <code>.xml</code></li>
+<li><code>LegacyXmlUpgradeTitle</code> / <code>LegacyXmlUpgradeMessage</code> once the prompt is removed</li>
+</ul>
+<p>Leave in place at V120: sniffing XML <strong>content</strong> for <code>.kthemex</code>, KPLT kind 0 compressed
+XML inside <code>.ktheme</code>, and <code>Export(bool)</code> XML bytes. Workspace, docking, translations, and
+toolbar XML files are unrelated.</p>
+<h2 id="legacy-xml-load-warning">Legacy <code>.xml</code> load warning</h2>
+<p>Interactive loads of a <code>.xml</code> palette (import with <code>silent: false</code>, theme apply from
+selectors, <code>ThemeManager.ApplyTheme</code> when not silent, designer <strong>Upgrade Palette</strong>)
+call <code>KryptonPaletteFile.PromptLegacyXmlUpgrade</code>. The dialog is localisable:</p>
+<table>
+<thead>
+<tr>
+<th>String</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Title</td>
+<td><code>KryptonManager.Strings.MiscellaneousThemeStrings.LegacyXmlUpgradeTitle</code></td>
+</tr>
+<tr>
+<td>Body</td>
+<td><code>LegacyXmlUpgradeMessage</code> (<code>{0}</code> file name, <code>{1}</code> Yes, <code>{2}</code> No, <code>{3}</code> Cancel)</td>
+</tr>
+<tr>
+<td>Buttons</td>
+<td><code>GeneralToolkitStrings</code> Yes / No / Cancel (already localised)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Choice</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Yes</td>
+<td><code>UpgradeXmlToKthemex</code> then apply the <code>.kthemex</code> (source <code>.xml</code> left in place)</td>
+</tr>
+<tr>
+<td>No</td>
+<td>Apply the <code>.xml</code> file without rewriting</td>
+</tr>
+<tr>
+<td>Cancel</td>
+<td>Do not import or apply</td>
+</tr>
+</tbody>
+</table>
+<p>Silent imports (<code>Import(path)</code> / <code>Import(path, true)</code>) skip the prompt so tests and
+batch loads keep working. Translators should keep <code>{0}</code>–<code>{3}</code> in <code>LegacyXmlUpgradeMessage</code>.
+Export/import these strings with the rest of <code>KryptonManager.ToolkitStrings</code>
+(Translations.xml / JSON).</p>
+<p><code>KryptonPaletteFile.IsLegacyXmlExtension</code> is the counterpart to <code>IsPaletteExtension</code>
+(which already excludes <code>.xml</code>).</p>
+<h2 id="multi-theme-ktheme-collection">Multi-theme <code>.ktheme</code> collection</h2>
+<p>Single-theme <code>.ktheme</code> files are unchanged (container version 1, kind 0 or 1). Collections
+use the same header with <strong>kind 2</strong>. Header name is an optional collection display name,
+not a theme name.</p>
+<p>Kind 2 payload (after the usual KPLT header):</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Count</td>
+<td><code>uint16</code></td>
+</tr>
+<tr>
+<td>Per entry: name length, UTF-8 name, inner kind (<code>uint16</code>, 0 or 1), payload length (<code>int32</code>), payload</td>
+<td>repeating</td>
+</tr>
+</tbody>
+</table>
+<p>Each collected palette must have a unique <code>SetPaletteName</code> (ordinal ignore-case). Inner
+payloads are native persist (kind 1) at the current schema. Destination must be <code>.ktheme</code>
+(<code>.kthemex</code> and JSON are rejected).</p>
+<p>Folder catalogs (for example <code>Theme-Palettes\Palettes\Office Themes\2013\…</code>) are stored
+with <code>ExportCollectionFromDirectory</code>. Theme names are the relative paths using <code>/</code>
+(<code>Office Themes/2013/Access 2013</code>). That does <strong>not</strong> bump the container version. Nested
+<code>.ktheme</code> collections in the folder are flattened. <code>Import(path, themeName)</code> uses that full
+path as <code>themeName</code>.</p>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonPaletteFile.ExportCollection</code></td>
+<td>Write <code>.ktheme</code> only</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.ExportCollectionFromDirectory</code></td>
+<td>Store a folder tree; names are relative <code>/</code> paths</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.AddToCollection</code></td>
+<td>Add a <code>.kthemex</code> / <code>.xml</code> / <code>.ktheme</code> (or an in-memory palette) to a collection; creates or promotes as needed</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.RemoveFromCollection</code></td>
+<td>Drop a named theme; throws if it would leave the collection empty</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.GetCollectionName</code> / <code>SetCollectionName</code></td>
+<td>Kind-2 header display name</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.GetPaletteFiles</code></td>
+<td>List <code>.kthemex</code> / <code>.ktheme</code> / <code>.xml</code> under a folder</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.GetThemeNames</code></td>
+<td>Names in file order (one name for single-theme files)</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.GetThemeThumbnails</code></td>
+<td>Optional previews in the same order (caller disposes)</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.IsCollection</code></td>
+<td>True only for kind 2</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.IsCollectionThemePath</code> / <code>SplitCollectionThemePath</code> / <code>ToDisplayPath</code></td>
+<td>Path-named themes</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.CollectionPathSeparator</code></td>
+<td><code>/</code> stored in path-named theme names</td>
+</tr>
+<tr>
+<td><code>KryptonCustomPaletteBase.Import(path, themeName)</code></td>
+<td>Load one named theme</td>
+</tr>
+<tr>
+<td><code>ThemeManager.ApplyTheme(file, themeName, silent, manager)</code></td>
+<td>Apply one collected theme</td>
+</tr>
+</tbody>
+</table>
+<p>Older toolkits skip unknown persist properties, so adding <code>Thumbnail</code> later did not require a schema bump.</p>
+<h2 id="thumbnails">Thumbnails</h2>
+<p><code>KryptonCustomPaletteBase.Thumbnail</code> is an optional <code>Image</code> (recommended
+<code>KryptonPaletteFile.RecommendedThumbnailSize</code>, 64×64 PNG). It persists in <code>.kthemex</code> / XML
+and in native <code>.ktheme</code> payloads. There is no automatic preview generator: set the image
+in the designer, in code, or in <strong>Krypton Palette Author</strong> (Load thumbnail / Clear).
+Leave it null when the file has no preview.</p>
+<p>Kind 2 collections append an optional <strong>KPTH</strong> catalog after the last entry (container
+version stays 1):</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Magic</td>
+<td>4 ASCII <code>KPTH</code></td>
+</tr>
+<tr>
+<td>Catalog version</td>
+<td><code>uint16</code> (currently 1)</td>
+</tr>
+<tr>
+<td>Byte length</td>
+<td><code>int32</code> of the following payload</td>
+</tr>
+<tr>
+<td>Payload: count, then per image name / width / height / PNG</td>
+<td><code>byte length</code></td>
+</tr>
+</tbody>
+</table>
+<p>Readers that do not understand a newer catalog version skip <code>byte length</code> bytes.
+<code>KryptonPaletteFile.GetThemeThumbnails</code> returns images in <code>GetThemeNames</code> order (caller
+disposes). Selectors: <code>ShowThumbnails</code> / <code>ThumbnailSize</code> on the list, combo, and tree.</p>
+<h2 id="selector-controls-utilities">Selector controls (Utilities)</h2>
+<p><code>KryptonPaletteFileListBox</code>, <code>KryptonPaletteFileComboBox</code>, and <code>KryptonPaletteFileTreeView</code>
+live in <code>Krypton.Toolkit.Utilities</code> (NuGet: <code>Krypton.Standard.Toolkit</code>). They are not
+substitutes for <code>KryptonThemeListBox</code> / <code>KryptonThemeComboBox</code>, which list builtin catalog
+modes.</p>
+<p>Set <code>PaletteDirectory</code> to a folder of <code>.kthemex</code> / <code>.ktheme</code> / <code>.xml</code> files. <code>SearchSubdirectories</code>
+(default <strong>true</strong> on the tree, <strong>false</strong> on list/combo) includes nested folders. Collections
+expand to one item per named theme. Path-named collection themes
+(<code>Office Themes/2013/Access 2013</code>) rebuild the same tree as the original directory.
+Unreadable files are skipped. <code>AutoApply</code> (default true) imports the selection and assigns
+it as the global custom palette. Applying a <code>.xml</code> item calls <code>PromptLegacyXmlUpgrade</code>
+(<code>TryImportInto</code> with <code>promptLegacyXml: true</code>). Folder nodes on the tree do not apply.
+<code>Reload()</code> rescans; <code>ApplySelected()</code> applies without <code>AutoApply</code>.</p>
+<p><code>KryptonPaletteFileThemeItem.FromDirectory</code> is the scan API. <code>TreePath</code> is the <code>/</code>-separated
+folder path used by the tree and by nested list labels. <code>Thumbnail</code> is filled when
+<code>ShowThumbnails</code> / <code>loadThumbnails</code> is true.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PaletteDirectory</code></td>
+<td>empty</td>
+<td>Folder to scan (<code>FolderNameEditor</code> in the designer)</td>
+</tr>
+<tr>
+<td><code>SearchSubdirectories</code></td>
+<td>false (list/combo), true (tree)</td>
+<td>Nested folders</td>
+</tr>
+<tr>
+<td><code>IncludeKthemex</code> / <code>IncludeKtheme</code> / <code>IncludeXml</code></td>
+<td>true</td>
+<td>Extension filters</td>
+</tr>
+<tr>
+<td><code>ShowThumbnails</code></td>
+<td>false</td>
+<td>Load and show <code>Thumbnail</code> when present</td>
+</tr>
+<tr>
+<td><code>ThumbnailSize</code></td>
+<td>32×32</td>
+<td>Display size for loaded previews</td>
+</tr>
+<tr>
+<td><code>KryptonManager</code></td>
+<td>new instance</td>
+<td>Target for apply</td>
+</tr>
+<tr>
+<td><code>SelectedPaletteTheme</code></td>
+<td>—</td>
+<td>Current <code>KryptonPaletteFileThemeItem</code> (null on folder nodes)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="collection-editor-utilities">Collection editor (Utilities)</h2>
+<p><code>KryptonPaletteCollectionEditor</code> is a toolbox <code>Component</code> in <code>Krypton.Toolkit.Utilities</code>.
+Call <code>ShowDialog</code> / static <code>Show(owner, collectionPath)</code> to add <code>.kthemex</code> (or <code>.ktheme</code> /
+<code>.xml</code>) files and remove named themes. Add and remove save immediately through
+<code>AddToCollection</code> / <code>RemoveFromCollection</code>. The last theme cannot be removed.</p>
+<p>TestForm: <code>PaletteCollectionEditorDemo</code> under <code>KryptonUtilities\Feature</code> (StartScreen
+<strong>2117 Palette collection editor</strong>). <code>PaletteBinaryDemo</code> also has <strong>Edit .ktheme collection...</strong>.</p>
+<h2 id="authoring-app">Authoring app</h2>
+<p><strong>Krypton Palette Author</strong> is a Demos WinExe (<code>Source/Krypton Toolkit Examples/KryptonPalette Author</code>,
+assembly <code>Krypton Palette Author</code>).
+Krypton Explorer launches it from the Toolkit examples page (link <strong>Krypton Palette Author</strong>).
+Do not put this project in Standard-Toolkit.</p>
+<p>It is the place to create and edit palette files:</p>
+<ul>
+<li>New / Open / Save / Save As (<code>.kthemex</code> default, <code>.ktheme</code> native, <code>.xml</code> legacy)</li>
+<li><strong>Upgrade .xml to .kthemex</strong> via <code>KryptonCustomPaletteBase.UpgradeXmlToKthemex</code> (same folder; source left in place; loads into the editor)</li>
+<li><strong>Upgrade folder .xml to .kthemex</strong> via <code>KryptonPaletteFile.UpgradeXmlToKthemexFromDirectory</code> (nested folders; source left in place; does not load into the editor)</li>
+<li>Convert via <code>KryptonCustomPaletteBase.ConvertFile</code> (uses <code>UpgradeXmlToKthemex</code> when the source is <code>.xml</code> and the destination is <code>.kthemex</code>)</li>
+<li>Open of <code>.xml</code> uses silent <code>Import</code> (no load warning); use <strong>Upgrade .xml to .kthemex</strong> or the Toolkit prompt on apply</li>
+<li>Store a folder tree via <code>ExportCollectionFromDirectory</code></li>
+<li><strong>Edit .ktheme collection</strong> via <code>KryptonPaletteCollectionEditor</code> (add <code>.kthemex</code> files, remove named themes)</li>
+<li>Populate from a builtin or extra catalog theme (<code>BasePaletteMode</code> + <code>PopulateFromBase</code>)</li>
+<li>Palette name and optional <code>Thumbnail</code></li>
+<li>Property grid on the working <code>KryptonCustomPaletteBase</code> with a live control preview</li>
+<li><code>KryptonPaletteFileTreeView</code> of a working folder (<code>AutoApply</code> false; double-click loads
+into the editor). Multi-theme collections prompt for a name.</li>
+</ul>
+<p><code>KryptonPalette Examples</code> stays the control sample (import/export, <strong>Upgrade .xml to .kthemex</strong>, <strong>Upgrade folder .xml to .kthemex</strong>, and <strong>Edit .ktheme collection</strong> appended for #2117).
+Do not overwrite that project.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

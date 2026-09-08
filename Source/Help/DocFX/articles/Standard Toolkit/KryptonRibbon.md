@@ -8,6 +8,7 @@ Learn more about the capabilities of the `KryptonRibbon` using the following sec
 
 ## Operation
 
+* [RTL Support](Ribbon/KryptonRibbonRTL.md)
 * [Tabs](Ribbon/KryptonRibbonTabs.md)
 * [Groups](Ribbon/KryptonRibbonGroups.md)
 * [Group Containers](Ribbon/KryptonRibbonGroupContainers.md)
@@ -19,6 +20,7 @@ Learn more about the capabilities of the `KryptonRibbon` using the following sec
 * [Notification Bar](Ribbon/KryptonRibbonNotificationBar.md)
 * [ButtonSpecs](Ribbon/ButtonSpecs.md)
 * [Show Tab Headers](Ribbon/RibbonShowTabHeaders.md)
+* [Translations](Ribbon/Translations.md)
 
 ## Events
 

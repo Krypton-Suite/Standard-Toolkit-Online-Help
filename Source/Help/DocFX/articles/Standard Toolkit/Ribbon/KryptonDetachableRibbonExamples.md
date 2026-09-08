@@ -1,4 +1,4 @@
-# Detachable Ribbons - Code Examples
+﻿# Detachable Ribbons - Code Examples
 
 This document provides practical code examples for common scenarios when working with detachable ribbons.
 
@@ -72,6 +72,37 @@ private void UpdateToggleButton()
         ? "Reattach Ribbon" 
         : "Detach Ribbon";
     toggleButton.Enabled = _ribbon.AllowDetach;
+}
+```
+
+---
+
+### Example 2b: Drag-to-Reattach, Custom Floating Title, and Programmatic Drag
+
+```csharp
+public void ConfigureDetachableRibbon()
+{
+    // Enable detach and drag-to-reattach features
+    _ribbon.AllowDetach = true;
+    _ribbon.AllowDragReattach = true;
+
+    // Set custom title bar text for the floating window
+    _ribbon.FloatingWindowText = "Word Processing Tools";
+
+    // You can also change the title dynamically while the ribbon is already floating
+    if (_ribbon.IsDetached)
+    {
+        _ribbon.FloatingWindowText = "Document 1 - Ribbon";
+    }
+}
+
+// Programmatic tear-out and drag initiation (e.g. from a custom gesture or tool strip)
+private void OnCustomTearOutInitiated(Point screenPoint)
+{
+    if (_ribbon.AllowDetach && !_ribbon.IsDetached)
+    {
+        _ribbon.DetachAndDrag(screenPoint);
+    }
 }
 ```
 

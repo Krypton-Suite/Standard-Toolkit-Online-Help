@@ -102,6 +102,12 @@ bool isDetached = kryptonRibbon.IsDetached;
 <td>Enables/disables detach functionality</td>
 </tr>
 <tr>
+<td><code>AllowDragReattach</code></td>
+<td><code>bool</code></td>
+<td><code>true</code></td>
+<td>Enables/disables drag-and-drop reattachment with docking indicator</td>
+</tr>
+<tr>
 <td><code>IsDetached</code></td>
 <td><code>bool</code></td>
 <td><code>false</code></td>
@@ -111,7 +117,7 @@ bool isDetached = kryptonRibbon.IsDetached;
 <td><code>FloatingWindowText</code></td>
 <td><code>string</code></td>
 <td><code>&quot;Ribbon&quot;</code></td>
-<td>Text displayed in the floating window title bar</td>
+<td>Text displayed in the floating window title bar (updates live)</td>
 </tr>
 <tr>
 <td><code>SavePreferencesOnStateChange</code></td>
@@ -141,6 +147,11 @@ bool isDetached = kryptonRibbon.IsDetached;
 <td><code>Detach()</code></td>
 <td><code>bool</code></td>
 <td>Detaches ribbon into floating window</td>
+</tr>
+<tr>
+<td><code>DetachAndDrag(Point)</code></td>
+<td><code>bool</code></td>
+<td>Detaches ribbon and immediately starts interactive dragging</td>
 </tr>
 <tr>
 <td><code>Reattach()</code></td>
@@ -204,6 +215,20 @@ bool isDetached = kryptonRibbon.IsDetached;
 <li>Moves ribbon to floating window</li>
 <li>Disables form integration</li>
 <li>Raises <code>RibbonDetached</code> event</li>
+</ol>
+<h3 id="detachanddragpoint-screenpoint"><code>DetachAndDrag(Point screenPoint)</code></h3>
+<p><strong>Returns</strong>: <code>true</code> if successful, <code>false</code> otherwise</p>
+<p><strong>Preconditions</strong>:</p>
+<ul>
+<li><code>AllowDetach == true</code></li>
+<li>Ribbon has a parent in a Form</li>
+<li>Ribbon is not already detached</li>
+</ul>
+<p><strong>What it does</strong>:</p>
+<ol>
+<li>Calls <code>Detach()</code></li>
+<li>Positions the floating window centered under the mouse cursor</li>
+<li>Initiates the interactive window move drag loop via Windows message dispatch</li>
 </ol>
 <h3 id="reattach"><code>Reattach()</code></h3>
 <p><strong>Returns</strong>: <code>true</code> if successful, <code>false</code> otherwise</p>

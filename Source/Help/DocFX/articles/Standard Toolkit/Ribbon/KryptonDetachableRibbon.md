@@ -1,4 +1,4 @@
-# Detachable Ribbon
+﻿# Detachable Ribbon
 
 ## Overview
 
@@ -80,8 +80,33 @@ kryptonRibbon.FloatingWindowText = KryptonManager.Strings.MiscellaneousStrings.R
 
 - This property is used when the ribbon is detached into a floating window
 - The text appears in the floating window's title bar
-- Defaults to "Ribbon" if not set
+- Defaults to "Ribbon" if not set (or `KryptonManager.Strings.MiscellaneousStrings.RibbonFloatingWindowText`)
+- Can be changed at design time or dynamically at runtime (updating it while floating immediately changes the title of the active floating window)
 - Can be localized for multi-language support
+
+---
+
+#### `AllowDragReattach`
+
+**Type**: `bool`  
+**Default**: `true`  
+**Category**: `Behavior`  
+**Access**: Read/Write
+
+Gets or sets whether dragging the floating ribbon window near the parent window will automatically show a docking preview indicator and snap/reattach upon release.
+
+```csharp
+// Enable drag-to-reattach with docking preview (default)
+kryptonRibbon.AllowDragReattach = true;
+
+// Disable drag-to-reattach
+kryptonRibbon.AllowDragReattach = false;
+```
+
+**Usage Notes**:
+
+- When `true`, dragging the floating window over the parent form's upper dock area displays a semi-transparent dock preview glyph (`VisualRibbonDropSolidWindow`) and releasing the window reattaches the ribbon
+- When `false`, the floating window can be dragged freely without snapping/reattaching to the parent form
 
 ---
 
@@ -236,6 +261,7 @@ if (kryptonRibbon.IsDetached)
 **Automatic Reattachment**:
 The ribbon automatically reattaches when:
 
+- The floating window is dragged over the parent form's snap zone and released (when `AllowDragReattach` is `true`)
 - The floating window is closed by the user
 - The floating window's title bar is double-clicked
 - The floating window is disposed
@@ -243,8 +269,38 @@ The ribbon automatically reattaches when:
 
 **User Interaction**:
 
+- **Drag-Out to Detach**: When attached and `AllowDetach` is enabled, clicking and dragging any ribbon tab or the empty tabs header area outward tears the ribbon out into an interactive floating window
+- **Drag-to-Reattach**: Dragging the floating window over the top of the parent window displays a semi-transparent dock preview indicator (`VisualRibbonDropSolidWindow`), and releasing drops and reattaches the ribbon
 - **Double-Click Title Bar**: Double-clicking the floating window's title bar reattaches the ribbon
-- **Double-Click Caption Area**: When attached, double-clicking the ribbon's caption area detaches it (if `AllowDetach` is enabled)
+- **Double-Click Caption Area**: When attached, double-clicking the ribbon's tabs area detaches it (if `AllowDetach` is enabled)
+
+---
+
+#### `DetachAndDrag()`
+
+**Signature**: `public bool DetachAndDrag(Point screenPoint)`
+
+Detaches the ribbon into a floating window and immediately initiates an interactive window drag operation centered under the cursor.
+
+**Parameters**:
+
+- `screenPoint`: Current mouse cursor position in screen coordinates
+
+**Returns**: `true` if the ribbon was successfully detached and the drag loop was initiated; otherwise, `false`
+
+**Preconditions**:
+
+- `AllowDetach` must be `true`
+- Ribbon must have a valid parent control and form
+- Ribbon must not already be detached
+
+**Example**:
+
+```csharp
+// Programmatically initiate drag-out detachment
+Point cursorScreenPos = Cursor.Position;
+kryptonRibbon.DetachAndDrag(cursorScreenPos);
+```
 
 ---
 

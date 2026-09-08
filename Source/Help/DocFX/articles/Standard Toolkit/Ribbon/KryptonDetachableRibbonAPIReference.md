@@ -1,4 +1,4 @@
-# Detachable Ribbons - API Quick Reference
+﻿# Detachable Ribbons - API Quick Reference
 
 ## Quick Start
 
@@ -25,8 +25,9 @@ bool isDetached = kryptonRibbon.IsDetached;
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `AllowDetach` | `bool` | `false` | Enables/disables detach functionality |
+| `AllowDragReattach` | `bool` | `true` | Enables/disables drag-and-drop reattachment with docking indicator |
 | `IsDetached` | `bool` | `false` | Read-only: indicates if ribbon is currently detached |
-| `FloatingWindowText` | `string` | `"Ribbon"` | Text displayed in the floating window title bar |
+| `FloatingWindowText` | `string` | `"Ribbon"` | Text displayed in the floating window title bar (updates live) |
 | `SavePreferencesOnStateChange` | `bool` | `true` | Automatically save preferences when state changes |
 | `ButtonSpecs` | `RibbonButtonSpecAnyCollection` | - | Collection of custom buttons to display next to expand/collapse button |
 
@@ -35,6 +36,7 @@ bool isDetached = kryptonRibbon.IsDetached;
 | Method | Returns | Description |
 | --- | --- | --- |
 | `Detach()` | `bool` | Detaches ribbon into floating window |
+| `DetachAndDrag(Point)` | `bool` | Detaches ribbon and immediately starts interactive dragging |
 | `Reattach()` | `bool` | Reattaches ribbon to original parent |
 | `SaveDetachPreferences()` | `void` | Saves current detach preferences (raises event) |
 | `LoadDetachPreferences(bool, Point?)` | `bool` | Loads and restores saved preferences |
@@ -69,6 +71,22 @@ bool isDetached = kryptonRibbon.IsDetached;
 3. Moves ribbon to floating window
 4. Disables form integration
 5. Raises `RibbonDetached` event
+
+### `DetachAndDrag(Point screenPoint)`
+
+**Returns**: `true` if successful, `false` otherwise
+
+**Preconditions**:
+
+- `AllowDetach == true`
+- Ribbon has a parent in a Form
+- Ribbon is not already detached
+
+**What it does**:
+
+1. Calls `Detach()`
+2. Positions the floating window centered under the mouse cursor
+3. Initiates the interactive window move drag loop via Windows message dispatch
 
 ### `Reattach()`
 

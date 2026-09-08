@@ -12,4 +12,5 @@ sections.
 * [Persistence](Workspace/WorkspacePersistence.md)
 * [Page Dragging](Workspace/WorkspacePageDragging.md)
 * [Page Tag Persistence](Workspace/WorkspacePageTagPersistence.md)
+* [RTL Support](Workspace/WorkspaceRTL.md)
 * [Events](Workspace/WorkspaceEvents.md)

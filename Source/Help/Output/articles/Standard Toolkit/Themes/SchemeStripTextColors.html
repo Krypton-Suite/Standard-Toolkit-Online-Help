@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Scheme strip text colours | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Scheme strip text colours | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="scheme-strip-text-colours">Scheme strip text colours</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Menu, tool, status, and context/menu-item text can be themed independently. Before this change, ColorTables aliased menu and tool strip text to the status-strip (or label/button) colour, so <code>SetSchemeColor(MenuStripText, …)</code> had no effect on chrome.</p>
+<p>Package owners: <code>Krypton.Toolkit</code> (enum, ColorTables, official palettes) and <code>Krypton.Themes</code> (extra palettes and scheme generators).</p>
+<p>Button hover text is <strong>not</strong> part of this feature. Use <code>SchemeBaseColors.ButtonTextTracking</code> (Issue #880).</p>
+<h2 id="architecture">Architecture</h2>
+<p><code>SchemeBaseColors</code> is the indexed scheme used by <code>PaletteBase.SchemeColors</code>. ColorTables read those slots when building <code>ProfessionalColorTable</code> properties (<code>MenuStripText</code>, <code>ToolStripText</code>, <code>StatusStripText</code>, <code>MenuItemText</code>). <code>KryptonContextMenu</code> item text uses palette content styles, not the ColorTable, so those styles were retargeted as well.</p>
+<pre><code>SetSchemeColor(slot)
+        │
+        ▼
+PaletteBase.SchemeColors[]  (+ matching BaseColors property, when the palette has one)
+        │
+        ├─ ColorTable.MenuStripText / ToolStripText / StatusStripText / MenuItemText
+        │     (strips, ToolStripMenuItem, ContextMenuStrip)
+        └─ GetContentShortTextColor*(ContextMenuItemText*)
+              (KryptonContextMenu item captions and shortcuts)
+</code></pre>
+<p><code>SchemeBaseColorsExtensions.Resolve</code> / <code>Coalesce</code> / <code>Get</code> treat <code>Color.Empty</code> (and <code>SharedStaticVariables.EMPTY_COLOR</code>, which is the same) as “use the family fallback”. Builtin schemes default the new slot to empty so appearance stays historic until a consumer sets a colour.</p>
+<h2 id="public-api">Public API</h2>
+<h3 id="schemebasecolorstoolstriptext--242"><code>SchemeBaseColors.ToolStripText = 242</code></h3>
+<p>Appended after <code>TextListItem = 241</code>. Existing members keep their numeric values. Do not insert new members in the middle of this enum.</p>
+<p>Related slots:</p>
+<table>
+<thead>
+<tr>
+<th>Slot</th>
+<th>Typical chrome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MenuStripText</code> (232)</td>
+<td><code>KryptonMenuStrip</code> / <code>MenuStrip</code> top-level text</td>
+</tr>
+<tr>
+<td><code>ToolStripText</code> (242)</td>
+<td><code>KryptonToolStrip</code> / <code>ToolStrip</code> item text</td>
+</tr>
+<tr>
+<td><code>StatusStripText</code> (21)</td>
+<td><code>KryptonStatusStrip</code> / <code>StatusStrip</code> text</td>
+</tr>
+<tr>
+<td><code>MenuItemText</code></td>
+<td>Dropdown items, <code>ContextMenuStrip</code> items, <code>KryptonContextMenu</code> item text</td>
+</tr>
+</tbody>
+</table>
+<h3 id="kryptoncolorschemebasetoolstriptext"><code>KryptonColorSchemeBase.ToolStripText</code></h3>
+<p>Abstract property on every scheme. Generators (<code>LimeGreenSchemeHelper</code>, <code>MaterializeSchemeHelper</code>, <code>CustomThemeSchemeRemapper</code>) assign it with <code>MenuStripText</code>.</p>
+<h3 id="runtime">Runtime</h3>
+<pre><code class="lang-csharp">var palette = KryptonManager.CurrentGlobalPalette;
+palette.SetSchemeColor(SchemeBaseColors.MenuStripText, Color.Firebrick);
+palette.SetSchemeColor(SchemeBaseColors.ToolStripText, Color.MediumBlue);
+palette.SetSchemeColor(SchemeBaseColors.StatusStripText, Color.DarkGreen);
+palette.SetSchemeColor(SchemeBaseColors.MenuItemText, Color.DarkOrange);
+
+Color current = palette.GetSchemeColor(SchemeBaseColors.ToolStripText);
+palette.SetSchemeColor(SchemeBaseColors.ToolStripText, Color.Empty); // restore fallback
+</code></pre>
+<p>Professional palettes may use a shorter hand-built colour array. <code>Get</code> / <code>Resolve</code> are bounds-safe; <code>SetSchemeColor</code> can throw <code>IndexOutOfRangeException</code> — catch that when driving unknown palettes from a demo.</p>
+<p>Custom palettes that already expose independent <code>ToolMenuStatus</code> colours (<code>KryptonInternalKCT</code>) are unchanged.</p>
+<h2 id="family-fallbacks">Family fallbacks</h2>
+<p>When the primary slot is empty, ColorTables use:</p>
+<table>
+<thead>
+<tr>
+<th>Family</th>
+<th>MenuStripText</th>
+<th>ToolStripText</th>
+<th>MenuItemText</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Office 2010 / 2013 / 365 / Visual Studio</td>
+<td><code>StatusStripText</code></td>
+<td><code>StatusStripText</code></td>
+<td><code>TextButtonNormal</code> (or the table's previous hardcoded colour)</td>
+</tr>
+<tr>
+<td>Office 2007</td>
+<td><code>TextLabelPanel</code></td>
+<td><code>TextButtonNormal</code></td>
+<td><code>TextButtonNormal</code></td>
+</tr>
+<tr>
+<td>Sparkle</td>
+<td><code>TextLabelPanel</code></td>
+<td><code>TextLabelPanel</code></td>
+<td>Sparkle <code>_menuItemText</code></td>
+</tr>
+<tr>
+<td>White subclasses (2010/2013/365)</td>
+<td>Coalesce with <code>Color.FromArgb(255, 30, 30, 30)</code></td>
+<td>family tool-strip fallback</td>
+<td>family menu-item fallback</td>
+</tr>
+</tbody>
+</table>
+<p>Helpers:</p>
+<ul>
+<li><code>SchemeBaseColorsExtensions.Coalesce(primary, fallback)</code></li>
+<li><code>colors.Resolve(primary, fallback)</code></li>
+<li><code>colors.Get(index)</code></li>
+<li><code>PaletteBase.GetSchemeColorOrFallback(primary, fallback)</code> (protected)</li>
+</ul>
+<h2 id="context-menus">Context menus</h2>
+<p><code>PaletteContentStyle.ContextMenuItemTextStandard</code>, <code>ContextMenuItemTextAlternate</code>, and <code>ContextMenuItemShortcutText</code> now coalesce <code>MenuItemText</code> onto <code>TextLabelControl</code> (Material uses <code>HeaderText</code>).</p>
+<p>Official palettes read that colour from the live <code>SchemeColors</code> array. Extra Office/365 palettes still read <code>BaseColors.MenuItemText</code>; <code>SetSchemeColor</code> therefore also writes the matching property on the palette's <code>BaseColors</code> object so those menus follow the override.</p>
+<p>Native <code>ContextMenuStrip</code> and File/Edit dropdown items use <code>ColorTable.MenuItemText</code> (fallback <code>TextButtonNormal</code> on Office 2010/2013/365). That is the same slot, so they should match <code>KryptonContextMenu</code> once <code>MenuItemText</code> is set.</p>
+<p><code>ContextMenuItemImage</code> stays on the label/image arm (glyph, not item text). Menu headings stay on <code>ContextMenuHeadingText</code>.</p>
+<p><code>PaletteRelativeAlign.Center</code> arms that still list those styles are font/alignment only — do not split them.</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li><strong>Do not insert enum members</strong> before <code>Custom</code> or in the middle of <code>SchemeBaseColors</code>. Append only.</li>
+<li>Material and macOS schemes that already stored a non-empty <code>MenuStripText</code> now honour that slot (previously ignored by ColorTables). That is intended.</li>
+<li><code>KryptonThemeComboBox</code> / theme re-apply restores builtin scheme values and clears live <code>SetSchemeColor</code> overrides — re-select the theme after <strong>Reset all</strong>.</li>
+<li>Native WinForms <code>MenuStrip</code> / <code>ToolStrip</code> / <code>StatusStrip</code> / <code>ContextMenuStrip</code> share the same <code>ColorTable</code> as the Krypton wraps when <code>ToolStripManager.Renderer</code> is the Krypton renderer.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
