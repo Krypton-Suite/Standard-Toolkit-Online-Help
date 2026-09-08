@@ -277,7 +277,7 @@ All jobs use **`windows-2025-vs2026`** and **`environment: production`** where p
    ```yaml
    - Only if packages_published == True
    - Check DISCORD_WEBHOOK_MASTER present
-   - Send rich embed with version, packages, links
+   - Send rich embed with version, linked commit SHA, packages, links
    ```
 
 #### Unique Features (release-master)
@@ -592,6 +592,8 @@ Workflows generate `global.json` with a shared PowerShell pattern (`Get-ListedSd
 
 ### Notification Content
 
+Release announcements include a **Commit** field: a 7-character SHA linking to the commit that was checked out and built (`git rev-parse HEAD`). That is the pack source (for example `alpha` for nightly), not `github.sha`, which can be the workflow-file commit on scheduled or dispatched runs. The embed title also links to that commit.
+
 All Discord notifications use rich embeds with this structure:
 
 ```plaintext
@@ -601,6 +603,9 @@ All Discord notifications use rich embeds with this structure:
 ├────────────────────────────────────────────────────┤
 │ 📌 Version                                         │
 │ 110.26.1.1                                         │
+│                                                    │
+│ 🔗 Commit                                          │
+│ abc1234  (clickable link to the built commit)      │
 │                                                    │
 │ 📦 NuGet Packages                                  │
 │ - Krypton.Toolkit                                  │

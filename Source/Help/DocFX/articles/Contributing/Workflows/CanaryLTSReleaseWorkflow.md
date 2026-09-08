@@ -223,7 +223,7 @@ When disabled, the first step writes a warning and sets `enabled=false`; all sub
 ### 16. Announce Canary LTS Release on Discord
 
 - **Condition**: Kill switch enabled **and** `steps.push_nuget.outputs.packages_published == 'True'`.
-- **Behaviour**: If `DISCORD_WEBHOOK_CANARY` is set, sends an embed with title "Krypton Toolkit Canary LTS Release", version, branch V105-LTS, package links, and changelog link to the V105-LTS Changelog. If the webhook is not set, logs a warning and exits successfully.
+- **Behaviour**: If `DISCORD_WEBHOOK_CANARY` is set, sends an embed with title "Krypton Toolkit Canary LTS Release", version, linked commit SHA, branch V105-LTS, package links, and changelog link to the V105-LTS Changelog. If the webhook is not set, logs a warning and exits successfully.
 
 ---
 
@@ -282,7 +282,7 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 ## Discord Notifications
 
 - **When**: Only if the push step actually published at least one package (`packages_published == 'True'`) and `DISCORD_WEBHOOK_CANARY` is set.
-- **Content**: Embed titled "Krypton Toolkit Canary LTS Release", with version, branch (V105-LTS), links to the six Canary packages on nuget.org, and a link to the V105-LTS Changelog. Footer: "Canary LTS (V105-LTS)".
+- **Content**: Embed titled "Krypton Toolkit Canary LTS Release", with version, linked commit SHA, branch (V105-LTS), links to the six Canary packages on nuget.org, and a link to the V105-LTS Changelog. Footer: "Canary LTS (V105-LTS)". The title also links to the built commit.
 - **Webhook**: Same as for the main Canary release (`release-canary` in release.yml); you can use one channel or separate channels by using a different webhook secret for LTS if desired.
 
 ---

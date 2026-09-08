@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonRibbon translations (RibbonTranslations.xml) | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonRibbon translations (RibbonTranslations.xml) | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonribbon-translations-ribbontranslationsxml">KryptonRibbon translations (<code>RibbonTranslations.xml</code>)</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4369">#4369</a> adds an <strong>instance overlay</strong> of every localizable caption on a given <code>KryptonRibbon</code> (tabs, groups, buttons, KeyTips, tooltips, QAT, contexts, app menu, recent docs, backstage, notification bar). Consumers persist the document as <code>RibbonTranslations.xml</code> / <code>.json</code>, or as a database BLOB via the stream APIs.</p>
+<p>This is <strong>not</strong> a replacement for <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4088">#4088</a> <code>ToolkitTranslations.xml</code>. Process-wide QAT / app-menu chrome still lives on <code>KryptonManager.Strings.RibbonStrings</code> (<code>GeneralRibbonStrings</code>). Optional <code>&lt;RibbonStrings&gt;</code> inside a ribbon file can round-trip that chrome, but the default export omits it.</p>
+<p>Import never creates or deletes tabs, groups, or items. Unknown XML keys are ignored. Missing keys keep the live values.</p>
+<p>Package: <code>Krypton.Ribbon</code>. Schema: <code>Documents/Assets/RibbonTranslations.xsd</code>.</p>
+<h2 id="architecture">Architecture</h2>
+<ul>
+<li><code>RibbonTranslationWalker</code> (inside <code>RibbonTranslationsXmlPersistence</code>) walks <code>RibbonTabs</code> → groups → <code>GetChildComponents()</code>, plus QAT, contexts, button specs, app menu, recent docs, notification bar, and backstage.</li>
+<li>Property-driven export: public instance <code>string</code> properties marked <code>[Localizable(true)]</code>, minus a denylist (images, colors, <code>Keys</code>, editor <strong>content</strong>, <code>ContextName</code>, <code>SelectedContext</code>).</li>
+<li>Match order on import: <code>TranslationId</code> → <code>UniqueName</code> / <code>ContextName</code> / <code>Site.Name</code> → <code>Type</code> + <code>Index</code>.</li>
+<li>JSON is a twin of the XML tree (<code>RibbonTranslationsJsonPersistence</code>); identity fields are XML attributes on import.</li>
+</ul>
+<pre><code>RibbonTranslations.xml / stream / JSON
+        │
+        ▼
+KryptonRibbon Import / Export / Analyze / Auto Discover
+        │
+        ▼
+RibbonTranslationsXmlPersistence  (walker + overlay)
+        │
+        ▼
+Tabs / Groups / Items / QAT / Contexts / App menu / …
+        │
+        ▼
+IComponentChangeService  (designer only)
+</code></pre>
+<h2 id="xml-shape">XML shape</h2>
+<p>Root element is <code>KryptonRibbonTranslations</code> (distinct from <code>KryptonTranslations</code> so files cannot be mixed up). <code>Version=&quot;1&quot;</code> is structural only; older and newer files load best-effort.</p>
+<pre><code class="lang-xml">&lt;KryptonRibbonTranslations Version=&quot;1&quot; Culture=&quot;de-DE&quot; ToolkitVersion=&quot;110.0.0.0&quot; RibbonName=&quot;kryptonRibbon1&quot;&gt;
+  &lt;RibbonStrings&gt;
+    &lt;AppButtonText Value=&quot;Datei&quot; /&gt;
+  &lt;/RibbonStrings&gt;
+  &lt;Ribbon&gt;
+    &lt;FloatingWindowText Value=&quot;Menüband&quot; /&gt;
+    &lt;FileAppTab&gt;
+      &lt;FileAppTabText Value=&quot;Datei&quot; /&gt;
+    &lt;/FileAppTab&gt;
+    &lt;Tabs&gt;
+      &lt;Tab TranslationId=&quot;home&quot; Name=&quot;kryptonRibbonTab1&quot; Type=&quot;KryptonRibbonTab&quot; Index=&quot;0&quot;&gt;
+        &lt;Text Value=&quot;Start&quot; /&gt;
+        &lt;KeyTip Value=&quot;S&quot; /&gt;
+        &lt;Groups&gt;
+          &lt;Group TranslationId=&quot;clipboard&quot; Index=&quot;0&quot;&gt;
+            &lt;TextLine1 Value=&quot;Zwischenablage&quot; /&gt;
+            &lt;Items&gt;
+              &lt;Item TranslationId=&quot;paste&quot; Type=&quot;KryptonRibbonGroupButton&quot; Index=&quot;0&quot;&gt;
+                &lt;TextLine1 Value=&quot;Einfügen&quot; /&gt;
+                &lt;KeyTip Value=&quot;V&quot; /&gt;
+              &lt;/Item&gt;
+            &lt;/Items&gt;
+          &lt;/Group&gt;
+        &lt;/Groups&gt;
+      &lt;/Tab&gt;
+    &lt;/Tabs&gt;
+  &lt;/Ribbon&gt;
+&lt;/KryptonRibbonTranslations&gt;
+</code></pre>
+<p>Loose XSD uses <code>xs:any processContents=&quot;lax&quot;</code> at each container so new item types and new <code>[Localizable]</code> strings appear via reflection.</p>
+<h2 id="identity-translationid">Identity (<code>TranslationId</code>)</h2>
+<p>Ribbon items historically had no stable runtime name (only <code>Site.Name</code> at design time, <code>ButtonSpec.UniqueName</code>, <code>ContextName</code>). Additive optional property:</p>
+<pre><code class="lang-csharp">[DefaultValue(&quot;&quot;)]
+[Localizable(false)]
+public string TranslationId { get; set; }
+</code></pre>
+<p>Present on <code>KryptonRibbon</code>, <code>KryptonRibbonTab</code>, <code>KryptonRibbonGroup</code>, <code>KryptonRibbonGroupItem</code> (containers and leaves), <code>KryptonRibbonQATButton</code>, and <code>KryptonRibbonRecentDoc</code>. Empty is not serialized. Implement <code>IRibbonTranslationIdentity</code> when adding a new sited ribbon part.</p>
+<p>Prefer <code>TranslationId</code> for runtime-built ribbons and database round-trips. Designer-sited components still match on <code>Site.Name</code> when <code>TranslationId</code> is empty.</p>
+<p>Root attribute <code>RibbonName</code> is <code>TranslationId</code> if set, otherwise <code>Control.Name</code>. Auto Discovery <strong>skips</strong> a shared file whose <code>RibbonName</code> is set and does not match this ribbon. Manual import still overlays (with a debug warning).</p>
+<h2 id="public-api-kryptonribbon">Public API (<code>KryptonRibbon</code>)</h2>
+<h3 id="export--import">Export / import</h3>
+<ul>
+<li><code>ExportTranslationsToXmlDocument</code> / <code>ToXmlFile</code> / <code>ToStream</code></li>
+<li><code>ImportTranslationsFromXmlDocument</code> / <code>FromXmlFile</code> / <code>FromStream</code></li>
+<li>JSON equivalents (<code>ExportTranslationsToJson</code>, <code>ToJsonFile</code>, <code>ToJsonStream</code>, <code>ImportTranslationsFromJson</code> / <code>FromJsonFile</code> / <code>FromJsonStream</code>)</li>
+<li><code>AnalyzeTranslationsFromFile</code> — unmatched XML keys vs live tree (coverage, not a hard fail)</li>
+<li><code>MergeMissingTranslationsToFile</code> — rewrite the file with newly added keys filled from current values</li>
+</ul>
+<p>Database apps should turn Auto Discovery off and use the stream overloads.</p>
+<h3 id="options-ribbontranslationoptions">Options (<code>RibbonTranslationOptions</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>IncludeDefaults</code></td>
+<td><code>false</code></td>
+<td>Emit strings even when they match designer defaults (use for templates).</td>
+</tr>
+<tr>
+<td><code>IncludeChrome</code></td>
+<td><code>false</code></td>
+<td>Include process-wide <code>KryptonManager.Strings.RibbonStrings</code>.</td>
+</tr>
+<tr>
+<td><code>IncludeToolTips</code></td>
+<td><code>true</code></td>
+<td>Tooltip heading/description/title/body.</td>
+</tr>
+<tr>
+<td><code>IncludeKeyTips</code></td>
+<td><code>true</code></td>
+<td>KeyTip strings.</td>
+</tr>
+<tr>
+<td><code>IncludeContentStrings</code></td>
+<td><code>false</code></td>
+<td>Editor content (<code>TextBox.Text</code>, combo items, mask, …).</td>
+</tr>
+<tr>
+<td><code>ResetFirst</code></td>
+<td><code>true</code></td>
+<td>Reset exportable strings on <strong>existing</strong> nodes before applying the file. Does not rebuild the tree.</td>
+</tr>
+<tr>
+<td><code>ChangeService</code></td>
+<td><code>null</code></td>
+<td>Designer <code>IComponentChangeService</code> so CodeDom serializes imported values.</td>
+</tr>
+</tbody>
+</table>
+<p>When a group button has a <code>KryptonCommand</code>, <code>TextLine*</code> is applied to the <strong>command</strong> as well, because that is what the UI displays.</p>
+<h3 id="events">Events</h3>
+<ul>
+<li><code>RibbonTranslationsSaving</code> / <code>RibbonTranslationsLoading</code> — extra XML on the root.</li>
+<li><code>RibbonTranslationsImported</code> — after file, stream, or Auto Discovery import.</li>
+<li><code>RibbonTranslationsCoverageReported</code> — after analyze.</li>
+</ul>
+<h2 id="what-is-in-vs-out">What is in vs out</h2>
+<p><strong>In (default):</strong> <code>FloatingWindowText</code>; <code>RibbonFileAppTab.FileAppTabText</code>; app-button tooltips, menu items, recent docs, app button specs; tab <code>Text</code> / <code>KeyTip</code>; group <code>TextLine1</code> / <code>TextLine2</code> / <code>KeyTipGroup</code> / <code>KeyTipDialogLauncher</code>; leaf <code>TextLine*</code> / <code>KeyTip</code> / tooltip heading and description; QAT <code>Text</code> / <code>ToolTipTitle</code> / <code>ToolTipBody</code>; context <code>ContextTitle</code> only; <code>ButtonSpec</code> <code>Text</code> / <code>ExtraText</code> / tooltips; gallery range <code>Heading</code>; notification bar title/text/action buttons; backstage page/command <code>Text</code>.</p>
+<p><strong>Out by default:</strong> images, colors, <code>Keys</code>, editor content, <code>ContextName</code>, <code>SelectedContext</code>. Opt in with <code>IncludeContentStrings</code> if a consumer really wants editor <code>Text</code>.</p>
+<h2 id="auto-discovery">Auto Discovery</h2>
+<p>Defaults <strong>on</strong> (<code>KryptonRibbon.AutoDiscoverTranslations</code> static, <code>EnableAutoDiscoverTranslations</code> per instance). First <code>HandleCreated</code> (skipped in <code>DesignMode</code>) probes:</p>
+<ol>
+<li>Culture ladder: exact → parent/neutral → default (no culture suffix).</li>
+<li>Format: XML before JSON.</li>
+<li>File stem: per-ribbon <code>RibbonTranslations.{ribbonKey}.{culture}</code> then shared <code>RibbonTranslations.{culture}</code>.</li>
+<li>Directories: <code>TranslationsSearchPath</code> or application base directory, then a nested <code>RibbonTranslations\</code> subdirectory.</li>
+</ol>
+<p>Example for ribbon key <code>kryptonRibbon1</code> and UI culture <code>de-DE</code>:</p>
+<ul>
+<li><code>RibbonTranslations.kryptonRibbon1.de-DE.xml</code></li>
+<li><code>RibbonTranslations.kryptonRibbon1.de.xml</code></li>
+<li><code>RibbonTranslations.kryptonRibbon1.xml</code></li>
+<li><code>RibbonTranslations.de-DE.xml</code> … <code>RibbonTranslations.xml</code></li>
+<li>then the same stems as <code>.json</code>, then the same list under <code>RibbonTranslations\</code>.</li>
+</ul>
+<p>On miss, <strong>instance captions are not wiped</strong>. <code>TrySwitchTranslationsCulture</code> changes <code>CurrentUICulture</code> and re-probes with the same rule.</p>
+<p>Live ribbons subscribe (weakly) to <code>KryptonManager.TranslationsImported</code> so a chrome <code>ToolkitTranslations.xml</code> import can re-probe ribbon files. Re-entry during import is ignored.</p>
+<p>Database / embedded apps: set <code>KryptonRibbon.AutoDiscoverTranslations = false</code> <strong>before</strong> constructing ribbons, or set <code>EnableAutoDiscoverTranslations = false</code> on each instance, then call <code>ImportTranslationsFromStream</code>.</p>
+<h2 id="designer">Designer</h2>
+<p><code>KryptonRibbon</code> Smart Tag (<code>KryptonRibbonActionList</code>) verbs:</p>
+<ul>
+<li>Import / Export XML and JSON</li>
+<li>Generate template (<code>IncludeDefaults = true</code>)</li>
+<li>Merge missing keys</li>
+<li>Switch culture</li>
+</ul>
+<p>Import wraps <code>IDesignerHost.CreateTransaction</code> and passes <code>IComponentChangeService</code> so the property grid and CodeDom pick up nested captions. Then <code>PerformNeedPaint(true)</code> refreshes the design surface.</p>
+<p>Do <strong>not</strong> re-add a serializable <code>RibbonStrings</code> property on <code>KryptonRibbon</code>. Chrome stays on <code>KryptonManager</code>.</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">ribbon.TranslationId = &quot;main&quot;;
+ribbon.RibbonTabs[0].TranslationId = &quot;home&quot;;
+
+// File
+ribbon.ExportTranslationsToXmlFile(@&quot;RibbonTranslations.de.xml&quot;,
+    new RibbonTranslationOptions { IncludeDefaults = true });
+ribbon.ImportTranslationsFromXmlFile(@&quot;RibbonTranslations.de.xml&quot;);
+
+// Database BLOB
+using (var stream = GetBlobStream())
+{
+    ribbon.ImportTranslationsFromStream(stream);
+}
+
+// Coverage
+var coverage = ribbon.AnalyzeTranslationsFromFile(@&quot;RibbonTranslations.de.xml&quot;);
+</code></pre>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

@@ -58,6 +58,7 @@ This document provides links to the documentation provided, each will be split u
 * [Item Events](Standard%20Toolkit/Ribbon/ItemEvents.md)
 * [Krypton Gallery](Standard%20Toolkit/Ribbon/KryptonGallery.md)
 * [Krypton Ribbon Notification Bar](Standard%20Toolkit/Ribbon/KryptonRibbonNotificationBar.md)
+* [Translations](Standard%20Toolkit/Ribbon/Translations.md)
 
 ## [Krypton Toolkit](Standard%20Toolkit/KryptonToolkit.md)
 

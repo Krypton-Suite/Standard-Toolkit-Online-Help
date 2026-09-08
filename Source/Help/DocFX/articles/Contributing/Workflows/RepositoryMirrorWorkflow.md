@@ -382,7 +382,7 @@ Retains the newest `BACKUP_SNAPSHOT_KEEP` bundles. Skipped on dry run or when ba
 
 #### Step 5 — Discord notification
 
-Runs when kill switch passed and mirror step was not skipped (`always()` so failures are reported too). No-op if `DISCORD_WEBHOOK_MIRROR` is unset. Reports push/delete/prune/missing branches, tag status, dry-run mode, and optional offline bundle path.
+Runs when kill switch passed and mirror step was not skipped (`always()` so failures are reported too). No-op if `DISCORD_WEBHOOK_MIRROR` is unset. Reports push/delete/prune/missing branches, tag status, dry-run mode, optional offline bundle path, the workflow run URL, and a linked commit SHA.
 
 ---
 
@@ -556,7 +556,7 @@ When `DISCORD_WEBHOOK_MIRROR` is configured, each completed mirror attempt sends
 | Pruned tags / Would prune tags | Tags removed from mirror when absent from source |
 | Tags | Sync status, or “Tags sync failed” when `tags_failed=true` |
 | Mode | “dry run (no pushes)” when applicable |
-| Link | Workflow run URL |
+| Link | Workflow run URL and linked commit SHA |
 
 If the webhook secret is not set, the step logs a skip message and exits 0.
 

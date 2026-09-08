@@ -358,7 +358,7 @@
 <li><p><strong>Discord Notification</strong> (conditional) ⭐</p>
 <pre><code class="lang-yaml">- Only if packages_published == True
 - Check DISCORD_WEBHOOK_MASTER present
-- Send rich embed with version, packages, links
+- Send rich embed with version, linked commit SHA, packages, links
 </code></pre>
 </li>
 </ol>
@@ -702,6 +702,7 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 <hr>
 <h2 id="discord-notifications">Discord Notifications</h2>
 <h3 id="notification-content">Notification Content</h3>
+<p>Release announcements include a <strong>Commit</strong> field: a 7-character SHA linking to the commit that was checked out and built (<code>git rev-parse HEAD</code>). That is the pack source (for example <code>alpha</code> for nightly), not <code>github.sha</code>, which can be the workflow-file commit on scheduled or dispatched runs. The embed title also links to that commit.</p>
 <p>All Discord notifications use rich embeds with this structure:</p>
 <pre><code class="lang-plaintext">┌────────────────────────────────────────────────────┐
 │ 🎉 Krypton Toolkit Stable Release                  | 
@@ -709,6 +710,9 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 ├────────────────────────────────────────────────────┤
 │ 📌 Version                                         │
 │ 110.26.1.1                                         │
+│                                                    │
+│ 🔗 Commit                                          │
+│ abc1234  (clickable link to the built commit)      │
 │                                                    │
 │ 📦 NuGet Packages                                  │
 │ - Krypton.Toolkit                                  │

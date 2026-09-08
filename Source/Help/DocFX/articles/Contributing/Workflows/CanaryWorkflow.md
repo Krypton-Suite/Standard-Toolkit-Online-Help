@@ -102,6 +102,8 @@ When packages were newly published, the workflow posts a Discord embed to:
 
 - `DISCORD_WEBHOOK_CANARY`
 
+The embed includes version, a linked commit SHA for the `Canary` checkout, package links, target frameworks, and changelog. The title also links to that commit.
+
 If webhook is missing, notification is skipped with warning.
 
 ## Concurrency

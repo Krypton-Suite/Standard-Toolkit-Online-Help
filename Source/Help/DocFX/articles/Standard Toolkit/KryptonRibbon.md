@@ -20,6 +20,7 @@ Learn more about the capabilities of the `KryptonRibbon` using the following sec
 * [Notification Bar](Ribbon/KryptonRibbonNotificationBar.md)
 * [ButtonSpecs](Ribbon/ButtonSpecs.md)
 * [Show Tab Headers](Ribbon/RibbonShowTabHeaders.md)
+* [Translations](Ribbon/Translations.md)
 
 ## Events
 

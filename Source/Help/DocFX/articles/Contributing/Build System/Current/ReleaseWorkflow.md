@@ -46,7 +46,7 @@ Common characteristics:
    - Prefers `artifacts/bin/Release/net48/Krypton.Toolkit.dll`, then `Bin/Release/net48/Krypton.Toolkit.dll`.  
    - Falls back to `Krypton.Toolkit 2022.csproj` `<Version>` or default `100.25.1.1`.
 6. **Announce Release on Discord** (if packages published and webhook present)  
-   - Posts embed with version, package list, TFM coverage, and nuget.org links.
+   - Posts embed with version, linked commit SHA, package list, TFM coverage, and nuget.org links.
 
 ### 2. `release-v105-lts` (105 LTS line)
 

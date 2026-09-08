@@ -262,9 +262,10 @@ Each job uses a different project file:
 
 **Message Structure**:
 
-- Title (varies by release type)
+- Title (varies by release type; title links to the built commit)
 - Description
 - Version field
+- Commit field (short SHA linking to the built commit)
 - NuGet package links
 - Target frameworks list
 - Changelog link
