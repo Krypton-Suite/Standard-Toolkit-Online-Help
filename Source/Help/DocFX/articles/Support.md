@@ -7,7 +7,7 @@ The following articles contain answers to common questions.
 * [Breaking Changes](Support/BreakingChanges.md)
 * [Designer Fixes with .NET](Support/DesignerFix.md)
 * [Frequently Asked Questions](Support/FAQ.md)
-* [How to Install Pre Release Packages](Support/HowtoInstallPreReleasePackages.md)
+* [How to Install Pre-Release Packages](Support/HowtoInstallPreReleasePackages.md)
 * [Installing Krypton](Support/InstallingKrypton.md)
 * [Using Krypton in Visual Studio 2022](Standard%20Toolkit/Tutorials/UsingKryptoninVisualStudio2022.md)
 * [Removal of IPalette](Support/IPaletteRemoval.md)
@@ -19,3 +19,4 @@ The following articles contain answers to common questions.
 * [Reporting a Issue](Support/ReportingaIssue.md)
 * [Using Krypton Packages](Support/UsingKryptonPackages.md)
 * [Visual Studio Templates](Support/VisualStudioTemplates.md)
+* [WinForms Designer Extensibility SDK](Support/WinFormsDesignerExtensibilitySDK.md)

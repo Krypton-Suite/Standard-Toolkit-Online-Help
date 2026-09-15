@@ -19,8 +19,8 @@ There are currently two types of package that are supported. The table below out
 
 | Package Type | Supported Frameworks |
 | --- | --- |
-| Full | .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8, 4.8.1, .NET 6 - 8 |
-| Lite | .NET Framework 4.8, 4.8.1, .NET 6 - 8 |
+| Full | .NET Framework 4.7.2, 4.8, 4.8.1, .NET 8 - 10 |
+| Lite | .NET Framework 4.8, 4.8.1, .NET 8 - 10 |
 
 (**Note:** If you are using either the `Canary` or `Nightly` packages, then they will have _all_ of the frameworks supported, as listed in the 'Full' regime.)
 

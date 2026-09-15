@@ -2,6 +2,8 @@
 
 If you are experiencing issues while using the components in the designer when upgrading from .NET Framework to .NET, you might need to replace  `<TargetFramework>net[##Current-Version##]-windows</TargetFramework>` with the following in your project configuration files.
 
+**Note:** As of version 110, [native .NET designer support](WinFormsDesignerExtensibilitySDK.md) is now included.
+
 ```xml
     <TargetFrameworks>net481;net[##Current-Version##]-windows</TargetFrameworks>
 ```
