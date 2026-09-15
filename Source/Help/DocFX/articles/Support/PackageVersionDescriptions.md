@@ -1,5 +1,15 @@
 # Krypton Toolkit Package Descriptions
 
+## Quick Links
+
+* [Nightly](#nightly)
+* [Canary](#canary)
+* [Release Candidate](#release-candidate)
+* [Stable](#stable)
+* [Long Term Stable (LTS)](#long-term-stable-lts)
+* [Support Release Cadence](#support-release-cadence)
+* [More Information](#more-information)
+
 ## Nightly
 
 ![Krypton Nightly NuGet package icon](<https://github.com/Krypton-Suite/Documentation/blob/main/Assets/NuGet%20Package%20Icons/Krypton%20Nightly.png?raw=true>)
@@ -13,6 +23,12 @@ These builds are normally built from the **`alpha`** branch, or from a branch wi
 ![Krypton Canary NuGet package icon](<https://github.com/Krypton-Suite/Documentation/blob/main/Assets/NuGet%20Package%20Icons/Krypton%20Canary.png?raw=true>)
 
 The canary packages are the next phase of development. Typically, canary packages are released **once** per month. Although these builds are considered to be more stable than the **nightly** packages, they are again **not** intended for production ready code, as features may break. Canary packages are there for developers to test & evaluate new features for the final release. They also have a companion symbol package (snupkg) for easier debugging.
+
+## Release Candidate
+
+![Krypton Release Candidate NuGet package icon](<https://github.com/Krypton-Suite/Documentation/blob/main/Assets/NuGet%20Package%20Icons/Krypton%20Release%20Candidate.png?raw=true>)
+
+Release Candidate NuGet packages are released once per year and just **one** month before the stable packages are made available. These builds have gone through applicable testing. Although these builds are considered production ready, there migh be a few bugs.
 
 ## Stable
 

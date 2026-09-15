@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonLoadingCircle | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonLoadingCircle | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonloadingcircle">KryptonLoadingCircle</h1>
+
+<h2 id="overview">Overview</h2>
+<p><code>KryptonLoadingCircle</code> is an animated spoke spinner in <code>Krypton.Toolkit.Utilities</code>. It can be hosted on a form (Toolbox item) or inside a ToolStrip via <code>KryptonLoadingCircleToolStripMenuItem</code>.</p>
+<p>When <code>CircleValues.Color</code> is <code>Color.Empty</code> (the default), spoke colours resolve from the active Krypton palette and refresh when the global theme changes. Set a concrete colour to override the theme.</p>
+<p>Related determinate control: <code>KryptonCircularProgressBar</code> (percentage / marquee arc), not an indeterminate busy spinner.</p>
+<p>Toolkit also ships an <strong><code>internal</code></strong> twin, <code>InternalKryptonLoadingCircle</code> (<code>Controls Toolkit/Internal/</code>), for Toolkit-only hosts. Same palette/<code>Timer</code> behaviour; not Toolbox-visible. Prefer the Utilities type for applications.</p>
+<h2 id="architecture">Architecture</h2>
+<ul>
+<li>Owner-draw <code>Control</code> with double buffering.</li>
+<li>UI-thread <code>Timer</code> advances the leading spoke index and calls <code>Invalidate</code>.</li>
+<li>Spoke geometry comes from <code>LoadingCircleValues</code> (radii, thickness, spoke count, style presets).</li>
+<li>Palette wiring mirrors other lightweight Utilities paint controls (<code>KryptonSliderButton</code>):
+<ul>
+<li>Subscribe to <code>KryptonManager.GlobalPaletteChanged</code> and <code>PaletteBase.PalettePaint</code>.</li>
+<li>On change, regenerate the spoke colour array and invalidate.</li>
+<li>Unsubscribe in <code>Dispose</code>.</li>
+</ul>
+</li>
+</ul>
+<pre><code class="lang-text">Color.Empty  --&gt;  GetContentShortTextColor1(LabelNormalControl, Normal|Disabled)
+Concrete Color --&gt;  use override as the lightest spoke
+                   |
+                   v
+         GenerateColoursPallet (alpha fade across spokes)
+                   |
+                   v
+              OnPaint (DrawLine spokes)
+</code></pre>
+<h2 id="public-api">Public API</h2>
+<h3 id="kryptonloadingcircle-1"><code>KryptonLoadingCircle</code></h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CircleValues</code></td>
+<td>Expandable <code>LoadingCircleValues</code> bag (designer Content).</td>
+</tr>
+<tr>
+<td><code>Color</code> / <code>Active</code> / <code>StylePreset</code> / radii / thickness</td>
+<td>Convenience forwards to <code>CircleValues</code> (hidden from the property grid; use the bag).</td>
+</tr>
+<tr>
+<td><code>SetCircleAppearance(...)</code></td>
+<td>Sets spoke count and radii in one call.</td>
+</tr>
+<tr>
+<td><code>Active</code></td>
+<td>Starts/stops the rotation timer.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="loadingcirclevalues"><code>LoadingCircleValues</code></h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Color</code></td>
+<td><code>Empty</code></td>
+<td>Empty = palette; otherwise override.</td>
+</tr>
+<tr>
+<td><code>Active</code></td>
+<td><code>false</code></td>
+<td>Animation on/off.</td>
+</tr>
+<tr>
+<td><code>StylePreset</code></td>
+<td><code>Custom</code></td>
+<td><code>MacOSX</code>, <code>Firefox</code>, <code>IE7</code>, or <code>Custom</code>.</td>
+</tr>
+<tr>
+<td><code>InnerCircleRadius</code> / <code>OuterCircleRadius</code> / <code>SpokeThickness</code> / <code>NumberSpoke</code></td>
+<td>Custom defaults</td>
+<td>Logical 96 DPI units; scaled in paint.</td>
+</tr>
+<tr>
+<td><code>RotationSpeed</code></td>
+<td>timer interval</td>
+<td>Higher is slower.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="palette-resolution">Palette resolution</h3>
+<pre><code class="lang-csharp">palette.GetContentShortTextColor1(
+    PaletteContentStyle.LabelNormalControl,
+    Enabled ? PaletteState.Normal : PaletteState.Disabled);
+</code></pre>
+<p>Disabled state uses <code>PaletteState.Disabled</code> so spokes mute with the theme.</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">var spinner = new KryptonLoadingCircle
+{
+    Size = new Size(64, 64),
+    StylePreset = StylePresets.MacOSX,
+    Active = true
+    // Color remains Empty → follows KryptonManager theme
+};
+
+// Override theme colour:
+spinner.Color = Color.SteelBlue;
+
+// Return to palette:
+spinner.Color = Color.Empty;
+</code></pre>
+<p>ToolStrip:</p>
+<pre><code class="lang-csharp">var item = new KryptonLoadingCircleToolStripMenuItem();
+item.LoadingCircleControl!.Active = true;
+</code></pre>
+<h2 id="designer-notes">Designer notes</h2>
+<ul>
+<li>Fresh Toolbox drop: <code>CircleValues.IsDefault</code> is true (<code>Color.Empty</code>, inactive, Custom preset).</li>
+<li><code>ShouldSerializeColor</code> / <code>ResetColor</code> keep Empty from serializing as Modified.</li>
+</ul>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>No local <code>PaletteMode</code>; always tracks <code>KryptonManager.CurrentGlobalPalette</code>.</li>
+<li>If no palette is available, falls back to <code>SystemColors.ControlText</code>.</li>
+<li>Stop the timer when inactive; dispose unhooks palette events and disposes the timer.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

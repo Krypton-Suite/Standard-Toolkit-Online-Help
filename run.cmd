@@ -1,5 +1,8 @@
 @echo off
+
 setlocal enabledelayedexpansion
+
+title Krypton Online Help Build System
 
 REM ============================================
 REM Configuration

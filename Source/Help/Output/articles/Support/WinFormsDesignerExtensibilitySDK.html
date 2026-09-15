@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>WinForms Designer Extensibility SDK (#593) | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="WinForms Designer Extensibility SDK (#593) | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../Krypton.ico">
+      <link rel="stylesheet" href="../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../styles/docfx.css">
+      <link rel="stylesheet" href="../../styles/main.css">
+      <meta property="docfx:navrel" content="../../toc.html">
+      <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="winforms-designer-extensibility-sdk-593">WinForms Designer Extensibility SDK (#593)</h1>
+
+<h2 id="overview">Overview</h2>
+<p>Visual Studio’s .NET WinForms designer is out of process: <code>devenv.exe</code> stays on .NET Framework, and real controls live in <code>DesignToolsServer.exe</code> on the application TFM. This guide describes how Krypton splits designers, action lists, and glyphs out of the runtime assemblies for modern Windows TFMs, while keeping in-process designers for .NET Framework.</p>
+<p>Owning packages: <code>Krypton.Toolkit</code>, <code>Krypton.Ribbon</code>, <code>Krypton.Navigator</code>, <code>Krypton.Workspace</code>, <code>Krypton.Toolkit.Utilities</code>, <code>Krypton.Navigator.Utilities</code>. <code>Krypton.Docking</code> has no <code>ControlDesigner</code> types, so nothing was ported.</p>
+<p>Do <strong>not</strong> add <code>Microsoft.WinForms.Designer.SDK</code> to a runtime or application project. That package is design-time only and leaks into consumer apps (<a href="https://github.com/dotnet/winforms/issues/13296">dotnet/winforms#13296</a>).</p>
+<h2 id="architecture">Architecture</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>TFM</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Runtime (<code>Krypton.Toolkit</code>, …)</td>
+<td>net4x + net8/9/10/11-windows</td>
+<td>Controls only on modern TFMs. No SDK PackageReference.</td>
+</tr>
+<tr>
+<td><code>*.Design</code> (Server)</td>
+<td>modern Windows TFMs only</td>
+<td>Designers, action lists, glyphs. References SDK 1.6.0. Loaded by DesignToolsServer.</td>
+</tr>
+<tr>
+<td><code>Krypton.Toolkit.Design.Client</code></td>
+<td><strong>net472 only</strong></td>
+<td>VS-hosted type-editor UI (<code>OpenFileDialog</code> / <code>FolderBrowserDialog</code>).</td>
+</tr>
+<tr>
+<td><code>Krypton.Toolkit.Design.Protocol</code></td>
+<td>same TFMs as <code>Directory.Build.props</code></td>
+<td>Shared DTOs, <code>KryptonDesignerEndpointNames</code>, and <code>KryptonDesignerEditorNames</code> (Client editor AQNs).</td>
+</tr>
+</tbody>
+</table>
+<p><code>[Designer]</code> attributes use a string that resolves to the runtime assembly on <code>NETFRAMEWORK</code> and to <code>Krypton.*.Design</code> otherwise:</p>
+<pre><code class="lang-csharp">[Designer(&quot;Krypton.Toolkit.KryptonButtonDesigner, &quot; + KryptonWinFormsDesignerSdk.AssemblyName)]
+</code></pre>
+<p><code>KryptonWinFormsDesignerSdk.AssemblyName</code> is defined per runtime project (<code>General\KryptonWinFormsDesignerSdk.cs</code>). Utilities stub designers that point at <code>KryptonStubDesigner</code> use the Toolkit Design assembly name, because that type lives in Toolkit.</p>
+<h3 id="dual-compile">Dual compile</h3>
+<p>Existing designer <code>.cs</code> files stay in the runtime tree. On modern TFMs the runtime <strong>Compile Remove</strong>s them. Each <code>*.Design</code> project <strong>Compile Include</strong>s the same files and aliases SDK types in <code>GlobalDeclarations.cs</code> (<code>ControlDesigner</code> → <code>Microsoft.DotNet.DesignTools.Designers.ControlDesigner</code>, and the matching action-list / glyph / behavior types).</p>
+<p><code>IncludeWinFormsDesignReferences=true</code> so <code>DesignerVerb</code> and <code>IDesignerHost</code> still resolve. Aliases disambiguate <code>ControlDesigner</code>.</p>
+<p>Public types that remain in the runtime on Framework: type editors (<code>KryptonDesignerImageEditor</code>, collection editors) and designer UI under <code>Designers\Controls Visuals</code> and <code>Designers\Editors</code>. On modern TFMs, <code>[Editor]</code> attributes for image/folder pickers use assembly-qualified Client names (<code>KryptonWinFormsDesignerSdk.ImageEditor</code>); in-process editor types stay in the runtime as a Framework fallback. Internal <code>ControlDesigner</code> / <code>ComponentDesigner</code> subclasses and action lists move to Design.Server on modern TFMs.</p>
+<p>Do <strong>not</strong> copy each designer into a parallel <code>Krypton.Toolkit.Server</code> tree with <code>#if NETFRAMEWORK</code> stubs. Dual-compile is the catalogue strategy. Add a new Client/Server pair only when the type cannot dual-compile (VS-hosted editor, ViewModel + <code>IDataPipeObject</code>, or SDK <code>CodeDomSerializer</code>).</p>
+<h3 id="sdk-api-mismatches">SDK API mismatches</h3>
+<p><code>KryptonDesignerSdkCompat</code> (dual-compiled; <strong>public</strong> under <code>KRYPTON_WINFORMS_DESIGNER_SDK</code>) wraps:</p>
+<ul>
+<li><code>AssociatedComponents</code> — SDK type is <code>IReadOnlyCollection&lt;IComponent&gt;</code>; Framework is <code>ICollection</code>.</li>
+<li><code>ToArrayList</code> — SDK <code>AssociatedComponents</code> is not <code>ICollection</code>.</li>
+</ul>
+<p>Other <code>#if KRYPTON_WINFORMS_DESIGNER_SDK</code> forks:</p>
+<ul>
+<li><code>KryptonGroupPanelDesigner.SnapLines</code> uses the SDK base implementation (SDK <code>SnapLine</code> is not the Framework type).</li>
+<li><code>KryptonSplitContainerBehavior.OnMouseUp</code> takes <code>(Glyph?, MouseButtons, Point)</code> on the SDK.</li>
+<li><code>KryptonGroupPanelDesigner.InheritanceAttribute</code> is non-nullable on the SDK; <code>InitializeNewComponent</code> takes <code>IDictionary?</code>.</li>
+<li>Design.Server assemblies are <code>[assembly: CLSCompliant(false)]</code> because they wrap non-CLS <code>Microsoft.DotNet.DesignTools</code> types.</li>
+</ul>
+<p><code>NoneExcludedImageIndexConverter</code> lives in <code>Converters\</code> (runtime). It used to sit in <code>KryptonTreeViewDesigner.cs</code>, which is excluded from modern TFMs.</p>
+<h3 id="internalsvisibleto">InternalsVisibleTo</h3>
+<p>Runtime assemblies and <code>Krypton.Interop</code> grant InternalsVisibleTo the matching <code>*.Design</code> assemblies using the existing Krypton public key (<code>KryptonWinFormsDesignerSdkPublicKey</code> in <code>Directory.Build.props</code>). Design.Server needs Interop for <code>ThrowHelper</code> and <code>SharedStaticConstants</code>.</p>
+<p>Do <strong>not</strong> add a Toolkit → Design <code>ProjectReference</code> (circular: Design already references Toolkit). Design projects are built via the solution. Packing uses <code>Exists()</code> on <code>Bin\&lt;Config&gt;\&lt;tfm&gt;\</code>.</p>
+<h2 id="shared-msbuild">Shared MSBuild</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Directory.Build.props</code></td>
+<td><code>KryptonWinFormsDesignerSdkVersion</code> (1.6.0), <code>KryptonWinFormsDesignerSdkEnabled</code>, public key.</td>
+</tr>
+<tr>
+<td><code>Krypton.Shared/Krypton.WinFormsDesignerSdk.props</code></td>
+<td>Signing, SDK PackageReference, <code>KRYPTON_WINFORMS_DESIGNER_SDK</code>, <code>IncludeWinFormsDesignReferences=true</code>. Does not override TFMs.</td>
+</tr>
+<tr>
+<td><code>Krypton.Shared/Krypton.WinFormsDesignerSdk.Server.props</code></td>
+<td>Imports the above; <strong>overrides TargetFrameworks to modern-only</strong>.</td>
+</tr>
+<tr>
+<td><code>Krypton.Shared/Krypton.WinFormsDesignerSdk.Package.targets</code></td>
+<td>Packs Server DLL + Protocol into <code>lib\{tfm}\Design\WinForms\Server\</code>, Client + Protocol net472 into <code>lib\{tfm}\Design\WinForms\</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>Krypton.Standard.Toolkit</code> <code>AddReferencedAssembliesToPackage</code> packs the same layout for the meta-package (modern TFMs only).</p>
+<h2 id="new-projects">New projects</h2>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>Assembly</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Krypton.Toolkit.Design.Protocol</code></td>
+<td>DTOs + <code>KryptonDesignerEndpointNames</code> (<code>EditImage</code>, <code>EditFolderPath</code>) + <code>KryptonDesignerEditorNames</code></td>
+</tr>
+<tr>
+<td><code>Krypton.Toolkit.Design.Client</code></td>
+<td>net472; <code>KryptonDesignerImageEditor</code>, <code>KryptonDesignerFolderNameEditor</code> in <code>Krypton.Toolkit.Design.Client</code></td>
+</tr>
+<tr>
+<td><code>Krypton.Toolkit.Design</code></td>
+<td>Toolkit designers + action lists + split-container glyphs/behavior + <code>KryptonDesignerActionItem</code> + <code>KryptonDesignerSdkCompat</code> + linked <code>KryptonDesignerTypeRoutingProvider</code></td>
+</tr>
+<tr>
+<td><code>Krypton.Ribbon.Design</code></td>
+<td>Ribbon designers + action lists; refs Toolkit.Design</td>
+</tr>
+<tr>
+<td><code>Krypton.Navigator.Design</code></td>
+<td>Navigator designer and action lists</td>
+</tr>
+<tr>
+<td><code>Krypton.Workspace.Design</code></td>
+<td>Workspace designers and action list; refs Navigator.Design</td>
+</tr>
+<tr>
+<td><code>Krypton.Toolkit.Utilities.Design</code></td>
+<td>Utilities designers (including <code>KryptonCustomStringsManagerDesigner.cs</code>, which is not under <code>Designers\Designers\</code>)</td>
+</tr>
+<tr>
+<td><code>Krypton.Navigator.Utilities.Design</code></td>
+<td>Navigator.Utilities designers and action lists</td>
+</tr>
+</tbody>
+</table>
+<p>SNK path for new projects: <code>Krypton.Interop\StrongKrypton.snk</code>.</p>
+<p>Design projects sit under the <strong>DesignerSdk</strong> solution folder (<code>/Source/DesignerSdk/</code> in the <code>.slnx</code>). Disk paths stay <code>Source/Krypton Components/Krypton.*.Design*</code>.</p>
+<p><code>Source/Krypton Components/Krypton.Shared/KryptonDesignerTypeRoutingProvider.cs</code> is <strong>Compile Include</strong>d (linked) into every Design.Server project.</p>
+<h2 id="type-routing">Type routing</h2>
+<p>The SDK does <strong>not</strong> infer <code>FooEditorVM</code> from <code>FooEditor</code>. Every connection is an explicit string match.</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>String</th>
+<th>Resolved by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[Designer(&quot;X&quot;)]</code> or <code>[Designer(&quot;X, Assembly&quot;)]</code></td>
+<td><code>X</code> / full name</td>
+<td>Server <code>KryptonDesignerTypeRoutingProvider</code> (this assembly’s <code>ComponentDesigner</code> types) plus assembly-qualified load</td>
+</tr>
+<tr>
+<td><code>[Editor(&quot;Y, Assembly&quot;, typeof(UITypeEditor))]</code></td>
+<td>Assembly-qualified Client type</td>
+<td>devenv loads <code>Design/WinForms/</code> Client DLLs. SDK 1.6 net472 Client has no type-routing API</td>
+</tr>
+<tr>
+<td><code>[DesignerSerializer(&quot;Z&quot;, &quot;…CodeDomSerializer&quot;)]</code></td>
+<td>FQN</td>
+<td>Loaded Server assemblies (<code>Type.GetType</code>), <strong>not</strong> type routing</td>
+</tr>
+</tbody>
+</table>
+<p>The linked provider registers <code>type.Name</code> and <code>type.FullName</code> for every non-abstract <code>ComponentDesigner</code> in that Design assembly.</p>
+<h2 id="type-editors-client--protocol">Type editors (Client / Protocol)</h2>
+<p>On modern TFMs, image and folder <code>[Editor]</code> attributes use <code>KryptonWinFormsDesignerSdk.ImageEditor</code> / <code>FolderNameEditor</code> / <code>InitialDirectoryEditor</code>:</p>
+<ul>
+<li><strong>.NET Framework:</strong> assembly-qualified in-process type (<code>Krypton.Toolkit.KryptonDesignerImageEditor, Krypton.Toolkit</code>), including the themed <code>VisualSelectResourceForm</code> picker.</li>
+<li><strong>Modern TFMs:</strong> assembly-qualified Client type (<code>Krypton.Toolkit.Design.Client.KryptonDesignerImageEditor, Krypton.Toolkit.Design.Client</code>). Keep these strings in sync with <code>KryptonDesignerEditorNames</code>.</li>
+</ul>
+<p>SDK 1.6’s net472 Client surface has no <code>Microsoft.DotNet.DesignTools.TypeRouting</code> API. Do not add a Client <code>TypeRoutingProvider</code> unless the SDK is bumped. Client editors are packed for Visual Studio (<code>lib\{tfm}\Design\WinForms\</code>). They are plain WinForms dialogs, not Krypton-themed, so Client does not pack net472 Toolkit into that folder.</p>
+<p>Simple Client editors (file/folder) run in devenv.exe and return a value the SDK marshals back. They do <strong>not</strong> need a ViewModel.</p>
+<p>Protocol DTOs (<code>KryptonDesignerEditImageRequest</code>, folder equivalents) and <code>KryptonDesignerEndpointNames</code> exist. <code>ExportRequestHandler</code> / ViewModel RPC is <strong>not</strong> wired. Use that stack when:</p>
+<ul>
+<li>The Client cannot reference the property type</li>
+<li>The dialog must round-trip a structured object through <code>IDataPipeObject</code></li>
+<li>A smart-tag command must <code>InvokePropertyEditor</code> on that object</li>
+</ul>
+<p><code>[AllowNull]</code> from the Designer SDK is internal on net472 — use <code>T?</code> on Protocol properties.</p>
+<h2 id="projectreference-does-not-load-oop-designers">ProjectReference does not load OOP designers</h2>
+<p><code>Microsoft.NET.DesignerSupport.targets</code> builds <code>{Project}.designer.deps.json</code> from <strong>NuGet</strong> <code>project.assets.json</code> only. A solution <code>ProjectReference</code> to Toolkit shows the control but uses the default <code>ControlDesigner</code> (no smart tags, no Client editors).</p>
+<ul>
+<li><strong>TestForm</strong> stays on <code>ProjectReference</code> for runtime validation (<code>WinFormsDesignerSdkDemo</code> / StartScreen <strong>593 WinForms Designer SDK</strong>). Do not convert it to NuGet-only.</li>
+<li>Exercise OOP designers in Visual Studio against a <strong>packed nupkg</strong> (CI feed or a local folder feed). Restart VS after replacing the package; design-time assemblies are cached.</li>
+</ul>
+<h2 id="nuget-layout">NuGet layout</h2>
+<p>Per <a href="https://github.com/microsoft/winforms-designer-extensibility/blob/main/docs/sdk/control-library-nuget-package-spec.md">control-library-nuget-package-spec.md</a>:</p>
+<pre><code>lib\{tfm}\Design\WinForms\Server\   Krypton.*.Design.dll + Protocol (modern TFM)
+lib\{tfm}\Design\WinForms\          Krypton.Toolkit.Design.Client.dll + Protocol (net472)
+</code></pre>
+<p>Individual Toolkit nupkgs use <code>Package.targets</code> with <code>$(TargetFramework)</code> (<code>net8.0-windows</code>). Standard.Toolkit uses <code>_LibFolderName</code> (<code>net8.0-windows7.0</code>, …).</p>
+<p>CI pack jobs (<code>Scripts/Build/Krypton.Orchestration.targets</code>) must <strong>build</strong> Protocol, Client, and <code>*.Design</code> before Pack. Runtime projects do not ProjectReference Design (circular). Packing uses <code>Exists()</code>; if those DLLs are missing, the nupkg is produced without <code>Design/WinForms</code>. <code>Scripts/CI/Test-KryptonDesignerSdkInPackages.ps1</code> fails pack workflows when the folder is absent on modern TFMs.</p>
+<h2 id="breaking-changes-modern-tfms-only">Breaking changes (modern TFMs only)</h2>
+<p>These public types are compiled into <code>*.Design</code> instead of the runtime:</p>
+<ul>
+<li><code>KryptonNavigatorDesigner</code>, <code>KryptonNavigatorActionList</code></li>
+<li><code>KryptonDesignerActionItem</code></li>
+<li><code>KryptonBackstageViewDesigner</code></li>
+</ul>
+<p>Related designer types that were already internal (<code>KryptonPageDesigner</code>, <code>KryptonPageActionList</code>, workspace designers) also compile only into <code>*.Design</code> on modern TFMs.</p>
+<p>.NET Framework (<code>net472</code> / <code>net48</code> / <code>net481</code>) is unchanged: designers remain in the runtime assemblies.</p>
+<h2 id="do-not">Do not</h2>
+<ul>
+<li>Add <code>Microsoft.WinForms.Designer.SDK</code> to runtime or application csprojs.</li>
+<li>Add a Toolkit → Design ProjectReference.</li>
+<li>Convert TestForm to NuGet-only so OOP designers load; keep a packed-nupkg host for that.</li>
+<li>Put new <code>PaletteMode</code> or packing paths in the wrong <code>lib\{tfm}</code> folder.</li>
+<li>Leave <code>Documents/Development/</code> files in a pull request.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
