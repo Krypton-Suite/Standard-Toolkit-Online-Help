@@ -514,29 +514,27 @@ nuget.exe push Krypton.Toolkit.Canary.100.25.1.305-beta.nupkg -Source https://ap
 ### NuGet Push Fails in CI
 
 **Symptoms**:
-- Error: "401 Unauthorized"
+- NuGet login fails, or `dotnet nuget push` returns 401 or 403
 - Packages not published
+- On this repository, the push step fails when no short-lived key was issued
 
 **Causes**:
-- Invalid or expired `NUGET_API_KEY`
-- Secret not configured
+- `NUGET_USER` missing or set to an email address instead of the nuget.org profile name
+- No trusted publishing policy for that workflow file, or the policy environment is not `production`
+- Workflow is missing `id-token: write`
 
 **Solutions**:
 
-1. **Generate New API Key**:
-   - Go to https://www.nuget.org/account/apikeys
-   - Create API Key with push permission
-   - Expiration: At least 1 year
+Follow [NuGet Trusted Publishing](../../Workflows/NuGetTrustedPublishing.md).
 
-2. **Update Secret**:
-   - Repository Settings → Secrets and variables → Actions → Secrets
-   - Update `NUGET_API_KEY`
+The push step receives the short-lived key from the login step:
 
-3. **Verify Secret in Workflow**:
 ```yaml
 env:
-  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+  NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
 ```
+
+That value is not `secrets.NUGET_API_KEY`. Local `publish.cmd` still uses a developer API key; see [Build Scripts](BuildScripts.md).
 
 ### Release Creation Fails
 

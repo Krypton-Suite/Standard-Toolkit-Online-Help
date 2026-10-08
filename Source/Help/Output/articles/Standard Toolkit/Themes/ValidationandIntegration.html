@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>08 — Validation and Integration | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="08 — Validation and Integration | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="08--validation-and-integration">08 — Validation and Integration</h1>
+
+<p><a href="./07-Utilities-UI.md">← Utilities UI</a> · <a href="./README.md">Index</a></p>
+<h2 id="testform">TestForm</h2>
+<table>
+<thead>
+<tr>
+<th>Demo</th>
+<th>What to exercise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PaletteBinaryDemo</code></td>
+<td>Export/import <code>.kthemex</code> / <code>.ktheme</code>, convert, upgrade, collection + folder pack, Utilities selectors, shell associations (icons)</td>
+</tr>
+<tr>
+<td><code>PaletteCollectionEditorDemo</code></td>
+<td>Add/remove themes, header name, Details columns, thumbnails</td>
+</tr>
+</tbody>
+</table>
+<p>Run:</p>
+<pre><code class="lang-powershell">dotnet run --project &quot;.\Source\Krypton Components\TestForm\TestForm.csproj&quot; -c Debug
+</code></pre>
+<h2 id="unit-tests">Unit tests</h2>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Scripts/UnitTests/UnitTest-PaletteBinary.ps1</code></td>
+<td>Round-trip, Convert, UpgradeXml*, collections, Add/Remove, directory pack, KPTH, JSON rejection, <code>FromDirectory</code>, shell ProgIDs, <code>.kpal</code> not accepted</td>
+</tr>
+<tr>
+<td><code>Scripts/UnitTests/UnitTest-ThemePreview.ps1</code></td>
+<td>Thumbnail / <code>.kthemex</code> with theme preview (#3870)</td>
+</tr>
+</tbody>
+</table>
+<p>Screenshots (local PR artefacts only):</p>
+<ul>
+<li><code>Scripts/UnitTests/Invoke-PaletteBinaryScreenshot.ps1</code></li>
+<li><code>Scripts/UnitTests/Invoke-PaletteCollectionEditorScreenshot.ps1</code></li>
+</ul>
+<p>Document new scripts in <code>Scripts/UnitTests/README.md</code> when adding keepers.</p>
+<h2 id="standard-toolkit-demos">Standard-Toolkit-Demos</h2>
+<p>Reuse <code>..\Standard-Toolkit-Demos</code> if present (do not re-clone). Feature work belongs on an <code>alpha-…</code> branch from <code>alpha</code>.</p>
+<p>Known consumer examples:</p>
+<ul>
+<li><strong>KryptonPalette Examples</strong> — import/export/collection/folder/selectors</li>
+<li><strong>Krypton Palette Author</strong> — fuller authoring (open/save/convert/upgrade/collection/tree)</li>
+</ul>
+<p>Append to existing examples; do not overwrite. Demos changes are <strong>not</strong> part of the Standard-Toolkit PR.</p>
+<h2 id="palette-designer-external">Palette Designer (external)</h2>
+<p>Sources live under Theme-Palettes (<code>Z:\Development\Krypton\Theme-Palettes\Applications\Source\Palette Designer</code>), not in Standard-Toolkit.</p>
+<p>Expected integration:</p>
+<ol>
+<li><code>EnsureShellAssociations(Application.ExecutablePath)</code> for Open + exe icon.</li>
+<li>Open/Save through <code>KryptonCustomPaletteBase</code> / <code>KryptonPaletteFile</code> (prompt for collection theme when opening kind 2).</li>
+<li>Before Export, optionally <code>KryptonThemePreview.AssignGeneratedThumbnail</code> so <code>Thumbnail</code> is populated.</li>
+<li>Optional menu entry that hosts <code>KryptonPaletteCollectionEditor</code>.</li>
+</ol>
+<h2 id="edge-case-checklist">Edge-case checklist</h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Expected behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Missing Themes assembly</td>
+<td>File I/O works; extra builtin modes fall back via catalog</td>
+</tr>
+<tr>
+<td>Multi-theme import without name</td>
+<td>Throws if count &gt; 1</td>
+</tr>
+<tr>
+<td>Empty collection</td>
+<td>Forbidden on export / last-remove</td>
+</tr>
+<tr>
+<td><code>ignoreDefaults</code></td>
+<td>Omits values matching base on export; collection rewrites use <code>false</code></td>
+</tr>
+<tr>
+<td>Silent import</td>
+<td>No message boxes; no legacy XML prompt</td>
+</tr>
+<tr>
+<td>Non-interactive</td>
+<td>Prompt returns path unchanged</td>
+</tr>
+<tr>
+<td>JSON</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Non-palette <code>.xml</code> in bulk upgrade</td>
+<td>Skipped</td>
+</tr>
+<tr>
+<td>Native schema upgrade</td>
+<td>Not via XSLT</td>
+</tr>
+<tr>
+<td>Compressed-XML collection entries</td>
+<td>Readable; new writes are native</td>
+</tr>
+<tr>
+<td>Thumbnail catalog</td>
+<td>Collections only; missing → null; 1 MiB cap</td>
+</tr>
+<tr>
+<td>Self-add to collection</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Duplicate theme names</td>
+<td>Case-insensitive; replace or throw</td>
+</tr>
+<tr>
+<td>Path separators</td>
+<td>Stored <code>/</code>; display OS-specific</td>
+</tr>
+<tr>
+<td>Shell without admin</td>
+<td>HKCU only; failures ignored</td>
+</tr>
+<tr>
+<td>Open verb preservation</td>
+<td>Won’t overwrite existing exe Open unless registering with path</td>
+</tr>
+</tbody>
+</table>
+<h2 id="source-files-to-keep-in-sync-with-this-guide">Source files to keep in sync with this guide</h2>
+<p>When behaviour changes, update the matching chapter and this checklist:</p>
+<ul>
+<li><code>Krypton.Toolkit/Palette Base/KryptonPaletteFile*.cs</code></li>
+<li><code>Krypton.Toolkit/Palette Base/KryptonPaletteBinaryPersistence.cs</code></li>
+<li><code>Krypton.Toolkit/Controls Toolkit/KryptonCustomPaletteBase.cs</code> (Import/Export/Upgrade)</li>
+<li><code>Krypton.Toolkit/Rendering/ThemeManager.cs</code></li>
+<li>Utilities selector + collection editor trees</li>
+<li><code>Scripts/UnitTests/UnitTest-PaletteBinary.ps1</code></li>
+<li>Changelog #2117 bullets (consumer wording only — not this guide)</li>
+</ul>
+<h2 id="changelog-reference">Changelog reference</h2>
+<p>Consumer summary: <code>Documents/Changelog/Changelog.md</code> → Implemented <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/2117">#2117</a>.</p>
+<p>Do <strong>not</strong> add Changelog entries for edits to these Development docs alone.</p>
+<p><a href="./07-Utilities-UI.md">← Utilities UI</a> · <a href="./README.md">Index</a></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

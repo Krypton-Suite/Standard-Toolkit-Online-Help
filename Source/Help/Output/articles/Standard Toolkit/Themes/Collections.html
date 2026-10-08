@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>04 — Collections | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="04 — Collections | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="04--collections">04 — Collections</h1>
+
+<p><a href="./03-Core-API.md">← Core API</a> · <a href="./README.md">Index</a> · <a href="./05-Upgrade-Convert-Migration.md">Next: Upgrade →</a></p>
+<p>A <strong>collection</strong> is a <code>.ktheme</code> file with KPLT payload kind <strong>2</strong>: several named themes in one container. Single-theme <code>.ktheme</code> files (kind 0/1) are <strong>not</strong> collections (<code>IsCollection</code> is false) until promoted.</p>
+<h2 id="creating-collections">Creating collections</h2>
+<h3 id="from-in-memory-palettes">From in-memory palettes</h3>
+<pre><code class="lang-csharp">var ocean = new KryptonCustomPaletteBase();
+ocean.SetPaletteName(&quot;Ocean&quot;);
+// ... edit colours ...
+
+var dusk = new KryptonCustomPaletteBase();
+dusk.SetPaletteName(&quot;Dusk&quot;);
+
+KryptonPaletteFile.ExportCollection(
+    @&quot;C:\Themes\Suite.ktheme&quot;,
+    new[] { ocean, dusk },
+    ignoreDefaults: false,
+    collectionName: &quot;My Suite&quot;);
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li>Destination extension must be <code>.ktheme</code> (<code>.kthemex</code> / JSON rejected).</li>
+<li>Names from <code>SetPaletteName</code> must be unique (ordinal ignore-case).</li>
+<li>At least one palette required.</li>
+<li>Optional <code>collectionName</code> becomes the KPLT header display name (<code>GetCollectionName</code> / <code>SetCollectionName</code>).</li>
+</ul>
+<h3 id="from-a-directory-tree">From a directory tree</h3>
+<pre><code class="lang-csharp">KryptonPaletteFile.ExportCollectionFromDirectory(
+    @&quot;C:\Themes\Catalog.ktheme&quot;,
+    @&quot;C:\Theme-Palettes\Palettes&quot;,
+    searchSubdirectories: true,
+    ignoreDefaults: false,
+    collectionName: &quot;Theme-Palettes&quot;);
+</code></pre>
+<p>Theme names are <strong>relative paths</strong> with <code>/</code>, e.g. <code>Office Themes/2013/Access 2013</code>.</p>
+<ul>
+<li>Nested <code>.ktheme</code> packs under the folder are flattened into the parent path space.</li>
+<li>Does <strong>not</strong> bump container version.</li>
+<li>Colliding names get disambiguating suffixes.</li>
+</ul>
+<h2 id="listing-and-loading-themes">Listing and loading themes</h2>
+<pre><code class="lang-csharp">string[] names = KryptonPaletteFile.GetThemeNames(path);
+bool multi = KryptonPaletteFile.IsCollection(path);
+
+var palette = new KryptonCustomPaletteBase();
+palette.Import(path, themeName: names[0], silent: true);
+
+// or
+ThemeManager.ApplyTheme(path, names[0], silent: true, kryptonManager);
+</code></pre>
+<p>Importing a multi-theme collection <strong>without</strong> <code>themeName</code> throws when more than one theme is present. A collection with exactly one theme imports that entry.</p>
+<p>Single-theme <code>.kthemex</code> / <code>.xml</code> / kind 0–1 <code>.ktheme</code> return one name from <code>GetThemeNames</code>.</p>
+<h2 id="add--remove--rename">Add / remove / rename</h2>
+<pre><code class="lang-csharp">// Create or update; promotes single-theme .ktheme to kind 2
+KryptonPaletteFile.AddToCollection(collectionPath, sourcePath);
+KryptonPaletteFile.AddToCollection(collectionPath, sourcePath, themeName, replaceExisting: true);
+KryptonPaletteFile.AddToCollection(collectionPath, sourcePaths, replaceExisting: false);
+KryptonPaletteFile.AddToCollection(collectionPath, paletteInstance, replaceExisting: false);
+
+KryptonPaletteFile.RemoveFromCollection(collectionPath, themeName);
+
+KryptonPaletteFile.SetCollectionName(collectionPath, &quot;Display Name&quot;);
+string header = KryptonPaletteFile.GetCollectionName(collectionPath);
+</code></pre>
+<p>Behaviour notes:</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Missing destination <code>.ktheme</code></td>
+<td>Created on first successful add</td>
+</tr>
+<tr>
+<td>Destination is single-theme <code>.ktheme</code></td>
+<td>Promoted to collection</td>
+</tr>
+<tr>
+<td>Source is a collection</td>
+<td>Adds every named theme (or one when <code>themeName</code> selects it)</td>
+</tr>
+<tr>
+<td>Duplicate name</td>
+<td>Throw unless <code>replaceExisting: true</code></td>
+</tr>
+<tr>
+<td>Self-add (same path)</td>
+<td>Rejected</td>
+</tr>
+<tr>
+<td>Remove last theme</td>
+<td>Forbidden — delete the file instead</td>
+</tr>
+<tr>
+<td>Rewrites after add/remove</td>
+<td><code>ignoreDefaults: false</code></td>
+</tr>
+</tbody>
+</table>
+<p>UI wrapper: <code>KryptonPaletteCollectionEditor</code> — see <a href="./07-Utilities-UI.md">07-Utilities-UI</a>.</p>
+<h2 id="path-separators">Path separators</h2>
+<p>Stored names use <code>/</code>. UI should call <code>ToDisplayPath</code> / <code>SplitCollectionThemePath</code> when showing folder columns (collection editor Details view uses Theme + Folder).</p>
+<h2 id="thumbnails-in-collections">Thumbnails in collections</h2>
+<p><code>ExportCollection</code> writes an optional trailing <code>KPTH</code> catalog from each palette’s <code>Thumbnail</code>. Selectors call <code>GetThemeThumbnails</code> so previews load <strong>without</strong> a full theme import. See <a href="./06-Thumbnails-and-Shell.md">06-Thumbnails-and-Shell</a>.</p>
+<h2 id="cookbook-apply-from-ktheme">Cookbook: apply from <code>*.ktheme</code></h2>
+<pre><code class="lang-csharp">void ApplyFromKtheme(string path, string? themeName, KryptonManager manager)
+{
+    if (KryptonPaletteFile.IsCollection(path))
+    {
+        var names = KryptonPaletteFile.GetThemeNames(path);
+        var pick = themeName ?? (names.Length == 1 ? names[0] : throw new InvalidOperationException(&quot;Pick a theme name.&quot;));
+        ThemeManager.ApplyTheme(path, pick, silent: true, manager);
+        return;
+    }
+
+    ThemeManager.ApplyTheme(path, silent: true, manager);
+}
+</code></pre>
+<p><a href="./03-Core-API.md">← Core API</a> · <a href="./README.md">Index</a> · <a href="./05-Upgrade-Convert-Migration.md">Next: Upgrade →</a></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

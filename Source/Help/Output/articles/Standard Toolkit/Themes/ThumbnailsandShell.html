@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>06 — Thumbnails and Shell Associations | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="06 — Thumbnails and Shell Associations | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="06--thumbnails-and-shell-associations">06 — Thumbnails and Shell Associations</h1>
+
+<p><a href="./05-Upgrade-Convert-Migration.md">← Upgrade</a> · <a href="./README.md">Index</a> · <a href="./07-Utilities-UI.md">Next: Utilities UI →</a></p>
+<h2 id="palette-thumbnail">Palette thumbnail</h2>
+<p><code>KryptonCustomPaletteBase.Thumbnail</code> is an optional preview image.</p>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Guidance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Recommended size</td>
+<td><code>KryptonPaletteFile.RecommendedThumbnailSize</code> (<strong>64×64</strong>)</td>
+</tr>
+<tr>
+<td><code>.kthemex</code> storage</td>
+<td>Base64 PNG in the XML image cache</td>
+</tr>
+<tr>
+<td>Collection storage</td>
+<td>Trailing <code>KPTH</code> catalog after kind-2 entries</td>
+</tr>
+<tr>
+<td>Generation</td>
+<td><code>KryptonThemePreview</code> / <code>AssignGeneratedThumbnail</code> (Designer, Theme Browser Export)</td>
+</tr>
+<tr>
+<td>Builtin themes</td>
+<td>Generated mock-up in Theme Browser / list views (not file-based)</td>
+</tr>
+</tbody>
+</table>
+<p>Selectors and the collection editor composite the preview with the Stable Kr tile as a <strong>corner overlay</strong>. Without a preview, the Kr tile fills the icon.</p>
+<h3 id="reading-thumbnails-without-full-import">Reading thumbnails without full import</h3>
+<pre><code class="lang-csharp">Image?[] thumbs = KryptonPaletteFile.GetThemeThumbnails(path);
+try
+{
+    // same order as GetThemeNames(path); null = missing
+}
+finally
+{
+    foreach (var img in thumbs)
+    {
+        img?.Dispose();
+    }
+}
+</code></pre>
+<p>For collections, this reads the <code>KPTH</code> catalog. For single <code>.kthemex</code>, a lightweight import path may be used. Catalog version mismatch or missing catalog → null slots.</p>
+<p><code>KPTH</code> constraints: max <strong>1 MiB</strong> PNG per theme; does not bump KPLT container version.</p>
+<h2 id="icon-helpers">Icon helpers</h2>
+<pre><code class="lang-csharp">Image badge = KryptonPaletteFile.GetThemeBadgeImage();
+Image composed = KryptonPaletteFile.CreateThemeIcon(thumbnailOrNull, size: 32);
+Icon? shell = KryptonPaletteFile.CreateShellIcon(largeIcon: false);
+Icon? fileIcon = KryptonPaletteFile.CreateThemeFileIcon(path, largeIcon: true);
+</code></pre>
+<p><code>CreateThemeIcon</code> draws the preview full-frame and a Kr tile at ~45% size bottom-right.</p>
+<h2 id="shell-associations-hkcu">Shell associations (HKCU)</h2>
+<pre><code class="lang-csharp">KryptonPaletteFile.EnsureShellAssociations();
+KryptonPaletteFile.EnsureShellAssociations(openWithExecutable: applicationExePath);
+</code></pre>
+<h3 id="behaviour">Behaviour</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hive</td>
+<td><strong>HKCU only</strong> — no admin rights</td>
+</tr>
+<tr>
+<td><code>.kthemex</code></td>
+<td>ProgID <code>kthemexfile</code> (“Krypton Theme XML”)</td>
+</tr>
+<tr>
+<td><code>.ktheme</code></td>
+<td>ProgID <code>kthemefile</code> (“Krypton Theme Container”)</td>
+</tr>
+<tr>
+<td>DefaultIcon (no Open override)</td>
+<td>Stable Kr <code>.ico</code> under <code>%LocalAppData%\Krypton-Suite\KryptonPalette.ico</code></td>
+</tr>
+<tr>
+<td>DefaultIcon (with exe)</td>
+<td><code>&quot;exePath&quot;,0</code></td>
+</tr>
+<tr>
+<td>Open verb</td>
+<td>Set only when <code>openWithExecutable</code> is provided (Palette Designer). Otherwise does <strong>not</strong> replace an existing Open that already points at an <code>.exe</code></td>
+</tr>
+<tr>
+<td>Cleanup</td>
+<td>Unregisters unreleased <code>.kpal</code> / <code>.kpalx</code> if still tied to old toolkit ProgIDs</td>
+</tr>
+<tr>
+<td>Refresh</td>
+<td><code>SHChangeNotify</code> (ASSOCCHANGED + UPDATEIMAGE) so Explorer updates without restart</td>
+</tr>
+<tr>
+<td>Failures</td>
+<td>Swallowed; call is idempotent for icon-only registration</td>
+</tr>
+</tbody>
+</table>
+<h3 id="palette-designer-integration">Palette Designer integration</h3>
+<p>At startup (or first palette open), call:</p>
+<pre><code class="lang-csharp">KryptonPaletteFile.EnsureShellAssociations(Application.ExecutablePath);
+</code></pre>
+<p>so double-click Open launches the Designer and file icons match the app icon. Toolkit hosts that only need Explorer icons can call the parameterless overload.</p>
+<h3 id="import-dialogs">Import dialogs</h3>
+<p><code>KryptonCustomPaletteBase.Import(bool)</code> / export dialogs call <code>EnsureShellAssociations()</code> so first-run associations exist without a separate setup step.</p>
+<p><a href="./05-Upgrade-Convert-Migration.md">← Upgrade</a> · <a href="./README.md">Index</a> · <a href="./07-Utilities-UI.md">Next: Utilities UI →</a></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

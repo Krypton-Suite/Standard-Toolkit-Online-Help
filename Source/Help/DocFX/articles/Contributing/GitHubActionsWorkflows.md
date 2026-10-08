@@ -224,7 +224,7 @@ All jobs use **`windows-2025-vs2026`** and **`environment: production`** where p
 3. **Publish to NuGet** ⭐
 
    ```yaml
-   - Check NUGET_API_KEY present
+   - NuGet login (OIDC) for this repository, then push
    - Find all .nupkg files
    - Push each with --skip-duplicate
    - Track if any packages published (new vs skipped)
@@ -254,7 +254,7 @@ All jobs use **`windows-2025-vs2026`** and **`environment: production`** where p
    - List all package files
    - List all archive files
    - Verify GITHUB_TOKEN present
-   - Verify NUGET_API_KEY present
+   - Verify NuGet trusted publishing login ran when packages should publish
    ```
 
 7. **Create/Update GitHub Release** ⭐
@@ -452,7 +452,8 @@ echo "packages_published=$publishedAny" >> $env:GITHUB_OUTPUT
 | --- | --- | --- | --- | --- |
 | **Code changed, version bumped** | ✅ | ✅ | ✅ New | ✅ Sent |
 | **No code change, same version** | ✅ | ✅ | ⏭️ Skipped | ❌ Not sent |
-| **No API key configured** | ✅ | ✅ | ⏭️ Skipped | ❌ Not sent |
+| **Not this repository** (fork) | ✅ | ✅ | ⏭️ Skipped | ❌ Not sent |
+| **Trusted publishing misconfigured** | ✅ | ✅ | ❌ Job failed | ❌ Not sent |
 | **Partial changes (some packages new)** | ✅ | ✅ | ⚠️ Mixed | ✅ Sent |
 
 **Benefit**: No Discord spam from nightly builds when version hasn't changed!
@@ -482,40 +483,25 @@ echo "packages_published=$publishedAny" >> $env:GITHUB_OUTPUT
 
 ### Required GitHub Secrets
 
-#### 1. NUGET_API_KEY (Required)
+#### 1. NUGET_USER (Required to publish)
 
-**Purpose**: Authenticate with nuget.org to publish packages
+**Purpose**: nuget.org profile name used by trusted publishing. It is not an API key.
 
-**Setup Steps**:
+**Setup**: [NuGet Trusted Publishing](Workflows/NuGetTrustedPublishing.md)
 
-1. **Get API Key from nuget.org**:
-   - Login to [nuget.org](https://www.nuget.org)
-   - Click username → API Keys
-   - Click "Create"
-   - Configure:
-     - **Key Name**: "GitHub Actions - Krypton Toolkit"
-     - **Select Scopes**: ✅ Push, ✅ Push new packages and package versions
-     - **Select Packages**: All packages (or glob pattern `Krypton.*`)
-     - **Expiration**: 365 days
-   - Click "Create"
-   - **Copy the key** (shown only once!)
+Summary:
 
-2. **Add to GitHub**:
-   - Repository → Settings
-   - Secrets and variables → Actions
-   - New repository secret
-   - **Name**: `NUGET_API_KEY` (exact spelling)
-   - **Secret**: Paste the API key
-   - Click "Add secret"
+1. On nuget.org, create a trusted publishing policy for each workflow file that pushes (`release.yml`, `canary.yml`, `nightly.yml`, `release-candidate.yml`, `canary-lts-release.yml`). Repository owner `Krypton-Suite`, repository `Standard-Toolkit`, environment `production`, package id `Krypton.*`.
+2. Add repository secret `NUGET_USER` with the nuget.org profile name (not the email address).
+3. After one successful publish from a workflow file, delete any leftover `NUGET_API_KEY` secret.
 
-**Used By**: All release workflows
+**Used by**: Every workflow that pushes to nuget.org.
 
-**What Happens Without It**:
+**What happens when it is wrong**:
 
-- Workflows succeed but skip NuGet push
-- Warning logged: "NUGET_API_KEY not set - skipping NuGet push"
-- No packages published
-- No Discord notifications sent
+- On `Krypton-Suite/Standard-Toolkit`, the push step fails if login does not provide a short-lived key.
+- On a fork, login and push are skipped and the workflow can still succeed.
+- No Discord notification is sent when nothing was published.
 
 ---
 
@@ -681,7 +667,8 @@ if: steps.push_nuget.outputs.packages_published == 'True'
 **NOT Sent**:
 
 - ❌ All packages already exist (version unchanged)
-- ❌ NuGet push was skipped (no API key)
+- ❌ NuGet push was skipped (run is not `Krypton-Suite/Standard-Toolkit`)
+- ❌ NuGet login failed (job failed before Discord)
 - ❌ Webhook not configured
 - ❌ Push failed for all packages
 
@@ -768,18 +755,11 @@ if ($LASTEXITCODE -eq 0) {
 }
 ```
 
-#### 3. Missing API Key
+#### 3. Trusted publishing login failed
 
-**Error**: `401 Unauthorized` from nuget.org
+**Error**: NuGet login failed, or the push step reports that trusted publishing did not provide an API key
 
-**Solution**: Check before pushing:
-
-```powershell
-if (-not $env:NUGET_API_KEY) {
-  Write-Warning "NUGET_API_KEY not set - skipping"
-  exit 0  # Success exit, not failure
-}
-```
+**Solution**: Follow [NuGet Trusted Publishing](Workflows/NuGetTrustedPublishing.md). On this repository the push step fails instead of skipping. Confirm `NUGET_USER`, `id-token: write`, and a nuget.org policy for that workflow file and the `production` environment.
 
 #### 4. Missing Webhook
 
@@ -1137,12 +1117,9 @@ jobs:
 
 #### Secret Rotation
 
-**NuGet API Key** (annually):
+**NuGet publish** (no long-lived API key):
 
-1. Create new API key on nuget.org
-2. Update GitHub secret
-3. Delete old API key on nuget.org
-4. Test with manual workflow trigger
+Trusted publishing uses a one-hour key minted per job. Do not rotate a stored nuget.org API key for Actions. Keep `NUGET_USER` as the profile name, and delete `NUGET_API_KEY` after the first successful trusted publish. Details: [NuGet Trusted Publishing](Workflows/NuGetTrustedPublishing.md).
 
 **Discord Webhooks** (as needed):
 
@@ -1152,11 +1129,11 @@ jobs:
 
 #### Least Privilege
 
-**NuGet API Key Scoping**:
+**NuGet trusted publishing policy**:
 
-- ✅ Push scope only (not delete/unlist)
-- ✅ Specific to Krypton.* packages
-- ✅ Limited expiration (365 days max)
+- ✅ Workflow file name and `production` environment only
+- ✅ Package id glob `Krypton.*`
+- ✅ Push new packages and new versions, not unlist or delete
 
 **GitHub Token**:
 
@@ -1302,7 +1279,7 @@ Before merging workflow changes:
 
 | Secret | Type | Required | Used By |
 | --- | --- | --- | --- |
-| `NUGET_API_KEY` | NuGet API Key | Yes (for publishing) | All release workflows |
+| `NUGET_USER` | nuget.org profile name | Yes (for publishing) | Workflows that push to nuget.org |
 | `DISCORD_WEBHOOK_MASTER` | Discord URL | No | `release.yml` (**master** and **V105-LTS** jobs) |
 | `DISCORD_WEBHOOK_CANARY` | Discord URL | No | release.yml (canary) |
 | `DISCORD_WEBHOOK_NIGHTLY` | Discord URL | No | release.yml (alpha), nightly.yml |
@@ -1357,6 +1334,7 @@ gh run watch [run-id]
 
 ### Related Documentation
 
+- [NuGet Trusted Publishing](Workflows/NuGetTrustedPublishing.md) - nuget.org policies and `NUGET_USER`
 - [Build System Guide](BuildSystemDocumentationIndex.md) - MSBuild scripts and project configuration
 - [Parallel MSBuild](Build%20System/BuildSystemOverview.md#parallel-msbuild) - `/m`, `BuildInParallel`, and throttling
 - [Branch promotion policy](BranchPromotionPolicy.md) - Promotion chain and ruleset setup
@@ -1368,6 +1346,6 @@ gh run watch [run-id]
 ## Next Steps
 
 ✅ **Read Next**: [Build System Guide](BuildSystemDocumentationIndex.md) for MSBuild scripts and project structure  
-✅ **Setup**: Configure GitHub Secrets (NUGET_API_KEY and Discord webhooks)  
+✅ **Setup**: Configure `NUGET_USER` and nuget.org trusted publishing policies ([guide](Workflows/NuGetTrustedPublishing.md)), plus Discord webhooks  
 ✅ **Test**: Manually trigger nightly workflow to verify configuration  
 ✅ **Monitor**: Watch first automated nightly build at 23:42 UTC  

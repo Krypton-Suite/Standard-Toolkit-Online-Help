@@ -22,6 +22,7 @@ The repository uses several automated workflows to handle builds, releases, issu
 
 - **[Canary LTS Release Workflow](Workflows/CanaryLTSReleaseWorkflow.md)** - Handles automated canary LTS releases and publishes NuGet packages to nuget.org with Discord notifications.
 - **[Canary Workflow](Workflows/CanaryWorkflow.md)** - Standalone canary release pipeline that builds and publishes from the `Canary` branch.
+- **[NuGet Trusted Publishing](Workflows/NuGetTrustedPublishing.md)** - How GitHub Actions publishes to nuget.org with a short-lived key (nuget.org policies, `NUGET_USER`, `production` environment).
 - **[Templates Release Workflow](Workflows/TemplatesReleaseWorkflow.md)** - Builds and publishes Visual Studio template ZIP and VSIX artifacts to GitHub Releases.
 
 ### Automation Workflows
@@ -102,7 +103,7 @@ The repository uses several automated workflows to handle builds, releases, issu
 
 ### Required Secrets
 
-- `NUGET_API_KEY` - API key for publishing packages to nuget.org
+- `NUGET_USER` - nuget.org profile name for trusted publishing (not an API key). Setup: [NuGet Trusted Publishing](Workflows/NuGetTrustedPublishing.md)
 - `DISCORD_WEBHOOK_MASTER` - Webhook URL for **stable** and **V105-LTS** release notifications (`release-master`, `release-v105-lts`)
 - `DISCORD_WEBHOOK_NIGHTLY` - Webhook URL for nightly build notifications
 - `DISCORD_WEBHOOK_CANARY` - Webhook URL for canary release notifications
@@ -154,7 +155,7 @@ The workflows are designed around the following branch structure:
 
 ### Release Issues
 
-1. Verify NuGet API key is valid and has publish permissions
+1. Verify trusted publishing: `NUGET_USER`, the nuget.org policy for that workflow file, and the `production` environment. See [NuGet Trusted Publishing](Workflows/NuGetTrustedPublishing.md)
 2. Check if packages already exist (duplicate version)
 3. Review Discord webhook URLs if notifications fail
 4. Check kill switch variables if releases are skipped
@@ -163,7 +164,8 @@ The workflows are designed around the following branch structure:
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - [MSBuild Documentation](https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild)
-- [NuGet Package Publishing](https://docs.microsoft.com/en-us/nuget/nuget-org/publish-a-package)
+- [NuGet Trusted Publishing](Workflows/NuGetTrustedPublishing.md)
+- [NuGet trusted publishing (Microsoft Learn)](https://learn.microsoft.com/en-gb/nuget/nuget-org/trusted-publishing)
 
 ## Contributing
 

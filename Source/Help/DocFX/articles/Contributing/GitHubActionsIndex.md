@@ -180,7 +180,7 @@ All secrets are configured at repository level (Settings → Secrets and variabl
 
 | Secret | Required By | Purpose |
 | --- | --- | --- |
-| `NUGET_API_KEY` | All release workflows | Publish packages to nuget.org |
+| `NUGET_USER` | All NuGet publish workflows | nuget.org profile name for [trusted publishing](Workflows/NuGetTrustedPublishing.md). Not an API key |
 | `GITHUB_TOKEN` | Build, Release (master) | Create GitHub releases (automatic) |
 | `DISCORD_WEBHOOK_MASTER` | Release (**master** and **V105-LTS**) | Stable / V105-line announcements |
 | `DISCORD_WEBHOOK_CANARY` | Release (canary) | Canary announcements |
@@ -389,7 +389,7 @@ Stable releases reach `master` through the promotion chain, not by pushing featu
 
 ### Security
 
-1. **Rotate Secrets**: NuGet API keys every 90-180 days
+1. **NuGet publish**: Use [trusted publishing](Workflows/NuGetTrustedPublishing.md). Do not store a long-lived nuget.org API key in Actions secrets. `NUGET_USER` is a profile name.
 2. **Minimum Permissions**: Use narrowest scopes
 3. **Monitor Activity**: Watch for unauthorized publishes
 4. **Enable 2FA**: On NuGet and GitHub accounts
@@ -520,6 +520,7 @@ We welcome feedback on workflow documentation:
 - [Nightly Workflow Documentation](Workflows/NightlyWorkflow.md)
 - [Canary Workflow Documentation](Workflows/CanaryWorkflow.md)
 - [Canary LTS Release Workflow Documentation](Workflows/CanaryLTSReleaseWorkflow.md)
+- [NuGet Trusted Publishing](Workflows/NuGetTrustedPublishing.md)
 - [Templates Release Workflow Documentation](Workflows/TemplatesReleaseWorkflow.md)
 - [CodeQL Workflow Documentation](Workflows/CodeQLWorkflow.md)
 - [Auto-complete Linked Issues Documentation](Workflows/AutoCompleteIssuesWorkflow.md)

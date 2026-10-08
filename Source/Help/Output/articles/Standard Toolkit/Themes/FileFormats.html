@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>02 — File Formats | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="02 — File Formats | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="02--file-formats">02 — File Formats</h1>
+
+<p><a href="./01-Overview-and-Architecture.md">← Overview</a> · <a href="./README.md">Index</a> · <a href="./03-Core-API.md">Next: Core API →</a></p>
+<h2 id="extensions">Extensions</h2>
+<table>
+<thead>
+<tr>
+<th>Extension</th>
+<th>Constant</th>
+<th>Role</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.kthemex</code></td>
+<td><code>KryptonPaletteFile.Extension</code> (<code>&quot;kthemex&quot;</code>)</td>
+<td>Preferred single-theme file</td>
+<td>Plain <code>KryptonPalette</code> XML</td>
+</tr>
+<tr>
+<td><code>.ktheme</code></td>
+<td><code>KryptonPaletteFile.BinaryExtension</code> (<code>&quot;ktheme&quot;</code>)</td>
+<td>Binary container (single or collection)</td>
+<td><code>KPLT</code> + payload kind</td>
+</tr>
+<tr>
+<td><code>.xml</code></td>
+<td><code>KryptonPaletteFile.XmlExtension</code> (<code>&quot;xml&quot;</code>)</td>
+<td>Legacy single-theme</td>
+<td>Same XML document; retire in <strong>V120 LTS</strong></td>
+</tr>
+<tr>
+<td><code>.json</code></td>
+<td>—</td>
+<td>Not supported</td>
+<td>Rejected with <code>ArgumentException</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>IsPaletteExtension</code> is true only for <code>.kthemex</code> and <code>.ktheme</code> (not <code>.xml</code>).</p>
+<p><code>DialogFilter</code> lists kthemex, ktheme, xml, and <code>*.*</code> (xml entry marked ToDo for V120).</p>
+<h2 id="kryptonpalettefileformat"><code>KryptonPaletteFileFormat</code></h2>
+<pre><code class="lang-csharp">public enum KryptonPaletteFileFormat
+{
+    Xml = 0,                  // .kthemex / .xml; also Export(bool) byte[]
+    PaletteCompressedXml = 1, // .ktheme KPLT kind 0 (Deflate XML)
+    PaletteBinary = 2         // .ktheme KPLT kind 1 (native); default for .ktheme paths
+}
+</code></pre>
+<p><code>FormatFromPath</code>:</p>
+<ul>
+<li><code>.ktheme</code> → <code>PaletteBinary</code></li>
+<li>Everything else (including <code>.kthemex</code> / <code>.xml</code>) → <code>Xml</code></li>
+</ul>
+<p>Compressed-XML <code>.ktheme</code> requires the explicit format overload; path-only export writes native.</p>
+<h2 id="when-to-use-which-format">When to use which format</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Prefer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Designer / hand-edit / source control</td>
+<td><code>.kthemex</code></td>
+</tr>
+<tr>
+<td>Compact single theme</td>
+<td><code>.ktheme</code> native (<code>PaletteBinary</code>)</td>
+</tr>
+<tr>
+<td>Single theme as compressed XML inside KPLT</td>
+<td><code>.ktheme</code> + <code>PaletteCompressedXml</code></td>
+</tr>
+<tr>
+<td>Several named themes in one file</td>
+<td><code>.ktheme</code> collection (kind 2 only)</td>
+</tr>
+<tr>
+<td>Entire folder catalog</td>
+<td><code>ExportCollectionFromDirectory</code> → kind 2</td>
+</tr>
+<tr>
+<td>Legacy Theme-Palettes trees</td>
+<td>Still <code>.xml</code> until upgraded</td>
+</tr>
+</tbody>
+</table>
+<p>Collections <strong>cannot</strong> be written as <code>.kthemex</code>.</p>
+<h2 id="kplt-container-layout">KPLT container layout</h2>
+<p>Magic: <code>KryptonPaletteFile.ContainerMagic</code> = <code>&quot;KPLT&quot;</code>.</p>
+<p>Little-endian layout (<code>KryptonPaletteBinaryPersistence</code>):</p>
+<ol>
+<li>Magic — 4 ASCII bytes <code>KPLT</code></li>
+<li>Container version — <code>uint16</code> (<code>CurrentContainerVersion = 1</code>)</li>
+<li>Payload kind — <code>uint16</code>
+<ul>
+<li><code>0</code> — compressed XML (Deflate)</li>
+<li><code>1</code> — native persist stream (+ PNG image table)</li>
+<li><code>2</code> — named multi-theme collection</li>
+</ul>
+</li>
+<li>Palette schema version — <code>int32</code> (<code>SharedStaticConstants.CURRENT_SUPPORTED_PALETTE_VERSION</code>, currently <strong>22</strong>)</li>
+<li>Name length (<code>uint16</code>) + UTF-8 name (header / single-theme display name)</li>
+<li>Payload bytes</li>
+</ol>
+<h3 id="kind-2-collection-payload">Kind 2 collection payload</h3>
+<ol>
+<li><code>uint16</code> theme count</li>
+<li>Per entry: UTF-8 name, <code>uint16</code> inner kind, <code>int32</code> length, payload</li>
+<li>New exports use <strong>native</strong> (kind 1) inner payloads; older compressed-XML entries remain readable</li>
+</ol>
+<h3 id="trailing-thumbnail-catalog-collections-only">Trailing thumbnail catalog (collections only)</h3>
+<p>After kind-2 entries:</p>
+<ol>
+<li>Magic <code>KPTH</code> (<code>ThumbnailCatalogMagic</code>)</li>
+<li>Catalog version <code>uint16</code> (<code>ThumbnailCatalogVersion = 1</code>)</li>
+<li>Payload length + per-theme PNG previews (name, width, height, bytes; max <strong>1 MiB</strong> per image)</li>
+</ol>
+<p>Does <strong>not</strong> bump the KPLT container version. Older readers ignore bytes past the pack entries. Catalog version mismatch → treat as no thumbnails.</p>
+<p>Recommended stored size: <code>KryptonPaletteFile.RecommendedThumbnailSize</code> = <strong>64</strong>.</p>
+<h2 id="xml-document-kthemex--xml">XML document (<code>.kthemex</code> / <code>.xml</code>)</h2>
+<ul>
+<li>Root: <code>KryptonPalette</code> with <code>Version</code> and optional <code>Name</code></li>
+<li>Thumbnail: optional base64 PNG in the XML image cache (<code>KryptonCustomPaletteBase.Thumbnail</code>)</li>
+<li>No magic bytes; sniff looks for XML</li>
+</ul>
+<h2 id="native-payload-kind-1">Native payload (kind 1)</h2>
+<ol>
+<li>Image table: <code>int32</code> count, then name + PNG length + PNG</li>
+<li>Property records walking the <code>[KryptonPersist]</code> graph:
+<ul>
+<li><code>RecordEnd = 0</code></li>
+<li><code>RecordNavigate = 1</code></li>
+<li><code>RecordValue = 2</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="sniffing">Sniffing</h2>
+<p><code>KryptonPaletteBinaryPersistence.Sniff</code> (seekable stream) distinguishes:</p>
+<ul>
+<li>KPLT container</li>
+<li>XML palette</li>
+<li>Unknown</li>
+</ul>
+<p>Public helpers (<code>IsCollection</code>, <code>GetThemeNames</code>, Import) open the file and delegate to persistence.</p>
+<h2 id="schema-version">Schema version</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>XML / kind 0</td>
+<td>Can be raised via <code>ImportWithUpgrade</code> / Convert / UpgradeXml* (XSLT)</td>
+</tr>
+<tr>
+<td>Native kind 1</td>
+<td>Must already match current schema; no XSLT upgrade</td>
+</tr>
+<tr>
+<td>Plain Import of older schema XML</td>
+<td>Throws without upgrading (use upgrade APIs)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="path-helpers-for-collection-theme-names">Path helpers for collection theme names</h2>
+<p>Folder-derived theme names use portable <code>/</code> (<code>CollectionPathSeparator</code>):</p>
+<ul>
+<li><code>NormalizeCollectionThemeName</code></li>
+<li><code>IsCollectionThemePath</code> / <code>SplitCollectionThemePath</code> / <code>CombineCollectionThemePath</code></li>
+<li><code>ToDisplayPath</code> (OS separators for UI)</li>
+<li><code>GetRelativeCollectionThemeName(filePath, rootDirectory)</code></li>
+</ul>
+<p>Nested <code>.ktheme</code> files under a directory pack are <strong>flattened</strong> under the parent relative path. Name collisions get <code>&quot; (2)&quot;</code>-style suffixes.</p>
+<p><a href="./01-Overview-and-Architecture.md">← Overview</a> · <a href="./README.md">Index</a> · <a href="./03-Core-API.md">Next: Core API →</a></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

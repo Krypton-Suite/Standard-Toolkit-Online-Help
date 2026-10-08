@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>05 — Upgrade, Convert, and Migration | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="05 — Upgrade, Convert, and Migration | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="05--upgrade-convert-and-migration">05 — Upgrade, Convert, and Migration</h1>
+
+<p><a href="./04-Collections.md">← Collections</a> · <a href="./README.md">Index</a> · <a href="./06-Thumbnails-and-Shell.md">Next: Thumbnails &amp; Shell →</a></p>
+<h2 id="current-schema">Current schema</h2>
+<p>Palette schema version is <code>SharedStaticConstants.CURRENT_SUPPORTED_PALETTE_VERSION</code> (currently <strong>22</strong>). Older XML (e.g. 20/21) must go through an upgrade path before a plain silent Import succeeds.</p>
+<h2 id="upgrade-strategies">Upgrade strategies</h2>
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Rewrites file?</th>
+<th>Imports into component?</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Designer <strong>Upgrade Palette</strong></td>
+<td>No</td>
+<td>Yes (schema only)</td>
+<td>Fix in-memory / open document</td>
+</tr>
+<tr>
+<td><code>UpgradeXmlToKthemex</code></td>
+<td>Yes (<code>.xml</code> → <code>.kthemex</code>)</td>
+<td>File API: no; component overload: yes</td>
+<td>Dedicated extension migration</td>
+</tr>
+<tr>
+<td><code>UpgradeXmlToKthemexFromDirectory</code></td>
+<td>Yes (batch)</td>
+<td>No</td>
+<td>Catalogs / Theme-Palettes trees</td>
+</tr>
+<tr>
+<td><code>Convert</code> / <code>ConvertFile</code></td>
+<td>Yes (any supported → dest)</td>
+<td>Component overload: yes</td>
+<td>Format change + schema raise</td>
+</tr>
+<tr>
+<td><code>ImportWithUpgrade</code></td>
+<td>No (unless paired with Export)</td>
+<td>Yes</td>
+<td>Load older XML/kind-0 into memory</td>
+</tr>
+<tr>
+<td><code>PromptLegacyXmlUpgrade</code></td>
+<td>On Yes</td>
+<td>Caller imports returned path</td>
+<td>Interactive warn on <code>.xml</code> open</td>
+</tr>
+</tbody>
+</table>
+<h3 id="single-file-xml--kthemex">Single-file XML → kthemex</h3>
+<pre><code class="lang-csharp">// Source.xml remains; Mine.kthemex written beside it (default dest)
+string dest = KryptonPaletteFile.UpgradeXmlToKthemex(@&quot;C:\Themes\Source.xml&quot;);
+
+// Or explicit destination
+KryptonPaletteFile.UpgradeXmlToKthemex(source, dest);
+</code></pre>
+<p>Source must be <code>.xml</code>; destination must be <code>.kthemex</code>.</p>
+<h3 id="bulk-folder-upgrade">Bulk folder upgrade</h3>
+<pre><code class="lang-csharp">var result = KryptonPaletteFile.UpgradeXmlToKthemexFromDirectory(
+    @&quot;C:\Theme-Palettes\Palettes&quot;,
+    searchSubdirectories: true);
+
+Console.WriteLine(result.ToSummaryString());
+// ConvertedPaths / SourcePaths / SkippedPaths / Errors
+</code></pre>
+<p>Non-palette <code>.xml</code> files are <strong>skipped</strong> (counted). One failure does not stop the rest.</p>
+<h3 id="convert-between-formats">Convert between formats</h3>
+<pre><code class="lang-csharp">KryptonPaletteFile.Convert(source, dest);
+KryptonPaletteFile.Convert(source, dest, KryptonPaletteFileFormat.PaletteBinary, ignoreDefaults: true);
+</code></pre>
+<p>Uses <code>ImportWithUpgrade</code> then <code>Export</code>. JSON destinations/sources are rejected.</p>
+<h2 id="interactive-legacy-xml-prompt">Interactive legacy XML prompt</h2>
+<p>When a non-silent Import hits <code>.xml</code>:</p>
+<ol>
+<li><code>PromptLegacyXmlUpgrade</code> shows Yes / No / Cancel.</li>
+<li>Strings: <code>KryptonManager.Strings.MiscellaneousThemeStrings.LegacyXmlUpgradeTitle</code> / <code>LegacyXmlUpgradeMessage</code> (<code>[Localizable(true)]</code>).</li>
+<li>Button text from <code>GeneralToolkitStrings</code> (accelerators stripped). Bad format → English fallback.</li>
+<li>Silent imports and non-<code>UserInteractive</code> sessions skip the dialog and leave the <code>.xml</code> path.</li>
+</ol>
+<h2 id="what-can-be-schema-upgraded">What can be schema-upgraded</h2>
+<table>
+<thead>
+<tr>
+<th>Payload</th>
+<th>XSLT / ImportWithUpgrade</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plain XML / <code>.kthemex</code> / <code>.xml</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>KPLT kind 0 (compressed XML)</td>
+<td>Yes (<code>TryCopyXmlForUpgrade</code>)</td>
+</tr>
+<tr>
+<td>KPLT kind 1 (native)</td>
+<td><strong>No</strong> — must already be current schema</td>
+</tr>
+<tr>
+<td>Collection entries</td>
+<td>Inner payloads follow the same rules; new exports write native</td>
+</tr>
+</tbody>
+</table>
+<h2 id="v120-lts-plan-todo-in-source">V120 LTS plan (ToDo in source)</h2>
+<p>Marked throughout the file API:</p>
+<ul>
+<li>Remove <code>XmlExtension</code> and <code>.xml</code> from <code>DialogFilter</code>.</li>
+<li>Drop <code>IncludeXml</code> on selectors (or always false).</li>
+<li>Prefer upgrade-or-cancel over “load <code>.xml</code> without rewrite”.</li>
+<li>Consumers should already prefer <code>.kthemex</code>.</li>
+</ul>
+<p>Do not delete those ToDos when editing adjacent code; implement them only when the V120 work is scheduled.</p>
+<h2 id="consumer-migration-checklist">Consumer migration checklist</h2>
+<ol>
+<li>Prefer <code>.kthemex</code> for single themes; use <code>.ktheme</code> for collections or compact binary.</li>
+<li>Replace any pre-release <code>.kpal</code> / <code>.kpalx</code> references (never shipped as public names).</li>
+<li>Call <code>EnsureShellAssociations</code> once at app start (or from Palette Designer with exe path) to fix Explorer icons / leftover ProgIDs.</li>
+<li>For older schema XML, use Upgrade/Convert/<code>ImportWithUpgrade</code> — do not rely on plain Import.</li>
+<li>Utilities selectors / collection editor need <strong>Krypton.Standard.Toolkit</strong> (or Utilities project reference).</li>
+<li>This feature is <strong>additive</strong> in Changelog (#2117); no README <strong>Breaking Changes</strong> entry as of the V110 nightly notes. Future XML removal <strong>will</strong> be breaking — document then.</li>
+</ol>
+<h2 id="extra-builtin-export">Extra builtin export</h2>
+<p>When <code>Krypton.Themes</code> is loaded:</p>
+<pre><code class="lang-csharp">KryptonThemeCustomPaletteHelper.ExportToFile(PaletteMode.SomeExtra, path, ignoreDefaults: true);
+</code></pre>
+<p>Missing Themes does not break file I/O; applying missing <strong>extra</strong> builtin modes falls back via the theme catalog (see Themes catalog docs).</p>
+<p><a href="./04-Collections.md">← Collections</a> · <a href="./README.md">Index</a> · <a href="./06-Thumbnails-and-Shell.md">Next: Thumbnails &amp; Shell →</a></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

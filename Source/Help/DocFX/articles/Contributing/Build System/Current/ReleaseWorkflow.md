@@ -19,7 +19,7 @@ Common characteristics:
 - **SDK setup**: install **.NET 9.0.x** and **10.0.x**. Jobs that publish preview TFMs also run **Setup .NET Preview** (unless repository variable **`USE_DOTNET_PREVIEW`** is `false`) and **Pin SDK via global.json**, which resolves `sdk.version` using **`DOTNET_PREVIEW_SDK_BAND`** / **`Get-ListedSdkVersion`** when preview is enabled, or stable **10.x → 9.x** when preview is disabled (see [GitHub Actions Workflows](../../GitHubActionsWorkflows.md#repository-variables-net-preview--ci)).
 - The **`release-v105-lts`** job pins **stable** SDKs only (no preview setup step).
 - Orchestrated **Build** and **Pack** steps pass **`/m`** and `/p:UseArtifactsOutput=true`, so outputs go under `artifacts/bin/` and `artifacts/packages/` on the runner. **Push** and **Get Version** steps try `artifacts/...` first, then fall back to legacy `Bin/...` for compatibility with older layouts or local debugging.
-- Package publishing relies on `secrets.NUGET_API_KEY`.
+- Package publishing uses [NuGet trusted publishing](../../Workflows/NuGetTrustedPublishing.md) (`NUGET_USER` plus a short-lived key). It does not read `secrets.NUGET_API_KEY`.
 
 ## Kill Switches
 
@@ -91,7 +91,7 @@ Preview vs stable selection is driven by repository variables **`USE_DOTNET_PREV
 
 - Packages iterate serially; failures log warnings but do not fail the workflow (resilience for flaky pushes).
 - Successful pushes toggle `$publishedAny` to `$true`, which determines whether Discord announcements run.
-- Missing `NUGET_API_KEY` skips publishing gracefully; ensure repo secrets are populated before enabling release branches.
+- On `Krypton-Suite/Standard-Toolkit`, a missing short-lived key fails the push step. Other repositories skip publishing. See [NuGet Trusted Publishing](../../Workflows/NuGetTrustedPublishing.md).
 
 ### Version Discovery
 
@@ -115,7 +115,7 @@ Outputs `version` and `tag`, enabling downstream release automation or manual ta
 | Symptom | Diagnosis | Action |
 | --- | --- | --- |
 | Job skipped entirely | Branch mismatch or kill switch `true` | Verify `github.ref` and repository variables. |
-| `dotnet nuget push` failing with 403 | Expired or missing `NUGET_API_KEY` | Rotate key in repo secrets; rerun job. |
+| `dotnet nuget push` failing with 403 | Trusted publishing policy, `NUGET_USER`, or `id-token: write` does not match the job | Follow [NuGet Trusted Publishing](../../Workflows/NuGetTrustedPublishing.md); rerun the job. |
 | Discord step skipped | `packages_published=false` or missing webhook secret | Confirm packages actually produced, check secret names. |
 | Version fallback used unexpectedly | Assembly or csproj not accessible | Ensure build outputs exist under `artifacts/bin/...` or `Bin/...`; confirm `UseArtifactsOutput` matches the layout you expect. |
 
@@ -128,6 +128,7 @@ Outputs `version` and `tag`, enabling downstream release automation or manual ta
 
 ## Related documentation
 
+- [NuGet Trusted Publishing](../../Workflows/NuGetTrustedPublishing.md)
 - [Branch promotion policy](../../BranchPromotionPolicy.md)
 - [Master merge guard](../../Workflows/MasterMergeGuardWorkflow.md)
 - [Branch promotion guard](../../Workflows/BranchPromotionGuardWorkflow.md)

@@ -97,6 +97,7 @@ This document contains comprehensive developer documentation for the Krypton Too
 - `nightly.yml` - Automated nightly builds with change detection
 - Security features and verification
 - Required secrets and variables
+- [NuGet trusted publishing setup](Workflows/NuGetTrustedPublishing.md)
 - Workflow outputs and notifications
 - Troubleshooting CI/CD issues
 - Manual workflow execution

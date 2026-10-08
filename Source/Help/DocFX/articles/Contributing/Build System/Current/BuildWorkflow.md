@@ -12,7 +12,7 @@ Comprehensive reference for the Build workflow located at `.github/workflows/bui
 | Toolchains | .NET SDKs 9.0.x and 10.0.x, MSBuild x64, NuGet CLI 6.x |
 | Global.json | **Pin SDK via global.json** pins latest stable 10.x (fallback 9.x) in `build`/`release`; preview workflows use additional variables |
 | Build Scripts | `Scripts/Build/nightly.proj` (build job), `Scripts/Build/build.proj` (release job); MSBuild steps use `/m` and `/p:UseArtifactsOutput=true` |
-| Secrets/Vars | `NUGET_API_KEY` when publishing; repository variables `DOTNET_PREVIEW_SETUP_VERSION`, `DOTNET_PREVIEW_SDK_BAND`, `USE_DOTNET_PREVIEW` for preview SDK behaviour (see [GitHub Actions Workflows](../../GitHubActionsWorkflows.md#repository-variables-net-preview--ci)) |
+| Secrets/Vars | This workflow does not publish to nuget.org. Repository variables `DOTNET_PREVIEW_SETUP_VERSION`, `DOTNET_PREVIEW_SDK_BAND`, `USE_DOTNET_PREVIEW` control preview SDK behaviour (see [GitHub Actions Workflows](../../GitHubActionsWorkflows.md#repository-variables-net-preview--ci)) |
 
 ## Job Topology
 

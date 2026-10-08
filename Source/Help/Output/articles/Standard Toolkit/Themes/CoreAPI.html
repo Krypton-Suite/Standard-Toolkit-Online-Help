@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>03 — Core API | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="03 — Core API | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="03--core-api">03 — Core API</h1>
+
+<p><a href="./02-File-Formats.md">← File Formats</a> · <a href="./README.md">Index</a> · <a href="./04-Collections.md">Next: Collections →</a></p>
+<p>Namespace: <code>Krypton.Toolkit</code> unless noted.</p>
+<h2 id="kryptonpalettefile-static-partial"><code>KryptonPaletteFile</code> (static partial)</h2>
+<table>
+<thead>
+<tr>
+<th>Partial file</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonPaletteFileFormat.cs</code></td>
+<td>Constants, convert/upgrade prompts, theme names/thumbs, <code>ExportCollection</code>, shell</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.Collection.cs</code></td>
+<td>Add / remove / rename collection</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.Directory.cs</code></td>
+<td>Directory scan, path helpers, bulk upgrade, pack-from-folder</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteFile.Icons.cs</code></td>
+<td>Badge / thumbnail overlay icons</td>
+</tr>
+</tbody>
+</table>
+<h3 id="constants">Constants</h3>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Extension</code></td>
+<td><code>&quot;kthemex&quot;</code></td>
+</tr>
+<tr>
+<td><code>XmlExtension</code></td>
+<td><code>&quot;xml&quot;</code></td>
+</tr>
+<tr>
+<td><code>BinaryExtension</code></td>
+<td><code>&quot;ktheme&quot;</code></td>
+</tr>
+<tr>
+<td><code>XmlProgId</code></td>
+<td><code>&quot;kthemexfile&quot;</code></td>
+</tr>
+<tr>
+<td><code>BinaryProgId</code></td>
+<td><code>&quot;kthemefile&quot;</code></td>
+</tr>
+<tr>
+<td><code>DialogFilter</code></td>
+<td>Open/Save filter string</td>
+</tr>
+<tr>
+<td><code>ContainerMagic</code></td>
+<td><code>&quot;KPLT&quot;</code></td>
+</tr>
+<tr>
+<td><code>ThumbnailCatalogMagic</code></td>
+<td><code>&quot;KPTH&quot;</code></td>
+</tr>
+<tr>
+<td><code>RecommendedThumbnailSize</code></td>
+<td><code>64</code></td>
+</tr>
+<tr>
+<td><code>CollectionPathSeparator</code></td>
+<td><code>'/'</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="path-and-format">Path and format</h3>
+<pre><code class="lang-csharp">KryptonPaletteFileFormat FormatFromPath(string path);
+bool IsPaletteExtension(string? pathOrExtension);
+bool IsLegacyXmlExtension(string? pathOrExtension);
+bool IsCollection(string path);
+string[] GetThemeNames(string path);
+Image?[] GetThemeThumbnails(string path); // caller disposes non-null
+string GetCollectionName(string path);
+string SetCollectionName(string collectionPath, string? collectionName);
+</code></pre>
+<p><code>GetPaletteFiles(directory, searchSubdirectories, includeKthemex, includeKtheme, includeXml)</code> lists matching files under a folder.</p>
+<h3 id="convert-and-upgrade">Convert and upgrade</h3>
+<pre><code class="lang-csharp">string Convert(string sourcePath, string destinationPath);
+string Convert(string sourcePath, string destinationPath, KryptonPaletteFileFormat format);
+string Convert(string sourcePath, string destinationPath, KryptonPaletteFileFormat format, bool ignoreDefaults);
+
+string UpgradeXmlToKthemex(string sourcePath);
+string UpgradeXmlToKthemex(string sourcePath, string destinationPath);
+
+KryptonPaletteDirectoryUpgradeResult UpgradeXmlToKthemexFromDirectory(
+    string directory, bool searchSubdirectories = true);
+
+string? PromptLegacyXmlUpgrade(string sourcePath, bool silent);
+</code></pre>
+<ul>
+<li><code>Convert</code> runs <code>ImportWithUpgrade</code> then <code>Export</code>. Rejects <code>.json</code>.</li>
+<li><code>UpgradeXmlToKthemex</code> requires source <code>.xml</code> and destination <code>.kthemex</code>; <strong>source file left in place</strong>.</li>
+<li><code>PromptLegacyXmlUpgrade</code>: Yes → rewrite and return <code>.kthemex</code> path; No → return original <code>.xml</code>; Cancel → <code>null</code>. Silent / non-interactive → return path unchanged (no dialog).</li>
+</ul>
+<h3 id="collection-export-also-see-04-collections">Collection export (also see <a href="./04-Collections.md">04-Collections</a>)</h3>
+<pre><code class="lang-csharp">string ExportCollection(string destinationPath, IEnumerable&lt;KryptonCustomPaletteBase&gt; palettes);
+string ExportCollection(..., bool ignoreDefaults);
+string ExportCollection(..., bool ignoreDefaults, string? collectionName);
+
+string ExportCollectionFromDirectory(string destinationPath, string sourceDirectory,
+    bool searchSubdirectories = true, bool ignoreDefaults = false, string? collectionName = null);
+</code></pre>
+<p>Destination must be <code>.ktheme</code>. Each palette needs a unique <code>SetPaletteName</code> (ordinal ignore-case).</p>
+<h3 id="shell-and-icons">Shell and icons</h3>
+<pre><code class="lang-csharp">void EnsureShellAssociations();
+void EnsureShellAssociations(string? openWithExecutable);
+Icon? CreateShellIcon(bool largeIcon = false);
+Image GetThemeBadgeImage();
+Image CreateThemeIcon(Image? thumbnail, Size size /* or int */);
+Icon? CreateThemeFileIcon(string path, bool largeIcon = false);
+</code></pre>
+<p>Details: <a href="./06-Thumbnails-and-Shell.md">06-Thumbnails-and-Shell</a>.</p>
+<hr>
+<h2 id="kryptoncustompalettebase"><code>KryptonCustomPaletteBase</code></h2>
+<h3 id="import">Import</h3>
+<table>
+<thead>
+<tr>
+<th>Overload</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Import(bool silent = false)</code></td>
+<td>File dialog; calls <code>EnsureShellAssociations</code></td>
+</tr>
+<tr>
+<td><code>Import(string filename)</code></td>
+<td>Silent</td>
+</tr>
+<tr>
+<td><code>Import(string filename, bool silent)</code></td>
+<td>May prompt legacy XML upgrade when not silent</td>
+</tr>
+<tr>
+<td><code>Import(string filename, string themeName[, bool silent])</code></td>
+<td>Named theme from a collection</td>
+</tr>
+<tr>
+<td><code>Import(Stream…)</code> / <code>Import(byte[]…)</code></td>
+<td>Stream sniff via binary persistence</td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>silent</code>:</strong> <code>true</code> suppresses success/error message boxes and skips <code>PromptLegacyXmlUpgrade</code>. Prefer trusting the implementation over any inverted XML comments.</p>
+<h3 id="export">Export</h3>
+<table>
+<thead>
+<tr>
+<th>Overload</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Export()</code></td>
+<td>Dialog; default <code>.kthemex</code></td>
+</tr>
+<tr>
+<td><code>Export(string path, bool ignoreDefaults[, bool silent[, format]])</code></td>
+<td>Path selects Xml vs native; format overload for compressed-XML <code>.ktheme</code></td>
+</tr>
+<tr>
+<td><code>Export(bool ignoreDefaults)</code></td>
+<td>Returns XML <strong>bytes</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="upgrade--convert-on-the-component">Upgrade / convert on the component</h3>
+<pre><code class="lang-csharp">void UpgradeXmlToKthemex(...);           // rewrite file + import into this instance
+KryptonPaletteDirectoryUpgradeResult UpgradeXmlToKthemexFromDirectory(...); // batch; does not import
+void ConvertFile(string source, string dest[, bool silent]);
+void ConvertFile(bool silent);           // dialogs
+</code></pre>
+<p>Designer verbs on <code>KryptonCustomPaletteBaseDesigner</code>:</p>
+<ul>
+<li>Import / Export</li>
+<li><strong>Upgrade Palette</strong> — schema into the component only (no file rewrite)</li>
+<li><strong>Upgrade .xml to .kthemex...</strong> / <strong>Upgrade folder .xml to .kthemex...</strong></li>
+<li><strong>Convert palette file...</strong></li>
+</ul>
+<h3 id="thumbnail">Thumbnail</h3>
+<pre><code class="lang-csharp">Image? Thumbnail { get; set; } // optional preview; recommended 64×64
+</code></pre>
+<hr>
+<h2 id="thememanager-file-apply"><code>ThemeManager</code> file apply</h2>
+<pre><code class="lang-csharp">public static void ApplyTheme(string themeFile, bool silent, KryptonManager manager);
+public static void ApplyTheme(string themeFile, string themeName, bool silent, KryptonManager manager);
+</code></pre>
+<p>Creates a <code>KryptonCustomPaletteBase</code>, imports (named when provided), then assigns <code>manager.GlobalCustomPalette</code>.</p>
+<p>Also: <code>ApplyTheme(PaletteMode)</code>, <code>ApplyTheme(string themeName)</code>, <code>ApplyTheme(KryptonCustomPaletteBase, …)</code> for builtins / in-memory palettes.</p>
+<hr>
+<h2 id="related-toolkit-types">Related Toolkit types</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonPaletteFileFormat</code></td>
+<td>Persist format enum</td>
+</tr>
+<tr>
+<td><code>KryptonPaletteDirectoryUpgradeResult</code></td>
+<td><code>ConvertedPaths</code>, <code>SourcePaths</code>, <code>SkippedPaths</code>, <code>Errors</code>, counts, <code>ToSummaryString()</code>, <code>Empty</code></td>
+</tr>
+<tr>
+<td><code>KryptonPaletteDirectoryUpgradeError</code></td>
+<td><code>SourcePath</code>, <code>Message</code></td>
+</tr>
+<tr>
+<td><code>KryptonThemePreview</code></td>
+<td>Generated mock-up; <code>AssignGeneratedThumbnail</code> for Export</td>
+</tr>
+<tr>
+<td><code>KryptonMiscellaneousThemeStrings</code></td>
+<td><code>LegacyXmlUpgradeTitle</code> / <code>LegacyXmlUpgradeMessage</code>; Themes-missing fallbacks</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="kryptonthemeskryptonthemecustompalettehelper"><code>Krypton.Themes.KryptonThemeCustomPaletteHelper</code></h2>
+<p>Optional assembly helper (not referenced by Toolkit):</p>
+<ul>
+<li><code>CreateCustomPalette(PaletteMode)</code> — <code>PopulateFromBase</code> + display name</li>
+<li><code>ExportToFile(mode, path[, ignoreDefaults])</code> / format overload</li>
+</ul>
+<p>Use when exporting <strong>extra</strong> builtin modes to <code>.kthemex</code> / <code>.ktheme</code>.</p>
+<hr>
+<h2 id="internal-kryptonpalettebinarypersistence">Internal: <code>KryptonPaletteBinaryPersistence</code></h2>
+<p>Document for maintainers; do not call from consumer code.</p>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Sniff</code></td>
+<td>KPLT vs XML vs unknown</td>
+</tr>
+<tr>
+<td><code>Import</code> / <code>Export</code></td>
+<td>Dispatch by format / kind</td>
+</tr>
+<tr>
+<td><code>ExportCollection</code></td>
+<td>Kind 2 + optional KPTH</td>
+</tr>
+<tr>
+<td><code>TryCopyXmlForUpgrade</code></td>
+<td>XML or kind 0 only</td>
+</tr>
+<tr>
+<td><code>TryGetSchemaVersion</code></td>
+<td>XML attribute or KPLT header</td>
+</tr>
+<tr>
+<td>Collection import without name</td>
+<td>Exactly one theme → import it; more than one → throw</td>
+</tr>
+</tbody>
+</table>
+<p><a href="./02-File-Formats.md">← File Formats</a> · <a href="./README.md">Index</a> · <a href="./04-Collections.md">Next: Collections →</a></p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

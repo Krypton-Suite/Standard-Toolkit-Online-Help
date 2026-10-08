@@ -226,7 +226,7 @@ Each job uses a different project file:
 - **Canary**: `Bin/Packages/Canary/*.nupkg`
 - Alpha: `Bin/Packages/Nightly/*.nupkg` (not published)
 
-**Required Secret**: `NUGET_API_KEY`
+**Required secret**: `NUGET_USER` (nuget.org profile name). See [NuGet Trusted Publishing](NuGetTrustedPublishing.md). On this repository a missing short-lived key fails the job. `release-alpha` does not push.
 
 **Output Variable**: `packages_published` (true/false)
 
@@ -280,9 +280,9 @@ Each job uses a different project file:
 
 ### Required Secrets
 
-- **`NUGET_API_KEY`**: API key for nuget.org publishing
-  - Required for all jobs that publish packages
-  - Get from: https://www.nuget.org/account/apikeys
+- **`NUGET_USER`**: nuget.org profile name for trusted publishing
+  - Required for jobs that publish packages (`release-master`, `release-v105-lts`, `release-canary`)
+  - Setup: [NuGet Trusted Publishing](NuGetTrustedPublishing.md)
 
 - **`DISCORD_WEBHOOK_MASTER`**: Stable / **V105-LTS** notifications (`release-master`, `release-v105-lts`)
 
@@ -339,14 +339,14 @@ Each job uses a different project file:
 
 **Possible Causes**:
 
-1. Missing or invalid `NUGET_API_KEY`
+1. Trusted publishing login failed or the short-lived key was missing (`NUGET_USER`, nuget.org policy, or `production` environment)
 2. Package version already exists (handled gracefully)
 3. Invalid package format
 4. Network issues
 
 **Solutions**:
 
-- Verify API key is set and valid
+- Follow [NuGet Trusted Publishing](NuGetTrustedPublishing.md)
 - Check if package version already exists (this is normal)
 - Review NuGet push logs
 - Verify package files are valid
@@ -456,7 +456,7 @@ If package naming changes:
 3. **Version Management**: Ensure versions increment correctly
 4. **Testing**: Test release process on non-production branches first
 5. **Notifications**: Keep Discord webhooks updated
-6. **Security**: Never commit secrets or API keys
+6. **Security**: Never commit secrets. NuGet publish uses trusted publishing, not a stored API key. See [NuGet Trusted Publishing](NuGetTrustedPublishing.md).
 7. **Documentation**: Update this file when making changes
 
 ## Workflow Flow Diagram
