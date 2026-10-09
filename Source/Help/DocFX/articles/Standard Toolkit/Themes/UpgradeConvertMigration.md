@@ -1,6 +1,6 @@
 ﻿# 05 — Upgrade, Convert, and Migration
 
-[← Collections](./04-Collections.md) · [Index](./README.md) · [Next: Thumbnails & Shell →](./06-Thumbnails-and-Shell.md)
+[← Collections](./Collections.md) · [Index](./PaletteFilesIndex.md) · [Next: Thumbnails & Shell →](./ThumbnailsandShell.md)
 
 ## Current schema
 
@@ -99,4 +99,4 @@ KryptonThemeCustomPaletteHelper.ExportToFile(PaletteMode.SomeExtra, path, ignore
 
 Missing Themes does not break file I/O; applying missing **extra** builtin modes falls back via the theme catalog (see Themes catalog docs).
 
-[← Collections](./04-Collections.md) · [Index](./README.md) · [Next: Thumbnails & Shell →](./06-Thumbnails-and-Shell.md)
+[← Collections](./Collections.md) · [Index](./PaletteFilesIndex.md) · [Next: Thumbnails & Shell →](./ThumbnailsandShell.md)

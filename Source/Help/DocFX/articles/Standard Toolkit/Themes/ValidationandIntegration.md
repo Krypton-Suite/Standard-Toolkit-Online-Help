@@ -1,6 +1,6 @@
 ﻿# 08 — Validation and Integration
 
-[← Utilities UI](./07-Utilities-UI.md) · [Index](./README.md)
+[← Utilities UI](./UtilitiesUI.md) · [Index](./PaletteFilesIndex.md)
 
 ## TestForm
 
@@ -90,4 +90,4 @@ Consumer summary: `Documents/Changelog/Changelog.md` → Implemented [#2117](htt
 
 Do **not** add Changelog entries for edits to these Development docs alone.
 
-[← Utilities UI](./07-Utilities-UI.md) · [Index](./README.md)
+[← Utilities UI](./UtilitiesUI.md) · [Index](./PaletteFilesIndex.md)

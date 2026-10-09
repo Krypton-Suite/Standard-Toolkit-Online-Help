@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>NuGet Trusted Publishing | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="NuGet Trusted Publishing | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="nuget-trusted-publishing">NuGet Trusted Publishing</h1>
+
+<p>Setup and operator guide for publishing Krypton packages to nuget.org from GitHub Actions without a long-lived API key. This is the implementation of <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4480">issue #4480</a>.</p>
+<p>Microsoft’s description of the feature is <a href="https://learn.microsoft.com/en-gb/nuget/nuget-org/trusted-publishing">Trusted Publishing</a>.</p>
+<p>Local <code>publish.cmd</code>, ModernBuild, and <code>nuget.exe push</code> from a developer machine are unchanged. They still use a developer API key. See <a href="#local-publishing">Local publishing</a>.</p>
+<h2 id="overview">Overview</h2>
+<p>Trusted publishing exchanges a short-lived GitHub Actions OpenID Connect token for a temporary nuget.org API key. The key lasts about one hour. Nothing in the repository stores a nuget.org credential that can publish on its own.</p>
+<p>The GitHub secret that remains is <code>NUGET_USER</code>. Its value is the nuget.org <strong>profile name</strong> of the account that owns the packages (the name in <code>https://www.nuget.org/profiles/&lt;name&gt;</code>), not an email address and not an API key.</p>
+<h2 id="how-a-publish-run-authenticates">How a publish run authenticates</h2>
+<ol>
+<li>A publish job in this repository starts. The job must use the GitHub environment <code>production</code>.</li>
+<li>Immediately before <code>dotnet nuget push</code>, the job runs <code>NuGet/login@v1</code>.</li>
+<li>That action asks GitHub for an OIDC token. The workflow permission <code>id-token: write</code> is what allows that request. The token is signed by GitHub and names the repository owner, repository, workflow file, and environment.</li>
+<li>nuget.org checks the token against a trusted publishing policy. The policy must match those claims.</li>
+<li>nuget.org returns one temporary API key. Each OIDC token can be exchanged once. The resulting key can push every package in that job’s loop.</li>
+<li><code>dotnet nuget push</code> sends that key to <code>https://api.nuget.org/v3/index.json</code> with <code>--skip-duplicate</code>.</li>
+</ol>
+<p>Request the key immediately before the push. The build can take longer than the key’s lifetime. Do not put <code>NuGet/login</code> at the start of the job.</p>
+<p>A policy matches the <strong>workflow file name</strong>, not the git branch and not the job id. <code>release.yml</code> is one policy even though three jobs inside it push. Branch and kill-switch <code>if</code> conditions in the workflow are what stop the wrong job from publishing. The <code>production</code> environment on the policy is what stops a workflow file from publishing unless the job was admitted to that environment.</p>
+<h2 id="workflows-that-publish">Workflows that publish</h2>
+<p>Create one nuget.org policy for each of these files. Environment is <code>production</code> on every policy.</p>
+<table>
+<thead>
+<tr>
+<th>Workflow file</th>
+<th>Jobs that push</th>
+<th>GitHub environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>release.yml</code></td>
+<td><code>release-master</code>, <code>release-v105-lts</code>, <code>release-canary</code></td>
+<td><code>production</code></td>
+</tr>
+<tr>
+<td><code>canary.yml</code></td>
+<td><code>canary</code></td>
+<td><code>production</code></td>
+</tr>
+<tr>
+<td><code>nightly.yml</code></td>
+<td><code>nightly</code></td>
+<td><code>production</code></td>
+</tr>
+<tr>
+<td><code>release-candidate.yml</code></td>
+<td><code>release-candidate</code></td>
+<td><code>production</code></td>
+</tr>
+<tr>
+<td><code>canary-lts-release.yml</code></td>
+<td><code>canary-lts-release</code></td>
+<td><code>production</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>release-alpha</code> in <code>release.yml</code> does not push to nuget.org. It does not need its own policy. The <code>release.yml</code> policy already covers the file.</p>
+<p><code>build.yml</code> does not push to nuget.org and must not receive a policy.</p>
+<p>Package ids are <code>Krypton.*</code>, including channel suffixes such as <code>Krypton.Toolkit.Canary</code>, <code>Krypton.Toolkit.Nightly</code>, <code>Krypton.Toolkit.Lite</code>, and <code>Krypton.Standard.Toolkit</code>.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Access to the nuget.org account or organization that <strong>owns</strong> the <code>Krypton.*</code> packages. That is the same account the old API key belonged to. The policy owner must be that user or that organization. A policy owned by someone else cannot push those packages.</li>
+<li>Permission to create Actions secrets on <code>Krypton-Suite/Standard-Toolkit</code>.</li>
+<li>Permission to edit the <code>production</code> environment if its protection rules need to allow these workflows.</li>
+<li>The workflow changes already in this repository: <code>id-token: write</code>, <code>NuGet/login@v1</code> immediately before each push, and <code>environment: production</code> on every publish job, including Canary LTS.</li>
+</ul>
+<p>Do this setup before the next publish. A run on <code>Krypton-Suite/Standard-Toolkit</code> fails the job when login does not produce a key.</p>
+<h2 id="1-create-the-nugetorg-policies">1. Create the nuget.org policies</h2>
+<p>Sign in to nuget.org as a member of the package owner. Open your username menu and choose <strong>Trusted Publishing</strong>.</p>
+<p>Create five policies. The match is case-insensitive. Enter the workflow <strong>file name only</strong>. Do not include <code>.github/workflows/</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Policy field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repository owner</td>
+<td><code>Krypton-Suite</code></td>
+</tr>
+<tr>
+<td>Repository</td>
+<td><code>Standard-Toolkit</code></td>
+</tr>
+<tr>
+<td>Workflow file</td>
+<td>One of <code>release.yml</code>, <code>canary.yml</code>, <code>nightly.yml</code>, <code>release-candidate.yml</code>, <code>canary-lts-release.yml</code></td>
+</tr>
+<tr>
+<td>Environment</td>
+<td><code>production</code></td>
+</tr>
+</tbody>
+</table>
+<p>Suggested policy names, so the list stays readable: <code>standard-toolkit-release</code>, <code>standard-toolkit-canary</code>, <code>standard-toolkit-nightly</code>, <code>standard-toolkit-release-candidate</code>, <code>standard-toolkit-canary-lts</code>.</p>
+<h3 id="package-owner">Package owner</h3>
+<p>Set the policy owner to the nuget.org user or organization that owns the packages. The policy applies to packages owned by that owner.</p>
+<p>If the owner is an organization, the person who creates the policy must be an active member. If they later leave the organization, nuget.org marks the policy inactive until they are added back. A locked or deleted organization also inactivates its policies.</p>
+<h3 id="scopes">Scopes</h3>
+<p>Limit each policy to package id glob <code>Krypton.*</code>.</p>
+<p>Allow both of these actions:</p>
+<ul>
+<li>Push new versions of existing packages.</li>
+<li>Push new packages.</li>
+</ul>
+<p>New package ids under <code>Krypton.*</code> (a new component, or a new channel suffix) then work without another policy. Ids outside that glob are rejected.</p>
+<h3 id="pending-policies-and-repository-identity">Pending policies and repository identity</h3>
+<p>nuget.org locks a policy to the GitHub repository id and owner id after a successful publish. That stops someone from deleting this repository, creating another with the same name, and publishing as if it were the original.</p>
+<p>This repository is public, so a successful publish from each workflow file supplies those ids and the policy becomes permanently active.</p>
+<p>A policy created against a <strong>private</strong> repository starts temporarily active for seven days. If nothing publishes in that window, nuget.org deactivates it. Restarting the window is available from the Trusted Publishing page. That temporary window does not apply to this public repository, but it does apply if you copy the setup onto a private fork.</p>
+<h2 id="2-add-the-nuget_user-secret">2. Add the <code>NUGET_USER</code> secret</h2>
+<p>Repository → <strong>Settings</strong> → <strong>Secrets and variables</strong> → <strong>Actions</strong> → <strong>New repository secret</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>NUGET_USER</code></td>
+</tr>
+<tr>
+<td>Secret</td>
+<td>nuget.org profile name</td>
+</tr>
+</tbody>
+</table>
+<p>The profile name is the last segment of the profile URL, for example <code>Krypton-Suite</code> in <code>https://www.nuget.org/profiles/Krypton-Suite</code>. It is not the sign-in email. <code>NuGet/login</code> rejects an email address.</p>
+<p>The workflows pass it as:</p>
+<pre><code class="lang-yaml">- name: NuGet login (OIDC)
+  id: nuget_login
+  uses: NuGet/login@v1
+  with:
+    user: ${{ secrets.NUGET_USER }}
+</code></pre>
+<p>The push step then uses the action output, not a stored key:</p>
+<pre><code class="lang-yaml">env:
+  NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
+</code></pre>
+<p><code>NUGET_API_KEY</code> in that <code>env</code> block is only the name of the variable the existing PowerShell reads. It is filled from <code>steps.nuget_login.outputs.NUGET_API_KEY</code> for that job. It is not <code>secrets.NUGET_API_KEY</code>.</p>
+<h2 id="3-confirm-the-production-environment">3. Confirm the <code>production</code> environment</h2>
+<p>Publish jobs set <code>environment: production</code>. The nuget.org policies require that same environment name. A job that omits <code>environment: production</code> will not satisfy those policies.</p>
+<p><code>production</code> is also the approval gate. If the environment requires reviewers, a scheduled nightly run waits for approval before it can publish. That is existing behavior, and trusted publishing depends on it: a policy does not check the git branch.</p>
+<p>Environment protection rules live under <strong>Settings</strong> → <strong>Environments</strong> → <strong>production</strong>. Repository variables used as kill switches (<code>RELEASE_DISABLED</code>, <code>NIGHTLY_DISABLED</code>, and the others) stay on the repository <strong>Variables</strong> tab, not only on the environment, unless a workflow is changed to read environment variables.</p>
+<h2 id="4-what-the-workflows-already-enforce">4. What the workflows already enforce</h2>
+<p>Each publishing workflow sets:</p>
+<pre><code class="lang-yaml">permissions:
+  contents: read
+  id-token: write
+</code></pre>
+<p><code>id-token: write</code> is required. Without it, GitHub will not issue the OIDC token and <code>NuGet/login</code> fails. These workflows set permissions at workflow level, and the publish jobs inherit them. If a job later sets its own <code>permissions</code> block, that block replaces the workflow permissions. It must then include both <code>contents: read</code> and <code>id-token: write</code>, or checkout and login both break.</p>
+<p>Login is skipped unless <code>github.repository</code> is <code>Krypton-Suite/Standard-Toolkit</code>, and it uses the same kill-switch <code>if</code> as the push step (nightly also requires <code>has_changes</code>).</p>
+<p>On <code>Krypton-Suite/Standard-Toolkit</code>, a missing short-lived key fails the push step. The job does not continue as a successful run with nothing published.</p>
+<p>On any other repository, including a fork, login is skipped and the push step logs a warning, sets <code>packages_published=false</code>, and exits 0. A fork’s OIDC token names the fork, so it cannot match these policies. Skipping avoids a red Actions run on forks that still contain the workflow file.</p>
+<p>Individual package push failures inside the loop are still logged as warnings, matching the previous push script. A package that already exists is skipped because of <code>--skip-duplicate</code>, and <code>packages_published</code> stays false unless some other package was new. Discord runs only when <code>packages_published</code> is true.</p>
+<h2 id="5-first-publish-then-delete-the-old-key">5. First publish, then delete the old key</h2>
+<ol>
+<li>Create the five policies and the <code>NUGET_USER</code> secret.</li>
+<li>Merge the workflow changes to the branch that will publish.</li>
+<li>Run one real publish. A manual run of Canary or Nightly is enough if that channel is safe to publish. In the log, <strong>NuGet login (OIDC)</strong> should report that it exchanged the token for an API key. The package should appear on nuget.org, and the matching policy should show as fully active.</li>
+<li>Delete the repository secret <code>NUGET_API_KEY</code>. If that secret was inherited from the organization, remove or stop exposing it to this repository as well.</li>
+</ol>
+<p>Until step 4, a leaked copy of the old key could still push. The workflows no longer read <code>secrets.NUGET_API_KEY</code>.</p>
+<p>Repeat a publish once per workflow file that has not yet published. Each policy stays pending until that file’s job exchanges a token successfully. Publishing from <code>canary.yml</code> does not activate the policy for <code>nightly.yml</code>.</p>
+<h2 id="adding-another-publish-workflow">Adding another publish workflow</h2>
+<ol>
+<li>On nuget.org, add a policy whose workflow file is the new YAML file name and whose environment is <code>production</code>.</li>
+<li>Set <code>permissions</code> so the publish job has <code>id-token: write</code> and <code>contents: read</code>.</li>
+<li>Put the publish job on <code>environment: production</code>.</li>
+<li>Insert <code>NuGet/login@v1</code> immediately before the push, with <code>user: ${{ secrets.NUGET_USER }}</code>, and pass <code>steps.nuget_login.outputs.NUGET_API_KEY</code> into the push. Keep the repository check so forks skip instead of failing login.</li>
+<li>Update this document’s workflow table.</li>
+</ol>
+<p>Dependabot already watches the <code>github-actions</code> ecosystem, so <code>NuGet/login</code> version updates are proposed with the other actions.</p>
+<h2 id="local-publishing">Local publishing</h2>
+<p>Trusted publishing applies only to GitHub Actions (and other CI systems nuget.org supports, such as GitLab). A developer machine has no GitHub OIDC token for these policies.</p>
+<p><code>Scripts/**/publish.cmd</code> and ModernBuild still expect a developer API key configured with:</p>
+<pre><code class="lang-cmd">nuget.exe setapikey &lt;YOUR_API_KEY&gt; -Source https://api.nuget.org/v3/index.json
+</code></pre>
+<p>Create that key on nuget.org under <strong>API Keys</strong>, scoped to <code>Krypton.*</code>, with push permission and a short expiration. Do not store it in the repository and do not put it back into the <code>NUGET_API_KEY</code> Actions secret. See <a href="../Build%20System/BuildScripts.html">Build Scripts</a> and <a href="../Build%20System/ModernBuildTool.html">ModernBuild</a>.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Login fails with 403, or GitHub reports the id token cannot be requested</td>
+<td>Workflow or job is missing <code>id-token: write</code></td>
+<td>Add <code>id-token: write</code> without dropping <code>contents: read</code>.</td>
+</tr>
+<tr>
+<td>nuget.org rejects the token, policy not found</td>
+<td>Owner, repository, workflow file name, or environment does not match</td>
+<td>Compare the policy with the table above. File name only, environment <code>production</code>.</td>
+</tr>
+<tr>
+<td>Login fails and the log mentions the user</td>
+<td><code>NUGET_USER</code> is missing, is an email, or is not the package owner’s profile name</td>
+<td>Set the secret to the profile name. Confirm that account owns the packages the policy is attached to.</td>
+</tr>
+<tr>
+<td>Policy shows pending, then inactive</td>
+<td>No successful publish from that workflow file within the activation window (typical for private repositories)</td>
+<td>Publish from that workflow, or restart the window on nuget.org.</td>
+</tr>
+<tr>
+<td>Policy shows an ownership warning</td>
+<td>The creating user left the nuget.org organization, or the organization is locked</td>
+<td>Restore membership or organization access. The policy becomes active again when ownership is valid.</td>
+</tr>
+<tr>
+<td>Push step fails before any <code>dotnet nuget push</code>, saying trusted publishing did not provide a key</td>
+<td>Login was skipped or did not set <code>NUGET_API_KEY</code> on this repository</td>
+<td>Read the login step. Fix the secret or policy. This is a failed release, not a skip.</td>
+</tr>
+<tr>
+<td>Push skipped with a warning about <code>Krypton-Suite/Standard-Toolkit</code></td>
+<td>The run is a fork or another repository</td>
+<td>Expected. Policies match this repository only.</td>
+</tr>
+<tr>
+<td><code>dotnet nuget push</code> returns 409, or the log says the package already exists</td>
+<td>That version is already on nuget.org</td>
+<td>Expected with <code>--skip-duplicate</code>. Discord is not sent when nothing new was published.</td>
+</tr>
+<tr>
+<td><code>dotnet nuget push</code> returns 403 after login succeeded</td>
+<td>Policy scope does not include that package id, or the temporary key expired</td>
+<td>Confirm the glob is <code>Krypton.*</code> and that login is the step immediately before push.</td>
+</tr>
+<tr>
+<td>Nightly or another scheduled run sits waiting</td>
+<td><code>production</code> requires a reviewer</td>
+<td>Approve the environment, or adjust the environment protection rules.</td>
+</tr>
+<tr>
+<td>Canary LTS push is rejected</td>
+<td>Its job is not on <code>environment: production</code></td>
+<td>The job must set <code>environment: production</code> so the policy’s environment claim matches.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="https://learn.microsoft.com/en-gb/nuget/nuget-org/trusted-publishing">Trusted Publishing</a> (Microsoft Learn)</li>
+<li><a href="ReleaseWorkflow.html">Release Workflow</a></li>
+<li><a href="CanaryWorkflow.html">Canary Workflow</a></li>
+<li><a href="NightlyWorkflow.html">Nightly Workflow</a></li>
+<li><a href="CanaryLTSReleaseWorkflow.html">Canary LTS Release Workflow</a></li>
+<li><a href="../GitHubActionsWorkflows.html">GitHub Actions Workflows</a></li>
+<li><a href="../Build%20System/NuGetPackaging.html">NuGet packaging</a></li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

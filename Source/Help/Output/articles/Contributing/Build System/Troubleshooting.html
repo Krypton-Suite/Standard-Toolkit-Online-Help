@@ -625,35 +625,23 @@ build-canary.cmd Pack
 <h3 id="nuget-push-fails-in-ci">NuGet Push Fails in CI</h3>
 <p><strong>Symptoms</strong>:</p>
 <ul>
-<li>Error: &quot;401 Unauthorized&quot;</li>
+<li>NuGet login fails, or <code>dotnet nuget push</code> returns 401 or 403</li>
 <li>Packages not published</li>
+<li>On this repository, the push step fails when no short-lived key was issued</li>
 </ul>
 <p><strong>Causes</strong>:</p>
 <ul>
-<li>Invalid or expired <code>NUGET_API_KEY</code></li>
-<li>Secret not configured</li>
+<li><code>NUGET_USER</code> missing or set to an email address instead of the nuget.org profile name</li>
+<li>No trusted publishing policy for that workflow file, or the policy environment is not <code>production</code></li>
+<li>Workflow is missing <code>id-token: write</code></li>
 </ul>
 <p><strong>Solutions</strong>:</p>
-<ol>
-<li><p><strong>Generate New API Key</strong>:</p>
-<ul>
-<li>Go to <a href="https://www.nuget.org/account/apikeys">https://www.nuget.org/account/apikeys</a></li>
-<li>Create API Key with push permission</li>
-<li>Expiration: At least 1 year</li>
-</ul>
-</li>
-<li><p><strong>Update Secret</strong>:</p>
-<ul>
-<li>Repository Settings → Secrets and variables → Actions → Secrets</li>
-<li>Update <code>NUGET_API_KEY</code></li>
-</ul>
-</li>
-<li><p><strong>Verify Secret in Workflow</strong>:</p>
-</li>
-</ol>
+<p>Follow <a href="../../Workflows/NuGetTrustedPublishing.md">NuGet Trusted Publishing</a>.</p>
+<p>The push step receives the short-lived key from the login step:</p>
 <pre><code class="lang-yaml">env:
-  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+  NUGET_API_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
 </code></pre>
+<p>That value is not <code>secrets.NUGET_API_KEY</code>. Local <code>publish.cmd</code> still uses a developer API key; see <a href="BuildScripts.html">Build Scripts</a>.</p>
 <h3 id="release-creation-fails">Release Creation Fails</h3>
 <p><strong>Symptoms</strong>:</p>
 <ul>

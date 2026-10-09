@@ -525,7 +525,7 @@ nuget.exe push Krypton.Toolkit.Canary.100.25.1.305-beta.nupkg -Source https://ap
 
 **Solutions**:
 
-Follow [NuGet Trusted Publishing](../../Workflows/NuGetTrustedPublishing.md).
+Follow [NuGet Trusted Publishing](../Workflows/NuGetTrustedPublishing.md).
 
 The push step receives the short-lived key from the login step:
 

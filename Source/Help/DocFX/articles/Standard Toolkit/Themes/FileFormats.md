@@ -1,6 +1,6 @@
 ﻿# 02 — File Formats
 
-[← Overview](./01-Overview-and-Architecture.md) · [Index](./README.md) · [Next: Core API →](./03-Core-API.md)
+[← Overview](./OverviewandArchitecture.md) · [Index](./PaletteFilesIndex.md) · [Next: Core API →](./CoreAPI.md)
 
 ## Extensions
 
@@ -123,4 +123,4 @@ Folder-derived theme names use portable `/` (`CollectionPathSeparator`):
 
 Nested `.ktheme` files under a directory pack are **flattened** under the parent relative path. Name collisions get `" (2)"`-style suffixes.
 
-[← Overview](./01-Overview-and-Architecture.md) · [Index](./README.md) · [Next: Core API →](./03-Core-API.md)
+[← Overview](./OverviewandArchitecture.md) · [Index](./PaletteFilesIndex.md) · [Next: Core API →](./CoreAPI.md)

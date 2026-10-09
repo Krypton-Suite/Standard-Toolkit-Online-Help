@@ -317,7 +317,7 @@
 </code></pre>
 </li>
 <li><p><strong>Publish to NuGet</strong> ⭐</p>
-<pre><code class="lang-yaml">- Check NUGET_API_KEY present
+<pre><code class="lang-yaml">- NuGet login (OIDC) for this repository, then push
 - Find all .nupkg files
 - Push each with --skip-duplicate
 - Track if any packages published (new vs skipped)
@@ -341,7 +341,7 @@
 <pre><code class="lang-yaml">- List all package files
 - List all archive files
 - Verify GITHUB_TOKEN present
-- Verify NUGET_API_KEY present
+- Verify NuGet trusted publishing login ran when packages should publish
 </code></pre>
 </li>
 <li><p><strong>Create/Update GitHub Release</strong> ⭐</p>
@@ -519,10 +519,17 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 <td>❌ Not sent</td>
 </tr>
 <tr>
-<td><strong>No API key configured</strong></td>
+<td><strong>Not this repository</strong> (fork)</td>
 <td>✅</td>
 <td>✅</td>
 <td>⏭️ Skipped</td>
+<td>❌ Not sent</td>
+</tr>
+<tr>
+<td><strong>Trusted publishing misconfigured</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>❌ Job failed</td>
 <td>❌ Not sent</td>
 </tr>
 <tr>
@@ -554,45 +561,21 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 <hr>
 <h2 id="configuration-guide">Configuration Guide</h2>
 <h3 id="required-github-secrets">Required GitHub Secrets</h3>
-<h4 id="1-nuget_api_key-required">1. NUGET_API_KEY (Required)</h4>
-<p><strong>Purpose</strong>: Authenticate with nuget.org to publish packages</p>
-<p><strong>Setup Steps</strong>:</p>
+<h4 id="1-nuget_user-required-to-publish">1. NUGET_USER (Required to publish)</h4>
+<p><strong>Purpose</strong>: nuget.org profile name used by trusted publishing. It is not an API key.</p>
+<p><strong>Setup</strong>: <a href="Workflows/NuGetTrustedPublishing.html">NuGet Trusted Publishing</a></p>
+<p>Summary:</p>
 <ol>
-<li><p><strong>Get API Key from nuget.org</strong>:</p>
-<ul>
-<li>Login to <a href="https://www.nuget.org">nuget.org</a></li>
-<li>Click username → API Keys</li>
-<li>Click &quot;Create&quot;</li>
-<li>Configure:
-<ul>
-<li><strong>Key Name</strong>: &quot;GitHub Actions - Krypton Toolkit&quot;</li>
-<li><strong>Select Scopes</strong>: ✅ Push, ✅ Push new packages and package versions</li>
-<li><strong>Select Packages</strong>: All packages (or glob pattern <code>Krypton.*</code>)</li>
-<li><strong>Expiration</strong>: 365 days</li>
-</ul>
-</li>
-<li>Click &quot;Create&quot;</li>
-<li><strong>Copy the key</strong> (shown only once!)</li>
-</ul>
-</li>
-<li><p><strong>Add to GitHub</strong>:</p>
-<ul>
-<li>Repository → Settings</li>
-<li>Secrets and variables → Actions</li>
-<li>New repository secret</li>
-<li><strong>Name</strong>: <code>NUGET_API_KEY</code> (exact spelling)</li>
-<li><strong>Secret</strong>: Paste the API key</li>
-<li>Click &quot;Add secret&quot;</li>
-</ul>
-</li>
+<li>On nuget.org, create a trusted publishing policy for each workflow file that pushes (<code>release.yml</code>, <code>canary.yml</code>, <code>nightly.yml</code>, <code>release-candidate.yml</code>, <code>canary-lts-release.yml</code>). Repository owner <code>Krypton-Suite</code>, repository <code>Standard-Toolkit</code>, environment <code>production</code>, package id <code>Krypton.*</code>.</li>
+<li>Add repository secret <code>NUGET_USER</code> with the nuget.org profile name (not the email address).</li>
+<li>After one successful publish from a workflow file, delete any leftover <code>NUGET_API_KEY</code> secret.</li>
 </ol>
-<p><strong>Used By</strong>: All release workflows</p>
-<p><strong>What Happens Without It</strong>:</p>
+<p><strong>Used by</strong>: Every workflow that pushes to nuget.org.</p>
+<p><strong>What happens when it is wrong</strong>:</p>
 <ul>
-<li>Workflows succeed but skip NuGet push</li>
-<li>Warning logged: &quot;NUGET_API_KEY not set - skipping NuGet push&quot;</li>
-<li>No packages published</li>
-<li>No Discord notifications sent</li>
+<li>On <code>Krypton-Suite/Standard-Toolkit</code>, the push step fails if login does not provide a short-lived key.</li>
+<li>On a fork, login and push are skipped and the workflow can still succeed.</li>
+<li>No Discord notification is sent when nothing was published.</li>
 </ul>
 <hr>
 <h4 id="2-discord-webhooks-optional">2. Discord Webhooks (Optional)</h4>
@@ -781,7 +764,8 @@ echo &quot;packages_published=$publishedAny&quot; &gt;&gt; $env:GITHUB_OUTPUT
 <p><strong>NOT Sent</strong>:</p>
 <ul>
 <li>❌ All packages already exist (version unchanged)</li>
-<li>❌ NuGet push was skipped (no API key)</li>
+<li>❌ NuGet push was skipped (run is not <code>Krypton-Suite/Standard-Toolkit</code>)</li>
+<li>❌ NuGet login failed (job failed before Discord)</li>
 <li>❌ Webhook not configured</li>
 <li>❌ Push failed for all packages</li>
 </ul>
@@ -849,14 +833,9 @@ if ($LASTEXITCODE -eq 0) {
   gh release create $tag ... # Create new
 }
 </code></pre>
-<h4 id="3-missing-api-key">3. Missing API Key</h4>
-<p><strong>Error</strong>: <code>401 Unauthorized</code> from nuget.org</p>
-<p><strong>Solution</strong>: Check before pushing:</p>
-<pre><code class="lang-powershell">if (-not $env:NUGET_API_KEY) {
-  Write-Warning &quot;NUGET_API_KEY not set - skipping&quot;
-  exit 0  # Success exit, not failure
-}
-</code></pre>
+<h4 id="3-trusted-publishing-login-failed">3. Trusted publishing login failed</h4>
+<p><strong>Error</strong>: NuGet login failed, or the push step reports that trusted publishing did not provide an API key</p>
+<p><strong>Solution</strong>: Follow <a href="Workflows/NuGetTrustedPublishing.html">NuGet Trusted Publishing</a>. On this repository the push step fails instead of skipping. Confirm <code>NUGET_USER</code>, <code>id-token: write</code>, and a nuget.org policy for that workflow file and the <code>production</code> environment.</p>
 <h4 id="4-missing-webhook">4. Missing Webhook</h4>
 <p><strong>Error</strong>: HTTP error from Discord</p>
 <p><strong>Solution</strong>: Check before posting:</p>
@@ -1126,13 +1105,8 @@ ls .github/workflows/nightly.yml  # Should exist
 <hr>
 <h3 id="security-best-practices">Security Best Practices</h3>
 <h4 id="secret-rotation">Secret Rotation</h4>
-<p><strong>NuGet API Key</strong> (annually):</p>
-<ol>
-<li>Create new API key on nuget.org</li>
-<li>Update GitHub secret</li>
-<li>Delete old API key on nuget.org</li>
-<li>Test with manual workflow trigger</li>
-</ol>
+<p><strong>NuGet publish</strong> (no long-lived API key):</p>
+<p>Trusted publishing uses a one-hour key minted per job. Do not rotate a stored nuget.org API key for Actions. Keep <code>NUGET_USER</code> as the profile name, and delete <code>NUGET_API_KEY</code> after the first successful trusted publish. Details: <a href="Workflows/NuGetTrustedPublishing.html">NuGet Trusted Publishing</a>.</p>
 <p><strong>Discord Webhooks</strong> (as needed):</p>
 <ul>
 <li>Regenerate in Discord if compromised</li>
@@ -1140,11 +1114,11 @@ ls .github/workflows/nightly.yml  # Should exist
 <li>Old URL stops working immediately</li>
 </ul>
 <h4 id="least-privilege">Least Privilege</h4>
-<p><strong>NuGet API Key Scoping</strong>:</p>
+<p><strong>NuGet trusted publishing policy</strong>:</p>
 <ul>
-<li>✅ Push scope only (not delete/unlist)</li>
-<li>✅ Specific to Krypton.* packages</li>
-<li>✅ Limited expiration (365 days max)</li>
+<li>✅ Workflow file name and <code>production</code> environment only</li>
+<li>✅ Package id glob <code>Krypton.*</code></li>
+<li>✅ Push new packages and new versions, not unlist or delete</li>
 </ul>
 <p><strong>GitHub Token</strong>:</p>
 <ul>
@@ -1319,10 +1293,10 @@ ls .github/workflows/nightly.yml  # Should exist
 </thead>
 <tbody>
 <tr>
-<td><code>NUGET_API_KEY</code></td>
-<td>NuGet API Key</td>
+<td><code>NUGET_USER</code></td>
+<td>nuget.org profile name</td>
 <td>Yes (for publishing)</td>
-<td>All release workflows</td>
+<td>Workflows that push to nuget.org</td>
 </tr>
 <tr>
 <td><code>DISCORD_WEBHOOK_MASTER</code></td>
@@ -1388,6 +1362,7 @@ gh run watch [run-id]
 <strong>Companion Document</strong>: <a href="BuildSystemDocumentationIndex.html">Build System Guide</a></p>
 <h3 id="related-documentation">Related Documentation</h3>
 <ul>
+<li><a href="Workflows/NuGetTrustedPublishing.html">NuGet Trusted Publishing</a> - nuget.org policies and <code>NUGET_USER</code></li>
 <li><a href="BuildSystemDocumentationIndex.html">Build System Guide</a> - MSBuild scripts and project configuration</li>
 <li><a href="Build%20System/BuildSystemOverview.html#parallel-msbuild">Parallel MSBuild</a> - <code>/m</code>, <code>BuildInParallel</code>, and throttling</li>
 <li><a href="BranchPromotionPolicy.html">Branch promotion policy</a> - Promotion chain and ruleset setup</li>
@@ -1397,7 +1372,7 @@ gh run watch [run-id]
 <hr>
 <h2 id="next-steps">Next Steps</h2>
 <p>✅ <strong>Read Next</strong>: <a href="BuildSystemDocumentationIndex.html">Build System Guide</a> for MSBuild scripts and project structure<br>
-✅ <strong>Setup</strong>: Configure GitHub Secrets (NUGET_API_KEY and Discord webhooks)<br>
+✅ <strong>Setup</strong>: Configure <code>NUGET_USER</code> and nuget.org trusted publishing policies (<a href="Workflows/NuGetTrustedPublishing.html">guide</a>), plus Discord webhooks<br>
 ✅ <strong>Test</strong>: Manually trigger nightly workflow to verify configuration<br>
 ✅ <strong>Monitor</strong>: Watch first automated nightly build at 23:42 UTC</p>
 

@@ -1,6 +1,6 @@
 ﻿# 03 — Core API
 
-[← File Formats](./02-File-Formats.md) · [Index](./README.md) · [Next: Collections →](./04-Collections.md)
+[← File Formats](./FileFormats.md) · [Index](./PaletteFilesIndex.md) · [Next: Collections →](./Collections.md)
 
 Namespace: `Krypton.Toolkit` unless noted.
 
@@ -63,7 +63,7 @@ string? PromptLegacyXmlUpgrade(string sourcePath, bool silent);
 - `UpgradeXmlToKthemex` requires source `.xml` and destination `.kthemex`; **source file left in place**.
 - `PromptLegacyXmlUpgrade`: Yes → rewrite and return `.kthemex` path; No → return original `.xml`; Cancel → `null`. Silent / non-interactive → return path unchanged (no dialog).
 
-### Collection export (also see [04-Collections](./04-Collections.md))
+### Collection export (also see [Collections](./Collections.md))
 
 ```csharp
 string ExportCollection(string destinationPath, IEnumerable<KryptonCustomPaletteBase> palettes);
@@ -87,7 +87,7 @@ Image CreateThemeIcon(Image? thumbnail, Size size /* or int */);
 Icon? CreateThemeFileIcon(string path, bool largeIcon = false);
 ```
 
-Details: [06-Thumbnails-and-Shell](./06-Thumbnails-and-Shell.md).
+Details: [Thumbnails and Shell](./ThumbnailsandShell.md).
 
 ---
 
@@ -186,4 +186,4 @@ Document for maintainers; do not call from consumer code.
 | `TryGetSchemaVersion` | XML attribute or KPLT header |
 | Collection import without name | Exactly one theme → import it; more than one → throw |
 
-[← File Formats](./02-File-Formats.md) · [Index](./README.md) · [Next: Collections →](./04-Collections.md)
+[← File Formats](./FileFormats.md) · [Index](./PaletteFilesIndex.md) · [Next: Collections →](./Collections.md)

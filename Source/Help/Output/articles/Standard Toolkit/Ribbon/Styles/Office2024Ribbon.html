@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Office 2024 ribbon | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Office 2024 ribbon | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="office-2024-ribbon">Office 2024 ribbon</h1>
+
+<p>Office 2024 ribbon chrome for issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4496">#4496</a>. The selected tab is an underline, groups have no boxes, and File is a text tab. Microsoft 365 and Office 2013 keep their existing folder-tab ribbon.</p>
+<h2 id="overview">Overview</h2>
+<p><code>Krypton.Toolkit</code> owns the shape and the renderer. <code>Krypton.Ribbon</code> branches layout and painting on that shape. <code>Krypton.Themes</code> ships twelve extra palettes. Consumers opt in by selecting a palette mode. There is no <code>KryptonRibbon.RibbonStyle</code> property.</p>
+<p>Out of scope: the simplified one-row ribbon, and Word title-bar widgets (Search, AutoSave, Comments, Editing, Share). Group captions stay. Button images stay consumer-supplied.</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code>PaletteMode.Office2024Black
+  -&gt; PaletteOffice2024Black : PaletteMicrosoft365Black
+  -&gt; GetRibbonShape() = Office2024
+  -&gt; GetRenderer() = RenderOffice2024
+  -&gt; ViewDrawRibbon* / CalculatedValues branch on the shape
+  -&gt; RenderStandard.DrawRibbonBack
+       RibbonTabSelected2024  underline (color 1)
+       RibbonTabTracking2024  hover pill (color 1)
+       RibbonGroupArea2024    rounded group card (color 1)
+</code></pre>
+<p><code>RenderOffice2024</code> derives from <code>RenderMicrosoft365</code>. It skips the filled File block and the cluster edge when the shape is <code>Office2024</code>. Control colours, form chrome, and toolbar images stay on the Microsoft 365 base. Toolbar and shield images still use <code>KryptonThemeChromeKind.Microsoft365</code>.</p>
+<h2 id="public-api">Public API</h2>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PaletteRibbonShape.Office2024</code></td>
+<td>Underline tabs, flat groups, text File tab. Appended after <code>MacOS</code>.</td>
+</tr>
+<tr>
+<td><code>PaletteRibbonColorStyle.RibbonTabSelected2024</code></td>
+<td>Color 1 is the underline.</td>
+</tr>
+<tr>
+<td><code>PaletteRibbonColorStyle.RibbonTabTracking2024</code></td>
+<td>Color 1 is the hover fill.</td>
+</tr>
+<tr>
+<td><code>RendererMode.Office2024</code></td>
+<td>Selects <code>KryptonManager.RenderOffice2024</code> for a custom palette.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024Blue</code></td>
+<td>Light blue body, navy tab text, Fluent blue underline <code>#0F6CBD</code>.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024BlueDarkMode</code></td>
+<td>Deep blue body, light tab text, light underline.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024BlueLightMode</code></td>
+<td>White body, navy tab text, Fluent blue underline <code>#0F6CBD</code>.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024Silver</code></td>
+<td>Silver body, dark tab text, Fluent blue underline <code>#0F6CBD</code>.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024SilverDarkMode</code></td>
+<td>Slate body, light tab text, light underline.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024SilverLightMode</code></td>
+<td>Light silver body, dark tab text, Fluent blue underline <code>#0F6CBD</code>.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024White</code></td>
+<td>White body, dark tab text, Fluent blue underline <code>#0F6CBD</code>.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024LightGray</code></td>
+<td>Body <code>#F3F2F1</code>, same blue underline.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024DarkGray</code></td>
+<td>Body <code>#2D2D2D</code>, light text and underline.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024Black</code></td>
+<td>Body <code>#1F1F1F</code>, white selected text and underline.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024BlackDarkMode</code></td>
+<td>Body <code>#0A0A0A</code>, white selected text and underline.</td>
+</tr>
+<tr>
+<td><code>PaletteMode.Office2024BlackDarkModeAlternate</code></td>
+<td>Body <code>#181818</code>, white selected text and underline.</td>
+</tr>
+</tbody>
+</table>
+<p>Display names follow the Microsoft 365 pattern, for example <code>Office 2024 - Blue</code>, <code>Office 2024 - Blue (Dark Mode)</code>, <code>Office 2024 - Silver (Light Mode)</code>, and <code>Office 2024 - Black (Dark Mode - Alternate)</code>.</p>
+<p>Family key: <code>KryptonThemeFamilies.Office2024</code>. <code>KryptonThemeAvailability.SetFamilyEnabled</code> can hide this family without hiding Microsoft 365.</p>
+<p>There are no <code>KryptonManager.PaletteOffice2024*</code> properties. Resolve extras with <code>KryptonManager.GetPaletteForMode</code>.</p>
+<p><code>PaletteRibbonGeneral.RibbonShape</code> stays default <code>Inherit</code>, so existing designer files do not change. A custom palette can set <code>Ribbon.RibbonGeneral.RibbonShape = PaletteRibbonShape.Office2024</code> and <code>RendererMode.Office2024</code>.</p>
+<p>These properties are on the ribbon, under <code>StateCommon.RibbonGeneral</code>. They apply only when the shape is <code>Office2024</code>. Microsoft 365 ignores them.</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GroupAreaBevelEdges</code></td>
+<td>Optional bevel. Default off. Light top-left edge, dark bottom-right edge.</td>
+</tr>
+<tr>
+<td><code>GroupAreaBevelLight</code></td>
+<td>Light edge. <code>Color.Empty</code> derives a lighter colour from the group area.</td>
+</tr>
+<tr>
+<td><code>GroupAreaBevelDark</code></td>
+<td>Dark edge. <code>Color.Empty</code> derives a darker colour from the group area.</td>
+</tr>
+<tr>
+<td><code>GroupAreaBevelSize</code></td>
+<td>Visible bevel width in pixels at 96 DPI. Default 2. Minimum 1.</td>
+</tr>
+<tr>
+<td><code>GroupAreaGap</code></td>
+<td>Gap between group cards in pixels at 96 DPI. Zero, the default, keeps one card.</td>
+</tr>
+</tbody>
+</table>
+<p>Inserting the twelve modes immediately before <code>PaletteMode.Custom</code> shifts <code>Custom</code>'s integer. Names stay stable through <code>PaletteModeStrings</code>.</p>
+<h2 id="usage">Usage</h2>
+<p>Reference <code>Krypton.Themes</code> (it is packed into <code>Krypton.Standard.Toolkit</code>).</p>
+<pre><code class="lang-csharp">var manager = new KryptonManager();
+manager.GlobalPaletteMode = PaletteMode.Office2024Black;
+</code></pre>
+<p>Or on one form and ribbon:</p>
+<pre><code class="lang-csharp">kryptonForm.PaletteMode = PaletteMode.Office2024White;
+kryptonRibbon.PaletteMode = PaletteMode.Office2024White;
+</code></pre>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>Office 2024 allows the File application menu and backstage. Office 2007 still does not.</li>
+<li>The form icon stays visible when the File tab is showing, same as Microsoft 365.</li>
+<li>Contextual tabs keep their title colour. They do not draw a folder-tab fill.</li>
+<li>Explicit ribbon group separators take space and do not stroke.</li>
+<li>Normal group borders are <code>Empty</code>. Tracking and pressed collapsed groups still use the Microsoft 365 border styles.</li>
+<li>Group button text uses the lighter tab colour on dark ribbons so labels stay readable on the flat body.</li>
+<li>The tab strip and the group area are painted separately. The tab strip uses <code>PaletteBackStyle.PanelClient</code> and stays square. The group area is its own inset card of the ribbon body colour, rounded on all four corners. At 96 DPI the card is inset 6px, and the items sit 10px inside the card above and below and 8px on each side. Those distances scale with DPI. A <code>GroupAreaGap</code> above zero paints one card per group and adds 10px inside the left and right of each card. Tab text and the selected underline switch to a contrasting colour when <code>PanelClient</code> would hide the body-coloured text. The caption quick-access strip does not paint its own bar, so icons sit on the title bar.</li>
+</ul>
+<h2 id="validation">Validation</h2>
+<p>TestForm: <code>Office2024RibbonDemo</code>, registered from <code>StartScreen</code> as <strong>Office 2024 Ribbon (#4496)</strong>.</p>
+<pre><code class="lang-text">dotnet run --project &quot;.\Source\Krypton Components\TestForm\TestForm.csproj&quot; -c Debug
+</code></pre>
+<p>Switch the twelve Office 2024 modes and Microsoft 365 Blue. Microsoft 365 Blue must still show folder tabs. <strong>Beveled group edges</strong>, <strong>Bevel size</strong>, and <strong>Group gap</strong> exercise the optional card bevel and the split cards.</p>
+<p>Screenshots: <code>Scripts/UnitTests/Invoke-Office2024RibbonScreenshot.ps1</code> (<code># UnitTest-CI: exclude</code>).</p>
+<p>After <code>Krypton.Themes</code> loads, <code>KryptonThemeCatalog.GetUnimplementedBuiltinModes()</code> must not include the twelve new modes.</p>
+<p>The consumer example belongs in <a href="https://github.com/Krypton-Suite/Standard-Toolkit-Demos">Standard-Toolkit-Demos</a> under <code>Source\Krypton Ribbon Examples</code> (append <code>Ribbon Controls</code>), on branch <code>alpha-4496-office-2024-ribbon</code> from <code>alpha</code>. That working tree is already on <code>alpha-3927-krypton-tag-input</code> with unrelated changes, so the append was not made in this change set.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

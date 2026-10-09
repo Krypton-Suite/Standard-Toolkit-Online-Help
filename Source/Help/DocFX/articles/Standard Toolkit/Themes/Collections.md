@@ -1,6 +1,6 @@
 ﻿# 04 — Collections
 
-[← Core API](./03-Core-API.md) · [Index](./README.md) · [Next: Upgrade →](./05-Upgrade-Convert-Migration.md)
+[← Core API](./CoreAPI.md) · [Index](./PaletteFilesIndex.md) · [Next: Upgrade →](./UpgradeConvertMigration.md)
 
 A **collection** is a `.ktheme` file with KPLT payload kind **2**: several named themes in one container. Single-theme `.ktheme` files (kind 0/1) are **not** collections (`IsCollection` is false) until promoted.
 
@@ -91,7 +91,7 @@ Behaviour notes:
 | Remove last theme | Forbidden — delete the file instead |
 | Rewrites after add/remove | `ignoreDefaults: false` |
 
-UI wrapper: `KryptonPaletteCollectionEditor` — see [07-Utilities-UI](./07-Utilities-UI.md).
+UI wrapper: `KryptonPaletteCollectionEditor` — see [Utilities UI](./UtilitiesUI.md).
 
 ## Path separators
 
@@ -99,7 +99,7 @@ Stored names use `/`. UI should call `ToDisplayPath` / `SplitCollectionThemePath
 
 ## Thumbnails in collections
 
-`ExportCollection` writes an optional trailing `KPTH` catalog from each palette’s `Thumbnail`. Selectors call `GetThemeThumbnails` so previews load **without** a full theme import. See [06-Thumbnails-and-Shell](./06-Thumbnails-and-Shell.md).
+`ExportCollection` writes an optional trailing `KPTH` catalog from each palette’s `Thumbnail`. Selectors call `GetThemeThumbnails` so previews load **without** a full theme import. See [Thumbnails and Shell](./ThumbnailsandShell.md).
 
 ## Cookbook: apply from `*.ktheme`
 
@@ -118,4 +118,4 @@ void ApplyFromKtheme(string path, string? themeName, KryptonManager manager)
 }
 ```
 
-[← Core API](./03-Core-API.md) · [Index](./README.md) · [Next: Upgrade →](./05-Upgrade-Convert-Migration.md)
+[← Core API](./CoreAPI.md) · [Index](./PaletteFilesIndex.md) · [Next: Upgrade →](./UpgradeConvertMigration.md)

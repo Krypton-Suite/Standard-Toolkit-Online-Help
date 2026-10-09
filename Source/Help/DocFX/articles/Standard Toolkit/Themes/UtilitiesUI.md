@@ -1,6 +1,6 @@
 ﻿# 07 — Utilities UI
 
-[← Thumbnails & Shell](./06-Thumbnails-and-Shell.md) · [Index](./README.md) · [Next: Validation →](./08-Validation-and-Integration.md)
+[← Thumbnails & Shell](./ThumbnailsandShell.md) · [Index](./PaletteFilesIndex.md) · [Next: Validation →](./ValidationandIntegration.md)
 
 Assembly: `Krypton.Toolkit.Utilities` (shipped via [Krypton.Standard.Toolkit](https://www.nuget.org/packages/Krypton.Standard.Toolkit)).
 
@@ -118,4 +118,4 @@ editor.ShowDialog(this);
 
 New demos for Toolkit.Utilities belong under `TestForm/KryptonToolkitUtilities/` per `AGENTS.md`; the collection editor demo currently lives under the older `KryptonUtilities` folder name — do not relocate unless that is the task.
 
-[← Thumbnails & Shell](./06-Thumbnails-and-Shell.md) · [Index](./README.md) · [Next: Validation →](./08-Validation-and-Integration.md)
+[← Thumbnails & Shell](./ThumbnailsandShell.md) · [Index](./PaletteFilesIndex.md) · [Next: Validation →](./ValidationandIntegration.md)

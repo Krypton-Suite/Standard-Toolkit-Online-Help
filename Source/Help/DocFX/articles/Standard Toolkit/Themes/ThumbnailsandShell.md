@@ -1,6 +1,6 @@
 ﻿# 06 — Thumbnails and Shell Associations
 
-[← Upgrade](./05-Upgrade-Convert-Migration.md) · [Index](./README.md) · [Next: Utilities UI →](./07-Utilities-UI.md)
+[← Upgrade](./UpgradeConvertMigration.md) · [Index](./PaletteFilesIndex.md) · [Next: Utilities UI →](./UtilitiesUI.md)
 
 ## Palette thumbnail
 
@@ -83,4 +83,4 @@ so double-click Open launches the Designer and file icons match the app icon. To
 
 `KryptonCustomPaletteBase.Import(bool)` / export dialogs call `EnsureShellAssociations()` so first-run associations exist without a separate setup step.
 
-[← Upgrade](./05-Upgrade-Convert-Migration.md) · [Index](./README.md) · [Next: Utilities UI →](./07-Utilities-UI.md)
+[← Upgrade](./UpgradeConvertMigration.md) · [Index](./PaletteFilesIndex.md) · [Next: Utilities UI →](./UtilitiesUI.md)

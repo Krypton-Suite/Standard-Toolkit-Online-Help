@@ -32,6 +32,10 @@ Learn more about the capabilities of the `KryptonRibbon` using the following sec
 * [BackStage View](Ribbon/Components/BackStage%20View/KryptonRibbonBackstageView.md)
 * [Krypton Gallery](Ribbon/KryptonGallery.md)
 
+## Styles
+
+* [Office 2024](Ribbon/Styles/Office2024Ribbon.md)
+
 ## Utilities
 
 * [Ribbon Utilities](Ribbon/Utilities/KryptonRibbonUtilities.md)
