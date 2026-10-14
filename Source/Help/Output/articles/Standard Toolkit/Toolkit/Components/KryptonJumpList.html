@@ -67,117 +67,117 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="kryptonjumplist">KryptonJumpList</h1>
+<h1 id="kryptonjumplist" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="1">KryptonJumpList</h1>
 
-<p>This document describes the <strong>current</strong> Windows taskbar jump list integration in the Krypton Toolkit.<br>
-It reflects the implementation based on <code>JumpListValues</code>, <code>JumpListItem</code>, and the COM / WPF bridges that
+<p sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="3">This document describes the <strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="3">current</strong> Windows taskbar jump list integration in the Krypton Toolkit.<br>
+It reflects the implementation based on <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="4">JumpListValues</code>, <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="4">JumpListItem</code>, and the COM / WPF bridges that
 were added for Windows 7+ style Jump Lists.</p>
-<h2 id="overview">Overview</h2>
-<p>Jump lists let <code>VisualForm</code>-based applications (including <code>KryptonForm</code>) expose:</p>
-<ul>
-<li><strong>User tasks</strong> (e.g. “New document”, “Open settings”)</li>
-<li><strong>Custom categories</strong> (e.g. “Recent Files”, “Templates”) – backed by <code>JumpListValues.Categories</code> and shown under named headings in the taskbar jump list (supported in the core COM implementation and in the TestForm demo).</li>
-<li><strong>Shell–managed sections</strong> like <strong>Recent</strong> and <strong>Frequent</strong> – controlled by <code>ShowRecentCategory</code> / <code>ShowFrequentCategory</code> <strong>and</strong> the Windows privacy setting “Show recently opened items in Start, Jump Lists, and File Explorer”; if that OS setting is off or Windows has no data, these sections will not appear.</li>
+<h2 id="overview" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="7">Overview</h2>
+<p sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="9">Jump lists let <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="9">VisualForm</code>-based applications (including <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="9">KryptonForm</code>) expose:</p>
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="11">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="11"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="11">User tasks</strong> (e.g. “New document”, “Open settings”)</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="12"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="12">Custom categories</strong> (e.g. “Recent Files”, “Templates”) – backed by <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="12">JumpListValues.Categories</code> and shown under named headings in the taskbar jump list (supported in the core COM implementation and in the TestForm demo).</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="13"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="13">Shell–managed sections</strong> like <strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="13">Recent</strong> and <strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="13">Frequent</strong> – controlled by <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="13">ShowRecentCategory</code> / <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="13">ShowFrequentCategory</code> <strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="13">and</strong> the Windows privacy setting “Show recently opened items in Start, Jump Lists, and File Explorer”; if that OS setting is off or Windows has no data, these sections will not appear.</li>
 </ul>
-<p>These appear when the user right‑clicks the app’s taskbar button.</p>
-<h2 id="core-types">Core Types</h2>
-<h3 id="jumplistitem"><code>JumpListItem</code></h3>
-<ul>
-<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/General/JumpListItem.cs</code></li>
-<li><strong>Purpose</strong>: Represents a single item (task or destination) that can appear in the jump list.</li>
-<li><strong>Key properties</strong>:
-<ul>
-<li><code>Title</code> – Display text shown in the jump list.</li>
-<li><code>Path</code> – Executable or file path (e.g. app EXE, document path).</li>
-<li><code>Arguments</code> – Command–line arguments (for tasks).</li>
-<li><code>WorkingDirectory</code> – Working directory for the process.</li>
-<li><code>IconPath</code> – Optional icon source (defaults to <code>Path</code> if omitted).</li>
-<li><code>IconIndex</code> – Index within the icon resource.</li>
-<li><code>Description</code> – Tooltip text.</li>
-</ul>
-</li>
-</ul>
-<h3 id="jumplistvalues"><code>JumpListValues</code></h3>
-<ul>
-<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/Values/JumpListValues.cs</code></li>
-<li><strong>Purpose</strong>: Stores jump list configuration for a <code>VisualForm</code>.</li>
-<li><strong>Key members</strong>:
-<ul>
-<li><code>AppId</code> – Application User Model ID (AppUserModelID).</li>
-<li><code>ShowFrequentCategory</code> – Whether to show the Windows‑managed <strong>Frequent</strong> section.</li>
-<li><code>ShowRecentCategory</code> – Whether to show the Windows‑managed <strong>Recent</strong> section.</li>
-<li><code>UserTasks : List&lt;JumpListItem&gt;</code> – Collection of user tasks.</li>
-<li><code>Categories : Dictionary&lt;string, List&lt;JumpListItem&gt;&gt;</code> – Custom categories.</li>
-<li><code>ResetUserTasks()</code>, <code>ClearCategories()</code> – Helpers to clear state.</li>
-<li><code>Apply()</code> – Raises the internal <code>JumpListChanged</code> event so <code>VisualForm</code> can rebuild the shell jump list.</li>
+<p sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="15">These appear when the user right‑clicks the app’s taskbar button.</p>
+<h2 id="core-types" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="17">Core Types</h2>
+<h3 id="jumplistitem" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="19"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="19">JumpListItem</code></h3>
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="21">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="21"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="21">Location</strong>: <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="21">Source/Krypton Components/Krypton.Toolkit/General/JumpListItem.cs</code></li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="22"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="22">Purpose</strong>: Represents a single item (task or destination) that can appear in the jump list.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="23"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="23">Key properties</strong>:
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="24">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="24"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="24">Title</code> – Display text shown in the jump list.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="25"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="25">Path</code> – Executable or file path (e.g. app EXE, document path).</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="26"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="26">Arguments</code> – Command–line arguments (for tasks).</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="27"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="27">WorkingDirectory</code> – Working directory for the process.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="28"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="28">IconPath</code> – Optional icon source (defaults to <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="28">Path</code> if omitted).</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="29"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="29">IconIndex</code> – Index within the icon resource.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="30"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="30">Description</code> – Tooltip text.</li>
 </ul>
 </li>
 </ul>
-<blockquote>
-<p><strong>Note</strong><br>
-Mutating <code>UserTasks</code> or <code>Categories</code> directly (e.g. <code>Add</code>, <code>Clear</code>) does <strong>not</strong> automatically update Windows.
-You must either call <code>Apply()</code> or use higher-level helpers that raise <code>JumpListChanged</code>.</p>
+<h3 id="jumplistvalues" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="32"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="32">JumpListValues</code></h3>
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="34">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="34"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="34">Location</strong>: <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="34">Source/Krypton Components/Krypton.Toolkit/Values/JumpListValues.cs</code></li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="35"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="35">Purpose</strong>: Stores jump list configuration for a <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="35">VisualForm</code>.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="36"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="36">Key members</strong>:
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="37">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="37"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="37">AppId</code> – Application User Model ID (AppUserModelID).</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="38"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="38">ShowFrequentCategory</code> – Whether to show the Windows‑managed <strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="38">Frequent</strong> section.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="39"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="39">ShowRecentCategory</code> – Whether to show the Windows‑managed <strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="39">Recent</strong> section.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="40"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="40">UserTasks : List&lt;JumpListItem&gt;</code> – Collection of user tasks.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="41"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="41">Categories : Dictionary&lt;string, List&lt;JumpListItem&gt;&gt;</code> – Custom categories.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="42"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="42">ResetUserTasks()</code>, <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="42">ClearCategories()</code> – Helpers to clear state.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="43"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="43">Apply()</code> – Raises the internal <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="43">JumpListChanged</code> event so <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="43">VisualForm</code> can rebuild the shell jump list.</li>
+</ul>
+</li>
+</ul>
+<blockquote sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="45">
+<p sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="45"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="45">Note</strong><br>
+Mutating <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="46">UserTasks</code> or <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="46">Categories</code> directly (e.g. <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="46">Add</code>, <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="46">Clear</code>) does <strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="46">not</strong> automatically update Windows.
+You must either call <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="47">Apply()</code> or use higher-level helpers that raise <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="47">JumpListChanged</code>.</p>
 </blockquote>
-<h3 id="com-interop-platforminvokecs">COM Interop (<code>PlatformInvoke.cs</code>)</h3>
-<ul>
-<li><strong>Location</strong>: <code>Source/Krypton Components/Krypton.Toolkit/General/PlatformInvoke.cs</code></li>
-<li><strong>Purpose</strong>: Provides the native interfaces and CLSIDs used to talk to the Windows shell.</li>
-<li><strong>Relevant declarations</strong>:
-<ul>
-<li><code>ICustomDestinationList</code> – Creates and commits a custom jump list.</li>
-<li><code>IShellLinkW</code> – Represents a shell link used for tasks and destinations.</li>
-<li><code>IObjectCollection</code> / <code>IObjectArray</code> – Collections of shell COM objects.</li>
-<li><code>CustomDestinationList</code> / <code>ObjectCollection</code> – COM classes (CLSIDs) used to create the objects.</li>
-<li><code>IPropertyStore</code>, <code>PROPERTYKEY</code>, <code>PROPVARIANT</code>, <code>PKEY_Title</code> – Used to set the display title for shell links.</li>
-<li><code>SetCurrentProcessExplicitAppUserModelID</code> – P/Invoke call to set the process AppUserModelID.</li>
+<h3 id="com-interop-platforminvokecs" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="49">COM Interop (<code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="49">PlatformInvoke.cs</code>)</h3>
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="51">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="51"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="51">Location</strong>: <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="51">Source/Krypton Components/Krypton.Toolkit/General/PlatformInvoke.cs</code></li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="52"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="52">Purpose</strong>: Provides the native interfaces and CLSIDs used to talk to the Windows shell.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="53"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="53">Relevant declarations</strong>:
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="54">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="54"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="54">ICustomDestinationList</code> – Creates and commits a custom jump list.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="55"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="55">IShellLinkW</code> – Represents a shell link used for tasks and destinations.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="56"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="56">IObjectCollection</code> / <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="56">IObjectArray</code> – Collections of shell COM objects.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="57"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="57">CustomDestinationList</code> / <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="57">ObjectCollection</code> – COM classes (CLSIDs) used to create the objects.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="58"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="58">IPropertyStore</code>, <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="58">PROPERTYKEY</code>, <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="58">PROPVARIANT</code>, <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="58">PKEY_Title</code> – Used to set the display title for shell links.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="59"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="59">SetCurrentProcessExplicitAppUserModelID</code> – P/Invoke call to set the process AppUserModelID.</li>
 </ul>
 </li>
 </ul>
-<p>Krypton uses these to:</p>
-<ul>
-<li>Create <code>IShellLinkW</code> instances for each <code>JumpListItem</code>.</li>
-<li>Set required fields (path, arguments, icon, description, title).</li>
-<li>Place links into categories and the tasks section.</li>
-<li>Commit the list via <code>ICustomDestinationList.CommitList()</code>.</li>
+<p sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="61">Krypton uses these to:</p>
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="63">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="63">Create <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="63">IShellLinkW</code> instances for each <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="63">JumpListItem</code>.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="64">Set required fields (path, arguments, icon, description, title).</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="65">Place links into categories and the tasks section.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="66">Commit the list via <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="66">ICustomDestinationList.CommitList()</code>.</li>
 </ul>
-<h2 id="integration-with-visualform--kryptonform">Integration with <code>VisualForm</code> / <code>KryptonForm</code></h2>
-<h3 id="properties">Properties</h3>
-<p>On <code>VisualForm</code> (and therefore <code>KryptonForm</code>) you get:</p>
-<ul>
-<li><code>JumpListValues</code> – Exposes the <code>JumpListValues</code> instance.</li>
-<li><code>JumpList</code> – Convenience wrapper that forwards to <code>JumpListValues</code>.</li>
+<h2 id="integration-with-visualform--kryptonform" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="68">Integration with <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="68">VisualForm</code> / <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="68">KryptonForm</code></h2>
+<h3 id="properties" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="70">Properties</h3>
+<p sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="72">On <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="72">VisualForm</code> (and therefore <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="72">KryptonForm</code>) you get:</p>
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="74">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="74"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="74">JumpListValues</code> – Exposes the <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="74">JumpListValues</code> instance.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="75"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="75">JumpList</code> – Convenience wrapper that forwards to <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="75">JumpListValues</code>.</li>
 </ul>
-<h3 id="lifecycle">Lifecycle</h3>
-<ul>
-<li>On construction, <code>VisualForm</code> creates a <code>JumpListValues</code> instance and subscribes to its internal <code>JumpListChanged</code> event.</li>
-<li>When the form handle is created, <code>VisualForm</code> calls its internal <code>OnJumpListChanged()</code> which:
-<ul>
-<li>Ensures:
-<ul>
-<li>Not in design mode.</li>
-<li>Window handle exists.</li>
-<li>OS is Windows 7+.</li>
-<li><code>AppId</code> is non-empty.</li>
-</ul>
-</li>
-<li>Creates a <code>CustomDestinationList</code> instance.</li>
-<li>Adds <strong>Recent</strong>/<strong>Frequent</strong> categories if enabled.</li>
-<li>Converts <code>Categories</code> and <code>UserTasks</code> into <code>IShellLinkW</code> objects and appends them.</li>
-<li>Calls <code>CommitList()</code> to apply the jump list to the shell.</li>
+<h3 id="lifecycle" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="77">Lifecycle</h3>
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="79">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="79">On construction, <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="79">VisualForm</code> creates a <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="79">JumpListValues</code> instance and subscribes to its internal <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="79">JumpListChanged</code> event.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="80">When the form handle is created, <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="80">VisualForm</code> calls its internal <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="80">OnJumpListChanged()</code> which:
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="81">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="81">Ensures:
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="82">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="82">Not in design mode.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="83">Window handle exists.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="84">OS is Windows 7+.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="85"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="85">AppId</code> is non-empty.</li>
 </ul>
 </li>
-<li><code>JumpListValues.Apply()</code> simply invokes <code>JumpListChanged</code>, which in turn causes <code>VisualForm</code> to rebuild the COM jump list.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="86">Creates a <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="86">CustomDestinationList</code> instance.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="87">Adds <strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="87">Recent</strong>/<strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="87">Frequent</strong> categories if enabled.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="88">Converts <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="88">Categories</code> and <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="88">UserTasks</code> into <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="88">IShellLinkW</code> objects and appends them.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="89">Calls <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="89">CommitList()</code> to apply the jump list to the shell.</li>
 </ul>
-<h3 id="error-handling">Error Handling</h3>
-<ul>
-<li>If COM activation fails (e.g. <code>REGDB_E_CLASSNOTREG</code>), the exception is caught and ignored so the app continues running without a jump list.</li>
-<li>Any other exceptions from the COM layer are captured by <code>KryptonExceptionHandler</code>.</li>
+</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="90"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="90">JumpListValues.Apply()</code> simply invokes <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="90">JumpListChanged</code>, which in turn causes <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="90">VisualForm</code> to rebuild the COM jump list.</li>
 </ul>
-<h2 id="usage">Usage</h2>
-<h3 id="1-setting-the-appusermodelid">1. Setting the AppUserModelID</h3>
-<p>Windows uses the AppUserModelID to associate your process with its taskbar icon and jump list.</p>
-<p>You must set it <strong>before</strong> any window is created:</p>
-<pre><code class="lang-csharp">// Typical Program.Main (WinForms)
+<h3 id="error-handling" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="92">Error Handling</h3>
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="94">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="94">If COM activation fails (e.g. <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="94">REGDB_E_CLASSNOTREG</code>), the exception is caught and ignored so the app continues running without a jump list.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="95">Any other exceptions from the COM layer are captured by <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="95">KryptonExceptionHandler</code>.</li>
+</ul>
+<h2 id="usage" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="97">Usage</h2>
+<h3 id="1-setting-the-appusermodelid" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="99">1. Setting the AppUserModelID</h3>
+<p sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="101">Windows uses the AppUserModelID to associate your process with its taskbar icon and jump list.</p>
+<p sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="103">You must set it <strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="103">before</strong> any window is created:</p>
+<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="105">// Typical Program.Main (WinForms)
 [STAThread]
 static void Main()
 {
@@ -190,37 +190,37 @@ static void Main()
     Application.Run(new MyKryptonForm());
 }
 </code></pre>
-<p>On the form, match the values:</p>
-<pre><code class="lang-csharp">public MyKryptonForm()
+<p sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="120">On the form, match the values:</p>
+<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="122">public MyKryptonForm()
 {
     InitializeComponent();
     JumpList.AppId = &quot;MyCompany.MyApp&quot;;
 }
 </code></pre>
-<h3 id="2-configuring-via-designer">2. Configuring via Designer</h3>
-<ol>
-<li>Select your <code>KryptonForm</code> in the designer.</li>
-<li>In the Properties grid, expand <code>JumpList</code>.</li>
-<li>Set:
-<ul>
-<li><code>AppId</code> – Same as you use in <code>SetCurrentProcessExplicitAppUserModelID</code>.</li>
-<li><code>ShowFrequentCategory</code> / <code>ShowRecentCategory</code> as needed.</li>
+<h3 id="2-configuring-via-designer" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="130">2. Configuring via Designer</h3>
+<ol sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="132">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="132">Select your <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="132">KryptonForm</code> in the designer.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="133">In the Properties grid, expand <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="133">JumpList</code>.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="134">Set:
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="135">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="135"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="135">AppId</code> – Same as you use in <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="135">SetCurrentProcessExplicitAppUserModelID</code>.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="136"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="136">ShowFrequentCategory</code> / <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="136">ShowRecentCategory</code> as needed.</li>
 </ul>
 </li>
-<li>Expand <code>UserTasks</code>:
-<ul>
-<li>Click the collection editor <code>...</code>.</li>
-<li>Add <code>JumpListItem</code> entries (set <code>Title</code>, <code>Path</code>, optional <code>Arguments</code>, <code>IconPath</code>, etc.).</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="137">Expand <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="137">UserTasks</code>:
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="138">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="138">Click the collection editor <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="138">...</code>.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="139">Add <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="139">JumpListItem</code> entries (set <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="139">Title</code>, <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="139">Path</code>, optional <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="139">Arguments</code>, <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="139">IconPath</code>, etc.).</li>
 </ul>
 </li>
-<li>Custom categories:
-<ul>
-<li>Use code or helpers to populate <code>Categories</code> at runtime (currently a dictionary, not designer-editable).</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="140">Custom categories:
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="141">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="141">Use code or helpers to populate <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="141">Categories</code> at runtime (currently a dictionary, not designer-editable).</li>
 </ul>
 </li>
 </ol>
-<h3 id="3-configuring-in-code">3. Configuring in Code</h3>
-<pre><code class="lang-csharp">// Inside a KryptonForm
+<h3 id="3-configuring-in-code" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="143">3. Configuring in Code</h3>
+<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="145">// Inside a KryptonForm
 private void ConfigureJumpList()
 {
     JumpList.AppId = &quot;MyCompany.MyApp&quot;;
@@ -264,9 +264,9 @@ private void ConfigureJumpList()
     JumpList.Apply();
 }
 </code></pre>
-<h3 id="4-handling-item-clicks">4. Handling Item Clicks</h3>
-<p>When the user chooses a task or file from the jump list, Windows starts your application with the configured arguments or file path:</p>
-<pre><code class="lang-csharp">// Program.Main example
+<h3 id="4-handling-item-clicks" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="191">4. Handling Item Clicks</h3>
+<p sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="193">When the user chooses a task or file from the jump list, Windows starts your application with the configured arguments or file path:</p>
+<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="195">// Program.Main example
 static void Main()
 {
     Krypton.Toolkit.PI.SetCurrentProcessExplicitAppUserModelID(&quot;MyCompany.MyApp&quot;);
@@ -300,25 +300,25 @@ static void Main()
     Application.Run(new MyKryptonForm());
 }
 </code></pre>
-<h2 id="requirements--notes">Requirements &amp; Notes</h2>
-<ul>
-<li><strong>OS</strong>: Windows 7 or later.</li>
-<li><strong>.NET</strong>:
-<ul>
-<li>.NET Framework 4.7.2+ or</li>
-<li>.NET 8.0‑windows+ (for modern TFMs in this repo).</li>
+<h2 id="requirements--notes" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="231">Requirements &amp; Notes</h2>
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="233">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="233"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="233">OS</strong>: Windows 7 or later.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="234"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="234">.NET</strong>:
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="235">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="235">.NET Framework 4.7.2+ or</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="236">.NET 8.0‑windows+ (for modern TFMs in this repo).</li>
 </ul>
 </li>
-<li>Jump lists are only created at runtime (never in the designer).</li>
-<li>If COM activation fails (<code>REGDB_E_CLASSNOTREG</code> or similar), Krypton silently skips jump list updates so the app still runs.</li>
-<li>The TestForm jump list demo also includes an optional WPF <code>System.Windows.Shell.JumpList</code> bridge for environments where native COM is unreliable; that bridge is <strong>demo-only</strong> and not required for normal applications.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="237">Jump lists are only created at runtime (never in the designer).</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="238">If COM activation fails (<code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="238">REGDB_E_CLASSNOTREG</code> or similar), Krypton silently skips jump list updates so the app still runs.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="239">The TestForm jump list demo also includes an optional WPF <code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="239">System.Windows.Shell.JumpList</code> bridge for environments where native COM is unreliable; that bridge is <strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="239">demo-only</strong> and not required for normal applications.</li>
 </ul>
-<h2 id="benefits">Benefits</h2>
-<ul>
-<li><strong>Improved UX</strong>: Quick access to common tasks and documents directly from the taskbar.</li>
-<li><strong>Native integration</strong>: Uses the same mechanisms as WPF’s <a href="https://learn.microsoft.com/en-us/dotnet/api/system.windows.shell.jumplist?view=windowsdesktop-10.0"><code>System.Windows.Shell.JumpList</code></a>.</li>
-<li><strong>Flexible</strong>: Supports user tasks, custom categories, and shell‑managed Recent/Frequent sections.</li>
-<li><strong>Safe &amp; resilient</strong>: Handles unsupported or misconfigured environments gracefully without crashing the app.</li>
+<h2 id="benefits" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="241">Benefits</h2>
+<ul sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="243">
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="243"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="243">Improved UX</strong>: Quick access to common tasks and documents directly from the taskbar.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="244"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="244">Native integration</strong>: Uses the same mechanisms as WPF’s <a href="https://learn.microsoft.com/en-us/dotnet/api/system.windows.shell.jumplist?view=windowsdesktop-10.0" sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="244"><code sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="244">System.Windows.Shell.JumpList</code></a>.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="245"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="245">Flexible</strong>: Supports user tasks, custom categories, and shell‑managed Recent/Frequent sections.</li>
+<li sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="246"><strong sourcefile="articles/Standard Toolkit/Toolkit/Components/KryptonJumpList.md" sourcestartlinenumber="246">Safe &amp; resilient</strong>: Handles unsupported or misconfigured environments gracefully without crashing the app.</li>
 </ul>
 
 </article>

@@ -30,10 +30,10 @@ There are currently two types of package that are supported. The table below out
 
 | Version | Status | Latest Release | Latest Release Date | End of Support |
 | --- | --- | --- | --- | --- |
-| .NET 11.0 | Standard Term Support | 11.0.0-rc.1 | September 8, 2026 | TBA |
-| .NET 10.0 | Long Term Support | 10.0.12 | September 8, 2026 | November 14, 2028 |
-| .NET 9.0 | Standard Term Support | 9.0.20 | September 8, 2026 | November 10, 2026 |
-| .NET 8.0 | Long Term Support | 8.0.31 | September 8, 2026 | November 10, 2026 |
+| .NET 11.0 | Standard Term Support | 11.0.0-rc.2 | October 13, 2026 | TBA |
+| .NET 10.0 | Long Term Support | 10.0.13 | October 13, 2026 | November 14, 2028 |
+| .NET 9.0 | Standard Term Support | 9.0.21 | October 13, 2026 | November 10, 2026 |
+| .NET 8.0 | Long Term Support | 8.0.32 | October 13, 2026 | November 10, 2026 |
 
 ### Supported .NET Framework Versions
 
