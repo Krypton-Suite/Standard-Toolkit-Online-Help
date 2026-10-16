@@ -75,7 +75,7 @@
 <li>Workflow name: <code>Canary Release</code></li>
 <li>Triggers: <code>push</code> (<code>Canary</code>), <code>workflow_dispatch</code></li>
 <li>Runner: <code>windows-2025-vs2026</code></li>
-<li>Permissions: <code>contents: read</code></li>
+<li>Permissions: <code>contents: read</code>, <code>id-token: write</code></li>
 <li>Environment: <code>production</code></li>
 </ul>
 <h2 id="overview">Overview</h2>
@@ -153,9 +153,9 @@
 <li>Applies size gate from <code>Scripts/CI/StandardToolkitNupkgGuard.ps1</code></li>
 <li>Tracks whether any package was newly published</li>
 </ul>
-<p>Required secret for publish:</p>
+<p>Required for publish:</p>
 <ul>
-<li><code>NUGET_API_KEY</code></li>
+<li><code>NUGET_USER</code> (nuget.org profile name). Login uses <a href="NuGetTrustedPublishing.html">NuGet trusted publishing</a>. A missing short-lived key fails the job on this repository. Other repositories skip the push.</li>
 </ul>
 <h2 id="notifications">Notifications</h2>
 <p>When packages were newly published, the workflow posts a Discord embed to:</p>
@@ -179,7 +179,7 @@
 <h3 id="no-packages-published">No packages published</h3>
 <p>Check:</p>
 <ul>
-<li><code>NUGET_API_KEY</code> configured</li>
+<li><code>NUGET_USER</code> and a nuget.org trusted publishing policy for <code>canary.yml</code> (see <a href="NuGetTrustedPublishing.html">NuGet Trusted Publishing</a>)</li>
 <li>version increment/publish duplication behavior (<code>--skip-duplicate</code>)</li>
 <li>package size guard thresholds (<code>STANDARD_TOOLKIT_MIN_NUPKG_MB</code>)</li>
 </ul>
@@ -191,6 +191,7 @@
 </ul>
 <h2 id="related-documentation">Related Documentation</h2>
 <ul>
+<li><a href="NuGetTrustedPublishing.html">NuGet Trusted Publishing</a></li>
 <li><a href="ReleaseWorkflow.html">Release Workflow</a></li>
 <li><a href="../GitHubActionsWorkflows.html">GitHub Actions Workflows</a></li>
 </ul>

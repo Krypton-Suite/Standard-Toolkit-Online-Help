@@ -214,7 +214,7 @@
 <li><strong>Branch</strong>: Workflow logic runs only on <code>V105-LTS</code>.</li>
 <li><strong>Secrets</strong> (see <a href="#secrets-and-variables-reference">Secrets and Variables Reference</a>):
 <ul>
-<li><strong>NUGET_API_KEY</strong> (required for push): nuget.org API key with push permission.</li>
+<li><strong>NUGET_USER</strong> (required for push): nuget.org profile name. See <a href="NuGetTrustedPublishing.html">NuGet Trusted Publishing</a>. A missing short-lived key fails the job on this repository.</li>
 <li><strong>AUTHENTICODE_CERT_BASE64</strong> (optional): Base64-encoded .pfx for code signing.</li>
 <li><strong>AUTHENTICODE_CERT_PASSWORD</strong> (optional): Password for the .pfx.</li>
 <li><strong>DISCORD_WEBHOOK_CANARY</strong> (optional): Discord webhook for release announcements.</li>
@@ -352,8 +352,8 @@
 <li><strong>Condition</strong>: Kill switch enabled.</li>
 <li><strong>Behaviour</strong>:
 <ul>
-<li>If <code>NUGET_API_KEY</code> is not set: logs a warning, sets <code>packages_published=false</code>, exits successfully (no failure).</li>
-<li>Otherwise: enumerates <code>Artefacts/Packages/Canary/*.nupkg</code>, and for each runs <code>dotnet nuget push ... --source https://api.nuget.org/v3/index.json --skip-duplicate</code>. Sets <code>packages_published=true</code> if at least one package was actually pushed (not skipped as duplicate).</li>
+<li>On <code>Krypton-Suite/Standard-Toolkit</code>: exchanges a GitHub OIDC token for a short-lived API key (<code>NuGet/login</code>), then enumerates <code>Artefacts/Packages/Canary/*.nupkg</code> and runs <code>dotnet nuget push ... --source https://api.nuget.org/v3/index.json --skip-duplicate</code>. A missing key fails the step. Sets <code>packages_published=true</code> if at least one package was actually pushed (not skipped as duplicate).</li>
+<li>On any other repository: logs a warning, sets <code>packages_published=false</code>, and exits successfully.</li>
 </ul>
 </li>
 <li><strong>Note</strong>: If your build outputs to <code>Bin/Packages/Canary</code> instead of <code>Artefacts/Packages/Canary</code>, the push step will find no packages; see <a href="#troubleshooting">Troubleshooting</a>.</li>
@@ -425,10 +425,10 @@
 </thead>
 <tbody>
 <tr>
-<td><strong>NUGET_API_KEY</strong></td>
+<td><strong>NUGET_USER</strong></td>
 <td>Secret</td>
 <td>Yes (for push)</td>
-<td>nuget.org API key; push to <a href="https://api.nuget.org/v3/index.json">https://api.nuget.org/v3/index.json</a>. If unset, push is skipped and the workflow still succeeds.</td>
+<td>nuget.org profile name for trusted publishing. On this repository a missing short-lived key fails the push step. Setup: <a href="NuGetTrustedPublishing.html">NuGet Trusted Publishing</a>.</td>
 </tr>
 <tr>
 <td><strong>AUTHENTICODE_CERT_BASE64</strong></td>
@@ -484,8 +484,8 @@
 <hr>
 <h2 id="security-and-permissions">Security and Permissions</h2>
 <ul>
-<li><strong>Permissions</strong>: Uses default <code>GITHUB_TOKEN</code> for checkout. No special scopes are required unless you add steps that need them.</li>
-<li><strong>Secrets</strong>: All sensitive data (NuGet key, certificate, Discord webhook) are stored as repository secrets and are not logged.</li>
+<li><strong>Permissions</strong>: <code>contents: read</code> and <code>id-token: write</code>. <code>id-token: write</code> lets the job request the GitHub OIDC token used by NuGet trusted publishing.</li>
+<li><strong>Secrets</strong>: <code>NUGET_USER</code> is the nuget.org profile name, not an API key. Certificate and Discord webhook values stay in repository secrets and are not logged.</li>
 <li><strong>Branch</strong>: The job runs only when <code>github.ref == 'refs/heads/V105-LTS'</code>, so only the V105-LTS branch can trigger this pipeline.</li>
 <li><strong>Certificate</strong>: The .pfx is written to <code>RUNNER_TEMP</code> and used only for the build; it is not committed or re-exposed in logs.</li>
 </ul>
@@ -516,7 +516,7 @@
 </ul>
 <h3 id="nuget-push-fails-eg-403-or-409">NuGet push fails (e.g. 403 or 409)</h3>
 <ul>
-<li>Verify <strong>NUGET_API_KEY</strong> is correct and has push permission for the package IDs.</li>
+<li>Verify trusted publishing for <code>canary-lts-release.yml</code> (<code>NUGET_USER</code>, policy, <code>production</code> environment). See <a href="NuGetTrustedPublishing.html">NuGet Trusted Publishing</a>.</li>
 <li>For 409: version already exists; the script uses <code>--skip-duplicate</code>, so the run may still succeed but no new version is pushed. Check NuGet for that version.</li>
 </ul>
 <h3 id="kill-switch-has-no-effect">Kill switch has no effect</h3>
@@ -526,6 +526,7 @@
 </ul>
 <h2 id="see-also">See Also</h2>
 <ul>
+<li><a href="NuGetTrustedPublishing.html">NuGet Trusted Publishing</a></li>
 <li><a href="ReleaseWorkflow.html">Release Workflow</a> — Main release pipeline for stable, LTS, and Canary</li>
 <li><a href="BuildWorkflow.html">Build Workflow</a> — CI validation</li>
 </ul>

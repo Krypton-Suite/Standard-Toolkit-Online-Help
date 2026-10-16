@@ -124,7 +124,7 @@
 <li><strong>SDK setup</strong>: install <strong>.NET 9.0.x</strong> and <strong>10.0.x</strong>. Jobs that publish preview TFMs also run <strong>Setup .NET Preview</strong> (unless repository variable <strong><code>USE_DOTNET_PREVIEW</code></strong> is <code>false</code>) and <strong>Pin SDK via global.json</strong>, which resolves <code>sdk.version</code> using <strong><code>DOTNET_PREVIEW_SDK_BAND</code></strong> / <strong><code>Get-ListedSdkVersion</code></strong> when preview is enabled, or stable <strong>10.x → 9.x</strong> when preview is disabled (see <a href="../../GitHubActionsWorkflows.html#repository-variables-net-preview--ci">GitHub Actions Workflows</a>).</li>
 <li>The <strong><code>release-v105-lts</code></strong> job pins <strong>stable</strong> SDKs only (no preview setup step).</li>
 <li>Orchestrated <strong>Build</strong> and <strong>Pack</strong> steps pass <strong><code>/m</code></strong> and <code>/p:UseArtifactsOutput=true</code>, so outputs go under <code>artifacts/bin/</code> and <code>artifacts/packages/</code> on the runner. <strong>Push</strong> and <strong>Get Version</strong> steps try <code>artifacts/...</code> first, then fall back to legacy <code>Bin/...</code> for compatibility with older layouts or local debugging.</li>
-<li>Package publishing relies on <code>secrets.NUGET_API_KEY</code>.</li>
+<li>Package publishing uses <a href="../../Workflows/NuGetTrustedPublishing.html">NuGet trusted publishing</a> (<code>NUGET_USER</code> plus a short-lived key). It does not read <code>secrets.NUGET_API_KEY</code>.</li>
 </ul>
 <h2 id="kill-switches">Kill Switches</h2>
 <ul>
@@ -202,7 +202,7 @@
 <ul>
 <li>Packages iterate serially; failures log warnings but do not fail the workflow (resilience for flaky pushes).</li>
 <li>Successful pushes toggle <code>$publishedAny</code> to <code>$true</code>, which determines whether Discord announcements run.</li>
-<li>Missing <code>NUGET_API_KEY</code> skips publishing gracefully; ensure repo secrets are populated before enabling release branches.</li>
+<li>On <code>Krypton-Suite/Standard-Toolkit</code>, a missing short-lived key fails the push step. Other repositories skip publishing. See <a href="../../Workflows/NuGetTrustedPublishing.html">NuGet Trusted Publishing</a>.</li>
 </ul>
 <h3 id="version-discovery">Version Discovery</h3>
 <p>Priority order:</p>
@@ -236,8 +236,8 @@
 </tr>
 <tr>
 <td><code>dotnet nuget push</code> failing with 403</td>
-<td>Expired or missing <code>NUGET_API_KEY</code></td>
-<td>Rotate key in repo secrets; rerun job.</td>
+<td>Trusted publishing policy, <code>NUGET_USER</code>, or <code>id-token: write</code> does not match the job</td>
+<td>Follow <a href="../../Workflows/NuGetTrustedPublishing.html">NuGet Trusted Publishing</a>; rerun the job.</td>
 </tr>
 <tr>
 <td>Discord step skipped</td>
@@ -260,6 +260,7 @@
 </ul>
 <h2 id="related-documentation">Related documentation</h2>
 <ul>
+<li><a href="../../Workflows/NuGetTrustedPublishing.html">NuGet Trusted Publishing</a></li>
 <li><a href="../../BranchPromotionPolicy.html">Branch promotion policy</a></li>
 <li><a href="../../Workflows/MasterMergeGuardWorkflow.html">Master merge guard</a></li>
 <li><a href="../../Workflows/BranchPromotionGuardWorkflow.html">Branch promotion guard</a></li>

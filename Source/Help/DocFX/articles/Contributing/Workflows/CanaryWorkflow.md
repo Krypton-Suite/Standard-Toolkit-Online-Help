@@ -6,7 +6,7 @@
 - Workflow name: `Canary Release`
 - Triggers: `push` (`Canary`), `workflow_dispatch`
 - Runner: `windows-2025-vs2026`
-- Permissions: `contents: read`
+- Permissions: `contents: read`, `id-token: write`
 - Environment: `production`
 
 ## Overview
@@ -92,9 +92,9 @@ NuGet push step behavior:
 - Applies size gate from `Scripts/CI/StandardToolkitNupkgGuard.ps1`
 - Tracks whether any package was newly published
 
-Required secret for publish:
+Required for publish:
 
-- `NUGET_API_KEY`
+- `NUGET_USER` (nuget.org profile name). Login uses [NuGet trusted publishing](NuGetTrustedPublishing.md). A missing short-lived key fails the job on this repository. Other repositories skip the push.
 
 ## Notifications
 
@@ -126,7 +126,7 @@ Check:
 
 Check:
 
-- `NUGET_API_KEY` configured
+- `NUGET_USER` and a nuget.org trusted publishing policy for `canary.yml` (see [NuGet Trusted Publishing](NuGetTrustedPublishing.md))
 - version increment/publish duplication behavior (`--skip-duplicate`)
 - package size guard thresholds (`STANDARD_TOOLKIT_MIN_NUPKG_MB`)
 
@@ -139,5 +139,6 @@ Check:
 
 ## Related Documentation
 
+- [NuGet Trusted Publishing](NuGetTrustedPublishing.md)
 - [Release Workflow](ReleaseWorkflow.md)
 - [GitHub Actions Workflows](../GitHubActionsWorkflows.md)

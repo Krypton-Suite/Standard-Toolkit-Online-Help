@@ -90,7 +90,7 @@ if: github.ref == 'refs/heads/V105-LTS' && (github.event_name == 'push' || githu
 - **Repository**: Contains the Standard Toolkit solution and `Scripts/Build/canarylongtermstable.proj` (Canary LTS orchestration; distinct from `canary.proj` on the `canary` branch).
 - **Branch**: Workflow logic runs only on `V105-LTS`.
 - **Secrets** (see [Secrets and Variables Reference](#secrets-and-variables-reference)):
-  - **NUGET_API_KEY** (required for push): nuget.org API key with push permission.
+  - **NUGET_USER** (required for push): nuget.org profile name. See [NuGet Trusted Publishing](NuGetTrustedPublishing.md). A missing short-lived key fails the job on this repository.
   - **AUTHENTICODE_CERT_BASE64** (optional): Base64-encoded .pfx for code signing.
   - **AUTHENTICODE_CERT_PASSWORD** (optional): Password for the .pfx.
   - **DISCORD_WEBHOOK_CANARY** (optional): Discord webhook for release announcements.
@@ -206,8 +206,8 @@ When disabled, the first step writes a warning and sets `enabled=false`; all sub
 - **Id**: `push_nuget`
 - **Condition**: Kill switch enabled.
 - **Behaviour**:
-  - If `NUGET_API_KEY` is not set: logs a warning, sets `packages_published=false`, exits successfully (no failure).
-  - Otherwise: enumerates `Artefacts/Packages/Canary/*.nupkg`, and for each runs `dotnet nuget push ... --source https://api.nuget.org/v3/index.json --skip-duplicate`. Sets `packages_published=true` if at least one package was actually pushed (not skipped as duplicate).
+  - On `Krypton-Suite/Standard-Toolkit`: exchanges a GitHub OIDC token for a short-lived API key (`NuGet/login`), then enumerates `Artefacts/Packages/Canary/*.nupkg` and runs `dotnet nuget push ... --source https://api.nuget.org/v3/index.json --skip-duplicate`. A missing key fails the step. Sets `packages_published=true` if at least one package was actually pushed (not skipped as duplicate).
+  - On any other repository: logs a warning, sets `packages_published=false`, and exits successfully.
 - **Note**: If your build outputs to `Bin/Packages/Canary` instead of `Artefacts/Packages/Canary`, the push step will find no packages; see [Troubleshooting](#troubleshooting).
 
 ### 15. Get Version
@@ -268,7 +268,7 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 
 | Name | Type | Required | Description |
 | --- | --- | --- | --- |
-| **NUGET_API_KEY** | Secret | Yes (for push) | nuget.org API key; push to https://api.nuget.org/v3/index.json. If unset, push is skipped and the workflow still succeeds. |
+| **NUGET_USER** | Secret | Yes (for push) | nuget.org profile name for trusted publishing. On this repository a missing short-lived key fails the push step. Setup: [NuGet Trusted Publishing](NuGetTrustedPublishing.md). |
 | **AUTHENTICODE_CERT_BASE64** | Secret | No | Base64-encoded .pfx used for Authenticode signing. If set, Build step enables signing. |
 | **AUTHENTICODE_CERT_PASSWORD** | Secret | No | Password for the .pfx. Only used when AUTHENTICODE_CERT_BASE64 is set. |
 | **DISCORD_WEBHOOK_CANARY** | Secret | No | Discord webhook URL. If set and at least one package was pushed, an announcement is sent. |
@@ -289,8 +289,8 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 
 ## Security and Permissions
 
-- **Permissions**: Uses default `GITHUB_TOKEN` for checkout. No special scopes are required unless you add steps that need them.
-- **Secrets**: All sensitive data (NuGet key, certificate, Discord webhook) are stored as repository secrets and are not logged.
+- **Permissions**: `contents: read` and `id-token: write`. `id-token: write` lets the job request the GitHub OIDC token used by NuGet trusted publishing.
+- **Secrets**: `NUGET_USER` is the nuget.org profile name, not an API key. Certificate and Discord webhook values stay in repository secrets and are not logged.
 - **Branch**: The job runs only when `github.ref == 'refs/heads/V105-LTS'`, so only the V105-LTS branch can trigger this pipeline.
 - **Certificate**: The .pfx is written to `RUNNER_TEMP` and used only for the build; it is not committed or re-exposed in logs.
 
@@ -323,7 +323,7 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 
 ### NuGet push fails (e.g. 403 or 409)
 
-- Verify **NUGET_API_KEY** is correct and has push permission for the package IDs.
+- Verify trusted publishing for `canary-lts-release.yml` (`NUGET_USER`, policy, `production` environment). See [NuGet Trusted Publishing](NuGetTrustedPublishing.md).
 - For 409: version already exists; the script uses `--skip-duplicate`, so the run may still succeed but no new version is pushed. Check NuGet for that version.
 
 ### Kill switch has no effect
@@ -333,5 +333,6 @@ Canary LTS and Canary (from `canary` branch) share these IDs; the NuGet version 
 
 ## See Also
 
+- [NuGet Trusted Publishing](NuGetTrustedPublishing.md)
 - [Release Workflow](ReleaseWorkflow.md) — Main release pipeline for stable, LTS, and Canary
 - [Build Workflow](BuildWorkflow.md) — CI validation

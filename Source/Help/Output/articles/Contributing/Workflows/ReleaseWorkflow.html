@@ -279,7 +279,7 @@
 <li><strong>Canary</strong>: <code>Bin/Packages/Canary/*.nupkg</code></li>
 <li>Alpha: <code>Bin/Packages/Nightly/*.nupkg</code> (not published)</li>
 </ul>
-<p><strong>Required Secret</strong>: <code>NUGET_API_KEY</code></p>
+<p><strong>Required secret</strong>: <code>NUGET_USER</code> (nuget.org profile name). See <a href="NuGetTrustedPublishing.html">NuGet Trusted Publishing</a>. On this repository a missing short-lived key fails the job. <code>release-alpha</code> does not push.</p>
 <p><strong>Output Variable</strong>: <code>packages_published</code> (true/false)</p>
 <h3 id="version-extraction">Version Extraction</h3>
 <p><strong>Methods</strong> (in order of preference):</p>
@@ -334,10 +334,10 @@
 <h2 id="configuration">Configuration</h2>
 <h3 id="required-secrets">Required Secrets</h3>
 <ul>
-<li><p><strong><code>NUGET_API_KEY</code></strong>: API key for nuget.org publishing</p>
+<li><p><strong><code>NUGET_USER</code></strong>: nuget.org profile name for trusted publishing</p>
 <ul>
-<li>Required for all jobs that publish packages</li>
-<li>Get from: <a href="https://www.nuget.org/account/apikeys">https://www.nuget.org/account/apikeys</a></li>
+<li>Required for jobs that publish packages (<code>release-master</code>, <code>release-v105-lts</code>, <code>release-canary</code>)</li>
+<li>Setup: <a href="NuGetTrustedPublishing.html">NuGet Trusted Publishing</a></li>
 </ul>
 </li>
 <li><p><strong><code>DISCORD_WEBHOOK_MASTER</code></strong>: Stable / <strong>V105-LTS</strong> notifications (<code>release-master</code>, <code>release-v105-lts</code>)</p>
@@ -393,14 +393,14 @@
 <h3 id="nuget-publishing-failed">NuGet Publishing Failed</h3>
 <p><strong>Possible Causes</strong>:</p>
 <ol>
-<li>Missing or invalid <code>NUGET_API_KEY</code></li>
+<li>Trusted publishing login failed or the short-lived key was missing (<code>NUGET_USER</code>, nuget.org policy, or <code>production</code> environment)</li>
 <li>Package version already exists (handled gracefully)</li>
 <li>Invalid package format</li>
 <li>Network issues</li>
 </ol>
 <p><strong>Solutions</strong>:</p>
 <ul>
-<li>Verify API key is set and valid</li>
+<li>Follow <a href="NuGetTrustedPublishing.html">NuGet Trusted Publishing</a></li>
 <li>Check if package version already exists (this is normal)</li>
 <li>Review NuGet push logs</li>
 <li>Verify package files are valid</li>
@@ -499,7 +499,7 @@
 <li><strong>Version Management</strong>: Ensure versions increment correctly</li>
 <li><strong>Testing</strong>: Test release process on non-production branches first</li>
 <li><strong>Notifications</strong>: Keep Discord webhooks updated</li>
-<li><strong>Security</strong>: Never commit secrets or API keys</li>
+<li><strong>Security</strong>: Never commit secrets. NuGet publish uses trusted publishing, not a stored API key. See <a href="NuGetTrustedPublishing.html">NuGet Trusted Publishing</a>.</li>
 <li><strong>Documentation</strong>: Update this file when making changes</li>
 </ol>
 <h2 id="workflow-flow-diagram">Workflow Flow Diagram</h2>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Dialog DPI and content sizing | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Dialog DPI and content sizing | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="dialog-dpi-and-content-sizing">Dialog DPI and content sizing</h1>
+
+<p>Toolkit dialogs size themselves from their content and the monitor that will show them. A designer <code>ClientSize</code> is a 96 DPI starting point. It is not the size the user sees when the text is long or the display is scaled.</p>
+<p><code>KryptonMessageBox</code> already measured its text and buttons. This note covers the shared helper and the dialogs that now use it.</p>
+<h2 id="owner">Owner</h2>
+<p><code>Krypton.Toolkit</code> owns <code>KryptonDialogLayout</code>. <code>Krypton.Toolkit.Utilities</code> calls the same helper for the about box, bug report, foldable dialog, checksum dialogs, theme builder, log viewer, palette editor, OAuth login, splash manager, Font Awesome picker, and toasts.</p>
+<h2 id="what-the-helper-does">What the helper does</h2>
+<p><code>KryptonDialogLayout</code> (internal) is the only place that turns a fixed border into a resizable one and that clamps a window to the working area.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FitWrappedPrompt</code></td>
+<td>A wrap label inside an auto-sized table (input box).</td>
+</tr>
+<tr>
+<td><code>FitClientToText</code></td>
+<td>Docked text. The form grows; the label fills the client.</td>
+</tr>
+<tr>
+<td><code>EnableResizable</code></td>
+<td>Tool dialogs. Fixed borders become sizable, <code>MaximumSize</code> is cleared, and the design window size becomes <code>MinimumSize</code> when none was set.</td>
+</tr>
+<tr>
+<td><code>ClampToWorkingArea</code></td>
+<td>Keep the window inside the owner monitor after a DPI change.</td>
+</tr>
+</tbody>
+</table>
+<p><code>EnableResizable</code> does not multiply a size WinForms has already scaled. <code>AutoScaleMode.Font</code> still scales the designer layout. The helper then shrinks the window if that scaled size is larger than the working area. Prompts pass <code>useContentFractions: true</code> (two-thirds of the width, 95% of the height), matching the message box. Tool windows use the full working area.</p>
+<p><code>FitWrappedPrompt</code> measures the label twice. The table often narrows the label after the first measure, which adds a wrap line, and the palette font is only final after the form is shown. The input box therefore calls it from both <code>OnLoad</code> and <code>OnShown</code>. The second pass sets the label <code>MinimumSize</code> height from <code>TextRenderer</code> at the client width so a later layout cannot clip the last line.</p>
+<p>Per-monitor awareness still depends on the host process (<code>Application.SetHighDpiMode(HighDpiMode.PerMonitorV2)</code> or the application manifest). The helper reads the DPI WinForms reports for the owner window.</p>
+<h2 id="which-dialogs">Which dialogs</h2>
+<p>Left as they were:</p>
+<ul>
+<li><code>KryptonMessageBox</code>, the RTL message box, and both extended message boxes (<code>UpdateSizing</code>).</li>
+<li><code>VisualCustomFileDialogForm</code> (its own <code>ScaleSize</code> and <code>DpiChanged</code> path).</li>
+<li><code>KryptonTaskDialog</code> (already sized from its elements).</li>
+</ul>
+<p>Content-sized, border stays fixed:</p>
+<ul>
+<li><code>VisualInputBoxForm</code> and <code>VisualInputBoxRtlAwareForm</code></li>
+<li><code>ModalWaitDialog</code></li>
+<li><code>VisualInformationBoxForm</code> is measured, then made resizable so a clamped message can still be enlarged</li>
+</ul>
+<p>Resizable, with the detail surface scrolling or docking:</p>
+<ul>
+<li>Exception dialogs (Toolkit and Utilities), bug report, both GitHub issue reports</li>
+<li>Splash, theme browser and its RTL twin, changelog, print preview, conversion, toolkit binary information</li>
+<li>Designer editors, including the ones that used to lock <code>MaximumSize</code> to the client size</li>
+<li>About box, foldable dialog, checksum dialogs, custom theme builder, log viewer, palette collection editor, OAuth login, Font Awesome picker</li>
+<li>Toasts, from <code>VisualToastBaseForm</code> (close-box chrome is sizable; borderless toasts stay borderless)</li>
+</ul>
+<p>Shell open, save, folder, colour, font, and print dialogs still use the native client size. When that size is missing, the 900×600 fallback is scaled from 96 DPI. <code>AutoScaleMode.None</code> does not follow a later DPI change, so the wrapper applies <code>DpiChangedEventArgs.SuggestedRectangle</code> and clamps.</p>
+<h2 id="validation">Validation</h2>
+<ul>
+<li>TestForm: <code>KryptonDialogExamples</code> (Start screen, &quot;Krypton Dialog tests&quot;). Use <strong>Long input prompt</strong> and <strong>Exception dialog</strong>.</li>
+<li><code>Scripts/UnitTests/UnitTest-DialogDpiLayout.ps1</code> (<code>include</code>).</li>
+</ul>
+<p>Standard-Toolkit-Demos was not updated in the same change when that clone was already on another feature branch with local edits. Add the long-prompt case to the existing input-box example on a new <code>alpha-…</code> branch from <code>alpha</code> once that tree is free.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

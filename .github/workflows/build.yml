@@ -49,10 +49,58 @@ jobs:
           repository: Krypton-Suite/Extended-Toolkit
           path: Extended-Toolkit
 
-      - name: Setup .NET
+      - name: Setup .NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
+
+      # Toolkit restore under the dotnet CLI includes net11.0-windows (NETSDK1045 on the 10 SDK).
+      # Stable 11.0.x may be unpublished before GA; fall back to the preview band.
+      - name: Setup .NET 11 (stable)
+        id: setup_dotnet11_stable
+        continue-on-error: true
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '11.0.x'
+
+      - name: Setup .NET 11 (preview fallback)
+        if: steps.setup_dotnet11_stable.outcome == 'failure'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '11.0.x'
+          dotnet-quality: preview
+
+      - name: Show installed SDKs
+        run: dotnet --list-sdks
+
+      # Sibling checkouts (Standard-Toolkit, Extended-Toolkit) walk up to the workspace root.
+      - name: Pin SDK via global.json
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          function Get-ListedSdkVersion([string]$Pattern) {
+            $hit = dotnet --list-sdks | Select-String $Pattern | Select-Object -Last 1
+            if (-not $hit) { return $null }
+            $line = $hit.Line.TrimEnd()
+            if ($line -match '^(\d+\.\d+\.\d+)\s') { return $Matches[1] }
+            return (($line -split '\s+', 2)[0])
+          }
+          $sdkVersion = Get-ListedSdkVersion '11\.0'
+          if (-not $sdkVersion) {
+            Write-Error 'No 11.0 SDK is installed. DocFX restore of net11.0-windows projects requires it.'
+          }
+          Write-Host "Using SDK $sdkVersion"
+          $globalJson = Join-Path $env:GITHUB_WORKSPACE 'global.json'
+          @"
+          {
+            "sdk": {
+              "version": "$sdkVersion",
+              "rollForward": "latestFeature",
+              "allowPrerelease": true
+            }
+          }
+          "@ | Out-File -Encoding utf8 $globalJson
+          Write-Host "Wrote $globalJson"
 
       - name: Install DocFX
         run: dotnet tool install -g docfx

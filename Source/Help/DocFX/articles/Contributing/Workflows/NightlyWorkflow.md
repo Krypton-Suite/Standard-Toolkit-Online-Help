@@ -149,7 +149,7 @@ Nightly builds use the latest **prerelease** WebView2 package for `Krypton.Toolk
 
 ### NuGet publishing
 
-**Secret:** `NUGET_API_KEY` (optional — missing key skips push with warning, `packages_published=false`).
+**Secret:** `NUGET_USER` (nuget.org profile name). The push uses a short-lived key from [NuGet trusted publishing](NuGetTrustedPublishing.md). On `Krypton-Suite/Standard-Toolkit`, a missing key fails the step. Other repositories skip the push and set `packages_published=false`.
 
 **Package search paths (both):**
 
@@ -200,7 +200,7 @@ Accepted version format: `^[1-9]\d{2,}\.\d+\.\d+\.\d+$`
 
 | Secret | Required | Purpose |
 |--------|----------|---------|
-| `NUGET_API_KEY` | For publish | nuget.org push |
+| `NUGET_USER` | For publish | nuget.org profile name for trusted publishing |
 | `DISCORD_WEBHOOK_NIGHTLY` | No | Release announcement |
 
 ### Variables
@@ -225,7 +225,7 @@ Accepted version format: `^[1-9]\d{2,}\.\d+\.\d+\.\d+$`
 | Workflow skipped immediately | `NIGHTLY_DISABLED=true` | Clear or set variable to `false` |
 | “No commits in 24h” notice | No `alpha` commits in 24h and retention 0 | Commit to `alpha`, set retention days, or manual dispatch |
 | Build steps skipped | `has_changes=false` | Same as above; check `change_window` in logs |
-| NuGet push skipped | Missing `NUGET_API_KEY` | Add secret |
+| NuGet login or push failed | Missing `NUGET_USER`, policy mismatch, or no short-lived key | See [NuGet Trusted Publishing](NuGetTrustedPublishing.md) |
 | Job failed on push | Nupkg size guard | Check `STANDARD_TOOLKIT_MIN_NUPKG_MB` and package sizes |
 | Duplicate packages only | Versions already on nuget.org | Expected; `packages_published=false`, no Discord |
 | WebView2 warnings | Cache corrupt / download fail | Re-run; check logs under Populate WebView2 |
@@ -275,6 +275,7 @@ When changing `nightly.yml`, update this file and [GitHub Workflow Index](../Git
 
 ## Related documentation
 
+- [NuGet Trusted Publishing](NuGetTrustedPublishing.md)
 - [Build workflow](BuildWorkflow.md) — PR CI (different trigger; shares SDK/WebView2 patterns on `alpha`)
 - [Release workflow](ReleaseWorkflow.md) — `release-alpha` and shared `NIGHTLY_DISABLED`
 - [Kill switches](../Build%20System/KillSwitches.md)
