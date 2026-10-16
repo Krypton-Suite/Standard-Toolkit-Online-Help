@@ -67,100 +67,100 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="taskbar-thumbnail-toolbar-buttons" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="1">Taskbar Thumbnail Toolbar Buttons</h1>
+<h1 id="taskbar-thumbnail-toolbar-buttons">Taskbar Thumbnail Toolbar Buttons</h1>
 
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="3">This document describes the <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="3">Taskbar Thumbnail Toolbar Buttons</strong> feature in the Krypton Toolkit: how to add interactive buttons (e.g. Play, Pause, Next) to the Windows 7+ taskbar thumbnail preview that appears when the user hovers over your application’s taskbar button. It covers APIs, usage patterns, icon requirements, limitations, and integration with <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="3">KryptonForm</code> / <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="3">VisualForm</code>.</p>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="5">
-<h2 id="1-overview" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="7">1. Overview</h2>
-<h3 id="what-it-is" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="9">What It Is</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="11">Windows 7 and later expose <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="11">thumbnail toolbars</strong> via the <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="11">ITaskbarList3</code> COM interface. A thumbnail toolbar is a strip of small buttons shown <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="11">below</strong> the live thumbnail preview when the user hovers over a taskbar button. Applications like Windows Media Player use them for play, pause, next, and similar quick actions.</p>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="13">The Krypton Toolkit wraps this functionality so you can:</p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="15">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="15">Define up to <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="15">7 buttons</strong> per form (icon, tooltip, enabled/disabled/hidden).</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="16">Add, update, or clear buttons at runtime.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="17">Handle <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="17">clicks</strong> via a <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="17">ThumbnailButtonClick</code> event that receives the button ID.</li>
+<p>This document describes the <strong>Taskbar Thumbnail Toolbar Buttons</strong> feature in the Krypton Toolkit: how to add interactive buttons (e.g. Play, Pause, Next) to the Windows 7+ taskbar thumbnail preview that appears when the user hovers over your application’s taskbar button. It covers APIs, usage patterns, icon requirements, limitations, and integration with <code>KryptonForm</code> / <code>VisualForm</code>.</p>
+<hr>
+<h2 id="1-overview">1. Overview</h2>
+<h3 id="what-it-is">What It Is</h3>
+<p>Windows 7 and later expose <strong>thumbnail toolbars</strong> via the <code>ITaskbarList3</code> COM interface. A thumbnail toolbar is a strip of small buttons shown <strong>below</strong> the live thumbnail preview when the user hovers over a taskbar button. Applications like Windows Media Player use them for play, pause, next, and similar quick actions.</p>
+<p>The Krypton Toolkit wraps this functionality so you can:</p>
+<ul>
+<li>Define up to <strong>7 buttons</strong> per form (icon, tooltip, enabled/disabled/hidden).</li>
+<li>Add, update, or clear buttons at runtime.</li>
+<li>Handle <strong>clicks</strong> via a <code>ThumbnailButtonClick</code> event that receives the button ID.</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="19">Buttons are <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="19">per-window</strong>: each top-level <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="19">KryptonForm</code> (or other <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="19">VisualForm</code>-based form) that appears in the taskbar can have its own set of thumbnail toolbar buttons.</p>
-<h3 id="use-cases" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="21">Use Cases</h3>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="23">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="23"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="23">Media players</strong>: Play, Pause, Next, Previous, Stop.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="24"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="24">Download/transfer</strong>: Pause, Cancel, Open folder.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="25"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="25">Communications</strong>: Mute, Hold, End call.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="26"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="26">Editors</strong>: Quick actions (e.g. Save, Undo) without switching to the window.</li>
+<p>Buttons are <strong>per-window</strong>: each top-level <code>KryptonForm</code> (or other <code>VisualForm</code>-based form) that appears in the taskbar can have its own set of thumbnail toolbar buttons.</p>
+<h3 id="use-cases">Use Cases</h3>
+<ul>
+<li><strong>Media players</strong>: Play, Pause, Next, Previous, Stop.</li>
+<li><strong>Download/transfer</strong>: Pause, Cancel, Open folder.</li>
+<li><strong>Communications</strong>: Mute, Hold, End call.</li>
+<li><strong>Editors</strong>: Quick actions (e.g. Save, Undo) without switching to the window.</li>
 </ul>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="28">
-<h2 id="2-requirements" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="30">2. Requirements</h2>
-<table sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="32">
+<hr>
+<h2 id="2-requirements">2. Requirements</h2>
+<table>
 <thead>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="32">
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="32">Requirement</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="32">Details</th>
+<tr>
+<th>Requirement</th>
+<th>Details</th>
 </tr>
 </thead>
 <tbody>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="34">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="34"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="34">Operating system</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="34">Windows 7 or later (6.1+). The feature is no-op on older OS versions.</td>
+<tr>
+<td><strong>Operating system</strong></td>
+<td>Windows 7 or later (6.1+). The feature is no-op on older OS versions.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="35">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="35"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="35">Form type</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="35"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="35">KryptonForm</code> or any form derived from <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="35">VisualForm</code> (e.g. <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="35">KryptonForm</code>).</td>
+<tr>
+<td><strong>Form type</strong></td>
+<td><code>KryptonForm</code> or any form derived from <code>VisualForm</code> (e.g. <code>KryptonForm</code>).</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="36">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="36"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="36">Taskbar visibility</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="36">The form’s <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="36">ShowInTaskbar</code> must be <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="36">true</code>. Thumbnail buttons are not applied when <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="36">ShowInTaskbar</code> is <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="36">false</code>.</td>
+<tr>
+<td><strong>Taskbar visibility</strong></td>
+<td>The form’s <code>ShowInTaskbar</code> must be <code>true</code>. Thumbnail buttons are not applied when <code>ShowInTaskbar</code> is <code>false</code>.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="37">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="37"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="37">TaskbarButtonCreated</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="37">The implementation <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="37">registers and handles</strong> the <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="37">&quot;TaskbarButtonCreated&quot;</code> window message before calling <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="37">ITaskbarList3</code>. You do not need to do this yourself; it is done inside <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="37">VisualForm</code>.</td>
+<tr>
+<td><strong>TaskbarButtonCreated</strong></td>
+<td>The implementation <strong>registers and handles</strong> the <code>&quot;TaskbarButtonCreated&quot;</code> window message before calling <code>ITaskbarList3</code>. You do not need to do this yourself; it is done inside <code>VisualForm</code>.</td>
 </tr>
 </tbody>
 </table>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="39">The toolkit defers applying thumbnail buttons until <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="39">after</strong> the taskbar has created the button for the window and sent <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="39">TaskbarButtonCreated</code>. Button updates (e.g. from <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="39">Apply()</code> or <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="39">Add</code>/<code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="39">Remove</code>/<code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="39">Clear</code>) are applied once that message has been received.</p>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="41">
-<h2 id="3-api-reference" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="43">3. API Reference</h2>
-<h3 id="31-thumbnailbuttonitem" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="45">3.1. <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="45">ThumbnailButtonItem</code></h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="47"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="47">Namespace:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="47">Krypton.Toolkit</code><br>
-<strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="48">Assembly:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="48">Krypton.Toolkit</code></p>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="50">Represents a single button in the thumbnail toolbar.</p>
-<table sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="52">
+<p>The toolkit defers applying thumbnail buttons until <strong>after</strong> the taskbar has created the button for the window and sent <code>TaskbarButtonCreated</code>. Button updates (e.g. from <code>Apply()</code> or <code>Add</code>/<code>Remove</code>/<code>Clear</code>) are applied once that message has been received.</p>
+<hr>
+<h2 id="3-api-reference">3. API Reference</h2>
+<h3 id="31-thumbnailbuttonitem">3.1. <code>ThumbnailButtonItem</code></h3>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit</code></p>
+<p>Represents a single button in the thumbnail toolbar.</p>
+<table>
 <thead>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="52">
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="52">Member</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="52">Type</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="52">Description</th>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="54">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="54"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="54">Id</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="54"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="54">uint</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="54">Application-defined button ID. Must be <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="54">unique</strong> within the toolbar. This value is passed to <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="54">ThumbnailButtonClick</code> when the button is clicked. <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="54">Note:</strong> Uses <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="54">uint</code> for native API compatibility; non–CLS-compliant.</td>
+<tr>
+<td><code>Id</code></td>
+<td><code>uint</code></td>
+<td>Application-defined button ID. Must be <strong>unique</strong> within the toolbar. This value is passed to <code>ThumbnailButtonClick</code> when the button is clicked. <strong>Note:</strong> Uses <code>uint</code> for native API compatibility; non–CLS-compliant.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55">Icon</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55">Icon?</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55">Icon displayed on the button. Should be <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55">32-bit</strong> (e.g. <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55">Format32bppArgb</code>) and <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55">SM_CXICON × SM_CYICON</strong> size (typically <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55">32×32</strong>). See <a href="#5-icon-requirements" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="55">Icon requirements</a>.</td>
+<tr>
+<td><code>Icon</code></td>
+<td><code>Icon?</code></td>
+<td>Icon displayed on the button. Should be <strong>32-bit</strong> (e.g. <code>Format32bppArgb</code>) and <strong>SM_CXICON × SM_CYICON</strong> size (typically <strong>32×32</strong>). See <a href="#5-icon-requirements">Icon requirements</a>.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="56">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="56"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="56">Tooltip</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="56"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="56">string</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="56">Tooltip shown when the user hovers over the button. Maximum <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="56">259 characters</strong>; longer strings are truncated.</td>
+<tr>
+<td><code>Tooltip</code></td>
+<td><code>string</code></td>
+<td>Tooltip shown when the user hovers over the button. Maximum <strong>259 characters</strong>; longer strings are truncated.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="57">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="57"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="57">Enabled</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="57"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="57">bool</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="57">Whether the button is enabled. Default <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="57">true</code>.</td>
+<tr>
+<td><code>Enabled</code></td>
+<td><code>bool</code></td>
+<td>Whether the button is enabled. Default <code>true</code>.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="58">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="58"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="58">Hidden</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="58"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="58">bool</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="58">Whether the button is hidden. Default <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="58">false</code>.</td>
+<tr>
+<td><code>Hidden</code></td>
+<td><code>bool</code></td>
+<td>Whether the button is hidden. Default <code>false</code>.</td>
 </tr>
 </tbody>
 </table>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="60"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="60">Example:</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="62">var btn = new ThumbnailButtonItem
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">var btn = new ThumbnailButtonItem
 {
     Id = 1,
     Icon = myIcon,
@@ -169,114 +169,114 @@
     Hidden = false
 };
 </code></pre>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="73">
-<h3 id="32-taskbarthumbnailbuttonvalues" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="75">3.2. <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="75">TaskbarThumbnailButtonValues</code></h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="77"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="77">Namespace:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="77">Krypton.Toolkit</code><br>
-<strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="78">Assembly:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="78">Krypton.Toolkit</code></p>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="80">Storage for thumbnail toolbar button definitions. Holds a list of <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="80">ThumbnailButtonItem</code> and notifies the form to update the taskbar when the list changes.</p>
-<table sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="82">
+<hr>
+<h3 id="32-taskbarthumbnailbuttonvalues">3.2. <code>TaskbarThumbnailButtonValues</code></h3>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit</code></p>
+<p>Storage for thumbnail toolbar button definitions. Holds a list of <code>ThumbnailButtonItem</code> and notifies the form to update the taskbar when the list changes.</p>
+<table>
 <thead>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="82">
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="82">Member</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="82">Type</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="82">Description</th>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="84">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="84"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="84">Buttons</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="84"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="84">List&lt;ThumbnailButtonItem&gt;</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="84">The list of buttons. Maximum <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="84">7</strong>. Edit this list, then call <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="84">Apply()</code> to push changes to the taskbar.</td>
+<tr>
+<td><code>Buttons</code></td>
+<td><code>List&lt;ThumbnailButtonItem&gt;</code></td>
+<td>The list of buttons. Maximum <strong>7</strong>. Edit this list, then call <code>Apply()</code> to push changes to the taskbar.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="85">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="85"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="85">Add(ThumbnailButtonItem item)</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="85"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="85">void</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="85">Appends a button. No-op if already at 7 buttons. Triggers an update.</td>
+<tr>
+<td><code>Add(ThumbnailButtonItem item)</code></td>
+<td><code>void</code></td>
+<td>Appends a button. No-op if already at 7 buttons. Triggers an update.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="86">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="86"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="86">Remove(uint id)</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="86"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="86">void</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="86">Removes the button with the given <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="86">Id</code>. No-op if not found. Triggers an update. <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="86">Note:</strong> Non–CLS-compliant due to <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="86">uint</code>.</td>
+<tr>
+<td><code>Remove(uint id)</code></td>
+<td><code>void</code></td>
+<td>Removes the button with the given <code>Id</code>. No-op if not found. Triggers an update. <strong>Note:</strong> Non–CLS-compliant due to <code>uint</code>.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="87">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="87"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="87">Clear()</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="87"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="87">void</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="87">Removes all buttons and updates the taskbar.</td>
+<tr>
+<td><code>Clear()</code></td>
+<td><code>void</code></td>
+<td>Removes all buttons and updates the taskbar.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="88">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="88"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="88">Apply()</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="88"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="88">void</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="88">Notifies that button definitions have changed (e.g. after editing <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="88">Buttons</code> directly). Call after batch changes to refresh the taskbar once.</td>
+<tr>
+<td><code>Apply()</code></td>
+<td><code>void</code></td>
+<td>Notifies that button definitions have changed (e.g. after editing <code>Buttons</code> directly). Call after batch changes to refresh the taskbar once.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="89">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="89"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="89">ResetButtons()</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="89"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="89">void</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="89">Same as <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="89">Clear()</code>.</td>
+<tr>
+<td><code>ResetButtons()</code></td>
+<td><code>void</code></td>
+<td>Same as <code>Clear()</code>.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="90">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="90"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="90">CopyFrom(TaskbarThumbnailButtonValues source)</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="90"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="90">void</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="90">Replaces this instance’s buttons with copies of <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="90">source</code>’s buttons.</td>
+<tr>
+<td><code>CopyFrom(TaskbarThumbnailButtonValues source)</code></td>
+<td><code>void</code></td>
+<td>Replaces this instance’s buttons with copies of <code>source</code>’s buttons.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="91">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="91"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="91">IsDefault</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="91"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="91">bool</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="91"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="91">true</code> when there are no buttons.</td>
+<tr>
+<td><code>IsDefault</code></td>
+<td><code>bool</code></td>
+<td><code>true</code> when there are no buttons.</td>
 </tr>
 </tbody>
 </table>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="93"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="93">Designer:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="93">TaskbarThumbnailButtonValues</code> is <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="93">ExpandableObjectConverter</code>; <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="93">Buttons</code> is serialized as content.</p>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="95">
-<h3 id="33-thumbnailbuttonclickeventargs" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="97">3.3. <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="97">ThumbnailButtonClickEventArgs</code></h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="99"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="99">Namespace:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="99">Krypton.Toolkit</code><br>
-<strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="100">Assembly:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="100">Krypton.Toolkit</code></p>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="102">Event data for thumbnail toolbar button clicks.</p>
-<table sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="104">
+<p><strong>Designer:</strong> <code>TaskbarThumbnailButtonValues</code> is <code>ExpandableObjectConverter</code>; <code>Buttons</code> is serialized as content.</p>
+<hr>
+<h3 id="33-thumbnailbuttonclickeventargs">3.3. <code>ThumbnailButtonClickEventArgs</code></h3>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit</code></p>
+<p>Event data for thumbnail toolbar button clicks.</p>
+<table>
 <thead>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="104">
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="104">Member</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="104">Type</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="104">Description</th>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="106">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="106"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="106">ButtonId</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="106"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="106">uint</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="106">The <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="106">Id</code> of the button that was clicked. <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="106">Note:</strong> Non–CLS-compliant.</td>
+<tr>
+<td><code>ButtonId</code></td>
+<td><code>uint</code></td>
+<td>The <code>Id</code> of the button that was clicked. <strong>Note:</strong> Non–CLS-compliant.</td>
 </tr>
 </tbody>
 </table>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="108">
-<h3 id="34-form-level-api-visualform--kryptonform" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="110">3.4. Form-Level API (<code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="110">VisualForm</code> / <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="110">KryptonForm</code>)</h3>
-<table sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="112">
+<hr>
+<h3 id="34-form-level-api-visualform--kryptonform">3.4. Form-Level API (<code>VisualForm</code> / <code>KryptonForm</code>)</h3>
+<table>
 <thead>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="112">
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="112">Member</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="112">Type</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="112">Description</th>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="114">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="114"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="114">ShellValues</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="114"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="114">WindowsShellValues</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="114">Shell-related values (overlay icon, <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="114">thumbnail buttons</strong>, jump list, etc.).</td>
+<tr>
+<td><code>ShellValues</code></td>
+<td><code>WindowsShellValues</code></td>
+<td>Shell-related values (overlay icon, <strong>thumbnail buttons</strong>, jump list, etc.).</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="115">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="115"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="115">ShellValues.ThumbnailButtonValues</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="115"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="115">TaskbarThumbnailButtonValues</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="115">The thumbnail toolbar button storage for this form.</td>
+<tr>
+<td><code>ShellValues.ThumbnailButtonValues</code></td>
+<td><code>TaskbarThumbnailButtonValues</code></td>
+<td>The thumbnail toolbar button storage for this form.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="116">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="116"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="116">ThumbnailButtonClick</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="116"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="116">event EventHandler&lt;ThumbnailButtonClickEventArgs&gt;</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="116">Raised when the user clicks a thumbnail toolbar button.</td>
+<tr>
+<td><code>ThumbnailButtonClick</code></td>
+<td><code>event EventHandler&lt;ThumbnailButtonClickEventArgs&gt;</code></td>
+<td>Raised when the user clicks a thumbnail toolbar button.</td>
 </tr>
 </tbody>
 </table>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="118"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="118">Example:</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="120">// Access storage
+<p><strong>Example:</strong></p>
+<pre><code class="lang-csharp">// Access storage
 var tbv = ShellValues.ThumbnailButtonValues;
 
 // Subscribe to clicks
@@ -290,81 +290,81 @@ ThumbnailButtonClick += (s, e) =&gt;
     }
 };
 </code></pre>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="136">
-<h3 id="35-windowsshellvalues" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="138">3.5. <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="138">WindowsShellValues</code></h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="140"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="140">Namespace:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="140">Krypton.Toolkit</code><br>
-<strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="141">Assembly:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="141">Krypton.Toolkit</code></p>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="143">Aggregates overlay icon, thumbnail buttons, and related shell settings. Exposed as <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="143">ShellValues</code> on <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="143">VisualForm</code>.</p>
-<table sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="145">
+<hr>
+<h3 id="35-windowsshellvalues">3.5. <code>WindowsShellValues</code></h3>
+<p><strong>Namespace:</strong> <code>Krypton.Toolkit</code><br>
+<strong>Assembly:</strong> <code>Krypton.Toolkit</code></p>
+<p>Aggregates overlay icon, thumbnail buttons, and related shell settings. Exposed as <code>ShellValues</code> on <code>VisualForm</code>.</p>
+<table>
 <thead>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="145">
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="145">Member</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="145">Type</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="145">Description</th>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="147">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="147"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="147">ThumbnailButtonValues</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="147"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="147">TaskbarThumbnailButtonValues</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="147">Thumbnail toolbar buttons.</td>
+<tr>
+<td><code>ThumbnailButtonValues</code></td>
+<td><code>TaskbarThumbnailButtonValues</code></td>
+<td>Thumbnail toolbar buttons.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="148">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="148"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="148">OverlayIconValues</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="148"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="148">TaskbarOverlayIconValues</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="148">Taskbar overlay icon (separate feature).</td>
+<tr>
+<td><code>OverlayIconValues</code></td>
+<td><code>TaskbarOverlayIconValues</code></td>
+<td>Taskbar overlay icon (separate feature).</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="149">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="149"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="149">ResetThumbnailButtonValues()</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="149"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="149">void</code></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="149">Resets thumbnail buttons to default (empty).</td>
+<tr>
+<td><code>ResetThumbnailButtonValues()</code></td>
+<td><code>void</code></td>
+<td>Resets thumbnail buttons to default (empty).</td>
 </tr>
 </tbody>
 </table>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="151">
-<h2 id="4-features-and-behaviour" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="153">4. Features and Behaviour</h2>
-<h3 id="41-adding-buttons" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="155">4.1. Adding Buttons</h3>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="157">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="157">Use <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="157">Add(item)</code> for single additions, or add to <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="157">Buttons</code> and then call <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="157">Apply()</code> for batch updates.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="158"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="158">Important:</strong> The Windows API allows <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="158">one</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="158">ThumbBarAddButtons</code> call per window. Subsequent changes use <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="158">ThumbBarUpdateButtons</code>. The toolkit manages this internally. To avoid multiple “first add” attempts, <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="158">batch</strong> your buttons: fill <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="158">Buttons</code>, then call <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="158">Apply()</code> once.</li>
+<hr>
+<h2 id="4-features-and-behaviour">4. Features and Behaviour</h2>
+<h3 id="41-adding-buttons">4.1. Adding Buttons</h3>
+<ul>
+<li>Use <code>Add(item)</code> for single additions, or add to <code>Buttons</code> and then call <code>Apply()</code> for batch updates.</li>
+<li><strong>Important:</strong> The Windows API allows <strong>one</strong> <code>ThumbBarAddButtons</code> call per window. Subsequent changes use <code>ThumbBarUpdateButtons</code>. The toolkit manages this internally. To avoid multiple “first add” attempts, <strong>batch</strong> your buttons: fill <code>Buttons</code>, then call <code>Apply()</code> once.</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="160"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="160">Recommended pattern:</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="162">var tbv = ShellValues.ThumbnailButtonValues;
+<p><strong>Recommended pattern:</strong></p>
+<pre><code class="lang-csharp">var tbv = ShellValues.ThumbnailButtonValues;
 tbv.Clear();
 tbv.Buttons.Add(new ThumbnailButtonItem { Id = 1, Icon = icon1, Tooltip = &quot;Play&quot;, Enabled = true });
 tbv.Buttons.Add(new ThumbnailButtonItem { Id = 2, Icon = icon2, Tooltip = &quot;Pause&quot;, Enabled = true });
 // ... up to 7 total
 tbv.Apply();
 </code></pre>
-<h3 id="42-updating-buttons" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="171">4.2. Updating Buttons</h3>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="173">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="173">Change an existing <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="173">ThumbnailButtonItem</code>’s <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="173">Icon</code>, <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="173">Tooltip</code>, <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="173">Enabled</code>, or <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="173">Hidden</code>, then call <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="173">Apply()</code>.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="174">The toolkit uses <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="174">ThumbBarUpdateButtons</code> for updates. You cannot remove a button at the native level; you can only <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="174">hide</strong> it (<code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="174">Hidden = true</code>) or <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="174">disable</strong> it (<code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="174">Enabled = false</code>).</li>
+<h3 id="42-updating-buttons">4.2. Updating Buttons</h3>
+<ul>
+<li>Change an existing <code>ThumbnailButtonItem</code>’s <code>Icon</code>, <code>Tooltip</code>, <code>Enabled</code>, or <code>Hidden</code>, then call <code>Apply()</code>.</li>
+<li>The toolkit uses <code>ThumbBarUpdateButtons</code> for updates. You cannot remove a button at the native level; you can only <strong>hide</strong> it (<code>Hidden = true</code>) or <strong>disable</strong> it (<code>Enabled = false</code>).</li>
 </ul>
-<h3 id="43-clearing-buttons" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="176">4.3. Clearing Buttons</h3>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="178">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="178">Call <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="178">Clear()</code>. The managed list is cleared and the taskbar is updated. The native toolbar may still show previously added buttons as hidden; the toolkit reflects “no buttons” by not sending further updates for that set.</li>
+<h3 id="43-clearing-buttons">4.3. Clearing Buttons</h3>
+<ul>
+<li>Call <code>Clear()</code>. The managed list is cleared and the taskbar is updated. The native toolbar may still show previously added buttons as hidden; the toolkit reflects “no buttons” by not sending further updates for that set.</li>
 </ul>
-<h3 id="44-button-limit-and-order" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="180">4.4. Button Limit and Order</h3>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="182">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="182"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="182">Maximum 7 buttons</strong> per window. <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="182">Add</code> ignores new items when the list is full.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="183">Buttons are shown in <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="183">list order</strong> (index 0 = leftmost).</li>
+<h3 id="44-button-limit-and-order">4.4. Button Limit and Order</h3>
+<ul>
+<li><strong>Maximum 7 buttons</strong> per window. <code>Add</code> ignores new items when the list is full.</li>
+<li>Buttons are shown in <strong>list order</strong> (index 0 = leftmost).</li>
 </ul>
-<h3 id="45-tooltip-length" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="185">4.5. Tooltip Length</h3>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="187">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="187">Tooltips are truncated to <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="187">259 characters</strong> before being sent to the native API.</li>
+<h3 id="45-tooltip-length">4.5. Tooltip Length</h3>
+<ul>
+<li>Tooltips are truncated to <strong>259 characters</strong> before being sent to the native API.</li>
 </ul>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="189">
-<h2 id="5-icon-requirements" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="191">5. Icon Requirements</h2>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="193">The Windows thumbnail toolbar expects <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="193">32-bit</strong> icons at <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="193">SM_CXICON × SM_CYICON</strong> (typically <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="193">32×32</strong> on standard DPI). Otherwise, buttons may not appear or may look wrong.</p>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="195"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="195">Recommendations:</strong></p>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="197">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="197">Use <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="197">32×32</strong> pixel icons (or <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="197">GetSystemMetrics(SM_CXICON)</code> / <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="197">SM_CYICON</code> if you need DPI-aware sizing).</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="198">Use <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="198"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="198">PixelFormat.Format32bppArgb</code></strong> when creating bitmaps, then create an <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="198">Icon</code> (e.g. via <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="198">Icon.FromHandle(bitmap.GetHicon())</code>). Keep the <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="198">Icon</code> (or underlying bitmap) alive for the lifetime of the button.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="199">Prefer <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="199">simple, high-contrast</strong> shapes so buttons remain readable at small size.</li>
+<hr>
+<h2 id="5-icon-requirements">5. Icon Requirements</h2>
+<p>The Windows thumbnail toolbar expects <strong>32-bit</strong> icons at <strong>SM_CXICON × SM_CYICON</strong> (typically <strong>32×32</strong> on standard DPI). Otherwise, buttons may not appear or may look wrong.</p>
+<p><strong>Recommendations:</strong></p>
+<ol>
+<li>Use <strong>32×32</strong> pixel icons (or <code>GetSystemMetrics(SM_CXICON)</code> / <code>SM_CYICON</code> if you need DPI-aware sizing).</li>
+<li>Use <strong><code>PixelFormat.Format32bppArgb</code></strong> when creating bitmaps, then create an <code>Icon</code> (e.g. via <code>Icon.FromHandle(bitmap.GetHicon())</code>). Keep the <code>Icon</code> (or underlying bitmap) alive for the lifetime of the button.</li>
+<li>Prefer <strong>simple, high-contrast</strong> shapes so buttons remain readable at small size.</li>
 </ol>
-<h3 id="example-creating-a-suitable-icon" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="201">Example: creating a suitable icon</h3>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="203">using System.Drawing.Imaging;
+<h3 id="example-creating-a-suitable-icon">Example: creating a suitable icon</h3>
+<pre><code class="lang-csharp">using System.Drawing.Imaging;
 
 const int size = 32;
 var bmp = new Bitmap(size, size, PixelFormat.Format32bppArgb);
@@ -381,11 +381,11 @@ using (var g = Graphics.FromImage(bmp))
 Icon icon = Icon.FromHandle(bmp.GetHicon());
 // Keep 'icon' (or 'bmp') alive while the button is in use.
 </code></pre>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="222">You can also use <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="222">system icons</strong> (e.g. <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="222">SystemIcons.Application</code>, <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="222">SystemIcons.Information</code>) for quick tests, as long as they meet the size/format expectations.</p>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="224">
-<h2 id="6-code-examples" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="226">6. Code Examples</h2>
-<h3 id="61-minimal-setup-load" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="228">6.1. Minimal Setup (Load)</h3>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="230">public partial class MyForm : KryptonForm
+<p>You can also use <strong>system icons</strong> (e.g. <code>SystemIcons.Application</code>, <code>SystemIcons.Information</code>) for quick tests, as long as they meet the size/format expectations.</p>
+<hr>
+<h2 id="6-code-examples">6. Code Examples</h2>
+<h3 id="61-minimal-setup-load">6.1. Minimal Setup (Load)</h3>
+<pre><code class="lang-csharp">public partial class MyForm : KryptonForm
 {
     private const uint IdPlay = 1, IdPause = 2;
 
@@ -422,8 +422,8 @@ Icon icon = Icon.FromHandle(bmp.GetHicon());
     }
 }
 </code></pre>
-<h3 id="62-updating-state-eg-play--pause" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="269">6.2. Updating State (e.g. Play ↔ Pause)</h3>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="271">private void UpdateThumbnailState(bool isPlaying)
+<h3 id="62-updating-state-eg-play--pause">6.2. Updating State (e.g. Play ↔ Pause)</h3>
+<pre><code class="lang-csharp">private void UpdateThumbnailState(bool isPlaying)
 {
     var tbv = ShellValues.ThumbnailButtonValues;
     var play = tbv.Buttons.FirstOrDefault(b =&gt; b.Id == IdPlay);
@@ -433,72 +433,72 @@ Icon icon = Icon.FromHandle(bmp.GetHicon());
     tbv.Apply();
 }
 </code></pre>
-<h3 id="63-clearing-buttons" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="283">6.3. Clearing Buttons</h3>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="285">ShellValues.ThumbnailButtonValues.Clear();
+<h3 id="63-clearing-buttons">6.3. Clearing Buttons</h3>
+<pre><code class="lang-csharp">ShellValues.ThumbnailButtonValues.Clear();
 </code></pre>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="289">
-<h2 id="7-limitations-and-pitfalls" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="291">7. Limitations and Pitfalls</h2>
-<table sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="293">
+<hr>
+<h2 id="7-limitations-and-pitfalls">7. Limitations and Pitfalls</h2>
+<table>
 <thead>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="293">
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="293">Limitation</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="293">Description</th>
+<tr>
+<th>Limitation</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="295">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="295"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="295">Windows 7+</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="295">No effect on Windows Vista or earlier.</td>
+<tr>
+<td><strong>Windows 7+</strong></td>
+<td>No effect on Windows Vista or earlier.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="296">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="296"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="296">ShowInTaskbar</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="296">Buttons are only applied when <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="296">ShowInTaskbar</code> is <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="296">true</code>.</td>
+<tr>
+<td><strong>ShowInTaskbar</strong></td>
+<td>Buttons are only applied when <code>ShowInTaskbar</code> is <code>true</code>.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="297">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="297"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="297">No real “remove”</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="297">The native API does not support removing buttons. Use <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="297">Hidden = true</code> or <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="297">Clear()</code>; the toolkit clears its list, but the shell may keep reserved space.</td>
+<tr>
+<td><strong>No real “remove”</strong></td>
+<td>The native API does not support removing buttons. Use <code>Hidden = true</code> or <code>Clear()</code>; the toolkit clears its list, but the shell may keep reserved space.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="298">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="298"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="298">7 buttons max</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="298">More than 7 buttons are ignored.</td>
+<tr>
+<td><strong>7 buttons max</strong></td>
+<td>More than 7 buttons are ignored.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="299">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="299"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="299">Icon size/format</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="299">Wrong size or format can prevent buttons from showing. Prefer 32×32, 32bpp.</td>
+<tr>
+<td><strong>Icon size/format</strong></td>
+<td>Wrong size or format can prevent buttons from showing. Prefer 32×32, 32bpp.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="300">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="300"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="300">Per-window</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="300">Each taskbar-represented window has its own toolbar. Child/owned windows typically do not.</td>
+<tr>
+<td><strong>Per-window</strong></td>
+<td>Each taskbar-represented window has its own toolbar. Child/owned windows typically do not.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="301">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="301"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="301">Grouped taskbar</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="301">When multiple app windows are grouped, each thumbnail has its own toolbar. Ensure you configure buttons on the correct form.</td>
+<tr>
+<td><strong>Grouped taskbar</strong></td>
+<td>When multiple app windows are grouped, each thumbnail has its own toolbar. Ensure you configure buttons on the correct form.</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="302">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="302"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="302">Design mode</strong></td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="302">Thumbnail logic is skipped in design mode.</td>
+<tr>
+<td><strong>Design mode</strong></td>
+<td>Thumbnail logic is skipped in design mode.</td>
 </tr>
 </tbody>
 </table>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="304">
-<h2 id="8-internal-behaviour-summary" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="306">8. Internal Behaviour (Summary)</h2>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="308">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="308"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="308">TaskbarButtonCreated:</strong> The form registers <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="308">&quot;TaskbarButtonCreated&quot;</code> and handles it in <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="308">WndProc</code>. Thumbnail updates are deferred until this message is received.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="309"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="309">ThumbBarAddButtons / ThumbBarUpdateButtons:</strong> The first update uses <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="309">ThumbBarAddButtons</code>; later updates use <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="309">ThumbBarUpdateButtons</code>. The toolkit uses manual marshalling for <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="309">THUMBBUTTON</code> arrays to avoid COM typelib/SAFEARRAY issues.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="310"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="310">WM_COMMAND + THBN_CLICKED:</strong> Button clicks arrive as <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="310">WM_COMMAND</code> with <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="310">HIWORD(wParam) == THBN_CLICKED</code>; <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="310">LOWORD(wParam)</code> is the button ID. The toolkit raises <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="310">ThumbnailButtonClick</code> with that ID.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="311"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="311">Handle lifecycle:</strong> On handle destroy, internal state (<code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="311">_thumbButtonsAdded</code>, <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="311">_taskbarButtonCreated</code>) is reset so that a recreated handle gets correct behaviour.</li>
+<hr>
+<h2 id="8-internal-behaviour-summary">8. Internal Behaviour (Summary)</h2>
+<ul>
+<li><strong>TaskbarButtonCreated:</strong> The form registers <code>&quot;TaskbarButtonCreated&quot;</code> and handles it in <code>WndProc</code>. Thumbnail updates are deferred until this message is received.</li>
+<li><strong>ThumbBarAddButtons / ThumbBarUpdateButtons:</strong> The first update uses <code>ThumbBarAddButtons</code>; later updates use <code>ThumbBarUpdateButtons</code>. The toolkit uses manual marshalling for <code>THUMBBUTTON</code> arrays to avoid COM typelib/SAFEARRAY issues.</li>
+<li><strong>WM_COMMAND + THBN_CLICKED:</strong> Button clicks arrive as <code>WM_COMMAND</code> with <code>HIWORD(wParam) == THBN_CLICKED</code>; <code>LOWORD(wParam)</code> is the button ID. The toolkit raises <code>ThumbnailButtonClick</code> with that ID.</li>
+<li><strong>Handle lifecycle:</strong> On handle destroy, internal state (<code>_thumbButtonsAdded</code>, <code>_taskbarButtonCreated</code>) is reset so that a recreated handle gets correct behaviour.</li>
 </ul>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="313">
-<h2 id="9-related-features" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="315">9. Related Features</h2>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="317">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="317"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="317">Overlay icon:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="317">ShellValues.OverlayIconValues</code> — small overlay on the taskbar icon (e.g. notification badge).</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="318"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="318">Jump list:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="318">ShellValues.JumpList</code> — custom jump list items and categories.</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="319"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="319">Progress / state:</strong> Other <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="319">ITaskbarList3</code> features (e.g. progress bar, overlay) can be used alongside thumbnail buttons; they are separate configurations.</li>
+<hr>
+<h2 id="9-related-features">9. Related Features</h2>
+<ul>
+<li><strong>Overlay icon:</strong> <code>ShellValues.OverlayIconValues</code> — small overlay on the taskbar icon (e.g. notification badge).</li>
+<li><strong>Jump list:</strong> <code>ShellValues.JumpList</code> — custom jump list items and categories.</li>
+<li><strong>Progress / state:</strong> Other <code>ITaskbarList3</code> features (e.g. progress bar, overlay) can be used alongside thumbnail buttons; they are separate configurations.</li>
 </ul>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="321">
-<h2 id="10-demo-and-references" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="323">10. Demo and References</h2>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="325">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="325"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="325">Windows docs:</strong> <a href="https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-thumbbaraddbuttons" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="325">ITaskbarList3::ThumbBarAddButtons</a>, <a href="https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-thumbbarupdatebuttons" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="325">ITaskbarList3::ThumbBarUpdateButtons</a>, <a href="https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/ns-shobjidl_core-thumbbutton" sourcefile="articles/Standard Toolkit/Toolkit Utilities/TaskbarThumbnailButtons.md" sourcestartlinenumber="325">THUMBBUTTON</a>.</li>
+<hr>
+<h2 id="10-demo-and-references">10. Demo and References</h2>
+<ul>
+<li><strong>Windows docs:</strong> <a href="https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-thumbbaraddbuttons">ITaskbarList3::ThumbBarAddButtons</a>, <a href="https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-itaskbarlist3-thumbbarupdatebuttons">ITaskbarList3::ThumbBarUpdateButtons</a>, <a href="https://learn.microsoft.com/en-us/windows/win32/api/shobjidl_core/ns-shobjidl_core-thumbbutton">THUMBBUTTON</a>.</li>
 </ul>
 
 </article>

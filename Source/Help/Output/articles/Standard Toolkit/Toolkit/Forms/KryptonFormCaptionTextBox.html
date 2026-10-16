@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonForm caption text box | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonForm caption text box | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonform-caption-text-box">KryptonForm caption text box</h1>
+
+<p>A <code>KryptonTextBox</code> can sit in the <code>KryptonForm</code> caption. <code>KryptonSearchBox</code> uses the same slot because it derives from <code>KryptonTextBox</code> and lives in <code>Krypton.Toolkit.Utilities</code>. <code>Krypton.Toolkit</code> does not reference Utilities.</p>
+<p>The caption is non-client chrome. <code>WM_NCCALCSIZE</code> keeps it outside the client area, so a normal child cannot be moved into the title bar. Title-bar <code>ButtonSpec</code> views are not windows: they have no caret, no keyboard focus, and no IME. The editor is a real control, parented to a borderless owned window that is positioned over a reserved caption slot.</p>
+<h2 id="api">API</h2>
+<p>These members are on <code>KryptonForm</code>, category Visuals.</p>
+<table>
+<thead>
+<tr>
+<th>Member</th>
+<th>Type</th>
+<th>Default</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CaptionControl</code></td>
+<td><code>Control?</code></td>
+<td><code>null</code></td>
+<td>Shortcut control. Assigning it does not remove the other caption controls. A <code>Form</code> is rejected.</td>
+</tr>
+<tr>
+<td><code>CaptionTextBox</code></td>
+<td><code>KryptonTextBox?</code></td>
+<td><code>null</code></td>
+<td>Shortcut when that control is a <code>KryptonTextBox</code>. Setting <code>null</code> removes that text box only.</td>
+</tr>
+<tr>
+<td><code>CaptionTextBoxEdge</code></td>
+<td><code>FormCaptionTextBoxEdge</code></td>
+<td><code>Right</code></td>
+<td>Edge of the shortcut control only.</td>
+</tr>
+<tr>
+<td><code>AddCaptionControl</code></td>
+<td>method</td>
+<td></td>
+<td>Adds a control on its own edge. Adding the same control again updates that edge.</td>
+</tr>
+<tr>
+<td><code>SetCaptionControlEdge</code></td>
+<td>method</td>
+<td></td>
+<td>Moves one caption control.</td>
+</tr>
+<tr>
+<td><code>RemoveCaptionControl</code></td>
+<td>method</td>
+<td></td>
+<td>Removes one control and restores its previous parent.</td>
+</tr>
+<tr>
+<td><code>TryGetCaptionControlEdge</code></td>
+<td>method</td>
+<td></td>
+<td>Reads one control's edge.</td>
+</tr>
+</tbody>
+</table>
+<p>The designer writes <code>CaptionTextBox</code> when the control is a <code>KryptonTextBox</code>, and <code>CaptionControl</code> otherwise.</p>
+<p>Width, cue text, palette, and button specs stay on the control. The host clamps the height to the caption content height and does not grow <code>RealWindowBorders</code>. <code>FormBorderStyle.None</code> and a hidden caption leave the control as a normal child. The designer does not reparent the control; hosting starts at runtime.</p>
+<p><code>FormCaptionTextBoxEdge</code> is in <code>Krypton.Toolkit</code>.</p>
+<h2 id="hosting">Hosting</h2>
+<p><code>KryptonForm.CaptionTextBox.cs</code> owns the feature.</p>
+<ol>
+<li>Each hosted control has its own <code>FormCaptionTextBoxEdge</code> and its own owned window. <code>PrepareCaptionTextBoxSlot</code> inserts a <code>ViewLayoutSeparator</code> per left or right control. Heading layout reverses children, and each separator is inserted at index 0 in add order, so the earlier control on that edge sits nearer the window edge and a later one sits nearer the title. <code>Center</code> controls share one centred group in <code>FillRectangle</code>. The fill (title, icon, ribbon tabs) is laid out again on the near side of that group. The separator preferred height is 1; <code>ViewDecoratorFixedSize</code> keeps the caption height unchanged.</li>
+<li>After caption layout, <code>SyncCaptionTextBoxHost</code> maps the slot through <code>GetWindowRect</code> and moves the host with <code>SetWindowPos</code> (<code>SWP_NOACTIVATE</code>, <code>SWP_NOZORDER</code>, <code>SWP_NOOWNERZORDER</code>). Window coordinates are physical pixels, so the host is not positioned with <code>Form.SetBounds</code>.</li>
+<li>The host is an internal borderless <code>Form</code>: <code>ShowInTaskbar</code> is false, <code>WS_EX_NOACTIVATE</code> and <code>WS_EX_TOOLWINDOW</code> are set, and <code>WM_MOUSEACTIVATE</code> returns <code>MA_NOACTIVATE</code>. A click focuses the editor without deactivating the owner, so the caption stays active while the editor contains focus and the owner or the host is the active form.</li>
+<li><code>WindowChromeHitTest</code> returns <code>HTBORDER</code> for the slot, below the top resize band, so a gap around the editor does not start a caption drag. Double-click maximize and caption drag still work outside the slot.</li>
+<li>The host is owned by <code>MdiParent</code> when the form is an MDI child, and it is hidden unless that child is active. A minimized or hidden form hides the host. If the form is top-most, the host is top-most as well.</li>
+<li>Tab from the editor activates the owner and moves focus with <code>SelectNextControl</code>.</li>
+</ol>
+<p>Palette mode is whatever the control already uses. <code>WM_NCCALCSIZE</code> is unchanged.</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">var search = new KryptonSearchBox
+{
+    Width = 220
+};
+search.CueHint.CueHintText = &quot;Search&quot;;
+kryptonForm.CaptionTextBoxEdge = FormCaptionTextBoxEdge.Right;
+kryptonForm.CaptionTextBox = search;
+
+var button = new KryptonButton { Text = &quot;Caption&quot;, AutoSize = true };
+kryptonForm.AddCaptionControl(button, FormCaptionTextBoxEdge.Left);
+</code></pre>
+<p><code>KryptonSearchBox</code> suggestion popups use <code>PointToScreen</code> and <code>SW_SHOWNOACTIVATE</code>, so they still open under the caption editor.</p>
+<p>Changing <code>Width</code> or <code>Height</code> while the control is in the caption updates the reserved slot on the next layout. The placed width is the control width plus an 8-pixel horizontal gap, clamped to the caption. The placed height is the control height clamped to the caption, with a 2-pixel vertical gap.</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>Custom chrome must be applied (<code>UseThemeFormChromeBorderWidth</code> on both the public allow flag and the form chrome). Before the handle exists, the control stays a child of its original parent.</li>
+<li>An integrated ribbon (Office 2024 or otherwise) lays out around the same slot. The slot does not replace ribbon context tabs or the quick-access toolbar.</li>
+<li>Right-to-left layout mirrors the dock with the rest of the caption.</li>
+<li>Disposing the form restores the editor when it had a previous parent. An editor created only for the caption is disposed with the host.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2025. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

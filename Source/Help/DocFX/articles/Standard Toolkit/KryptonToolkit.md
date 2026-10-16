@@ -92,6 +92,7 @@ the toolbox.
 
 * [KryptonForm](Toolkit/Forms/KryptonForm.md)
   * [AdministratorSuffixFeatureforKryptonForm](Toolkit/Forms/AdministratorSuffixFeatureforKryptonForm.md)
+  * [KryptonFormCaptionTextBox](Toolkit/Forms/KryptonFormCaptionTextBox.md)
   * [Krypton system menu (theming)](Toolkit/Forms/KryptonFormSystemMenuOverview.md)
   * [KryptonFormTitleBar](Toolkit/Forms/KryptonFormTitleBar.md)
 

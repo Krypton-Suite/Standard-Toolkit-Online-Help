@@ -67,84 +67,84 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="uia-provider-implementation" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1">UIA Provider Implementation</h1>
+<h1 id="uia-provider-implementation">UIA Provider Implementation</h1>
 
-<h2 id="table-of-contents" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="3">Table of Contents</h2>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="5">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="5"><a href="#overview" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="5">Overview</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="6"><a href="#problem-statement" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="6">Problem Statement</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="7"><a href="#architecture--design" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="7">Architecture &amp; Design</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="8"><a href="#implementation-details" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="8">Implementation Details</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="9"><a href="#code-patterns--examples" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="9">Code Patterns &amp; Examples</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="10"><a href="#framework-compatibility" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="10">Framework Compatibility</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="11"><a href="#extending-the-implementation" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="11">Extending the Implementation</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="12"><a href="#testing--validation" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="12">Testing &amp; Validation</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="13"><a href="#troubleshooting" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="13">Troubleshooting</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="14"><a href="#performance-considerations" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="14">Performance Considerations</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="15"><a href="#best-practices" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="15">Best Practices</a></li>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#problem-statement">Problem Statement</a></li>
+<li><a href="#architecture--design">Architecture &amp; Design</a></li>
+<li><a href="#implementation-details">Implementation Details</a></li>
+<li><a href="#code-patterns--examples">Code Patterns &amp; Examples</a></li>
+<li><a href="#framework-compatibility">Framework Compatibility</a></li>
+<li><a href="#extending-the-implementation">Extending the Implementation</a></li>
+<li><a href="#testing--validation">Testing &amp; Validation</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#performance-considerations">Performance Considerations</a></li>
+<li><a href="#best-practices">Best Practices</a></li>
 </ol>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="17">
-<h2 id="overview" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="19">Overview</h2>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="21">This document provides comprehensive technical documentation for the UIA (UI Automation) Provider implementation in Krypton Toolkit. The implementation ensures that Krypton controls that wrap standard Windows Forms controls properly expose accessibility information to assistive technologies.</p>
-<h3 id="what-is-ui-automation" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="23">What is UI Automation?</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="25">UI Automation is Microsoft's accessibility framework that enables assistive technologies (screen readers, automation tools, etc.) to interact with applications. It provides a standardized way to:</p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="27">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="27">Discover UI elements</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="28">Read element properties (name, role, state, value)</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="29">Navigate between elements</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="30">Interact with controls programmatically</li>
+<hr>
+<h2 id="overview">Overview</h2>
+<p>This document provides comprehensive technical documentation for the UIA (UI Automation) Provider implementation in Krypton Toolkit. The implementation ensures that Krypton controls that wrap standard Windows Forms controls properly expose accessibility information to assistive technologies.</p>
+<h3 id="what-is-ui-automation">What is UI Automation?</h3>
+<p>UI Automation is Microsoft's accessibility framework that enables assistive technologies (screen readers, automation tools, etc.) to interact with applications. It provides a standardized way to:</p>
+<ul>
+<li>Discover UI elements</li>
+<li>Read element properties (name, role, state, value)</li>
+<li>Navigate between elements</li>
+<li>Interact with controls programmatically</li>
 </ul>
-<h3 id="why-this-matters" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="32">Why This Matters</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="34">When Krypton wraps standard Windows Forms controls (e.g., <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="34">KryptonTextBox</code> wraps a <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="34">TextBox</code>), the internal control's accessibility information may not be properly exposed through the wrapper. This causes:</p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="36">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="36">Screen readers (Narrator, NVDA, JAWS) to fail or provide incorrect information</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="37">UI Automation tools to not discover controls</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="38">Accessibility compliance issues</li>
+<h3 id="why-this-matters">Why This Matters</h3>
+<p>When Krypton wraps standard Windows Forms controls (e.g., <code>KryptonTextBox</code> wraps a <code>TextBox</code>), the internal control's accessibility information may not be properly exposed through the wrapper. This causes:</p>
+<ul>
+<li>Screen readers (Narrator, NVDA, JAWS) to fail or provide incorrect information</li>
+<li>UI Automation tools to not discover controls</li>
+<li>Accessibility compliance issues</li>
 </ul>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="40">
-<h2 id="problem-statement" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="42">Problem Statement</h2>
-<h3 id="the-wrapping-problem" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="44">The Wrapping Problem</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="46">Krypton controls often wrap standard Windows Forms controls to provide custom styling while maintaining functionality:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="48">public class KryptonTextBox : VisualControlBase
+<hr>
+<h2 id="problem-statement">Problem Statement</h2>
+<h3 id="the-wrapping-problem">The Wrapping Problem</h3>
+<p>Krypton controls often wrap standard Windows Forms controls to provide custom styling while maintaining functionality:</p>
+<pre><code class="lang-csharp">public class KryptonTextBox : VisualControlBase
 {
     private InternalTextBox _textBox;  // Internal TextBox control
     
     public TextBox TextBox =&gt; _textBox;  // Exposed for advanced scenarios
 }
 </code></pre>
-<h3 id="net-6-uia-providers" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="57">.NET 6+ UIA Providers</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="59">Starting with .NET 6, Microsoft added built-in UIA providers for standard Windows Forms controls. These providers:</p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="61">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="61">Automatically expose accessibility information</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="62">Support modern accessibility standards</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="63">Work seamlessly with assistive technologies</li>
+<h3 id="net-6-uia-providers">.NET 6+ UIA Providers</h3>
+<p>Starting with .NET 6, Microsoft added built-in UIA providers for standard Windows Forms controls. These providers:</p>
+<ul>
+<li>Automatically expose accessibility information</li>
+<li>Support modern accessibility standards</li>
+<li>Work seamlessly with assistive technologies</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="65">However, when a control is wrapped:</p>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="67">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="67">The wrapper control (<code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="67">KryptonTextBox</code>) becomes the accessible object</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="68">The internal control's (<code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="68">TextBox</code>) accessibility information is &quot;hidden&quot;</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="69">Assistive technologies see the wrapper, not the internal control</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="70">Accessibility information is lost or incorrect</li>
+<p>However, when a control is wrapped:</p>
+<ol>
+<li>The wrapper control (<code>KryptonTextBox</code>) becomes the accessible object</li>
+<li>The internal control's (<code>TextBox</code>) accessibility information is &quot;hidden&quot;</li>
+<li>Assistive technologies see the wrapper, not the internal control</li>
+<li>Accessibility information is lost or incorrect</li>
 </ol>
-<h3 id="example-scenario" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="72">Example Scenario</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="74"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="74">Before Implementation:</strong></p>
-<pre><code class="lang-text" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="76">Narrator: &quot;Edit, no name specified&quot;
+<h3 id="example-scenario">Example Scenario</h3>
+<p><strong>Before Implementation:</strong></p>
+<pre><code class="lang-text">Narrator: &quot;Edit, no name specified&quot;
 </code></pre>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="80"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="80">After Implementation:</strong></p>
-<pre><code class="lang-text" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="82">Narrator: &quot;Test TextBox, edit, type in text&quot;
+<p><strong>After Implementation:</strong></p>
+<pre><code class="lang-text">Narrator: &quot;Test TextBox, edit, type in text&quot;
 </code></pre>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="86">
-<h2 id="architecture--design" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="88">Architecture &amp; Design</h2>
-<h3 id="design-principles" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="90">Design Principles</h3>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="92">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="92"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="92">Delegation Pattern</strong>: Delegate accessibility calls to the internal control's accessibility object</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="93"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="93">Null Safety</strong>: Handle cases where internal control might be null</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="94"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="94">Framework Compatibility</strong>: Work on both modern (.NET 8+) and legacy (.NET Framework) TFMs</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="95"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="95">Minimal Overhead</strong>: Efficient delegation with minimal performance impact</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="96"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="96">Fallback Support</strong>: Provide sensible defaults when internal control information is unavailable</li>
+<hr>
+<h2 id="architecture--design">Architecture &amp; Design</h2>
+<h3 id="design-principles">Design Principles</h3>
+<ol>
+<li><strong>Delegation Pattern</strong>: Delegate accessibility calls to the internal control's accessibility object</li>
+<li><strong>Null Safety</strong>: Handle cases where internal control might be null</li>
+<li><strong>Framework Compatibility</strong>: Work on both modern (.NET 8+) and legacy (.NET Framework) TFMs</li>
+<li><strong>Minimal Overhead</strong>: Efficient delegation with minimal performance impact</li>
+<li><strong>Fallback Support</strong>: Provide sensible defaults when internal control information is unavailable</li>
 </ol>
-<h3 id="architecture-diagram" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="98">Architecture Diagram</h3>
-<pre><code class="lang-text" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="100">┌─────────────────────────────────────────────────────────┐
+<h3 id="architecture-diagram">Architecture Diagram</h3>
+<pre><code class="lang-text">┌─────────────────────────────────────────────────────────┐
 │                    KryptonTextBox                       │
 │  ┌───────────────────────────────────────────────────┐  │
 │  │  CreateAccessibilityInstance()                    │  │
@@ -176,8 +176,8 @@
 │  └───────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 </code></pre>
-<h3 id="class-hierarchy" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="134">Class Hierarchy</h3>
-<pre><code class="lang-text" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="136">Control.ControlAccessibleObject (base class)
+<h3 id="class-hierarchy">Class Hierarchy</h3>
+<pre><code class="lang-text">Control.ControlAccessibleObject (base class)
     │
     ├── KryptonTextBoxAccessibleObject
     ├── KryptonRichTextBoxAccessibleObject
@@ -189,15 +189,15 @@
     ├── KryptonDomainUpDownAccessibleObject
     └── KryptonLinkWrapLabelAccessibleObject
 </code></pre>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="150">
-<h2 id="implementation-details" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="152">Implementation Details</h2>
-<h3 id="core-components" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="154">Core Components</h3>
-<h4 id="1-accessibleobject-classes" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="156">1. AccessibleObject Classes</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="158">Each Krypton control has a corresponding <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="158">AccessibleObject</code> class located in:</p>
-<pre><code class="lang-text" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="160">Source/Krypton Components/Krypton.Toolkit/Utilities/Accessibility/
+<hr>
+<h2 id="implementation-details">Implementation Details</h2>
+<h3 id="core-components">Core Components</h3>
+<h4 id="1-accessibleobject-classes">1. AccessibleObject Classes</h4>
+<p>Each Krypton control has a corresponding <code>AccessibleObject</code> class located in:</p>
+<pre><code class="lang-text">Source/Krypton Components/Krypton.Toolkit/Utilities/Accessibility/
 </code></pre>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="164"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="164">Structure:</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="166">internal class KryptonTextBoxAccessibleObject : Control.ControlAccessibleObject
+<p><strong>Structure:</strong></p>
+<pre><code class="lang-csharp">internal class KryptonTextBoxAccessibleObject : Control.ControlAccessibleObject
 {
     private readonly KryptonTextBox _owner;
     
@@ -213,16 +213,16 @@
     // ... etc
 }
 </code></pre>
-<h4 id="2-control-integration" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="184">2. Control Integration</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="186">Each Krypton control overrides <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="186">CreateAccessibilityInstance()</code>:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="188">protected override AccessibleObject CreateAccessibilityInstance()
+<h4 id="2-control-integration">2. Control Integration</h4>
+<p>Each Krypton control overrides <code>CreateAccessibilityInstance()</code>:</p>
+<pre><code class="lang-csharp">protected override AccessibleObject CreateAccessibilityInstance()
 {
     return new KryptonTextBoxAccessibleObject(this);
 }
 </code></pre>
-<h3 id="property-delegation-pattern" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="195">Property Delegation Pattern</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="197">All accessibility properties follow this pattern:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="199">public override string? Name
+<h3 id="property-delegation-pattern">Property Delegation Pattern</h3>
+<p>All accessibility properties follow this pattern:</p>
+<pre><code class="lang-csharp">public override string? Name
 {
     get
     {
@@ -238,9 +238,9 @@
     }
 }
 </code></pre>
-<h3 id="role-fallback-strategy" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="217">Role Fallback Strategy</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="219">For legacy TFMs, we provide explicit role fallbacks:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="221">public override AccessibleRole Role
+<h3 id="role-fallback-strategy">Role Fallback Strategy</h3>
+<p>For legacy TFMs, we provide explicit role fallbacks:</p>
+<pre><code class="lang-csharp">public override AccessibleRole Role
 {
     get
     {
@@ -261,9 +261,9 @@
     }
 }
 </code></pre>
-<h3 id="method-delegation-pattern" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="244">Method Delegation Pattern</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="246">Methods follow a similar delegation pattern:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="248">public override void DoDefaultAction()
+<h3 id="method-delegation-pattern">Method Delegation Pattern</h3>
+<p>Methods follow a similar delegation pattern:</p>
+<pre><code class="lang-csharp">public override void DoDefaultAction()
 {
     // Delegate to internal control's default action
     var internalAccessible = _owner.TextBox?.AccessibilityObject;
@@ -277,10 +277,10 @@
     }
 }
 </code></pre>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="264">
-<h2 id="code-patterns--examples" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="266">Code Patterns &amp; Examples</h2>
-<h3 id="complete-example-kryptontextboxaccessibleobject" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="268">Complete Example: KryptonTextBoxAccessibleObject</h3>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="270">#region BSD License
+<hr>
+<h2 id="code-patterns--examples">Code Patterns &amp; Examples</h2>
+<h3 id="complete-example-kryptontextboxaccessibleobject">Complete Example: KryptonTextBoxAccessibleObject</h3>
+<pre><code class="lang-csharp">#region BSD License
 /*
  * Original BSD 3-Clause License
  * New BSD 3-Clause License
@@ -503,8 +503,8 @@ internal class KryptonTextBoxAccessibleObject : Control.ControlAccessibleObject
     #endregion
 }
 </code></pre>
-<h3 id="control-integration-example" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="495">Control Integration Example</h3>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="497">// In KryptonTextBox.cs, in the Protected Overrides region:
+<h3 id="control-integration-example">Control Integration Example</h3>
+<pre><code class="lang-csharp">// In KryptonTextBox.cs, in the Protected Overrides region:
 
 /// &lt;summary&gt;
 /// Creates the accessibility object for the KryptonTextBox control.
@@ -513,10 +513,10 @@ internal class KryptonTextBoxAccessibleObject : Control.ControlAccessibleObject
 protected override AccessibleObject CreateAccessibilityInstance() 
     =&gt; new KryptonTextBoxAccessibleObject(this);
 </code></pre>
-<h3 id="special-cases" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="508">Special Cases</h3>
-<h4 id="kryptonlinkwraplabel" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="510">KryptonLinkWrapLabel</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="512">Since <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="512">KryptonLinkWrapLabel</code> inherits directly from <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="512">LinkLabel</code>, the implementation is slightly different:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="514">public override string? Name
+<h3 id="special-cases">Special Cases</h3>
+<h4 id="kryptonlinkwraplabel">KryptonLinkWrapLabel</h4>
+<p>Since <code>KryptonLinkWrapLabel</code> inherits directly from <code>LinkLabel</code>, the implementation is slightly different:</p>
+<pre><code class="lang-csharp">public override string? Name
 {
     get
     {
@@ -532,9 +532,9 @@ protected override AccessibleObject CreateAccessibilityInstance()
     }
 }
 </code></pre>
-<h4 id="kryptoncheckedlistbox" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="532">KryptonCheckedListBox</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="534">Since <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="534">CheckedListBox</code> inherits from <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="534">ListBox</code>, we access it through the <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="534">ListBox</code> property:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="536">public override string? Name
+<h4 id="kryptoncheckedlistbox">KryptonCheckedListBox</h4>
+<p>Since <code>CheckedListBox</code> inherits from <code>ListBox</code>, we access it through the <code>ListBox</code> property:</p>
+<pre><code class="lang-csharp">public override string? Name
 {
     get
     {
@@ -549,84 +549,84 @@ protected override AccessibleObject CreateAccessibilityInstance()
     }
 }
 </code></pre>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="553">
-<h2 id="framework-compatibility" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="555">Framework Compatibility</h2>
-<h3 id="modern-tfms-net80-windows-net90-windows-net100-windows" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="557">Modern TFMs (net8.0-windows, net9.0-windows, net10.0-windows)</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="559"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="559">Features:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="561">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="561">Built-in UIA providers for standard controls</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="562">Rich accessibility information</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="563">Full UIA pattern support</li>
+<hr>
+<h2 id="framework-compatibility">Framework Compatibility</h2>
+<h3 id="modern-tfms-net80-windows-net90-windows-net100-windows">Modern TFMs (net8.0-windows, net9.0-windows, net10.0-windows)</h3>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Built-in UIA providers for standard controls</li>
+<li>Rich accessibility information</li>
+<li>Full UIA pattern support</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="565"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="565">Implementation:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="567">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="567">Directly delegates to internal control's UIA providers</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="568">Leverages all .NET 6+ accessibility enhancements</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="569">No additional work required</li>
+<p><strong>Implementation:</strong></p>
+<ul>
+<li>Directly delegates to internal control's UIA providers</li>
+<li>Leverages all .NET 6+ accessibility enhancements</li>
+<li>No additional work required</li>
 </ul>
-<h3 id="legacy-tfms-net472-net48-net481" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="571">Legacy TFMs (net472, net48, net481)</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="573"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="573">Limitations:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="575">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="575">No built-in UIA providers</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="576">Basic <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="576">AccessibilityObject</code> instances only</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="577">Limited accessibility information</li>
+<h3 id="legacy-tfms-net472-net48-net481">Legacy TFMs (net472, net48, net481)</h3>
+<p><strong>Limitations:</strong></p>
+<ul>
+<li>No built-in UIA providers</li>
+<li>Basic <code>AccessibilityObject</code> instances only</li>
+<li>Limited accessibility information</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="579"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="579">Implementation:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="581">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="581">Delegates to internal control's basic <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="581">AccessibilityObject</code></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="582">Provides explicit <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="582">AccessibleRole</code> fallbacks</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="583">Ensures consistent behavior across TFMs</li>
+<p><strong>Implementation:</strong></p>
+<ul>
+<li>Delegates to internal control's basic <code>AccessibilityObject</code></li>
+<li>Provides explicit <code>AccessibleRole</code> fallbacks</li>
+<li>Ensures consistent behavior across TFMs</li>
 </ul>
-<h3 id="role-fallback-mapping" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="585">Role Fallback Mapping</h3>
-<table sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="587">
+<h3 id="role-fallback-mapping">Role Fallback Mapping</h3>
+<table>
 <thead>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="587">
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="587">Control Type</th>
-<th sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="587">Fallback Role</th>
+<tr>
+<th>Control Type</th>
+<th>Fallback Role</th>
 </tr>
 </thead>
 <tbody>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="589">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="589">TextBox</td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="589"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="589">AccessibleRole.Text</code></td>
+<tr>
+<td>TextBox</td>
+<td><code>AccessibleRole.Text</code></td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="590">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="590">RichTextBox</td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="590"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="590">AccessibleRole.Text</code></td>
+<tr>
+<td>RichTextBox</td>
+<td><code>AccessibleRole.Text</code></td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="591">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="591">ComboBox</td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="591"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="591">AccessibleRole.ComboBox</code></td>
+<tr>
+<td>ComboBox</td>
+<td><code>AccessibleRole.ComboBox</code></td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="592">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="592">ListBox</td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="592"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="592">AccessibleRole.List</code></td>
+<tr>
+<td>ListBox</td>
+<td><code>AccessibleRole.List</code></td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="593">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="593">CheckedListBox</td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="593"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="593">AccessibleRole.List</code></td>
+<tr>
+<td>CheckedListBox</td>
+<td><code>AccessibleRole.List</code></td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="594">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="594">MaskedTextBox</td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="594"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="594">AccessibleRole.Text</code></td>
+<tr>
+<td>MaskedTextBox</td>
+<td><code>AccessibleRole.Text</code></td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="595">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="595">NumericUpDown</td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="595"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="595">AccessibleRole.Text</code></td>
+<tr>
+<td>NumericUpDown</td>
+<td><code>AccessibleRole.Text</code></td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="596">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="596">DomainUpDown</td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="596"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="596">AccessibleRole.Text</code></td>
+<tr>
+<td>DomainUpDown</td>
+<td><code>AccessibleRole.Text</code></td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="597">
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="597">LinkWrapLabel</td>
-<td sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="597"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="597">AccessibleRole.Link</code></td>
+<tr>
+<td>LinkWrapLabel</td>
+<td><code>AccessibleRole.Link</code></td>
 </tr>
 </tbody>
 </table>
-<h3 id="runtime-vs-compile-time" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="599">Runtime vs Compile-Time</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="601">We use <strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="601">runtime checks</strong> rather than conditional compilation:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="603">// ✅ Good: Runtime check
+<h3 id="runtime-vs-compile-time">Runtime vs Compile-Time</h3>
+<p>We use <strong>runtime checks</strong> rather than conditional compilation:</p>
+<pre><code class="lang-csharp">// ✅ Good: Runtime check
 var role = internalAccessible.Role;
 if (role != AccessibleRole.Default &amp;&amp; role != AccessibleRole.None)
 {
@@ -641,38 +641,38 @@ return AccessibleRole.Text;  // Fallback
     return AccessibleRole.Text;
 #endif
 </code></pre>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="620"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="620">Benefits:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="622">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="622">Single codebase for all TFMs</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="623">Easier maintenance</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="624">Consistent behavior</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="625">Better testability</li>
+<p><strong>Benefits:</strong></p>
+<ul>
+<li>Single codebase for all TFMs</li>
+<li>Easier maintenance</li>
+<li>Consistent behavior</li>
+<li>Better testability</li>
 </ul>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="627">
-<h2 id="extending-the-implementation" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="629">Extending the Implementation</h2>
-<h3 id="adding-support-for-a-new-control" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="631">Adding Support for a New Control</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="633">If you need to add UIA provider support for a new Krypton control that wraps a standard control:</p>
-<h4 id="step-1-create-the-accessibleobject-class" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="635">Step 1: Create the AccessibleObject Class</h4>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="637">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="637"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="637">Create a new file in <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="637">Utilities/Accessibility/</code>:</p>
-<pre><code class="lang-text" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="639">Krypton[ControlName]AccessibleObject.cs
+<hr>
+<h2 id="extending-the-implementation">Extending the Implementation</h2>
+<h3 id="adding-support-for-a-new-control">Adding Support for a New Control</h3>
+<p>If you need to add UIA provider support for a new Krypton control that wraps a standard control:</p>
+<h4 id="step-1-create-the-accessibleobject-class">Step 1: Create the AccessibleObject Class</h4>
+<ol>
+<li><p>Create a new file in <code>Utilities/Accessibility/</code>:</p>
+<pre><code class="lang-text">Krypton[ControlName]AccessibleObject.cs
 </code></pre>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="643"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="643">Use the template from <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="643">KryptonTextBoxAccessibleObject.cs</code> as a starting point</p>
+<li><p>Use the template from <code>KryptonTextBoxAccessibleObject.cs</code> as a starting point</p>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="645"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="645">Update the class name and <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="645">_owner</code> field type</p>
+<li><p>Update the class name and <code>_owner</code> field type</p>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="647"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="647">Update property accessors to use the correct internal control property</p>
+<li><p>Update property accessors to use the correct internal control property</p>
 </li>
 </ol>
-<h4 id="step-2-integrate-with-the-control" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="649">Step 2: Integrate with the Control</h4>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="651">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="651"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="651">Open the Krypton control file (e.g., <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="651">Krypton[ControlName].cs</code>)</p>
+<h4 id="step-2-integrate-with-the-control">Step 2: Integrate with the Control</h4>
+<ol>
+<li><p>Open the Krypton control file (e.g., <code>Krypton[ControlName].cs</code>)</p>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="653"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="653">Find the <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="653">#region Protected Overrides</code> section</p>
+<li><p>Find the <code>#region Protected Overrides</code> section</p>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="655"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="655">Add:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="657">/// &lt;summary&gt;
+<li><p>Add:</p>
+<pre><code class="lang-csharp">/// &lt;summary&gt;
 /// Creates the accessibility object for the Krypton[ControlName] control.
 /// &lt;/summary&gt;
 /// &lt;returns&gt;A new Krypton[ControlName]AccessibleObject instance.&lt;/returns&gt;
@@ -681,17 +681,17 @@ protected override AccessibleObject CreateAccessibilityInstance()
 </code></pre>
 </li>
 </ol>
-<h4 id="step-3-determine-the-internal-control-property" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="666">Step 3: Determine the Internal Control Property</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="668">Identify how the control exposes its internal standard control:</p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="670">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="670"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="670">KryptonTextBox</code> → <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="670">_owner.TextBox</code></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="671"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="671">KryptonComboBox</code> → <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="671">_owner.ComboBox</code></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="672"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="672">KryptonCheckedListBox</code> → <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="672">_owner.ListBox</code> (CheckedListBox inherits from ListBox)</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="673"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="673">KryptonLinkWrapLabel</code> → Cast to <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="673">LinkLabel</code> (inherits from LinkLabel)</li>
+<h4 id="step-3-determine-the-internal-control-property">Step 3: Determine the Internal Control Property</h4>
+<p>Identify how the control exposes its internal standard control:</p>
+<ul>
+<li><code>KryptonTextBox</code> → <code>_owner.TextBox</code></li>
+<li><code>KryptonComboBox</code> → <code>_owner.ComboBox</code></li>
+<li><code>KryptonCheckedListBox</code> → <code>_owner.ListBox</code> (CheckedListBox inherits from ListBox)</li>
+<li><code>KryptonLinkWrapLabel</code> → Cast to <code>LinkLabel</code> (inherits from LinkLabel)</li>
 </ul>
-<h4 id="step-4-determine-the-fallback-role" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="675">Step 4: Determine the Fallback Role</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="677">Choose the appropriate <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="677">AccessibleRole</code> for the control type:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="679">// Text input controls
+<h4 id="step-4-determine-the-fallback-role">Step 4: Determine the Fallback Role</h4>
+<p>Choose the appropriate <code>AccessibleRole</code> for the control type:</p>
+<pre><code class="lang-csharp">// Text input controls
 return AccessibleRole.Text;
 
 // Selection controls
@@ -700,15 +700,15 @@ return AccessibleRole.ComboBox;  // or List, etc.
 // Navigation controls
 return AccessibleRole.Link;
 </code></pre>
-<h4 id="step-5-test" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="690">Step 5: Test</h4>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="692">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="692">Add the control to <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="692">AccessibilityTest.cs</code> in the TestForm project</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="693">Run the accessibility test</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="694">Test with Narrator</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="695">Test with UI Automation tools</li>
+<h4 id="step-5-test">Step 5: Test</h4>
+<ol>
+<li>Add the control to <code>AccessibilityTest.cs</code> in the TestForm project</li>
+<li>Run the accessibility test</li>
+<li>Test with Narrator</li>
+<li>Test with UI Automation tools</li>
 </ol>
-<h3 id="example-adding-kryptondatetimepicker" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="697">Example: Adding KryptonDateTimePicker</h3>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="699">// Step 1: Create KryptonDateTimePickerAccessibleObject.cs
+<h3 id="example-adding-kryptondatetimepicker">Example: Adding KryptonDateTimePicker</h3>
+<pre><code class="lang-csharp">// Step 1: Create KryptonDateTimePickerAccessibleObject.cs
 internal class KryptonDateTimePickerAccessibleObject : Control.ControlAccessibleObject
 {
     private readonly KryptonDateTimePicker _owner;
@@ -743,115 +743,115 @@ internal class KryptonDateTimePickerAccessibleObject : Control.ControlAccessible
 protected override AccessibleObject CreateAccessibilityInstance() 
     =&gt; new KryptonDateTimePickerAccessibleObject(this);
 </code></pre>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="736">
-<h2 id="testing--validation" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="738">Testing &amp; Validation</h2>
-<h3 id="automated-testing" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="740">Automated Testing</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="742">The <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="742">AccessibilityTest</code> form in the TestForm project provides automated property validation:</p>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="744"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="744">Location:</strong> <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="744">Source/Krypton Components/TestForm/AccessibilityTest.cs</code></p>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="746"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="746">Features:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="748">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="748">Tests all 9 implemented controls</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="749">Validates Name, Description, Role, State, Value</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="750">Checks navigation capabilities</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="751">Displays comprehensive test results</li>
+<hr>
+<h2 id="testing--validation">Testing &amp; Validation</h2>
+<h3 id="automated-testing">Automated Testing</h3>
+<p>The <code>AccessibilityTest</code> form in the TestForm project provides automated property validation:</p>
+<p><strong>Location:</strong> <code>Source/Krypton Components/TestForm/AccessibilityTest.cs</code></p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Tests all 9 implemented controls</li>
+<li>Validates Name, Description, Role, State, Value</li>
+<li>Checks navigation capabilities</li>
+<li>Displays comprehensive test results</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="753"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="753">Usage:</strong></p>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="755">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="755">Run TestForm application</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="756">Select &quot;Accessibility Test (UIA Providers)&quot;</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="757">Click &quot;Test Accessibility Properties&quot;</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="758">Review results in the results panel</li>
+<p><strong>Usage:</strong></p>
+<ol>
+<li>Run TestForm application</li>
+<li>Select &quot;Accessibility Test (UIA Providers)&quot;</li>
+<li>Click &quot;Test Accessibility Properties&quot;</li>
+<li>Review results in the results panel</li>
 </ol>
-<h3 id="manual-testing-with-narrator" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="760">Manual Testing with Narrator</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="762"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="762">Windows Narrator:</strong></p>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="764">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="764">Enable Narrator: <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="764">Win + Ctrl + Enter</code></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="765">Navigate to the test form</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="766">Use <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="766">Tab</code> to navigate between controls</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="767">Listen to what Narrator announces</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="768">Verify:
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="769">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="769">Control name is announced</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="770">Control role is announced</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="771">Control value is announced (if applicable)</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="772">Control is interactive</li>
+<h3 id="manual-testing-with-narrator">Manual Testing with Narrator</h3>
+<p><strong>Windows Narrator:</strong></p>
+<ol>
+<li>Enable Narrator: <code>Win + Ctrl + Enter</code></li>
+<li>Navigate to the test form</li>
+<li>Use <code>Tab</code> to navigate between controls</li>
+<li>Listen to what Narrator announces</li>
+<li>Verify:
+<ul>
+<li>Control name is announced</li>
+<li>Control role is announced</li>
+<li>Control value is announced (if applicable)</li>
+<li>Control is interactive</li>
 </ul>
 </li>
 </ol>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="774"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="774">Expected Output:</strong></p>
-<pre><code class="lang-text" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="776">&quot;Test TextBox, edit, type in text&quot;
+<p><strong>Expected Output:</strong></p>
+<pre><code class="lang-text">&quot;Test TextBox, edit, type in text&quot;
 &quot;Test ComboBox, combo box, Option 1, collapsed&quot;
 &quot;Test ListBox, list, Item 1, 1 of 5&quot;
 </code></pre>
-<h3 id="manual-testing-with-ui-automation-tools" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="782">Manual Testing with UI Automation Tools</h3>
-<h4 id="inspectexe-windows-sdk" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="784">Inspect.exe (Windows SDK)</h4>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="786">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="786">Launch Inspect.exe</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="787">Point to a Krypton control</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="788">Verify:
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="789">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="789">Control is discoverable</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="790">Properties are correct (Name, Role, etc.)</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="791">Patterns are available (if applicable)</li>
+<h3 id="manual-testing-with-ui-automation-tools">Manual Testing with UI Automation Tools</h3>
+<h4 id="inspectexe-windows-sdk">Inspect.exe (Windows SDK)</h4>
+<ol>
+<li>Launch Inspect.exe</li>
+<li>Point to a Krypton control</li>
+<li>Verify:
+<ul>
+<li>Control is discoverable</li>
+<li>Properties are correct (Name, Role, etc.)</li>
+<li>Patterns are available (if applicable)</li>
 </ul>
 </li>
 </ol>
-<h4 id="accessibility-insights" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="793">Accessibility Insights</h4>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="795">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="795">Launch Accessibility Insights for Windows</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="796">Run FastPass scan</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="797">Verify no accessibility issues</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="798">Check control properties</li>
+<h4 id="accessibility-insights">Accessibility Insights</h4>
+<ol>
+<li>Launch Accessibility Insights for Windows</li>
+<li>Run FastPass scan</li>
+<li>Verify no accessibility issues</li>
+<li>Check control properties</li>
 </ol>
-<h3 id="testing-checklist" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="800">Testing Checklist</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="802">For each control:</p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="804">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="804">[ ] <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="804">AccessibleObject</code> is created (not null)</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="805">[ ] <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="805">Name</code> property returns correct value</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="806">[ ] <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="806">Description</code> property returns correct value</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="807">[ ] <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="807">Role</code> property returns appropriate role</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="808">[ ] <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="808">State</code> property reflects control state</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="809">[ ] <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="809">Value</code> property returns current value (if applicable)</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="810">[ ] <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="810">GetChildCount()</code> returns correct count</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="811">[ ] <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="811">Navigate()</code> works correctly</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="812">[ ] <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="812">DoDefaultAction()</code> performs expected action</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="813">[ ] Narrator can identify and interact with control</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="814">[ ] UI Automation tools can discover control</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="815">[ ] Works on all target frameworks</li>
+<h3 id="testing-checklist">Testing Checklist</h3>
+<p>For each control:</p>
+<ul>
+<li>[ ] <code>AccessibleObject</code> is created (not null)</li>
+<li>[ ] <code>Name</code> property returns correct value</li>
+<li>[ ] <code>Description</code> property returns correct value</li>
+<li>[ ] <code>Role</code> property returns appropriate role</li>
+<li>[ ] <code>State</code> property reflects control state</li>
+<li>[ ] <code>Value</code> property returns current value (if applicable)</li>
+<li>[ ] <code>GetChildCount()</code> returns correct count</li>
+<li>[ ] <code>Navigate()</code> works correctly</li>
+<li>[ ] <code>DoDefaultAction()</code> performs expected action</li>
+<li>[ ] Narrator can identify and interact with control</li>
+<li>[ ] UI Automation tools can discover control</li>
+<li>[ ] Works on all target frameworks</li>
 </ul>
-<h3 id="framework-specific-testing" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="817">Framework-Specific Testing</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="819">Test on each TFM:</p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="821">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="821">net472</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="822">net48</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="823">net481</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="824">net8.0-windows</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="825">net9.0-windows</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="826">net10.0-windows</li>
+<h3 id="framework-specific-testing">Framework-Specific Testing</h3>
+<p>Test on each TFM:</p>
+<ul>
+<li>net472</li>
+<li>net48</li>
+<li>net481</li>
+<li>net8.0-windows</li>
+<li>net9.0-windows</li>
+<li>net10.0-windows</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="828"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="828">Key Differences to Verify:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="830">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="830">Role fallbacks work on legacy TFMs</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="831">UIA providers work on modern TFMs</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="832">No regressions in functionality</li>
+<p><strong>Key Differences to Verify:</strong></p>
+<ul>
+<li>Role fallbacks work on legacy TFMs</li>
+<li>UIA providers work on modern TFMs</li>
+<li>No regressions in functionality</li>
 </ul>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="834">
-<h2 id="troubleshooting" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="836">Troubleshooting</h2>
-<h3 id="common-issues" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="838">Common Issues</h3>
-<h4 id="issue-accessibleobject-is-null" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="840">Issue: AccessibleObject is null</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="842"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="842">Symptoms:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="844">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="844"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="844">AccessibilityObject</code> returns null</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="845">Tests fail with null reference exceptions</li>
+<hr>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="common-issues">Common Issues</h3>
+<h4 id="issue-accessibleobject-is-null">Issue: AccessibleObject is null</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>AccessibilityObject</code> returns null</li>
+<li>Tests fail with null reference exceptions</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="847"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="847">Causes:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="849">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="849">Internal control not initialized</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="850">Control not added to a form</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="851">Control handle not created</li>
+<p><strong>Causes:</strong></p>
+<ul>
+<li>Internal control not initialized</li>
+<li>Control not added to a form</li>
+<li>Control handle not created</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="853"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="853">Solutions:</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="855">// Ensure internal control exists
+<p><strong>Solutions:</strong></p>
+<pre><code class="lang-csharp">// Ensure internal control exists
 if (_owner.TextBox == null)
 {
     return base.Name;  // Fallback
@@ -863,20 +863,20 @@ if (!_owner.IsHandleCreated)
     _owner.CreateControl();
 }
 </code></pre>
-<h4 id="issue-role-returns-default-or-none" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="869">Issue: Role returns Default or None</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="871"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="871">Symptoms:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="873">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="873"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="873">Role</code> property returns <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="873">AccessibleRole.Default</code> or <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="873">AccessibleRole.None</code></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="874">Screen readers don't announce control type correctly</li>
+<h4 id="issue-role-returns-default-or-none">Issue: Role returns Default or None</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li><code>Role</code> property returns <code>AccessibleRole.Default</code> or <code>AccessibleRole.None</code></li>
+<li>Screen readers don't announce control type correctly</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="876"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="876">Solutions:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="878">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="878"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="878">This is expected on legacy TFMs</p>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li><p>This is expected on legacy TFMs</p>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="879"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="879">Our implementation provides fallback roles</p>
+<li><p>Our implementation provides fallback roles</p>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="880"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="880">Verify fallback logic is working:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="882">if (role != AccessibleRole.Default &amp;&amp; role != AccessibleRole.None)
+<li><p>Verify fallback logic is working:</p>
+<pre><code class="lang-csharp">if (role != AccessibleRole.Default &amp;&amp; role != AccessibleRole.None)
 {
     return role;
 }
@@ -884,42 +884,42 @@ return AccessibleRole.Text;  // Fallback
 </code></pre>
 </li>
 </ul>
-<h4 id="issue-name-property-returns-null" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="890">Issue: Name property returns null</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="892"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="892">Symptoms:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="894">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="894">Screen readers don't announce control name</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="895"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="895">Name</code> property returns null</li>
+<h4 id="issue-name-property-returns-null">Issue: Name property returns null</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Screen readers don't announce control name</li>
+<li><code>Name</code> property returns null</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="897"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="897">Solutions:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="899">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="899"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="899">Set <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="899">AccessibleName</code> on the control:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="901">kryptonTextBox1.AccessibleName = &quot;User Name Input&quot;;
+<p><strong>Solutions:</strong></p>
+<ul>
+<li><p>Set <code>AccessibleName</code> on the control:</p>
+<pre><code class="lang-csharp">kryptonTextBox1.AccessibleName = &quot;User Name Input&quot;;
 </code></pre>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="905"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="905">Or set <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="905">Name</code> property:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="907">kryptonTextBox1.Name = &quot;txtUserName&quot;;
+<li><p>Or set <code>Name</code> property:</p>
+<pre><code class="lang-csharp">kryptonTextBox1.Name = &quot;txtUserName&quot;;
 </code></pre>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="911"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="911">Verify fallback logic:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="913">return base.Name ?? _owner.Name;
+<li><p>Verify fallback logic:</p>
+<pre><code class="lang-csharp">return base.Name ?? _owner.Name;
 </code></pre>
 </li>
 </ul>
-<h4 id="issue-navigation-doesnt-work" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="917">Issue: Navigation doesn't work</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="919"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="919">Symptoms:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="921">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="921">Screen reader navigation skips controls</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="922"><code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="922">Navigate()</code> returns null</li>
+<h4 id="issue-navigation-doesnt-work">Issue: Navigation doesn't work</h4>
+<p><strong>Symptoms:</strong></p>
+<ul>
+<li>Screen reader navigation skips controls</li>
+<li><code>Navigate()</code> returns null</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="924"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="924">Solutions:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="926">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="926">Ensure controls are properly parented</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="927">Verify <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="927">GetChild()</code> and <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="927">GetChildCount()</code> work correctly</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="928">Check that controls are in the tab order</li>
+<p><strong>Solutions:</strong></p>
+<ul>
+<li>Ensure controls are properly parented</li>
+<li>Verify <code>GetChild()</code> and <code>GetChildCount()</code> work correctly</li>
+<li>Check that controls are in the tab order</li>
 </ul>
-<h3 id="debugging-tips" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="930">Debugging Tips</h3>
-<h4 id="enable-accessibility-debugging" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="932">Enable Accessibility Debugging</h4>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="934">// Add debug output to verify delegation
+<h3 id="debugging-tips">Debugging Tips</h3>
+<h4 id="enable-accessibility-debugging">Enable Accessibility Debugging</h4>
+<pre><code class="lang-csharp">// Add debug output to verify delegation
 public override string? Name
 {
     get
@@ -938,40 +938,40 @@ public override string? Name
     }
 }
 </code></pre>
-<h4 id="verify-internal-control-access" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="955">Verify Internal Control Access</h4>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="957">// Add validation
+<h4 id="verify-internal-control-access">Verify Internal Control Access</h4>
+<pre><code class="lang-csharp">// Add validation
 if (_owner.TextBox == null)
 {
     throw new InvalidOperationException(
         &quot;Internal TextBox is null. Control may not be initialized.&quot;);
 }
 </code></pre>
-<h4 id="test-with-ui-automation-spy" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="966">Test with UI Automation Spy</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="968">Use UI Automation Spy to inspect the accessibility tree:</p>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="970">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="970">Launch UI Automation Spy</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="971">Point to control</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="972">Inspect properties</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="973">Compare with expected values</li>
+<h4 id="test-with-ui-automation-spy">Test with UI Automation Spy</h4>
+<p>Use UI Automation Spy to inspect the accessibility tree:</p>
+<ol>
+<li>Launch UI Automation Spy</li>
+<li>Point to control</li>
+<li>Inspect properties</li>
+<li>Compare with expected values</li>
 </ol>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="975">
-<h2 id="performance-considerations" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="977">Performance Considerations</h2>
-<h3 id="overhead-analysis" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="979">Overhead Analysis</h3>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="981"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="981">Delegation Pattern:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="983">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="983">Property access: ~1-2 property lookups + null checks</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="984">Method calls: ~1 method call + null check</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="985"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="985">Estimated overhead: &lt; 1 microsecond per call</strong></li>
+<hr>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="overhead-analysis">Overhead Analysis</h3>
+<p><strong>Delegation Pattern:</strong></p>
+<ul>
+<li>Property access: ~1-2 property lookups + null checks</li>
+<li>Method calls: ~1 method call + null check</li>
+<li><strong>Estimated overhead: &lt; 1 microsecond per call</strong></li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="987"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="987">Memory:</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="989">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="989">One <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="989">AccessibleObject</code> instance per control</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="990">Minimal memory footprint (~100 bytes per instance)</li>
+<p><strong>Memory:</strong></p>
+<ul>
+<li>One <code>AccessibleObject</code> instance per control</li>
+<li>Minimal memory footprint (~100 bytes per instance)</li>
 </ul>
-<h3 id="optimization-strategies" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="992">Optimization Strategies</h3>
-<h4 id="1-cache-internal-accessibility-object" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="994">1. Cache Internal Accessibility Object</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="996"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="996">Current Implementation:</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="998">public override string? Name
+<h3 id="optimization-strategies">Optimization Strategies</h3>
+<h4 id="1-cache-internal-accessibility-object">1. Cache Internal Accessibility Object</h4>
+<p><strong>Current Implementation:</strong></p>
+<pre><code class="lang-csharp">public override string? Name
 {
     get
     {
@@ -980,8 +980,8 @@ if (_owner.TextBox == null)
     }
 }
 </code></pre>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1009"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1009">Optimized (if needed):</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1011">private AccessibleObject? _cachedInternalAccessible;
+<p><strong>Optimized (if needed):</strong></p>
+<pre><code class="lang-csharp">private AccessibleObject? _cachedInternalAccessible;
 
 private AccessibleObject? InternalAccessible
 {
@@ -995,17 +995,17 @@ private AccessibleObject? InternalAccessible
     }
 }
 </code></pre>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1027"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1027">Note:</strong> Current implementation is already efficient. Caching is only needed if profiling shows performance issues.</p>
-<h4 id="2-lazy-initialization" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1029">2. Lazy Initialization</h4>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1031">Accessibility objects are created on-demand when first accessed:</p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1033">// Created when AccessibilityObject property is first accessed
+<p><strong>Note:</strong> Current implementation is already efficient. Caching is only needed if profiling shows performance issues.</p>
+<h4 id="2-lazy-initialization">2. Lazy Initialization</h4>
+<p>Accessibility objects are created on-demand when first accessed:</p>
+<pre><code class="lang-csharp">// Created when AccessibilityObject property is first accessed
 var accessible = control.AccessibilityObject;
 </code></pre>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1038">This is already handled by the framework - no changes needed.</p>
-<h3 id="performance-best-practices" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1040">Performance Best Practices</h3>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1042">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1042"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1042"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1042">Avoid unnecessary property access</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1044">// ❌ Bad: Multiple property accesses
+<p>This is already handled by the framework - no changes needed.</p>
+<h3 id="performance-best-practices">Performance Best Practices</h3>
+<ol>
+<li><p><strong>Avoid unnecessary property access</strong></p>
+<pre><code class="lang-csharp">// ❌ Bad: Multiple property accesses
 if (_owner.TextBox != null &amp;&amp; _owner.TextBox.AccessibilityObject != null)
 {
     return _owner.TextBox.AccessibilityObject.Name;
@@ -1019,36 +1019,36 @@ if (internalAccessible?.Name != null)
 }
 </code></pre>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1059"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1059"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1059">Use null-conditional operators</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1061">// ✅ Efficient and safe
+<li><p><strong>Use null-conditional operators</strong></p>
+<pre><code class="lang-csharp">// ✅ Efficient and safe
 return _owner.TextBox?.AccessibilityObject?.Name ?? base.Name;
 </code></pre>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1066"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1066"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1066">Minimize allocations</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1067">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1067">Reuse variables where possible</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1068">Avoid creating temporary objects in hot paths</li>
+<li><p><strong>Minimize allocations</strong></p>
+<ul>
+<li>Reuse variables where possible</li>
+<li>Avoid creating temporary objects in hot paths</li>
 </ul>
 </li>
 </ol>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1070">
-<h2 id="best-practices" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1072">Best Practices</h2>
-<h3 id="code-organization" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1074">Code Organization</h3>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1076">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1076"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1076"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1076">File Location</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1077">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1077">Place all <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1077">AccessibleObject</code> classes in <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1077">Utilities/Accessibility/</code></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1078">Follow naming convention: <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1078">Krypton[ControlName]AccessibleObject.cs</code></li>
+<hr>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="code-organization">Code Organization</h3>
+<ol>
+<li><p><strong>File Location</strong></p>
+<ul>
+<li>Place all <code>AccessibleObject</code> classes in <code>Utilities/Accessibility/</code></li>
+<li>Follow naming convention: <code>Krypton[ControlName]AccessibleObject.cs</code></li>
 </ul>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1080"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1080"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1080">Namespace</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1081">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1081">Use <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1081">Krypton.Toolkit</code> namespace</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1082">Keep classes <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1082">internal</code> (not public API)</li>
+<li><p><strong>Namespace</strong></p>
+<ul>
+<li>Use <code>Krypton.Toolkit</code> namespace</li>
+<li>Keep classes <code>internal</code> (not public API)</li>
 </ul>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1084"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1084"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1084">Region Organization</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1086">#region Instance Fields
+<li><p><strong>Region Organization</strong></p>
+<pre><code class="lang-csharp">#region Instance Fields
 #endregion
 
 #region Identity
@@ -1059,18 +1059,18 @@ return _owner.TextBox?.AccessibilityObject?.Name ?? base.Name;
 </code></pre>
 </li>
 </ol>
-<h3 id="implementation-guidelines" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1097">Implementation Guidelines</h3>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1099">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1099"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1099"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1099">Always Provide Fallbacks</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1101">// ✅ Good: Always has a fallback
+<h3 id="implementation-guidelines">Implementation Guidelines</h3>
+<ol>
+<li><p><strong>Always Provide Fallbacks</strong></p>
+<pre><code class="lang-csharp">// ✅ Good: Always has a fallback
 return internalAccessible?.Name ?? base.Name ?? _owner.Name;
 
 // ❌ Bad: Can return null unexpectedly
 return internalAccessible?.Name;
 </code></pre>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1109"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1109"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1109">Handle Null Cases</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1111">// ✅ Good: Null-safe
+<li><p><strong>Handle Null Cases</strong></p>
+<pre><code class="lang-csharp">// ✅ Good: Null-safe
 var internalAccessible = _owner.TextBox?.AccessibilityObject;
 if (internalAccessible != null)
 {
@@ -1081,15 +1081,15 @@ if (internalAccessible != null)
 return _owner.TextBox.AccessibilityObject.Name;
 </code></pre>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1123"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1123"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1123">Use Appropriate Roles</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1124">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1124">Match the control's semantic meaning</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1125">Use standard <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1125">AccessibleRole</code> values</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1126">Don't use <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1126">Default</code> or <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1126">None</code> as fallbacks</li>
+<li><p><strong>Use Appropriate Roles</strong></p>
+<ul>
+<li>Match the control's semantic meaning</li>
+<li>Use standard <code>AccessibleRole</code> values</li>
+<li>Don't use <code>Default</code> or <code>None</code> as fallbacks</li>
 </ul>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1128"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1128"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1128">Document Special Cases</strong></p>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1130">/// &lt;summary&gt;
+<li><p><strong>Document Special Cases</strong></p>
+<pre><code class="lang-csharp">/// &lt;summary&gt;
 /// Gets the accessible role of the control.
 /// Note: On legacy TFMs, provides explicit fallback to Text role
 /// when internal control returns Default or None.
@@ -1097,78 +1097,78 @@ return _owner.TextBox.AccessibilityObject.Name;
 </code></pre>
 </li>
 </ol>
-<h3 id="testing-guidelines" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1138">Testing Guidelines</h3>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1140">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1140"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1140"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1140">Test on All TFMs</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1141">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1141">Don't assume behavior is the same</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1142">Verify fallbacks work correctly</li>
+<h3 id="testing-guidelines">Testing Guidelines</h3>
+<ol>
+<li><p><strong>Test on All TFMs</strong></p>
+<ul>
+<li>Don't assume behavior is the same</li>
+<li>Verify fallbacks work correctly</li>
 </ul>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1144"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1144"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1144">Test with Real Tools</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1145">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1145">Don't rely only on automated tests</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1146">Test with Narrator, NVDA, JAWS</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1147">Test with UI Automation tools</li>
+<li><p><strong>Test with Real Tools</strong></p>
+<ul>
+<li>Don't rely only on automated tests</li>
+<li>Test with Narrator, NVDA, JAWS</li>
+<li>Test with UI Automation tools</li>
 </ul>
 </li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1149"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1149"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1149">Test Edge Cases</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1150">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1150">Null internal controls</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1151">Disabled controls</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1152">Hidden controls</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1153">Controls not in tab order</li>
-</ul>
-</li>
-</ol>
-<h3 id="maintenance" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1155">Maintenance</h3>
-<ol sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1157">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1157"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1157"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1157">Keep in Sync</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1158">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1158">When internal control changes, update <code sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1158">AccessibleObject</code></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1159">When new properties are added, consider accessibility implications</li>
-</ul>
-</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1161"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1161"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1161">Review Regularly</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1162">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1162">Check for new .NET accessibility features</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1163">Update fallback roles if needed</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1164">Verify compatibility with new TFMs</li>
-</ul>
-</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1166"><p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1166"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1166">Document Changes</strong></p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1167">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1167">Update this documentation</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1168">Update implementation plan document</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1169">Note any breaking changes</li>
+<li><p><strong>Test Edge Cases</strong></p>
+<ul>
+<li>Null internal controls</li>
+<li>Disabled controls</li>
+<li>Hidden controls</li>
+<li>Controls not in tab order</li>
 </ul>
 </li>
 </ol>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1171">
-<h2 id="additional-resources" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1173">Additional Resources</h2>
-<h3 id="microsoft-documentation" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1175">Microsoft Documentation</h3>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1177">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1177"><a href="https://learn.microsoft.com/en-us/dotnet/framework/ui-automation/ui-automation-overview" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1177">UI Automation Overview</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1178"><a href="https://learn.microsoft.com/en-us/dotnet/desktop/winforms/advanced/accessibility-in-windows-forms-controls" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1178">Accessibility in Windows Forms</a></li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1179"><a href="https://devblogs.microsoft.com/dotnet/whats-new-in-windows-forms-in-net-6-0/" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1179">.NET 6 WinForms Accessibility Improvements</a></li>
+<h3 id="maintenance">Maintenance</h3>
+<ol>
+<li><p><strong>Keep in Sync</strong></p>
+<ul>
+<li>When internal control changes, update <code>AccessibleObject</code></li>
+<li>When new properties are added, consider accessibility implications</li>
 </ul>
-<h3 id="tools" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1181">Tools</h3>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1183">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1183"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1183">Inspect.exe</strong>: Windows SDK tool for inspecting accessibility properties</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1184"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1184">Accessibility Insights</strong>: Microsoft's accessibility testing tool</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1185"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1185">UI Automation Spy</strong>: Inspect UI Automation tree</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1186"><strong sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1186">Narrator</strong>: Windows built-in screen reader</li>
+</li>
+<li><p><strong>Review Regularly</strong></p>
+<ul>
+<li>Check for new .NET accessibility features</li>
+<li>Update fallback roles if needed</li>
+<li>Verify compatibility with new TFMs</li>
 </ul>
-<hr sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1188">
-<h2 id="conclusion" sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1190">Conclusion</h2>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1192">This implementation provides comprehensive UIA provider support for Krypton controls that wrap standard Windows Forms controls. By using a delegation pattern with proper fallbacks, we ensure:</p>
-<ul sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1194">
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1194">✅ Accessibility information is properly exposed</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1195">✅ Works on both modern and legacy TFMs</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1196">✅ Minimal performance overhead</li>
-<li sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1197">✅ Easy to extend and maintain</li>
+</li>
+<li><p><strong>Document Changes</strong></p>
+<ul>
+<li>Update this documentation</li>
+<li>Update implementation plan document</li>
+<li>Note any breaking changes</li>
 </ul>
-<p sourcefile="articles/Standard Toolkit/Toolkit Utilities/UIAProviders.md" sourcestartlinenumber="1199">For questions or issues, refer to the troubleshooting section or create an issue in the repository.</p>
+</li>
+</ol>
+<hr>
+<h2 id="additional-resources">Additional Resources</h2>
+<h3 id="microsoft-documentation">Microsoft Documentation</h3>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/dotnet/framework/ui-automation/ui-automation-overview">UI Automation Overview</a></li>
+<li><a href="https://learn.microsoft.com/en-us/dotnet/desktop/winforms/advanced/accessibility-in-windows-forms-controls">Accessibility in Windows Forms</a></li>
+<li><a href="https://devblogs.microsoft.com/dotnet/whats-new-in-windows-forms-in-net-6-0/">.NET 6 WinForms Accessibility Improvements</a></li>
+</ul>
+<h3 id="tools">Tools</h3>
+<ul>
+<li><strong>Inspect.exe</strong>: Windows SDK tool for inspecting accessibility properties</li>
+<li><strong>Accessibility Insights</strong>: Microsoft's accessibility testing tool</li>
+<li><strong>UI Automation Spy</strong>: Inspect UI Automation tree</li>
+<li><strong>Narrator</strong>: Windows built-in screen reader</li>
+</ul>
+<hr>
+<h2 id="conclusion">Conclusion</h2>
+<p>This implementation provides comprehensive UIA provider support for Krypton controls that wrap standard Windows Forms controls. By using a delegation pattern with proper fallbacks, we ensure:</p>
+<ul>
+<li>✅ Accessibility information is properly exposed</li>
+<li>✅ Works on both modern and legacy TFMs</li>
+<li>✅ Minimal performance overhead</li>
+<li>✅ Easy to extend and maintain</li>
+</ul>
+<p>For questions or issues, refer to the troubleshooting section or create an issue in the repository.</p>
 
 </article>
           </div>

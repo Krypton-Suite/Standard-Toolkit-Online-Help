@@ -67,15 +67,15 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="scheme-strip-text-colours" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="1">Scheme strip text colours</h1>
+<h1 id="scheme-strip-text-colours">Scheme strip text colours</h1>
 
-<h2 id="overview" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="3">Overview</h2>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="5">Menu, tool, status, and context/menu-item text can be themed independently. Before this change, ColorTables aliased menu and tool strip text to the status-strip (or label/button) colour, so <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="5">SetSchemeColor(MenuStripText, …)</code> had no effect on chrome.</p>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="7">Package owners: <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="7">Krypton.Toolkit</code> (enum, ColorTables, official palettes) and <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="7">Krypton.Themes</code> (extra palettes and scheme generators).</p>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="9">Button hover text is <strong sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="9">not</strong> part of this feature. Use <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="9">SchemeBaseColors.ButtonTextTracking</code> (Issue #880).</p>
-<h2 id="architecture" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="11">Architecture</h2>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="13"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="13">SchemeBaseColors</code> is the indexed scheme used by <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="13">PaletteBase.SchemeColors</code>. ColorTables read those slots when building <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="13">ProfessionalColorTable</code> properties (<code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="13">MenuStripText</code>, <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="13">ToolStripText</code>, <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="13">StatusStripText</code>, <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="13">MenuItemText</code>). <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="13">KryptonContextMenu</code> item text uses palette content styles, not the ColorTable, so those styles were retargeted as well.</p>
-<pre><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="15">SetSchemeColor(slot)
+<h2 id="overview">Overview</h2>
+<p>Menu, tool, status, and context/menu-item text can be themed independently. Before this change, ColorTables aliased menu and tool strip text to the status-strip (or label/button) colour, so <code>SetSchemeColor(MenuStripText, …)</code> had no effect on chrome.</p>
+<p>Package owners: <code>Krypton.Toolkit</code> (enum, ColorTables, official palettes) and <code>Krypton.Themes</code> (extra palettes and scheme generators).</p>
+<p>Button hover text is <strong>not</strong> part of this feature. Use <code>SchemeBaseColors.ButtonTextTracking</code> (Issue #880).</p>
+<h2 id="architecture">Architecture</h2>
+<p><code>SchemeBaseColors</code> is the indexed scheme used by <code>PaletteBase.SchemeColors</code>. ColorTables read those slots when building <code>ProfessionalColorTable</code> properties (<code>MenuStripText</code>, <code>ToolStripText</code>, <code>StatusStripText</code>, <code>MenuItemText</code>). <code>KryptonContextMenu</code> item text uses palette content styles, not the ColorTable, so those styles were retargeted as well.</p>
+<pre><code>SetSchemeColor(slot)
         │
         ▼
 PaletteBase.SchemeColors[]  (+ matching BaseColors property, when the palette has one)
@@ -85,41 +85,41 @@ PaletteBase.SchemeColors[]  (+ matching BaseColors property, when the palette ha
         └─ GetContentShortTextColor*(ContextMenuItemText*)
               (KryptonContextMenu item captions and shortcuts)
 </code></pre>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="27"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="27">SchemeBaseColorsExtensions.Resolve</code> / <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="27">Coalesce</code> / <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="27">Get</code> treat <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="27">Color.Empty</code> (and <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="27">SharedStaticVariables.EMPTY_COLOR</code>, which is the same) as “use the family fallback”. Builtin schemes default the new slot to empty so appearance stays historic until a consumer sets a colour.</p>
-<h2 id="public-api" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="29">Public API</h2>
-<h3 id="schemebasecolorstoolstriptext--242" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="31"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="31">SchemeBaseColors.ToolStripText = 242</code></h3>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="33">Appended after <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="33">TextListItem = 241</code>. Existing members keep their numeric values. Do not insert new members in the middle of this enum.</p>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="35">Related slots:</p>
-<table sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="37">
+<p><code>SchemeBaseColorsExtensions.Resolve</code> / <code>Coalesce</code> / <code>Get</code> treat <code>Color.Empty</code> (and <code>SharedStaticVariables.EMPTY_COLOR</code>, which is the same) as “use the family fallback”. Builtin schemes default the new slot to empty so appearance stays historic until a consumer sets a colour.</p>
+<h2 id="public-api">Public API</h2>
+<h3 id="schemebasecolorstoolstriptext--242"><code>SchemeBaseColors.ToolStripText = 242</code></h3>
+<p>Appended after <code>TextListItem = 241</code>. Existing members keep their numeric values. Do not insert new members in the middle of this enum.</p>
+<p>Related slots:</p>
+<table>
 <thead>
-<tr sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="37">
-<th sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="37">Slot</th>
-<th sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="37">Typical chrome</th>
+<tr>
+<th>Slot</th>
+<th>Typical chrome</th>
 </tr>
 </thead>
 <tbody>
-<tr sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="39">
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="39"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="39">MenuStripText</code> (232)</td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="39"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="39">KryptonMenuStrip</code> / <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="39">MenuStrip</code> top-level text</td>
+<tr>
+<td><code>MenuStripText</code> (232)</td>
+<td><code>KryptonMenuStrip</code> / <code>MenuStrip</code> top-level text</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="40">
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="40"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="40">ToolStripText</code> (242)</td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="40"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="40">KryptonToolStrip</code> / <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="40">ToolStrip</code> item text</td>
+<tr>
+<td><code>ToolStripText</code> (242)</td>
+<td><code>KryptonToolStrip</code> / <code>ToolStrip</code> item text</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="41">
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="41"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="41">StatusStripText</code> (21)</td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="41"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="41">KryptonStatusStrip</code> / <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="41">StatusStrip</code> text</td>
+<tr>
+<td><code>StatusStripText</code> (21)</td>
+<td><code>KryptonStatusStrip</code> / <code>StatusStrip</code> text</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="42">
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="42"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="42">MenuItemText</code></td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="42">Dropdown items, <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="42">ContextMenuStrip</code> items, <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="42">KryptonContextMenu</code> item text</td>
+<tr>
+<td><code>MenuItemText</code></td>
+<td>Dropdown items, <code>ContextMenuStrip</code> items, <code>KryptonContextMenu</code> item text</td>
 </tr>
 </tbody>
 </table>
-<h3 id="kryptoncolorschemebasetoolstriptext" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="44"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="44">KryptonColorSchemeBase.ToolStripText</code></h3>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="46">Abstract property on every scheme. Generators (<code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="46">LimeGreenSchemeHelper</code>, <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="46">MaterializeSchemeHelper</code>, <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="46">CustomThemeSchemeRemapper</code>) assign it with <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="46">MenuStripText</code>.</p>
-<h3 id="runtime" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="48">Runtime</h3>
-<pre><code class="lang-csharp" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="50">var palette = KryptonManager.CurrentGlobalPalette;
+<h3 id="kryptoncolorschemebasetoolstriptext"><code>KryptonColorSchemeBase.ToolStripText</code></h3>
+<p>Abstract property on every scheme. Generators (<code>LimeGreenSchemeHelper</code>, <code>MaterializeSchemeHelper</code>, <code>CustomThemeSchemeRemapper</code>) assign it with <code>MenuStripText</code>.</p>
+<h3 id="runtime">Runtime</h3>
+<pre><code class="lang-csharp">var palette = KryptonManager.CurrentGlobalPalette;
 palette.SetSchemeColor(SchemeBaseColors.MenuStripText, Color.Firebrick);
 palette.SetSchemeColor(SchemeBaseColors.ToolStripText, Color.MediumBlue);
 palette.SetSchemeColor(SchemeBaseColors.StatusStripText, Color.DarkGreen);
@@ -128,65 +128,65 @@ palette.SetSchemeColor(SchemeBaseColors.MenuItemText, Color.DarkOrange);
 Color current = palette.GetSchemeColor(SchemeBaseColors.ToolStripText);
 palette.SetSchemeColor(SchemeBaseColors.ToolStripText, Color.Empty); // restore fallback
 </code></pre>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="61">Professional palettes may use a shorter hand-built colour array. <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="61">Get</code> / <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="61">Resolve</code> are bounds-safe; <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="61">SetSchemeColor</code> can throw <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="61">IndexOutOfRangeException</code> — catch that when driving unknown palettes from a demo.</p>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="63">Custom palettes that already expose independent <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="63">ToolMenuStatus</code> colours (<code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="63">KryptonInternalKCT</code>) are unchanged.</p>
-<h2 id="family-fallbacks" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="65">Family fallbacks</h2>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="67">When the primary slot is empty, ColorTables use:</p>
-<table sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="69">
+<p>Professional palettes may use a shorter hand-built colour array. <code>Get</code> / <code>Resolve</code> are bounds-safe; <code>SetSchemeColor</code> can throw <code>IndexOutOfRangeException</code> — catch that when driving unknown palettes from a demo.</p>
+<p>Custom palettes that already expose independent <code>ToolMenuStatus</code> colours (<code>KryptonInternalKCT</code>) are unchanged.</p>
+<h2 id="family-fallbacks">Family fallbacks</h2>
+<p>When the primary slot is empty, ColorTables use:</p>
+<table>
 <thead>
-<tr sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="69">
-<th sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="69">Family</th>
-<th sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="69">MenuStripText</th>
-<th sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="69">ToolStripText</th>
-<th sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="69">MenuItemText</th>
+<tr>
+<th>Family</th>
+<th>MenuStripText</th>
+<th>ToolStripText</th>
+<th>MenuItemText</th>
 </tr>
 </thead>
 <tbody>
-<tr sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="71">
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="71">Office 2010 / 2013 / 365 / Visual Studio</td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="71"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="71">StatusStripText</code></td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="71"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="71">StatusStripText</code></td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="71"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="71">TextButtonNormal</code> (or the table's previous hardcoded colour)</td>
+<tr>
+<td>Office 2010 / 2013 / 365 / Visual Studio</td>
+<td><code>StatusStripText</code></td>
+<td><code>StatusStripText</code></td>
+<td><code>TextButtonNormal</code> (or the table's previous hardcoded colour)</td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="72">
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="72">Office 2007</td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="72"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="72">TextLabelPanel</code></td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="72"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="72">TextButtonNormal</code></td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="72"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="72">TextButtonNormal</code></td>
+<tr>
+<td>Office 2007</td>
+<td><code>TextLabelPanel</code></td>
+<td><code>TextButtonNormal</code></td>
+<td><code>TextButtonNormal</code></td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="73">
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="73">Sparkle</td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="73"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="73">TextLabelPanel</code></td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="73"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="73">TextLabelPanel</code></td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="73">Sparkle <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="73">_menuItemText</code></td>
+<tr>
+<td>Sparkle</td>
+<td><code>TextLabelPanel</code></td>
+<td><code>TextLabelPanel</code></td>
+<td>Sparkle <code>_menuItemText</code></td>
 </tr>
-<tr sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="74">
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="74">White subclasses (2010/2013/365)</td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="74">Coalesce with <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="74">Color.FromArgb(255, 30, 30, 30)</code></td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="74">family tool-strip fallback</td>
-<td sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="74">family menu-item fallback</td>
+<tr>
+<td>White subclasses (2010/2013/365)</td>
+<td>Coalesce with <code>Color.FromArgb(255, 30, 30, 30)</code></td>
+<td>family tool-strip fallback</td>
+<td>family menu-item fallback</td>
 </tr>
 </tbody>
 </table>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="76">Helpers:</p>
-<ul sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="78">
-<li sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="78"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="78">SchemeBaseColorsExtensions.Coalesce(primary, fallback)</code></li>
-<li sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="79"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="79">colors.Resolve(primary, fallback)</code></li>
-<li sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="80"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="80">colors.Get(index)</code></li>
-<li sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="81"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="81">PaletteBase.GetSchemeColorOrFallback(primary, fallback)</code> (protected)</li>
+<p>Helpers:</p>
+<ul>
+<li><code>SchemeBaseColorsExtensions.Coalesce(primary, fallback)</code></li>
+<li><code>colors.Resolve(primary, fallback)</code></li>
+<li><code>colors.Get(index)</code></li>
+<li><code>PaletteBase.GetSchemeColorOrFallback(primary, fallback)</code> (protected)</li>
 </ul>
-<h2 id="context-menus" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="83">Context menus</h2>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="85"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="85">PaletteContentStyle.ContextMenuItemTextStandard</code>, <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="85">ContextMenuItemTextAlternate</code>, and <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="85">ContextMenuItemShortcutText</code> now coalesce <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="85">MenuItemText</code> onto <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="85">TextLabelControl</code> (Material uses <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="85">HeaderText</code>).</p>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="87">Official palettes read that colour from the live <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="87">SchemeColors</code> array. Extra Office/365 palettes still read <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="87">BaseColors.MenuItemText</code>; <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="87">SetSchemeColor</code> therefore also writes the matching property on the palette's <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="87">BaseColors</code> object so those menus follow the override.</p>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="89">Native <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="89">ContextMenuStrip</code> and File/Edit dropdown items use <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="89">ColorTable.MenuItemText</code> (fallback <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="89">TextButtonNormal</code> on Office 2010/2013/365). That is the same slot, so they should match <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="89">KryptonContextMenu</code> once <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="89">MenuItemText</code> is set.</p>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="91"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="91">ContextMenuItemImage</code> stays on the label/image arm (glyph, not item text). Menu headings stay on <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="91">ContextMenuHeadingText</code>.</p>
-<p sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="93"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="93">PaletteRelativeAlign.Center</code> arms that still list those styles are font/alignment only — do not split them.</p>
-<h2 id="edge-cases" sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="95">Edge cases</h2>
-<ul sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="97">
-<li sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="97"><strong sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="97">Do not insert enum members</strong> before <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="97">Custom</code> or in the middle of <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="97">SchemeBaseColors</code>. Append only.</li>
-<li sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="98">Material and macOS schemes that already stored a non-empty <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="98">MenuStripText</code> now honour that slot (previously ignored by ColorTables). That is intended.</li>
-<li sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="99"><code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="99">KryptonThemeComboBox</code> / theme re-apply restores builtin scheme values and clears live <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="99">SetSchemeColor</code> overrides — re-select the theme after <strong sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="99">Reset all</strong>.</li>
-<li sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="100">Native WinForms <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="100">MenuStrip</code> / <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="100">ToolStrip</code> / <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="100">StatusStrip</code> / <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="100">ContextMenuStrip</code> share the same <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="100">ColorTable</code> as the Krypton wraps when <code sourcefile="articles/Standard Toolkit/Themes/SchemeStripTextColors.md" sourcestartlinenumber="100">ToolStripManager.Renderer</code> is the Krypton renderer.</li>
+<h2 id="context-menus">Context menus</h2>
+<p><code>PaletteContentStyle.ContextMenuItemTextStandard</code>, <code>ContextMenuItemTextAlternate</code>, and <code>ContextMenuItemShortcutText</code> now coalesce <code>MenuItemText</code> onto <code>TextLabelControl</code> (Material uses <code>HeaderText</code>).</p>
+<p>Official palettes read that colour from the live <code>SchemeColors</code> array. Extra Office/365 palettes still read <code>BaseColors.MenuItemText</code>; <code>SetSchemeColor</code> therefore also writes the matching property on the palette's <code>BaseColors</code> object so those menus follow the override.</p>
+<p>Native <code>ContextMenuStrip</code> and File/Edit dropdown items use <code>ColorTable.MenuItemText</code> (fallback <code>TextButtonNormal</code> on Office 2010/2013/365). That is the same slot, so they should match <code>KryptonContextMenu</code> once <code>MenuItemText</code> is set.</p>
+<p><code>ContextMenuItemImage</code> stays on the label/image arm (glyph, not item text). Menu headings stay on <code>ContextMenuHeadingText</code>.</p>
+<p><code>PaletteRelativeAlign.Center</code> arms that still list those styles are font/alignment only — do not split them.</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li><strong>Do not insert enum members</strong> before <code>Custom</code> or in the middle of <code>SchemeBaseColors</code>. Append only.</li>
+<li>Material and macOS schemes that already stored a non-empty <code>MenuStripText</code> now honour that slot (previously ignored by ColorTables). That is intended.</li>
+<li><code>KryptonThemeComboBox</code> / theme re-apply restores builtin scheme values and clears live <code>SetSchemeColor</code> overrides — re-select the theme after <strong>Reset all</strong>.</li>
+<li>Native WinForms <code>MenuStrip</code> / <code>ToolStrip</code> / <code>StatusStrip</code> / <code>ContextMenuStrip</code> share the same <code>ColorTable</code> as the Krypton wraps when <code>ToolStripManager.Renderer</code> is the Krypton renderer.</li>
 </ul>
 
 </article>
