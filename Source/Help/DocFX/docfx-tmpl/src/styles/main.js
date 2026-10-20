@@ -104,3 +104,97 @@ document.addEventListener("DOMContentLoaded", () => {
     footer.innerHTML = footer.innerHTML.replace(/2017 - \d{4}/g, `2017 - ${currentYear}`);
   }
 });
+
+(function () {
+  var KEY = 'docfx-sidebar-width', MIN = 180, MAX = 700;
+  var handle = null;
+
+  function position() {
+    var toc = document.querySelector('.sidetoc');
+    if (!toc || !handle) return;
+    var filter = document.querySelector('.sidefilter');
+    var r = toc.getBoundingClientRect();
+    var top = filter ? filter.getBoundingClientRect().top : r.top;
+    handle.style.left = (r.right - 3) + 'px';
+    handle.style.top = top + 'px';
+    handle.style.bottom = '0';
+  }
+
+  function setWidth(w) {
+    w = Math.max(MIN, Math.min(MAX, w));
+    document.documentElement.style.setProperty('--sidebar-width', w + 'px');
+    position();
+    return w;
+  }
+
+  try {
+    var saved = parseInt(localStorage.getItem(KEY), 10);
+    if (saved) setWidth(saved);
+  } catch (e) {}
+
+  function createHandle() {
+    handle = document.createElement('div');
+    handle.className = 'sidebar-resizer';
+    document.body.appendChild(handle);
+
+    handle.addEventListener('pointerdown', function (e) {
+      var toc = document.querySelector('.sidetoc');
+      if (!toc) return;
+      var left = toc.getBoundingClientRect().left;
+      var width = null;
+      handle.setPointerCapture(e.pointerId);
+      handle.classList.add('dragging');
+      document.body.classList.add('sidebar-resizing');
+
+      function move(ev) { width = setWidth(ev.clientX - left); }
+      function up() {
+        handle.removeEventListener('pointermove', move);
+        handle.removeEventListener('pointerup', up);
+        handle.classList.remove('dragging');
+        document.body.classList.remove('sidebar-resizing');
+        try { if (width) localStorage.setItem(KEY, width); } catch (e) {}
+      }
+      handle.addEventListener('pointermove', move);
+      handle.addEventListener('pointerup', up);
+      e.preventDefault();
+    });
+
+    position();
+  }
+
+  // The TOC is rendered by JavaScript, so wait until it exists.
+  function init() {
+    if (document.querySelector('.sidetoc')) { createHandle(); return true; }
+    return false;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    if (init()) return;
+    var obs = new MutationObserver(function () {
+      if (init()) obs.disconnect();
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  });
+
+  window.addEventListener('resize', position);
+  window.addEventListener('scroll', position, { passive: true });
+})();
+
+// Collapsible "Inherited Members" and "Extension Methods" sections
+$(function () {
+  $('div.inheritedMembers, div.extensionMethods').each(function () {
+    var box = $(this);
+    var header = box.children('h5').first();
+    var body = box.children().not(header);
+    if (!header.length || !body.length) return;
+
+    header.addClass('collapsible-header')
+          .attr('title', 'Click to expand or collapse');
+    body.hide();                       // collapsed by default
+
+    header.on('click', function () {
+      body.toggle();
+      header.toggleClass('open');
+    });
+  });
+});

@@ -59,8 +59,10 @@ REM ============================================
 REM Start DocFX
 REM ============================================
 echo [INFO] Starting DocFX server...
+echo [INFO] First build can take several minutes (API metadata). Keep the DocFX window open.
 
-start "" "%DOCFX%" "%DOCFX_CONFIG%" --serve
+REM -NoExit keeps the console open after the script ends so build errors are readable.
+start "Krypton Online Help (DocFX)" powershell.exe -NoProfile -ExecutionPolicy Bypass -NoExit -File "%REPO_ROOT%Source\Help\DocFX\build-docfx.ps1" -Serve
 
 REM Give server time to spin up
 timeout /t 2 >nul
@@ -69,10 +71,11 @@ REM ============================================
 REM Open browser
 REM ============================================
 echo [INFO] Opening browser at %DOCFX_URL%
+echo [INFO] If the page fails to load, wait for DocFX to finish building, then refresh.
 start "" "%DOCFX_URL%"
 
-echo [INFO] DocFX is running.
-echo Press Ctrl+C in the DocFX window to stop.
+echo [INFO] DocFX is running in the "Krypton Online Help (DocFX)" window.
+echo Press Ctrl+C in that window to stop.
 
 endlocal
 goto :eof
