@@ -10,11 +10,9 @@ $footerYearPattern = '(?<=2017 - )\d{4}(?=\. All rights reserved\.)'
 $failed = $false
 
 # DocFX runs bare `dotnet restore` and does not pass metadata.properties to that
-# restore (see DotnetApiCatalog.Compile.cs). Without these response files, Extended
-# restores net472 against Krypton.Toolkit.Lite (NU1201).
+# restore (see DotnetApiCatalog.Compile.cs). Pin TFM via MSBuild response file.
 $kryptonRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..\..')).Path
 $standardRspPath = Join-Path $kryptonRoot 'Standard-Toolkit\Source\Krypton Components\Directory.Build.rsp'
-$extendedRspPath = Join-Path $kryptonRoot 'Extended-Toolkit\Source\Krypton Toolkit\Directory.Build.rsp'
 $createdRspPaths = [System.Collections.Generic.List[string]]::new()
 
 function Install-DocFxMsBuildResponseFile {
@@ -40,12 +38,6 @@ function Install-DocFxMsBuildResponseFile {
 try {
     Install-DocFxMsBuildResponseFile -Path $standardRspPath -Contents @"
 /p:TFMs=all
-/p:TargetFramework=net10.0-windows
-"@
-
-    Install-DocFxMsBuildResponseFile -Path $extendedRspPath -Contents @"
-/p:TFMs=all
-/p:Configuration=Release
 /p:TargetFramework=net10.0-windows
 "@
 

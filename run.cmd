@@ -14,9 +14,6 @@ set "DOCFX_URL=http://localhost:8080"
 set "STANDARD_TOOLKIT_ROOT=%REPO_ROOT%..\Standard-Toolkit"
 set "STANDARD_TOOLKIT_SRC=%STANDARD_TOOLKIT_ROOT%\Source\Krypton Components"
 set "STANDARD_TOOLKIT_REPO=https://github.com/Krypton-Suite/Standard-Toolkit.git"
-set "EXTENDED_TOOLKIT_ROOT=%REPO_ROOT%..\Extended-Toolkit"
-set "EXTENDED_TOOLKIT_SRC=%EXTENDED_TOOLKIT_ROOT%\Source\Krypton Toolkit"
-set "EXTENDED_TOOLKIT_REPO=https://github.com/Krypton-Suite/Extended-Toolkit.git"
 
 echo ============================================
 echo DocFX Build Script
@@ -51,8 +48,6 @@ REM DocFX metadata.src cannot use a Git URL, so clone
 REM the sibling folder from GitHub when it is missing.
 REM ============================================
 call :EnsureSiblingToolkit "Standard-Toolkit" "%STANDARD_TOOLKIT_ROOT%" "%STANDARD_TOOLKIT_SRC%" "%STANDARD_TOOLKIT_REPO%"
-if errorlevel 1 exit /b 1
-call :EnsureSiblingToolkit "Extended-Toolkit" "%EXTENDED_TOOLKIT_ROOT%" "%EXTENDED_TOOLKIT_SRC%" "%EXTENDED_TOOLKIT_REPO%"
 if errorlevel 1 exit /b 1
 
 REM ============================================
