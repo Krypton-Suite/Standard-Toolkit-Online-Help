@@ -29,9 +29,9 @@ dotnet tool install -g docfx
 cd Source/Help/DocFX
 
 # Build and serve locally
-docfx docfx.json --serve
+powershell -NoProfile -ExecutionPolicy Bypass -File .\build-docfx.ps1 -Serve
 ```
 
-Then open http://localhost:8080 in your browser.
+Then open http://localhost:8080 in your browser. The build script sets the footer's ending year to the current year.
 
 For more details, see [How to Build.md](How%20to%20Build.md).
