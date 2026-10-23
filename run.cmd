@@ -14,9 +14,6 @@ set "DOCFX_URL=http://localhost:8080"
 set "STANDARD_TOOLKIT_ROOT=%REPO_ROOT%..\Standard-Toolkit"
 set "STANDARD_TOOLKIT_SRC=%STANDARD_TOOLKIT_ROOT%\Source\Krypton Components"
 set "STANDARD_TOOLKIT_REPO=https://github.com/Krypton-Suite/Standard-Toolkit.git"
-set "EXTENDED_TOOLKIT_ROOT=%REPO_ROOT%..\Extended-Toolkit"
-set "EXTENDED_TOOLKIT_SRC=%EXTENDED_TOOLKIT_ROOT%\Source\Krypton Toolkit"
-set "EXTENDED_TOOLKIT_REPO=https://github.com/Krypton-Suite/Extended-Toolkit.git"
 
 echo ============================================
 echo DocFX Build Script
@@ -52,15 +49,15 @@ REM the sibling folder from GitHub when it is missing.
 REM ============================================
 call :EnsureSiblingToolkit "Standard-Toolkit" "%STANDARD_TOOLKIT_ROOT%" "%STANDARD_TOOLKIT_SRC%" "%STANDARD_TOOLKIT_REPO%"
 if errorlevel 1 exit /b 1
-call :EnsureSiblingToolkit "Extended-Toolkit" "%EXTENDED_TOOLKIT_ROOT%" "%EXTENDED_TOOLKIT_SRC%" "%EXTENDED_TOOLKIT_REPO%"
-if errorlevel 1 exit /b 1
 
 REM ============================================
 REM Start DocFX
 REM ============================================
 echo [INFO] Starting DocFX server...
+echo [INFO] First build can take several minutes (API metadata). Keep the DocFX window open.
 
-start "" "%DOCFX%" "%DOCFX_CONFIG%" --serve
+REM -NoExit keeps the console open after the script ends so build errors are readable.
+start "Krypton Online Help (DocFX)" powershell.exe -NoProfile -ExecutionPolicy Bypass -NoExit -File "%REPO_ROOT%Source\Help\DocFX\build-docfx.ps1" -Serve
 
 REM Give server time to spin up
 timeout /t 2 >nul
@@ -69,10 +66,11 @@ REM ============================================
 REM Open browser
 REM ============================================
 echo [INFO] Opening browser at %DOCFX_URL%
+echo [INFO] If the page fails to load, wait for DocFX to finish building, then refresh.
 start "" "%DOCFX_URL%"
 
-echo [INFO] DocFX is running.
-echo Press Ctrl+C in the DocFX window to stop.
+echo [INFO] DocFX is running in the "Krypton Online Help (DocFX)" window.
+echo Press Ctrl+C in that window to stop.
 
 endlocal
 goto :eof

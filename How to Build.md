@@ -40,7 +40,9 @@ DocFX extracts API reference from **sibling** clones next to this repository (sa
 - Standard Toolkit → `../Standard-Toolkit/Source/Krypton Components/` → `api/`
 - Extended Toolkit → `../Extended-Toolkit/Source/Krypton Toolkit/` → `api-extended/`
 
-Keep those trees current when you want metadata to match local toolkit source. Standard and Extended metadata are generated for `net10.0-windows` only. Pinning that TFM is required because the toolkit projects multi-target (including .NET Framework, where `ReadOnlySpan<T>` comes from `System.Memory` rather than the BCL). Extended also skips Ultimate/Lite aggregates, tests, examples, and helper tools.
+Keep those trees current when you want metadata to match local toolkit source. Standard and Extended metadata are generated for `net10.0-windows` only. Pinning that TFM is required because the toolkit projects multi-target (including .NET Framework, where `ReadOnlySpan<T>` comes from `System.Memory` rather than the BCL).
+
+DocFX runs a bare `dotnet restore` and does **not** pass `metadata.properties` into that restore. `build-docfx.ps1` therefore installs temporary `Directory.Build.rsp` files under the sibling Standard/Extended trees (`TFMs=all`, `Configuration=Release` for Extended, `TargetFramework=net10.0-windows`) for the duration of the run, then removes them. Without that, Extended restores `net472` against default `Krypton.Toolkit.Lite` and fails with NU1201. Extended also skips Ultimate/Lite aggregates, tests, examples, and helper tools.
 
 DocFX cannot take a Git URL in `metadata.src`. If a sibling folder is missing, `run.cmd` clones [Krypton-Suite/Standard-Toolkit](https://github.com/Krypton-Suite/Standard-Toolkit) and/or [Krypton-Suite/Extended-Toolkit](https://github.com/Krypton-Suite/Extended-Toolkit) there as a fallback. GitHub Actions checks out the same repositories beside this repo.
 
@@ -54,7 +56,7 @@ DocFX cannot take a Git URL in `metadata.src`. If a sibling folder is missing, `
 - Run the following command to build and serve the documentation:
 
 ```cmd
-docfx docfx.json --serve
+powershell -NoProfile -ExecutionPolicy Bypass -File .\build-docfx.ps1 -Serve
 ```
 
 - Now you can view the generated website at [http://localhost:8080](http://localhost:8080)
@@ -65,10 +67,11 @@ docfx docfx.json --serve
 - Run:
 
 ```cmd
-docfx docfx.json
+powershell -NoProfile -ExecutionPolicy Bypass -File .\build-docfx.ps1
 ```
 
 - The output will be generated in `Source/Help/Output`
+- The build script sets the footer's ending year to the current year.
 
 ### Tip
 
