@@ -6,14 +6,14 @@ There are currently two types of package that are supported. The table below out
 
 | Package Type | Supported Frameworks |
 | --- | --- |
-| Full | .NET Framework 4.7.2, 4.8, 4.8.1, .NET 8 - 11 |
+| Full | .NET Framework 4.7.2, 4.8, 4.8.1, .NET 10 - 11 |
 
 ## Stable Release
 
 | Package Type | Supported Frameworks |
 | --- | --- |
-| Full | .NET Framework 4.7.2, 4.8, 4.8.1, .NET 8 - 10 |
-| Lite | .NET Framework 4.8, 4.8.1, .NET 8 - 10 |
+| Full | .NET Framework 4.7.2, 4.8, 4.8.1, .NET 8 - 11 |
+| Lite | .NET Framework 4.8, 4.8.1, .NET 8 - 11 |
 
 ## LTS Release
 
@@ -30,10 +30,8 @@ There are currently two types of package that are supported. The table below out
 
 | Version | Status | Latest Release | Latest Release Date | End of Support |
 | --- | --- | --- | --- | --- |
-| .NET 11.0 | Standard Term Support | 11.0.0-rc.2 | October 13, 2026 | TBA |
-| .NET 10.0 | Long Term Support | 10.0.13 | October 13, 2026 | November 14, 2028 |
-| .NET 9.0 | Standard Term Support | 9.0.21 | October 13, 2026 | November 10, 2026 |
-| .NET 8.0 | Long Term Support | 8.0.32 | October 13, 2026 | November 10, 2026 |
+| .NET 11.0 | Standard Term Support | 11.0.0 | November 10, 2026 | TBA |
+| .NET 10.0 | Long Term Support | 10.0.14 | November 10, 2026 | November 14, 2028 |
 
 ### Supported .NET Framework Versions
 

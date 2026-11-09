@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton snap-layout overlay | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton snap-layout overlay | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-snap-layout-overlay">Krypton snap-layout overlay</h1>
+
+<p>Palette-drawn maximize-button layout menu for <code>KryptonForm</code> (issue #4579). Owner: <code>Krypton.Toolkit</code>.</p>
+<h2 id="overview">Overview</h2>
+<p>Windows 11 draws its snap-layout flyout when a custom title bar returns hit-test <code>HTMAXBUTTON</code> (<code>9</code>, the same value as <code>HTZOOM</code>). That flyout cannot be recolored. <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/1190">#1190</a> turned the hit-test on so the shell menu appeared. <code>KryptonManager.SnapLayoutValues.Mode</code> chooses that Windows menu or a palette-drawn menu. The Windows menu stays the default. On a dropped <code>KryptonManager</code>, expand <code>SnapLayout</code> and edit the same object as <code>KryptonManager.SnapLayoutValues</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>System</code></td>
+<td>Shell menu (default global). Forms that <code>Inherit</code> keep <code>HTMAXBUTTON</code>.</td>
+</tr>
+<tr>
+<td><code>Toolkit</code></td>
+<td>Palette menu; snaps this form; optional Groups, Assist, preview ghost, custom cards.</td>
+</tr>
+<tr>
+<td><code>None</code></td>
+<td>Maximize / restore only (<code>HTBORDER</code> on the maximize button).</td>
+</tr>
+<tr>
+<td><code>Inherit</code></td>
+<td>Form follows <code>SnapLayoutValues.Mode</code> (form default).</td>
+</tr>
+</tbody>
+</table>
+<p>The palette menu can show icons of other taskbar applications. It does not move those windows. Win+Z still opens the shell menu. There is no private shell COM hook. Native taskbar Snap Groups eligibility is separate (<code>Feature4129SnapGroupsDemo</code>).</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code>KryptonManager.SnapLayoutValues.Mode  (designer: SnapLayout.Mode)
+    System  (default) -&gt; forms that Inherit keep HTMAXBUTTON (shell menu)
+    Toolkit           -&gt; hover timer (~400 ms) -&gt; VisualSnapLayoutPopup
+                          -&gt; zone click -&gt; ApplyToolkitSnap (+ Register)
+                          -&gt; optional Assist for remaining zones
+                          -&gt; group zone click -&gt; restore live members
+    None              -&gt; HTBORDER (maximize click only)
+
+KryptonForm.SnapLayouts
+    Inherit (default) -&gt; manager value
+    Toolkit / System / None -&gt; that form only
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonSnapLayoutMode</code></td>
+<td><code>Toolkit</code>, <code>System</code>, <code>None</code>, <code>Inherit</code>.</td>
+</tr>
+<tr>
+<td><code>SnapLayoutValues</code></td>
+<td>Sole app-wide store (<code>ExpandableObjectConverter</code>). <code>KryptonManager.SnapLayout</code> is the same object in the property grid. <code>ModeChanged</code> fires when <code>Mode</code> changes. <code>Inherit</code> stored on the manager is coerced to <code>System</code>.</td>
+</tr>
+<tr>
+<td><code>KryptonSnapLayoutZone</code> / <code>KryptonSnapLayoutCard</code></td>
+<td>Public. Zone = work-area fractions <code>0..1</code>. Card = one or more zones.</td>
+</tr>
+<tr>
+<td><code>KryptonSnapLayoutCardCollection</code></td>
+<td><code>SnapLayoutValues.CustomLayouts</code>. Empty by default.</td>
+</tr>
+<tr>
+<td><code>KryptonSnapLayoutCatalog</code></td>
+<td>Builtin cards (halves, stacks, quarters; on a wide work area thirds and 25/50/25) plus custom. Drops a card when any zone is smaller than <code>MinimumSize</code>. Mirrors for right-to-left. Custom cards are not gated on the ~1100px width rule.</td>
+</tr>
+<tr>
+<td><code>KryptonSnapLayoutTaskbar</code></td>
+<td>Decorative icons of visible taskbar windows (index 0 = this form). Prefer group-member icons when a live Snap Group owns the card.</td>
+</tr>
+<tr>
+<td><code>KryptonSnapGroupRegistry</code></td>
+<td>Process-wide weak-ref membership. Key = monitor work-area origin + ordered zone fractions (not popup card index). Group when two or more live forms share the key.</td>
+</tr>
+<tr>
+<td><code>KryptonSnapLayoutPersistence</code></td>
+<td>Internal XML export/import for custom cards + <code>IncludeBuiltinLayouts</code>.</td>
+</tr>
+<tr>
+<td><code>VisualSnapLayoutPopup</code></td>
+<td>Internal <code>VisualPopup</code>. <code>PanelAlternate</code> chrome, cards, preview, group caption, zone hit-testing.</td>
+</tr>
+<tr>
+<td><code>VisualSnapLayoutAssistPopup</code></td>
+<td>Peer picker for remaining zones after a multi-zone toolkit snap.</td>
+</tr>
+<tr>
+<td><code>KryptonForm</code></td>
+<td>Hover timers, hit-test switch, <code>ApplyToolkitSnap</code>, register/unregister, Assist host, restore glyph, caption-drag unsnap.</td>
+</tr>
+<tr>
+<td><code>ButtonSpecFormWindowMax</code></td>
+<td>While a toolkit snap is active and <code>WindowState</code> is <code>Normal</code>, click restores saved bounds instead of maximizing.</td>
+</tr>
+</tbody>
+</table>
+<p><code>Toolkit</code> and <code>None</code> hit-test the maximize button as <code>HTBORDER</code> with non-client-as-normal so the button still clicks and Windows 11 does not open its menu. MDI children and the designer keep <code>HTMAXBUTTON</code>. The popup shows only for a top-level sizable form with <code>MaximizeBox</code>, outside design mode.</p>
+<h2 id="public-api">Public API</h2>
+<pre><code class="lang-csharp">public enum KryptonSnapLayoutMode
+{
+    Toolkit = 0,
+    System = 1,
+    None = 2,
+    Inherit = 3
+}
+
+KryptonManager.SnapLayoutValues.Mode = KryptonSnapLayoutMode.Toolkit;
+form.SnapLayouts = KryptonSnapLayoutMode.Inherit; // default: follow manager
+</code></pre>
+<p><code>SnapLayoutValues</code> is the only store. A fresh manager leaves <code>SnapLayout</code> unmodified. The menu reads values when it opens.</p>
+<h3 id="settings">Settings</h3>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Mode</code></td>
+<td><code>System</code></td>
+<td>Menu for forms that inherit.</td>
+</tr>
+<tr>
+<td><code>CornerRounding</code></td>
+<td><code>8</code></td>
+<td>Menu corner radius in pixels. Zero is square. Region and drop shadow use this radius.</td>
+</tr>
+<tr>
+<td><code>CardSize</code></td>
+<td><code>Size.Empty</code></td>
+<td>Preferred card size. Empty sizes to the work area and wraps rows. A positive size is used until the row no longer fits.</td>
+</tr>
+<tr>
+<td><code>ShowIcon</code></td>
+<td><code>true</code></td>
+<td>Draw application icons in zones.</td>
+</tr>
+<tr>
+<td><code>ShowPreview</code></td>
+<td><code>true</code></td>
+<td>While the pointer is over a zone, show where this form will snap.</td>
+</tr>
+<tr>
+<td><code>ShowPreviewGhost</code></td>
+<td><code>false</code></td>
+<td>Opt-in. When <code>ShowPreview</code> is on, stretch a cached <code>PrintWindow</code> of this form into the hot zone instead of the palette fill and icon. Still uses <code>PreviewOpacity</code> and the palette border.</td>
+</tr>
+<tr>
+<td><code>PreviewOpacity</code></td>
+<td><code>0.45</code></td>
+<td>Preview opacity <code>0..1</code>. Zero hides the preview. Clamped.</td>
+</tr>
+<tr>
+<td><code>ShowShadow</code></td>
+<td><code>true</code></td>
+<td>Draw the menu drop shadow.</td>
+</tr>
+<tr>
+<td><code>ShadowColor</code></td>
+<td><code>Color.Empty</code></td>
+<td>Shadow colour; empty draws as black.</td>
+</tr>
+<tr>
+<td><code>ShadowOpacity</code></td>
+<td><code>0.18</code></td>
+<td>Shadow strength <code>0..1</code>. Clamped.</td>
+</tr>
+<tr>
+<td><code>ShadowOffset</code></td>
+<td><code>3</code></td>
+<td>Drop in pixels (down/right). Clamped <code>0..32</code>.</td>
+</tr>
+<tr>
+<td><code>ShadowBlur</code></td>
+<td><code>0</code></td>
+<td>Halo outside the menu. Zero is drop only. Clamped <code>0..32</code>.</td>
+</tr>
+<tr>
+<td><code>IncludeBuiltinLayouts</code></td>
+<td><code>true</code></td>
+<td>Keep standard cards. <code>false</code> shows only custom cards.</td>
+</tr>
+<tr>
+<td><code>CustomLayouts</code></td>
+<td>empty</td>
+<td>Cards appended after builtins. Designer <code>Content</code> + collection editors.</td>
+</tr>
+<tr>
+<td><code>RememberGroups</code></td>
+<td><code>true</code></td>
+<td>In-process Snap Groups of peer <code>KryptonForm</code>s; restore from the menu.</td>
+</tr>
+<tr>
+<td><code>ShowAssist</code></td>
+<td><code>true</code></td>
+<td>After snapping into one zone of a multi-zone card, offer other open <code>KryptonForm</code>s for remaining zones.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="persistence-custom-cards">Persistence (custom cards)</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ExportCustomLayouts()</code></td>
+<td>Versioned XML for current <code>CustomLayouts</code> + <code>IncludeBuiltinLayouts</code>.</td>
+</tr>
+<tr>
+<td><code>ImportCustomLayouts(string? xml)</code></td>
+<td>Replace collection. Null/whitespace clears cards and resets <code>IncludeBuiltinLayouts</code> to <code>true</code>.</td>
+</tr>
+<tr>
+<td><code>SaveCustomLayoutsToFile(string path)</code></td>
+<td>UTF-8 write of the export.</td>
+</tr>
+<tr>
+<td><code>LoadCustomLayoutsFromFile(string path)</code></td>
+<td>Read file, then import.</td>
+</tr>
+</tbody>
+</table>
+<p>Unsupported <code>version</code> throws. Invalid zones are skipped; cards with no valid zones are skipped. Import builds a new list then replaces so a failure does not leave a half-cleared collection.</p>
+<pre><code class="lang-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;KryptonSnapCustomLayouts version=&quot;1&quot;&gt;
+  &lt;IncludeBuiltinLayouts&gt;true&lt;/IncludeBuiltinLayouts&gt;
+  &lt;Card&gt;
+    &lt;Zone X=&quot;0&quot; Y=&quot;0&quot; Width=&quot;0.7&quot; Height=&quot;1&quot; /&gt;
+    &lt;Zone X=&quot;0.7&quot; Y=&quot;0&quot; Width=&quot;0.3&quot; Height=&quot;1&quot; /&gt;
+  &lt;/Card&gt;
+&lt;/KryptonSnapCustomLayouts&gt;
+</code></pre>
+<p>Designer <code>Content</code> serialization can bake cards into <code>InitializeComponent</code> as compiled defaults. Runtime <code>Add</code> without Export/Save does not survive process restart.</p>
+<h2 id="snap-behaviour">Snap behaviour</h2>
+<p><code>Toolkit</code> remembers pre-snap bounds (<code>RestoreBounds</code> when maximized, otherwise <code>Bounds</code>). A later zone keeps that original rectangle. The maximize glyph switches to restore while the snap is active and <code>WindowState</code> is <code>Normal</code>. Dragging the caption restores that size under the pointer before the move loop. A later user move or resize, or maximizing, clears the snap flag and unregisters group membership.</p>
+<p>Preview fill/border use tracking <code>ContextMenuItemHighlight</code>. With <code>ShowPreviewGhost</code>, fill and centered icon are replaced by the stretched owner capture (cached for the popup lifetime). Ghost cannot appear when <code>ShowPreview</code> is false or <code>PreviewOpacity</code> is 0.</p>
+<p>Idle zone tiles use <code>ButtonStandalone</code>; the hot zone uses <code>ContextMenuItemHighlight</code>. Popup background is <code>PanelAlternate</code> with a <code>ControlClient</code> border. The drop shadow is a separate window; colour is painted solid and opacity is the window opacity (magenta colour key does not tint it).</p>
+<h2 id="snap-groups-own-process">Snap Groups (own process)</h2>
+<ol>
+<li>Successful toolkit snap calls <code>KryptonSnapGroupRegistry.Register</code> when <code>RememberGroups</code> is true.</li>
+<li><code>Unregister</code> on caption unsnap, maximize that clears snap state, or dispose.</li>
+<li>A group exists when <strong>two or more</strong> live forms share the card fingerprint and monitor key.</li>
+<li>Menu prefers group-member icons for that card and shows <code>Group | {title} and …</code> while the card is hot.</li>
+<li>Clicking a zone that belongs to the group restores every live member to the current work area. The form that opened the menu activates last when it is in the group.</li>
+</ol>
+<p>Foreign HWNDs are never moved.</p>
+<h2 id="assist">Assist</h2>
+<p>After snapping into one zone of a multi-zone card (when <code>ShowAssist</code> is true):</p>
+<ol>
+<li>Collect other visible top-level <code>KryptonForm</code>s that fit a remaining zone (<code>MinimumSize</code>).</li>
+<li>Skip owned tool windows (<code>Owner != null</code> and <code>ShowInTaskbar == false</code>).</li>
+<li>Show <code>VisualSnapLayoutAssistPopup</code> one remaining zone at a time; Escape dismisses.</li>
+<li>Each Assist placement registers membership so the group can restore later.</li>
+</ol>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">SnapLayoutValues snap = KryptonManager.SnapLayoutValues;
+snap.Mode = KryptonSnapLayoutMode.Toolkit;
+
+form.SnapLayouts = KryptonSnapLayoutMode.Inherit;
+
+snap.ShowPreview = true;
+snap.ShowPreviewGhost = false;
+snap.PreviewOpacity = 0.45f;
+snap.ShowIcon = true;
+snap.CornerRounding = 8f;
+snap.CardSize = Size.Empty;
+snap.ShowShadow = true;
+snap.ShadowColor = Color.Empty; // black
+snap.ShadowOpacity = 0.18f;
+snap.ShadowOffset = 3;
+snap.ShadowBlur = 0;
+snap.RememberGroups = true;
+snap.ShowAssist = true;
+snap.IncludeBuiltinLayouts = true;
+
+snap.CustomLayouts.Add(new KryptonSnapLayoutCard(
+    new KryptonSnapLayoutZone(0f, 0f, 0.7f, 1f),
+    new KryptonSnapLayoutZone(0.7f, 0f, 0.3f, 1f)));
+
+string xml = snap.ExportCustomLayouts();
+snap.SaveCustomLayoutsToFile(@&quot;C:\Temp\layouts.xml&quot;);
+snap.CustomLayouts.Clear();
+snap.LoadCustomLayoutsFromFile(@&quot;C:\Temp\layouts.xml&quot;);
+// or: snap.ImportCustomLayouts(xml);
+</code></pre>
+<p>In the designer, drop a <code>KryptonManager</code>, expand <code>SnapLayout</code>, edit <code>CustomLayouts</code> / <code>Zones</code> (fractions <code>0..1</code>). A zone left at zero is not shown. Shadow, Groups, Assist, and preview ghost settings are on the same object.</p>
+<p><code>KryptonSnapLayoutZone</code> rejects edges outside <code>0..1</code>, a non-positive size, and a zone that extends past the work area (<code>ArgumentOutOfRangeException</code>). A fraction of a pixel of float error is allowed so mirrored thirds still construct. Add cards on the UI thread. The menu copies <code>CustomLayouts</code> when it opens.</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>Shell menu until <code>Mode</code> or a form’s <code>SnapLayouts</code> is <code>Toolkit</code>.</li>
+<li>Other applications are never moved; taskbar icons in empty zones are decorative.</li>
+<li><code>ShowPreview</code> false or <code>PreviewOpacity</code> 0 hides colour and ghost preview.</li>
+<li><code>ShowPreviewGhost</code> false keeps the palette fill and icon preview.</li>
+<li><code>ShowShadow</code> false or <code>ShadowOpacity</code> 0 hides the drop shadow; <code>ShadowBlur</code> 0 is drop only.</li>
+<li><code>RememberGroups</code> / <code>ShowAssist</code> false restores single-form menu behaviour.</li>
+<li>Win+Z unchanged.</li>
+<li>Fixed borders and forms without <code>MaximizeBox</code> do not show the toolkit menu.</li>
+<li>MDI children keep the previous hit-test and do not show the toolkit menu.</li>
+<li>Right-to-left mirrors builtin and custom zones.</li>
+<li><code>IncludeBuiltinLayouts</code> false with an empty or unfit custom list means the toolkit menu does not open.</li>
+<li>Custom cards appear on a narrow work area; the wide-monitor gate applies only to builtin thirds / 25/50/25.</li>
+<li>Each custom card is labelled Custom; builtins have no label.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2026. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>
