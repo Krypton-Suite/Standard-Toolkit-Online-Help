@@ -158,6 +158,7 @@ This document provides links to the documentation provided, each will be split u
 * [Administrator Suffix Feature for KryptonForm](Standard%20Toolkit/Toolkit/Forms/AdministratorSuffixFeatureforKryptonForm.md)
 * [KryptonForm](Standard%20Toolkit/Toolkit/Forms/KryptonForm.md)
 * [Krypton System Menu](Standard%20Toolkit/Toolkit/Forms/KryptonSystemMenu.md)
+* [Krypton Snap Layout Overlay](Standard%20Toolkit/Toolkit/Forms/KryptonSnapLayoutOverlay.md)
 
 ### [Themes](Standard%20Toolkit/Themes.md)
 

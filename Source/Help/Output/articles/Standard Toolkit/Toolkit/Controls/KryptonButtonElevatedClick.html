@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonButton ElevatedClick | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonButton ElevatedClick | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../../toc.html">
+      <meta property="docfx:tocrel" content="../../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../../index.html">
+                <img id="logo" class="svg" src="../../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonbutton-elevatedclick">KryptonButton ElevatedClick</h1>
+
+<p><code>KryptonButton.ElevatedClick</code> is the click path for a command that will require elevation. While a handler is attached, the UAC shield stays visible so the button cannot look like an ordinary command. When the process is not already an administrator, the button starts the target executable with the RunAs verb. A content image stays in place and the shield is drawn on top of it. With no content image, the shield is the button image.</p>
+<p>Owner: <code>Krypton.Toolkit</code>. Issue <a href="https://github.com/Krypton-Suite/Standard-Toolkit/issues/4648">#4648</a>.</p>
+<h2 id="architecture">Architecture</h2>
+<p><code>KryptonButton</code> stores the event and raises it from <code>OnClick</code> before <code>KryptonDropButton.OnClick</code>. Before the event, when the process is not already an administrator, <code>OnClick</code> starts <code>ElevatedProcessPath</code> (or <code>Application.ExecutablePath</code> when that property is empty) with <code>UseShellExecute = true</code> and <code>Verb = &quot;runas&quot;</code>. A <code>Win32Exception</code>, including the user dismissing the UAC prompt (native error 1223), skips both <code>ElevatedClick</code> and <code>Click</code>. An already-elevated process does not start a second copy. The base <code>OnClick</code> still assigns <code>DialogResult</code>, raises <code>Click</code>, and runs <code>KryptonCommand</code> when the launch succeeds or is skipped because the process is already an administrator.</p>
+<p>The first subscriber calls <code>ButtonValues.LockUacShieldForElevation</code>, which sets <code>UseAsUACElevationButton</code> and paints the shield through the existing imageres / fallback path. <code>AssignUacShieldImage</code> chooses the slot. A content image that is not the shield bitmap this method just wrote stays in <code>Image</code>, and the shield is assigned to <code>OverlayImage</code> (<code>Position</code> <code>BottomRight</code>, <code>ScaleMode</code> <code>Percentage</code>, the existing 0.5 factor). With no content image the shield is written to <code>Image</code>, because <code>RenderStandard</code> paints <code>GetOverlayImage</code> only when the content image is drawn.</p>
+<p>A private lock flag (not part of <code>IsDefault</code>) makes <code>UseAsUACElevationButton = false</code> a no-op and rejects changes to <code>OverlayImage.Image</code> through <code>OverlayImageValues.RejectImageChange</code>. <code>Image</code> can still be set: a new content image moves the shield onto the overlay, and clearing <code>Image</code> moves the shield back onto <code>Image</code> so it stays visible. Shield refreshes (<code>UACShieldIconSize</code>, <code>IconSelectionStrategy</code>, and the internal assign) set <code>_applyingUacShield</code> so they bypass that reject hook.</p>
+<p>The last unsubscribe calls <code>UnlockUacShieldForElevation</code>. That clears the lock only. The shield stays until code sets <code>UseAsUACElevationButton</code> to false. Turning the flag off clears the overlay only when this code placed the shield there. A previous user overlay is not restored. A content image is kept.</p>
+<p><code>KryptonCheckButton</code>, <code>KryptonPoweredByButton</code>, and <code>KryptonAlternateCommandLinkButton</code> inherit the event because they call <code>base.OnClick</code>. <code>KryptonDropButton</code>, <code>KryptonSplitButton</code>, and <code>KryptonColorButton</code> do not.</p>
+<h2 id="public-api">Public API</h2>
+<pre><code class="lang-csharp">public event EventHandler? ElevatedClick;
+public string ElevatedProcessPath { get; set; }
+protected virtual void OnElevatedClick(EventArgs e);
+</code></pre>
+<p><code>Click</code> remains the default event. <code>ElevatedClick</code> is category Action. <code>ElevatedProcessPath</code> is category Behavior, defaults to empty, and is not serialized until set (<code>ShouldSerializeElevatedProcessPath</code> is true when the string is non-empty; null is stored as empty). Empty means <code>Application.ExecutablePath</code>.</p>
+<p>The handler does not call <code>Process.Start</code>. The button does that with <code>UseShellExecute = true</code> and verb <code>runas</code>.</p>
+<p>While any <code>ElevatedClick</code> handler is attached:</p>
+<ul>
+<li><code>Values.UseAsUACElevationButton</code> stays <code>true</code>. Assigning <code>false</code> is ignored.</li>
+<li><code>Values.Image</code> can change. A content image keeps the shield on <code>Values.OverlayImage</code>. Clearing <code>Image</code>, or <code>ResetImage()</code> when the factory image is null, moves the shield back onto <code>Image</code>.</li>
+<li><code>Values.OverlayImage.Image</code> cannot replace or clear the shield.</li>
+<li><code>Values.UACShieldIconSize</code> can still change the shield size.</li>
+</ul>
+<p>Showing the shield makes <code>Values</code> not default, the same as <code>UseAsUACElevationButton</code>. A fresh button with no image and no subscriber stays unmodified in the property grid.</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">var restart = new KryptonButton
+{
+    Text = &quot;Restart as administrator&quot;
+};
+restart.ElevatedClick += (sender, args) =&gt;
+{
+    // The button already started this process with Verb = &quot;runas&quot;
+    // when the current principal was not Administrator.
+};
+</code></pre>
+<p>Set <code>ElevatedProcessPath</code> to launch a different executable. Assign <code>Values.Image</code> before the handler when the shield should overlay that picture. The handler is attached before the form is shown. <code>InitializeComponent</code> wires events after property sets, so a designer value of <code>UseAsUACElevationButton = false</code> is overridden when the form runs.</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>Design time does not attach the form's handler to the design-surface instance, so a new button stays unmodified in the property grid until the event is used at run time.</li>
+<li><code>Click</code>, dialog result, and <code>KryptonCommand</code> still run after <code>ElevatedClick</code> when RunAs succeeds or the process is already an administrator. Dismissing the UAC prompt raises neither event.</li>
+<li>The original process still runs the handler after a successful RunAs launch. Do not repeat the privileged work there; the new process is the elevated one.</li>
+<li>Removing the last handler does not hide the shield. The content image stays. An overlay placed for the shield is removed only when <code>UseAsUACElevationButton</code> is set to false, and a previous user overlay is not put back.</li>
+<li>The lock is not serialized. A fresh toolbox button with no subscriber is not <strong>Modified</strong>.</li>
+</ul>
+<h2 id="validation">Validation</h2>
+<p><code>TestForm</code> <code>ButtonsTest</code> (Start Screen: <strong>Buttons Test</strong>). The Elevated Click button has a content image so the shield is a bottom-right overlay. The existing Normal UAC Button has no content image and keeps the shield as its image. A click logs <code>ElevatedClick (already Administrator)</code> or <code>ElevatedClick (RunAs launch requested)</code>, then <code>Click</code>. An empty <code>ElevatedProcessPath</code> restarts TestForm when the process is not already an administrator. Dismissing the UAC prompt leaves the log unchanged. Hiding the shield still logs <code>Hide ignored: shield still shown.</code></p>
+<p><code>Scripts/UnitTests/Invoke-ElevatedClickScreenshot.ps1</code> hosts the overlay against <code>Krypton.Toolkit</code> and writes <code>Documents/PR/4648-elevated-click-demo.png</code>. It does not click the button, so it does not open the UAC consent dialog.</p>
+<p>Consumer example: append the same scenario to <code>KryptonButton Examples</code> in <a href="https://github.com/Krypton-Suite/Standard-Toolkit-Demos">Standard-Toolkit-Demos</a> on a branch from <code>alpha</code>. Do not replace <code>Form1</code>. The local Demos clone was left unchanged because it is on <code>alpha-4550-caption-textbox</code> with unrelated uncommitted work.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2026. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../../styles/main.js"></script>
+  </body>
+</html>

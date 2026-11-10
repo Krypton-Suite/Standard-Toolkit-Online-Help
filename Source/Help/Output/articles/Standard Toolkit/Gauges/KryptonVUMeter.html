@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton VU meter | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton VU meter | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-vu-meter">Krypton VU meter</h1>
+
+<p><code>KryptonVuMeter</code> is a display control in <code>Krypton.Gauges</code> (issue #4655). It paints one meter. A stereo pair is two controls. <code>Krypton.Gauges</code> is not its own NuGet package. <code>Krypton.Gauges.dll</code> is included in the <code>Krypton.Standard.Toolkit</code> package.</p>
+<p>The control does not take keyboard or mouse input. The painted indicator eases toward the target level (about 300 ms by default). That ease is not an IEC 60268 certification.</p>
+<h2 id="types">Types</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonVuMeter</code></td>
+<td>Toolbox control. <code>Value</code> is the bindable target and stays in step with <code>Values.Value</code>.</td>
+</tr>
+<tr>
+<td><code>VuMeterValues</code></td>
+<td>Style, range, target, capture settings, and peak hold.</td>
+</tr>
+<tr>
+<td><code>StateCommon</code>, <code>StateNormal</code>, <code>StateDisabled</code></td>
+<td>Palette colours for the face, ticks, needle, peak, and segments.</td>
+</tr>
+<tr>
+<td><code>VuMeterStyle</code></td>
+<td><code>Analog</code> (default) or <code>Segments</code>.</td>
+</tr>
+<tr>
+<td><code>VuMeterInputMode</code></td>
+<td><code>Manual</code> (default) or <code>Capture</code>.</td>
+</tr>
+<tr>
+<td><code>VuMeterChannel</code></td>
+<td><code>Left</code> (default), <code>Right</code>, or <code>Mix</code>. Used only while capturing.</td>
+</tr>
+</tbody>
+</table>
+<p>Namespace: <code>Krypton.Gauges</code>.</p>
+<h2 id="scale">Scale</h2>
+<p>The default range is -20 to +3 VU. A new control rests at -20, which is the left stop (segments off). Marks inside the range use classic spacing, tighter toward +3:</p>
+<p>-20, -10, -7, -5, -3, -2, -1, 0, +1, +2, +3</p>
+<p>0 and above is the red zone. <code>Minimum</code> and <code>Maximum</code> can narrow the scale. Marks outside that range are omitted. The analog face ignores <code>Orientation</code>. Segments use <code>VisualOrientation</code>: <code>Left</code> and <code>Right</code> are a horizontal row, <code>Top</code> and <code>Bottom</code> are a vertical column (<code>Bottom</code> grows upward).</p>
+<h2 id="setting-the-level">Setting the level</h2>
+<pre><code class="lang-csharp">var meter = new KryptonVuMeter();
+meter.Values.Value = -6;
+meter.Values.PeakHold = true;
+</code></pre>
+<p><code>Value</code> on the control is <code>[DefaultBindingProperty]</code> and is not written into the designer file. Edit <code>Values</code> in the property grid. While <code>InputMode</code> is <code>Capture</code>, assignments are ignored.</p>
+<p><code>DisplayedValue</code> is the eased level currently painted. <code>ValueChanged</code> fires when the target changes, not on every animation frame.</p>
+<h2 id="capture">Capture</h2>
+<p><code>InputMode = VuMeterInputMode.Capture</code> opens the default recording device (console role) with shared-mode WASAPI. There is no extra audio package.</p>
+<ul>
+<li>Capture starts when the handle exists and the mode is <code>Capture</code>. It does not start in the designer.</li>
+<li>It stops when the mode returns to <code>Manual</code>, the handle is destroyed, or the control is disposed.</li>
+<li><code>Channel</code> selects left, right, or a mix of every channel.</li>
+<li><code>CalibrationOffsetDb</code> defaults to -18, so 0 VU is about -18 dBFS. This is a digital alignment, not a studio calibration.</li>
+<li><code>CaptureFailed</code> fires when the device cannot be opened (no endpoint, or Windows microphone privacy). The meter keeps the last level and the mode returns to <code>Manual</code>.</li>
+</ul>
+<pre><code class="lang-csharp">meter.CaptureFailed += (sender, e) =&gt; status.Text = e.Message;
+meter.Values.InputMode = VuMeterInputMode.Capture;
+meter.Values.Channel = VuMeterChannel.Mix;
+</code></pre>
+<p>Two meters can capture the same device in shared mode. The TestForm demo captures on the analog meter and copies <code>ValueChanged</code> onto the segmented meter so only one client is opened.</p>
+<h2 id="appearance">Appearance</h2>
+<p>Colours come from the palette. <code>StateCommon</code> is the shared set. <code>StateNormal</code> is used while the control is enabled, and <code>StateDisabled</code> while it is disabled. Leave a colour empty to inherit. A fresh drop inherits everything, so the property grid is not modified.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default palette source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Face.Color1</code></td>
+<td>Input control background</td>
+</tr>
+<tr>
+<td><code>Face.Color2</code></td>
+<td>Input control border</td>
+</tr>
+<tr>
+<td><code>Tick.Color1</code>, <code>Needle.Color1</code>, <code>SegmentLow.Color1</code></td>
+<td>Control label text</td>
+</tr>
+<tr>
+<td><code>Peak.Color1</code></td>
+<td>Checked dock header</td>
+</tr>
+<tr>
+<td><code>SegmentHigh.Color1</code></td>
+<td>Pressed link</td>
+</tr>
+<tr>
+<td><code>SegmentOff.Color1</code></td>
+<td>Standalone button background</td>
+</tr>
+</tbody>
+</table>
+<p><code>StateCommon.Back</code> is the background behind the face. <code>PanelBackStyle</code> selects that background.</p>
+<pre><code class="lang-csharp">meter.StateNormal.Needle.Color1 = Color.Firebrick;
+meter.StateNormal.SegmentHigh.Color1 = Color.Firebrick;
+meter.StateNormal.SegmentLow.Color1 = Color.SeaGreen;
+</code></pre>
+<p>Peak hold draws a second needle, or lights the peak segment, then lets it fall after <code>PeakHoldMilliseconds</code> (default 1500) over <code>PeakDecayMilliseconds</code> (default 2000).</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2026. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

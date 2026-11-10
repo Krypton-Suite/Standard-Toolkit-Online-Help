@@ -95,6 +95,7 @@ the toolbox.
   * [KryptonFormCaptionTextBox](Toolkit/Forms/KryptonFormCaptionTextBox.md)
   * [Krypton system menu (theming)](Toolkit/Forms/KryptonFormSystemMenuOverview.md)
   * [KryptonFormTitleBar](Toolkit/Forms/KryptonFormTitleBar.md)
+  * [Krypton Snap Layout Overlay](Toolkit/Forms/KryptonSnapLayoutOverlay.md)
 
 ## Utilities
 

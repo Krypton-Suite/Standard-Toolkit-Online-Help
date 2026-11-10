@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Application Updater | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Application Updater | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-application-updater">Krypton Application Updater</h1>
+
+<p><code>KryptonApplicationUpdater</code> lives in <code>Krypton.Toolkit.Utilities</code>. It checks for a newer <code>System.Version</code>, asks or applies according to severity, and verifies the file before an installer starts or a zip is extracted. The running process cannot replace its own files, so a zip is applied by an embedded net472 helper after this process exits.</p>
+<h2 id="architecture">Architecture</h2>
+<p><code>KryptonApplicationUpdater</code> is a toolbox component. It does not contact the network from its constructor. The schedule starts only after the component is sited, and only when <code>Mode</code> is not <code>Manual</code> and the site is not the designer.</p>
+<pre><code class="lang-text">CheckNow / timer
+  -&gt; IKryptonUpdateProvider
+  -&gt; newer System.Version?
+  -&gt; skip or postpone gate
+  -&gt; Notify prompt, or Automatic download when severity is at or below the threshold
+  -&gt; download (resume a partial file, or start again)
+  -&gt; SHA-256 of the whole file (and Authenticode when a thumbprint is set)
+  -&gt; installer process, or the embedded helper
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonApplicationUpdater</code></td>
+<td>Schedule, prompt, download, verify, apply</td>
+</tr>
+<tr>
+<td><code>IKryptonUpdateProvider</code></td>
+<td>Returns a <code>KryptonUpdateCatalog</code></td>
+</tr>
+<tr>
+<td><code>KryptonJsonManifestUpdateProvider</code></td>
+<td>One JSON object or <code>{ &quot;packages&quot;: [ ... ] }</code></td>
+</tr>
+<tr>
+<td><code>KryptonGitHubReleaseUpdateProvider</code></td>
+<td>Latest GitHub release</td>
+</tr>
+<tr>
+<td><code>KryptonUpdateStateStore</code></td>
+<td>Last check, postpone, and skip, one file per entry assembly</td>
+</tr>
+<tr>
+<td><code>Krypton.Toolkit.Utilities.UpdateHelper</code></td>
+<td>net472 exe embedded in the utilities assembly. It is not copied to the consumer output and it is not packed</td>
+</tr>
+</tbody>
+</table>
+<p>JSON on <code>net472</code> uses <code>JavaScriptSerializer</code>. <code>net8.0-windows</code> and later use <code>System.Text.Json</code>.</p>
+<h2 id="public-api">Public API</h2>
+<p>Designer properties use <code>[DefaultValue]</code> so a fresh drop stays unbold. <code>Strings</code> is a <code>GlobalId</code> storage object and <code>IsDefault</code> is true until a string changes.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FeedKind</code></td>
+<td><code>JsonManifest</code></td>
+<td><code>JsonManifest</code> or <code>GitHubReleases</code>. Ignored when <code>Provider</code> is set</td>
+</tr>
+<tr>
+<td><code>FeedUrl</code></td>
+<td>empty</td>
+<td>HTTPS manifest, or a local file path</td>
+</tr>
+<tr>
+<td><code>GitHubOwner</code>, <code>GitHubRepository</code>, <code>GitHubAssetName</code></td>
+<td>empty</td>
+<td>Latest-release lookup. <code>GitHubAssetName</code> selects one asset when the release has no <code>krypton-update.json</code></td>
+</tr>
+<tr>
+<td><code>GitHubDefaultSeverity</code></td>
+<td><code>Recommended</code></td>
+<td>Used when the release itself is mapped to a package</td>
+</tr>
+<tr>
+<td><code>CurrentVersion</code></td>
+<td>empty</td>
+<td>Empty uses the entry assembly version</td>
+</tr>
+<tr>
+<td><code>Mode</code></td>
+<td><code>Notify</code></td>
+<td><code>Manual</code> runs only from <code>CheckNow</code>. <code>Notify</code> asks. <code>Automatic</code> downloads without a prompt when the severity is at or below <code>AutomaticApplyMaximumSeverity</code></td>
+</tr>
+<tr>
+<td><code>CheckOnStartup</code></td>
+<td>true</td>
+<td>One check after the component is sited, still subject to <code>CheckInterval</code></td>
+</tr>
+<tr>
+<td><code>CheckInterval</code></td>
+<td>1 day</td>
+<td>Scheduled checks skip when the last successful check is still inside this interval</td>
+</tr>
+<tr>
+<td><code>AutomaticApplyMaximumSeverity</code></td>
+<td><code>Recommended</code></td>
+<td>Highest severity <code>Automatic</code> applies without a prompt</td>
+</tr>
+<tr>
+<td><code>AllowPostpone</code></td>
+<td>true</td>
+<td>Shows Remind me later. The manifest can still hide it</td>
+</tr>
+<tr>
+<td><code>PostponeInterval</code></td>
+<td>1 day</td>
+<td>Initial remind-later date, and the span used by <code>Postpone(package)</code></td>
+</tr>
+<tr>
+<td><code>ExitApplicationOnApply</code></td>
+<td>true</td>
+<td>Zip apply exits this process so the helper can replace files</td>
+</tr>
+<tr>
+<td><code>InstallDirectory</code></td>
+<td>empty</td>
+<td>Empty uses the application base directory</td>
+</tr>
+<tr>
+<td><code>RestartCommand</code></td>
+<td>empty</td>
+<td>Empty restarts the current process after a zip apply that exits</td>
+</tr>
+</tbody>
+</table>
+<p><code>Provider</code> (<code>IKryptonUpdateProvider</code>) and <code>GitHubToken</code> are hidden from the designer and are not serialized. <code>StateFilePath</code> is hidden. Empty stores state at <code>%LocalAppData%\Krypton Toolkit\Updates\&lt;entry assembly&gt;.state</code>.</p>
+<p>Severities, low to high: <code>Optional</code>, <code>Recommended</code>, <code>Important</code>, <code>Critical</code>. Omit <code>allowPostpone</code> or <code>allowSkip</code> and a critical package hides that action. Set the flag true to offer it.</p>
+<p>Events the host can cancel: <code>Checking</code>, <code>UpdateAvailable</code>, <code>DownloadProgress</code>, <code>Applying</code>. <code>Failed</code>, <code>Completed</code>, <code>Postponed</code>, and <code>Skipped</code> are notifications. Cancel <code>UpdateAvailable</code> to show your own UI, then call <code>DownloadAsync</code> and <code>ApplyAsync</code>.</p>
+<p>Methods: <code>CheckNow</code> (fire-and-forget), <code>CheckNowAsync</code> (ignores the interval and an active postpone), <code>CheckAsync</code> (scheduled gates, including <code>Manual</code> which returns <code>Idle</code>), <code>ShowReleaseNotesAsync</code>, <code>DownloadAsync</code>, <code>ApplyAsync</code>, <code>Postpone</code>, <code>Postpone(package, duration)</code>, <code>Skip</code>. <code>CheckNow</code> stays quiet for a skipped version until a newer version exists. <code>Postpone(package)</code> still uses <code>PostponeInterval</code>. The remind-later dialog calls <code>Postpone(package, duration)</code> with the time until the chosen date.</p>
+<p>The update prompt is the short decision: current version, new version, severity, Update now, Release notes, and Remind later. Release notes opens <code>VisualApplicationUpdateNotesForm</code> and leaves the prompt open. That window is read-only. <code>ShowReleaseNotesAsync</code> opens the same window directly. When a newer package exists it also offers Update now and Remind later, and it does not apply automatically. When nothing is newer, the title is &quot;Release notes&quot;, the heading is &quot;You are up to date.&quot;, and the list is every feed package with Close only. A feed failure raises <code>Failed</code> and shows the message in that window. Notes are newest first (version, severity, released UTC, text). <code>SelectAllNewerThan</code> is the list; <code>SelectNewerThan</code> remains the package that is downloaded. GitHub without a multi-package <code>krypton-update.json</code> still returns one release.</p>
+<p>Remind later opens a small dialog with a <code>KryptonDateTimePicker</code>. The date runs from tomorrow through <code>maximumPostponeDays</code> (365 when the manifest omits it) and starts <code>PostponeInterval</code> whole days from today, at least one day ahead and never past that limit. Scheduled checks stay quiet until the start of that local date. <code>Postpone(package, duration)</code> is clamped to the same limit. When skip is also allowed, Skip this version is on this dialog and still ignores that version until a newer one exists. Cancel returns to the window that opened the dialog. Scheduled checks and Check now are unchanged: a postpone hides that version until the stored time, and Check now still ignores an active postpone.</p>
+<p>A critical package hides Remind later unless the manifest sets <code>allowPostpone</code> to true, and hides Skip this version unless it sets <code>allowSkip</code> to true. Either value false hides that action for any severity. When postpone is hidden and skip is allowed, Skip this version is on the prompt. Otherwise it stays on the remind-later dialog. The component <code>AllowPostpone</code> property can still hide Remind later. <code>Postpone</code> does nothing when postpone is blocked. <code>Skip</code> does nothing when skip is blocked.</p>
+<p><code>allowResume</code> false hides Resume. <code>allowRetry</code> false hides Restart. Omit either and that button stays available. A local file still has no Resume, because it is copied in one pass. When both are false, the progress window offers Close only.</p>
+<h2 id="feed-contract">Feed contract</h2>
+<p>The newest <code>System.Version</code> newer than the current version wins. A leading <code>v</code> is stripped. Prerelease labels are not ordered.</p>
+<pre><code class="lang-json">{
+  &quot;version&quot;: &quot;2.1.0&quot;,
+  &quot;severity&quot;: &quot;important&quot;,
+  &quot;packageKind&quot;: &quot;installer&quot;,
+  &quot;packageUrl&quot;: &quot;https://example.com/setup-2.1.0.exe&quot;,
+  &quot;sha256&quot;: &quot;&lt;64 hex chars&gt;&quot;,
+  &quot;certificateThumbprint&quot;: &quot;&lt;optional&gt;&quot;,
+  &quot;releaseNotes&quot;: &quot;text&quot;,
+  &quot;installerArguments&quot;: &quot;/quiet&quot;,
+  &quot;releasedUtc&quot;: &quot;2026-11-03T00:00:00Z&quot;,
+  &quot;maximumPostponeDays&quot;: 14,
+  &quot;allowPostpone&quot;: false,
+  &quot;allowSkip&quot;: true,
+  &quot;allowResume&quot;: true,
+  &quot;allowRetry&quot;: false
+}
+</code></pre>
+<p><code>maximumPostponeDays</code>, <code>allowPostpone</code>, <code>allowSkip</code>, <code>allowResume</code>, and <code>allowRetry</code> are optional. On a <code>{ &quot;packages&quot;: [ ... ] }</code> file they may sit on the root, and a package value replaces the root value. Omit <code>maximumPostponeDays</code> for 365. Omit <code>allowPostpone</code> or <code>allowSkip</code> and a critical package cannot use that action, while every other severity can. <code>true</code> allows it, including on a critical package. <code>false</code> blocks it. Omit <code>allowResume</code> or <code>allowRetry</code> and Resume or Restart stays available. <code>allowRetry</code> false hides Restart.</p>
+<p><code>packageKind</code> is <code>installer</code> or <code>archive</code>. A local <code>packageUrl</code> is accepted so an offline manifest can point at a local file. Remote feed and package addresses must be <code>https</code>. Redirects are followed only while the next address is still <code>https</code>.</p>
+<p>SHA-256 is required. The compare is constant-time and always covers the whole file, including a file that was resumed. When <code>certificateThumbprint</code> is set, the downloaded file must be Authenticode-signed and the thumbprint must match. A mismatch deletes the file.</p>
+<h2 id="download">Download</h2>
+<p>The progress window keeps one temp file for the attempt. The first transfer and Restart replace that file. Resume, when the file already has bytes, sends <code>Range: bytes=&lt;length&gt;-</code>.</p>
+<ul>
+<li><code>206</code> appends. The bar counts the bytes already on disk plus the new bytes. The total comes from <code>Content-Range</code> when the server sends it.</li>
+<li><code>200</code>, <code>416</code>, or a gzip, deflate, or brotli range response replaces the file. The status line says the download is starting again. A compressed range would not line up with the bytes already saved.</li>
+<li>A dropped connection or Cancel keeps the partial file. The window stays open. Resume is shown when a partial remote file remains and <code>allowResume</code> is not false. Restart is shown when <code>allowRetry</code> is not false. A local file has no range request, so Resume stays hidden. A hash or thumbprint failure has already deleted the file, so Resume stays hidden.</li>
+<li>Close leaves the update. Close after Cancel is <code>Cancelled</code>. Close after a failure raises <code>Failed</code> once. <code>Failed</code> is not raised while Resume or Restart is still available.</li>
+</ul>
+<p><code>DownloadAsync</code> is still one shot: it deletes its own temp file on failure and does not offer Resume or Restart. <code>Strings</code> includes <code>Resume</code>, <code>Restart</code>, <code>DownloadInterrupted</code>, and <code>DownloadRestarting</code>.</p>
+<p>Details starts folded. The button uses an expander glyph and grows the window by a fixed footer. The footer shows the file name, bytes received and total, speed, and time remaining. Speed is the change since the previous progress sample. An unknown length or a zero rate shows Unknown. Resume keeps counting bytes already on disk. The footer stays available after the transfer stops.</p>
+<p>GitHub: <code>GET https://api.github.com/repos/{owner}/{repo}/releases/latest</code> with a User-Agent. An asset named <code>krypton-update.json</code> uses the schema above. A <code>packageUrl</code> that is not <code>https</code> and not a local path is treated as an asset name on that release. Without that manifest, the provider maps the tag, the body, and one asset (<code>GitHubAssetName</code>, otherwise the single <code>.exe</code>, <code>.msi</code>, or <code>.zip</code>). The hash comes from the manifest, otherwise the asset <code>digest</code> (<code>sha256:</code>). If neither exists, the check fails and nothing is applied.</p>
+<h2 id="apply">Apply</h2>
+<p><code>installer</code>: <code>.msi</code> starts through <code>msiexec /i</code>. Anything else starts directly, with <code>installerArguments</code> when the manifest set them.</p>
+<p><code>archive</code>: the component writes a job file, extracts the embedded helper, and starts it. When <code>ExitApplicationOnApply</code> is true the helper waits for this process, rejects zip entries that escape <code>InstallDirectory</code> (zip-slip), extracts, and starts <code>RestartCommand</code>. When it is false, the helper does not wait and does not restart, and the component waits for the helper to finish. The TestForm demo sets <code>ExitApplicationOnApply</code> to false and points <code>InstallDirectory</code> at a temp folder.</p>
+<h2 id="manifest-editor">Manifest editor</h2>
+<p><code>Source/TestHarnesses/UpdateManifestEditor</code> is a maintainer WinForms app for the JSON file above. It is registered in the suite solution under Testing and is not packed. It does not reference <code>Krypton.Toolkit.Utilities</code>; the parser there stays internal.</p>
+<p>One window lists packages. The selected row edits version (<code>System.Version</code>; a leading <code>v</code> is stripped when the file is written), severity, package kind, the local package file, the published package URL, SHA-256, an optional Authenticode thumbprint, installer arguments, release notes, released UTC, maximum postpone days, and postpone, skip, resume, and retry (default, allow, or block). Retry controls the Restart button.</p>
+<p>The package file is used only to hash the bytes and, when the file is Authenticode-signed, to read the certificate thumbprint. Browsing a <code>.zip</code> selects <code>archive</code>; any other file selects <code>installer</code>. The combo can override that. Browsing fills <code>packageUrl</code> with the local path only when that box is still empty. A published feed should replace the path with <code>https</code>. A remote value must be <code>https</code>. A local path is allowed.</p>
+<p>Save writes one JSON object when the list has one package, and <code>{ &quot;packages&quot;: [ ... ] }</code> when it has more. Empty optional fields are omitted. Open accepts either shape. The save dialog defaults to <code>krypton-update.json</code>. Copy places the same JSON on the clipboard. Save is blocked until every package has a parseable version, a package URL, and a 64-character hex SHA-256.</p>
+<p><code>Scripts/UnitTests/Invoke-UpdateManifestEditorScreenshot.ps1</code> hosts the editor with a sample package and writes the screenshot under <code>Documents/PR/</code>.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2026. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

@@ -27,7 +27,16 @@ function Install-DocFxMsBuildResponseFile {
     }
 
     if (Test-Path -LiteralPath $Path) {
-        throw "Refusing to overwrite existing MSBuild response file: $Path"
+        # Reclaim leftovers from a killed DocFX run (only /p: pin lines). Never
+        # overwrite a hand-authored response file with other content.
+        $existing = [System.IO.File]::ReadAllText($Path)
+        $isDocFxPin = $existing -match '(?s)\A(\s*/p:(TFMs|TargetFramework|Configuration)=[^\r\n]*\s*)+\z'
+        if (-not $isDocFxPin) {
+            throw "Refusing to overwrite existing MSBuild response file: $Path"
+        }
+
+        Write-Host "Removing leftover DocFX MSBuild response file: $Path"
+        Remove-Item -LiteralPath $Path -Force
     }
 
     [System.IO.File]::WriteAllText($Path, $Contents, [System.Text.UTF8Encoding]::new($false))

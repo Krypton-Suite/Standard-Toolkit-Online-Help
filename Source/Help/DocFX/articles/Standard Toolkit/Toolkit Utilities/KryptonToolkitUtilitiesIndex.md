@@ -52,6 +52,7 @@ Public types in the **`Krypton.Toolkit.Utilities`** assembly ship with the **`Kr
 | [KryptonFloatingToolbarPanels](KryptonFloatingToolbarPanels.md) | Dock panel hosts (`ToolStripPanelExtended`, etc.) |
 | [KryptonRadialMenu](KryptonRadialMenu.md) | The Krypton radial menu |
 | [KryptonEnhancedContextMenu](KryptonEnhancedContextMenu.md) | Office-style menu with Mini Toolbar (#3862) |
+| [KryptonApplicationUpdater](KryptonApplicationUpdater.md) | An application updater |
 
 ## Web and authentication
 
