@@ -59,7 +59,7 @@ The toolkit uses date-based semantic versioning:
 - **Revision**: Day of year (1-366)
 - **Suffix**: Configuration-dependent (e.g., `-alpha`, `-beta`)
 
-**Example**: `110.26.1.1` = Version 110, released in 2026, January, on the 1st day of the year
+**Example**: `120.27.1.1` = Version 110, released in 2026, January, on the 1st day of the year
 
 ### Configuration-Based Versioning
 

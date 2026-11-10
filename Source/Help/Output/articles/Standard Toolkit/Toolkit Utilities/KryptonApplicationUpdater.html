@@ -113,6 +113,14 @@
 <td><code>Krypton.Toolkit.Utilities.UpdateHelper</code></td>
 <td>net472 exe embedded in the utilities assembly. It is not copied to the consumer output and it is not packed</td>
 </tr>
+<tr>
+<td><code>KryptonTransferProgressPanel</code></td>
+<td>Toolbox composite used when progress display is <code>TransferSpeedGraph</code> (speed + optional progress chart)</td>
+</tr>
+<tr>
+<td><code>KryptonTransferDualGraph</code></td>
+<td>Optional single-chart dual series via panel <code>ChartLayout.DualSeries</code> (not selected by the updater)</td>
+</tr>
 </tbody>
 </table>
 <p>JSON on <code>net472</code> uses <code>JavaScriptSerializer</code>. <code>net8.0-windows</code> and later use <code>System.Text.Json</code>.</p>
@@ -197,6 +205,11 @@
 <td>empty</td>
 <td>Empty restarts the current process after a zip apply that exits</td>
 </tr>
+<tr>
+<td><code>ProgressDisplay</code></td>
+<td><code>ProgressBar</code></td>
+<td>Primary download chrome: <code>ProgressBar</code> or <code>TransferSpeedGraph</code>. A package <code>progressDisplay</code> value overrides this when set</td>
+</tr>
 </tbody>
 </table>
 <p><code>Provider</code> (<code>IKryptonUpdateProvider</code>) and <code>GitHubToken</code> are hidden from the designer and are not serialized. <code>StateFilePath</code> is hidden. Empty stores state at <code>%LocalAppData%\Krypton Toolkit\Updates\&lt;entry assembly&gt;.state</code>.</p>
@@ -223,10 +236,48 @@
   &quot;allowPostpone&quot;: false,
   &quot;allowSkip&quot;: true,
   &quot;allowResume&quot;: true,
-  &quot;allowRetry&quot;: false
+  &quot;allowRetry&quot;: false,
+  &quot;progressDisplay&quot;: &quot;transferSpeedGraph&quot;,
+  &quot;banner&quot;: {
+    &quot;text&quot;: &quot;Security update — install now&quot;,
+    &quot;backColor&quot;: &quot;#8B0000&quot;,
+    &quot;backColor2&quot;: &quot;#FF4500&quot;,
+    &quot;foreColor&quot;: &quot;#FFFFFF&quot;,
+    &quot;imageUrl&quot;: &quot;https://example.com/icon.png&quot;
+  },
+  &quot;pulse&quot;: {
+    &quot;enable&quot;: true,
+    &quot;color&quot;: &quot;#FF4500&quot;,
+    &quot;style&quot;: &quot;All&quot;,
+    &quot;speed&quot;: 1.5
+  }
 }
 </code></pre>
-<p><code>maximumPostponeDays</code>, <code>allowPostpone</code>, <code>allowSkip</code>, <code>allowResume</code>, and <code>allowRetry</code> are optional. On a <code>{ &quot;packages&quot;: [ ... ] }</code> file they may sit on the root, and a package value replaces the root value. Omit <code>maximumPostponeDays</code> for 365. Omit <code>allowPostpone</code> or <code>allowSkip</code> and a critical package cannot use that action, while every other severity can. <code>true</code> allows it, including on a critical package. <code>false</code> blocks it. Omit <code>allowResume</code> or <code>allowRetry</code> and Resume or Restart stays available. <code>allowRetry</code> false hides Restart.</p>
+<p><code>maximumPostponeDays</code>, <code>allowPostpone</code>, <code>allowSkip</code>, <code>allowResume</code>, <code>allowRetry</code>, and <code>progressDisplay</code> are optional. On a <code>{ &quot;packages&quot;: [ ... ] }</code> file they may sit on the root, and a package value replaces the root value. Omit <code>maximumPostponeDays</code> for 365. Omit <code>allowPostpone</code> or <code>allowSkip</code> and a critical package cannot use that action, while every other severity can. <code>true</code> allows it, including on a critical package. <code>false</code> blocks it. Omit <code>allowResume</code> or <code>allowRetry</code> and Resume or Restart stays available. <code>allowRetry</code> false hides Restart. Omit <code>progressDisplay</code> to use <code>KryptonApplicationUpdater.ProgressDisplay</code>. Values are <code>progressBar</code> and <code>transferSpeedGraph</code> (case-insensitive).</p>
+<h3 id="banner-and-pulse">Banner and pulse</h3>
+<p>Optional nested <code>banner</code> and <code>pulse</code> objects. On a packages file they may sit on the root; a package object replaces the whole root object (no field-level merge). Omit an object to leave that feature off.</p>
+<table>
+<thead>
+<tr>
+<th>Object</th>
+<th>Windows</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>banner</code></td>
+<td>Prompt, notes</td>
+<td>Top strip when <code>text</code> and/or <code>imageUrl</code> is set. Colours are <code>#RRGGBB</code> or <code>#AARRGGBB</code>. <code>backColor</code> alone is a solid fill; set <code>backColor2</code> for a left-to-right linear gradient. <code>imageUrl</code> is https or a local path (http is rejected). A failed image load hides the icon and keeps the text.</td>
+</tr>
+<tr>
+<td><code>pulse</code></td>
+<td>Prompt, notes, progress</td>
+<td>Form chrome via <code>KryptonForm.PulsingBorderValues</code>. <code>enable</code> defaults to false when the object is present without it. <code>style</code> is <code>All</code> (default) or <code>Bottom</code>. <code>speed</code> defaults to 1. Show-when is always <code>Always</code> and animate is always on (not in JSON).</td>
+</tr>
+</tbody>
+</table>
+<p>Public types: <code>KryptonUpdateBanner</code> and <code>KryptonUpdatePulse</code> on <code>KryptonUpdatePackage</code>. Helpers: <code>KryptonUpdatePresentation.ApplyBanner</code>, <code>ApplyPulse</code>, and <code>LoadBannerImageAsync</code>.</p>
 <p><code>packageKind</code> is <code>installer</code> or <code>archive</code>. A local <code>packageUrl</code> is accepted so an offline manifest can point at a local file. Remote feed and package addresses must be <code>https</code>. Redirects are followed only while the next address is still <code>https</code>.</p>
 <p>SHA-256 is required. The compare is constant-time and always covers the whole file, including a file that was resumed. When <code>certificateThumbprint</code> is set, the downloaded file must be Authenticode-signed and the thumbprint must match. A mismatch deletes the file.</p>
 <h2 id="download">Download</h2>
@@ -238,17 +289,37 @@
 <li>Close leaves the update. Close after Cancel is <code>Cancelled</code>. Close after a failure raises <code>Failed</code> once. <code>Failed</code> is not raised while Resume or Restart is still available.</li>
 </ul>
 <p><code>DownloadAsync</code> is still one shot: it deletes its own temp file on failure and does not offer Resume or Restart. <code>Strings</code> includes <code>Resume</code>, <code>Restart</code>, <code>DownloadInterrupted</code>, and <code>DownloadRestarting</code>.</p>
-<p>Details starts folded. The button uses an expander glyph and grows the window by a fixed footer. The footer shows the file name, bytes received and total, speed, and time remaining. Speed is the change since the previous progress sample. An unknown length or a zero rate shows Unknown. Resume keeps counting bytes already on disk. The footer stays available after the transfer stops.</p>
+<h3 id="progress-chrome">Progress chrome</h3>
+<p>The progress window binds <code>package.ProgressDisplay ?? updater.ProgressDisplay</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>UI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ProgressBar</code> (default)</td>
+<td>Continuous percent when the total length is known; marquee when it is not</td>
+</tr>
+<tr>
+<td><code>TransferSpeedGraph</code></td>
+<td>Hosts public <code>KryptonTransferProgressPanel</code>: scrolling speed chart plus an optional progress chart (<code>SetProgress</code> / <code>AddSample</code>). Size and ETA stay in Details</td>
+</tr>
+</tbody>
+</table>
+<p>The panel default <code>ChartLayout</code> is <code>SideBySide</code> (separate speed and progress columns). <code>DualSeries</code> paints both series on one <code>KryptonTransferDualGraph</code> chart; the updater does not switch to that layout (no extra <code>KryptonUpdateProgressDisplay</code> value). Speed colours use <code>PaletteElement.TransferSpeedGraph</code> / <code>SchemeBaseColors.TransferSpeedGraph*</code>; progress colours use <code>TransferProgressGraph</code>. The progress form sets graph capacity to 60 samples. <code>ProgressSampleMode</code> defaults to <code>Auto</code> (percent when total is known, otherwise bytes).</p>
+<p>Details starts folded. The Details button lives on the docked button strip with Cancel (and Resume / Restart / Close in recovery). Opening Details expands a panel <strong>below</strong> that strip and grows the form by the same height. The panel shows the file name, bytes received and total, speed, and time remaining. Speed is the change since the previous progress sample (and drives <code>AddSample</code> in graph mode). An unknown length or a zero rate shows Unknown. Resume keeps counting bytes already on disk. Details stays available after the transfer stops.</p>
 <p>GitHub: <code>GET https://api.github.com/repos/{owner}/{repo}/releases/latest</code> with a User-Agent. An asset named <code>krypton-update.json</code> uses the schema above. A <code>packageUrl</code> that is not <code>https</code> and not a local path is treated as an asset name on that release. Without that manifest, the provider maps the tag, the body, and one asset (<code>GitHubAssetName</code>, otherwise the single <code>.exe</code>, <code>.msi</code>, or <code>.zip</code>). The hash comes from the manifest, otherwise the asset <code>digest</code> (<code>sha256:</code>). If neither exists, the check fails and nothing is applied.</p>
 <h2 id="apply">Apply</h2>
 <p><code>installer</code>: <code>.msi</code> starts through <code>msiexec /i</code>. Anything else starts directly, with <code>installerArguments</code> when the manifest set them.</p>
 <p><code>archive</code>: the component writes a job file, extracts the embedded helper, and starts it. When <code>ExitApplicationOnApply</code> is true the helper waits for this process, rejects zip entries that escape <code>InstallDirectory</code> (zip-slip), extracts, and starts <code>RestartCommand</code>. When it is false, the helper does not wait and does not restart, and the component waits for the helper to finish. The TestForm demo sets <code>ExitApplicationOnApply</code> to false and points <code>InstallDirectory</code> at a temp folder.</p>
 <h2 id="manifest-editor">Manifest editor</h2>
 <p><code>Source/TestHarnesses/UpdateManifestEditor</code> is a maintainer WinForms app for the JSON file above. It is registered in the suite solution under Testing and is not packed. It does not reference <code>Krypton.Toolkit.Utilities</code>; the parser there stays internal.</p>
-<p>One window lists packages. The selected row edits version (<code>System.Version</code>; a leading <code>v</code> is stripped when the file is written), severity, package kind, the local package file, the published package URL, SHA-256, an optional Authenticode thumbprint, installer arguments, release notes, released UTC, maximum postpone days, and postpone, skip, resume, and retry (default, allow, or block). Retry controls the Restart button.</p>
+<p>One window lists packages. The selected row edits version (<code>System.Version</code>; a leading <code>v</code> is stripped when the file is written), severity, package kind, the local package file, the published package URL, SHA-256, an optional Authenticode thumbprint, installer arguments, release notes, released UTC, maximum postpone days, postpone, skip, resume, and retry (default, allow, or block), plus optional banner text / back / back 2 / fore / image URL and pulse enable / colour / style / speed. Retry controls the Restart button. Banner back 2 is the gradient end colour.</p>
 <p>The package file is used only to hash the bytes and, when the file is Authenticode-signed, to read the certificate thumbprint. Browsing a <code>.zip</code> selects <code>archive</code>; any other file selects <code>installer</code>. The combo can override that. Browsing fills <code>packageUrl</code> with the local path only when that box is still empty. A published feed should replace the path with <code>https</code>. A remote value must be <code>https</code>. A local path is allowed.</p>
 <p>Save writes one JSON object when the list has one package, and <code>{ &quot;packages&quot;: [ ... ] }</code> when it has more. Empty optional fields are omitted. Open accepts either shape. The save dialog defaults to <code>krypton-update.json</code>. Copy places the same JSON on the clipboard. Save is blocked until every package has a parseable version, a package URL, and a 64-character hex SHA-256.</p>
-<p><code>Scripts/UnitTests/Invoke-UpdateManifestEditorScreenshot.ps1</code> hosts the editor with a sample package and writes the screenshot under <code>Documents/PR/</code>.</p>
 
 </article>
           </div>

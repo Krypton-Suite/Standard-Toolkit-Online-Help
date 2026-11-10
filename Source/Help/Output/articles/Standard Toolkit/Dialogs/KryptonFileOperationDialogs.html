@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton file-operation dialogs | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton file-operation dialogs | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-file-operation-dialogs">Krypton file-operation dialogs</h1>
+
+<p><code>Krypton.Dialogs</code> replaces Explorer's progress, name-conflict, and delete windows for copy, move, rename, and delete that an application starts itself. Explorer and every other process keep the Windows dialogs. There is no shell hook.</p>
+<p>The assembly is not published on its own. It is packed into <a href="https://www.nuget.org/packages/Krypton.Standard.Toolkit">Krypton.Standard.Toolkit</a>. Toolkit must not reference it.</p>
+<h2 id="architecture">Architecture</h2>
+<pre><code>App
+  KryptonFileOperation          queue, preflight, events
+    KryptonFileConflictDialog
+    KryptonDeleteConfirmationDialog
+    KryptonPermanentDeleteDialog
+    VisualFileOperationProgressForm     UI thread
+      OperationsProgressDialog           IOperationsProgressDialog, worker STA
+    FileOperationRunner                  IFileOperation, worker STA
+</code></pre>
+<p><code>Perform</code> must be called on an STA thread, normally the WinForms UI thread. It throws <code>InvalidOperationException</code> otherwise. The progress form is created on that thread and its handle exists before the worker starts. <code>IFileOperation</code> is created on a dedicated STA thread named <code>KryptonFileOperation</code>, so <code>PerformOperations</code> does not block the message pump. Progress snapshots are posted with <code>BeginInvoke</code>. <code>GetOperationStatus</code> only reads a volatile flag.</p>
+<p>The shell calls <code>StartProgressDialog</code> when it wants the window. Fast batches can finish before the window is worth looking at. <code>FOF_SILENT</code> is not set, because that suppresses the progress dialog. <code>FOF_NOERRORUI</code> is set, so per-item failures come through the <code>Error</code> event and the progress window instead of a shell message box. Elevation still uses the Windows UAC prompt (<code>FOFX_SHOWELEVATIONPROMPT</code>).</p>
+<h2 id="why-prompts-run-before-the-shell-call">Why prompts run before the shell call</h2>
+<p><code>IFileOperationProgressSink.PreCopyItem</code> cannot skip one file. Any failure cancels the whole batch. <code>FOF_NOCONFIRMATION</code> answers Yes to every shell prompt, and <code>FOF_WANTNUKEWARNING</code> still forces the permanent-delete warning even when confirmation is off.</p>
+<p><code>KryptonFileOperation</code> therefore shows the conflict and delete dialogs first and queues only the chosen items. <code>PerformOperations</code> then uses <code>FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR | FOF_NOERRORUI</code>. Recycle also sets <code>FOF_ALLOWUNDO | FOFX_RECYCLEONDELETE</code>. Permanent delete omits both <code>FOF_ALLOWUNDO</code> and <code>FOF_WANTNUKEWARNING</code>.</p>
+<p>A batch that mixes recycle with permanent delete runs as two passes. The undoable pass goes first. Cancel on that pass does not run the permanent pass.</p>
+<p>Name collisions inside a folder that was queued as one item are not preflighted. Those follow <code>FOF_NOCONFIRMATION</code>.</p>
+<h2 id="public-api">Public API</h2>
+<pre><code class="lang-csharp">public sealed class KryptonFileOperation : IDisposable
+{
+    public KryptonFileOperationStrings Strings { get; }
+    public IWin32Window? Owner { get; set; }
+    public bool ShowBanners { get; set; } // default true
+
+    public event EventHandler&lt;KryptonFileDeleteConfirmEventArgs&gt;? ConfirmDelete;
+    public event EventHandler&lt;KryptonFileDeleteConfirmEventArgs&gt;? ConfirmPermanentDelete;
+    public event EventHandler&lt;KryptonFileConflictEventArgs&gt;? FileConflict;
+    public event EventHandler&lt;KryptonFileOperationErrorEventArgs&gt;? Error;
+
+    public void QueueCopy(string sourcePath, string destinationDirectory, string? newName = null);
+    public void QueueMove(string sourcePath, string destinationDirectory, string? newName = null);
+    public void QueueRename(string path, string newName);
+    public void QueueDelete(string path, bool recycle);
+
+    public bool Copy(string sourcePath, string destinationDirectory, string? newName = null);
+    public bool Move(string sourcePath, string destinationDirectory, string? newName = null);
+    public bool Rename(string path, string newName);
+    public bool Delete(string path, bool recycle);
+
+    public bool Perform();
+}
+</code></pre>
+<p>A null or empty <code>newName</code> keeps the source name. The convenience methods queue one item and then call <code>Perform</code>, which also runs anything already queued. <code>Perform</code> returns false when the user cancels or any item reports an error. It returns true when every item is skipped or the shell finishes the batch.</p>
+<p><code>KryptonFileOperation</code> and the confirmation dialogs are <code>[ToolboxItem(false)]</code>. The speed graph lives in Utilities and is <code>[ToolboxItem(true)]</code>.</p>
+<h3 id="preflight">Preflight</h3>
+<ul>
+<li>Copy, move, or rename onto an existing name shows <code>KryptonFileConflictDialog</code>: Replace, Skip, Keep both, or Cancel, plus &quot;do this for the remaining conflicts&quot;.</li>
+<li>Skip does not queue the item. Replace queues the original name. Keep both queues <code>Name (2).ext</code>, then <code>(3)</code>, and so on, skipping names that already exist or were reserved earlier in the same <code>Perform</code>.</li>
+<li>A missing source reports <code>Error</code> and continues with the rest of the batch.</li>
+<li>The same path as both source and destination reports <code>Error</code> and does not queue.</li>
+<li><code>QueueDelete(..., recycle: true)</code> asks once for the whole recycle batch, then queues those items.</li>
+<li><code>QueueDelete(..., recycle: false)</code> asks once with <code>KryptonPermanentDeleteDialog</code>.</li>
+<li>Cancel at any prompt returns before <code>PerformOperations</code>.</li>
+</ul>
+<h3 id="replacing-a-prompt">Replacing a prompt</h3>
+<p>Set <code>Handled</code> on <code>ConfirmDelete</code>, <code>ConfirmPermanentDelete</code>, or <code>FileConflict</code> to skip the stock dialog.</p>
+<ul>
+<li>Delete: <code>Handled</code> plus <code>Confirmed</code> continues. <code>Handled</code> plus <code>Cancel</code> stops the batch.</li>
+<li>Conflict: <code>Handled</code> plus <code>Choice</code> (<code>Replace</code>, <code>Skip</code>, <code>KeepBoth</code>, <code>Cancel</code>). <code>ApplyToRemaining</code> reuses that choice for later collisions in the same <code>Perform</code>.</li>
+</ul>
+<p><code>Error</code> is informational. <code>FOF_NOERRORUI</code> is set, so the shell will not show its own error UI. The progress window shows <code>KryptonFileOperationErrorEventArgs.Message</code>.</p>
+<h3 id="strings">Strings</h3>
+<p><code>KryptonFileOperationStrings</code> holds the dialog text (<code>Copying</code>, <code>Moving</code>, <code>Deleting</code>, <code>Recycling</code>, <code>Renaming</code>, <code>CopyingAndMoving</code>, button labels, and the conflict and delete sentences). <code>IsDefault</code> and <code>Reset</code> match the other Krypton string stores. The text is not on <code>KryptonManager.Strings</code>, because Toolkit does not reference this assembly.</p>
+<h3 id="progress-window">Progress window</h3>
+<p>One window, titled from the shell verb (<code>Copying</code>, <code>Moving</code>, <code>Deleting</code>, <code>Renaming</code>, <code>Copying and moving</code> for a cross-volume move). Each dialog can show a Windows-style top banner (status icon + bold main instruction) and a bottom <code>PanelAlternate</code> button bar. Set <code>KryptonFileOperation.ShowBanners</code> (default <code>true</code>) or pass <code>showBanner</code> to the standalone dialog <code>Show</code> methods. When banners are off, the instruction text moves into the body. Progress shows the current item, from, to, a <code>KryptonProgressBar</code> (or speed graph when expanded), item and byte counts, speed, and time remaining. Preflight and indeterminate mode use a marquee and &quot;Calculating…&quot;. Conflict uses a warning icon with the conflict intro in the banner; recycle uses a question icon and permanent delete a warning icon.</p>
+<p><strong>More details / Fewer details</strong> swaps the progress indicator: collapsed shows the <code>KryptonProgressBar</code>; expanded hides the bar and shows a theme-aware [<code>KryptonTransferSpeedGraph</code>](Source/Krypton Components/Krypton.Toolkit.Utilities/Components/Krypton Transfer Speed Graph/Controls Toolkit/KryptonTransferSpeedGraph.cs) from <code>Krypton.Toolkit.Utilities</code> in the same slot. Samples are pushed only while expanded and while progress is determinate. Collapse restores the bar and keeps the sample window so re-expand still shows recent history. The hosted instance uses <code>Values.Capacity = 60</code> for a denser short window. Chart colours come from the current global palette (back, border, fill, text), not from Explorer's fixed dark/green look.</p>
+<p><code>KryptonTransferSpeedGraph</code> is a public Toolbox control in Utilities (<code>[ToolboxItem(true)]</code>), not in <code>Krypton.Dialogs</code>. Apps can host it on their own forms. Call <code>AddSample(bytesPerSecond)</code>, <code>Clear()</code>, <code>Pause()</code> / <code>Resume()</code> (or <code>Values.Paused</code>), and set behaviour under expandable <code>Values</code> (<code>Capacity</code>, <code>Paused</code>, <code>ShowSpeedLabel</code>, <code>SpeedLabelFormat</code>). While paused, <code>AddSample</code> is ignored and the chart stays frozen. The progress dialog Pause / Resume button drives the graph the same way. Appearance uses the usual <code>StateCommon</code> / <code>StateNormal</code> / <code>StateDisabled</code> triple (panel back, control border, label content). Series fill prefers <code>State*.Back.Color2</code> when set; otherwise it uses the standalone-button checked colour from the active palette.</p>
+<p>Pause is shown only when the shell passes <code>OPPROGDLG_ENABLEPAUSE</code>. Cancel is always available. Closing the window is treated as Cancel while the operation is running. <code>GetOperationStatus</code> returns running, paused, or cancelled from those buttons. <code>PauseTimer</code>, <code>ResumeTimer</code>, and <code>ResetTimer</code> freeze or restart the estimate.</p>
+<h3 id="standalone-dialogs">Standalone dialogs</h3>
+<p>The three prompts can be shown without an operation:</p>
+<ul>
+<li><code>KryptonFileConflictDialog.Show(owner, source, destination, strings, out applyToRemaining, showBanner = true)</code> returns <code>KryptonFileConflictChoice</code>.</li>
+<li><code>KryptonDeleteConfirmationDialog.Show(owner, paths, strings, showBanner = true)</code> returns <code>DialogResult</code>.</li>
+<li><code>KryptonPermanentDeleteDialog.Show(owner, paths, strings, showBanner = true)</code> returns <code>DialogResult</code>.</li>
+</ul>
+<p>Pass null <code>strings</code> to use the factory text. Pass <code>showBanner: false</code> to hide the icon banner (same as <code>KryptonFileOperation.ShowBanners = false</code>).</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">using (var operation = new KryptonFileOperation { Owner = this /*, ShowBanners = false */ })
+{
+    operation.FileConflict += (sender, args) =&gt;
+    {
+        args.Handled = true;
+        args.Choice = KryptonFileConflictChoice.KeepBoth;
+        args.ApplyToRemaining = true;
+    };
+
+    operation.QueueCopy(sourceFile, destinationDirectory);
+    operation.QueueDelete(oldFile, recycle: true);
+    if (!operation.Perform())
+    {
+        // Cancelled, or Error was raised for a failed item.
+    }
+}
+</code></pre>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li>Call <code>Perform</code> on the UI STA thread. A background thread, including an MTA worker, throws <code>InvalidOperationException</code>.</li>
+<li>Do not call <code>Perform</code> again on the same instance until it returns. Queue methods throw <code>InvalidOperationException</code> while a batch is running.</li>
+<li>Dispose sets the progress status to cancelled and drops the queue. It does not abort a <code>Perform</code> that is already inside <code>PerformOperations</code> except by that status, which the shell reads on its next <code>GetOperationStatus</code>.</li>
+<li>UAC is the Windows elevation prompt. These dialogs do not replace it.</li>
+<li>The COM interfaces (<code>IFileOperation</code>, <code>IOperationsProgressDialog</code>, <code>IFileOperationProgressSink</code>, <code>IShellItem</code>) stay internal to <code>Krypton.Dialogs</code>.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2026. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

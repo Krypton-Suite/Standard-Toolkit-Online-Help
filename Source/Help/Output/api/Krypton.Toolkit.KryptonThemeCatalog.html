@@ -263,9 +263,12 @@ Pass <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywo
 
 
   <h5 id="Krypton_Toolkit_KryptonThemeCatalog_DiscoverThemes_System_IServiceProvider__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The runtime probe runs once from <a class="xref" href="Krypton.Toolkit.KryptonManager.html">KryptonManager</a>'s static constructor, before Visual Studio
-has sited the component. Property-grid and theme-selector calls pass the designer service so extra
-palettes appear when the project references <code>Krypton.Themes</code>.</p>
+  <div class="markdown level1 remarks"><p>Creating the default core palette does not call this method. The first <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.windows.forms.application.idle">Idle</a>
+does, unless <a class="xref" href="Krypton.Toolkit.KryptonManager.html#Krypton_Toolkit_KryptonManager_AutoDiscoverThemes">AutoDiscoverThemes</a> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> or the caller is
+the designer. Extra modes, theme lists, and the <a class="xref" href="Krypton.Toolkit.PaletteMode.html">PaletteMode</a> drop-down also call it, so a
+request that arrives before idle still resolves. Property-grid calls pass the designer service so extra
+palettes appear when the project references <code>Krypton.Themes</code>, including when the assembly was not
+beside the IDE.</p>
 </div>
 
 
@@ -486,6 +489,9 @@ palettes appear when the project references <code>Krypton.Themes</code>.</p>
 
 
 
+  <h5 id="Krypton_Toolkit_KryptonThemeCatalog_GetPalette_Krypton_Toolkit_PaletteMode__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>A core mode does not load <code>Krypton.Themes.dll</code>. An extra mode calls <a class="xref" href="Krypton.Toolkit.KryptonThemeCatalog.html#Krypton_Toolkit_KryptonThemeCatalog_DiscoverThemes">DiscoverThemes()</a> first.</p>
+</div>
 
 
   <h5 class="exceptions">Exceptions</h5>
@@ -728,6 +734,9 @@ palettes appear when the project references <code>Krypton.Themes</code>.</p>
 
 
 
+  <h5 id="Krypton_Toolkit_KryptonThemeCatalog_TryGetDescriptor_Krypton_Toolkit_PaletteMode_Krypton_Toolkit_KryptonThemeDescriptor___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>A core mode is resolved from <code>Krypton.Toolkit</code> only. An extra mode calls <a class="xref" href="Krypton.Toolkit.KryptonThemeCatalog.html#Krypton_Toolkit_KryptonThemeCatalog_DiscoverThemes">DiscoverThemes()</a>.</p>
+</div>
 
 
 

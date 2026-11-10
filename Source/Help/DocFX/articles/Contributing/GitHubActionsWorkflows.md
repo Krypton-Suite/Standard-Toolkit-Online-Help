@@ -588,7 +588,7 @@ All Discord notifications use rich embeds with this structure:
 │ A new stable release is now available!             │
 ├────────────────────────────────────────────────────┤
 │ 📌 Version                                         │
-│ 110.26.1.1                                         │
+│ 120.27.1.1                                         │
 │                                                    │
 │ 🔗 Commit                                          │
 │ abc1234  (clickable link to the built commit)      │
@@ -799,8 +799,8 @@ if (-not $env:DISCORD_WEBHOOK_NIGHTLY) {
 **Check logs for**:
 
 ```text
-Got version from assembly: 110.26.1.1
-Final determined version: 110.26.1.1
+Got version from assembly: 120.27.1.1
+Final determined version: 120.27.1.1
 ```
 
 ---
@@ -892,7 +892,7 @@ ls .github/workflows/nightly.yml  # Should exist
 **Log shows**:
 
 ```text
-Package Krypton.Toolkit.110.26.1.1.nupkg already exists - skipped
+Package Krypton.Toolkit.120.27.1.1.nupkg already exists - skipped
 ```
 
 **This is EXPECTED if**:

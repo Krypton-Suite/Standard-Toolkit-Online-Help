@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Color live preview | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Color live preview | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="color-live-preview">Color live preview</h1>
+
+<p>Opt-in hover preview for color drop-downs. A highlighted swatch can be shown before it is written to <code>SelectedColor</code>. The session is public so later color controls can raise the same stages.</p>
+<h2 id="overview">Overview</h2>
+<p><code>TrackingColor</code> still reports the swatch under the pointer, and <code>Color.Empty</code> when the pointer leaves a swatch. That event does not say whether the drop-down is still open, or whether the user chose No Color.</p>
+<p><code>LivePreview</code> (default <code>false</code>) adds a session on top of that signal:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>When</th>
+<th>Color to paint</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Preview</code></td>
+<td>A swatch is highlighted (mouse or keyboard)</td>
+<td>That swatch</td>
+</tr>
+<tr>
+<td><code>Revert</code></td>
+<td>The pointer leaves the swatches while the drop-down stays open</td>
+<td>The color committed when the drop-down opened</td>
+</tr>
+<tr>
+<td><code>Commit</code></td>
+<td>The user clicks a swatch or No Color</td>
+<td>The chosen color, including <code>Color.Empty</code></td>
+</tr>
+<tr>
+<td><code>Cancel</code></td>
+<td>The drop-down closes without a choice</td>
+<td>The color committed when the drop-down opened</td>
+</tr>
+</tbody>
+</table>
+<p><code>SelectedColor</code> and the recent-color list change only on a real choice. A later <code>Cancel</code> after <code>Commit</code> is ignored.</p>
+<p><code>Color.Empty</code> from <code>TrackingColor</code> means the pointer left the swatches. No Color is a menu item, so it is committed on click and is not a hover preview.</p>
+<h2 id="architecture">Architecture</h2>
+<p><code>KryptonColorLivePreviewSession</code> (<code>Krypton.Toolkit</code>) is the state machine. Color controls call <code>Open</code>, <code>Track</code>, <code>Commit</code>, and <code>Cancel</code>. Methods other than <code>Cancel</code> do nothing while <code>Enabled</code> is false. Setting <code>Enabled</code> to false while a drop-down is open cancels the preview.</p>
+<p><code>IKryptonColorLivePreview</code> is the surface hosts bind to:</p>
+<ul>
+<li><code>LivePreview</code></li>
+<li><code>IsColorPreviewActive</code></li>
+<li><code>DisplayColor</code> (highlighted swatch while a preview is active, otherwise the committed color)</li>
+<li><code>ColorPreview</code></li>
+</ul>
+<p>Implemented by:</p>
+<ul>
+<li><code>KryptonColorButton</code> (color bar uses <code>DisplayColor</code> without assigning <code>SelectedColor</code>)</li>
+<li><code>KryptonColorButtonToolStripMenuItem</code> (forwards the hosted button)</li>
+<li><code>KryptonRibbonGroupColorButton</code></li>
+<li><code>KryptonRibbonGroupClusterColorButton</code> (glyph reads <code>DisplayColor</code>)</li>
+</ul>
+<p>A future color control creates a <code>KryptonColorLivePreviewSession</code>, sets <code>Enabled</code> from its own <code>LivePreview</code> property, and forwards <code>PreviewChanged</code>.</p>
+<p><code>KryptonColorDialog</code> is the Win32 color dialog. It has no hover callback. Opening More Colors cancels the swatch preview. OK assigns <code>SelectedColor</code> and raises <code>SelectedColorChanged</code>. It does not raise <code>ColorPreview</code> with <code>Commit</code>.</p>
+<h2 id="usage">Usage</h2>
+<pre><code class="lang-csharp">colorButton.LivePreview = true;
+colorButton.ColorPreview += (sender, e) =&gt;
+{
+    sample.BackColor = e.Color.IsEmpty ? Color.White : e.Color;
+};
+colorButton.SelectedColorChanged += (sender, e) =&gt;
+{
+    // More Colors OK arrives here. Swatch clicks also raise SelectedColorChanged.
+    sample.BackColor = e.Color.IsEmpty ? Color.White : e.Color;
+};
+</code></pre>
+<p><code>KryptonColorLivePreviewEventArgs.CommittedColor</code> is the color that was committed when the drop-down opened. <code>Color</code> is the color to paint for this stage.</p>
+<h2 id="edge-cases">Edge cases</h2>
+<ul>
+<li><code>LivePreview</code> defaults to false. Existing <code>TrackingColor</code> handlers keep the same payload.</li>
+<li>Highlighting the color that is already committed still previews, then <code>Commit</code> restores that color if the bar was showing a different swatch.</li>
+<li>Turning <code>LivePreview</code> off while the drop-down is open cancels the preview.</li>
+<li>Keyboard movement uses the same highlight path as the mouse, so it previews as well.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2026. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>
