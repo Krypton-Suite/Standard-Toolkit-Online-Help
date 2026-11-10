@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>Krypton Analogue Gauges (#4656) | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="Krypton Analogue Gauges (#4656) | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="krypton-analogue-gauges-4656">Krypton Analogue Gauges (#4656)</h1>
+
+<p>Local developer guide — do not include in pull requests.</p>
+<h2 id="overview">Overview</h2>
+<p>Dashboard-style analogue gauges live in <code>Krypton.Gauges</code> (packed only via <code>Krypton.Standard.Toolkit</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonCircularGauge</code></td>
+<td>Arc face with needle, ticks, optional peak marker</td>
+</tr>
+<tr>
+<td><code>KryptonLinearGauge</code></td>
+<td>Horizontal/vertical track with fill</td>
+</tr>
+<tr>
+<td><code>KryptonRectangularGauge</code></td>
+<td>Compact solid or segmented indicator</td>
+</tr>
+<tr>
+<td><code>KryptonThermometerGauge</code></td>
+<td>Classic bulb + tube liquid fill (vertical by default)</td>
+</tr>
+<tr>
+<td><code>KryptonAmpereMeterGauge</code></td>
+<td>Square panel meter, short upper arc, bottom pivot (AC or DC)</td>
+</tr>
+</tbody>
+</table>
+<p>They share value/range/palette/animation/input behaviour through <code>KryptonGaugeBase</code>.</p>
+<h2 id="architecture">Architecture</h2>
+<ul>
+<li><code>KryptonGaugeBase</code> : <code>VisualSimpleBase</code> — shared <code>Values</code>, palette states, animation (<code>DisplayedValue</code> / <code>PeakValue</code>), interactive input hooks</li>
+<li>Per-face <code>ViewDraw*Gauge</code> : <code>ViewDrawPanel</code> — GDI+ painting in <code>RenderAfter</code></li>
+<li>Designers dual-compile into <code>Krypton.Gauges.Design</code> (same <code>Components/**/Designers/**</code> pattern as the VU meter)</li>
+</ul>
+<h2 id="public-api-essentials">Public API (essentials)</h2>
+<ul>
+<li><code>GaugeValues</code>: <code>Minimum</code>, <code>Maximum</code>, <code>Value</code>, <code>Ranges</code>, <code>Animate</code>, <code>AnimationMilliseconds</code>, <code>InputMode</code> (<code>Manual</code> | <code>Interactive</code>), <code>ShowScaleLabels</code>, <code>Caption</code>, <code>Units</code>, <code>SmallChange</code>, <code>LargeChange</code></li>
+<li>Face subclasses:
+<ul>
+<li><code>CircularGaugeValues</code> (<code>StartAngle</code>, <code>SweepAngle</code>, ticks, needle/peak)</li>
+<li><code>LinearGaugeValues</code> (<code>Orientation</code>, ticks)</li>
+<li><code>RectangularGaugeValues</code> (<code>Style</code>, <code>Orientation</code>, <code>SegmentCount</code>, <code>ShowValueText</code>)</li>
+<li><code>ThermometerGaugeValues</code> (<code>Orientation</code>, <code>MajorTickCount</code>, <code>MinorTickCount</code>, <code>ShowBulb</code>, <code>BulbScale</code>)</li>
+<li><code>AmpereMeterGaugeValues</code> (<code>StartAngle</code>, <code>SweepAngle</code>, ticks, <code>ShowCenterZeroMark</code>; factory <code>Maximum = 10</code>, <code>Units = &quot;A&quot;</code>)</li>
+</ul>
+</li>
+<li><code>GaugeRange</code> / <code>GaugeRangeCollection</code>: coloured bands with <code>Severity</code> or explicit <code>Color</code></li>
+<li>Palette: <code>Face</code>, <code>Tick</code>, <code>Needle</code>, <code>Fill</code>, <code>RangeWarning</code>, <code>RangeError</code>, <code>Cap</code>, <code>Peak</code>, <code>SegmentOff</code></li>
+<li>Events: <code>ValueChanged</code> (<code>GaugeValueChangedEventArgs</code> with old/new)</li>
+</ul>
+<h2 id="thermometer-face">Thermometer face</h2>
+<ul>
+<li>Default size is roughly <code>64×220</code> (vertical). Horizontal places the bulb at the minimum end.</li>
+<li>Liquid uses palette <code>Fill</code>; tube glass uses <code>Face</code> / border; ticks and range bands follow the same palette as linear.</li>
+<li>Hit-testing maps along the <strong>tube</strong> rectangle only (<code>GaugeGeometry.PointToLinearNormalized</code>).</li>
+<li><code>ShowBulb = false</code> draws a tube-only face for tight panels. <code>BulbScale</code> (0.5–2.0) scales the bulb relative to tube thickness.</li>
+</ul>
+<h2 id="ampere-meter-face">Ampere meter face</h2>
+<ul>
+<li>Default size is roughly <code>160×160</code> (square panel bezel).</li>
+<li>Default arc is a short upper fan (<code>StartAngle ≈ 200°</code>, <code>SweepAngle ≈ 140°</code>) with the needle pivot near the bottom of the dial.</li>
+<li><strong>AC (default):</strong> <code>Minimum = 0</code>, <code>Maximum = 10</code>, units <code>A</code>.</li>
+<li><strong>DC / bipolar:</strong> set <code>Minimum &lt; 0</code> (e.g. −10…+10). <code>ShowCenterZeroMark</code> emphasises the zero tick when bipolar.</li>
+<li>Hit-testing maps against the pivot + start/sweep (same geometry helper as circular).</li>
+</ul>
+<h2 id="interactive-input">Interactive input</h2>
+<p>When <code>InputMode == Interactive</code> and enabled:</p>
+<ul>
+<li>Pointer drag/click maps through face geometry</li>
+<li>Arrow / Page / Home / End keys adjust <code>Value</code> when focused</li>
+<li>Manual mode ignores user input; apps still set <code>Value</code></li>
+</ul>
+<h2 id="related">Related</h2>
+<ul>
+<li>VU meter (#4655) remains a separate audio-oriented control in the same assembly.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2026. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

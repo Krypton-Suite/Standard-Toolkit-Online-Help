@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+      <title>KryptonEqualizer | Krypton Standard Toolkit Documentation </title>
+      <meta name="viewport" content="width=device-width">
+      <meta name="title" content="KryptonEqualizer | Krypton Standard Toolkit Documentation ">
+    
+    
+      <link rel="shortcut icon" href="../../../Krypton.ico">
+      <link rel="stylesheet" href="../../../styles/docfx.vendor.min.css">
+      <link rel="stylesheet" href="../../../styles/docfx.css">
+      <link rel="stylesheet" href="../../../styles/main.css">
+      <meta property="docfx:navrel" content="../../../toc.html">
+      <meta property="docfx:tocrel" content="../../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../../index.html">
+                <img id="logo" class="svg" src="../../../Logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="kryptonequalizer">KryptonEqualizer</h1>
+
+<p>Maintainer guide for the multi-band equalizer in <code>Krypton.Gauges</code> (issue #4660).</p>
+<h2 id="overview">Overview</h2>
+<p><code>KryptonEqualizer</code> draws N frequency bands as spectrum <strong>levels</strong> (solid bars or LED segments) and exposes interactive <strong>gain</strong> thumbs for a graphic-EQ style UI. Levels come from the application or from WASAPI capture + FFT. Gains are never overwritten by capture.</p>
+<p>The assembly is <code>IsPackable=false</code> and ships inside <code>Krypton.Standard.Toolkit</code>.</p>
+<h2 id="architecture">Architecture</h2>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KryptonEqualizer</code></td>
+<td>Toolbox control (<code>VisualSimpleBase</code>)</td>
+</tr>
+<tr>
+<td><code>EqualizerValues</code> / <code>EqualizerBand</code></td>
+<td>Settings and per-band Level / Gain</td>
+</tr>
+<tr>
+<td><code>ViewDrawEqualizer</code></td>
+<td>Paint bars, peaks, thumbs, labels</td>
+</tr>
+<tr>
+<td><code>PaletteEqualizer*</code></td>
+<td>Palette-backed face / low / mid / high / peak / thumb colours</td>
+</tr>
+<tr>
+<td><code>WasapiCapturePump</code></td>
+<td>Shared WASAPI capture thread (also used by <code>KryptonVuMeter</code>)</td>
+</tr>
+<tr>
+<td><code>EqualizerCapture</code> + <code>EqualizerFft</code></td>
+<td>Window → Hann → FFT → log-spaced band levels</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="lang-text">Manual SetLevels / Band.Level --&gt; Level --&gt; ballistics --&gt; paint
+Capture FFT ------------------&gt; Level
+User drag / keyboard ---------&gt; Gain --&gt; GainChanged --&gt; paint
+</code></pre>
+<h2 id="public-api-high-level">Public API (high level)</h2>
+<ul>
+<li><code>Values.Style</code> — <code>Bars</code> or <code>Segments</code></li>
+<li><code>Values.InputMode</code> — <code>Manual</code> or <code>Capture</code></li>
+<li><code>Values.BandCount</code> — 3…31 (default 10)</li>
+<li><code>Values.Interactive</code> — gain thumbs (default true)</li>
+<li><code>Values.PeakHold</code>, attack/release timings</li>
+<li><code>SetLevels</code> / <code>GetLevels</code> / <code>GetGains</code></li>
+<li>Events: <code>LevelsChanged</code>, <code>GainChanged</code>, <code>CaptureFailed</code></li>
+</ul>
+<p>Reuse <code>VuMeterChannel</code> for Left / Right / Mix while capturing.</p>
+<h2 id="capture-notes">Capture notes</h2>
+<ul>
+<li>No NAudio package. Shared-mode WASAPI on the default recording device.</li>
+<li>FFT length 2048 with 50% overlap.</li>
+<li><code>CalibrationOffsetDb</code> (default −18) aligns dBFS into the 0…1 level scale (<code>EqualizerScale.LevelFloorDb</code> = −60).</li>
+<li>Designer never starts capture; handle destroy stops it.</li>
+</ul>
+<h2 id="related">Related</h2>
+<ul>
+<li><code>KryptonVuMeter</code> (#4655) — single-level meter; shares <code>WasapiCapturePump</code></li>
+<li>Analogue gauges (#4656) — separate dashboard indicators</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+      <span>Krypton Component Suite
+BSD 3-Clause License
+© Component Factory Pty Ltd, 2006 - 2016, All rights reserved.</span> <span>Modifications by Peter Wagner (aka PWagner1), Simon Coghlan (aka Smurf-IV), Giduac, Ahmed Abdelhameed, tobitege,  KamaniAR, Lesandro Gotardo (aka lesandrog), Jorge A. Avilés (aka mcpbcs) et al. 2017 - 2026. All rights reserved. <a href="https://github.com/Krypton-Suite">https://github.com/Krypton-Suite</a></span>
+      
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="text/javascript" src="../../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../../styles/main.js"></script>
+  </body>
+</html>

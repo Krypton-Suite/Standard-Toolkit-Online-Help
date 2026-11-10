@@ -30,8 +30,8 @@ There are currently two types of package that are supported. The table below out
 
 | Version | Status | Latest Release | Latest Release Date | End of Support |
 | --- | --- | --- | --- | --- |
-| .NET 11.0 | Standard Term Support | 11.0.0 | November 10, 2026 | TBA |
-| .NET 10.0 | Long Term Support | 10.0.14 | November 10, 2026 | November 14, 2028 |
+| .NET 11.0 | Standard Term Support | 11.0.0 | November 10, 2026 | November 14, 2028 |
+| .NET 10.0 | Long Term Support | 10.0.15 | November 10, 2026 | November 14, 2028 |
 
 ### Supported .NET Framework Versions
 
